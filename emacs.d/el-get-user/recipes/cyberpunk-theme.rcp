@@ -1,6 +1,0 @@
-(:name cyberpunk-theme
-       :website "https://github.com/n3mo/cyberpunk-theme.el"
-       :description "Cyberpunk theme"
-       :type github
-       :pkgname "n3mo/cyberpunk-theme.el"
-       :features cyberpunk-theme)

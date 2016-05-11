@@ -1,46 +1,30 @@
-(require 'package)
+;;; init.el --- Spacemacs Initialization File
+;;
+;; Copyright (c) 2012-2016 Sylvain Benner & Contributors
+;;
+;; Author: Sylvain Benner <sylvain.benner@gmail.com>
+;; URL: https://github.com/syl20bnr/spacemacs
+;;
+;; This file is not part of GNU Emacs.
+;;
+;;; License: GPLv3
 
-;; Install el-get 
-(add-to-list 'load-path "~/.emacs.d/el-get/el-get")
-(unless (require 'el-get nil 'noerror)
-  (with-current-buffer
-    (url-retrieve-synchronously
-      "http://raw.github.com/dimitri/el-get/master/el-get-install.el")
-    (let (el-get-master-branch)
-      (goto-char (point-max))
-      (eval-print-last-sexp))))
+;; Without this comment emacs25 adds (package-initialize) here
+;; (package-initialize)
 
-(add-to-list 'el-get-recipe-path "~/.emacs.d/el-get-user/recipes")
+(setq gc-cons-threshold 100000000)
+(defconst spacemacs-version         "0.105.19" "Spacemacs version.")
+(defconst spacemacs-emacs-min-version   "24.3" "Minimal version of Emacs.")
 
-;; Install packages
-(add-to-list 'el-get-sources
-             '(:name evil          :type elpa   :pkgname "evil")
-             '(:name evil-leader   :type elpa   :pkgname "evil-leader"))
-
-(setq my-el-get-packages  
-      (append  
-        '(evil evil-leader evil-org cyberpunk-theme)  
-        (mapcar 'el-get-source-name el-get-sources)))  
-
-(el-get 'sync my-el-get-packages)
-
-(setq evil-default-cursor t)
-(set-cursor-color "#FFFFFF")
-
-;; disable some of the crap on startup
-(setq inhibit-startup-message t)
-(if (display-graphic-p)
-  (tool-bar-mode -1))
-
-(require 'evil-leader)
-(require 'evil)
-(require 'evil-org)
-
-;; enable evil-mode
-(evil-mode 1)
-
-;; org-mode
-(setq org-todo-keywords
-      '((sequence "TODO" "IN-PROGRESS" "WAITING" "|" "DONE")))
-;; rebind tab for org-mode to fix console emacs bug
-(evil-define-key 'normal org-mode-map (kbd "TAB") #'org-cycle)
+(if (not (version<= spacemacs-emacs-min-version emacs-version))
+    (message (concat "Your version of Emacs (%s) is too old. "
+                     "Spacemacs requires Emacs version %d or above.")
+             emacs-version spacemacs-emacs-min-version)
+  (load-file (concat user-emacs-directory "core/core-load-paths.el"))
+  (require 'core-spacemacs)
+  (spacemacs/init)
+  (spacemacs/maybe-install-dotfile)
+  (configuration-layer/sync)
+  (spacemacs/setup-startup-hook)
+  (require 'server)
+  (unless (server-running-p) (server-start)))
