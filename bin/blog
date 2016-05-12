@@ -1,0 +1,3 @@
+#! /bin/zsh
+
+touch ~/notes/blog/_posts/`date +%Y-%m-%d`-$1.md

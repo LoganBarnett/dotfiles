@@ -1,0 +1,26 @@
+#!/bin/bash
+
+# Copies files inside nested directories to a single directory. Script does
+# not do any checking for existing files, consider yourself warned.
+#
+# @author Josh Sherman
+# @link   http://joshtronic.com
+
+if [ -z "$1" ]; then
+    echo "Usage: flatten-dir.sh /path/to/nested/directories [ /path/to/target/directory ]"
+    exit
+else
+    NESTED_PATH="$1"
+fi
+
+if [ -z "$2" ]; then
+    TARGET_PATH="."
+else
+    TARGET_PATH="$2"
+fi
+
+for i in `find $NESTED_PATH`; do
+    if [ -f "$i" ]; then
+        cp $i $TARGET_PATH
+    fi
+done

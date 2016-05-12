@@ -1,0 +1,2 @@
+#! /bin/sh
+cd ~/Library/Application\ Support/Skype && rm Skype.pid && rm shared.lck

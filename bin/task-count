@@ -1,0 +1,10 @@
+#! /usr/bin/ruby
+task_count = 0
+done_count = 0
+File.readlines(ARGV[0]).each do |line|
+  next if line =~ /As a .+ I should/
+  task_count += 1
+  done_count += 1 if line =~ /(Done)/
+end
+
+puts "Tasks #{done_count}/#{task_count} - #{(done_count.to_f * 100.0) / task_count.to_f}%"

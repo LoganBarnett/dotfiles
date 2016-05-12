@@ -1,0 +1,10 @@
+#! /usr/bin/ruby
+dir = ARGV[0]
+line_count = 0
+Dir.glob("#{dir}/**/*.rb") do |ruby_file|
+  File.readlines(ruby_file).each do |line|
+	  line_count += 1 if line !~ /^#/ && line !~ /^(\s)*#/ && line !~ /^(\s)*$/
+  end
+end
+
+puts line_count

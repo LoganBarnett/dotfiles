@@ -1,0 +1,32 @@
+#! /bin/sh
+
+# IRC stuff
+function ircNotification {
+  TYPE=$1
+  MSG=$2
+
+  terminal-notifier \
+    -title IRC \
+    -subtitle "$TYPE" \
+    -message "$MSG" \
+    -appIcon ~/share/weechat.png \
+    -contentImage ~/share/weechat.png \
+    -execute "/usr/local/bin/tmux select-window -t 0:IRC" \
+    -activate com.apple.Terminal \
+    -sound default \
+    -group IRC
+}
+
+function getIrcNotifications {
+  mosh --ssh="ssh -i ~/aws/irc.pem" $TMUX_HOST -- tmux attach -t irc | grep -i logan | \
+    while read type message; do
+      ircNotification "$(echo -n $type | base64 -D -)" "$(echo -n $message | base64 -D -)"
+    done
+
+#  ssh remote.host.net 'nc -k -l -U /tmp/weechat.notify.sock' | \
+#    while read type message; do
+#      irc-notification "$(echo -n $type | base64 -D -)" "$(echo -n $message | base64 -D -)"
+#    done
+}
+
+getIrcNotifications $1

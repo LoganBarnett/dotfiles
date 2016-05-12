@@ -1,0 +1,4 @@
+#!/bin/sh
+#diffmerge -m -t1="Theirs" -t2="Merged" -t3="Mine" -r=$4 $2 $1 $3
+#diffmerge.sh -t1="Theirs" -t2="Merged" -t3="Mine" -r=%theirs %merged %mine %base
+diffmerge.sh -m -t1="Theirs" -t2="Merged" -t3="Mine" -r=$4 $2 $1 $3

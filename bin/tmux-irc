@@ -1,0 +1,4 @@
+#! /bin/sh
+
+#irc-notify $AWS_IRC &
+mosh --ssh="ssh -i ~/aws/irc.pem" $AWS_IRC -- tmux attach -t irc
