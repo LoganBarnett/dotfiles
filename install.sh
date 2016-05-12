@@ -1,5 +1,14 @@
 #!/usr/bin/env bash 
 
+# TODO: add various application settings not living under ~
+# TODO: add iStatsMenu
+# TODO: add Slack settings
+# TODO: add ssh key generation
+# TODO: add key pair
+# TODO: install istatmenu
+
+./create-ssh-key.sh
+
 PWD=$(pwd)
 EASYFILES="oh-my-zsh zshrc vimrc pentadactylrc Xdefaults tmux.conf emacs.d urxvt ideavim gitconfig spacemacs"
 
@@ -37,3 +46,4 @@ if [ $SHELL != '/bin/zsh' ];
   then
     chsh -s /bin/zsh 
 fi
+
