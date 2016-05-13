@@ -26,8 +26,9 @@ done
 mkdir -p ~/.config
 ln -s $PWD/awesome ~/.config/awesome
 
-BREWS="vim wget node htop nmap cask oh-my-zsh zsh-syntax-highlighting"
+BREWS="vim wget node htop nmap cask zsh-syntax-highlighting npm"
 
+brew update
 brew install $BREWS
 
 CASKS="slack chromium"
