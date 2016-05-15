@@ -36,7 +36,7 @@ if UseVimplug == 1
     Plug 'mattn/webapi-vim'
     Plug 'mattn/gist-vim'
     Plug 'terryma/vim-multiple-cursors'
-    Plug 'SirVer/ultisnips' | Plug 'honza/vim-snippets'
+    " Plug 'SirVer/ultisnips' | Plug 'honza/vim-snippets'
 
     Plug 'vim-scripts/paredit.vim', { 'for': 'clojure' }
     Plug 'tpope/vim-fireplace', { 'for': 'clojure' }
