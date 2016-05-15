@@ -26,7 +26,9 @@ done
 mkdir -p ~/.config
 ln -s $PWD/awesome ~/.config/awesome
 
-BREWS="vim wget node htop nmap cask zsh-syntax-highlighting npm"
+ln -s $PWD/bin ~/bin
+
+BREWS="vim wget node htop nmap cask zsh-syntax-highlighting npm mongodb"
 
 brew update
 brew install $BREWS
