@@ -10,7 +10,7 @@
 ./create-ssh-key.sh
 
 PWD=$(pwd)
-EASYFILES="oh-my-zsh zshrc vimrc pentadactylrc Xdefaults tmux.conf emacs.d urxvt ideavim gitconfig spacemacs"
+EASYFILES="oh-my-zsh zshrc vimrc pentadactylrc Xdefaults tmux.conf urxvt ideavim gitconfig spacemacs"
 
 # get submodules set up
 git submodule init
@@ -38,15 +38,20 @@ CASKS="slack chromium"
 brew cask install $CASKS
 
 # spacemacs
+echo "ensuring spacemacs setup"
 brew tap d12frosted/emacs-plus
 brew install emacs-plus --with-cocoa --with-gnutls --with-librsvg --with-imagemagick --with-spacemacs-icon
 brew linkapps
 
+git clone https://github.com/syl20bnr/spacemacs ~/.emacs.d || true
+
 # TODO: add a way of reading in the paradox-github token or generating it if it doesn't exist
 
+echo "making zsh our default shell"
 # use zsh as my shell
 if [ $SHELL != '/bin/zsh' ];
   then
     chsh -s /bin/zsh 
 fi
 
+echo "all installation is successful"
