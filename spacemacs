@@ -35,6 +35,7 @@ values."
      ;;        shell-default-position 'bottom)
      spell-checking
      syntax-checking
+     osx
      ;; version-control
      )
    ;; List of additional packages that will be installed without being
@@ -252,6 +253,12 @@ in `dotspacemacs/user-config'."
       (setq-local flycheck-javascript-eslint-executable eslint))))
 
 (defun dotspacemacs/user-config ()
+  ;; osx settings
+  (setq-default mac-command-key-is-meta t)
+  (setq-default mac-option-modifier 'alt)
+  (setq-default osx-use-option-as-meta nil)
+  (setq-default mac-option-key-is-meta nil)
+  (setq-default mac-command-modifier 'meta)
 
   ;; flycheck 
   (paradox-require 'flycheck)
