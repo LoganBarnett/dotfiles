@@ -26,7 +26,7 @@ done
 mkdir -p ~/.config
 ln -s $PWD/awesome ~/.config/awesome
 
-ln -s $PWD/bin ~/bin
+ln -s -h $PWD/bin ~/bin
 
 BREWS="vim wget node htop nmap cask zsh-syntax-highlighting npm mongodb"
 
