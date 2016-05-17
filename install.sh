@@ -24,16 +24,17 @@ done
 
 # link harder things
 mkdir -p ~/.config
-ln -s $PWD/awesome ~/.config/awesome
+ln -s -h $PWD/awesome ~/.config/awesome
 
 ln -s -h $PWD/bin ~/bin
 
-BREWS="vim wget node htop nmap cask zsh-syntax-highlighting npm mongodb"
+# ispell so flyspell works on emacs
+BREWS="vim wget node htop nmap cask zsh-syntax-highlighting npm mongodb ispell coreutils"
 
 brew update
 brew install $BREWS
 
-CASKS="slack chromium"
+CASKS="slack chromium discord"
 
 brew cask install $CASKS
 
