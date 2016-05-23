@@ -28,7 +28,7 @@ values."
      ;; better-defaults
      emacs-lisp
      ;; git
-     ;; markdown
+     markdown
      ;; org
      ;; (shell :variables
      ;;        shell-default-height 30
@@ -259,6 +259,9 @@ in `dotspacemacs/user-config'."
   (setq-default osx-use-option-as-meta nil)
   (setq-default mac-option-key-is-meta nil)
   (setq-default mac-command-modifier 'meta)
+
+  ;; indentation
+  (setq-default css-indent-offset 2)
 
   ;; flycheck 
   (paradox-require 'flycheck)
