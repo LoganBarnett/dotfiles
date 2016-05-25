@@ -36,7 +36,8 @@ values."
      spell-checking
      syntax-checking
      osx
-     ;; version-control
+     version-control
+     html
      )
    ;; List of additional packages that will be installed without being
    ;; wrapped in a layer. If you need some configuration for these
@@ -260,10 +261,19 @@ in `dotspacemacs/user-config'."
   (setq-default mac-option-key-is-meta nil)
   (setq-default mac-command-modifier 'meta)
 
+  ;; web-mode
+  (paradox-require 'web-mode)
+  (defun my-web-mode-hook ()
+    "Hooks for Web mode."
+    (setq web-mode-markup-indent-offset 2)
+    (setq web-mode-code-indent-offset 2)
+    )
+  (add-hook 'web-mode-hook  'my-web-mode-hook)
+
   ;; indentation
   (setq-default css-indent-offset 2)
 
-  ;; flycheck 
+  ;; flycheck
   (paradox-require 'flycheck)
   ;; use the npm version for the check
   (add-hook 'flycheck-mode-hook #'my/use-eslint-from-node-modules)
@@ -303,10 +313,17 @@ in `dotspacemacs/user-config'."
 This function is called at the very end of Spacemacs initialization after
 layers configuration. You are free to put any user code."
   (require 'fill-column-indicator)
+  (define-globalized-minor-mode global-fci-mode
+    fci-mode (lambda ()
+               (when (not (memq major-mode
+                                (list 'web-mode)))
+                 (fci-mode 1))))
+  (global-fci-mode 1)
   ;; (fci-mode)
   ;; (add-hook 'after-init-hook fci-mode)
   ;; (add-hook 'prog-mode-hook 'turn-on-fci-mode)
-  (add-hook 'buffer-list-update-hook 'turn-on-fci-mode)
+
+  ;; (add-hook 'buffer-list-update-hook 'turn-on-fci-mode)
   (paradox-require 'markdown-mode)
   (add-hook 'markdown-mode-hook 'auto-fill-mode)
   (add-hook 'markdown-mode-hook 'flyspell-mode)
