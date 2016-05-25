@@ -24,7 +24,7 @@ values."
      ;; Uncomment some layer names and press <SPC f e R> (Vim style) or
      ;; <M-m f e R> (Emacs style) to install them.
      ;; ----------------------------------------------------------------
-     ;; auto-completion
+     auto-completion
      ;; better-defaults
      emacs-lisp
      ;; git
@@ -38,12 +38,18 @@ values."
      osx
      version-control
      html
+     purescript
      )
    ;; List of additional packages that will be installed without being
    ;; wrapped in a layer. If you need some configuration for these
    ;; packages, then consider creating a layer. You can also put the
    ;; configuration in `dotspacemacs/user-config'.
-   dotspacemacs-additional-packages '()
+   dotspacemacs-additional-packages
+   '(
+     flycheck-purescript
+     ;; hopefully managed by a spacemacs layer
+     ;; company-mode
+     )
    ;; A list of packages and/or extensions that will not be install and loaded.
    dotspacemacs-excluded-packages '()
    ;; If non-nil spacemacs will delete any orphan packages, i.e. packages that
@@ -299,6 +305,15 @@ in `dotspacemacs/user-config'."
        (append flycheck-disabled-checkers
   	     '(javascript-jshint)))))
 
+  ;; company-mode (for auto-complete)
+  ;; (add-hook 'after-init-hook 'global-company-mode)
+  ;; fast auto-complete
+  (setq-default company-idle-delay 0.2)
+  (setq-default company-minimum-prefix-length 1)
+  ;; keep evil mode and company mode from conflicting
+  ;; see https://github.com/company-mode/company-mode/issues/383
+  (evil-declare-change-repeat 'company-complete)
+
   ;; non-nil indicates spacemacs should start with fullscreen
   (setq-default dotspacemacs-fullscreen-at-startup t)
   (setq paradox-github-token '663d5d3c21b2c6a716848fa00653bb92e6aeee68)
@@ -330,7 +345,15 @@ layers configuration. You are free to put any user code."
   ;; (add-hook 'markdown-mode-hook (lambda () (auto-fill-mode)))
  ;;(setq-default fci-rule-width 1)
   ;;(setq-default fci-rule-color "darkblue")
-  )
+
+  ;; purescript
+  (add-hook 'purescript-mode-hook 'turn-on-purescript-indentation)
+  (add-hook 'flycheck-mode-hook #'flycheck-purescript-setup)
+  ;; (setq-default flycheck-purescript-compile-output-dir "output")
+  (paradox-require 'flycheck-purescript)
+  (eval-after-load 'flycheck
+    '(flycheck-purescript-setup))
+)
 
 ;; Do not write anything past this comment. This is where Emacs will
 ;; auto-generate custom variable definitions.
