@@ -39,6 +39,7 @@ values."
      version-control
      html
      purescript
+     psc-ide
      )
    ;; List of additional packages that will be installed without being
    ;; wrapped in a layer. If you need some configuration for these
@@ -307,12 +308,17 @@ in `dotspacemacs/user-config'."
 
   ;; company-mode (for auto-complete)
   ;; (add-hook 'after-init-hook 'global-company-mode)
+  (global-company-mode 1)
   ;; fast auto-complete
   (setq-default company-idle-delay 0.2)
   (setq-default company-minimum-prefix-length 1)
+  (global-set-key (quote [(ctrl return)]) 'company-complete)
+  (setq-default company-auto-complete t)
   ;; keep evil mode and company mode from conflicting
   ;; see https://github.com/company-mode/company-mode/issues/383
   (evil-declare-change-repeat 'company-complete)
+
+
 
   ;; non-nil indicates spacemacs should start with fullscreen
   (setq-default dotspacemacs-fullscreen-at-startup t)
@@ -346,7 +352,10 @@ layers configuration. You are free to put any user code."
  ;;(setq-default fci-rule-width 1)
   ;;(setq-default fci-rule-color "darkblue")
 
-  ;; purescript
+  ;; purescript-mode
+  (setq-default psc-ide-client-executable "/usr/local/bin/psc-ide-client")
+  (setq-default psc-ide-server-executable "/usr/local/bin/psc-ide-server")
+  (setq-default psc-ide-rebuild-on-save t)
   (add-hook 'purescript-mode-hook 'turn-on-purescript-indentation)
   (add-hook 'flycheck-mode-hook #'flycheck-purescript-setup)
   ;; (setq-default flycheck-purescript-compile-output-dir "output")
