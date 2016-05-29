@@ -34,7 +34,7 @@ BREWS="vim wget node htop nmap cask zsh-syntax-highlighting npm mongodb ispell c
 brew update
 brew install $BREWS
 
-CASKS="slack chromium discord"
+CASKS="slack chromium discord skype"
 
 brew cask install $CASKS
 
