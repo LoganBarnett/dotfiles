@@ -307,18 +307,24 @@ in `dotspacemacs/user-config'."
   	     '(javascript-jshint)))))
 
   ;; company-mode (for auto-complete)
-  ;; (add-hook 'after-init-hook 'global-company-mode)
   (global-company-mode 1)
   ;; fast auto-complete
   (setq-default company-idle-delay 0.2)
   (setq-default company-minimum-prefix-length 1)
   (global-set-key (quote [(ctrl return)]) 'company-complete)
   (setq-default company-auto-complete t)
+  ;; (define-key company-active-map [tab] 'company-select-next)
+  (setq-default company-auto-complete-chars [41 46])
   ;; keep evil mode and company mode from conflicting
   ;; see https://github.com/company-mode/company-mode/issues/383
   (evil-declare-change-repeat 'company-complete)
-
-
+  (with-eval-after-load 'company
+    (define-key company-active-map (kbd "RET") nil)
+    (define-key company-active-map [12] nil)
+    (define-key company-active-map [return] nil)
+    (define-key company-active-map (kbd "TAB") 'company-complete-selection)
+    (define-key company-active-map [tab] 'company-complete-selection)
+    )
 
   ;; non-nil indicates spacemacs should start with fullscreen
   (setq-default dotspacemacs-fullscreen-at-startup t)
