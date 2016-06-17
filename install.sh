@@ -34,6 +34,9 @@ BREWS="vim wget node htop nmap cask zsh-syntax-highlighting npm mongodb ispell c
 brew update
 brew install $BREWS
 
+#zsh customizations
+cd ~/.oh-my-zsh/custom/plugins && git clone git@github.com:eventi/noreallyjustfuckingstopalready.git
+
 CASKS="slack chromium discord skype"
 
 brew cask install $CASKS
