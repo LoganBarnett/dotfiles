@@ -58,4 +58,14 @@ if [ $SHELL != '/bin/zsh' ];
     chsh -s /bin/zsh 
 fi
 
+echo "installing rvm"
+\curl -sSL https://get.rvm.io | bash -s stable
+
+echo "sourcing rvm"
+source /Users/logan/.rvm/scripts/rvm
+
+echo "installing gems"
+GEMS="heroku jekyll"
+gem install $GEMS
+
 echo "all installation is successful"
