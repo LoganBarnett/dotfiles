@@ -29,7 +29,7 @@ ln -s -h $PWD/awesome ~/.config/awesome
 ln -s -h $PWD/bin ~/bin
 
 # ispell so flyspell works on emacs
-BREWS="vim wget node htop nmap cask zsh-syntax-highlighting npm mongodb ispell coreutils"
+BREWS="vim wget node htop nmap cask zsh-syntax-highlighting npm mongodb ispell coreutils mtr gpg nvm graphviz"
 
 brew update
 brew install $BREWS
