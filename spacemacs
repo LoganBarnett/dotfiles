@@ -279,6 +279,9 @@ in `dotspacemacs/user-config'."
 
   ;; indentation
   (setq-default css-indent-offset 2)
+  ;; prevent indentation from lining up with a prior line's glyph
+  ;; this will make it so fighting is less necessary to appease linters
+  (setq-default auto-mode-alist ())
 
   ;; flycheck
   (paradox-require 'flycheck)
