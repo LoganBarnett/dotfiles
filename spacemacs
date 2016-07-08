@@ -40,7 +40,6 @@ values."
      html
      purescript
      psc-ide
-     graphviz-dot
      )
    ;; List of additional packages that will be installed without being
    ;; wrapped in a layer. If you need some configuration for these
@@ -369,6 +368,38 @@ layers configuration. You are free to put any user code."
   (paradox-require 'flycheck-purescript)
   (eval-after-load 'flycheck
     '(flycheck-purescript-setup))
+
+  ;; graphviz dot support
+  (package-initialize)
+  (paradox-require 'graphviz-dot-mode)
+  (defun compile-dot ()
+    "compile a graphviz dot file"
+    ;; (compile graphviz-dot-dot-program))
+    (compile (concat graphviz-dot-dot-program
+            " -T" graphviz-dot-preview-extension " "
+            (shell-quote-argument buffer-file-name)
+            " -o "
+            (shell-quote-argument
+             (concat (file-name-sans-extension buffer-file-name)
+                     "." graphviz-dot-preview-extension))))
+    )
+  (add-hook 'graphviz-dot-mode-hook
+            (lambda ()
+             (add-hook 'after-save-hook 'compile-dot nil 'make-it-local)))
+
+  ;; compilation
+  ;; no need to show compile window on success - just interested in errors
+  (defun compilation-exit-autoclose (STATUS code msg)
+    "Close the compilation window if there was no error at all."
+    ;; If M-x compile exists with a 0
+    (when (and (eq STATUS 'exit) (zerop code))
+      ;; then bury the *compilation* buffer, so that C-x b doesn't go there
+      (bury-buffer)
+      ;; and delete the *compilation* window
+      (delete-window (get-buffer-window (get-buffer "*compilation*"))))
+    ;; Always return the anticipated result of compilation-exit-message-function
+    (cons msg code))
+  (setq compilation-exit-message-function 'compilation-exit-autoclose)
 )
 
 ;; Do not write anything past this comment. This is where Emacs will
