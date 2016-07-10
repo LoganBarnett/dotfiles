@@ -281,7 +281,9 @@ in `dotspacemacs/user-config'."
   (setq-default css-indent-offset 2)
   ;; prevent indentation from lining up with a prior line's glyph
   ;; this will make it so fighting is less necessary to appease linters
-  (setq-default auto-mode-alist ())
+  (setq-default js2-pretty-multiline-declarations nil)
+  (paradox-require 'cc-mode)
+  (add-to-list 'c-offsets-alist '(arglist-close . c-lineup-close-paren))
 
   ;; flycheck
   (paradox-require 'flycheck)
