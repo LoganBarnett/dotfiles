@@ -1,4 +1,4 @@
-#!/usr/bin/env bash 
+#!/usr/bin/env bash
 
 # TODO: add various application settings not living under ~
 # TODO: add iStatsMenu
@@ -14,7 +14,7 @@ EASYFILES="oh-my-zsh zshrc vimrc pentadactylrc Xdefaults tmux.conf urxvt ideavim
 
 # get submodules set up
 git submodule init
-git submodule update 
+git submodule update
 
 # link easy things
 for dotfile in $EASYFILES
@@ -31,14 +31,18 @@ ln -s -h $PWD/bin ~/bin
 # ispell so flyspell works on emacs
 BREWS="vim wget node htop nmap cask zsh-syntax-highlighting npm mongodb ispell coreutils mtr gpg nvm graphviz"
 
+echo "updating homebrew"
 brew update
+echo "installing brews"
 brew install $BREWS
 
 #zsh customizations
+echo "installing oh my zsh customizations"
 cd ~/.oh-my-zsh/custom/plugins && git clone git@github.com:eventi/noreallyjustfuckingstopalready.git
 
 CASKS="slack chromium discord skype"
 
+echo "installing homebrew casks"
 brew cask install $CASKS
 
 # spacemacs
@@ -67,5 +71,8 @@ source /Users/logan/.rvm/scripts/rvm
 echo "installing gems"
 GEMS="heroku jekyll"
 gem install $GEMS
+
+# alfred workflows
+./install-workflows.sh
 
 echo "all installation is successful"
