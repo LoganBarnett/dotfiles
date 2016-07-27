@@ -377,6 +377,7 @@ layers configuration. You are free to put any user code."
   ;; graphviz dot support
   (package-initialize)
   (paradox-require 'graphviz-dot-mode)
+  (setq-default graphviz-dot-preview-extension "svg")
   (defun compile-dot ()
     "compile a graphviz dot file"
     ;; (compile graphviz-dot-dot-program))
