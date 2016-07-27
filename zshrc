@@ -132,6 +132,9 @@ export AWS_ROID_MINER=52.2.198.173
 export USER_AWS_IRC=ubuntu@$AWS_IRC   # I should probably just make 'logan' on that system
 export USER_AWS_ROID_MINER=ubuntu@$AWS_ROID_MINER
 
+# thefuck - `fuck` after a failed command and it will try to do the right thing
+eval $(thefuck --alias)
+
 # vim mode for zsh
 bindkey -v
 
