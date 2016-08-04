@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+start_dir=$PWD
+
 # TODO: add various application settings not living under ~
 # TODO: add iStatsMenu
 # TODO: add Slack settings
@@ -76,6 +78,7 @@ GEMS="heroku jekyll"
 gem install $GEMS
 
 # alfred workflows
+cd $start_dir
 ./install-workflows.sh
 
 echo "all installation is successful"
