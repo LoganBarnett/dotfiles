@@ -58,6 +58,11 @@ brew linkapps
 
 git clone https://github.com/syl20bnr/spacemacs ~/.emacs.d || true
 
+# java needs a special section because of ordering
+echo "installing java and maven"
+brew cask install java
+brew install maven
+
 # TODO: add a way of reading in the paradox-github token or generating it if it doesn't exist
 
 echo "making zsh our default shell"
