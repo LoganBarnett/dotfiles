@@ -295,21 +295,23 @@ in `dotspacemacs/user-config'."
 ;;      '(javascript-jshint)))
   ;; use eslint with web-mode for jsx files
   (flycheck-add-mode 'javascript-eslint 'web-mode)
+  (flycheck-add-mode 'javascript-jshint 'web-mode)
   ;; turn on flychecking globally
   ;; (add-hook 'emacs-startup-hook #'global-flycheck-mode)
   (add-hook 'after-init-hook #'global-flycheck-mode)
   ;; (setq flycheck-check-syntax-automatically '(mode-enabled save idle-change new-line))
   (setq-default syntax-checking-enable-by-default t)
   (add-hook 'js-mode-hook 'flycheck-mode)
-  (eval-after-load
-      'flycheck
-    (lambda ()
-      (flycheck-add-mode 'javascript-eslint 'js2-mode)
-      ;; Disable jshint
-      (setq-default
-       flycheck-disabled-checkers
-       (append flycheck-disabled-checkers
-  	     '(javascript-jshint)))))
+  ;; (eval-after-load
+  ;;     'flycheck
+  ;;   (lambda ()
+  ;;     (flycheck-add-mode 'javascript-eslint 'js2-mode)
+  ;;     ;; Disable jshint
+  ;;     ;; wait, why are we doing this?
+  ;;     (setq-default
+  ;;      flycheck-disabled-checkers
+  ;;      (append flycheck-disabled-checkers
+  ;; 	     '(javascript-jshint)))))
 
   ;; company-mode (for auto-complete)
   (global-company-mode 1)

@@ -36,6 +36,11 @@ brew update
 echo "installing brews"
 brew install $BREWS
 
+# node modules
+NODE_MODULES="jshint"
+
+npm i -g $NODE_MODULES
+
 #zsh customizations
 echo "installing oh my zsh customizations"
 cd ~/.oh-my-zsh/custom/plugins && git clone git@github.com:eventi/noreallyjustfuckingstopalready.git
