@@ -40,10 +40,8 @@ brew install $BREWS
 echo "installing oh my zsh customizations"
 cd ~/.oh-my-zsh/custom/plugins && git clone git@github.com:eventi/noreallyjustfuckingstopalready.git
 
-CASKS="slack chromium discord skype"
-
-echo "installing homebrew casks"
-brew cask install $CASKS
+cd $start_dir
+./install-casks.sh
 
 # spacemacs
 echo "ensuring spacemacs setup"
