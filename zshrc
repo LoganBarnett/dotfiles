@@ -135,6 +135,10 @@ export USER_AWS_ROID_MINER=ubuntu@$AWS_ROID_MINER
 # thefuck - `fuck` after a failed command and it will try to do the right thing
 eval $(thefuck --alias)
 
+# nvm
+export NVM_DIR="$HOME/.nvm"
+ . "$(brew --prefix nvm)/nvm.sh"
+
 # vim mode for zsh
 bindkey -v
 
