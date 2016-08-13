@@ -30,17 +30,34 @@ ln -s -h $PWD/awesome ~/.config/awesome
 
 ln -s -h $PWD/bin ~/bin
 
-# ispell so flyspell works on emacs
-BREWS="vim wget node htop nmap cask zsh-syntax-highlighting npm mongodb ispell coreutils mtr gpg nvm graphviz postgresql"
+if [ $(uname) = 'Darwin' ]; then
 
-echo "updating homebrew"
-brew update
-echo "installing brews"
-brew install $BREWS
+    # ispell so flyspell works on emacs
+    BREWS="vim wget node htop nmap cask zsh-syntax-highlighting npm mongodb ispell coreutils mtr gpg nvm graphviz postgresql"
 
-# sed is special
-echo "installing sed"
-brew install gnu-sed --with-default-names
+    echo "updating homebrew"
+    brew update
+    echo "installing brews"
+    brew install $BREWS
+
+    # sed is special
+    echo "installing sed"
+    brew install gnu-sed --with-default-names
+
+    # spacemacs is special
+    echo "installing emacs for eventually installing spacemacs"
+    brew tap d12frosted/emacs-plus
+    brew install emacs-plus --with-cocoa --with-gnutls --with-librsvg --with-imagemagick --with-spacemacs-icon
+    brew linkapps
+
+    # java needs a special section because of ordering
+    echo "installing java and maven"
+    brew cask install java
+    brew install maven
+else
+    echo "skipping brew install - not on osx"
+fi
+
 
 # node modules
 NODE_MODULES="jshint"
@@ -49,23 +66,22 @@ npm i -g $NODE_MODULES
 
 #zsh customizations
 echo "installing oh my zsh customizations"
-cd ~/.oh-my-zsh/custom/plugins && git clone git@github.com:eventi/noreallyjustfuckingstopalready.git
+if [ $(uname) = 'Darwin' ]; then
+    echo "installing osx dns flushing for oh my zsh"
+    cd ~/.oh-my-zsh/custom/plugins && git clone git@github.com:eventi/noreallyjustfuckingstopalready.git
+else
+    echo "skipping osx dns flushing for oh my zsh - not osx"
+fi
 
-cd $start_dir
-./install-casks.sh
+if [ $(uname) = 'Darwin' ]; then
+    cd $start_dir
+    ./install-casks.sh
+else
+    echo "skipping cask installs - not osx"
+fi
 
-# spacemacs
-echo "ensuring spacemacs setup"
-brew tap d12frosted/emacs-plus
-brew install emacs-plus --with-cocoa --with-gnutls --with-librsvg --with-imagemagick --with-spacemacs-icon
-brew linkapps
-
+echo "installing spacemacs"
 git clone https://github.com/syl20bnr/spacemacs ~/.emacs.d || true
-
-# java needs a special section because of ordering
-echo "installing java and maven"
-brew cask install java
-brew install maven
 
 # TODO: add a way of reading in the paradox-github token or generating it if it doesn't exist
 
@@ -73,21 +89,30 @@ echo "making zsh our default shell"
 # use zsh as my shell
 if [ $SHELL != '/bin/zsh' ];
   then
-    chsh -s /bin/zsh 
+    chsh -s /bin/zsh
 fi
 
 echo "installing rvm"
 \curl -sSL https://get.rvm.io | bash -s stable
 
 echo "sourcing rvm"
-source /Users/logan/.rvm/scripts/rvm
+if [ $(uname) = 'Darwin' ]; then
+    source /Users/logan/.rvm/scripts/rvm
+else
+    echo "skipping rvm source - not on OSX"
+    echo "you know, you really should add support for other envs for rvm..."
+fi
 
 echo "installing gems"
 GEMS="heroku jekyll"
 gem install $GEMS
 
-# alfred workflows
-cd $start_dir
-./install-workflows.sh
+if [ $(uname) = 'Darwin' ]; then
+    # alfred workflows
+    cd $start_dir
+    ./install-workflows.sh
+else
+    echo "skipping alfred install - not on osx"
+fi
 
 echo "all installation is successful"
