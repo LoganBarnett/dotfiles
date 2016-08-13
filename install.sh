@@ -30,17 +30,6 @@ ln -s -h $PWD/awesome ~/.config/awesome
 
 ln -s -h $PWD/bin ~/bin
 
-# install zsh
-echo "installing zsh"
-sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"
-
-echo "making zsh our default shell"
-# use zsh as my shell
-if [ $SHELL != '/bin/zsh' ];
-then
-    chsh -s /bin/zsh
-fi
-
 if [ $(uname) = 'Darwin' ]; then
 
     # ispell so flyspell works on emacs
@@ -65,10 +54,27 @@ if [ $(uname) = 'Darwin' ]; then
     echo "installing java and maven"
     brew cask install java
     brew install maven
+elif [ $(uname) = 'Linux' ]; then
+    if [ $(which apt-get) != '' ]; then
+        echo "installing packages via apt-get"
+        # how can you not have curl? ugh
+        $APTS="curl"
+        sudo apt-get install $APTS
+    else
+        # we must be in some redhat based distro
+        echo "yum not supported yet!"
+    fi
 else
     echo "skipping brew install - not on osx"
 fi
 
+# install zsh
+echo "installing zsh"
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"
+if [ $SHELL != '/bin/zsh' ];
+then
+    chsh -s /bin/zsh
+fi
 
 # node modules
 NODE_MODULES="jshint"
