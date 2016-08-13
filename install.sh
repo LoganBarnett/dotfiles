@@ -30,6 +30,17 @@ ln -s -h $PWD/awesome ~/.config/awesome
 
 ln -s -h $PWD/bin ~/bin
 
+# install zsh
+echo "installing zsh"
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"
+
+echo "making zsh our default shell"
+# use zsh as my shell
+if [ $SHELL != '/bin/zsh' ];
+then
+    chsh -s /bin/zsh
+fi
+
 if [ $(uname) = 'Darwin' ]; then
 
     # ispell so flyspell works on emacs
@@ -84,13 +95,6 @@ echo "installing spacemacs"
 git clone https://github.com/syl20bnr/spacemacs ~/.emacs.d || true
 
 # TODO: add a way of reading in the paradox-github token or generating it if it doesn't exist
-
-echo "making zsh our default shell"
-# use zsh as my shell
-if [ $SHELL != '/bin/zsh' ];
-  then
-    chsh -s /bin/zsh
-fi
 
 echo "installing rvm"
 \curl -sSL https://get.rvm.io | bash -s stable
