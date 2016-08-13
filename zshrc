@@ -204,7 +204,7 @@ EXIT_STATUS_VAR='$?'
 
 function set_prompt() {
   PROMPT='$(path_color_prompt)$(pwd_prompt)$(git_prompt_info) $(echo $?) $(timestamp_prompt)
-$(vim_mode_prompt)'
+$(vim_mode_prompt)$reset_color'
 }
 
 
