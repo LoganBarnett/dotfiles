@@ -58,7 +58,7 @@ elif [ $(uname) = 'Linux' ]; then
     if [ $(which apt-get) != '' ]; then
         echo "installing packages via apt-get"
         # how can you not have curl? ugh
-        APTS="curl zsh zsh-syntax-highlighting emacs python3-dev python3-pip"
+        APTS="curl zsh emacs python3-dev python3-pip"
         sudo apt-get install -y -qq $APTS
     else
         # we must be in some redhat based distro
@@ -67,6 +67,7 @@ elif [ $(uname) = 'Linux' ]; then
 
     # thefuck is installed via pip on linux
     sudo -H pip install thefuck
+
 else
     echo "skipping brew install - not on osx"
 fi
@@ -77,6 +78,12 @@ sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/mas
 if [ $SHELL != '/bin/zsh' ];
 then
     chsh -s /bin/zsh
+fi
+
+if [ $(uname) = 'Linux' ]; then
+    # in Ubuntu apt-get does not provide this package, so install manually
+    echo "installing zsh syntax highlighting"
+    git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
 fi
 
 # node modules
