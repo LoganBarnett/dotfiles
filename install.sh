@@ -58,12 +58,15 @@ elif [ $(uname) = 'Linux' ]; then
     if [ $(which apt-get) != '' ]; then
         echo "installing packages via apt-get"
         # how can you not have curl? ugh
-        APTS="curl zsh zsh-syntax-highlighting emacs"
+        APTS="curl zsh zsh-syntax-highlighting emacs python3-dev python3-pip"
         sudo apt-get install -y -qq $APTS
     else
         # we must be in some redhat based distro
         echo "yum not supported yet!"
     fi
+
+    # thefuck is installed via pip on linux
+    sudo -H pip install thefuck
 else
     echo "skipping brew install - not on osx"
 fi
