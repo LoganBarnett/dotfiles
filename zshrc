@@ -57,10 +57,10 @@ export PATH="$HOME/.opam/system/bin:/bin:/usr/local/bin:$HOME/bin:/opt/local/bin
 # export MANPATH="/usr/local/man:$MANPATH"
 
 # island of misfit paths
-# /Users/logan/.rvm/gems/ruby-2.2.1/bin:
-# /Users/logan/.rvm/gems/ruby-2.2.1@global/bin:
-# /Users/logan/.rvm/rubies/ruby-2.2.1/bin:
-# /Users/logan/.rvm/bin:
+# $HOME/.rvm/gems/ruby-2.2.1/bin:
+# $HOME/.rvm/gems/ruby-2.2.1@global/bin:
+# $HOME/.rvm/rubies/ruby-2.2.1/bin:
+# $HOME/.rvm/bin:
 
 # ZSH_THEME=flazz
 source $ZSH/oh-my-zsh.sh

@@ -58,7 +58,7 @@ elif [ $(uname) = 'Linux' ]; then
     if [ $(which apt-get) != '' ]; then
         echo "installing packages via apt-get"
         # how can you not have curl? ugh
-        APTS="curl zsh zsh-syntax-highlighting"
+        APTS="curl zsh zsh-syntax-highlighting emacs"
         sudo apt-get install -y -qq $APTS
     else
         # we must be in some redhat based distro
@@ -107,7 +107,7 @@ echo "installing rvm"
 
 echo "sourcing rvm"
 if [ $(uname) = 'Darwin' ]; then
-    source /Users/logan/.rvm/scripts/rvm
+    source $HOME/.rvm/scripts/rvm
 else
     echo "skipping rvm source - not on OSX"
     echo "you know, you really should add support for other envs for rvm..."
