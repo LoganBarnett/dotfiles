@@ -58,8 +58,8 @@ elif [ $(uname) = 'Linux' ]; then
     if [ $(which apt-get) != '' ]; then
         echo "installing packages via apt-get"
         # how can you not have curl? ugh
-        APTS="curl zsh"
-        sudo apt-get install $APTS
+        APTS="curl zsh zsh-syntax-highlighting"
+        sudo apt-get install -y -qq $APTS
     else
         # we must be in some redhat based distro
         echo "yum not supported yet!"
