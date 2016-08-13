@@ -58,7 +58,7 @@ elif [ $(uname) = 'Linux' ]; then
     if [ $(which apt-get) != '' ]; then
         echo "installing packages via apt-get"
         # how can you not have curl? ugh
-        $APTS="curl"
+        APTS="curl zsh"
         sudo apt-get install $APTS
     else
         # we must be in some redhat based distro
@@ -69,7 +69,7 @@ else
 fi
 
 # install zsh
-echo "installing zsh"
+echo "installing oh-my-zsh"
 sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"
 if [ $SHELL != '/bin/zsh' ];
 then
