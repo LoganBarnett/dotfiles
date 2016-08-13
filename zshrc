@@ -1,5 +1,5 @@
 # Path to your oh-my-zsh installation.
-export ZSH=/Users/logan/.oh-my-zsh
+export ZSH=$HOME/.oh-my-zsh
 
 # Set name of the theme to load.
 # Look in ~/.oh-my-zsh/themes/
@@ -53,7 +53,7 @@ plugins=(git, noreallyjustfuckingstopalready)
 
 # User configuration
 
-export PATH="/Users/logan/.opam/system/bin:/bin:/usr/local/bin:/Users/logan/bin:/opt/local/bin:/opt/local/sbin:/Users/logan/dev/adt-bundle-mac/sdk/platform-tools:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/X11/bin:/usr/local/sbin:/Users/logan/node_modules/.bin"
+export PATH="$HOME/.opam/system/bin:/bin:/usr/local/bin:$HOME/bin:/opt/local/bin:/opt/local/sbin:$HOME/dev/adt-bundle-mac/sdk/platform-tools:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/X11/bin:/usr/local/sbin:$HOME/node_modules/.bin"
 # export MANPATH="/usr/local/man:$MANPATH"
 
 # island of misfit paths
