@@ -38,6 +38,10 @@ brew update
 echo "installing brews"
 brew install $BREWS
 
+# sed is special
+echo "installing sed"
+brew install gnu-sed --with-default-names
+
 # node modules
 NODE_MODULES="jshint"
 
