@@ -124,7 +124,7 @@ else
 fi
 
 echo "installing gems"
-GEMS="heroku jekyll"
+GEMS="heroku jekyll github-pages bundler"
 gem install $GEMS
 
 if [ $(uname) = 'Darwin' ]; then
