@@ -422,6 +422,9 @@ layers configuration. You are free to put any user code."
     ;; Always return the anticipated result of compilation-exit-message-function
     (cons msg code))
   (setq compilation-exit-message-function 'compilation-exit-autoclose)
+
+  ;; git gutter
+  (setq-default git-gutter-fr+-side 'left-fringe)
 )
 
 ;; Do not write anything past this comment. This is where Emacs will
