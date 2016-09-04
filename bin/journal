@@ -1,5 +1,5 @@
 #! /bin/zsh
 DATE=`date +%Y.%m.%d.%H.%M`
-FILE_PATH=$NOTES_DIR/journal/$DATE.md
+FILE_PATH=$NOTES_DIR/journal/$DATE.org
 touch $FILE_PATH
 echo $FILE_PATH

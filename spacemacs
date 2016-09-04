@@ -262,6 +262,12 @@ in `dotspacemacs/user-config'."
       (setq-local flycheck-javascript-eslint-executable eslint))))
 
 (defun dotspacemacs/user-config ()
+  ;; org-mode settings
+  ;; shrink inline images see:
+  ;; http://lists.gnu.org/archive/html/emacs-orgmode/2012-08/msg01388.html
+  (setq-default org-image-actual-width '(400))
+  (add-hook 'org-mode-hook 'auto-fill-mode)
+
   ;; osx settings
   (setq-default mac-command-key-is-meta t)
   (setq-default mac-option-modifier 'alt)
