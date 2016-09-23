@@ -49,6 +49,11 @@ values."
    dotspacemacs-additional-packages
    '(
      flycheck-purescript
+     company-flow
+     flycheck-flow
+     ;; flycheck-css-color
+     ;; flycheck-json
+
      ;; hopefully managed by a spacemacs layer
      ;; company-mode
      )
@@ -260,6 +265,15 @@ in `dotspacemacs/user-config'."
                                         root))))
     (when (file-executable-p eslint)
       (setq-local flycheck-javascript-eslint-executable eslint))))
+(defun my/use-flow-from-node-modules ()
+  (let* ((root (locate-dominating-file
+                (or (buffer-file-name) default-directory)
+                "node_modules"))
+         (flow (and root
+                    (expand-file-name "node_modules/flow-bin/cli.js"
+                                      root))))
+    (when (file-executable-p flow)
+      (setq-local flycheck-javascript-flow-executable flow))))
 
 (defun dotspacemacs/user-config ()
   ;; org-mode settings
@@ -296,6 +310,7 @@ in `dotspacemacs/user-config'."
   (paradox-require 'flycheck)
   ;; use the npm version for the check
   (add-hook 'flycheck-mode-hook #'my/use-eslint-from-node-modules)
+  (add-hook 'flycheck-mode-hook #'my/use-flow-from-node-modules)
   ;; disable jshint since we prefer eslint checking
 ;;  (setq-default flycheck-disabled-checkers
 ;;    (append flycheck-disabled-checkers
@@ -303,6 +318,9 @@ in `dotspacemacs/user-config'."
   ;; use eslint with web-mode for jsx files
   (flycheck-add-mode 'javascript-eslint 'web-mode)
   (flycheck-add-mode 'javascript-jshint 'web-mode)
+  ;; flow added to js-mode
+  (paradox-require 'flycheck-flow)
+  (flycheck-add-mode 'javascript-flow 'js-mode)
   ;; turn on flychecking globally
   ;; (add-hook 'emacs-startup-hook #'global-flycheck-mode)
   (add-hook 'after-init-hook #'global-flycheck-mode)
