@@ -277,7 +277,7 @@ in `dotspacemacs/user-config'."
 
 (defun dotspacemacs/user-config ()
   ;; add load-path for packages not in the melpa database
-  (add-to-list 'load-path "~/.emacs.d/lisp/")
+  (add-to-list 'load-path "~/dotfiles/lisp")
   ;; org-mode settings
   ;; shrink inline images see:
   ;; http://lists.gnu.org/archive/html/emacs-orgmode/2012-08/msg01388.html
