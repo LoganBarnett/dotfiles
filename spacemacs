@@ -276,6 +276,8 @@ in `dotspacemacs/user-config'."
       (setq-local flycheck-javascript-flow-executable flow))))
 
 (defun dotspacemacs/user-config ()
+  ;; add load-path for packages not in the melpa database
+  (add-to-list 'load-path "~/.emacs.d/lisp/")
   ;; org-mode settings
   ;; shrink inline images see:
   ;; http://lists.gnu.org/archive/html/emacs-orgmode/2012-08/msg01388.html
@@ -395,6 +397,12 @@ layers configuration. You are free to put any user code."
                  (fci-mode 1))))
   (global-fci-mode 1)
 
+  ;; handle long lines
+  (require 'so-long)
+  (add-to-list 'so-long-minor-modes 'rainbow-delimiters-mode)
+  (add-to-list 'so-long-target-modes 'json-mode)
+  (so-long-enable)
+
   ;; (add-hook 'buffer-list-update-hook 'turn-on-fci-mode)
   (paradox-require 'markdown-mode)
   (add-hook 'markdown-mode-hook 'auto-fill-mode)
@@ -449,6 +457,13 @@ layers configuration. You are free to put any user code."
 
   ;; git gutter
   (setq-default git-gutter-fr+-side 'left-fringe)
+
+  ;; fun!
+  (paradox-require 'nyan-mode)
+  (setq-default nyan-wavy-trail t)
+  (setq-default nyan-animate-nyancat t)
+  (setq-default nyan-animation-frame-interval 0.075)
+  (add-hook 'nyan-mode 'nyan-start-animation)
 )
 
 ;; Do not write anything past this comment. This is where Emacs will
