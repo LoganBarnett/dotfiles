@@ -256,6 +256,20 @@ It is called immediately after `dotspacemacs/init'.  You are free to put almost
 any user code here.  The exception is org related code, which should be placed
 in `dotspacemacs/user-config'."
   )
+(defun my/init-flycheck ()
+  ;; use eslint with web-mode for jsx files
+  (flycheck-add-mode 'javascript-eslint 'web-mode)
+  (flycheck-add-mode 'javascript-jshint 'web-mode)
+  ;; flow added to js-mode
+  (if (locate-library "flycheck-flow")
+    ;; (autoload 'flycheck-flow "flycheck-flow-mode" "flow type checker" t)
+    (paradox-require 'flycheck-flow)
+    (flycheck-add-mode 'javascript-flow 'js-mode)
+    )
+  ;; (paradox-require 'flycheck-flow)
+  ;; (setq flycheck-check-syntax-automatically '(mode-enabled save idle-change new-line))
+  (setq-default syntax-checking-enable-by-default t)
+  )
 (defun my/use-eslint-from-node-modules ()
   (let* ((root (locate-dominating-file
                 (or (buffer-file-name) default-directory)
@@ -277,7 +291,7 @@ in `dotspacemacs/user-config'."
 
 (defun dotspacemacs/user-config ()
   ;; add load-path for packages not in the melpa database
-  (add-to-list 'load-path "~/dotfiles/lisp")
+  (add-to-list 'load-path "~/dev/dotfiles/lisp")
   ;; org-mode settings
   ;; shrink inline images see:
   ;; http://lists.gnu.org/archive/html/emacs-orgmode/2012-08/msg01388.html
@@ -309,26 +323,33 @@ in `dotspacemacs/user-config'."
   (add-to-list 'c-offsets-alist '(arglist-close . c-lineup-close-paren))
 
   ;; flycheck
-  (paradox-require 'flycheck)
-  ;; use the npm version for the check
-  (add-hook 'flycheck-mode-hook #'my/use-eslint-from-node-modules)
-  (add-hook 'flycheck-mode-hook #'my/use-flow-from-node-modules)
+  (if (locate-library "flycheck-mode")
+      (autoload 'flycheck-mode "flycheck-mode" "flycheck checks syntax and lints" t)
+      (add-hook 'flycheck-mode-hook #'my/init-flycheck)
+      ;; use the npm version for the check
+      (add-hook 'flycheck-mode-hook #'my/use-eslint-from-node-modules)
+      (add-hook 'flycheck-mode-hook #'my/use-flow-from-node-modules)
+      ;; turn on flychecking globally
+      ;; (add-hook 'emacs-startup-hook #'global-flycheck-mode)
+      (add-hook 'after-init-hook #'global-flycheck-mode)
+      (add-hook 'js-mode-hook 'flycheck-mode)
+
+      ;; purescript
+      (add-hook 'flycheck-mode-hook #'flycheck-purescript-setup)
+      ;; (setq-default flycheck-purescript-compile-output-dir "output")
+      )
+  (if (locate-library "flycheck-purescript-mode")
+      ;; (paradox-require 'flycheck-purescript)
+      (autoload "flycheck-purescript-mode" "flycheck-purescript-mode" "checker for purescript" t)
+    ;; TODO: make this a mode hook for purescript-mode
+    (eval-after-load 'flycheck
+      '(flycheck-purescript-setup))
+    )
+  ;; (paradox-require 'flycheck)
   ;; disable jshint since we prefer eslint checking
 ;;  (setq-default flycheck-disabled-checkers
 ;;    (append flycheck-disabled-checkers
 ;;      '(javascript-jshint)))
-  ;; use eslint with web-mode for jsx files
-  (flycheck-add-mode 'javascript-eslint 'web-mode)
-  (flycheck-add-mode 'javascript-jshint 'web-mode)
-  ;; flow added to js-mode
-  (paradox-require 'flycheck-flow)
-  (flycheck-add-mode 'javascript-flow 'js-mode)
-  ;; turn on flychecking globally
-  ;; (add-hook 'emacs-startup-hook #'global-flycheck-mode)
-  (add-hook 'after-init-hook #'global-flycheck-mode)
-  ;; (setq flycheck-check-syntax-automatically '(mode-enabled save idle-change new-line))
-  (setq-default syntax-checking-enable-by-default t)
-  (add-hook 'js-mode-hook 'flycheck-mode)
   ;; (eval-after-load
   ;;     'flycheck
   ;;   (lambda ()
@@ -416,11 +437,6 @@ layers configuration. You are free to put any user code."
   (setq-default psc-ide-server-executable "/usr/local/bin/psc-ide-server")
   (setq-default psc-ide-rebuild-on-save t)
   (add-hook 'purescript-mode-hook 'turn-on-purescript-indentation)
-  (add-hook 'flycheck-mode-hook #'flycheck-purescript-setup)
-  ;; (setq-default flycheck-purescript-compile-output-dir "output")
-  (paradox-require 'flycheck-purescript)
-  (eval-after-load 'flycheck
-    '(flycheck-purescript-setup))
 
   ;; graphviz dot support
   (package-initialize)
