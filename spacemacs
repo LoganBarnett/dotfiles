@@ -298,6 +298,35 @@ in `dotspacemacs/user-config'."
   (setq-default org-image-actual-width '(400))
   (add-hook 'org-mode-hook 'auto-fill-mode)
 
+
+  ;; modeline settings
+  ;; (paradox-require 'diminish nil t)
+  ;; (setq-default diminish-mode-alist '(company-mode))
+  ;; (eval-after-load "company-mode" '(diminish 'company-mode 'auto-complete-mode))
+  ;; (eval-after-load 'yas-minor-mode '(diminish 'yas-minor-mode nil))
+  ;; (with-eval-after-load 'company-mode
+  ;;   (spacemacs|diminish 'company-mode nil))
+  ;; (spacemacs|diminish 'yas-minor-mode nil)
+  ;; (spacemacs|diminish 'flyspell-mode nil)
+  ;; (spacemacs|diminish 'which-key-mode nil)
+  ;; (spacemacs|diminish 'smartparens-mode nil)
+  ;; (require 'delight)
+  ;; (delight 'yas-minor-mode)
+  ;; (require 'delight-powerline)
+  ;; (when (paradox-require 'dim nil t)
+  ;;                    (dim-minor-names '((
+  ;;                                        yas-minor-mode "foo"
+  ;;                                        company-mode ""
+  ;;                                        flycheck-mode ""
+  ;;                                        flyspell-mode "")))
+  ;;                    )
+
+  ;; turning off individual lighters doesn't work using the "blessed"
+  ;; spacemacs|diminish function (see commented code above)
+  ;; so just turn the damn thing off entirely
+  (spaceline-toggle-minor-modes-off)
+
+
   ;; osx settings
   (setq-default mac-command-key-is-meta t)
   (setq-default mac-option-modifier 'alt)
@@ -389,6 +418,16 @@ in `dotspacemacs/user-config'."
   (setq-default tab-width 2)
   (setq-default js-indent-level 2)
 
+  ;; rainbow identifiers (aka semantic syntax highlighting)
+  (paradox-require 'rainbow-identifiers)
+  (add-hook 'prog-mode-hook 'rainbow-identifiers-mode)
+  (setq-default rainbow-identifiers-faces-to-override
+                '(font-lock-type-face font-lock-variable-name-face))
+
+  ;; (if (locate-library "rainbow-identifiers-mode")
+  ;;     (autoload 'rainbow-identifiers-mode "rainbow-identifiers-mode" "highlight usages of variable names semantically" t)
+  ;;     )
+
   ;; highlight lines longer than 80 chars
   ;; (require 'whitespace)
   ;; (setq whitespace-style '(tabs face empty lines-tail trailing))
@@ -421,6 +460,7 @@ layers configuration. You are free to put any user code."
   ;; handle long lines
   (require 'so-long)
   (add-to-list 'so-long-minor-modes 'rainbow-delimiters-mode)
+  (add-to-list 'so-long-minor-modes 'rainbow-identifiers-mode)
   (add-to-list 'so-long-target-modes 'json-mode)
   (so-long-enable)
 
