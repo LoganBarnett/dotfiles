@@ -127,7 +127,9 @@ values."
                                :size 11
                                :weight normal
                                :width normal
-                               :powerline-scale 1.1)
+                               :powerline-scale 1)
+                               ;; :powerline-scale 1.1)
+                               ;; :powerline-scale 1.5)
    ;; The leader key
    dotspacemacs-leader-key "SPC"
    ;; The leader key accessible in `emacs state' and `insert state'
@@ -325,7 +327,10 @@ in `dotspacemacs/user-config'."
   ;; spacemacs|diminish function (see commented code above)
   ;; so just turn the damn thing off entirely
   (spaceline-toggle-minor-modes-off)
-
+  ;; (setq-default spaceline-separator-dir-left '(left . left))
+  ;; (setq-default spaceline-separator-dir-right '(right . right))
+  (setq-default powerline-default-separator nil)
+  (spaceline-compile)
 
   ;; osx settings
   (setq-default mac-command-key-is-meta t)
@@ -519,7 +524,9 @@ layers configuration. You are free to put any user code."
   (setq-default nyan-wavy-trail t)
   (setq-default nyan-animate-nyancat t)
   (setq-default nyan-animation-frame-interval 0.075)
+  (setq-default nyan-bar-length 16)
   (add-hook 'nyan-mode 'nyan-start-animation)
+  (add-hook 'change-major-mode-hook 'nyan-start-animation)
 )
 
 ;; Do not write anything past this comment. This is where Emacs will
