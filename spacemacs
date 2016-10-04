@@ -39,6 +39,7 @@ values."
      version-control
      html
      purescript
+     javascript
      ;; this breaks tests?
      ;; psc-ide
      )
@@ -53,6 +54,9 @@ values."
      flycheck-flow
      ;; flycheck-css-color
      ;; flycheck-json
+     nyan-mode
+     rainbow-identifiers
+     graphviz-dot-mode
 
      ;; hopefully managed by a spacemacs layer
      ;; company-mode
@@ -85,6 +89,7 @@ values."
    ;; If non nil then spacemacs will check for updates at startup
    ;; when the current branch is not `develop'. (default t)
    dotspacemacs-check-for-update nil
+   ;; dotspacemacs-check-for-update t
    ;; One of `vim', `emacs' or `hybrid'. Evil is always enabled but if the
    ;; variable is `emacs' then the `holy-mode' is enabled at startup. `hybrid'
    ;; uses emacs key bindings for vim's insert mode, but otherwise leaves evil
@@ -290,6 +295,29 @@ in `dotspacemacs/user-config'."
                                       root))))
     (when (file-executable-p flow)
       (setq-local flycheck-javascript-flow-executable flow))))
+(defun my/use-node-modules-bin ()
+  "Set executables of JS checkers from local node modules."
+  (-when-let* ((file-name (buffer-file-name))
+               (root (locate-dominating-file file-name "node_modules"))
+               (module-directory (expand-file-name "node_modules" root)))
+    (pcase-dolist (`(,checker . ,module) '((javascript-jshint . "jshint")
+                                           (javascript-eslint . "eslint")
+                                           (javascript-jscs   . "jscs")
+                                           (javascript-flow   . "flow")))
+      (let ((package-directory (expand-file-name module module-directory))
+            (executable-var (flycheck-checker-executable-variable checker)))
+        (when (file-directory-p package-directory)
+          (set (make-local-variable executable-var)
+               (expand-file-name (concat "bin/" module ".js")
+                                 package-directory)))))))
+
+(defun my/flycheck-list-errors-only-when-errors ()
+  (if flycheck-current-errors
+      (flycheck-list-errors)
+    (-when-let (buffer (get-buffer flycheck-error-list-buffer))
+      (dolist (window (get-buffer-window-list buffer))
+        (quit-window nil window)))))
+
 
 (defun dotspacemacs/user-config ()
   ;; add load-path for packages not in the melpa database
@@ -357,28 +385,38 @@ in `dotspacemacs/user-config'."
   (add-to-list 'c-offsets-alist '(arglist-close . c-lineup-close-paren))
 
   ;; flycheck
-  (if (locate-library "flycheck-mode")
-      (autoload 'flycheck-mode "flycheck-mode" "flycheck checks syntax and lints" t)
+  (use-package "flycheck-mode"
+      :init
       (add-hook 'flycheck-mode-hook #'my/init-flycheck)
       ;; use the npm version for the check
-      (add-hook 'flycheck-mode-hook #'my/use-eslint-from-node-modules)
-      (add-hook 'flycheck-mode-hook #'my/use-flow-from-node-modules)
+      ;; this breaks flycheck when we enter json-mode and perhaps others
+      ;; an update seems to replace this anyways
+      ;; (add-hook 'flycheck-mode-hook #'my/use-eslint-from-node-modules)
+      ;; (add-hook 'flycheck-mode-hook #'my/use-flow-from-node-modules)
+      (add-hook 'flycheck-mode-hook #'my/use-node-modules-bin)
+      ;; can't use flycheck-syntax-check-failed-hook because it's for
+      ;; when flycheck itself has an error
+      ;; (add-hook 'flycheck-syntax-check-failed-hook 'flycheck-list-errors)
+      (add-hook 'flycheck-after-syntax-check-hook #'my/flycheck-list-errors-only-when-errors)
+      ;; (add-hook 'flycheck-mode-hook #'my/flycheck-list-errors-only-when-errors)
       ;; turn on flychecking globally
-      ;; (add-hook 'emacs-startup-hook #'global-flycheck-mode)
       (add-hook 'after-init-hook #'global-flycheck-mode)
-      (add-hook 'js-mode-hook 'flycheck-mode)
+      ;; (add-hook 'js-mode-hook 'flycheck-mode)
+      ;; (add-hook 'flycheck-mode-hook #'flycheck-purescript-setup)
+      :config
+      ;; (delete 'json-mode flycheck-global-modes)
 
       ;; purescript
-      (add-hook 'flycheck-mode-hook #'flycheck-purescript-setup)
       ;; (setq-default flycheck-purescript-compile-output-dir "output")
       )
-  (if (locate-library "flycheck-purescript-mode")
-      ;; (paradox-require 'flycheck-purescript)
-      (autoload "flycheck-purescript-mode" "flycheck-purescript-mode" "checker for purescript" t)
-    ;; TODO: make this a mode hook for purescript-mode
-    (eval-after-load 'flycheck
-      '(flycheck-purescript-setup))
-    )
+  ;; (if (locate-library "flycheck-purescript-mode")
+  ;;     (autoload "flycheck-purescript-mode" "flycheck-purescript-mode" "checker for purescript" t)
+  ;;   ;; TODO: make this a mode hook for purescript-mode
+  ;;   (eval-after-load 'flycheck
+  ;;     '(flycheck-purescript-setup))
+  ;;   )
+
+  ;; old flycheck settings - didn't work
   ;; (paradox-require 'flycheck)
   ;; disable jshint since we prefer eslint checking
 ;;  (setq-default flycheck-disabled-checkers
@@ -424,14 +462,20 @@ in `dotspacemacs/user-config'."
   (setq-default js-indent-level 2)
 
   ;; rainbow identifiers (aka semantic syntax highlighting)
-  (paradox-require 'rainbow-identifiers)
-  (add-hook 'prog-mode-hook 'rainbow-identifiers-mode)
-  (setq-default rainbow-identifiers-faces-to-override
-                '(font-lock-type-face font-lock-variable-name-face))
-
-  ;; (if (locate-library "rainbow-identifiers-mode")
-  ;;     (autoload 'rainbow-identifiers-mode "rainbow-identifiers-mode" "highlight usages of variable names semantically" t)
-  ;;     )
+  ;; (paradox-require 'rainbow-identifiers)
+  ;; (if (locate-library "rainbow-identifiers")
+  (use-package "rainbow-identifiers"
+    :ensure t
+    :init
+    (message "rainbow identifiers init")
+    (add-hook 'prog-mode-hook 'rainbow-identifiers-mode)
+    :config
+    (message "rainbow identifiers config")
+    (setq-default rainbow-identifiers-faces-to-override
+                  '(font-lock-type-face font-lock-variable-name-face))
+    (message "loaded rainbow identifiers")
+    :diminish 'rainbow-identifiers-mode
+  )
 
   ;; highlight lines longer than 80 chars
   ;; (require 'whitespace)
@@ -466,8 +510,11 @@ layers configuration. You are free to put any user code."
   (require 'so-long)
   (add-to-list 'so-long-minor-modes 'rainbow-delimiters-mode)
   (add-to-list 'so-long-minor-modes 'rainbow-identifiers-mode)
+  (add-to-list 'so-long-minor-modes 'flycheck-mode)
   (add-to-list 'so-long-target-modes 'json-mode)
   (so-long-enable)
+  (setq-default so-long-threshold 500)
+  (message "so-long watching enabled")
 
   ;; (add-hook 'buffer-list-update-hook 'turn-on-fci-mode)
   (paradox-require 'markdown-mode)
@@ -476,6 +523,9 @@ layers configuration. You are free to put any user code."
   ;; (add-hook 'markdown-mode-hook (lambda () (auto-fill-mode)))
  ;;(setq-default fci-rule-width 1)
   ;;(setq-default fci-rule-color "darkblue")
+
+  ;; javascript-mode
+  (add-to-list 'auto-mode-alist '("\\.js\\'" . javascript-mode))
 
   ;; purescript-mode
   (setq-default psc-ide-client-executable "/usr/local/bin/psc-ide-client")
@@ -525,8 +575,26 @@ layers configuration. You are free to put any user code."
   (setq-default nyan-animate-nyancat t)
   (setq-default nyan-animation-frame-interval 0.075)
   (setq-default nyan-bar-length 16)
-  (add-hook 'nyan-mode 'nyan-start-animation)
-  (add-hook 'change-major-mode-hook 'nyan-start-animation)
+  ;; as of spacemacs 0.200 this eats a ton of cpu time
+  ;; (add-hook 'nyan-mode 'nyan-start-animation)
+  ;; (add-hook 'change-major-mode-hook 'nyan-start-animation)
+
+  ;; da faq?
+  ;; animate letters inwards to the cursor point as you type
+  ;; left for reference and not actual use - only works at top of file
+  (defun animated-self-insert ()
+    (let* ((undo-entry (car buffer-undo-list))
+           (beginning (and (consp undo-entry) (car undo-entry)))
+           (end (and (consp undo-entry) (cdr undo-entry)))
+           (str (when (and (numberp beginning)
+                           (numberp end))
+                  (buffer-substring-no-properties beginning end)))
+           (animate-n-steps 3))
+      (when str
+        (delete-region beginning end)
+        (animate-string str (1- (line-number-at-pos)) (current-column)))))
+
+  ;; (add-hook 'post-self-insert-hook 'animated-self-insert)
 )
 
 ;; Do not write anything past this comment. This is where Emacs will
