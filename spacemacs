@@ -345,6 +345,8 @@ in `dotspacemacs/user-config'."
   (setq-default org-image-actual-width '(400))
   (add-hook 'org-mode-hook 'auto-fill-mode)
 
+  ;; turn off the menu bar so we can see things like the time on small screens
+  (menu-bar-mode -1)
 
   ;; modeline settings
   ;; (paradox-require 'diminish nil t)
