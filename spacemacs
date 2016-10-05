@@ -318,6 +318,24 @@ in `dotspacemacs/user-config'."
       (dolist (window (get-buffer-window-list buffer))
         (quit-window nil window)))))
 
+(defun my/fix-js2-rainbow-identifiers ()
+  (message "HACK: turning off rainbow-identifiers-mode")
+  (rainbow-identifiers-mode 0)
+  (message "HACK: turning back on rainbow-identifiers-mode")
+  (rainbow-identifiers-mode 1)
+  )
+
+(defun my/highlight-gt-80-columns ()
+  (font-lock-add-keywords nil
+   '(("\t+" (0 'my-tab-face append))
+     ("[ \t]+$"      (0 'my-trailing-space-face append))
+     ("^.\\{81,\\}$" (0 'my-long-line-face append))
+     ("^.\\{80\\}\\(.+\\)$" (1 'my-post-long-line-face append))
+     )
+   )
+  (message "applied > 80 column highlighting")
+  )
+"long test asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf"
 
 (defun dotspacemacs/user-config ()
   ;; add load-path for packages not in the melpa database
@@ -393,10 +411,11 @@ in `dotspacemacs/user-config'."
       ;; an update seems to replace this anyways
       ;; (add-hook 'flycheck-mode-hook #'my/use-eslint-from-node-modules)
       ;; (add-hook 'flycheck-mode-hook #'my/use-flow-from-node-modules)
+      ;; node-modules support shamelessly lifted from here
+      ;; https://github.com/lunaryorn/.emacs.d/blob/master/lisp/lunaryorn-flycheck.el#L62
       (add-hook 'flycheck-mode-hook #'my/use-node-modules-bin)
       ;; can't use flycheck-syntax-check-failed-hook because it's for
       ;; when flycheck itself has an error
-      ;; (add-hook 'flycheck-syntax-check-failed-hook 'flycheck-list-errors)
       (add-hook 'flycheck-after-syntax-check-hook #'my/flycheck-list-errors-only-when-errors)
       ;; (add-hook 'flycheck-mode-hook #'my/flycheck-list-errors-only-when-errors)
       ;; turn on flychecking globally
@@ -462,18 +481,14 @@ in `dotspacemacs/user-config'."
   (setq-default js-indent-level 2)
 
   ;; rainbow identifiers (aka semantic syntax highlighting)
-  ;; (paradox-require 'rainbow-identifiers)
-  ;; (if (locate-library "rainbow-identifiers")
   (use-package "rainbow-identifiers"
     :ensure t
     :init
-    (message "rainbow identifiers init")
     (add-hook 'prog-mode-hook 'rainbow-identifiers-mode)
+    ;; (add-hook 'js2-mode-hook #'my/fix-js2-rainbow-identifiers)
     :config
-    (message "rainbow identifiers config")
     (setq-default rainbow-identifiers-faces-to-override
                   '(font-lock-type-face font-lock-variable-name-face))
-    (message "loaded rainbow identifiers")
     :diminish 'rainbow-identifiers-mode
   )
 
@@ -482,29 +497,24 @@ in `dotspacemacs/user-config'."
   ;; (setq whitespace-style '(tabs face empty lines-tail trailing))
   ;; (global-whitespace-mode t)
   ;; taken from https://www.emacswiki.org/emacs/EightyColumnRule
-  (add-hook 'font-lock-mode-hook
-    (function
-     (lambda ()
-       (setq font-lock-keywords
-             (append font-lock-keywords
-                     '(("\t+" (0 'my-tab-face append))
-                       ("[ \t]+$"      (0 'my-trailing-space-face append))
-                       ("^.\\{81,\\}$" (0 'my-long-line-face append))
-                       ("^.\\{80\\}\\(.+\\)$" (1 'my-post-long-line-face append)
-                       )
-                      ))))))
+  ;; (add-hook 'font-lock-mode-hook #'my/highlight-gt-80-columns)
+  (add-hook 'prog-mode-hook #'my/highlight-gt-80-columns)
+  (add-hook 'text-mode-hook #'my/highlight-gt-80-columns)
 
   "Configuration function for user code.
 This function is called at the very end of Spacemacs initialization after
 layers configuration. You are free to put any user code."
   ;; show 80 column rule
   (require 'fill-column-indicator)
-  (define-globalized-minor-mode global-fci-mode
-    fci-mode (lambda ()
-               (when (not (memq major-mode
-                                (list 'web-mode)))
-                 (fci-mode 1))))
-  (global-fci-mode 1)
+  ;; (define-globalized-minor-mode global-fci-mode
+  ;;   fci-mode (lambda ()
+  ;;              (when (not (memq major-mode
+  ;;                               (list 'web-mode)))
+  ;;                (fci-mode 1))))
+  ;; (global-fci-mode 1)
+  (add-hook 'prog-mode-hook 'fci-mode)
+  (add-hook 'text-mode-hook 'fci-mode)
+  (add-hook 'web-mode-hook (lambda () (fci-mode 0)))
 
   ;; handle long lines
   (require 'so-long)
@@ -525,7 +535,15 @@ layers configuration. You are free to put any user code."
   ;;(setq-default fci-rule-color "darkblue")
 
   ;; javascript-mode
+  ;; js2-mode doesn't play nice with things like flow and es6 features
+  (rassq-delete-all 'js2-mode auto-mode-alist)
   (add-to-list 'auto-mode-alist '("\\.js\\'" . javascript-mode))
+
+  (setq-default js2-strict-missing-semi-warning nil)
+  (setq-default js2-strict-trailing-comma-warning nil)
+  ;; (setq-default js2-mode-toggle-warnings-and-errors 0)
+
+  (add-hook 'js2-mode 'js2-mode-toggle-warnings-and-errors)
 
   ;; purescript-mode
   (setq-default psc-ide-client-executable "/usr/local/bin/psc-ide-client")
