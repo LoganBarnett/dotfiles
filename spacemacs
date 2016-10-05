@@ -335,7 +335,6 @@ in `dotspacemacs/user-config'."
    )
   (message "applied > 80 column highlighting")
   )
-"long test asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf"
 
 (defun dotspacemacs/user-config ()
   ;; add load-path for packages not in the melpa database
