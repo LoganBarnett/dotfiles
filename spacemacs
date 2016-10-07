@@ -339,6 +339,12 @@ in `dotspacemacs/user-config'."
 (defun dotspacemacs/user-config ()
   ;; add load-path for packages not in the melpa database
   (add-to-list 'load-path "~/dev/dotfiles/lisp")
+
+  ;; debug
+  ;; (setq-default tramp-verbose 6)
+  ;; fixes tramp startup times
+  (eval-after-load 'tramp '(setenv "SHELL" "/bin/bash"))
+
   ;; org-mode settings
   ;; shrink inline images see:
   ;; http://lists.gnu.org/archive/html/emacs-orgmode/2012-08/msg01388.html
