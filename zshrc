@@ -1,3 +1,14 @@
+# prevent emacs tramp from barfing on startup
+if [[ "$TERM" == "dumb" ]]
+then
+  unsetopt zle
+  unsetopt prompt_cr
+  unsetopt prompt_subst
+  unfunction precmd
+  unfunction preexec
+  PS1='$ '
+fi
+
 # Path to your oh-my-zsh installation.
 export ZSH=$HOME/.oh-my-zsh
 
@@ -53,7 +64,6 @@ plugins=(git, noreallyjustfuckingstopalready, zsh-syntax-highlighting)
 
 # User configuration
 
-export PATH="$HOME/.opam/system/bin:/bin:/usr/local/bin:$HOME/bin:/opt/local/bin:/opt/local/sbin:$HOME/dev/adt-bundle-mac/sdk/platform-tools:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/X11/bin:/usr/local/sbin:$HOME/node_modules/.bin"
 # export MANPATH="/usr/local/man:$MANPATH"
 
 # island of misfit paths
