@@ -49,6 +49,7 @@ values."
    ;; configuration in `dotspacemacs/user-config'.
    dotspacemacs-additional-packages
    '(
+     flycheck
      flycheck-purescript
      company-flow
      flycheck-flow
@@ -103,7 +104,7 @@ values."
    ;; directory. A string value must be a path to an image format supported
    ;; by your Emacs build.
    ;; If the value is nil then no banner is displayed. (default 'official)
-   dotspacemacs-startup-banner 'official
+   dotspacemacs-startup-banner 'random
    ;; List of items to show in the startup buffer. If nil it is disabled.
    ;; Possible values are: `recents' `bookmarks' `projects'.
    ;; (default '(recents projects))
@@ -230,7 +231,7 @@ values."
    ;; If non nil line numbers are turned on in all `prog-mode' and `text-mode'
    ;; derivatives. If set to `relative', also turns on relative line numbers.
    ;; (default nil)
-   dotspacemacs-line-numbers nil
+   dotspacemacs-line-numbers t
    ;; If non-nil smartparens-strict-mode will be enabled in programming modes.
    ;; (default nil)
    dotspacemacs-smartparens-strict-mode nil
@@ -263,40 +264,117 @@ It is called immediately after `dotspacemacs/init'.  You are free to put almost
 any user code here.  The exception is org related code, which should be placed
 in `dotspacemacs/user-config'."
   )
+
+;; flycheck
 (defun my/init-flycheck ()
-  ;; use eslint with web-mode for jsx files
-  (flycheck-add-mode 'javascript-eslint 'web-mode)
-  (flycheck-add-mode 'javascript-jshint 'web-mode)
-  ;; flow added to js-mode
-  (if (locate-library "flycheck-flow")
-    ;; (autoload 'flycheck-flow "flycheck-flow-mode" "flow type checker" t)
+  (use-package "flycheck"
+    ;; :defer t
+    :ensure t
+    :init
+    ;; turn on flychecking globally
+    ;; (add-hook 'after-init-hook #'global-flycheck-mode)
+    ;; (add-hook 'js-mode-hook 'flycheck-mode)
+    ;; (add-hook 'flycheck-mode-hook #'flycheck-purescript-setup)
+    ;; (add-hook 'prog-mode #'flycheck-mode)
+    ;; (global-flycheck-mode)
+    (add-hook 'prog-mode-hook #'flycheck-mode)
+    (setq-default syntax-checking-enable-by-default t)
+    :config
+    ;; node-modules support shamelessly lifted from here
+    ;; https://github.com/lunaryorn/.emacs.d/blob/master/lisp/lunaryorn-flycheck.el#L62
+    (add-hook 'flycheck-mode-hook #'my/use-node-modules-bin)
+    ;; can't use flycheck-syntax-check-failed-hook because it's for
+    ;; when flycheck itself has an error
+    (add-hook 'flycheck-after-syntax-check-hook #'my/flycheck-list-errors-only-when-errors)
+    ;; (add-hook 'flycheck-mode-hook #'my/flycheck-list-errors-only-when-errors)
+    ;; (add-hook 'flycheck-mode-hook #'my/use-eslint-from-node-modules)
+    (add-hook 'flycheck-mode-hook (apply-partially #'my/use-checker-from-node-modules "flow"))
+    (add-hook 'flycheck-mode-hook (apply-partially #'my/use-checker-from-node-modules "eslint"))
+
+    ;; use the npm version for the check
+    ;; this breaks flycheck when we enter json-mode and perhaps others
+    ;; an update seems to replace this anyways
+    (setq-default flycheck-disabled-checkers
+                  (append flycheck-disabled-checkers
+                          '(javascript-jshint)))
+    ;; use eslint with web-mode for jsx files
+    (flycheck-add-mode 'javascript-eslint 'web-mode)
+    (flycheck-add-mode 'javascript-jshint 'web-mode)
+
+    ;; purescript
+    ;; (setq-default flycheck-purescript-compile-output-dir "output")
     (paradox-require 'flycheck-flow)
-    (flycheck-add-mode 'javascript-flow 'js-mode)
+    (use-package "flycheck-flow"
+      :init
+      (flycheck-add-mode 'javascript-flow 'js-mode)
+      (flycheck-add-mode 'javascript-flow 'web-mode)
+      :config
+      ;; (add-hook 'flycheck-mode-hook #'my/use-flow-from-node-modules)
+      (message "added flow to flycheck")
+      )
     )
-  ;; (paradox-require 'flycheck-flow)
   ;; (setq flycheck-check-syntax-automatically '(mode-enabled save idle-change new-line))
-  (setq-default syntax-checking-enable-by-default t)
   )
-(defun my/use-eslint-from-node-modules ()
+
+;; (defun my/use-eslint-from-node-modules ()
+;;   (let* ((root (locate-dominating-file
+;;                 (or (buffer-file-name) default-directory)
+;;                 "node_modules"))
+;;          (eslint (and root
+;;                       (expand-file-name "node_modules/eslint/bin/eslint.js"
+;;                                         root))))
+;;     (when (file-executable-p eslint)
+;;       (setq-local flycheck-javascript-eslint-executable eslint))))
+
+;; (defun my/use-flow-from-node-modules ()
+;;   ;; "look for the flow executable inside of the project's node_modules"
+;;   ;; (interactive)
+;;   (message "setting flow exec for mode %s" major-mode )
+;;   (when (eq major-mode "javascript-mode")
+;;     (message "we're in javascript-mode, so we can try to enable flow")
+;;     (setq flow "invalid")
+;;     (let* ((root (locate-dominating-file
+;;                   (or (buffer-file-name) default-directory)
+;;                   "node_modules"))
+;;            (flow (and root
+;;                       (expand-file-name "node_modules/flow-bin/cli.js"
+;;                                         root))))
+;;       (message "flow is %s" flow)
+;;       (if flow
+;;           (when (file-executable-p flow)
+;;             (setq-local flycheck-javascript-flow-executable flow))
+;;         (message "flow not available for mode %s with file %s" major-mode buffer-file-name)
+;;         )
+;;       ))
+;;   )
+
+(defun my/use-checker-from-node-modules (checker-name)
+  (message "setting %s exec for mode %s" checker-name major-mode )
+  (setq path "invalid")
   (let* ((root (locate-dominating-file
                 (or (buffer-file-name) default-directory)
                 "node_modules"))
-         (eslint (and root
-                      (expand-file-name "node_modules/eslint/bin/eslint.js"
-                                        root))))
-    (when (file-executable-p eslint)
-      (setq-local flycheck-javascript-eslint-executable eslint))))
-(defun my/use-flow-from-node-modules ()
-  (let* ((root (locate-dominating-file
-                (or (buffer-file-name) default-directory)
-                "node_modules"))
-         (flow (and root
-                    (expand-file-name "node_modules/flow-bin/cli.js"
-                                      root))))
-    (when (file-executable-p flow)
-      (setq-local flycheck-javascript-flow-executable flow))))
+         (path (and root
+                     (expand-file-name (concat "node_modules/.bin/" checker-name)
+                                       root))))
+    (message "path is %s" path)
+    (if path
+        ;; (when (file-executable-p path)
+        (let ((checker-exec-sym (intern (concat "flycheck-javascript-" checker-name "-executable"))))
+             (make-local-variable checker-exec-sym)
+             (set checker-exec-sym path)
+             (message "flow exec is %s" flycheck-javascript-flow-executable)
+             )
+      (message "checker %s not available for mode %s with file %s"
+               checker-name major-mode buffer-file-name)
+      ;; )
+      )
+    )
+  )
+
 (defun my/use-node-modules-bin ()
   "Set executables of JS checkers from local node modules."
+  (message "using node_modules/.bin for JS local linting/checking")
   (-when-let* ((file-name (buffer-file-name))
                (root (locate-dominating-file file-name "node_modules"))
                (module-directory (expand-file-name "node_modules" root)))
@@ -308,10 +386,11 @@ in `dotspacemacs/user-config'."
             (executable-var (flycheck-checker-executable-variable checker)))
         (when (file-directory-p package-directory)
           (set (make-local-variable executable-var)
-               (expand-file-name (concat "bin/" module ".js")
+               (expand-file-name (concat ".bin/" module)
                                  package-directory)))))))
 
 (defun my/flycheck-list-errors-only-when-errors ()
+  (message "checking for current errors")
   (if flycheck-current-errors
       (flycheck-list-errors)
     (-when-let (buffer (get-buffer flycheck-error-list-buffer))
@@ -409,55 +488,6 @@ in `dotspacemacs/user-config'."
   (paradox-require 'cc-mode)
   (add-to-list 'c-offsets-alist '(arglist-close . c-lineup-close-paren))
 
-  ;; flycheck
-  (use-package "flycheck-mode"
-      :init
-      (add-hook 'flycheck-mode-hook #'my/init-flycheck)
-      ;; use the npm version for the check
-      ;; this breaks flycheck when we enter json-mode and perhaps others
-      ;; an update seems to replace this anyways
-      ;; (add-hook 'flycheck-mode-hook #'my/use-eslint-from-node-modules)
-      ;; (add-hook 'flycheck-mode-hook #'my/use-flow-from-node-modules)
-      ;; node-modules support shamelessly lifted from here
-      ;; https://github.com/lunaryorn/.emacs.d/blob/master/lisp/lunaryorn-flycheck.el#L62
-      (add-hook 'flycheck-mode-hook #'my/use-node-modules-bin)
-      ;; can't use flycheck-syntax-check-failed-hook because it's for
-      ;; when flycheck itself has an error
-      (add-hook 'flycheck-after-syntax-check-hook #'my/flycheck-list-errors-only-when-errors)
-      ;; (add-hook 'flycheck-mode-hook #'my/flycheck-list-errors-only-when-errors)
-      ;; turn on flychecking globally
-      (add-hook 'after-init-hook #'global-flycheck-mode)
-      ;; (add-hook 'js-mode-hook 'flycheck-mode)
-      ;; (add-hook 'flycheck-mode-hook #'flycheck-purescript-setup)
-      :config
-      ;; (delete 'json-mode flycheck-global-modes)
-
-      ;; purescript
-      ;; (setq-default flycheck-purescript-compile-output-dir "output")
-      )
-  ;; (if (locate-library "flycheck-purescript-mode")
-  ;;     (autoload "flycheck-purescript-mode" "flycheck-purescript-mode" "checker for purescript" t)
-  ;;   ;; TODO: make this a mode hook for purescript-mode
-  ;;   (eval-after-load 'flycheck
-  ;;     '(flycheck-purescript-setup))
-  ;;   )
-
-  ;; old flycheck settings - didn't work
-  ;; (paradox-require 'flycheck)
-  ;; disable jshint since we prefer eslint checking
-;;  (setq-default flycheck-disabled-checkers
-;;    (append flycheck-disabled-checkers
-;;      '(javascript-jshint)))
-  ;; (eval-after-load
-  ;;     'flycheck
-  ;;   (lambda ()
-  ;;     (flycheck-add-mode 'javascript-eslint 'js2-mode)
-  ;;     ;; Disable jshint
-  ;;     ;; wait, why are we doing this?
-  ;;     (setq-default
-  ;;      flycheck-disabled-checkers
-  ;;      (append flycheck-disabled-checkers
-  ;; 	     '(javascript-jshint)))))
 
   ;; company-mode (for auto-complete)
   (global-company-mode 1)
@@ -620,6 +650,32 @@ layers configuration. You are free to put any user code."
         (animate-string str (1- (line-number-at-pos)) (current-column)))))
 
   ;; (add-hook 'post-self-insert-hook 'animated-self-insert)
+
+  (my/init-flycheck)
+
+  ;; (if (locate-library "flycheck-purescript-mode")
+  ;;     (autoload "flycheck-purescript-mode" "flycheck-purescript-mode" "checker for purescript" t)
+  ;;   ;; TODO: make this a mode hook for purescript-mode
+  ;;   (eval-after-load 'flycheck
+  ;;     '(flycheck-purescript-setup))
+  ;;   )
+
+  ;; old flycheck settings - didn't work
+  ;; (paradox-require 'flycheck)
+  ;; disable jshint since we prefer eslint checking
+;;  (setq-default flycheck-disabled-checkers
+;;    (append flycheck-disabled-checkers
+;;      '(javascript-jshint)))
+  ;; (eval-after-load
+  ;;     'flycheck
+  ;;   (lambda ()
+  ;;     (flycheck-add-mode 'javascript-eslint 'js2-mode)
+  ;;     ;; Disable jshint
+  ;;     ;; wait, why are we doing this?
+  ;;     (setq-default
+  ;;      flycheck-disabled-checkers
+  ;;      (append flycheck-disabled-checkers
+  ;; 	     '(javascript-jshint)))))
 )
 
 ;; Do not write anything past this comment. This is where Emacs will
