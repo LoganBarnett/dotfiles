@@ -12,7 +12,7 @@ start_dir=$PWD
 ./create-ssh-key.sh
 
 PWD=$(pwd)
-EASYFILES="oh-my-zsh zshrc vimrc pentadactylrc Xdefaults tmux.conf urxvt ideavim gitconfig spacemacs"
+EASYFILES="oh-my-zsh zshrc vimrc pentadactylrc Xdefaults tmux.conf urxvt ideavim gitconfig spacemacs zshenv"
 
 # get submodules set up
 git submodule init
