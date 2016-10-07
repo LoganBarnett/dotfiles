@@ -316,38 +316,6 @@ in `dotspacemacs/user-config'."
   ;; (setq flycheck-check-syntax-automatically '(mode-enabled save idle-change new-line))
   )
 
-;; (defun my/use-eslint-from-node-modules ()
-;;   (let* ((root (locate-dominating-file
-;;                 (or (buffer-file-name) default-directory)
-;;                 "node_modules"))
-;;          (eslint (and root
-;;                       (expand-file-name "node_modules/eslint/bin/eslint.js"
-;;                                         root))))
-;;     (when (file-executable-p eslint)
-;;       (setq-local flycheck-javascript-eslint-executable eslint))))
-
-;; (defun my/use-flow-from-node-modules ()
-;;   ;; "look for the flow executable inside of the project's node_modules"
-;;   ;; (interactive)
-;;   (message "setting flow exec for mode %s" major-mode )
-;;   (when (eq major-mode "javascript-mode")
-;;     (message "we're in javascript-mode, so we can try to enable flow")
-;;     (setq flow "invalid")
-;;     (let* ((root (locate-dominating-file
-;;                   (or (buffer-file-name) default-directory)
-;;                   "node_modules"))
-;;            (flow (and root
-;;                       (expand-file-name "node_modules/flow-bin/cli.js"
-;;                                         root))))
-;;       (message "flow is %s" flow)
-;;       (if flow
-;;           (when (file-executable-p flow)
-;;             (setq-local flycheck-javascript-flow-executable flow))
-;;         (message "flow not available for mode %s with file %s" major-mode buffer-file-name)
-;;         )
-;;       ))
-;;   )
-
 (defun my/use-checker-from-node-modules (checker-name)
   (message "setting %s exec for mode %s" checker-name major-mode )
   (setq path "invalid")
@@ -372,6 +340,7 @@ in `dotspacemacs/user-config'."
     )
   )
 
+;; I don't get how this can work yet - need time to grok - unused
 (defun my/use-node-modules-bin ()
   "Set executables of JS checkers from local node modules."
   (message "using node_modules/.bin for JS local linting/checking")
