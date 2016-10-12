@@ -91,6 +91,8 @@ NODE_MODULES="jshint"
 
 npm i -g $NODE_MODULES
 
+ln -s -n $PWD/jshintrc ~/.jshintrc
+
 #zsh customizations
 echo "installing oh my zsh customizations"
 if [ $(uname) = 'Darwin' ]; then
