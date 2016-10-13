@@ -207,14 +207,49 @@ ZSH_THEME_GIT_PROMPT_UNTRACKED="%{$fg[green]%}?"
 ZSH_THEME_GIT_PROMPT_CLEAN=""
 
 function timestamp_prompt() {
-  
+  echo "$fg[blue][$reset_color%D{$fg[green]%H$fg[yellow]:$fg[green]%M$fg[yellow]:$fg[green]%S}$fg[blue]]$reset_color"
 }
 
-EXIT_STATUS_VAR='$?'
+function exit_status_prompt() {
+   echo "%?"
+}
+
+function host_prompt() {
+  echo "$fg[yellow]%n@%M$reset_color"
+}
 
 function set_prompt() {
-  PROMPT='$(path_color_prompt)$(pwd_prompt)$(git_prompt_info) $(echo $?) $(timestamp_prompt)
+  PROMPT='$(path_color_prompt)$(pwd_prompt)$(git_prompt_info) $(host_prompt) $(exit_status_prompt) $(timer_prompt) $(timestamp_prompt)
 $(vim_mode_prompt)'
+}
+
+# zsh redefined function
+function preexec() {
+  timer=${timer:-$SECONDS}
+}
+
+# timer stuff found here
+# https://coderwall.com/p/kmchbw/zsh-display-commands-runtime-in-prompt
+# zsh hook command
+function precmd() {
+  if [ $timer ]; then
+    timer_show=$(($SECONDS - $timer))
+    unset timer
+  fi
+}
+
+function timer_prompt() {
+  if [ $timer_show ]; then 
+    echo $timer_show"s"
+  fi
+}
+
+# cause the prompt to repaint so we can see the current time
+TMOUT=1
+TRAPALRM() {
+  if [ "$WIDGET" != "complete-word" ]; then
+    zle reset-prompt
+  fi
 }
 
 
