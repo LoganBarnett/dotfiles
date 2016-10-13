@@ -374,10 +374,17 @@ in `dotspacemacs/user-config'."
   )
 
 (defun my/highlight-gt-80-columns ()
+  (require 'font-lock)
+  (defface my-tab-face '((t . (:background "gray10"))) "wide line tab face")
+  ;; TODO: figure out why this breaks rainbow identifiers
+  ;; (defface my-long-line-face '((t . (:background "gray10"))) "wide line face")
+  (defface my-trailing-space-face '((t . (:background "red"))) "trailing space")
+  (defface my-post-long-line-face '((t . (:underline "red"))) "post 80 face")
+
   (font-lock-add-keywords nil
    '(("\t+" (0 'my-tab-face append))
      ("[ \t]+$"      (0 'my-trailing-space-face append))
-     ("^.\\{81,\\}$" (0 'my-long-line-face append))
+     ;; ("^.\\{81,\\}$" (0 'my-long-line-face append))
      ("^.\\{80\\}\\(.+\\)$" (1 'my-post-long-line-face append))
      )
    )
@@ -645,6 +652,7 @@ layers configuration. You are free to put any user code."
   ;;      flycheck-disabled-checkers
   ;;      (append flycheck-disabled-checkers
   ;; 	     '(javascript-jshint)))))
+
 )
 
 ;; Do not write anything past this comment. This is where Emacs will
@@ -660,8 +668,4 @@ layers configuration. You are free to put any user code."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(my-tab-face            ((((class color)) (:background "gray10"))) t)
- '(my-long-line-face ((((class color)) (:background "gray10"))) t)
- '(my-trailing-space-face ((((class color)) (:background "red"))) t)
- '(my-post-long-line-face ((((class color)) (:underline "red"))) t)
  )
