@@ -3,6 +3,7 @@
 echo "installing alfred workflows"
 WORKFLOWS="
 top-processes=https://github.com/zhaocai/alfred2-top-workflow/raw/c2e848eff19a4f93b8302e199bf9f353012c3564/Top%20Processes.alfredworkflow
+dnd=https://github.com/paulrudy/alfred-toggle-do-not-disturb/raw/cdf4b5d773a36180a471d7d0ca66751478ff571c/toggle-do-not-disturb.alfredworkflow
 "
 
 WORKFLOW_DIR=$HOME'/Library/Application Support/Alfred 3/Alfred.alfredpreferences/workflows'
