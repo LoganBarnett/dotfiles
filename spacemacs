@@ -400,6 +400,12 @@ in `dotspacemacs/user-config'."
   ;; fixes tramp startup times
   (eval-after-load 'tramp '(setenv "SHELL" "/bin/bash"))
 
+  ;; encryption
+  (require 'epa-file)
+  (epa-file-enable)
+  (paradox-require 'pinentry)
+  (setf epa-pinentry-mode 'loopback)
+
   ;; org-mode settings
   ;; shrink inline images see:
   ;; http://lists.gnu.org/archive/html/emacs-orgmode/2012-08/msg01388.html
