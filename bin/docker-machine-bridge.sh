@@ -1,5 +1,7 @@
 #!/bin/sh
 
+# found at
+# https://raw.githubusercontent.com/blueimp/docker/1.18.0/bin/docker-machine-bridge.sh 
 #
 # Adds a bridged network adapter to a VirtualBox docker machine.
 #
