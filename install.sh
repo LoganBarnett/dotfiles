@@ -91,7 +91,8 @@ if [ $(uname) = 'Linux' ]; then
 fi
 
 # node modules
-NODE_MODULES="jshint"
+# tern for JS autocomplete and other hinting
+NODE_MODULES="jshint tern"
 
 npm i -g $NODE_MODULES
 
