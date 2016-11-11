@@ -40,6 +40,7 @@ values."
      html
      purescript
      javascript
+     elm
      ;; this breaks tests?
      ;; psc-ide
      )
