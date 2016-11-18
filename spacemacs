@@ -558,6 +558,7 @@ layers configuration. You are free to put any user code."
   ;; js2-mode doesn't play nice with things like flow and es6 features
   (rassq-delete-all 'js2-mode auto-mode-alist)
   (add-to-list 'auto-mode-alist '("\\.js\\'" . javascript-mode))
+  (add-to-list 'auto-mode-alist '("\\.jsx\\'" . javascript-mode))
 
   (setq-default js2-strict-missing-semi-warning nil)
   (setq-default js2-strict-trailing-comma-warning nil)
