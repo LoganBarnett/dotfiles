@@ -26,13 +26,13 @@ done
 
 # link harder things
 mkdir -p ~/.config
-ln -s -h $PWD/awesome ~/.config/awesome
+ln -s -n $PWD/awesome ~/.config/awesome
 
-ln -s -h $PWD/bin ~/bin
+ln -s -n $PWD/bin ~/bin
 
 mkdir -p ~/.gnupg
-ln -s gpg-agent.conf ~/.gnupg/gpg-agent.conf
-ln -s gpg.conf ~/.gnupg/gpg.conf
+ln -s -n gpg-agent.conf ~/.gnupg/gpg-agent.conf
+ln -s -n gpg.conf ~/.gnupg/gpg.conf
 
 if [ $(uname) = 'Darwin' ]; then
 
@@ -114,8 +114,7 @@ else
     echo "skipping cask installs - not osx"
 fi
 
-echo "installing spacemacs"
-git clone https://github.com/syl20bnr/spacemacs ~/.emacs.d || true
+./emacs-install.sh
 
 # TODO: add a way of reading in the paradox-github token or generating it if it doesn't exist
 

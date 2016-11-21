@@ -1,7 +1,10 @@
 ;; -*- mode: dotspacemacs -*-
 ;; -*- mode: emacs-lisp -*-
+;;; spacemacs --- spacemacs configuration
+;;; Commentary:
 ;; This file is loaded by Spacemacs at startup.
 ;; It must be stored in your home directory.
+;;; Code:
 
 (defun dotspacemacs/layers ()
   "Configuration Layers declaration.
@@ -19,6 +22,7 @@ values."
    ;; of a list then all discovered layers will be installed.
    dotspacemacs-configuration-layers
    '(
+     yaml
      ;; ----------------------------------------------------------------
      ;; Example of useful layers you may want to use right away.
      ;; Uncomment some layer names and press <SPC f e R> (Vim style) or
@@ -318,7 +322,7 @@ in `dotspacemacs/user-config'."
   )
 
 (defun my/use-checker-from-node-modules (checker-name)
-  (message "setting %s exec for mode %s" checker-name major-mode )
+  (message "flycheck -- setting %s exec for mode %s" checker-name major-mode )
   (setq path "invalid")
   (let* ((root (locate-dominating-file
                 (or (buffer-file-name) default-directory)
@@ -326,15 +330,16 @@ in `dotspacemacs/user-config'."
          (path (and root
                      (expand-file-name (concat "node_modules/.bin/" checker-name)
                                        root))))
-    (message "path is %s" path)
+    (message "flycheck -- path is %s" path)
     (if path
         ;; (when (file-executable-p path)
         (let ((checker-exec-sym (intern (concat "flycheck-javascript-" checker-name "-executable"))))
              (make-local-variable checker-exec-sym)
              (set checker-exec-sym path)
+             ;; TODO: not very checker agnostic... fix!
              (message "flow exec is %s" flycheck-javascript-flow-executable)
              )
-      (message "checker %s not available for mode %s with file %s"
+      (message "flycheck -- checker %s not available for mode %s with file %s"
                checker-name major-mode buffer-file-name)
       ;; )
       )
@@ -394,7 +399,10 @@ in `dotspacemacs/user-config'."
 
 (defun dotspacemacs/user-config ()
   ;; add load-path for packages not in the melpa database
-  (add-to-list 'load-path "~/dev/dotfiles/lisp")
+  (add-to-list 'load-path "~/.emacs.d/private/local/dotfiles")
+  ;; get tern on the path
+  ;; TODO: Make this home dir agnostic - maybe just use which
+  ;; (add-to-list 'load-path "/Users/logan/.nvm/versions/node/v5.11.1/bin")
 
   ;; debug
   ;; (setq-default tramp-verbose 6)
@@ -404,7 +412,7 @@ in `dotspacemacs/user-config'."
   ;; encryption
   (require 'epa-file)
   (epa-file-enable)
-  (paradox-require 'pinentry)
+  ;; (paradox-require 'pinentry)
   (setf epa-pinentry-mode 'loopback)
 
   ;; org-mode settings
@@ -412,6 +420,23 @@ in `dotspacemacs/user-config'."
   ;; http://lists.gnu.org/archive/html/emacs-orgmode/2012-08/msg01388.html
   (setq-default org-image-actual-width '(400))
   (add-hook 'org-mode-hook 'auto-fill-mode)
+  ;; Some initial langauges we want org-babel to support
+  ;; (require 'ob-js)
+  ;; (org-babel-do-load-languages
+  ;;  'org-babel-load-languages
+  ;;  '(
+  ;;    (sh . t)
+  ;;    (python . t)
+  ;;    (R . t)
+  ;;    (ruby . t)
+  ;;    (ditaa . t)
+  ;;    (dot . t)
+  ;;    (octave . t)
+  ;;    (sqlite . t)
+  ;;    (perl . t)
+  ;;    (js . t)
+  ;;    ))
+
 
   ;; turn off the menu bar so we can see things like the time on small screens
   (menu-bar-mode -1)
@@ -472,25 +497,8 @@ in `dotspacemacs/user-config'."
   (add-to-list 'c-offsets-alist '(arglist-close . c-lineup-close-paren))
 
 
-  ;; company-mode (for auto-complete)
-  (global-company-mode 1)
-  ;; fast auto-complete
-  (setq-default company-idle-delay 0.2)
-  (setq-default company-minimum-prefix-length 1)
-  (global-set-key (quote [(ctrl return)]) 'company-complete)
-  (setq-default company-auto-complete t)
-  ;; (define-key company-active-map [tab] 'company-select-next)
-  (setq-default company-auto-complete-chars [41 46])
-  ;; keep evil mode and company mode from conflicting
-  ;; see https://github.com/company-mode/company-mode/issues/383
-  (evil-declare-change-repeat 'company-complete)
-  (with-eval-after-load 'company
-    (define-key company-active-map (kbd "RET") nil)
-    (define-key company-active-map [12] nil)
-    (define-key company-active-map [return] nil)
-    (define-key company-active-map (kbd "TAB") 'company-complete-selection)
-    (define-key company-active-map [tab] 'company-complete-selection)
-    )
+  (load-library "config-company")
+  (config-company)
 
   ;; non-nil indicates spacemacs should start with fullscreen
   (setq-default dotspacemacs-fullscreen-at-startup t)
@@ -670,6 +678,9 @@ layers configuration. You are free to put any user code."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(package-selected-packages
+   (quote
+    (yaml-mode ws-butler window-numbering which-key web-mode web-beautify volatile-highlights vi-tilde-fringe uuidgen use-package toc-org tagedit spacemacs-theme spaceline slim-mode scss-mode sass-mode reveal-in-osx-finder restart-emacs request rainbow-identifiers rainbow-delimiters quelpa pug-mode psci psc-ide popwin persp-mode pcre2el pbcopy paradox osx-trash osx-dictionary org-plus-contrib org-bullets open-junk-file nyan-mode neotree move-text mmm-mode markdown-toc macrostep lorem-ipsum livid-mode linum-relative link-hint less-css-mode launchctl json-mode js2-refactor js-doc info+ indent-guide ido-vertical-mode hungry-delete hl-todo highlight-parentheses highlight-numbers highlight-indentation hide-comnt help-fns+ helm-themes helm-swoop helm-projectile helm-mode-manager helm-make helm-flx helm-descbinds helm-css-scss helm-company helm-c-yasnippet helm-ag graphviz-dot-mode google-translate golden-ratio git-gutter-fringe git-gutter-fringe+ gh-md flyspell-correct-helm flycheck-purescript flycheck-pos-tip flycheck-flow flycheck-elm flx-ido fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state evil-indent-plus evil-iedit-state evil-exchange evil-escape evil-ediff evil-args evil-anzu eval-sexp-fu emmet-mode elm-mode elisp-slime-nav dumb-jump diff-hl company-web company-tern company-statistics company-flow column-enforce-mode coffee-mode clean-aindent-mode auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line ac-ispell)))
  '(paradox-github-token t))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
