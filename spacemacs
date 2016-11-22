@@ -290,7 +290,8 @@ in `dotspacemacs/user-config'."
     (add-hook 'flycheck-mode-hook #'my/use-node-modules-bin)
     ;; can't use flycheck-syntax-check-failed-hook because it's for
     ;; when flycheck itself has an error
-    (add-hook 'flycheck-after-syntax-check-hook #'my/flycheck-list-errors-only-when-errors)
+    ;; TODO: As of emacs 25 there's some huge bugginesss with automatically showing errors
+    ;; (add-hook 'flycheck-after-syntax-check-hook #'my/flycheck-list-errors-only-when-errors)
     ;; (add-hook 'flycheck-mode-hook #'my/flycheck-list-errors-only-when-errors)
     ;; (add-hook 'flycheck-mode-hook #'my/use-eslint-from-node-modules)
     (add-hook 'flycheck-mode-hook (apply-partially #'my/use-checker-from-node-modules "flow"))
