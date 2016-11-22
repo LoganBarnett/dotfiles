@@ -37,10 +37,11 @@
 
     ;; backends
     (paradox-require 'company-flow)
-    '(add-to-list 'company-backends 'company-flow)
-    (add-to-list 'company-flow-modes 'javascript-mode)
     (add-hook 'company-mode-hook
               (apply-partially #'my/use-bin-from-node-modules "flow"))
+    ;; seems to work
+    (add-hook 'company-mode-hook
+              (lambda () (add-to-list 'company-backends 'company-flow)))
     )
   )
 
@@ -60,7 +61,6 @@ BIN-NAME: the name of the binary to use"
          (path (and root
                     (expand-file-name (concat "node_modules/.bin/" bin-name)
                                       root))))
-    ;; (message "company -- path is %s" path)
     (if path
         ;; (when (file-executable-p path)
         (let ((exec-sym (intern (concat "company-" bin-name "-executable"))))
