@@ -1,9 +1,15 @@
 ;;; config-company --- configure company-mode to my liking
-;;; Commentary: company mode handles auto completion
+;;; Commentary:
+;; company mode handles auto completion
 
 ;;; Code:
 (defun config-company ()
   "Run the company configuration."
+  (defvar company-active-map)
+  (defvar company-flow-modes)
+  (declare-function paradox-require "ext:paradox-require")
+  (declare-function global-company-mode "ext:global-company-mode")
+  (declare-function evil-declare-change-repeat "ext:evil-declare-change-repeat")
 
   (paradox-require 'company)
   ;; company-mode (for auto-complete)
@@ -18,7 +24,7 @@
   ;; keep evil mode and company mode from conflicting
   ;; see https://github.com/company-mode/company-mode/issues/383
   (evil-declare-change-repeat 'company-complete)
-  ;; (with-eval-after-load 'company
+  (with-eval-after-load 'company
     (message "configuring company after load")
     ;; keybindings
     (define-key company-active-map (kbd "RET") nil)
@@ -31,11 +37,9 @@
     (paradox-require 'company-flow)
     '(add-to-list 'company-backends 'company-flow)
     (add-to-list 'company-flow-modes 'javascript-mode)
-    (message "-------- do we get this far?")
     (add-hook 'company-mode-hook
               (apply-partially #'my/use-bin-from-node-modules "flow"))
-    (message "company -- done with configuration")
-    ;; )
+    )
   )
 
 ;; Commentary: add node_modules bin files for the project we are in
@@ -43,8 +47,11 @@
 ;; see about consolidating the two
 ;;; Code:
 (defun my/use-bin-from-node-modules (bin-name)
+  "Add node_modules bin files for project we are currently in.
+BIN-NAME: the name of the binary to use"
   ;; (message "company -- setting %s exec for mode %s" bin-name major-mode )
-  (setq path "invalid")
+  (defvar company-flow-executable)
+  (let ((path "invalid")))
   (let* ((root (locate-dominating-file
                 (or (buffer-file-name) default-directory)
                 "node_modules"))
