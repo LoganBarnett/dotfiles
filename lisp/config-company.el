@@ -39,9 +39,8 @@
     (paradox-require 'company-flow)
     (add-hook 'company-mode-hook
               (apply-partially #'my/use-bin-from-node-modules "flow"))
-    ;; seems to work
-    (add-hook 'company-mode-hook
-              (lambda () (add-to-list 'company-backends 'company-flow)))
+    (spacemacs|defvar-company-backends javascript-mode)
+    (add-to-list 'company-backends-javascript-mode 'company-flow)
     )
   )
 
