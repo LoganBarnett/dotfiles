@@ -400,6 +400,10 @@ in `dotspacemacs/user-config'."
   (message "applied > 80 column highlighting")
   )
 
+(defun my/js2-disable-global-variable-highlight ()
+  (font-lock-remove-keywords 'js2-external-variable)
+  )
+
 (defun my/delete-file-and-kill-buffer ()
     "Remove file connected to current buffer and kill buffer."
     (interactive)
