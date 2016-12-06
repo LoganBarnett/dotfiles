@@ -612,16 +612,14 @@ layers configuration. You are free to put any user code."
   ;;(setq-default fci-rule-color "darkblue")
 
   ;; javascript-mode
-  ;; js2-mode doesn't play nice with things like flow and es6 features
-  (rassq-delete-all 'js2-mode auto-mode-alist)
-  (add-to-list 'auto-mode-alist '("\\.js\\'" . javascript-mode))
-  (add-to-list 'auto-mode-alist '("\\.jsx\\'" . javascript-mode))
-
   (setq-default js2-strict-missing-semi-warning nil)
   (setq-default js2-strict-trailing-comma-warning nil)
+  (setq-default js2-mode-show-parse-errors nil)
+  (setq-default js2-highlight-external-variables nil)
   ;; (setq-default js2-mode-toggle-warnings-and-errors 0)
 
-  (add-hook 'js2-mode 'js2-mode-toggle-warnings-and-errors)
+  ;; (add-hook 'js2-mode 'js2-mode-toggle-warnings-and-errors)
+  ;; (add-hook 'js2-mode 'my/disable-js2-global-var-highlight)
 
   ;; purescript-mode
   (setq-default psc-ide-client-executable "/usr/local/bin/psc-ide-client")
