@@ -62,6 +62,7 @@ values."
      ;; flycheck-json
      nyan-mode
      rainbow-identifiers
+     ;; color-identifiers-mode
      graphviz-dot-mode
 
      ;; hopefully managed by a spacemacs layer
@@ -522,15 +523,47 @@ in `dotspacemacs/user-config'."
   (setq-default tab-width 2)
   (setq-default js-indent-level 2)
 
+  ;; (use-package "color-identifiers-mode"
+  ;;   :ensure t
+  ;;   :init
+  ;;   (global-color-identifiers-mode)
+  ;;   :config
+  ;;   )
+
   ;; rainbow identifiers (aka semantic syntax highlighting)
   (use-package "rainbow-identifiers"
     :ensure t
     :init
-    (add-hook 'prog-mode-hook 'rainbow-identifiers-mode)
+    ;; (add-hook 'prog-mode-hook 'rainbow-identifiers-mode)
     ;; (add-hook 'js2-mode-hook #'my/fix-js2-rainbow-identifiers)
     :config
     (setq-default rainbow-identifiers-faces-to-override
-                  '(font-lock-type-face font-lock-variable-name-face))
+                  '(
+                    ;; font-lock-type-face
+
+                    ;; font-lock-variable-name-face
+                    ;; font-lock-function-name-face
+                    ;; js2-object-property
+                    ;; js2-function-call
+                    ;; js2-function-param
+                    ;; js2-external-variable
+
+                    ;; js2-object-property
+                    ;; js2-instance-member
+                    ;; js2-private-member
+                    ;; js2-jsdoc-tag
+                    ;; js2-jsdoc-value
+                    ;; js2-jsdoc-type
+                    ;; font-lock-constant-face
+                    ;; font-lock-highlighting-faces
+
+                    ))
+    ;; (setq-default rainbow-identifiers-filter-functions
+    ;;               (lambda (face)
+    ;;                 (member face (list
+    ;;                             "font-lock-comment-delimiter-face"
+    ;;                             "font-lock-comment-face"
+    ;;                             ))))
     :diminish 'rainbow-identifiers-mode
   )
 
@@ -561,6 +594,7 @@ layers configuration. You are free to put any user code."
   ;; handle long lines
   (require 'so-long)
   (add-to-list 'so-long-minor-modes 'rainbow-delimiters-mode)
+  ;; (add-to-list 'so-long-minor-modes 'color-identifiers-mode)
   (add-to-list 'so-long-minor-modes 'rainbow-identifiers-mode)
   (add-to-list 'so-long-minor-modes 'flycheck-mode)
   (add-to-list 'so-long-target-modes 'json-mode)
