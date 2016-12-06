@@ -398,6 +398,19 @@ in `dotspacemacs/user-config'."
   (message "applied > 80 column highlighting")
   )
 
+(defun my/delete-file-and-kill-buffer ()
+    "Remove file connected to current buffer and kill buffer."
+    (interactive)
+    (let ((filename (buffer-file-name))
+          (buffer (current-buffer))
+          (name (buffer-name)))
+      (if (not (and filename (file-exists-p filename)))
+          (error "Buffer '%s' is not visiting a file!" name)
+        (when (yes-or-no-p "Are you sure you want to remove this file? ")
+          (delete-file filename)
+          (kill-buffer buffer)
+          (message "File '%s' successfully removed" filename)))))
+
 (defun dotspacemacs/user-config ()
   ;; add load-path for packages not in the melpa database
   (add-to-list 'load-path "~/.emacs.d/private/local/dotfiles")
