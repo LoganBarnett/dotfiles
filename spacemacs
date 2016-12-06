@@ -418,6 +418,7 @@ in `dotspacemacs/user-config'."
           (message "File '%s' successfully removed" filename)))))
 
 (defun dotspacemacs/user-config ()
+  (message "Loading user config")
   ;; add load-path for packages not in the melpa database
   (add-to-list 'load-path "~/.emacs.d/private/local/dotfiles")
   ;; get tern on the path
