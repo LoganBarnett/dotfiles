@@ -695,6 +695,8 @@ layers configuration. You are free to put any user code."
   ;; (add-hook 'post-self-insert-hook 'animated-self-insert)
 
   (my/init-flycheck)
+  (load-library "config-flyspell")
+  (config-flyspell)
 
   ;; (if (locate-library "flycheck-purescript-mode")
   ;;     (autoload "flycheck-purescript-mode" "flycheck-purescript-mode" "checker for purescript" t)
