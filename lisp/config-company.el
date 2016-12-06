@@ -41,6 +41,7 @@
               (apply-partially #'my/use-bin-from-node-modules "flow"))
     (spacemacs|defvar-company-backends javascript-mode)
     (add-to-list 'company-backends-javascript-mode 'company-flow)
+    (add-to-list 'company-backends-js2-mode 'company-flow)
     )
   )
 
