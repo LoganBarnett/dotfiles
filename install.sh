@@ -92,7 +92,7 @@ fi
 
 # node modules
 # tern for JS autocomplete and other hinting
-NODE_MODULES="jshint tern"
+NODE_MODULES="jshint tern marked"
 
 npm i -g $NODE_MODULES
 
