@@ -404,6 +404,8 @@ in `dotspacemacs/user-config'."
   (font-lock-remove-keywords 'js2-external-variable)
   )
 
+;; shameless grab from
+;; http://rejeep.github.io/emacs/elisp/2010/11/16/delete-file-and-buffer-in-emacs.html
 (defun my/delete-file-and-kill-buffer ()
     "Remove file connected to current buffer and kill buffer."
     (interactive)
