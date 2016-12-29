@@ -289,7 +289,7 @@ in `dotspacemacs/user-config'."
     :config
     ;; node-modules support shamelessly lifted from here
     ;; https://github.com/lunaryorn/.emacs.d/blob/master/lisp/lunaryorn-flycheck.el#L62
-    (add-hook 'flycheck-mode-hook #'my/use-node-modules-bin)
+    ;; (add-hook 'flycheck-mode-hook #'my/use-node-modules-bin)
     ;; can't use flycheck-syntax-check-failed-hook because it's for
     ;; when flycheck itself has an error
     ;; TODO: As of emacs 25 there's some huge bugginesss with automatically showing errors
@@ -298,13 +298,15 @@ in `dotspacemacs/user-config'."
     ;; (add-hook 'flycheck-mode-hook #'my/use-eslint-from-node-modules)
     (add-hook 'flycheck-mode-hook (apply-partially #'my/use-checker-from-node-modules "flow"))
     (add-hook 'flycheck-mode-hook (apply-partially #'my/use-checker-from-node-modules "eslint"))
+    (add-hook 'flycheck-mode-hook (apply-partially #'my/use-checker-from-node-modules "jshint"))
 
     ;; use the npm version for the check
     ;; this breaks flycheck when we enter json-mode and perhaps others
     ;; an update seems to replace this anyways
-    (setq-default flycheck-disabled-checkers
-                  (append flycheck-disabled-checkers
-                          '(javascript-jshint)))
+    ;; (setq-default flycheck-disabled-checkers
+    ;;               (append flycheck-disabled-checkers
+    ;;                       '(javascript-jshint)))
+
     ;; use eslint with web-mode for jsx files
     (flycheck-add-mode 'javascript-eslint 'web-mode)
     (flycheck-add-mode 'javascript-jshint 'web-mode)
@@ -325,7 +327,7 @@ in `dotspacemacs/user-config'."
   )
 
 (defun my/use-checker-from-node-modules (checker-name)
-  (message "flycheck -- setting %s exec for mode %s" checker-name major-mode )
+  ;; (message "flycheck -- setting %s exec for mode %s" checker-name major-mode )
   (setq path "invalid")
   (let* ((root (locate-dominating-file
                 (or (buffer-file-name) default-directory)
@@ -333,18 +335,14 @@ in `dotspacemacs/user-config'."
          (path (and root
                      (expand-file-name (concat "node_modules/.bin/" checker-name)
                                        root))))
-    (message "flycheck -- path is %s" path)
     (if path
-        ;; (when (file-executable-p path)
         (let ((checker-exec-sym (intern (concat "flycheck-javascript-" checker-name "-executable"))))
              (make-local-variable checker-exec-sym)
              (set checker-exec-sym path)
-             ;; TODO: not very checker agnostic... fix!
-             (message "flow exec is %s" flycheck-javascript-flow-executable)
+             (message "exec %s is %s" checker-name path)
              )
-      (message "flycheck -- checker %s not available for mode %s with file %s"
-               checker-name major-mode buffer-file-name)
-      ;; )
+      ;; (message "flycheck -- checker %s not available for mode %s with file %s"
+      ;;          checker-name major-mode buffer-file-name)
       )
     )
   )
@@ -439,8 +437,14 @@ in `dotspacemacs/user-config'."
   (setf epa-pinentry-mode 'loopback)
 
   ;; org-mode settings
+  ;; set default diary location
+  (setq-default diary-file "~/notes/diary.org")
+  ;; (setq-default appt-audible t)
+  (setq-default calendar-date-style 'iso)
+  (setq-default org-agenda-files '("~/notes/planner.org"))
   ;; shrink inline images see:
   ;; http://lists.gnu.org/archive/html/emacs-orgmode/2012-08/msg01388.html
+  (setq-default org-src-fontify-natively t)
   (setq-default org-image-actual-width '(400))
   (add-hook 'org-mode-hook 'auto-fill-mode)
   ;; Some initial langauges we want org-babel to support
@@ -637,7 +641,7 @@ layers configuration. You are free to put any user code."
   ;; graphviz dot support
   (package-initialize)
   (paradox-require 'graphviz-dot-mode)
-  (setq-default graphviz-dot-preview-extension "svg")
+  (setq-default graphviz-dot-preview-extension "png")
   (defun compile-dot ()
     "compile a graphviz dot file"
     ;; (compile graphviz-dot-dot-program))
@@ -738,7 +742,7 @@ layers configuration. You are free to put any user code."
  '(flycheck-javascript-flow-args nil)
  '(package-selected-packages
    (quote
-    (vimrc-mode dactyl-mode rainbow-identifiers color-identifiers-mode color-identifiers define-word yaml-mode ws-butler window-numbering which-key web-mode web-beautify volatile-highlights vi-tilde-fringe uuidgen use-package toc-org tagedit spacemacs-theme spaceline slim-mode scss-mode sass-mode reveal-in-osx-finder restart-emacs request rainbow-delimiters quelpa pug-mode psci psc-ide popwin persp-mode pcre2el pbcopy paradox osx-trash osx-dictionary org-plus-contrib org-bullets open-junk-file nyan-mode neotree move-text mmm-mode markdown-toc macrostep lorem-ipsum livid-mode linum-relative link-hint less-css-mode launchctl json-mode js2-refactor js-doc info+ indent-guide ido-vertical-mode hungry-delete hl-todo highlight-parentheses highlight-numbers highlight-indentation hide-comnt help-fns+ helm-themes helm-swoop helm-projectile helm-mode-manager helm-make helm-flx helm-descbinds helm-css-scss helm-company helm-c-yasnippet helm-ag graphviz-dot-mode google-translate golden-ratio git-gutter-fringe git-gutter-fringe+ gh-md flyspell-correct-helm flycheck-purescript flycheck-pos-tip flycheck-flow flycheck-elm flx-ido fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state evil-indent-plus evil-iedit-state evil-exchange evil-escape evil-ediff evil-args evil-anzu eval-sexp-fu emmet-mode elm-mode elisp-slime-nav dumb-jump diff-hl company-web company-tern company-statistics company-flow column-enforce-mode coffee-mode clean-aindent-mode auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line ac-ispell)))
+    (markdown-mode bind-key tern smartparens bind-map highlight flycheck git-commit with-editor company projectile helm helm-core yasnippet skewer-mode js2-mode hydra purescript-mode vimrc-mode dactyl-mode rainbow-identifiers color-identifiers-mode color-identifiers define-word yaml-mode ws-butler window-numbering which-key web-mode web-beautify volatile-highlights vi-tilde-fringe uuidgen use-package toc-org tagedit spacemacs-theme spaceline slim-mode scss-mode sass-mode reveal-in-osx-finder restart-emacs request rainbow-delimiters quelpa pug-mode psci psc-ide popwin persp-mode pcre2el pbcopy paradox osx-trash osx-dictionary org-plus-contrib org-bullets open-junk-file nyan-mode neotree move-text mmm-mode markdown-toc macrostep lorem-ipsum livid-mode linum-relative link-hint less-css-mode launchctl json-mode js2-refactor js-doc info+ indent-guide ido-vertical-mode hungry-delete hl-todo highlight-parentheses highlight-numbers highlight-indentation hide-comnt help-fns+ helm-themes helm-swoop helm-projectile helm-mode-manager helm-make helm-flx helm-descbinds helm-css-scss helm-company helm-c-yasnippet helm-ag graphviz-dot-mode google-translate golden-ratio git-gutter-fringe git-gutter-fringe+ gh-md flyspell-correct-helm flycheck-purescript flycheck-pos-tip flycheck-flow flycheck-elm flx-ido fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state evil-indent-plus evil-iedit-state evil-exchange evil-escape evil-ediff evil-args evil-anzu eval-sexp-fu emmet-mode elm-mode elisp-slime-nav dumb-jump diff-hl company-web company-tern company-statistics company-flow column-enforce-mode coffee-mode clean-aindent-mode auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line ac-ispell)))
  '(psc-ide-add-import-on-completion t t)
  '(psc-ide-rebuild-on-save nil t))
 (custom-set-faces
