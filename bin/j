@@ -1,3 +1,3 @@
 #! /bin/sh
 # starts a journal and opens it in emacs
-journal | xargs emacsclient &
+journal | xargs emacsclient -n
