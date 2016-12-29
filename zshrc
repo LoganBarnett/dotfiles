@@ -224,33 +224,33 @@ $(vim_mode_prompt)'
 }
 
 # zsh redefined function
-function preexec() {
-  timer=${timer:-$SECONDS}
-}
+# function preexec() {
+#   timer=${timer:-$SECONDS}
+# }
 
 # timer stuff found here
 # https://coderwall.com/p/kmchbw/zsh-display-commands-runtime-in-prompt
 # zsh hook command
-function precmd() {
-  if [ $timer ]; then
-    timer_show=$(($SECONDS - $timer))
-    unset timer
-  fi
-}
-
+# function precmd() {
+#   if [ $timer ]; then
+#     timer_show=$(($SECONDS - $timer))
+#     unset timer
+#   fi
+# }
+# 
 function timer_prompt() {
   if [ $timer_show ]; then 
     echo $timer_show"s"
   fi
 }
-
+ 
 # cause the prompt to repaint so we can see the current time
-TMOUT=1
-TRAPALRM() {
-  if [ "$WIDGET" != "complete-word" ]; then
-    zle reset-prompt
-  fi
-}
+# TMOUT=1
+# TRAPALRM() {
+#   if [ "$WIDGET" != "complete-word" ]; then
+#     zle reset-prompt
+#   fi
+# }
 
 
 set_prompt
