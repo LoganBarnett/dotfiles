@@ -448,21 +448,21 @@ in `dotspacemacs/user-config'."
   (setq-default org-image-actual-width '(400))
   (add-hook 'org-mode-hook 'auto-fill-mode)
   ;; Some initial langauges we want org-babel to support
-  ;; (require 'ob-js)
-  ;; (org-babel-do-load-languages
-  ;;  'org-babel-load-languages
-  ;;  '(
-  ;;    (sh . t)
-  ;;    (python . t)
-  ;;    (R . t)
-  ;;    (ruby . t)
-  ;;    (ditaa . t)
-  ;;    (dot . t)
-  ;;    (octave . t)
-  ;;    (sqlite . t)
-  ;;    (perl . t)
-  ;;    (js . t)
-  ;;    ))
+  (require 'ob-js)
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   '(
+     (sh . t)
+     (python . t)
+     (R . t)
+     (ruby . t)
+     (ditaa . t)
+     (dot . t)
+     (octave . t)
+     (sqlite . t)
+     (perl . t)
+     (js . t)
+     ))
 
 
   ;; turn off the menu bar so we can see things like the time on small screens
