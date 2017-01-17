@@ -631,6 +631,7 @@ layers configuration. You are free to put any user code."
   (setq-default js2-mode-show-parse-errors nil)
   (setq-default js2-highlight-external-variables nil)
   ;; (setq-default js2-mode-toggle-warnings-and-errors 0)
+  (setq-default js2-mode-show-strict-warnings nil)
 
   ;; (add-hook 'js2-mode 'js2-mode-toggle-warnings-and-errors)
   ;; (add-hook 'js2-mode 'my/disable-js2-global-var-highlight)
