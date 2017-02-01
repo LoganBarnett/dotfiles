@@ -1,3 +1,5 @@
+# -*- mode: sh -*-
+
 # prevent emacs tramp from barfing on startup
 if [[ "$TERM" == "dumb" ]]
 then
@@ -147,7 +149,7 @@ eval $(thefuck --alias)
 
 # nvm
 export NVM_DIR="$HOME/.nvm"
- . "$(brew --prefix nvm)/nvm.sh"
+ . "/usr/local/opt/nvm/nvm.sh"
 
 # vim mode for zsh
 bindkey -v
