@@ -107,12 +107,7 @@ if [ $(uname) = 'Linux' ]; then
 fi
 
 # node modules
-# tern for JS autocomplete and other hinting
-NODE_MODULES="jshint tern marked"
-
-npm i -g $NODE_MODULES
-
-ln -s -n $PWD/jshintrc ~/.jshintrc
+./install-node-modules.sh
 
 #zsh customizations
 echo "installing oh my zsh customizations"

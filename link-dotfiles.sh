@@ -12,7 +12,8 @@ urxvt
 ideavim
 gitconfig
 spacemacs
-zshenv"
+zshenv
+avnrc"
 
 # link easy things
 for dotfile in $EASYFILES
