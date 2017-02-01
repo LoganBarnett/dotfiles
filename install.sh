@@ -30,7 +30,30 @@ ln -s -n gpg.conf ~/.gnupg/gpg.conf
 if [ $(uname) = 'Darwin' ]; then
 
     # ispell so flyspell works on emacs
-    BREWS="vim wget node htop nmap cask zsh-syntax-highlighting npm mongodb ispell coreutils mtr gpg nvm graphviz postgresql markdown docker docker-machine homebrew/versions/gnupg21 pinentry-mac elm dos2unix"
+    BREWS="
+vim
+wget
+node
+htop
+nmap
+cask
+zsh-syntax-highlighting
+npm
+mongodb
+ispell
+coreutils
+mtr
+gpg
+nvm
+graphviz
+postgresql
+markdown
+docker
+docker-machine
+homebrew/versions/gnupg21
+pinentry-mac
+elm
+dos2unix"
 
     echo "updating homebrew"
     brew update
