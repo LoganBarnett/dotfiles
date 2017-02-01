@@ -11,18 +11,11 @@ start_dir=$PWD
 
 ./create-ssh-key.sh
 
-PWD=$(pwd)
-EASYFILES="oh-my-zsh zshrc vimrc pentadactylrc Xdefaults tmux.conf urxvt ideavim gitconfig spacemacs zshenv"
+./link-dotfiles.sh
 
 # get submodules set up
 git submodule init
 git submodule update
-
-# link easy things
-for dotfile in $EASYFILES
-do
-    ln -s -n $PWD/$dotfile ~/.$dotfile
-done
 
 # link harder things
 mkdir -p ~/.config
