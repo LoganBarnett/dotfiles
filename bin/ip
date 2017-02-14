@@ -1,0 +1,19 @@
+#! /bin/zsh
+
+# I'm forgetful, so keep this for reference
+# zparseopts -lan=type
+# $type will be --lan when invoked with `ip --lan`
+
+# TODO: support linux
+# TODO: support other interface types (such as utun, public)
+type=$1
+if [[ $type == 'lan' ]]; then
+    ipconfig getifaddr en0
+else
+    >&2 echo "$type is not supported\n\
+USAGE: ip [type]
+Where [type] is one of the following:
+lan
+"
+fi
+
