@@ -66,7 +66,7 @@ BIN-NAME: the name of the binary to use"
         (let ((exec-sym (intern (concat "company-" bin-name "-executable"))))
           (make-local-variable exec-sym)
           (set exec-sym path)
-          (message "company -- exec is %s" company-flow-executable)
+          ;; (message "company -- exec is %s" company-flow-executable)
           )
       ;; (message "company -- backend %s not available for mode %s with file %s"
                ;; bin-name major-mode buffer-file-name)
@@ -75,4 +75,5 @@ BIN-NAME: the name of the binary to use"
   )
 
 (provide 'config-company)
+
 ;;; config-company.el ends here
