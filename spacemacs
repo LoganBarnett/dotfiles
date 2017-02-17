@@ -278,6 +278,7 @@ in `dotspacemacs/user-config'."
 
 ;; flycheck
 (defun my/init-flycheck ()
+  "Setup flycheck to my liking."
   (use-package "flycheck"
     ;; :defer t
     :ensure t
@@ -331,6 +332,7 @@ in `dotspacemacs/user-config'."
   )
 
 (defun my/use-checker-from-node-modules (checker-name)
+  "Make flycheck look for an executable for CHECKER-NAME inside the node_modules directory for a project."
   ;; (message "flycheck -- setting %s exec for mode %s" checker-name major-mode )
   (setq path "invalid")
   (let* ((root (locate-dominating-file
@@ -370,6 +372,7 @@ in `dotspacemacs/user-config'."
                                  package-directory)))))))
 
 (defun my/flycheck-list-errors-only-when-errors ()
+  "Show flycheck error list when there are errors in the current buffer."
   (message "checking for current errors")
   (if flycheck-current-errors
       (flycheck-list-errors)
@@ -378,6 +381,7 @@ in `dotspacemacs/user-config'."
         (quit-window nil window)))))
 
 (defun my/fix-js2-rainbow-identifiers ()
+  "Plea to the gods to fix rainbow-identifiers with js2-mode."
   (message "HACK: turning off rainbow-identifiers-mode")
   (rainbow-identifiers-mode 0)
   (message "HACK: turning back on rainbow-identifiers-mode")
@@ -385,6 +389,7 @@ in `dotspacemacs/user-config'."
   )
 
 (defun my/highlight-gt-80-columns ()
+  "Highlight any text exceeding 80 columns.  You naughty text, you."
   (require 'font-lock)
   (defface my-tab-face '((t . (:background "gray10"))) "wide line tab face")
   ;; TODO: figure out why this breaks rainbow identifiers
@@ -403,6 +408,7 @@ in `dotspacemacs/user-config'."
   )
 
 (defun my/js2-disable-global-variable-highlight ()
+  "Disable js2 global variable highlight.  Wait.  Am I using this?"
   (font-lock-remove-keywords 'js2-external-variable)
   )
 
@@ -422,6 +428,7 @@ in `dotspacemacs/user-config'."
           (message "File '%s' successfully removed" filename)))))
 
 (defun dotspacemacs/user-config ()
+  "This is a safe place to stick user-specific configuration for Spacemacs."
   (message "Loading user config")
   ;; add load-path for packages not in the melpa database
   (add-to-list 'load-path "~/.emacs.d/private/local/dotfiles")
@@ -533,6 +540,8 @@ in `dotspacemacs/user-config'."
 
   ;; non-nil indicates spacemacs should start with fullscreen
   (setq-default dotspacemacs-fullscreen-at-startup t)
+  (defvar paradox-github-token)
+  ;; actually this was dropped because we check this into github
   (setq paradox-github-token '663d5d3c21b2c6a716848fa00653bb92e6aeee68)
   (global-linum-mode) ; show line numbers by default
   (setq-default indent-tabs-mode nil)
@@ -609,6 +618,8 @@ layers configuration. You are free to put any user code."
 
   ;; handle long lines
   (require 'so-long)
+  (defvar so-long-minor-modes)
+  (defvar so-long-target-modes)
   (add-to-list 'so-long-minor-modes 'rainbow-delimiters-mode)
   ;; (add-to-list 'so-long-minor-modes 'color-identifiers-mode)
   (add-to-list 'so-long-minor-modes 'rainbow-identifiers-mode)
@@ -758,3 +769,5 @@ layers configuration. You are free to put any user code."
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  )
+
+;;; spacemacs ends here
