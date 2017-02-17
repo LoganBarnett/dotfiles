@@ -548,6 +548,15 @@ in `dotspacemacs/user-config'."
   (setq-default tab-width 2)
   (setq-default js-indent-level 2)
 
+  ;; prog-mode stuff
+  ;; multi-line
+  ;; always add new line rather than flowing like fci-mode
+  (paradox-require 'multi-line)
+  (defvar multi-line-always-newline)
+  (setq-default multi-line-current-strategy
+                (multi-line-strategy
+                 :respace (multi-line-default-respacers
+                           (make-instance multi-line-always-newline))))
   ;; (use-package "color-identifiers-mode"
   ;;   :ensure t
   ;;   :init
