@@ -44,7 +44,7 @@ ispell
 coreutils
 mtr
 gpg
-nvm
+n
 graphviz
 postgresql
 markdown
