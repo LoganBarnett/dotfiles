@@ -333,8 +333,9 @@ in `dotspacemacs/user-config'."
 
 (defun my/use-checker-from-node-modules (checker-name)
   "Make flycheck look for an executable for CHECKER-NAME inside the node_modules directory for a project."
+  (defvar-local path "invalid")
+  (setq-local path "invalid")
   ;; (message "flycheck -- setting %s exec for mode %s" checker-name major-mode )
-  (setq path "invalid")
   (let* ((root (locate-dominating-file
                 (or (buffer-file-name) default-directory)
                 "node_modules"))
@@ -356,6 +357,9 @@ in `dotspacemacs/user-config'."
 ;; I don't get how this can work yet - need time to grok - unused
 (defun my/use-node-modules-bin ()
   "Set executables of JS checkers from local node modules."
+  (defvar-local file-name "")
+  (defvar-local root "")
+  (defvar-local module-directory "")
   (message "using node_modules/.bin for JS local linting/checking")
   (-when-let* ((file-name (buffer-file-name))
                (root (locate-dominating-file file-name "node_modules"))
@@ -373,6 +377,9 @@ in `dotspacemacs/user-config'."
 
 (defun my/flycheck-list-errors-only-when-errors ()
   "Show flycheck error list when there are errors in the current buffer."
+  (defvar flycheck-current-errors)
+  (defvar flycheck-error-list-buffer)
+  (defvar-local buffer "")
   (message "checking for current errors")
   (if flycheck-current-errors
       (flycheck-list-errors)
@@ -409,7 +416,7 @@ in `dotspacemacs/user-config'."
 
 (defun my/js2-disable-global-variable-highlight ()
   "Disable js2 global variable highlight.  Wait.  Am I using this?"
-  (font-lock-remove-keywords 'js2-external-variable)
+  (font-lock-remove-keywords 'js2-mode 'js2-external-variable)
   )
 
 ;; shameless grab from
@@ -445,6 +452,7 @@ in `dotspacemacs/user-config'."
   (require 'epa-file)
   (epa-file-enable)
   ;; (paradox-require 'pinentry)
+  (defvar epa-pinentry-mode)
   (setf epa-pinentry-mode 'loopback)
 
   ;; org-mode settings
@@ -516,11 +524,34 @@ in `dotspacemacs/user-config'."
   (setq-default osx-use-option-as-meta nil)
   (setq-default mac-option-key-is-meta nil)
   (setq-default mac-command-modifier 'meta)
+  ;; set keys for Apple keyboard, for emacs in OS X
+  ;; for other OSes and reference, see
+  ;; http://ergoemacs.org/emacs/emacs_hyper_super_keys.html
+  (setq-default mac-command-modifier 'meta) ; make cmd key do Meta
+  ;; (setq mac-option-modifier 'super) ; make opt key do Super
+  (setq-default mac-right-command-modifier 'super)
+  ;; (setq mac-control-modifier 'control) ; make Control key do Control
+  (setq-default ns-function-modifier 'hyper)  ; make Fn key do Hyper
+  ;; not an osx setting, but keyboard related (maybe move all of these to
+  ;; keyboard section)
+  ;; (setq-default )
+  ;; (define-key 'key-translation-map (kbd "<menu>") 'super)
+  ;; (setq-default w32-apps-modifier 'super)
+  ;; (global-unset-key (kbd "<menu>"))
+  ;; TODO: this doesn't seem to do anything useful
+  ;; (define-key key-translation-map (kbd "C-p") (kbd "<menu>"))
+  ;; (global-set-key (kbd "<menu>") (lambda () (interactive) 'super))
+  (setq-default ns-right-alternate-modifier 'super)
+  ;; (define-key key-translation-map (kbd "C-p") 'super)
+  ;; (key-chord-define-global "<menu>" (lambda () (interactive) 'super))
 
   ;; web-mode
   (paradox-require 'web-mode)
   (defun my-web-mode-hook ()
     "Hooks for Web mode."
+    (defvar web-mode-markup-indent-offset)
+    (defvar web-mode-code-indent-offset)
+    ;; why not setq-default?
     (setq web-mode-markup-indent-offset 2)
     (setq web-mode-code-indent-offset 2)
     )
@@ -532,6 +563,7 @@ in `dotspacemacs/user-config'."
   ;; this will make it so fighting is less necessary to appease linters
   (setq-default js2-pretty-multiline-declarations nil)
   (paradox-require 'cc-mode)
+  (defvar c-offsets-alist)
   (add-to-list 'c-offsets-alist '(arglist-close . c-lineup-close-paren))
 
 
@@ -670,6 +702,8 @@ layers configuration. You are free to put any user code."
   (defun compile-dot ()
     "compile a graphviz dot file"
     ;; (compile graphviz-dot-dot-program))
+    (defvar graphviz-dot-dot-program)
+    (defvar graphviz-dot-preview-extension)
     (compile (concat graphviz-dot-dot-program
             " -T" graphviz-dot-preview-extension " "
             (shell-quote-argument buffer-file-name)
@@ -694,6 +728,7 @@ layers configuration. You are free to put any user code."
       (delete-window (get-buffer-window (get-buffer "*compilation*"))))
     ;; Always return the anticipated result of compilation-exit-message-function
     (cons msg code))
+  (defvar compilation-exit-message-function)
   (setq compilation-exit-message-function 'compilation-exit-autoclose)
 
   ;; git gutter
@@ -769,7 +804,7 @@ layers configuration. You are free to put any user code."
  '(flycheck-javascript-flow-args nil)
  '(package-selected-packages
    (quote
-    (multi-line shut-up company-emacs-eclim eclim iedit markdown-mode bind-key tern smartparens bind-map highlight flycheck git-commit with-editor company projectile helm helm-core yasnippet skewer-mode js2-mode hydra purescript-mode vimrc-mode dactyl-mode rainbow-identifiers color-identifiers-mode color-identifiers define-word yaml-mode ws-butler window-numbering which-key web-mode web-beautify volatile-highlights vi-tilde-fringe uuidgen use-package toc-org tagedit spacemacs-theme spaceline slim-mode scss-mode sass-mode reveal-in-osx-finder restart-emacs request rainbow-delimiters quelpa pug-mode psci psc-ide popwin persp-mode pcre2el pbcopy paradox osx-trash osx-dictionary org-plus-contrib org-bullets open-junk-file nyan-mode neotree move-text mmm-mode markdown-toc macrostep lorem-ipsum livid-mode linum-relative link-hint less-css-mode launchctl json-mode js2-refactor js-doc info+ indent-guide ido-vertical-mode hungry-delete hl-todo highlight-parentheses highlight-numbers highlight-indentation hide-comnt help-fns+ helm-themes helm-swoop helm-projectile helm-mode-manager helm-make helm-flx helm-descbinds helm-css-scss helm-company helm-c-yasnippet helm-ag graphviz-dot-mode google-translate golden-ratio git-gutter-fringe git-gutter-fringe+ gh-md flyspell-correct-helm flycheck-purescript flycheck-pos-tip flycheck-flow flycheck-elm flx-ido fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state evil-indent-plus evil-iedit-state evil-exchange evil-escape evil-ediff evil-args evil-anzu eval-sexp-fu emmet-mode elm-mode elisp-slime-nav dumb-jump diff-hl company-web company-tern company-statistics company-flow column-enforce-mode coffee-mode clean-aindent-mode auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line ac-ispell)))
+    (packed auto-complete evil flyspell-correct async multiple-cursors avy simple-httpd haml-mode dash multi-line shut-up company-emacs-eclim eclim iedit markdown-mode bind-key tern smartparens bind-map highlight flycheck git-commit with-editor company projectile helm helm-core yasnippet skewer-mode js2-mode hydra purescript-mode vimrc-mode dactyl-mode rainbow-identifiers color-identifiers-mode color-identifiers define-word yaml-mode ws-butler window-numbering which-key web-mode web-beautify volatile-highlights vi-tilde-fringe uuidgen use-package toc-org tagedit spacemacs-theme spaceline slim-mode scss-mode sass-mode reveal-in-osx-finder restart-emacs request rainbow-delimiters quelpa pug-mode psci psc-ide popwin persp-mode pcre2el pbcopy paradox osx-trash osx-dictionary org-plus-contrib org-bullets open-junk-file nyan-mode neotree move-text mmm-mode markdown-toc macrostep lorem-ipsum livid-mode linum-relative link-hint less-css-mode launchctl json-mode js2-refactor js-doc info+ indent-guide ido-vertical-mode hungry-delete hl-todo highlight-parentheses highlight-numbers highlight-indentation hide-comnt help-fns+ helm-themes helm-swoop helm-projectile helm-mode-manager helm-make helm-flx helm-descbinds helm-css-scss helm-company helm-c-yasnippet helm-ag graphviz-dot-mode google-translate golden-ratio git-gutter-fringe git-gutter-fringe+ gh-md flyspell-correct-helm flycheck-purescript flycheck-pos-tip flycheck-flow flycheck-elm flx-ido fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state evil-indent-plus evil-iedit-state evil-exchange evil-escape evil-ediff evil-args evil-anzu eval-sexp-fu emmet-mode elm-mode elisp-slime-nav dumb-jump diff-hl company-web company-tern company-statistics company-flow column-enforce-mode coffee-mode clean-aindent-mode auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line ac-ispell)))
  '(psc-ide-add-import-on-completion t t)
  '(psc-ide-rebuild-on-save nil t))
 (custom-set-faces
