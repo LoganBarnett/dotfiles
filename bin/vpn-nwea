@@ -1,0 +1,3 @@
+#! /usr/bin/env sh
+
+sudo openconnect -u logan.barnett https://secure.nwea.org
