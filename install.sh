@@ -27,6 +27,8 @@ mkdir -p ~/.gnupg
 ln -s -n gpg-agent.conf ~/.gnupg/gpg-agent.conf
 ln -s -n gpg.conf ~/.gnupg/gpg.conf
 
+ln -s -n $PWD/lisp ~/.emacs.d/private/local/dotfiles
+
 if [ $(uname) = 'Darwin' ]; then
 
     # ispell so flyspell works on emacs
