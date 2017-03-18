@@ -292,6 +292,7 @@ in `dotspacemacs/user-config'."
     (add-hook 'prog-mode-hook #'flycheck-mode)
     (setq-default syntax-checking-enable-by-default t)
     :config
+
     ;; node-modules support shamelessly lifted from here
     ;; https://github.com/lunaryorn/.emacs.d/blob/master/lisp/lunaryorn-flycheck.el#L62
     ;; (add-hook 'flycheck-mode-hook #'my/use-node-modules-bin)
@@ -316,6 +317,7 @@ in `dotspacemacs/user-config'."
     (flycheck-add-mode 'javascript-eslint 'web-mode)
     (flycheck-add-mode 'javascript-jshint 'web-mode)
 
+
     ;; purescript
     ;; (setq-default flycheck-purescript-compile-output-dir "output")
     (paradox-require 'flycheck-flow)
@@ -325,6 +327,9 @@ in `dotspacemacs/user-config'."
       (flycheck-add-mode 'javascript-flow 'web-mode)
       :config
       ;; (add-hook 'flycheck-mode-hook #'my/use-flow-from-node-modules)
+      ;; only check flow annotated files with flow
+      (setq-default flycheck-javascript-flow-args '("--respect-pragma"))
+
       (message "added flow to flycheck")
       )
     )
