@@ -1,0 +1,37 @@
+table.stripped-odd tr:nth-child(odd) {
+  background-color: #333 !important;
+}
+
+
+table.stripped tr:nth-child(even) {
+  background-color: #222 !important;
+}
+
+.build-row:hover, .build-row.model-link-active {
+  background-color: #334 !important;
+}
+
+body, table, form, td, th, p {
+  color: #ddd !important;
+}
+
+.pane.build-details a, .pane.build-details a:visited {
+  color: #4aa !important;
+}
+
+.pane.build-name a, .pane.build-name a:visited {
+  color: #4aa !important;
+}
+
+.jenkins-config-widgets {
+  background-color: #333 !important;
+}
+
+.jenkins-config-widgets .form-config.tabBarFrame .tabBar .tab.active {
+  background-color: #334 !important;
+  color: #4aa !important;
+}
+
+#jenkins .jenkins-config {
+  background-color: #333 !important;
+}

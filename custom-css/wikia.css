@@ -1,0 +1,11 @@
+.WikiaPage .WikiaPageBackground {
+  background-color: #222 !important;
+}
+
+table.p402_hide {
+  background-color: #333 !important;
+}
+
+.article-table th, .WikiaTable th {
+  background-color: #333 !important;
+}

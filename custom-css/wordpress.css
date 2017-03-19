@@ -1,0 +1,11 @@
+#wrapper {
+  background-color: #222 !important;
+}
+
+.c-body {
+  background-color: #333 !important;
+}
+
+#content a:link, #content a:visited {
+  color: #398 !important;
+}

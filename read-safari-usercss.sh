@@ -1,0 +1,24 @@
+#! /usr/bin/env bash
+
+user_css_file=$(ls -1 ~/Library/Safari/LocalStorage/safari-extension_com.gridth.usercss*.localstorage);
+
+get_keys_sql="select key from itemtable;"
+
+# $1 - file name to write
+# $2 - the key to select
+function write_blob_sql() {
+  echo "select hex(value) from itemtable where key = $1;"
+}
+
+keys=`sqlite3 $user_css_file "$get_keys_sql"`
+
+mkdir -p .tmp-css
+
+for key in $keys; do
+  if [ "$key" != "converterWasRun" ]; then
+      TMP_JSON=.tmp-css/user-css-$key.json
+      sqlite3 $base_path$user_css_file "$(write_blob_sql $key)" |\
+        xxd -r -p | tr -dc '[:print:]' | jq '.' > $TMP_JSON
+      node ./write-css-from-safari.js $TMP_JSON custom-css
+  fi
+done

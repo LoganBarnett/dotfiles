@@ -1,0 +1,86 @@
+body.theme-documentation #footer .footer-body {
+  background-color: #222 !important;
+}
+
+#footer .footer-body {
+  color: #ddd !important;
+}
+
+#content .code {
+  background-color: #323 !important;
+}
+
+.panelHeader.pdl>b {
+  color: #eee !important;
+}
+
+body .syntaxhighlighter.sh-default .line.alt2 {
+  background-color: #323 !important;
+}
+
+body .syntaxhighlighter.sh-default .line.alt1 {
+  background-color: #323 !important;
+}
+
+code {
+  border: 0.1em solid #646;
+  color: #eee !important;
+  background-color: #323 !important;
+  font-style: normal !important;
+}
+
+.aui-page-panel {
+  background-color: #222 !important;
+}
+
+#title-text a {
+  color: #58d !important;
+}
+
+h1, h2, h3, h4, .wiki-content h1, .wiki-content h2, .wiki-content h3, .wiki-content h4, .pagetitle, .steptitle, .substeptitle, .formtitle, table.confluenceTable td.confluenceTd.highlight, table.confluenceTable td.confluenceTd.highlight > p, table.confluenceTable th.confluenceTh, table.confluenceTable th.confluenceTh > p, .wiki-content .tablesorter-header-inner, table.admin th, .form-element-large, .form-element-small, #toolbar #format-dropdown .format-h1 a, #toolbar #format-dropdown .format-h2 a, #toolbar #format-dropdown .format-h3 a, #toolbar #format-dropdown .format-h4 a {
+  color: #5a8 !important;
+}
+
+body, p, table, tr, td, .bodytext, .stepfield, .wiki-content p, .panelContent, span {
+  color: #ddd !important;
+}
+
+.wiki-content a, .wiki-content a:link, .wiki-content a:visited, .wiki-content a:focus, .wiki-content a:hover, .wiki-content a:active {
+  color: #4aa !important;
+  text-decoration: underline !important;
+}
+
+.wiki-content a span, .wiki-content a:link span, .wiki-content a:visited span, .wiki-content a:focus span, .wiki-content a:hover span, .wiki-content a:active span {
+  color: #4aa !important;
+  text-decoration: underline !important;
+}
+
+
+#splitter-sidebar {
+  background-color: #333 !important;
+}
+
+#splitter-sidebar .plugin_pagetree li a, #splitter-sidebar .plugin_pagetree ul {
+  color: #58d !important;
+  text-decoration: underline !important;
+}
+
+#splitter-sidebar .plugin_pagetree li ul li a, #splitter-sidebar .plugin_pagetree ul li ul {
+  color: #5a8 !important;
+}
+
+#splitter-sidebar .plugin_pagetree li ul li ul li a, #splitter-sidebar .plugin_pagetree ul li ul ul li {
+  color: #5c5 !important;
+}
+
+.panel, #content .panel {
+  background-color: #333 !important;
+}
+
+.panel .panelHeader {
+  color: #ddd !important;
+}
+
+.panelHeader {
+  background-color: #333 !important;
+}

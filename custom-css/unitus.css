@@ -1,0 +1,12 @@
+tr {
+  background-color: #222 !important;
+}
+
+tr.odd, table.billPayAddPayments tr.oddStart, table.billPayAddPayments tr.odd {
+  background-color: #333 !important;
+}
+
+.ui-state-default, .ui-widget-content .ui-state-default, .ui-widget-header .ui-state-default {
+  background-image: none;
+  background-color: #424 !important;
+}

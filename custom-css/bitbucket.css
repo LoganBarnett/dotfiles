@@ -1,0 +1,57 @@
+/*
+
+.diff-view.text-view .added.line, .diff-view.text-view .added.segment-connector, .diff-view.text-view .added.line .comment-box, .diff-view.text-view .added.line .bitbucket-gutter-marker {
+  background-color: #222 !important;
+  color: #4c4 !important;
+}
+*/
+
+.diff-view.text-view .added.line, .diff-view.text-view .added.segment-connector, .diff-view.text-view .added.line .comment-box, .diff-view.text-view .added.line .bitbucket-gutter-marker {
+  background-color: #3e3 !important;
+  color: #111 !important;
+}
+
+.diff-view.text-view .removed.line, .diff-view.text-view .removed.segment-connector, .diff-view.text-view .removed.line .comment-box, .diff-view.text-view .removed.line .bitbucket-gutter-marker {
+  background-color: #e33 !important;
+  color: #111 !important;
+}
+
+.text-view .line, .text-view .line .CodeMirror-gutter-elt > * {
+  background-color: #222 !important;
+  color: #ddd !important;
+}
+
+.unified-diff .CodeMirror-scroll {
+  background-color: #222 !important;
+}
+
+.CodeMirror-gutters > .blame {
+  background-color: #222 !important;
+  color: #ddd !important;
+}
+
+
+.comment-container .panel {
+  background-color: #333 !important;
+  color: #ddd !important;
+}
+
+.comment.unread > .content {
+  background-color: #424 !important;
+}
+
+.markup .user-mention {
+  background-color: #809 !important;
+}
+
+table.aui>tbody>tr, table.aui>tfoot>tr {
+  background-color: #333 !important;
+}
+
+.aui-page-panel {
+  background-color: #222 !important;
+}
+
+ak-editor-bitbucket .mono, code, tt {
+  background-color: #333 !important;
+}

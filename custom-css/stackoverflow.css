@@ -1,0 +1,40 @@
+.so-header {
+  background-color: #282828 !important;
+  color: #ddd !important;
+}
+
+.so-header .navigation .-link {
+  color: #d0d !important;
+}
+
+.so-header .searchbar input[type="text"].f-input {
+  background-color: #000 !important;
+}
+
+.so-header .my-profile .-rep {
+  color: #0dd !important;
+}
+
+#content {
+  background-color: #282828 !important;
+}
+
+pre {
+  background-color: #333 !important;
+}
+
+code {
+  background-color: #333 !important;
+}
+
+.pun, .pln {
+  color: #ddd !important;
+}
+
+.str, .lit, .tag {
+  color: #0da !important;
+}
+
+.kwd, .dec {
+  color: #a0a !important;
+}

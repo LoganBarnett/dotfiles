@@ -1,0 +1,15 @@
+body {
+  background-color: #222 !important;
+  color: #ddd !important;
+/*  font-family: "Source Code Pro" !important; */
+}
+
+input {
+  background-color: #333 !important;
+  color: #ddd !important;
+}
+
+textarea {
+  background-color: #333 !important;
+  color: #ddd !important;
+}

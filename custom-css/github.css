@@ -1,0 +1,498 @@
+/*  Github darker Grey */
+/*  https://(STAR).github.com/(STAR) */
+
+/* BASED ON THIS WITH MODIFICATIONS  */
+
+/*
+https://gist.github.com/Angles/3210473
+
+  Dark Github
+	By JojoBoss
+	http://userstyles.org/styles/42119
+*/
+/* changes needed
+.participation-graph added to line 66
+
+ * for the readme area: ignore class .announce instapaper_body md
+ * and id #readme
+
+article.markdown-body entry-content
+article h1
+article pre
+article code
+
+###  commit commit-tease js-details-container
+.commit
+.commit-meta
+span.name
+
+## on the code page
+.participation
+
+## wiki
+p code
+.markdown-body pre
+
+## top right buttons
+ul#user-links
+
+## top center links, unnecessary, optional
+ul.top-nav li :hover
+
+## revision to .participation and .updated-at
+
+## something with table.files
+
+*/
+/****************************************************/
+
+/* file/history browser */
+
+.file-header {
+  background-color: #648 !important;
+}
+
+/* issue links/headers */
+.Box-row-link {
+  color: #4078c0 !important;
+}
+
+/* editor selected tab (write/preview) */
+.tabnav-tab.selected {
+  background-color: #95b !important;
+  color: #ddd !important;
+}
+/* comments on issues */
+.timeline-comment-header {
+  background-color: #77d !important;
+  color: #ddd !important;
+}
+
+.timeline-comment-header .author {
+  color: #eee !important;
+}
+
+/* used in review summary */
+.simple-box {
+  background-color: #333 !important;
+}
+
+/* create repo, notifications */
+body ul#user-links {
+  background-color: #648 !important;
+}
+
+/* pull requests, issues, gist */
+.header-nav-link {
+  color: #ddd !important;
+}
+
+.header {
+  background-color: #648 !important;
+}
+
+/* top right icons */
+.octicon {
+  color: #ccc !important;
+}
+
+/* number links on top (commits, branches, releases, contributors) */
+.numbers-summary a, .numbers-summary .nolink {
+  color: #ccc !important;
+}
+
+/* also contributing to number links on top */
+.text-emphasized {
+  color: #ddd !important;
+}
+
+/* lovely color names */
+.text-gray-dark {
+  color: #ccc !important;
+}
+
+a.message {
+  color: #4078c0 !important;
+}
+
+.pl-smi {
+  color: #aaa !important;
+}
+
+/* tabular stuff */
+
+.markdown-body table tr {
+  background-color: #111 !important;
+}
+
+/* user mentions in comments */
+.user-mention {
+  color: #4078c0 !important;
+}
+
+/* comments */
+.timeline-comment {
+  background-color: #333 !important;
+}
+
+/* issue listing */
+
+/* issue listing header */
+.table-list-header {
+  background-color: inherit !important;
+}
+
+/* focused issue */
+.Box-body-row--highlight.navigation-focus {
+  background-color: #525 !important;
+}
+
+/* titles in the issues section */
+.Box-body-row--highlight .Box-row-link {
+  color: #a6a !important;
+}
+
+.navigation-focus .issue-title-link {
+  color: black !important;
+}
+
+.Box-row--focus-gray.navigation-focus {
+  background-color: #424 !important;
+}
+
+.issue-title-link, .link-gray-dark {
+  color: white !important;
+}
+
+/* issue commenting */
+#new_comment_field {
+  color: #aaa !important;
+  background-color: #333 !important;
+}
+
+p.drag-and-drop {
+  background-color: #111 !important;
+}
+
+.timeline-comment-wrapper {
+  background-color: #4f396d !important;
+}
+
+div.discussion-timeline-actions {
+  background-color: #4f396d !important;
+}
+
+.comment-form-head.tabnav {
+  background-color: #111 !important;
+}
+
+/* ordinary code bits */
+.blob-code-inner {
+  color: #aaa !important;
+}
+
+/* string literals I think */
+.pl-pds, .pl-s, .pl-s .pl-pse .pl-s1, .pl-sr, .pl-sr .pl-cce, .pl-sr .pl-sra, .pl-sr .pl-sre {
+  color: #096 !important;
+}
+
+/* line numbers */
+.blob-num {
+  color: #999 !important;
+}
+
+/* comments */
+.pl-c {
+  color: #099 !important;
+}
+
+
+ul#user-links {
+  /* color of box behind the buttons */
+  //background: green !important;
+  background: #333 url() !important;
+}
+
+ul.top-nav li :hover 
+{
+  background: #555 url() !important;
+}
+
+body, #main, .unread_count, .pagehead, #browser table th, .tree-browser th, .main, .news .alert .body, .profilecols ul.stats li strong, .tab-content textarea,
+ table.upgrades tr.current td, .definitions, span.name {
+  background: #222 url() !important;
+  color: #ddd !important;
+  margin-bottom: 0 !important;
+ }
+
+
+ #header {
+  //background: url(http://github.com/images/modules/header/logov3-hover.png) left center no-repeat !important;
+  background: url() left center no-repeat !important;
+ }
+
+#header a, .pagehead h1, .accountcols .main > p.overview, .classy, .actor .name, p.breadcrumb, .range-editor h3, .minibutton, ul.plans-features li,
+ p.read-it {
+  color: #ddd !important;
+  text-shadow: 0 0 0 transparent !important;
+ }
+
+ #header img {
+  visibility: hidden !important;
+ }
+
+ #header .userbox .avatarname a img {
+   visibility: visible !important;
+   border: 0px solid transparent !important;
+ }
+
+ #header .userbox, .actions, .tabs, a.button:hover, .metabox, ul.sidetabs li a:hover, .editbox h1, #issues .labels .admin, #issues .display .sortbar,
+ .actor, .repo, .cmeta, .new-comments .body, #facebox, #facebox .content, #facebox .close, .featured-callout, .ranked-repositories .meta a,
+ p.breadcrumb, .range-editor h3, .range-editor .chooser, ul.nav.logged_out, article h1, .commit, .commit-meta {
+  background: #444 url() !important;
+  color: #ddd !important;
+  border: 0 !important;
+  -moz-border-radius: 5px !important;
+  -webkit-border-radius: 5px !important;
+ }
+
+ .pagehead ul.tabs li a:hover, .pagehead ul.tabs li.contextswitch, #dashboard .repos, #dashboard .repos .top-bar, #dashboard .repos .bottom-bar,
+ #footer, #commit .envelope, .wikistyle, #languages .popular, .fieldgroup .fields, .issue, #directory .repo, a.selected, table.upgrades td,
+ .commit-preview .message, .commit-preview .message pre, .commit-preview p.error, article, .entry-content, .participation {
+  background: #333 url() !important;
+  color: #eee !important;
+  border: 0 !important;
+ }
+
+ .pagehead ul.actions a.feed, .notification-settings, .explore h2 .feed, #code_search_instructions h2, td.inst {
+  background-color: #333 !important;
+  border: 0 !important;
+ }
+
+ .site a, .profilecols ul.stats li a:hover strong, .plans-row .plan {
+  color: #4183C4 !important;
+  text-shadow: 0 0 0 transparent !important;
+ }
+
+ .minibutton, .minibutton > span, .repo-stats, .pagehead ul.tabs li a.selected, .pagehead ul.tabs li.contextswitch:hover,
+ a.button, .subnav-bar, .subnav-bar > ul > li > ul, .subnav-bar > ul > li:hover > a, .comment-form ul.tabs a.selected,
+ .issue.open.read .summary, .public .graph, .participation-graph {
+  background: #222 url() !important;
+  border: 0 !important;
+  -moz-border-radius: 5px !important;
+  -webkit-border-radius: 5px !important;
+  text-shadow: 0 0 0 transparent !important;
+ }
+
+ .minibutton:hover, .minibutton:hover > span {
+   background: #4183C4 !important;
+   color: #ddd !important
+ }
+
+ .repo-stats {
+  margin-right: 5px !important;
+ }
+
+ ul.repo-stats li a {
+  background-position: 5px -27px !important;
+ }
+
+p.description, p.updated-at {
+  text-shadow: none;
+}
+
+ .news, #dashboard .repos h2, #footer ul.sosueme li.main, .metabox em.placeholder, .url-box p, p.notification-settings, .pagehead ul.actions li,
+ .fieldgroup p.explain.planusage strong, table.notifications, .ranked-repositories p, #code_search_instructions p, ul.features, h2, h3 {
+  color: #999 !important;
+ }
+
+ .news blockquote, .url-box p strong, #languages a.bar, dl.form dt, .avatarexplain p strong, .lineoption p, .fieldgroup p.explain.planusage,
+ table.notifications th, .tree-browser th, .explore h2, .usagestats dl dt.numbers, .featured-callout h2, .commit-preview p.name .date, .feature-overview strong {
+  color: #ccc !important;
+ }
+
+ .filter-bar, #browser table td, .tree-browser td, #files .file .meta, #files .file .data .line_numbers, .highlight .gc,
+ .editbox, .editbox .body, .commentstyle, #issues .display, #issues .display .admin, button.classy, a.button.classy, #issues .labels .list li,
+ .issue .summary, .plain, .plain pre, #ng canvas, .public .body, .public .body p, .standard_form {
+  background: #333 url() !important;
+  color: #eee !important;
+  border-color: #555 !important;
+ }
+
+/* now for the file list added table.files td */
+
+table.files td {
+  background: #333 !important;
+  //color: #eee !important;
+  border-color: #555 !important;
+}
+
+ .news .alert .title span, .metabox .editable-text:hover, #inbox .list .item .title span {
+  color: #8c8000 !important;
+  background-color: transparent !important;
+ }
+
+ #browser table, #browser table th, .tree-browser th, #issues .menu ul li {
+  border-color: #555 !important;
+ }
+
+ #dashboard ul.repo_list .public, .metabox .rule, .comment-form, #issues .menu ul li.filter_selected, #issues .labels {
+  background-color: #333 !important;
+  color: #eee !important;
+  border-color: #555 !important;
+ }
+
+ .locales, .wikistyle pre, .wikistyle pre code, .highlight, article pre, article code, p code, .markdown-body pre {
+  background-color: #222 !important;
+  color: #eee !important;
+  border: 0 !important;
+ }
+
+ ul.clone-urls li, ul.clone-urls li > a {
+  //background: url(http://github.com/images/modules/buttons/black.gif) -23px 0 !important;
+  background: url() -23px 0 !important;
+  color: #ddd !important;
+ }
+
+ ul.clone-urls li:hover, ul.clone-urls li:hover > a, table.upgrades tr:hover td {
+  background: #4183C4 !important;
+ }
+
+ #forkqueue .legend .clean, .highlight .gi {
+  background: #026400 !important;
+  color: #ddd !important;
+ }
+
+ #forkqueue .legend .unclean, .highlight .gd {
+  background: #9d0000 !important;
+  color: #ddd !important;
+ }
+
+ .textographic a.repo {
+  background: transparent !important;
+ }
+
+ .highlight .c1 {
+   font-style: normal !important;
+ }
+
+ .wikistyle h2 {
+   border-top: 2px solid #1b1b1b !important;
+ }
+
+ #guides .guide div.heading, #guides .guide div.content {
+   padding: 10px 20px !important;
+ }
+
+ #guides .heading, #guides .admin {
+   border: 0px none #222 !important;
+ }
+
+ #guides .heading ul.actions li {
+   margin-left: 5px !important;
+ }
+ 
+ #guides .heading ul.actions li:first-child {
+   margin-left: 0px !important;
+ }
+ 
+ #guides .heading ul.actions {
+   padding: 5px !important;
+ }
+
+ #browser, .tree-browser {
+   border-left: 1px solid #444 !important;
+   border-right: 1px solid #444 !important;
+   border-top: 1px solid #777 !important;
+ }
+
+ #browser th, .tree-browser th {
+   background-color: #444 !important;
+   background: -moz-linear-gradient(90deg, #2a2a2a, #4a4a4a) repeat scroll 0 0 transparent !important;
+   background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#4a4a4a), to(#2a2a2a)) !important;
+   border-bottom: 1px solid #444 !important;
+   color: #bbb !important;
+ }
+
+ #browser tr td, .tree-browser tr td {
+   background: #272727 -moz-linear-gradient(90deg, #2c2c2c, #272727) repeat scroll 0 0 !important;
+   background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#272727), to(#2c2c2c)) !important;
+   border-bottom: 1px solid #444 !important;
+   color: #aaa !important;
+ }
+
+ #browser tr.alt td, .tree-browser tr.alt td {
+   background: #2c2c2c -moz-linear-gradient(90deg, #272727, #222) repeat scroll 0 0 !important;
+   background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#222222), to(#272727)) !important;
+   border-bottom: 1px solid #444 !important;
+   color: #aaa !important;
+ }
+
+ #commit .group {
+   border-top: 1px solid #444 !important;
+ }
+
+ #commit .machine {
+   border-left: 1px solid #444 !important; 
+ }
+
+ .metabox #download_button, .metabox #download_button:visited {
+   background: -moz-linear-gradient(90deg, #1a1a1a, #333) repeat scroll 0 0 transparent !important;
+   background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#333333), to(#1a1a1a)) repeat scroll 0 0 transparent !important;
+   border: 1px solid #2a2a2a !important;
+   -webkit-box-shadow:0 1px 0 #111 !important;
+   -moz-box-shadow: 0 1px 0 #111 !important;
+ }
+
+ .metabox #download_button:hover {
+   background: -moz-linear-gradient(90deg, #333, #1a1a1a) repeat scroll 0 0 transparent !important;
+   background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#1a1a1a), to(#333333)) repeat scroll 0 0 transparent !important;
+   border: 1px solid #1c1c1c !important;
+   -webkit-box-shadow:0 1px 0 #2a2a2a !important;
+   -moz-box-shadow: 0 1px 0 #2a2a2a !important;
+ }
+
+ .file {
+   background: #444 !important;
+   border: 1px solid #666 !important;
+ }
+
+ .add_file {
+   background-color: #444 !important;
+   border: 1px solid #666 !important;
+ }
+
+ div.highlight {
+   font-size: 1.2em !important;
+ }
+
+/* gist stuff INCOMPLETE  */
+
+div.data.syntax table pre {
+  //background-color: #444 !important;
+  background-color: #505050 !important; 
+}
+
+div.file div.input textarea {
+  //background-color: #505050 !important; 
+  background-color: #404040 !important; 
+ color: #C0C0C0;
+}
+
+/* this syntax item is black otherwise */
+.highlight .n {
+  //color: #B0B0B0 !important;
+  //background-color:  green !important;
+  //background-color:  #F5F5F5 !important;
+  background-color:  #909090 !important;
+}
+
+div.site div.main div {
+ //background-color: green !important;
+   font-size: 1.05em !important;
+}
+
+div.comment-content {
+  background-color: #404040 !important; 
+ color: #C0C0C0;
+}

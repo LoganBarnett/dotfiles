@@ -1,0 +1,24 @@
+.stream-item:not(.no-header-background-module) {
+  background-color: #222 !important;
+}
+
+.tweet:hover {
+  background-color: #333 !important;
+}
+
+
+.stream-item:not(.no-header-background-module) {
+  background-color: #222 !important;
+}
+
+.fullname {
+  color: #ddd !important;
+}
+
+.QuoteTweet .tweet-content, .QuoteTweet-text a, .QuoteTweet-text a:hover, .QuoteTweet-text a:focus, .QuoteTweet-text a:active, .QuoteTweet-text .pretty-link b, .QuoteTweet-text .pretty-link s, .QuoteTweet-text .pretty-link:hover b, .QuoteTweet-text .pretty-link:hover s, .QuoteTweet-text .pretty-link:focus b, .QuoteTweet-text .pretty-link:focus s, .QuoteTweet-text .pretty-link:active b, .QuoteTweet-text .pretty-link:active s {
+  color: #ccc !important;
+}
+
+.QuoteTweet-fullname {
+  color: #ddd !important;
+}

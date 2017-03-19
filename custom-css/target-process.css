@@ -1,0 +1,66 @@
+.entity-progress-box {
+  background-color: #444 !important;
+}
+
+.assignments-table__cell--title {
+  color: #ddd !important;
+}
+
+.state-selector .project-level .team-level>.state-selector__item:not(.state-selector__item--has-children).tau-active, .state-selector .project-level>.state-selector__item.tau-active {
+  background-color: #496 !important;
+}
+
+.ui-attachments-control .uploader-toolbar .fileBrowser .uploader-text, .ui-attachments-control .uploader-toolbar .fileBrowser .uploader-text-active {
+  color: #ddd !important;
+}
+
+.ui-attachments-control .uploader-toolbar .fileBrowser {
+  background-color: #444 !important;
+}
+
+.tag-view {
+  background-color: #709 !important;
+  color: #ddd !important;
+}
+
+.tau-action-link {
+  color: #496 !important;
+}
+
+.ui-collapsible-header .ui-label {
+  color: #ddd !important;
+}
+
+.ui-collapsible .ui-collapsible-header {
+  background-color: #709 !important;
+  color: #ddd !important;
+}
+
+.ui-comment-body {
+  background-color: #333 !important;
+}
+
+.tau-boardclipboard {
+  background-color: #121212 !important;
+}
+
+.tau-page-single.tau-page-entity {
+  background-color: #121212 !important;
+}
+
+.entity-tabs__holder {
+  color: #498 !important;
+}
+
+.entity-tabs .tab-item.selected {
+  background-color: #498 !important;
+  color: #ddd !important;
+}
+
+.view-header .entity-id__link {
+  color: #58d !important;
+}
+
+.notification__entity-wrap>.entity-card__task:hover, .tau-entity-color--task, .tau-entity-icon.tau-entity-icon--task, .tau-text_type_task, .tau-text_type_task:hover, .tau-text_type_task:visited {
+  color: #ddd !important;
+}

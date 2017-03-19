@@ -1,0 +1,250 @@
+legend {
+  color: #ddd !important;
+}
+
+.task-modal.color-neutral:not(.completed) .save-close>a, .task-modal.color-neutral:not(.completed) .save-close>button, .task-modal.color-neutral:not(.completed) .task-checklist-edit li>a, .task-modal.color-neutral:not(.completed) .task-checklist-edit li>button {
+  color: #ddd !important;
+}
+
+.task-modal.color-neutral:not(.completed) .save-close>a, .task-modal.color-neutral:not(.completed) .save-close>button, .task-modal.color-neutral:not(.completed) .task-checklist-edit li>a, .task-modal.color-neutral:not(.completed) .task-checklist-edit li>button {
+  background-color: #255 !important;
+}
+
+.task-modal.color-neutral:not(.completed) .task-options {
+  background-color: #333 !important;
+}
+
+.task-modal.color-neutral:not(.completed) {
+  background-color: #333 !important;
+}
+
+body .toolbar-nav .toolbar-button-dropdown>div a, body .toolbar-nav .toolbar-button-dropdown>div a:link, body .toolbar-nav .toolbar-button-dropdown>div a:visited {
+  color: #496 !important;
+}
+
+body .toolbar-nav .toolbar-button-dropdown textarea, body .toolbar-nav .toolbar-button-dropdown>a, body .toolbar-nav .toolbar-button-dropdown>button, body .toolbar-nav .toolbar-button-dropdown>input {
+  background-color: #255 !important;
+  color: #ddd !important;
+}
+
+.toolbar-nav .toolbar-button>a, .toolbar-nav .toolbar-button>button {
+  background-color: #255 !important;
+  color: #ddd !important;
+}
+
+body .toolbar-nav .toolbar-button-dropdown textarea, body .toolbar-nav .toolbar-button-dropdown>a, body .toolbar-nav body .toolbar-button-dropdown>button, body .toolbar-nav .toolbar-button-dropdown>input {
+  color: #ddd !important;
+}
+
+[class$="-options"] {
+  color: #ddd !important;
+}
+
+.toolbar-audio>div h4:before, .toolbar-settings>div h4:before, .toolbar-sync>div h4:before {
+  background-color: #d0d !important;
+}
+
+.toolbar-audio>div a, .toolbar-audio>div a:link, .toolbar-audio>div a:visited, .toolbar-settings>div a, .toolbar-settings>div a:link, .toolbar-settings>div a:visited, .toolbar-sync>div a, .toolbar-sync>div a:link, .toolbar-sync>div a:visited {
+  color: #496 !important;
+}
+
+.toolbar-audio>div, .toolbar-mobile>div, .toolbar-nav .toolbar-button-dropdown>div, .toolbar-notifs>div, .toolbar-settings>div {
+  background-color: #333 !important;
+}
+
+.toolbar-audio>div h4, .toolbar-settings>div h4, .toolbar-sync>div h4 {
+  background-color: #333 !important;
+  color: #58e !important;
+}
+
+body .toolbar-audio>a, body .toolbar-audio>button, body .toolbar-settings>a, body .toolbar-settings>button, body .toolbar-sync>a, body .toolbar-sync>button {
+  background-color: #255 !important;
+}
+
+body .toolbar-notifs>a, body .toolbar-notifs>button {
+  background-color: #255 !important;
+}
+
+.task-filter li.active a, .task-filter li.active button {
+  color: #ddd !important;
+  background-color: #525 !important;
+  border-color: #525 !important;
+}
+
+body .task-filter li>a, body .task-filter li>button {
+  background-color: #255 !important;
+  color: #ddd !important;
+}
+
+body .task-filter li>a:hover, body .task-filter li>button:hover {
+  background-color: #255 !important;
+}
+
+.task-add .glyphicon {
+  color: #ddd !important;
+}
+
+body .task-add textarea, body .task-add>a, body .task-add>button, body .task-add>input {
+  color: #ddd !important;
+  background-color: #255 !important;
+}
+
+.filters .hrpg-input-group input, .filters .hrpg-input-group textarea, .task-add input, .task-add textarea, .task-checklist-edit>.checklist-form li input, .task-checklist-edit>.checklist-form li textarea {
+  background-color: #333 !important;
+}
+
+.popover-title {
+  background-color: #255 !important;
+  border-bottom-color: #375 !important;
+}
+
+.btn-buy {
+  background-color: #255 !important;
+  color: #ddd !important;
+}
+
+.reward, .reward-item {
+  border-color: #255 !important;
+}
+
+.reward-item {
+  background-color: #222 !important;
+}
+
+.header-wrap {
+  background-color: #444 !important;
+}
+
+.toolbar {
+  background-color: #333 !important;
+}
+
+header .hero-stats {
+  background-color: #444 !important;
+}
+
+.completed {
+  background-color: #444 !important;
+}
+
+.task-column:not(.rewards) .color-better:not(.completed) {
+  background-color: #244 !important;
+  border-color: #488 !important;
+}
+
+.task-column:not(.rewards) .color-best:not(.completed) {
+  background-color: #224 !important;
+  border-color: #448 !important;
+}
+
+.task-column:not(.rewards) .color-good:not(.completed) {
+  background-color: #242 !important;
+  border-color: #484 !important;
+}
+
+.task-column:not(.rewards) .color-neutral:not(.completed) {
+  background-color: #442 !important;
+  border-color: #884 !important;
+}
+
+.task-column:not(.rewards) .color-bad:not(.completed) {
+  background-color: #432 !important;
+  border-color: #864 !important;
+}
+
+.task-column:not(.rewards) .color-worse:not(.completed) {
+  background-color: #422 !important;
+  border-color: #844 !important;
+}
+
+.task-column:not(.rewards) .color-worst:not(.completed) {
+  background-color: #222 !important;
+  border-color: #444 !important;
+}
+
+.completed {
+  background-color: #444 !important;
+  border-color: #888 !important;
+  color: #ddd !important;
+}
+
+a span.glyphicon {
+  color: #ddd !important;
+}
+
+.task-column:not(.rewards) .color-neutral:not(.completed) .action-yesno label, .task-column:not(.rewards) .color-neutral:not(.completed) .task-action-btn, .task-column:not(.rewards) .color-neutral:not(.completed) .task-actions, .task-column:not(.rewards) .color-neutral:not(.completed) .task-actions a {
+  background-color: #663 !important;
+}
+
+.task-column:not(.rewards) .color-good:not(.completed) .action-yesno label, .task-column:not(.rewards) .color-good:not(.completed) .task-action-btn, .task-column:not(.rewards) .color-good:not(.completed) .task-actions, .task-column:not(.rewards) .color-good:not(.completed) .task-actions a {
+  background-color: #363 !important;
+}
+
+.task-column:not(.rewards) .color-worst:not(.completed) .action-yesno label, .task-column:not(.rewards) .color-worst:not(.completed) .task-action-btn, .task-column:not(.rewards) .color-worst:not(.completed) .task-actions, .task-column:not(.rewards) .color-worst:not(.completed) .task-actions a {
+  background-color: #333 !important;
+  color: #888 !important;
+}
+
+.action-yesno label:after, .action-yesno label:before {
+  /*background-color: #eee !important;*/
+}
+
+.action-yesno label:after {
+  border-color: #eee !important;
+  border-width: 2px !important;
+  opacity: 0.8 !important;
+}
+
+.popover {
+  background-color: #435 !important;
+}
+
+.popover.top .arrow:after {
+  border-top-color: #435 !important;
+}
+
+.task-column {
+  background-color: #333 !important;
+}
+
+.table-striped>tbody>tr:nth-child(odd)>td, .table-striped>tbody>tr:nth-child(odd)>th {
+  background-color: #333 !important;
+}
+
+.footer {
+  background-color: #222 !important;
+}
+
+.modal-content {
+  background-color: #333 !important;
+}
+
+.btn-default {
+  background-color: #496 !important;
+  color: #ddd !important;
+}
+
+.pet-button {
+  background-color: inherit !important;
+}
+
+.toolbar-notifs>div h4 {
+  background-color: #333 !important;
+  color: #58d !important;
+}
+
+.toolbar-notifs>div a, .toolbar-notifs>div a:link, .toolbar-notifs>div a:visited {
+  color: #5a8 !important;
+}
+
+.toolbar-notifs>div h4:before {
+  background-color: #d0d !important;
+}
+
+.panel-default {
+  background-color: #333 !important;
+}
+
+.well {
+  background-color: #333 !important;
+}

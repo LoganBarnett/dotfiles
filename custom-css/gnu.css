@@ -1,0 +1,17 @@
+body {
+  background-color: #282828 !important;
+  color: #ddd !important;
+}
+
+h1, h2, h3, h4 {
+  color: #eee !important;
+}
+
+h5, h6, dt {
+  color: white !important;
+}
+
+div.example, pre.example {
+  background-color: #111 !important;
+  color: #d6d !important;
+}
