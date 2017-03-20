@@ -1,3 +1,31 @@
 .md {
   color: #bbb !important;
 }
+
+.link .usertext-body .md {
+  background-color: #222 !important;
+}
+
+.new-comment .md :not(pre)>code, .link .md :not(pre)>code, .usertext.border .md :not(pre)>code, .new-comment .md pre, .link .md pre, .usertext.border .md pre {
+  background-color: #234 !important;
+}
+
+.linkinfo {
+  background-color: #222 !important;
+}
+
+.side {
+  background-color: #121212 !important;
+}
+
+.titlebox form.toggle, .leavemoderator {
+  background-color: #121212 !important;
+}
+
+.morelink {
+  background-color: #121212 !important;
+  background-image: none !important;
+}
+
+.morelink .nub {
+  display: none !important;
