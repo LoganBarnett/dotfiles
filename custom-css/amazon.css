@@ -1,3 +1,19 @@
+a.a-color-base, a:active.a-color-base, a:link.a-color-base, a:visited.a-color-base {
+  color: #497 !important;
+}
+
+#detail-bullets ul, #feature-bullets-btf ul, #technical-data ul {
+  color: #ddd !important;
+}
+
+#productDescription {
+  color: #ddd !important;
+}
+
+.a-ordered-list .a-list-item, .a-unordered-list .a-list-item, ol .a-list-item, ul .a-list-item {
+  color: #ddd !important;
+}
+
 .a-popover-wrapper {
   background-color: #333 !important;
 }

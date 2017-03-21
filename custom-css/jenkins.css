@@ -1,3 +1,20 @@
+
+div.CodeMirror-selected {
+  background-color: #444 !important;
+}
+
+.cm-s-default span.cm-attribute {
+  color: #497 !important;
+}
+
+.cm-s-default span.cm-builtin {
+  color: #497 !important;
+}
+
+#jenkins .jenkins-config table .CodeMirror {
+  background-color: #333 !important;
+}
+
 table.stripped-odd tr:nth-child(odd) {
   background-color: #333 !important;
 }

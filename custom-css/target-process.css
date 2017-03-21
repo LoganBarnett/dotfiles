@@ -1,3 +1,19 @@
+.tau-clientinput .highlight pre, .tau-clientinput pre {
+  background-color: #333 !important;
+}
+
+.tau-clientinput table tr {
+  background-color: #333 !important;
+}
+
+.tau-cover-view--animated:before {
+  background-color: #121212 !important;
+}
+
+.tau-cover-view {
+  background-color: #121212 !important;
+}
+
 .entity-progress-box {
   background-color: #444 !important;
 }

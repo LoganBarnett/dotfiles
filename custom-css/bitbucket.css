@@ -6,6 +6,11 @@
 }
 */
 
+.comment-container .comment.focused > .content {
+  background-color: #333 !important;
+}
+
+
 .diff-view.text-view .added.line, .diff-view.text-view .added.segment-connector, .diff-view.text-view .added.line .comment-box, .diff-view.text-view .added.line .bitbucket-gutter-marker {
   background-color: #3e3 !important;
   color: #111 !important;
@@ -32,7 +37,7 @@
 
 
 .comment-container .panel {
-  background-color: #333 !important;
+  background-color: #121212 !important;
   color: #ddd !important;
 }
 
