@@ -1,3 +1,7 @@
+body, button, input, select, textarea {
+  color: #ddd !important;
+}
+
 .tau-clientinput .highlight pre, .tau-clientinput pre {
   background-color: #333 !important;
 }
