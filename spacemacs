@@ -439,6 +439,13 @@ in `dotspacemacs/user-config'."
           (kill-buffer buffer)
           (message "File '%s' successfully removed" filename)))))
 
+;; TODO: Setup a keybinding to replace org-clock-report with this function.
+(defun my/org-clock-report ()
+  "Run org-clock-report but don't leave a narrowed buffer when done."
+  (interactive)
+  (org-clock-report)
+  (widen))
+
 (defun dotspacemacs/user-config ()
   "This is a safe place to stick user-specific configuration for Spacemacs."
   (message "Loading user config")
