@@ -144,12 +144,24 @@ export AWS_ROID_MINER=52.2.198.173
 export USER_AWS_IRC=ubuntu@$AWS_IRC   # I should probably just make 'logan' on that system
 export USER_AWS_ROID_MINER=ubuntu@$AWS_ROID_MINER
 
+# oh java
+# JAVA_HOME="/Library/Java/JavaVirtualMachines/jdk1.8.0_102.jdk/Contents/Home"
+# JAVA_HOME="/Library/Java/Home"
+export JAVA_HOME=$(/usr/libexec/java_home)
+
 # thefuck - `fuck` after a failed command and it will try to do the right thing
 eval $(thefuck --alias)
 
 # nvm
-export NVM_DIR="$HOME/.nvm"
- . "/usr/local/opt/nvm/nvm.sh"
+# This is what nvm wants us to use by default. The maintainer for nvm is
+# pretty vocal about not supporting homebrew. We need to point to homebrew's dir
+# to get proper support (otherwise scripts cannot find the "nvm"
+#  binary/function)
+#
+# export NVM_DIR="$HOME/.nvm"
+# export NVM_DIR="/usr/local/opt/nvm"
+ # . "/usr/local/opt/nvm/nvm.sh"
+# . "$(brew --prefix nvm)/nvm.sh"
 [[ -s "$HOME/.avn/bin/avn.sh" ]] && source "$HOME/.avn/bin/avn.sh" # load avn
 
 # vim mode for zsh
