@@ -772,6 +772,8 @@ layers configuration. You are free to put any user code."
   (load-library "config-java")
   (config-java)
 
+  (add-to-list 'grep-find-ignored-directories "node_modules")
+
   ;; (if (locate-library "flycheck-purescript-mode")
   ;;     (autoload "flycheck-purescript-mode" "flycheck-purescript-mode" "checker for purescript" t)
   ;;   ;; TODO: make this a mode hook for purescript-mode
