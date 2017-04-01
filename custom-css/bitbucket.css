@@ -6,6 +6,23 @@
 }
 */
 
+body {
+  color: #ddd !important;
+}
+
+.aui-button, a.aui-button, .aui-button:visited {
+  background-color: #497 !important;
+  color: #ddd !important;
+}
+
+.markup-preview {
+  background-color: #333 !important;
+}
+
+.markup-editor .markup-toolbar {
+  background-color: #121212 !important;
+}
+
 .comment-container .comment.focused > .content {
   background-color: #333 !important;
 }

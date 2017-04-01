@@ -1,3 +1,7 @@
+body {
+  color: #ddd !important;
+}
+
 .WikiaPage .WikiaPageBackground {
   background-color: #222 !important;
 }

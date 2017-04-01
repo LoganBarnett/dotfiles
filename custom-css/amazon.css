@@ -1,3 +1,12 @@
+.a-color-base {
+  color: #ddd !important;
+}
+
+body {
+  background-color: #121212 !important;
+  color: #ddd !important;
+}
+
 a.a-color-base, a:active.a-color-base, a:link.a-color-base, a:visited.a-color-base {
   color: #497 !important;
 }
