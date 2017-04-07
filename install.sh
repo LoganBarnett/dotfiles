@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -e
+
 start_dir=$PWD
 
 # TODO: add various application settings not living under ~
@@ -23,10 +25,6 @@ ln -s -n $PWD/awesome ~/.config/awesome
 
 ln -s -n $PWD/bin ~/bin
 
-mkdir -p ~/.gnupg
-ln -s -n gpg-agent.conf ~/.gnupg/gpg-agent.conf
-ln -s -n gpg.conf ~/.gnupg/gpg.conf
-
 ln -s -n $PWD/lisp ~/.emacs.d/private/local/dotfiles
 
 if [ $(uname) = 'Darwin' ]; then
@@ -45,14 +43,12 @@ mongodb
 ispell
 coreutils
 mtr
-gpg
 n
 graphviz
 postgresql
 markdown
 docker
 docker-machine
-homebrew/versions/gnupg21
 pinentry-mac
 elm
 dos2unix"
@@ -61,6 +57,8 @@ dos2unix"
     brew update
     echo "installing brews"
     brew install $BREWS
+
+    ./install-gpg.sh
 
     # sed is special
     echo "installing sed"
