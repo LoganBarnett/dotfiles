@@ -269,3 +269,4 @@ function timer_prompt() {
 
 
 set_prompt
+export PATH="/usr/local/opt/gnupg@2.1/bin:$PATH"
