@@ -10,6 +10,10 @@ body {
   color: #ddd !important;
 }
 
+h2 {
+  color: #ddd !important;
+}
+
 .aui-button, a.aui-button, .aui-button:visited {
   background-color: #497 !important;
   color: #ddd !important;

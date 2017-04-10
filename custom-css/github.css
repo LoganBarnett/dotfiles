@@ -46,6 +46,11 @@ ul.top-nav li :hover
 */
 /****************************************************/
 
+/* end of path */
+.breadcrumb strong.final-path {
+  color: #ddd !important;
+}
+
 /* file/history browser */
 
 .file-header {

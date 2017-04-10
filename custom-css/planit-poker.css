@@ -1,0 +1,103 @@
+html body {
+  color: #ddd !important;
+  background-color: #121212 !important;
+}
+
+.navbar {
+  background-color: #333 !important;
+}
+
+.navbar.navbar-app .nav.navbar-nav>li {
+  color: #ddd !important;
+}
+
+.pages-board .page-board-room .game-name .page-header {
+  color: #ddd !important;
+}
+
+.grayed {
+  background-color: #121212 !important;
+}
+
+.pages-board .page-board-vote .playground .vote-results {
+  background-color: #333 !important;
+}
+
+.pages-board .page-board-vote .playground .vote-results .chart-block1 {
+  background-color: #333 !important;
+}
+
+.pages-board .page-board-vote .playground .vote-results {
+  background-color: #333 !important;
+  color: #ddd !important;
+}
+
+.pages-board .page-board-vote .playground .vote-results .chart-block1 .chart-block .center-title {
+  color: #ddd !important;
+}
+
+.pages-board .page-board-vote .playground .vote-results .chart-block1 .chart-block .summary .summary-info .summary-vote-value {
+  color: #ddd !important;
+}
+
+.pages-board .page-board-vote .playground .vote-results .chart-block1 .chart-block .summary .summary-info .summary-percent {
+  color: #ddd !important;
+}
+
+.pages-board .stories-list {
+  background-color: #333 !important;
+  color: #ddd !important;
+}
+
+.pages-board .stories-list .nav.nav-tabs>li>a>span {
+  color: #ddd !important;
+}
+
+.pages-board .page-board-room .timer span {
+  color: #ddd !important;
+}
+
+.pages-board .page-board-room .players-text {
+  color: #ddd !important;
+}
+
+.pages-board .page-board-room .right-block {
+  background-color: #333 !important;
+}
+
+.pages-board .page-board-room .players-list .player>.info>.name span {
+  color: #ddd !important;
+}
+
+.pages-board .page-board-room .players-list .player>.voting span {
+  color: #ddd !important;
+}
+
+.pages-board .page-board-room .control {
+  background-color: #333 !important;
+}
+
+.pages-board .page-board-room .invite-members {
+  background-color: #333 !important;
+}
+
+.pages-board .page-board-room .invite-members .invite-block .title:hover {
+  color: #9dd !important;
+}
+
+.pages-board .page-board-room .invite-members .invite-block .title {
+  background-color: #5bb !important;
+  color: #121212 !important;
+  border-radius: 0.5em;
+  text-align: center;
+  padding: 1em;
+}
+
+.pages-board .page-board-room .info-block {
+  background-color: #333 !important;
+}
+
+.pages-board .page-board-room .info-block .title1 {
+  background-color: #333 !important;
+  color: #ddd !important;
+}

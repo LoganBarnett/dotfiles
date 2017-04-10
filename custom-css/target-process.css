@@ -1,3 +1,30 @@
+.tau-clientinput h1, .tau-clientinput h2, .tau-clientinput h3, .tau-clientinput h4, .tau-clientinput h5, .tau-clientinput h6 {
+  color: #ddd !important;
+}
+
+.tau-search__wrap {
+  background-color: #121212 !important;
+  color: #ddd !important;
+}
+
+
+.tau-in-text {
+  background-color: #121212 !important;
+}
+
+.tau-select {
+  background-color: #121212 !important;
+  color: #ddd !important;
+}
+
+.quick-add__entity-item.tau-active {
+  background-color: #709 !important;
+}
+
+.quick-add {
+  background-color: #333 !important;
+}
+
 body, button, input, select, textarea {
   color: #ddd !important;
 }
@@ -70,6 +97,15 @@ body, button, input, select, textarea {
 
 .entity-tabs__holder {
   color: #498 !important;
+}
+.tau-btn.tau-success:not(:disabled) {
+  background-color: #377 !important;
+  background-image: none !important;
+  border-color: #ddd !important;
+}
+
+.category-assignments__item:hover {
+  background-color: #000 !important;
 }
 
 .entity-tabs .tab-item.selected {
