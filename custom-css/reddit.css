@@ -1,3 +1,20 @@
+textarea {
+  color: #ddd !important;
+  background-color: #121212 !important;
+}
+
+.link {
+  background-color: #333 !important;
+}
+
+body {
+  background-color: #121212 !important;
+}
+
+.commentarea {
+  background-color: #333 !important;
+}
+
 .md {
   color: #bbb !important;
 }
