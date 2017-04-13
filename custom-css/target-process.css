@@ -1,3 +1,29 @@
+/* i-role-card.tau-card-v2.tau-card-v2_type_task.ui-draggable-handle[style] */
+div.i-role-card.ui-draggable-handle[style] {
+  background-image: linear-gradient(-5deg, #243 1%, #243 49%, #364 51%, #364 99%) !important;
+}
+
+.tau-entity-full-name {
+  color: #ddd !important;
+}
+
+.tau-board-unit {
+  color: #ddd !important;
+}
+
+.tau-card-v2 {
+  background-color: #333 !important;
+  color: #ddd !important;
+}
+
+.tau-board {
+  background-color: #121212 !important;
+}
+
+.tau-board-view .tau-backlog-body .tau-cellholder, .tau-board-view .tau-rows-header .tau-cellholder, .tau-board-view .tau-timeline .tau-cellholder {
+  background-color: #333 !important;
+}
+
 .tau-clientinput h1, .tau-clientinput h2, .tau-clientinput h3, .tau-clientinput h4, .tau-clientinput h5, .tau-clientinput h6 {
   color: #ddd !important;
 }

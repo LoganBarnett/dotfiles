@@ -6,6 +6,10 @@ body {
   color: #ddd !important;
 }
 
+blockquote {
+  background-color: #212 !important;
+}
+
 .so-header {
   background-color: #282828 !important;
   color: #ddd !important;
