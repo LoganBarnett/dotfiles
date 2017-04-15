@@ -13,6 +13,12 @@ const customCssObj = JSON.parse(file)
 const newFileName = customCssObj.name
 const css = customCssObj.styles
 
-fs.writeFileSync(path.resolve(outputDir, newFileName + '.css'), css)
+const baseFileName = path.resolve(outputDir, newFileName)
+fs.writeFileSync(baseFileName + '.css', css)
 
+// also store the meta data
+delete customCssObj.styles
+fs.writeFileSync(baseFileName + '.json', JSON.stringify(customCssObj, null, 2))
+
+// clean up when done
 fs.unlink(fileName)
