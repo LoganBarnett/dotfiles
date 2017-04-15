@@ -1,0 +1,11 @@
+{
+  "domains": [
+    "https://*.google.com/*",
+    "https://google.com/*"
+  ],
+  "excludes": [
+    ""
+  ],
+  "name": "google",
+  "enabled": true
+}

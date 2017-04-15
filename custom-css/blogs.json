@@ -1,0 +1,12 @@
+{
+  "domains": [
+    "https://bytearcher.com/*",
+    "https://blog.akquinet.de/*",
+    "http://veloballs.com/*"
+  ],
+  "excludes": [
+    ""
+  ],
+  "name": "blogs",
+  "enabled": true
+}

@@ -1,0 +1,18 @@
+{
+  "domains": [
+    "http://*/*",
+    "https://*/*",
+    "http://*.com",
+    "https://*.com",
+    "http://*.stackoverflow.com/*",
+    "http://stackoverflow.com/*",
+    "https://*.stackoverflow.com/*",
+    "https://stackoverflow.com/*",
+    "https://bitbucket.org/*"
+  ],
+  "excludes": [
+    ""
+  ],
+  "name": "global",
+  "enabled": false
+}

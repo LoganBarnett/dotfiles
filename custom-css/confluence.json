@@ -1,0 +1,10 @@
+{
+  "domains": [
+    "https://confluence.americas.nwea.pvt/*"
+  ],
+  "excludes": [
+    ""
+  ],
+  "name": "confluence",
+  "enabled": true
+}

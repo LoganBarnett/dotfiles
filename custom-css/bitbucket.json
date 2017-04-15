@@ -1,0 +1,11 @@
+{
+  "domains": [
+    "https://bitbucket.org/*",
+    "http://stash.americas.nwea.pvt/*"
+  ],
+  "excludes": [
+    ""
+  ],
+  "name": "bitbucket",
+  "enabled": true
+}

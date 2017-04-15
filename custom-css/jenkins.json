@@ -1,0 +1,12 @@
+{
+  "domains": [
+    "http://jenkins-pisa.americas.nwea.pvt/*",
+    "http://webmap.americas.nwea.pvt/*",
+    "http://jenkins-webmap.americas.nwea.pvt/*"
+  ],
+  "excludes": [
+    ""
+  ],
+  "name": "jenkins",
+  "enabled": true
+}

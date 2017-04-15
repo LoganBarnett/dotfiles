@@ -1,0 +1,10 @@
+{
+  "domains": [
+    "https://www.reddit.com/*"
+  ],
+  "excludes": [
+    ""
+  ],
+  "name": "reddit",
+  "enabled": true
+}

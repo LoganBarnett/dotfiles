@@ -1,0 +1,10 @@
+{
+  "domains": [
+    "https://www.shadertoy.com/*"
+  ],
+  "excludes": [
+    ""
+  ],
+  "name": "shadertoy",
+  "enabled": true
+}

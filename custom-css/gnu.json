@@ -1,0 +1,10 @@
+{
+  "domains": [
+    "https://*.gnu.org/*"
+  ],
+  "excludes": [
+    ""
+  ],
+  "name": "gnu",
+  "enabled": true
+}

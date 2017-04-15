@@ -1,0 +1,10 @@
+{
+  "domains": [
+    "https://nwea.tpondemand.com/*"
+  ],
+  "excludes": [
+    ""
+  ],
+  "name": "target-process",
+  "enabled": true
+}

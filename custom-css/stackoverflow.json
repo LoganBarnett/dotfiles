@@ -1,0 +1,15 @@
+{
+  "domains": [
+    "http://*.stackoverflow.com/*",
+    "http://stackoverflow.com/*",
+    "https://*.stackoverflow.com/*",
+    "https://stackoverflow.com/*",
+    "https://*.stackexchange.com/*",
+    "http://*.stackexchange.com/*"
+  ],
+  "excludes": [
+    ""
+  ],
+  "name": "stackoverflow",
+  "enabled": true
+}

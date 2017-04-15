@@ -1,0 +1,10 @@
+{
+  "domains": [
+    "https://bbrathwaite.wordpress.com/*"
+  ],
+  "excludes": [
+    ""
+  ],
+  "name": "wordpress",
+  "enabled": true
+}

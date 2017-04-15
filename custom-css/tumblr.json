@@ -1,0 +1,15 @@
+{
+  "domains": [
+    "http://*.owlturd.com/*",
+    "https://*.owlturd.com/*",
+    "http://owlturd.com",
+    "",
+    "http://owlturdcomix.tumblr.com",
+    "http://*.tumblr.com"
+  ],
+  "excludes": [
+    ""
+  ],
+  "name": "tumblr",
+  "enabled": true
+}

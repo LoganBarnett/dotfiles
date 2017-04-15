@@ -1,0 +1,12 @@
+{
+  "domains": [
+    "https://*.messenger.com/*",
+    "https://messenger.com/*",
+    "https://www.messenger.com/t/david.koontz.921"
+  ],
+  "excludes": [
+    ""
+  ],
+  "name": "facebook-messenger",
+  "enabled": true
+}

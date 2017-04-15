@@ -1,0 +1,10 @@
+{
+  "domains": [
+    "https://lodash.com/*"
+  ],
+  "excludes": [
+    ""
+  ],
+  "name": "lodash",
+  "enabled": true
+}

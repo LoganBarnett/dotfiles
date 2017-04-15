@@ -1,0 +1,10 @@
+{
+  "domains": [
+    "*"
+  ],
+  "excludes": [
+    ""
+  ],
+  "name": "cke-editor",
+  "enabled": true
+}

@@ -1,0 +1,10 @@
+{
+  "domains": [
+    "http://habitica.wikia.com/*"
+  ],
+  "excludes": [
+    ""
+  ],
+  "name": "wikia",
+  "enabled": true
+}

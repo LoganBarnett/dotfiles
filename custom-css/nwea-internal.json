@@ -1,0 +1,10 @@
+{
+  "domains": [
+    "http://prototypes/*"
+  ],
+  "excludes": [
+    ""
+  ],
+  "name": "nwea-internal",
+  "enabled": true
+}

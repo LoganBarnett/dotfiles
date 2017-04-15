@@ -1,0 +1,11 @@
+{
+  "domains": [
+    "http://www.planitpoker.com/*",
+    "https://www.planitpoker.com/*"
+  ],
+  "excludes": [
+    ""
+  ],
+  "name": "planit-poker",
+  "enabled": true
+}

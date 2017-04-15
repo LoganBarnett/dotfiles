@@ -1,0 +1,13 @@
+{
+  "domains": [
+    "http://habitica.com/*",
+    "http://*.habitica.com/*",
+    "https://habitica.com/*",
+    "https://*.habitica.com/*"
+  ],
+  "excludes": [
+    ""
+  ],
+  "name": "habitica",
+  "enabled": true
+}

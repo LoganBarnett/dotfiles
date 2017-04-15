@@ -1,0 +1,10 @@
+{
+  "domains": [
+    "https://www.w3.org/*"
+  ],
+  "excludes": [
+    ""
+  ],
+  "name": "w3",
+  "enabled": true
+}

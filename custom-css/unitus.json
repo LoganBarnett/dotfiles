@@ -1,0 +1,10 @@
+{
+  "domains": [
+    "https://uonline.unitusccu.com/*"
+  ],
+  "excludes": [
+    ""
+  ],
+  "name": "unitus",
+  "enabled": true
+}

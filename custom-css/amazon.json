@@ -1,0 +1,10 @@
+{
+  "domains": [
+    "https://www.amazon.com/*"
+  ],
+  "excludes": [
+    ""
+  ],
+  "name": "amazon",
+  "enabled": true
+}

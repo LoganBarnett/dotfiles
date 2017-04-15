@@ -1,0 +1,10 @@
+{
+  "domains": [
+    "https://twitter.com/*"
+  ],
+  "excludes": [
+    ""
+  ],
+  "name": "twitter",
+  "enabled": true
+}

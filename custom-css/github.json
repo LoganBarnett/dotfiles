@@ -1,0 +1,10 @@
+{
+  "domains": [
+    "https://*.github.com/*"
+  ],
+  "excludes": [
+    ""
+  ],
+  "name": "github",
+  "enabled": true
+}
