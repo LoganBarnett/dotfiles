@@ -51,7 +51,9 @@ docker
 docker-machine
 pinentry-mac
 elm
-dos2unix"
+dos2unix
+gnupg
+"
 
     echo "updating homebrew"
     brew update
