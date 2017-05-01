@@ -16,6 +16,7 @@ diffmerge
 robomongo
 steam
 virtualbox
+gimp
 "
 
 echo "installing homebrew casks"
