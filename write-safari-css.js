@@ -46,7 +46,7 @@ names.forEach(name => {
   meta.styles = css
   meta.script = js
 
-  console.log('sending meta', meta)
+  // console.log('sending meta', meta)
   const convertedMeta = new Iconv('UTF-8', 'UTF-16LE')
       .convert(JSON.stringify(meta))
 
@@ -72,11 +72,10 @@ insert into itemtable
 ('${meta.key}', readfile('.tmp-css-write/${meta.name}.json'))
 ;`
 
-    console.log(updateSql)
+    // console.log(updateSql)
     const sqliteProcess = childProcess.spawn('sqlite3', [
       sqlitePath,
       updateSql,
     ])
 })
-// fs.unlinkSync(sqlitePath + '-wal')
 console.log('success')
