@@ -6,5 +6,6 @@
     ""
   ],
   "name": "wordpress",
-  "enabled": true
+  "enabled": true,
+  "key": "wordpress"
 }

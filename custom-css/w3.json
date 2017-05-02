@@ -6,5 +6,6 @@
     ""
   ],
   "name": "w3",
-  "enabled": true
+  "enabled": true,
+  "key": "w3"
 }

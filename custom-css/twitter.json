@@ -6,5 +6,6 @@
     ""
   ],
   "name": "twitter",
-  "enabled": true
+  "enabled": true,
+  "key": "twitter"
 }

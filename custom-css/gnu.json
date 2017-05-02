@@ -6,5 +6,6 @@
     ""
   ],
   "name": "gnu",
-  "enabled": true
+  "enabled": true,
+  "key": "gnu"
 }

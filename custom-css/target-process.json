@@ -6,5 +6,6 @@
     ""
   ],
   "name": "target-process",
-  "enabled": true
+  "enabled": true,
+  "key": "target-process"
 }

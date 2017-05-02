@@ -6,5 +6,6 @@
     ""
   ],
   "name": "lodash",
-  "enabled": true
+  "enabled": true,
+  "key": "lodash"
 }

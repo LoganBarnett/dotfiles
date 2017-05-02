@@ -6,5 +6,6 @@
     ""
   ],
   "name": "nwea-internal",
-  "enabled": true
+  "enabled": true,
+  "key": "nwea-internal"
 }

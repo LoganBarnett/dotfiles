@@ -14,5 +14,6 @@
     ""
   ],
   "name": "global",
-  "enabled": false
+  "enabled": false,
+  "key": "global"
 }

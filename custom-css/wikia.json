@@ -6,5 +6,6 @@
     ""
   ],
   "name": "wikia",
-  "enabled": true
+  "enabled": true,
+  "key": "wikia"
 }

@@ -9,5 +9,6 @@
     ""
   ],
   "name": "habitica",
-  "enabled": true
+  "enabled": true,
+  "key": "habitica"
 }

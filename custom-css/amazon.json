@@ -6,5 +6,6 @@
     ""
   ],
   "name": "amazon",
-  "enabled": true
+  "enabled": true,
+  "key": "amazon"
 }

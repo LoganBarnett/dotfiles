@@ -8,5 +8,6 @@
     ""
   ],
   "name": "jenkins",
-  "enabled": true
+  "enabled": true,
+  "key": "jenkins"
 }

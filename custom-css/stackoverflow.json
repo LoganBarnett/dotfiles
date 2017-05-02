@@ -11,5 +11,6 @@
     ""
   ],
   "name": "stackoverflow",
-  "enabled": true
+  "enabled": true,
+  "key": "stackoverflow"
 }

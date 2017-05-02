@@ -8,5 +8,6 @@
     ""
   ],
   "name": "blogs",
-  "enabled": true
+  "enabled": true,
+  "key": "blogs"
 }

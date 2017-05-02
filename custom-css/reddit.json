@@ -6,5 +6,6 @@
     ""
   ],
   "name": "reddit",
-  "enabled": true
+  "enabled": true,
+  "key": "reddit"
 }

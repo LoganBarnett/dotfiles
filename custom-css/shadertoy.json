@@ -6,5 +6,6 @@
     ""
   ],
   "name": "shadertoy",
-  "enabled": true
+  "enabled": true,
+  "key": "shadertoy"
 }

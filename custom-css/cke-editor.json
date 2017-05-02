@@ -6,5 +6,6 @@
     ""
   ],
   "name": "cke-editor",
-  "enabled": true
+  "enabled": true,
+  "key": "cke-editor"
 }

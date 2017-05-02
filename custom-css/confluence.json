@@ -6,5 +6,6 @@
     ""
   ],
   "name": "confluence",
-  "enabled": true
+  "enabled": true,
+  "key": "confluence"
 }

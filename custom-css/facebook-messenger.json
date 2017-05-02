@@ -8,5 +8,6 @@
     ""
   ],
   "name": "facebook-messenger",
-  "enabled": true
+  "enabled": true,
+  "key": "facebook-messenger"
 }

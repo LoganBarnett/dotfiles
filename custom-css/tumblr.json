@@ -11,5 +11,6 @@
     ""
   ],
   "name": "tumblr",
-  "enabled": true
+  "enabled": true,
+  "key": "tumblr"
 }
