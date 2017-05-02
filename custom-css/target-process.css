@@ -53,6 +53,7 @@ div.i-role-card.ui-draggable-handle[style] {
 
 body, button, input, select, textarea {
   color: #ddd !important;
+  background-color: #121212 !important;
 }
 
 .tau-clientinput .highlight pre, .tau-clientinput pre {
