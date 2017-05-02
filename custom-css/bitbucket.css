@@ -14,6 +14,10 @@ h2 {
   color: #ddd !important;
 }
 
+.file-tree-wrapper {
+  background-color: #121212 !important;
+}
+
 .aui-button, a.aui-button, .aui-button:visited {
   background-color: #497 !important;
   color: #ddd !important;
@@ -31,6 +35,13 @@ h2 {
   background-color: #333 !important;
 }
 
+.removed.line .ediff-change, .removed.line .ediff-delete {
+  color: #121212 !important;
+}
+
+.added.line .ediff-add, .added.line .ediff-change {
+  color: #121212 !important;
+}
 
 .diff-view.text-view .added.line, .diff-view.text-view .added.segment-connector, .diff-view.text-view .added.line .comment-box, .diff-view.text-view .added.line .bitbucket-gutter-marker {
   background-color: #3e3 !important;
