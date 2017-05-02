@@ -3,6 +3,31 @@ body {
   background-color: #121212 !important;
 }
 
+.hero-stats .mana {
+  background-color: #121212 !important;
+  color: #eee;
+}
+
+.hero-stats .health {
+  background-color: #121212 !important;
+  color: #eee;
+}
+.hero-stats .experience {
+  background-color: #121212 !important;
+  color: #eee;
+}
+
+.hero-stats .mana .bar {
+  background-color: #228 !important;
+}
+
+.hero-stats .health .bar {
+  background-color: #822 !important;
+}
+.hero-stats .experience .bar {
+  background-color: #882 !important;
+}
+
 legend {
   color: #ddd !important;
 }
