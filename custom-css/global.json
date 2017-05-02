@@ -1,5 +1,5 @@
 {
-  "domains": [
+  "includes": [
     "http://*/*",
     "https://*/*",
     "http://*.com",

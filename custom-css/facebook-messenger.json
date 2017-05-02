@@ -1,5 +1,5 @@
 {
-  "domains": [
+  "includes": [
     "https://*.messenger.com/*",
     "https://messenger.com/*",
     "https://www.messenger.com/t/david.koontz.921"

@@ -1,5 +1,5 @@
 {
-  "domains": [
+  "includes": [
     "https://*.google.com/*",
     "https://google.com/*"
   ],

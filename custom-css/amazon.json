@@ -1,5 +1,5 @@
 {
-  "domains": [
+  "includes": [
     "https://www.amazon.com/*"
   ],
   "excludes": [

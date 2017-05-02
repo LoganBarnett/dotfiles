@@ -1,5 +1,5 @@
 {
-  "domains": [
+  "includes": [
     "https://bitbucket.org/*",
     "http://stash.americas.nwea.pvt/*"
   ],

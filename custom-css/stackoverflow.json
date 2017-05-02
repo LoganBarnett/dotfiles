@@ -1,5 +1,5 @@
 {
-  "domains": [
+  "includes": [
     "http://*.stackoverflow.com/*",
     "http://stackoverflow.com/*",
     "https://*.stackoverflow.com/*",

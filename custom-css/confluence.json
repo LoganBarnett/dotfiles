@@ -1,5 +1,5 @@
 {
-  "domains": [
+  "includes": [
     "https://confluence.americas.nwea.pvt/*"
   ],
   "excludes": [

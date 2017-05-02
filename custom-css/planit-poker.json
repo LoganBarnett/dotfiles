@@ -1,5 +1,5 @@
 {
-  "domains": [
+  "includes": [
     "http://www.planitpoker.com/*",
     "https://www.planitpoker.com/*"
   ],

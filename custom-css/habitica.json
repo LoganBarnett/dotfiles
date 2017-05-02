@@ -1,5 +1,5 @@
 {
-  "domains": [
+  "includes": [
     "http://habitica.com/*",
     "http://*.habitica.com/*",
     "https://habitica.com/*",

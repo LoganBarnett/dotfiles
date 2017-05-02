@@ -1,5 +1,5 @@
 {
-  "domains": [
+  "includes": [
     "https://bytearcher.com/*",
     "https://blog.akquinet.de/*",
     "http://veloballs.com/*"
