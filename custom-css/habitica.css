@@ -5,16 +5,16 @@ body {
 
 .hero-stats .mana {
   background-color: #121212 !important;
-  color: #eee;
+  color: #eee !important;
 }
 
 .hero-stats .health {
   background-color: #121212 !important;
-  color: #eee;
+  color: #eee !important;
 }
 .hero-stats .experience {
   background-color: #121212 !important;
-  color: #eee;
+  color: #eee !important;
 }
 
 .hero-stats .mana .bar {
