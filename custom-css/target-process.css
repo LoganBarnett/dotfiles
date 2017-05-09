@@ -1,4 +1,9 @@
 /* i-role-card.tau-card-v2.tau-card-v2_type_task.ui-draggable-handle[style] */
+
+.ui-tags__editor__link:hover {
+  color: #ddd !important;
+}
+
 div.i-role-card.ui-draggable-handle[style] {
   background-image: linear-gradient(-5deg, #243 1%, #243 49%, #364 51%, #364 99%) !important;
 }
@@ -84,6 +89,10 @@ body, button, input, select, textarea {
   background-color: #496 !important;
 }
 
+.state-selector__item:hover {
+  background-color: #528 !important;
+}
+
 .ui-attachments-control .uploader-toolbar .fileBrowser .uploader-text, .ui-attachments-control .uploader-toolbar .fileBrowser .uploader-text-active {
   color: #ddd !important;
 }
@@ -114,6 +123,21 @@ body, button, input, select, textarea {
   background-color: #333 !important;
 }
 
+.ui-drop-down .filter-field-wrapper {
+  background-color: #333 !important;
+}
+
+.drop-down-list .drop-down-option:hover,
+.drop-down-list .drop-down-option_hover {
+  background-color: #528 !important;
+  color: #ddd !important;
+}
+
+.tau-bubble__inner {
+  background-color: #333 !important;
+  color: #ddd !important;
+}
+
 .tau-boardclipboard {
   background-color: #121212 !important;
 }
@@ -133,6 +157,10 @@ body, button, input, select, textarea {
 
 .category-assignments__item:hover {
   background-color: #000 !important;
+}
+
+.entity-tabs .tab-item-right-part:hover, .entity-tabs .tab-item:hover {
+  color: #ddd !important;
 }
 
 .entity-tabs .tab-item.selected {

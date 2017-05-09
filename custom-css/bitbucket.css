@@ -14,6 +14,21 @@ h2 {
   color: #ddd !important;
 }
 
+aui-inline-dialog .aui-inline-dialog-contents, .aui-inline-dialog .aui-inline-dialog-contents, aui-inline-dialog .contents, .aui-inline-dialog .contents {
+  background-color: #333 !important;
+}
+
+.commits-table .message .message-subject {
+  color: #ddd !important;
+}
+
+.jstree.file-tree > ul a {
+  color: #ddd !important;
+}
+h3, .aui-page-header-hero .aui-page-header-main p, .aui-page-header-marketing .aui-page-header-main p {
+  color: #ddd !important;
+}
+
 .file-tree-wrapper {
   background-color: #121212 !important;
 }
