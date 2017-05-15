@@ -1,5 +1,8 @@
 #! /usr/bin/env node
 
+// TODO: Install the extension for this dynamically. Links of relevance:
+// https://github.com/tsbehlman/Injector/issues/1
+// http://tbehlman.com/safari/Injector.safariextz
 const process = require('process')
 const fs = require('fs')
 const path = require('path')
