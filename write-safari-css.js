@@ -1,4 +1,4 @@
-#! /usr/bin/env node
+#! /usr/bin/env n use 7.7.4
 
 // NOTE: If the db is ever corrupted by a bad set of 'value', the first record
 // is always key = 'StyleStorageVersion', and the value = '1.7.0'. The value is
