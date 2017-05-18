@@ -68,6 +68,27 @@ body, button, input, select, textarea {
 .tau-clientinput table tr {
   background-color: #333 !important;
 }
+.tau-list__table {
+  background-color: #333 !important;
+}
+
+/* table header row for task list */
+.tau-board-list-view .tau-list-caption {
+  background-color: #333 !important;
+  color: #ddd !important;
+}
+
+/* table row for task list for complete tasks */
+.tau-board-list-view .tau-list-entity.tau-list-entity_final-state, .tau-board-list-view .tau-list-entity.tau-list-entity_isInPast {
+  background-color: #121212 !important;
+  color: #ddd !important;
+}
+
+/* table row for task list */
+.tau-list-entity {
+  background-color: #333 !important;
+  color: #ddd !important;
+}
 
 .tau-cover-view--animated:before {
   background-color: #121212 !important;
