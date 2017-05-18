@@ -92,6 +92,9 @@ h3, .aui-page-header-hero .aui-page-header-main p, .aui-page-header-marketing .a
   background-color: #424 !important;
 }
 
+.markup-content {
+  color: #ddd !important;
+}
 .markup .user-mention {
   background-color: #809 !important;
 }
