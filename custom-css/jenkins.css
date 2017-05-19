@@ -2,6 +2,10 @@ body {
   background-color: #121212 !important;
 }
 
+a:link {
+  color: var(--link-color) !important;
+}
+
 div.CodeMirror-selected {
   background-color: #444 !important;
 }
