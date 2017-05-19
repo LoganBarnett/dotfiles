@@ -4,6 +4,9 @@
 // is always key = 'StyleStorageVersion', and the value = '1.7.0'. The value is
 // also in the same utf16le encoding that the rest of it is.
 const fs = require('fs')
+const postcss = require('postcss')
+const customProperties = require('postcss-custom-properties')
+const cssVars = require('./css-vars.js')
 
 const readFileData = (path) => {
   try {
@@ -33,11 +36,23 @@ names.forEach(name => {
 
   meta.key = meta.key || name
 
-  const css = readFileData(`custom-css/${name}.css`, 'utf8')
-  let js = readFileData(`custom-css/${name}.js`, 'utf8')
+  const css = readFileData(`custom-css/${name}.css`)
+  let js = readFileData(`custom-css/${name}.js`)
   if(js == 'undefined') js = ''
 
-  meta.styles = css
+  try {
+    const customPropPlugin = customProperties()
+    customPropPlugin.setVariables(cssVars)
+    const processedCss = postcss()
+      .use(customPropPlugin)
+      .process(css)
+      .css
+
+    meta.styles = processedCss
+  }
+  catch(e) {
+    console.error(`error processing file ${name}`, e)
+  }
   meta.script = js
 
   const convertedMeta = new Iconv('UTF-8', 'UTF-16LE')

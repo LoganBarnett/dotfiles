@@ -158,7 +158,7 @@ input {
 
 /* Links (blue) #89A2CF*/
 a.fl:link, .fl a, .flt, a.flt, .gl a:link, a.mblink, .mblink b,#foot #navcnt a,a.fl.q._KCd._tWc,.st .f .fl {
-    color: #9BAED2!important;
+    color: var(--link-color) !important;
 }
 
 /* Text #BDBDBD */
