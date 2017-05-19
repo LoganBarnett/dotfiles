@@ -14,6 +14,7 @@ const readFileData = (path) => {
   }
   // TODO: Specifically look for files not existing as a catch.
   catch(e) {
+    console.warn(`File at ${path} not found! Using empty string as content.`)
     return ''
   }
 }
