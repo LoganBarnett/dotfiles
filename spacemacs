@@ -830,6 +830,26 @@ layers configuration. You are free to put any user code."
 
   (load-library "org-to-jekyll")
 
+  ;; TODO: move to another lisp file
+  (defun my/debt-months-remaining (principle monthly-payment interest-rate)
+    (- (log
+     (- 1
+        (/ (* principle interest-rate) monthly-payment)
+        )
+     (+ 1 interest-rate)
+     )))
+
+  ;; for reference - this was a port of the JS version (it might be incomplete
+  ;; port-wise) on this site:
+  ;; https://home.ubalt.edu/ntsbarsh/Business-stat/otherapplets/CompoundCal.htm#rjava9
+  ;; in the "Accelerating Mortgage Payments" form.
+  ;; (defun my/debt-months-remaining2 (principle monthly-payment interest-rate)
+  ;;   (/
+  ;;    (log (/ monthly-payment (- monthly-payment (* principle interest-rate))))
+  ;;    (log (+ 1 interest-rate))
+  ;;    )
+  ;;   )
+
   (setq-default grep-find-ignored-directories '(
                                                "tmp"
                                                ".tmp"
