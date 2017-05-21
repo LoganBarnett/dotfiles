@@ -828,6 +828,8 @@ layers configuration. You are free to put any user code."
   (load-library "config-java")
   (config-java)
 
+  (load-library "org-to-jekyll")
+
   (setq-default grep-find-ignored-directories '(
                                                "tmp"
                                                ".tmp"
