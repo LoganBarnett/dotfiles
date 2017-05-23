@@ -1,0 +1,26 @@
+{
+  "name": "dotfiles",
+  "version": "1.0.0",
+  "description": "System config managed via scripts.",
+  "main": "",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LoganBarnett/dotfiles.git"
+  },
+  "keywords": [
+    "dotfiles"
+  ],
+  "author": "Logan Barnett (logustus@gmail.com)",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/LoganBarnett/dotfiles/issues"
+  },
+  "homepage": "https://github.com/LoganBarnett/dotfiles#readme",
+  "dependencies": {
+    "postcss": "^6.0.1",
+    "postcss-custom-properties": "^6.0.1"
+  }
+}
