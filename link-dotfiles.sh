@@ -2,6 +2,7 @@
 
 PWD=$(pwd)
 EASYFILES="
+floorc.json
 oh-my-zsh
 zshrc
 vimrc
