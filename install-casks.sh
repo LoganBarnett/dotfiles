@@ -6,6 +6,7 @@ slack
 chromium
 discord
 skype
+haskell-platform
 hipchat
 microsoft-lync
 mumble

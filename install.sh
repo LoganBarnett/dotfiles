@@ -52,6 +52,7 @@ docker-machine
 pinentry-mac
 elm
 dos2unix
+stack
 gnupg
 "
 
