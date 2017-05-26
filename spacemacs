@@ -45,6 +45,7 @@ values."
      java
      javascript
      markdown
+     org
      osx
      purescript
      spell-checking
