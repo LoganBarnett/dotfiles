@@ -62,7 +62,18 @@ ZSH_THEME="robbyrussell"
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(git, noreallyjustfuckingstopalready, zsh-syntax-highlighting)
+
+# TODO: add osx conditionally
+plugins=(
+    brew,
+    command-not-found,
+    git,
+    node,
+    noreallyjustfuckingstopalready,
+    npm,
+    rsync,
+    yarn
+)
 
 # User configuration
 
@@ -164,8 +175,19 @@ eval $(thefuck --alias)
 # . "$(brew --prefix nvm)/nvm.sh"
 [[ -s "$HOME/.avn/bin/avn.sh" ]] && source "$HOME/.avn/bin/avn.sh" # load avn
 
-# vim mode for zsh
-bindkey -v
+# When we're running ansi-term from emacs, we don't want the evil-mode bindings
+# and zsh's vim bindings stumbling over each other. See
+# https://github.com/syl20bnr/spacemacs/issues/7140#issuecomment-252036519 for
+# more config examples.
+if [ $EMACS ]; then
+  bindkey -e
+else
+  # vim mode for zsh
+  bindkey -v
+  # Bundles that break emacs/term.el
+  # Syntax highlighting bundle.
+  plugins=$plugins"zsh-users/zsh-syntax-highlighting"
+fi
 
 function pwd_prompt() {
   echo "${PWD/$HOME/~}"
@@ -187,11 +209,15 @@ EDIT_MODE_PROMPT="%{$fg[green]%}✎ "
 COMMAND_MODE_PROMPT="%{$fg[yellow]%}© "
 VIM_MODE_PROMPT=$EDIT_MODE_PROMPT
 function mode_change_prompt() {
-  case $KEYMAP in
-    vicmd) VIM_MODE_PROMPT=$COMMAND_MODE_PROMPT;; # command mode
-    viins|main) VIM_MODE_PROMPT=$EDIT_MODE_PROMPT;; # insert mode
-    *) VIM_MODE_PROMPT=$EDIT_MODE_PROMPT;; # insert mode
-  esac
+  if [ $EMACS ]; then
+    VIM_MODE_PROMPT="$"
+  else
+    case $KEYMAP in
+      vicmd) VIM_MODE_PROMPT=$COMMAND_MODE_PROMPT;; # command mode
+      viins|main) VIM_MODE_PROMPT=$EDIT_MODE_PROMPT;; # insert mode
+      *) VIM_MODE_PROMPT=$EDIT_MODE_PROMPT;; # insert mode
+    esac
+  fi
   set_prompt
   zle reset-prompt
 }
@@ -254,11 +280,11 @@ $(vim_mode_prompt)'
 # }
 # 
 function timer_prompt() {
-  if [ $timer_show ]; then 
+  if [ $timer_show ]; then
     echo $timer_show"s"
   fi
 }
- 
+
 # cause the prompt to repaint so we can see the current time
 # TMOUT=1
 # TRAPALRM() {
