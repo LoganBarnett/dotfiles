@@ -49,6 +49,7 @@ values."
      purescript
      spell-checking
      syntax-checking
+     typescript
      version-control
      )
    ;; List of additional packages that will be installed without being
@@ -831,6 +832,8 @@ layers configuration. You are free to put any user code."
   (config-java)
   (load-library "config-elm")
   (config-elm)
+  (load-library "config-typescript")
+  (config-typescript)
 
   (load-library "org-to-jekyll")
 
