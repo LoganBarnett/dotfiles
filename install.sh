@@ -54,6 +54,7 @@ elm
 dos2unix
 stack
 gnupg
+yarn
 "
 
     echo "updating homebrew"
