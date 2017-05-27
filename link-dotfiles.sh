@@ -2,19 +2,20 @@
 
 PWD=$(pwd)
 EASYFILES="
-floorc.json
-oh-my-zsh
-zshrc
-vimrc
-pentadactylrc
 Xdefaults
+avnrc
+floorc.json
+gitconfig
+ideavim
+oh-my-zsh
+pentadactylrc
+spacemacs
 tmux.conf
 urxvt
-ideavim
-gitconfig
-spacemacs
+vimrc
 zshenv
-avnrc"
+zshrc
+"
 
 # link easy things
 for dotfile in $EASYFILES

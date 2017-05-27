@@ -31,30 +31,30 @@ if [ $(uname) = 'Darwin' ]; then
 
     # ispell so flyspell works on emacs
     BREWS="
-vim
-wget
-node
-htop
-nmap
 cask
-zsh-syntax-highlighting
-npm
-mongodb
-ispell
 coreutils
-mtr
-n
-graphviz
-postgresql
-markdown
 docker
 docker-machine
-pinentry-mac
-elm
 dos2unix
-stack
+elm
 gnupg
+graphviz
+htop
+ispell
+markdown
+mongodb
+mtr
+n
+nmap
+node
+npm
+pinentry-mac
+postgresql
+stack
+vim
+wget
 yarn
+zsh-syntax-highlighting
 "
 
     echo "updating homebrew"
