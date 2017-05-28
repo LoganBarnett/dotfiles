@@ -489,13 +489,6 @@ before packages are loaded. If you are unsure, you should try in setting them in
           (kill-buffer buffer)
           (message "File '%s' successfully removed" filename)))))
 
-;; TODO: Setup a keybinding to replace org-clock-report with this function.
-(defun my/org-clock-report ()
-  "Run org-clock-report but don't leave a narrowed buffer when done."
-  (interactive)
-  (org-clock-report)
-  (widen))
-
 (defun dotspacemacs/user-config ()
   "This is a safe place to stick user-specific configuration for Spacemacs."
   (message "Loading user config")
@@ -516,34 +509,6 @@ before packages are loaded. If you are unsure, you should try in setting them in
   ;; (paradox-require 'pinentry)
   (defvar epa-pinentry-mode)
   (setf epa-pinentry-mode 'loopback)
-
-  ;; org-mode settings
-  ;; set default diary location
-  (setq-default diary-file "~/notes/diary.org")
-  ;; (setq-default appt-audible t)
-  (setq-default calendar-date-style 'iso)
-  (setq-default org-agenda-files '("~/notes/planner.org"))
-  ;; shrink inline images see:
-  ;; http://lists.gnu.org/archive/html/emacs-orgmode/2012-08/msg01388.html
-  (setq-default org-src-fontify-natively t)
-  (setq-default org-image-actual-width '(400))
-  (add-hook 'org-mode-hook 'auto-fill-mode)
-  ;; Some initial langauges we want org-babel to support
-  (require 'ob-js)
-  (org-babel-do-load-languages
-   'org-babel-load-languages
-   '(
-     (sh . t)
-     (python . t)
-     (R . t)
-     (ruby . t)
-     (ditaa . t)
-     (dot . t)
-     (octave . t)
-     (sqlite . t)
-     (perl . t)
-     (js . t)
-     ))
 
 
   ;; turn off the menu bar so we can see things like the time on small screens
@@ -827,6 +792,8 @@ layers configuration. You are free to put any user code."
   ;; handle long lines
   (load-library "config-so-long-mode")
   (config-so-long-mode)
+  (load-library "config-org-mode")
+  (config-org-mode)
 
   (load-library "org-to-jekyll")
 
