@@ -27,6 +27,11 @@
 ;; reports the imports as errors. These errors do not show up as build errors,
 ;; so we're free to ignore them in Webpack based projects.
 ;;
+;; Reading:
+;; https://github.com/Microsoft/TypeScript/issues/9538
+;; https://github.com/Microsoft/TypeScript/pull/9646
+;; https://github.com/Microsoft/TypeScript/issues/10567
+;;
 ;; TODO: Remove the fringes and underlines as well.
 (defun flycheck-typescript-remove-passive-aggressive-import-errors ()
   "Remove passive aggressive error messages from flycheck."
