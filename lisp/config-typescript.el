@@ -7,7 +7,6 @@
 (require 'flycheck)
 (require 'cl-lib)
 (defvar flycheck-current-errors)
-(defvar use-package)
 
 (defun is-passive-aggressive-import-error (error)
   "Is t if flycheck-error ERROR is passive aggressive opinionation."

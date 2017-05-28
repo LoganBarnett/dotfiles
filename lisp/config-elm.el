@@ -6,6 +6,7 @@
 
 ;; configure elm
 (defun config-elm ()
+  "Configure Elm."
   ;; (use-package "elm"
     ;; :init
     ;; :config
