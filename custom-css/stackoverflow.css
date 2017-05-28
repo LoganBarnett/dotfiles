@@ -6,6 +6,10 @@ body {
   color: #ddd !important;
 }
 
+.container {
+  background-color: var(--general-background-color) !important;
+}
+
 blockquote {
   background-color: #212 !important;
 }
