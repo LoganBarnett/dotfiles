@@ -46,6 +46,16 @@ ul.top-nav li :hover
 */
 /****************************************************/
 
+/* links _around_ comment sections */
+.discussion-item-ref-title .title-link {
+  color: var(--link-color) !important;
+}
+
+/* link items in discussions */
+.discussion-item-entity {
+  color: var(--link-color) !important;
+}
+
 /* end of path */
 .breadcrumb strong.final-path {
   color: #ddd !important;
