@@ -3,6 +3,72 @@ body {
   background-color: #121212 !important;
 }
 
+#main>div>div>div>.tab-content {
+  border: none !important;
+}
+
+.options-menu {
+  background-color: var(--heading-background-color) !important;
+  padding: 0 !important;
+  border: none !important;
+}
+
+.options-menu li textarea,
+.options-menu li>a,
+.options-menu li>button,
+.options-menu li>in {
+  padding-bottom: 0 !important;
+}
+
+/* Aborted attempt at making S curves around the active tab.
+/*
+.options-menu li.active:before {
+  // background-color: var(--tab-inactive-sibling-container-background-color) !important;
+  content: '';
+  background-image: radial-gradient(circle at 100% 100%, rgba(204, 0, 0, 0) 100px, blue 100px);
+}
+
+.options-menu li.active:after {
+  // background-color: var(--tab-inactive-sibling-container-background-color) !important;
+  content: '';
+  background-image: radial-gradient(circle at 100% 100%, rgba(204, 0, 0, 0) 100px, blue 100px);
+}
+
+.options-menu li + options-menu li.active {
+  background-color: var(--tab-inactive-sibling-container-background-color) !important;
+}
+
+.options-menu li>a ~ options-menu li.active,
+.options-menu li>button ~ options-menu li.active {
+  border-radius: var(--tab-left-inactive-border-radius) !important;;
+}
+
+.options-menu li>a + options-menu li.active,
+.options-menu li>button + options-menu li.active {
+  border-radius: var(--tab-right-inactive-border-radius) !important;;
+}
+*/
+
+.options-menu li>a, .options-menu li>button {
+  border-radius: var(--tab-inactive-border-radius);
+  background-color: var(--tab-inactive-background-color) !important;
+  color: var(--tab-inactive-color) !important;
+  border: none !important;
+}
+
+.options-menu li.active a, .options-menu li.active button {
+  background-color: var(--tab-active-background-color) !important;
+  border-radius: var(--tab-active-border-radius) !important;
+  color: var(--tab-active-color) !important;
+}
+
+.options-menu li, .options-submenu li {
+  margin-right: 0 !important;
+  border: none;
+  padding-bottom: 0 !important;
+  margin-bottom: 0 !important;
+}
+
 .hero-stats .mana {
   background-color: #121212 !important;
   color: #eee !important;
