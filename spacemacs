@@ -620,7 +620,6 @@ before packages are loaded. If you are unsure, you should try in setting them in
   (add-hook 'web-mode-hook  'my-web-mode-hook)
 
   ;; css-mode
-  (add-hook 'css-mode-hook 'rainbow-mode)
 
   ;; indentation
   (setq-default css-indent-offset 2)
@@ -722,18 +721,6 @@ layers configuration. You are free to put any user code."
   (add-hook 'text-mode-hook 'fci-mode)
   (add-hook 'web-mode-hook (lambda () (fci-mode 0)))
 
-  ;; handle long lines
-  (require 'so-long)
-  (defvar so-long-minor-modes)
-  (defvar so-long-target-modes)
-  (add-to-list 'so-long-minor-modes 'rainbow-delimiters-mode)
-  ;; (add-to-list 'so-long-minor-modes 'color-identifiers-mode)
-  (add-to-list 'so-long-minor-modes 'rainbow-identifiers-mode)
-  (add-to-list 'so-long-minor-modes 'flycheck-mode)
-  (add-to-list 'so-long-target-modes 'json-mode)
-  (so-long-enable)
-  (setq-default so-long-threshold 500)
-  (message "so-long watching enabled")
 
   ;; (add-hook 'buffer-list-update-hook 'turn-on-fci-mode)
   (paradox-require 'markdown-mode)
@@ -835,6 +822,11 @@ layers configuration. You are free to put any user code."
   (config-elm)
   (load-library "config-typescript")
   (config-typescript)
+  (load-library "config-rainbow-mode")
+  (config-rainbow-mode)
+  ;; handle long lines
+  (load-library "config-so-long-mode")
+  (config-so-long-mode)
 
   (load-library "org-to-jekyll")
 
