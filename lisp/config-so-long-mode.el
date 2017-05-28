@@ -1,6 +1,6 @@
-;;; config-so-long-mode --- configure elm support
+;;; config-so-long-mode --- configure so-long support
 ;;; Commentary:
-;; the layer sets up a lot of this
+;; Configure so-long-mode to my liking.
 
 ;;; Code:
 (require 'use-package)
