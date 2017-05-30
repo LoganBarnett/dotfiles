@@ -1,6 +1,6 @@
 textarea {
   color: #ddd !important;
-  background-color: #121212 !important;
+  background-color: var(--general-background-color) !important;
 }
 
 .link {
@@ -8,7 +8,8 @@ textarea {
 }
 
 body {
-  background-color: #121212 !important;
+  background-color: var(--general-background-color) !important;
+  color: var(--text-color) !important;
 }
 
 .commentarea {
@@ -27,23 +28,45 @@ body {
   background-color: #234 !important;
 }
 
+.md code, .md pre {
+  border: var(--thin-border) !important;
+  background-color: var(--code-background-color) !important;
+}
+
+.md pre code {
+  background-color: var(--code-background-color) !important;
+}
+
 .linkinfo {
   background-color: #222 !important;
 }
 
 .side {
-  background-color: #121212 !important;
+  background-color: var(--general-background-color) !important;
 }
 
 .titlebox form.toggle, .leavemoderator {
-  background-color: #121212 !important;
+  background-color: var(--general-background-color) !important;
+}
+
+.titlebox h1 a {
+  color: var(--link-color) !important;
 }
 
 .morelink {
-  background-color: #121212 !important;
+  background-color: var(--general-background-color) !important;
   background-image: none !important;
 }
 
 .morelink .nub {
   display: none !important;
+}
+
+.thing .title {
+  color: var(--link-color) !important;
+}
+
+.thing .title:visited {
+  color: var(--visited-link-color) !important;
+  background-color: var(--visited-link-background-color) !important;
 }

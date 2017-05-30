@@ -1,10 +1,14 @@
 module.exports = {
   '--border': '#5d4d7a',
   '--text': '#b2b2b2',
+  '--text-color': '#b2b2b2',
   '--dim-text': '#686868',
   '--background': '#292b2e',
   '--general-background-color': '#292b2e',
+  '--code-background-color': '#100a14',
   '--link-color': '#2d9574',
+  '--visited-link-color': '#4f97d7',
+  '--visited-link-background-color': '#44505c',
   '--heading-background-color': '#292b2e',
   '--tab-inactive-color': '#2aa1ae',
   '--tab-inactive-background-color': '#292b2e',
@@ -19,4 +23,5 @@ module.exports = {
   '--tab-active-color': '#b2b2b2',
   '--tab-list-background-color': '#292b2e',
   '--button-background-color': '',
+  '--thin-border': '0.1em solid #5d4d7a',
 }
