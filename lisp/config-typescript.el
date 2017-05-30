@@ -7,6 +7,7 @@
 (require 'flycheck)
 (require 'cl-lib)
 (defvar flycheck-current-errors)
+(defvar typescript-indent-level)
 
 (defun is-passive-aggressive-import-error (error)
   "Is t if flycheck-error ERROR is passive aggressive opinionation."
@@ -42,7 +43,12 @@
 (defun config-typescript ()
   "Setup Typescript support."
   (use-package "tide"
+    :init
     :config
+    (use-package "typescript-mode"
+      :config
+      (setq-default typescript-indent-level 2)
+      )
     (add-hook 'flycheck-after-syntax-check-hook
               #'flycheck-typescript-remove-passive-aggressive-import-errors)
     )
