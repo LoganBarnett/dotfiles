@@ -24,4 +24,11 @@ module.exports = {
   '--tab-list-background-color': '#292b2e',
   '--button-background-color': '',
   '--thin-border': '0.1em solid #5d4d7a',
+  '--thin-border-color': '#5d4d7a',
+  '--diff-add-color': '#293235',
+  '--diff-add-background-color': '#86dc2f',
+  '--diff-minor-add-background-color': '#67b11d',
+  '--diff-remove-color': '#3c2a2c',
+  '--diff-remove-background-color': '#e0616d',
+  '--diff-minor-remove-background-color': '#ce537a',
 }

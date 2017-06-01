@@ -14,6 +14,12 @@ h2 {
   color: #ddd !important;
 }
 
+.aui-sidebar .aui-sidebar-wrapper,
+.aui-sidebar-submenu .aui-sidebar-wrapper {
+  background-color: var(--tab-active-background-color) !important;
+  color: var(--tab-active-color) !important;
+}
+
 aui-inline-dialog .aui-inline-dialog-contents, .aui-inline-dialog .aui-inline-dialog-contents, aui-inline-dialog .contents, .aui-inline-dialog .contents {
   background-color: #333 !important;
 }
@@ -27,6 +33,11 @@ aui-inline-dialog .aui-inline-dialog-contents, .aui-inline-dialog .aui-inline-di
 }
 h3, .aui-page-header-hero .aui-page-header-main p, .aui-page-header-marketing .aui-page-header-main p {
   color: #ddd !important;
+}
+
+.file-toolbar {
+  background-color: var(--tab-active-background-color) !important;
+  color: var(--tab-active-color) !important;
 }
 
 .file-tree-wrapper {
@@ -49,6 +60,14 @@ h3, .aui-page-header-hero .aui-page-header-main p, .aui-page-header-marketing .a
 .comment-container .comment.focused > .content {
   background-color: #333 !important;
 }
+.pull-request-activity .diff-comment-activity .file-content,
+.pull-request-activity .file-comment-activity .detail .file-comment-container {
+  border: var(--thin-border) !important;
+}
+
+.CodeMirror-gutter.gutter-border {
+  border-color: var(--thin-border-color) !important;
+}
 
 .removed.line .ediff-change, .removed.line .ediff-delete {
   color: #121212 !important;
@@ -59,13 +78,13 @@ h3, .aui-page-header-hero .aui-page-header-main p, .aui-page-header-marketing .a
 }
 
 .diff-view.text-view .added.line, .diff-view.text-view .added.segment-connector, .diff-view.text-view .added.line .comment-box, .diff-view.text-view .added.line .bitbucket-gutter-marker {
-  background-color: #3e3 !important;
-  color: #111 !important;
+  background-color: var(--diff-add-background-color) !important;
+  color: var(--diff-add-color) !important;
 }
 
 .diff-view.text-view .removed.line, .diff-view.text-view .removed.segment-connector, .diff-view.text-view .removed.line .comment-box, .diff-view.text-view .removed.line .bitbucket-gutter-marker {
-  background-color: #e33 !important;
-  color: #111 !important;
+  background-color: var(--diff-remove-background-color) !important;
+  color: var(--diff-remove-color) !important;
 }
 
 .text-view .line, .text-view .line .CodeMirror-gutter-elt > * {
@@ -100,7 +119,8 @@ h3, .aui-page-header-hero .aui-page-header-main p, .aui-page-header-marketing .a
 }
 
 table.aui>tbody>tr, table.aui>tfoot>tr {
-  background-color: #333 !important;
+  background-color: var(--general-background-color) !important;
+  color: var(--text-color) !important;
 }
 
 .aui-page-panel {
