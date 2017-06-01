@@ -15,9 +15,9 @@
 ;; configure org-mode
 (defun config-org-mode ()
   "Configure 'org-mode'."
-  (use-package "org-mode"
+  ;; (use-package "org-mode"
     ;; :init
-    :config
+    ;; :config
     ;; set default diary location
     (setq-default diary-file "~/notes/diary.org")
     ;; (setq-default appt-audible t)
@@ -38,10 +38,11 @@
     (bind-key (kbd "C-c C-x C-r") 'my/org-clock-report)
     ;; Some initial langauges we want org-babel to support
     (require 'ob-js)
+    (require 'ob-sh)
     (org-babel-do-load-languages
      'org-babel-load-languages
      '(
-       (sh . t)
+       (shell . t)
        (python . t)
        (R . t)
        (ruby . t)
@@ -52,7 +53,8 @@
        (perl . t)
        (js . t)
        ))
-    ))
+    )
+;; )
 (provide 'config-org-mode)
 
 ;;; config-org-mode.el ends here
