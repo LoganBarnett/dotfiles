@@ -1,7 +1,8 @@
 {
   "includes": [
     "https://bitbucket.org/*",
-    "http://stash.americas.nwea.pvt/*"
+    "http://stash.americas.nwea.pvt/*",
+    "https://stash.americas.nwea.pvt/*"
   ],
   "excludes": [
     ""
