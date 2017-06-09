@@ -797,6 +797,7 @@ layers configuration. You are free to put any user code."
   (config-org-mode)
 
   (load-library "org-to-jekyll")
+  (load-library "renumber-list")
 
   ;; TODO: move to another lisp file
   (defun my/debt-months-remaining (principle monthly-payment interest-rate)
