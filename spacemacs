@@ -786,6 +786,8 @@ layers configuration. You are free to put any user code."
   (config-java)
   (load-library "config-elm")
   (config-elm)
+  (load-library "config-javascript")
+  (config-javascript)
   (load-library "config-typescript")
   (config-typescript)
   (load-library "config-rainbow-mode")
