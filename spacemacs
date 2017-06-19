@@ -74,6 +74,7 @@ values."
      multi-line
      multi-term
      nyan-mode
+     prettier-js
      rainbow-identifiers
      rainbow-mode
      )
@@ -387,50 +388,6 @@ before packages are loaded. If you are unsure, you should try in setting them in
   ;; (setq flycheck-check-syntax-automatically '(mode-enabled save idle-change new-line))
   )
 
-(defun my/use-checker-from-node-modules (checker-name)
-  "Make flycheck look for an executable for CHECKER-NAME inside the node_modules directory for a project."
-  (defvar-local path "invalid")
-  (setq-local path "invalid")
-  ;; (message "flycheck -- setting %s exec for mode %s" checker-name major-mode )
-  (let* ((root (locate-dominating-file
-                (or (buffer-file-name) default-directory)
-                "node_modules"))
-         (path (and root
-                     (expand-file-name (concat "node_modules/.bin/" checker-name)
-                                       root))))
-    (if path
-        (let ((checker-exec-sym (intern (concat "flycheck-javascript-" checker-name "-executable"))))
-             (make-local-variable checker-exec-sym)
-             (set checker-exec-sym path)
-             (message "exec %s is %s" checker-name path)
-             )
-      ;; (message "flycheck -- checker %s not available for mode %s with file %s"
-      ;;          checker-name major-mode buffer-file-name)
-      )
-    )
-  )
-
-;; I don't get how this can work yet - need time to grok - unused
-(defun my/use-node-modules-bin ()
-  "Set executables of JS checkers from local node modules."
-  (defvar-local file-name "")
-  (defvar-local root "")
-  (defvar-local module-directory "")
-  (message "using node_modules/.bin for JS local linting/checking")
-  (-when-let* ((file-name (buffer-file-name))
-               (root (locate-dominating-file file-name "node_modules"))
-               (module-directory (expand-file-name "node_modules" root)))
-    (pcase-dolist (`(,checker . ,module) '((javascript-jshint . "jshint")
-                                           (javascript-eslint . "eslint")
-                                           (javascript-jscs   . "jscs")
-                                           (javascript-flow   . "flow")))
-      (let ((package-directory (expand-file-name module module-directory))
-            (executable-var (flycheck-checker-executable-variable checker)))
-        (when (file-directory-p package-directory)
-          (set (make-local-variable executable-var)
-               (expand-file-name (concat ".bin/" module)
-                                 package-directory)))))))
-
 (defun my/flycheck-list-errors-only-when-errors ()
   "Show flycheck error list when there are errors in the current buffer."
   (defvar flycheck-current-errors)
@@ -442,14 +399,6 @@ before packages are loaded. If you are unsure, you should try in setting them in
     (-when-let (buffer (get-buffer flycheck-error-list-buffer))
       (dolist (window (get-buffer-window-list buffer))
         (quit-window nil window)))))
-
-(defun my/fix-js2-rainbow-identifiers ()
-  "Plea to the gods to fix rainbow-identifiers with js2-mode."
-  (message "HACK: turning off rainbow-identifiers-mode")
-  (rainbow-identifiers-mode 0)
-  (message "HACK: turning back on rainbow-identifiers-mode")
-  (rainbow-identifiers-mode 1)
-  )
 
 (defun my/highlight-gt-80-columns ()
   "Highlight any text exceeding 80 columns.  You naughty text, you."
@@ -468,11 +417,6 @@ before packages are loaded. If you are unsure, you should try in setting them in
      )
    )
   (message "applied > 80 column highlighting")
-  )
-
-(defun my/js2-disable-global-variable-highlight ()
-  "Disable js2 global variable highlight.  Wait.  Am I using this?"
-  (font-lock-remove-keywords 'js2-mode 'js2-external-variable)
   )
 
 ;; shameless grab from
@@ -562,7 +506,6 @@ before packages are loaded. If you are unsure, you should try in setting them in
   (setq-default ns-function-modifier 'hyper)  ; make Fn key do Hyper
   ;; not an osx setting, but keyboard related (maybe move all of these to
   ;; keyboard section)
-  ;; (setq-default )
   ;; (define-key 'key-translation-map (kbd "<menu>") 'super)
   ;; (setq-default w32-apps-modifier 'super)
   ;; (global-unset-key (kbd "<menu>"))
@@ -589,9 +532,6 @@ before packages are loaded. If you are unsure, you should try in setting them in
 
   ;; indentation
   (setq-default css-indent-offset 2)
-  ;; prevent indentation from lining up with a prior line's glyph
-  ;; this will make it so fighting is less necessary to appease linters
-  (setq-default js2-pretty-multiline-declarations nil)
   (paradox-require 'cc-mode)
   (defvar c-offsets-alist)
   (add-to-list 'c-offsets-alist '(arglist-close . c-lineup-close-paren))
@@ -608,7 +548,6 @@ before packages are loaded. If you are unsure, you should try in setting them in
   (global-linum-mode) ; show line numbers by default
   (setq-default indent-tabs-mode nil)
   (setq-default tab-width 2)
-  (setq-default js-indent-level 2)
 
   ;; prog-mode stuff
   ;; multi-line
@@ -695,17 +634,6 @@ layers configuration. You are free to put any user code."
   ;; (add-hook 'markdown-mode-hook (lambda () (auto-fill-mode)))
  ;;(setq-default fci-rule-width 1)
   ;;(setq-default fci-rule-color "darkblue")
-
-  ;; javascript-mode
-  (setq-default js2-strict-missing-semi-warning nil)
-  (setq-default js2-strict-trailing-comma-warning nil)
-  (setq-default js2-mode-show-parse-errors nil)
-  (setq-default js2-highlight-external-variables nil)
-  ;; (setq-default js2-mode-toggle-warnings-and-errors 0)
-  (setq-default js2-mode-show-strict-warnings nil)
-
-  ;; (add-hook 'js2-mode 'js2-mode-toggle-warnings-and-errors)
-  ;; (add-hook 'js2-mode 'my/disable-js2-global-var-highlight)
 
   ;; purescript-mode
   (setq-default psc-ide-client-executable "/usr/local/bin/psc-ide-client")
@@ -824,9 +752,7 @@ layers configuration. You are free to put any user code."
   (setq-default grep-find-ignored-directories '(
                                                "tmp"
                                                ".tmp"
-                                               "node_modules"
                                                ))
-  ;; (add-to-list 'grep-find-ignored-directories "node_modules")
 
   ;; (if (locate-library "flycheck-purescript-mode")
   ;;     (autoload "flycheck-purescript-mode" "flycheck-purescript-mode" "checker for purescript" t)
@@ -865,9 +791,10 @@ layers configuration. You are free to put any user code."
  '(flycheck-javascript-flow-args nil)
  '(package-selected-packages
    (quote
-    (dockerfile-mode docker tablist docker-tramp tide typescript-mode org-projectile org-present org-pomodoro alert log4e gntp org-download htmlize gnuplot floobits multi-term diminish s rainbow-mode winum fuzzy f smeargle orgit org magit-gitflow helm-gitignore gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link evil-magit magit magit-popup packed auto-complete evil flyspell-correct async multiple-cursors avy simple-httpd haml-mode dash multi-line shut-up company-emacs-eclim eclim iedit markdown-mode bind-key tern smartparens bind-map highlight flycheck git-commit with-editor company projectile helm helm-core yasnippet skewer-mode js2-mode hydra purescript-mode vimrc-mode dactyl-mode rainbow-identifiers color-identifiers-mode color-identifiers define-word yaml-mode ws-butler window-numbering which-key web-mode web-beautify volatile-highlights vi-tilde-fringe uuidgen use-package toc-org tagedit spacemacs-theme spaceline slim-mode scss-mode sass-mode reveal-in-osx-finder restart-emacs request rainbow-delimiters quelpa pug-mode psci psc-ide popwin persp-mode pcre2el pbcopy paradox osx-trash osx-dictionary org-plus-contrib org-bullets open-junk-file nyan-mode neotree move-text mmm-mode markdown-toc macrostep lorem-ipsum livid-mode linum-relative link-hint less-css-mode launchctl json-mode js2-refactor js-doc info+ indent-guide ido-vertical-mode hungry-delete hl-todo highlight-parentheses highlight-numbers highlight-indentation hide-comnt help-fns+ helm-themes helm-swoop helm-projectile helm-mode-manager helm-make helm-flx helm-descbinds helm-css-scss helm-company helm-c-yasnippet helm-ag graphviz-dot-mode google-translate golden-ratio git-gutter-fringe git-gutter-fringe+ gh-md flyspell-correct-helm flycheck-purescript flycheck-pos-tip flycheck-flow flycheck-elm flx-ido fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state evil-indent-plus evil-iedit-state evil-exchange evil-escape evil-ediff evil-args evil-anzu eval-sexp-fu emmet-mode elm-mode elisp-slime-nav dumb-jump diff-hl company-web company-tern company-statistics company-flow column-enforce-mode coffee-mode clean-aindent-mode auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line ac-ispell)))
+    (prettier-js dockerfile-mode docker tablist docker-tramp tide typescript-mode org-projectile org-present org-pomodoro alert log4e gntp org-download htmlize gnuplot floobits multi-term diminish s rainbow-mode winum fuzzy f smeargle orgit org magit-gitflow helm-gitignore gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link evil-magit magit magit-popup packed auto-complete evil flyspell-correct async multiple-cursors avy simple-httpd haml-mode dash multi-line shut-up company-emacs-eclim eclim iedit markdown-mode bind-key tern smartparens bind-map highlight flycheck git-commit with-editor company projectile helm helm-core yasnippet skewer-mode js2-mode hydra purescript-mode vimrc-mode dactyl-mode rainbow-identifiers color-identifiers-mode color-identifiers define-word yaml-mode ws-butler window-numbering which-key web-mode web-beautify volatile-highlights vi-tilde-fringe uuidgen use-package toc-org tagedit spacemacs-theme spaceline slim-mode scss-mode sass-mode reveal-in-osx-finder restart-emacs request rainbow-delimiters quelpa pug-mode psci psc-ide popwin persp-mode pcre2el pbcopy paradox osx-trash osx-dictionary org-plus-contrib org-bullets open-junk-file nyan-mode neotree move-text mmm-mode markdown-toc macrostep lorem-ipsum livid-mode linum-relative link-hint less-css-mode launchctl json-mode js2-refactor js-doc info+ indent-guide ido-vertical-mode hungry-delete hl-todo highlight-parentheses highlight-numbers highlight-indentation hide-comnt help-fns+ helm-themes helm-swoop helm-projectile helm-mode-manager helm-make helm-flx helm-descbinds helm-css-scss helm-company helm-c-yasnippet helm-ag graphviz-dot-mode google-translate golden-ratio git-gutter-fringe git-gutter-fringe+ gh-md flyspell-correct-helm flycheck-purescript flycheck-pos-tip flycheck-flow flycheck-elm flx-ido fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state evil-indent-plus evil-iedit-state evil-exchange evil-escape evil-ediff evil-args evil-anzu eval-sexp-fu emmet-mode elm-mode elisp-slime-nav dumb-jump diff-hl company-web company-tern company-statistics company-flow column-enforce-mode coffee-mode clean-aindent-mode auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line ac-ispell)))
  '(psc-ide-add-import-on-completion t t)
- '(psc-ide-rebuild-on-save nil t))
+ '(psc-ide-rebuild-on-save nil t)
+ '(safe-local-variable-values (quote ((js2-indent-level . 4)))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
