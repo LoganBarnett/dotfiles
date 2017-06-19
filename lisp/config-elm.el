@@ -10,7 +10,7 @@
   ;; (use-package "elm"
     ;; :init
     ;; :config
-    (setq-default elm-indent-offset 2)
+    ;; (setq-default elm-indent-offset 2)
     ;; )
   )
 (provide 'config-elm)
