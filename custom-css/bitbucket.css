@@ -28,8 +28,18 @@ aui-inline-dialog .aui-inline-dialog-contents, .aui-inline-dialog .aui-inline-di
   color: #ddd !important;
 }
 
+.jstree .jstree-clicked {
+  color: var(--highlight-color) !important;
+  background-color: var(--highlight-background-color) !important;
+}
+
+.bitbucket-theme .jstree .change-type-MODIFY {
+  color: var(--highlight-color) !important;
+  width: 100% !important;
+}
+
 .jstree.file-tree > ul a {
-  color: #ddd !important;
+  color: var(--text-color) !important;
 }
 h3, .aui-page-header-hero .aui-page-header-main p, .aui-page-header-marketing .aui-page-header-main p {
   color: #ddd !important;

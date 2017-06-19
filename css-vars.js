@@ -10,6 +10,8 @@ module.exports = {
   '--visited-link-color': '#4f97d7',
   '--visited-link-background-color': '#44505c',
   '--heading-background-color': '#292b2e',
+  '--highlight-color': '#e3dedd',
+  '--highlight-background-color': '#3b314d',
   '--tab-inactive-color': '#2aa1ae',
   '--tab-inactive-background-color': '#292b2e',
   '--tab-left-inactive-border-radius': '0 0 0.5em 0',
