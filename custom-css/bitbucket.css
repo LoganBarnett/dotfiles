@@ -20,6 +20,28 @@ h2 {
   color: var(--tab-active-color) !important;
 }
 
+.aui-tabs.horizontal-tabs>.tabs-menu>.menu-item {
+  background-color: var(--tab-inactive-background-color) !important;
+  color: var(--tab-inactive-color) !important;
+}
+
+.aui-tabs>.tabs-menu .menu-item a,
+.aui-tabs>.tabs-menu .menu-item a:link,
+.aui-tabs>.tabs-menu .menu-item a:visited {
+  background-color: var(--tab-inactive-background-color) !important;
+  color: var(--tab-inactive-color) !important;
+}
+
+.aui-tabs>.tabs-menu .menu-item.active-tab a,
+.aui-tabs>.tabs-menu .menu-item.active-tab a:link,
+.aui-tabs>.tabs-menu .menu-item.active-tab a:visited,
+.aui-tabs>.tabs-menu .menu-item.active-tab a:focus,
+.aui-tabs>.tabs-menu .menu-item.active-tab a:hover,
+.aui-tabs>.tabs-menu .menu-item.active-tab a:active {
+  background-color: var(--tab-active-background-color) !important;
+  color: var(--tab-active-color) !important;
+}
+
 aui-inline-dialog .aui-inline-dialog-contents, .aui-inline-dialog .aui-inline-dialog-contents, aui-inline-dialog .contents, .aui-inline-dialog .contents {
   background-color: #333 !important;
 }
