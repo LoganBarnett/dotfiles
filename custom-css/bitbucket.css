@@ -14,6 +14,14 @@ h2 {
   color: #ddd !important;
 }
 
+h4 {
+  color: var(--text-color) !important;
+}
+
+h5 {
+  color: var(--text-color) !important;
+}
+
 .aui-sidebar .aui-sidebar-wrapper,
 .aui-sidebar-submenu .aui-sidebar-wrapper {
   background-color: var(--tab-active-background-color) !important;
@@ -72,8 +80,16 @@ h3, .aui-page-header-hero .aui-page-header-main p, .aui-page-header-marketing .a
   color: var(--tab-active-color) !important;
 }
 
+.breadcrumbs span.stub {
+  color: var(--tab-active-color) !important;
+}
+
 .file-tree-wrapper {
   background-color: #121212 !important;
+}
+
+.file-tree-container {
+  background: var(--general-background) !important;
 }
 
 .aui-button, a.aui-button, .aui-button:visited {
@@ -95,6 +111,10 @@ h3, .aui-page-header-hero .aui-page-header-main p, .aui-page-header-marketing .a
 .pull-request-activity .diff-comment-activity .file-content,
 .pull-request-activity .file-comment-activity .detail .file-comment-container {
   border: var(--thin-border) !important;
+}
+
+.pull-request-content > .commit-files .diff-tree-toolbar {
+  background: var(--general-background) !important;
 }
 
 .CodeMirror-gutter.gutter-border {

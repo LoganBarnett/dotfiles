@@ -5,6 +5,7 @@ module.exports = {
   '--dim-text': '#686868',
   '--background': '#292b2e',
   '--general-background-color': '#292b2e',
+  '--general-background': '#292b2e',
   '--code-background-color': '#100a14',
   '--link-color': '#2d9574',
   '--visited-link-color': '#4f97d7',
