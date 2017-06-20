@@ -11,7 +11,7 @@
 ;; configure so-long-mode
 (defun config-so-long-mode ()
   "Configure so-long-mode."
-  (use-package "so-long-mode"
+  (use-package "so-long"
     ;; :init
     :config
     (add-to-list 'so-long-minor-modes 'rainbow-delimiters-mode)
