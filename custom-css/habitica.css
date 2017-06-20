@@ -3,6 +3,15 @@ body {
   background-color: #121212 !important;
 }
 
+code {
+  background-color: var(--code-background-color) !important;
+}
+
+.form-control {
+  color: var(--text-color) !important;
+  background: var(--general-background) !important;
+}
+
 #main>div>div>div>.tab-content {
   border: none !important;
 }
@@ -69,18 +78,23 @@ body {
   margin-bottom: 0 !important;
 }
 
+.party-chat li.highlight, .tavern-chat li.highlight {
+  background-color: var(--general-background-color) !important;
+  color: var(--text-color) !important;
+}
+
 .hero-stats .mana {
-  background-color: #121212 !important;
-  color: #eee !important;
+  background-color: var(--general-background-color) !important;
+  color: var(--text-color) !important;
 }
 
 .hero-stats .health {
-  background-color: #121212 !important;
-  color: #eee !important;
+  background-color: var(--general-background-color) !important;
+  color: var(--text-color) !important;
 }
 .hero-stats .experience {
-  background-color: #121212 !important;
-  color: #eee !important;
+  background-color: var(--general-background-color) !important;
+  color: var(--text-color) !important;
 }
 
 .hero-stats .mana .bar {
