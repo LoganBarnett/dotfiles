@@ -51,6 +51,7 @@
        (octave . t)
        (sqlite . t)
        (perl . t)
+       (plantuml . t)
        (js . t)
        ))
     )

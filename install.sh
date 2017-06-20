@@ -49,6 +49,7 @@ nmap
 node
 npm
 pinentry-mac
+plantuml
 postgresql
 stack
 vim
