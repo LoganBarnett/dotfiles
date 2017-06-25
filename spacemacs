@@ -711,6 +711,8 @@ layers configuration. You are free to put any user code."
   (my/init-flycheck)
   (load-library "config-flyspell")
   (config-flyspell)
+  (load-library "config-vc")
+  (config-vc)
   (load-library "config-java")
   (config-java)
   (load-library "config-elm")
