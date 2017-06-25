@@ -37,6 +37,7 @@ docker
 docker-machine
 dos2unix
 elm
+ffmpeg
 gnupg
 graphviz
 htop
