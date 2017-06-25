@@ -18,6 +18,7 @@ robomongo
 steam
 virtualbox
 gimp
+xbox360-controller-driver
 "
 
 echo "installing homebrew casks"
