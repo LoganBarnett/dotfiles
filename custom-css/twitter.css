@@ -1,6 +1,23 @@
 body {
   background-color: #121212 !important;
-  color: #ddd !important;
+  color: var(--text-color) !important;
+}
+
+/* who to follow section */
+.wtf-module.has-content {
+  display: none !important;
+}
+
+/* default buttons have reversed color schemes here because they are designed to
+   have no borders
+*/
+button {
+  background-color: var(--button-color) !important;
+  color: var(--button-background-color) !important;
+}
+
+.home-tweet-box, .LiveVideo-tweetBox, .RetweetDialog-commentBox {
+  background-color: var(--general-background-color) !important;
 }
 
 .stream-item:not(.no-header-background-module) {
@@ -8,22 +25,39 @@ body {
 }
 
 .tweet:hover {
-  background-color: #333 !important;
+  background-color: var(--general-background-color) !important;
 }
 
+.permalink-tweet, .permalink-tweet:hover {
+  background-color: var(--general-background-color) !important;
+}
+
+input, textarea, div[contenteditable], .t1-select {
+  color: var(--text-color) !important;
+  background-color: var(--general-background-color) !important;
+}
+
+.EdgeButton--primary, .EdgeButton--primary:focus {
+  background-color: var(--button-background-color) !important;
+  color: var(--button-color) !important;
+}
 
 .stream-item:not(.no-header-background-module) {
   background-color: #222 !important;
 }
 
+.ProfileHeaderCard-bio {
+  color: var(--text-color) !important;
+}
+
 .fullname {
-  color: #ddd !important;
+  color: var(--text-color) !important;
 }
 
 .QuoteTweet .tweet-content, .QuoteTweet-text a, .QuoteTweet-text a:hover, .QuoteTweet-text a:focus, .QuoteTweet-text a:active, .QuoteTweet-text .pretty-link b, .QuoteTweet-text .pretty-link s, .QuoteTweet-text .pretty-link:hover b, .QuoteTweet-text .pretty-link:hover s, .QuoteTweet-text .pretty-link:focus b, .QuoteTweet-text .pretty-link:focus s, .QuoteTweet-text .pretty-link:active b, .QuoteTweet-text .pretty-link:active s {
-  color: #ccc !important;
+  color: var(--text-color) !important;
 }
 
 .QuoteTweet-fullname {
-  color: #ddd !important;
+  color: var(--text-color) !important;
 }
