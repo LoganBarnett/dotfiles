@@ -29,6 +29,15 @@ code {
   font-style: normal !important;
 }
 
+body.mceContentBody {
+  background-color: var(--general-background-color) !important;
+}
+
+/* code blocks */
+.wiki-content .wysiwyg-macro-body {
+  background-color: var(--general-background-color) !important;
+}
+
 .aui-page-panel {
   background-color: #222 !important;
 }
