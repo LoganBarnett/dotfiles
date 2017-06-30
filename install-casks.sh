@@ -9,22 +9,22 @@ brew tap caskroom/drivers
 # NOTE: I omitted razer-synpase due to its intrusive nature. Install manually
 # and then uninstall when keyboard config is complete.
 CASKS="
-slack
 chromium
+diffmerge
 discord
-skype
+gimp
+google-chrome
 haskell-platform
 hipchat
 microsoft-lync
 mumble
+robomongo
 screenhero
 silverlight
-google-chrome
-diffmerge
-robomongo
+skype
+slack
 steam
 virtualbox
-gimp
 xbox360-controller-driver
 "
 
