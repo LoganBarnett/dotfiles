@@ -71,6 +71,7 @@
   (defvar grep-find-ignored-directories)
   (use-package "js2-mode"
   :init
+  (require 'grep)
   :config
   (add-to-list 'grep-find-ignored-directories "node_modules")
   (setq-default js-indent-level 2)
