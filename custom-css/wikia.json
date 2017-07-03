@@ -1,6 +1,10 @@
 {
   "includes": [
-    "http://habitica.wikia.com/*"
+    "http://habitica.wikia.com/*",
+    "http://www.emacswiki.org/*",
+    "https://www.emacswiki.org/*",
+    "http://emacswiki.org/*",
+    "https://emacswiki.org/*"
   ],
   "excludes": [
     ""
