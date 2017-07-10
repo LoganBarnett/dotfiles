@@ -16,6 +16,7 @@ elm-format
 elm-oracle
 elm-test
 iconv
+js-beautify
 marked
 tern
 "
