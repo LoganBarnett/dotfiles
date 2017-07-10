@@ -317,7 +317,7 @@ values."
    ;; `trailing' to delete only the whitespace at end of lines, `changed'to
    ;; delete only whitespace for changed lines or `nil' to disable cleanup.
    ;; (default nil)
-   dotspacemacs-whitespace-cleanup nil
+   dotspacemacs-whitespace-cleanup "changed"
    ;; HACK: workaround for https://github.com/syl20bnr/spacemacs/issues/8091
    ;; dotspacemacs-helm-use-fuzzy 'source
    ))
@@ -402,25 +402,6 @@ before packages are loaded. If you are unsure, you should try in setting them in
     (-when-let (buffer (get-buffer flycheck-error-list-buffer))
       (dolist (window (get-buffer-window-list buffer))
         (quit-window nil window)))))
-
-(defun my/highlight-gt-80-columns ()
-  "Highlight any text exceeding 80 columns.  You naughty text, you."
-  (require 'font-lock)
-  (defface my-tab-face '((t . (:background "gray10"))) "wide line tab face")
-  ;; TODO: figure out why this breaks rainbow identifiers
-  ;; (defface my-long-line-face '((t . (:background "gray10"))) "wide line face")
-  (defface my-trailing-space-face '((t . (:background "red"))) "trailing space")
-  (defface my-post-long-line-face '((t . (:underline "red"))) "post 80 face")
-
-  (font-lock-add-keywords nil
-   '(("\t+" (0 'my-tab-face append))
-     ("[ \t]+$"      (0 'my-trailing-space-face append))
-     ;; ("^.\\{81,\\}$" (0 'my-long-line-face append))
-     ("^.\\{80\\}\\(.+\\)$" (1 'my-post-long-line-face append))
-     )
-   )
-  (message "applied > 80 column highlighting")
-  )
 
 ;; shameless grab from
 ;; http://rejeep.github.io/emacs/elisp/2010/11/16/delete-file-and-buffer-in-emacs.html
@@ -605,32 +586,10 @@ before packages are loaded. If you are unsure, you should try in setting them in
     :diminish 'rainbow-identifiers-mode
   )
 
-  ;; highlight lines longer than 80 chars
-  ;; (require 'whitespace)
-  ;; (setq whitespace-style '(tabs face empty lines-tail trailing))
-  ;; (global-whitespace-mode t)
-  ;; taken from https://www.emacswiki.org/emacs/EightyColumnRule
-  ;; (add-hook 'font-lock-mode-hook #'my/highlight-gt-80-columns)
-  (add-hook 'prog-mode-hook #'my/highlight-gt-80-columns)
-  (add-hook 'text-mode-hook #'my/highlight-gt-80-columns)
 
   "Configuration function for user code.
 This function is called at the very end of Spacemacs initialization after
 layers configuration. You are free to put any user code."
-  ;; show 80 column rule
-  (require 'fill-column-indicator)
-  ;; (define-globalized-minor-mode global-fci-mode
-  ;;   fci-mode (lambda ()
-  ;;              (when (not (memq major-mode
-  ;;                               (list 'web-mode)))
-  ;;                (fci-mode 1))))
-  ;; (global-fci-mode 1)
-  (add-hook 'prog-mode-hook 'fci-mode)
-  (add-hook 'text-mode-hook 'fci-mode)
-  (add-hook 'web-mode-hook (lambda () (fci-mode 0)))
-
-
-  ;; (add-hook 'buffer-list-update-hook 'turn-on-fci-mode)
   (paradox-require 'markdown-mode)
   (add-hook 'markdown-mode-hook 'auto-fill-mode)
   (add-hook 'markdown-mode-hook 'flyspell-mode)
@@ -711,6 +670,8 @@ layers configuration. You are free to put any user code."
   ;; (add-hook 'post-self-insert-hook 'animated-self-insert)
 
   (my/init-flycheck)
+  (load-library "config-whitespace")
+  (config-whitespace)
   (load-library "config-flyspell")
   (config-flyspell)
   (load-library "config-vc")
@@ -732,6 +693,10 @@ layers configuration. You are free to put any user code."
   (config-so-long-mode)
   (load-library "config-org-mode")
   (config-org-mode)
+
+  ;; (load-library "/Users/logan/dev/dotfiles/lisp/common-header-mode-line.pkg/common-header-mode-line.el")
+  ;; (load-library "config-common-header-mode-line")
+  ;; (config-common-header-mode-line)
 
   (load-library "org-to-jekyll")
   (load-library "renumber-list")
