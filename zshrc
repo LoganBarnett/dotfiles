@@ -173,6 +173,8 @@ eval $(thefuck --alias)
 # export NVM_DIR="/usr/local/opt/nvm"
  # . "/usr/local/opt/nvm/nvm.sh"
 # . "$(brew --prefix nvm)/nvm.sh"
+export NVM_DIR="$HOME/.nvm"
+. "/usr/local/opt/nvm/nvm.sh"
 [[ -s "$HOME/.avn/bin/avn.sh" ]] && source "$HOME/.avn/bin/avn.sh" # load avn
 
 # When we're running ansi-term from emacs, we don't want the evil-mode bindings
