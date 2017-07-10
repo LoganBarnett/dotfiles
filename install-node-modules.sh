@@ -23,4 +23,6 @@ tern
 
 npm i -g $NODE_MODULES
 
-ln -s -n $PWD/jshintrc ~/.jshintrc
+ln -f -s -n $PWD/jshintrc ~/.jshintrc
+# This makes nvm work with avn
+ln -f -s -n ~/.nvm/nvm.sh /usr/local/opt/nvm/nvm.sh
