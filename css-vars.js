@@ -11,6 +11,8 @@ module.exports = {
   '--visited-link-color': '#4f97d7',
   '--visited-link-background-color': '#44505c',
   '--heading-background-color': '#292b2e',
+  '--head1-color': '#4f97d7',
+  '--head1-background-color': '#293239',
   '--highlight-color': '#e3dedd',
   '--highlight-background-color': '#3b314d',
   '--tab-inactive-color': '#2aa1ae',

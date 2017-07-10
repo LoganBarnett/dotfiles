@@ -43,6 +43,11 @@ code {
   background-color: #333 !important;
 }
 
+.prettyprint {
+  color: var(--head1-color) !important;
+  background-color: var(--head1-background-color) !important;
+}
+
 .pun, .pln {
   color: #ddd !important;
 }
