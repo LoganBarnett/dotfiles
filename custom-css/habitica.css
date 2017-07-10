@@ -3,6 +3,11 @@ body {
   background-color: #121212 !important;
 }
 
+input {
+  color: var(--input-color) !important;
+  background-color: var(--input-background-color) !important;
+}
+
 code {
   background-color: var(--code-background-color) !important;
 }
