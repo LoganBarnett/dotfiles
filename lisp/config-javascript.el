@@ -72,7 +72,9 @@
   (use-package "js2-mode"
   :init
   (require 'grep)
+  (require 'nvm)
   :config
+  (nvm-use "8.1.3")
   (add-to-list 'grep-find-ignored-directories "node_modules")
   (setq-default js-indent-level 2)
   (setq-default js2-strict-missing-semi-warning nil)
