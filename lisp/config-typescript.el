@@ -38,6 +38,7 @@
   (setq flycheck-current-errors
         (cl-delete-if #'is-passive-aggressive-import-error
                    flycheck-current-errors))
+  (flycheck-error-list-refresh)
   )
 ;; configure typescript
 (defun config-typescript ()
@@ -51,6 +52,9 @@
       )
     (add-hook 'flycheck-after-syntax-check-hook
               #'flycheck-typescript-remove-passive-aggressive-import-errors)
+    (add-hook 'flycheck-error-list-after-refresh-hook
+              #'flycheck-typescript-remove-passive-aggressive-import-errors)
+    (flycheck-error-list-highlight-errors)
     )
   )
 (provide 'config-typescript)
