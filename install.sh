@@ -45,10 +45,10 @@ ispell
 markdown
 mongodb
 mtr
-n
 nmap
 node
 npm
+nvm
 pinentry-mac
 plantuml
 postgresql
