@@ -4,6 +4,7 @@
 
 ;;; Code:
 
+(require 'use-package)
 ;; configure elm
 (defun config-elm ()
   "Configure Elm."
