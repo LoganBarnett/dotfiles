@@ -7,6 +7,7 @@ avnrc
 floorc.json
 gitconfig
 ideavim
+jsbeautifyrc
 oh-my-zsh
 pentadactylrc
 spacemacs
