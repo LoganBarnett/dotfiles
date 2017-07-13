@@ -46,6 +46,11 @@ ul.top-nav li :hover
 */
 /****************************************************/
 
+/* Language percentage usage. */
+.repository-lang-stats ol.repository-lang-stats-numbers li .lang {
+  color: var(--link-color) !important;
+}
+
 /* links _around_ comment sections */
 .discussion-item-ref-title .title-link {
   color: var(--link-color) !important;
