@@ -13,10 +13,10 @@ brew uninstall gnupg2 gpg-agent dirmngr --force
 
 echo "linking gpg settings..."
 mkdir -p ~/.gnupg
-if [ ! -f ~/.gnupg/gpg-agent.conf ] || [ ! -f ~/.gnupg/gpg.conf  ]; then
-    echo "~/.gnupg config files are present but not symlinks, aborting..."
-    exit 1
-else
+# if [ ! -f ~/.gnupg/gpg-agent.conf ] || [ ! -f ~/.gnupg/gpg.conf  ]; then
+#     echo "~/.gnupg config files are present but not symlinks, aborting..."
+#     exit 1
+# else
     ln -s -n -f $PWD/gpg-agent.conf ~/.gnupg/gpg-agent.conf
     ln -s -n -f $PWD/gpg.conf ~/.gnupg/gpg.conf
-fi
+# fi

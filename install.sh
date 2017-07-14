@@ -57,6 +57,7 @@ pinentry-mac
 plantuml
 postgresql
 stack
+thefuck
 vim
 wget
 yarn
@@ -75,18 +76,25 @@ zsh-syntax-highlighting
 
     # sed is special
     echo "installing sed"
-    brew install gnu-sed --with-default-names
+    brew install gnu-sed --with-default-names || brew upgrade gnu-sed --with-default-names
 
     # spacemacs is special
     echo "installing emacs for eventually installing spacemacs"
     brew tap d12frosted/emacs-plus
-    brew install emacs-plus --with-cocoa --with-gnutls --with-librsvg --with-imagemagick --with-spacemacs-icon
+    echo "emacs tapped"
+    # "already installed" should not appear if emacs was not upgraded, so the
+    # check we have should be ok.
+    brew install emacs-plus --with-cocoa --with-gnutls --with-librsvg --with-imagemagick --with-spacemacs-icon 2>&1 | grep "just not linked" || brew upgrade emacs-plus --with-cocoa --with-gnutls --with-librsvg --with-imagemagick --with-spacemacs-icon 2>&1 | grep "already installed"
+    echo "emacs-plus installed"
+    brew link --overwrite emacs-plus
+    echo "linked emacs-plus"
     brew linkapps
+    echo "linked apps"
 
     # java needs a special section because of ordering
     echo "installing java and maven"
     brew cask install java
-    brew install maven
+    brew install maven || brew upgrade maven
 elif [ $(uname) = 'Linux' ]; then
     if [ $(which apt-get) != '' ]; then
         echo "installing packages via apt-get"
@@ -126,18 +134,21 @@ fi
 echo "installing oh my zsh customizations"
 if [ $(uname) = 'Darwin' ]; then
     echo "installing osx dns flushing for oh my zsh"
-    cd ~/.oh-my-zsh/custom/plugins && git clone git@github.com:eventi/noreallyjustfuckingstopalready.git
+    cd ~/.oh-my-zsh/custom/plugins && git clone git@github.com:eventi/noreallyjustfuckingstopalready.git || true
 else
     echo "skipping osx dns flushing for oh my zsh - not osx"
 fi
 
 if [ $(uname) = 'Darwin' ]; then
     cd $start_dir
+    echo "installing casks"
     ./install-casks.sh
 else
     echo "skipping cask installs - not osx"
 fi
 
+# This is really spacemacs installation.
+echo "setting up spacemacs"
 ./emacs-install.sh
 
 # TODO: add a way of reading in the paradox-github token or generating it if it doesn't exist

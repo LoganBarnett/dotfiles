@@ -30,3 +30,5 @@ xbox360-controller-driver
 
 echo "installing homebrew casks"
 brew cask install $CASKS
+
+echo "done installing casks"
