@@ -19,6 +19,9 @@ echo "linking easy dotfiles"
 ./link-dotfiles.sh
 echo "done linking easy dotfiles"
 
+echo "configuring git"
+./config-git.sh
+
 # get submodules set up
 git submodule init || true
 git submodule update || true
