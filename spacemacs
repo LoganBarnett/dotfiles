@@ -47,6 +47,7 @@ values."
      org
      osx
      purescript
+     react
      spell-checking
      syntax-checking
      typescript
@@ -694,6 +695,13 @@ layers configuration. You are free to put any user code."
   (load-library "config-org-mode")
   (config-org-mode)
 
+
+  (message "TODO: Find out how to use the current nvm version to find the bin dir for global node modules")
+  (add-to-list 'exec-path "/Users/logan/.nvm/versions/node/v8.1.3/bin/")
+  ;; TODO: move this into a general shell config file
+  ;; Setting the shell to bash makes it work with things like exec-path. zsh
+  ;; does not seem to work with this.
+  (setq-default shell-file-name "bash")
   ;; (load-library "/Users/logan/dev/dotfiles/lisp/common-header-mode-line.pkg/common-header-mode-line.el")
   ;; (load-library "config-common-header-mode-line")
   ;; (config-common-header-mode-line)
