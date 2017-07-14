@@ -11,21 +11,25 @@ start_dir=$PWD
 # TODO: add key pair
 # TODO: install istatmenu
 
+echo "creating ssh key if it doesn't exist"
 ./create-ssh-key.sh
+echo "done create ssh key"
 
+echo "linking easy dotfiles"
 ./link-dotfiles.sh
+echo "done linking easy dotfiles"
 
 # get submodules set up
-git submodule init
-git submodule update
+git submodule init || true
+git submodule update || true
 
 # link harder things
 mkdir -p ~/.config
-ln -s -n $PWD/awesome ~/.config/awesome
+ln -F -s -n $PWD/awesome ~/.config/awesome
 
-ln -s -n $PWD/bin ~/bin
+ln -F -s -n $PWD/bin ~/bin
 
-ln -s -n $PWD/lisp ~/.emacs.d/private/local/dotfiles
+ln -F -s -n $PWD/lisp ~/.emacs.d/private/local/dotfiles
 
 if [ $(uname) = 'Darwin' ]; then
 
@@ -62,7 +66,10 @@ zsh-syntax-highlighting
     echo "updating homebrew"
     brew update
     echo "installing brews"
-    brew install $BREWS
+    for brew in $BREWS
+    do
+      brew install $brew || brew upgrade $brew
+    done
 
     ./install-gpg.sh
 
