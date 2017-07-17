@@ -1,5 +1,11 @@
 /* i-role-card.tau-card-v2.tau-card-v2_type_task.ui-draggable-handle[style] */
 
+/* highlighted text */
+[style="background-color: #ffff00"] {
+  color: var(--highlight-color) !important;
+  background-color: var(--highlight-background-color) !important;
+}
+
 .ui-tags__editor__link:hover {
   color: #ddd !important;
 }
