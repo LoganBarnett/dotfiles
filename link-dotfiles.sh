@@ -1,5 +1,7 @@
 #! /usr/bin/env bash
 
+set -e
+
 PWD=$(pwd)
 EASYFILES="
 Xdefaults
@@ -23,5 +25,5 @@ for dotfile in $EASYFILES
 do
     # grep used to suppress warning of symlink existing
     WARNING="ln: $HOME/.$dotfile: File exists"
-    ln -s -n $PWD/$dotfile ~/.$dotfile 2>&1 | grep -v "$WARNING"
+    ln -s -n $PWD/$dotfile ~/.$dotfile 2>&1 | grep -v "$WARNING" || true
 done
