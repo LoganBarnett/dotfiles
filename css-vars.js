@@ -39,4 +39,6 @@ module.exports = {
   '--diff-remove-color': '#3c2a2c',
   '--diff-remove-background-color': '#e0616d',
   '--diff-minor-remove-background-color': '#ce537a',
+  '--open-ticket-color': '#86dc2f',
+  '--closed-ticket-color': '#ce537a',
 }

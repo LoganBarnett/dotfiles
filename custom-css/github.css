@@ -46,6 +46,16 @@ ul.top-nav li :hover
 */
 /****************************************************/
 
+/* open issue icon */
+.open.octicon {
+  color: var(--open-ticket-color) !important;
+}
+
+/* closed issue icon */
+.closed.octicon {
+  color: var(--closed-ticket-color) !important;
+}
+
 /* Language percentage usage. */
 .repository-lang-stats ol.repository-lang-stats-numbers li .lang {
   color: var(--link-color) !important;
