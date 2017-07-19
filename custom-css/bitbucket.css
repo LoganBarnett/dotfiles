@@ -129,6 +129,16 @@ h3, .aui-page-header-hero .aui-page-header-main p, .aui-page-header-marketing .a
   background: var(--general-background) !important;
 }
 
+/* Markdown code block */
+.code-block {
+  background-color: var(--general-background-color) !important;
+}
+
+/* Markdown code block text */
+.code-block pre code {
+  color: var(--text-color) !important;
+}
+
 .CodeMirror-gutter.gutter-border {
   border-color: var(--thin-border-color) !important;
 }
