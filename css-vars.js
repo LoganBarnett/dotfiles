@@ -27,6 +27,7 @@ module.exports = {
   '--tab-active-border-radius': '0.5em 0.5em 0 0',
   '--tab-active-color': '#b2b2b2',
   '--tab-list-background-color': '#292b2e',
+  '--button-background': '#2aa1ae',
   '--button-background-color': '#2aa1ae',
   '--button-color': '#292e34',
   '--input-color': '#2aa1ae',
