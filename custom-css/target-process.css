@@ -31,6 +31,28 @@ div.i-role-card.ui-draggable-handle[style] {
   background-color: #121212 !important;
 }
 
+/* heading of the current board */
+.tau-board-header {
+  background-color: var(--tab-active-background-color) !important;
+}
+
+/* buttons */
+.tau-btn {
+  color: var(--button-color) !important;
+  background: var(--button-background) !important;
+}
+
+/* filter status text in the filter button - displays as text in the button. */
+.boardsettings-filter__status--off, .boardsettings-filter__status--on {
+  background-color: var(--general-background-color) !important;
+  color: var(--text-color) !important;
+}
+
+.context-filter__body, .context-filter__revert-control {
+  color: var(--button-color) !important;
+  background: var(--button-background) !important;
+}
+
 .tau-board-view .tau-backlog-body .tau-cellholder, .tau-board-view .tau-rows-header .tau-cellholder, .tau-board-view .tau-timeline .tau-cellholder {
   background-color: #333 !important;
 }
