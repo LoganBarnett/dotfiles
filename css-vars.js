@@ -42,4 +42,6 @@ module.exports = {
   '--diff-minor-remove-background-color': '#ce537a',
   '--open-ticket-color': '#86dc2f',
   '--closed-ticket-color': '#ce537a',
+  '--error-color': '#ce537a',
+  '--error-background-color': '#3c2a2c',
 }
