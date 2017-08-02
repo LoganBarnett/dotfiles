@@ -39,6 +39,7 @@ values."
      docker
      elm
      emacs-lisp
+     flow-type
      git
      helm
      html
@@ -69,6 +70,7 @@ values."
      ;; hopefully managed by a spacemacs layer
      company-flow
      floobits
+     ;; flow-minor-mode
      flycheck
      flycheck-flow
      flycheck-purescript
