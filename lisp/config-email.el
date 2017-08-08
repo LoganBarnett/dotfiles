@@ -26,10 +26,16 @@ This moves them into the Spam folder."
 ;; configure email
 (defun config-email ()
   "Configure Email."
+  (defvar-local this-file (or load-file-name buffer-file-name))
+  (defvar-local this-dir (file-name-directory this-file))
+  ;; No idea why setq-local is needed here, and elsewhere defvar-local works.
+  ;; This would be a great question for the emacs user group.
+  (setq-local key-id
+           (my-utils/get-string-from-file
+            (concat this-dir "key-id.txt")))
   (setq-default
    user-mail-address "logustus@gmail.com"
-   mml2015-signers '("41E46FB1ACEA3EF0")
-   ;; mml2015-signers '("2A68087AE606797D")
+   mml-2015-signers key-id
    gnus-select-method
    '(nnimap "gmail"
             (nnimap-address "imap.gmail.com")
