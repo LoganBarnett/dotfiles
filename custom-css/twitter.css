@@ -8,6 +8,11 @@ body {
   display: none !important;
 }
 
+/* trending topics/hashtags section */
+.module.Trends.trends {
+  display: none !important;
+}
+
 /* default buttons have reversed color schemes here because they are designed to
    have no borders
 */
