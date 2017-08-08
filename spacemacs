@@ -41,6 +41,7 @@ values."
      emacs-lisp
      flow-type
      git
+     gnus
      helm
      html
      java
@@ -697,6 +698,8 @@ layers configuration. You are free to put any user code."
   (config-so-long-mode)
   (load-library "config-org-mode")
   (config-org-mode)
+  (load-library "config-email")
+  (config-email)
 
 
   (message "TODO: Find out how to use the current nvm version to find the bin dir for global node modules")
