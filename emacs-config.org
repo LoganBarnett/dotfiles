@@ -1,0 +1,99 @@
+* introduction
+
+* config
+** load paths
+
+For isolated configuration of specific subsystems and also including standalone
+emacs lisp packages (this not on Melpa and usually listed as a code snippet
+somewhere), I have a dotfiles directory containing .el files from my
+=dotfiles/lisp= directory.
+
+#+BEGIN_SRC emacs-lisp
+(add-to-list 'load-path "~/.emacs.d/private/local/dotfiles")
+#+END_SRC
+
+** look and feel
+
+The menu bar on MacOs has lots of diagnostic information on my machine. This
+information is clipped if the menu options from the focused application is too
+long. The stock Emacs menu options are enough to force the menu bar items to be
+clipped on a 13" screen. Switching off =menu-bar-mode= doesn't remove all menu
+bar items, but it disables enough that this isn't a problem.
+
+#+BEGIN_SRC emacs-lisp
+  (menu-bar-mode -1)
+#+END_SRC
+
+*** mode-line
+#+BEGIN_SRC emacs-lisp
+  ;; (paradox-require 'diminish nil t)
+  ;; (setq-default diminish-mode-alist '(company-mode))
+  ;; (eval-after-load "company-mode" '(diminish 'company-mode 'auto-complete-mode))
+  ;; (eval-after-load 'yas-minor-mode '(diminish 'yas-minor-mode nil))
+  ;; (with-eval-after-load 'company-mode
+  ;;   (spacemacs|diminish 'company-mode nil))
+  ;; (spacemacs|diminish 'yas-minor-mode nil)
+  ;; (spacemacs|diminish 'flyspell-mode nil)
+  ;; (spacemacs|diminish 'which-key-mode nil)
+  ;; (spacemacs|diminish 'smartparens-mode nil)
+  ;; (require 'delight)
+  ;; (delight 'yas-minor-mode)
+  ;; (require 'delight-powerline)
+  ;; (when (paradox-require 'dim nil t)
+  ;;                    (dim-minor-names '((
+  ;;                                        yas-minor-mode "foo"
+  ;;                                        company-mode ""
+  ;;                                        flycheck-mode ""
+  ;;                                        flyspell-mode "")))
+  ;;                    )
+
+  ;; turning off individual lighters doesn't work using the "blessed"
+  ;; spacemacs|diminish function (see commented code above)
+  ;; so just turn the damn thing off entirely
+  (spaceline-toggle-minor-modes-off)
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp
+  ;; (setq-default spaceline-separator-dir-left '(left . left))
+  ;; (setq-default spaceline-separator-dir-right '(right . right))
+  (setq-default powerline-default-separator nil)
+  (spaceline-compile)
+#+END_SRC
+
+** MacOS
+
+#+BEGIN_SRC emacs-lisp
+
+  (setq-default mac-command-key-is-meta t)
+  (setq-default mac-option-modifier 'alt)
+  (setq-default osx-use-option-as-meta nil)
+  (setq-default mac-option-key-is-meta nil)
+  (setq-default mac-command-modifier 'meta)
+  ;; set keys for Apple keyboard, for emacs in OS X
+  ;; for other OSes and reference, see
+  ;; http://ergoemacs.org/emacs/emacs_hyper_super_keys.html
+  (setq-default mac-command-modifier 'meta) ; make cmd key do Meta
+  ;; (setq mac-option-modifier 'super) ; make opt key do Super
+  (setq-default mac-right-command-modifier 'super)
+  ;; (setq mac-control-modifier 'control) ; make Control key do Control
+  (setq-default ns-function-modifier 'hyper)  ; make Fn key do Hyper
+  ;; not an osx setting, but keyboard related (maybe move all of these to
+  ;; keyboard section)
+  ;; (define-key 'key-translation-map (kbd "<menu>") 'super)
+  ;; (setq-default w32-apps-modifier 'super)
+  ;; (global-unset-key (kbd "<menu>"))
+  ;; TODO: this doesn't seem to do anything useful
+  ;; (define-key key-translation-map (kbd "C-p") (kbd "<menu>"))
+  ;; (global-set-key (kbd "<menu>") (lambda () (interactive) 'super))
+  (setq-default ns-right-alternate-modifier 'super)
+  ;; (define-key key-translation-map (kbd "C-p") 'super)
+  ;; (key-chord-define-global "<menu>" (lambda () (interactive) 'super))
+#+END_SRC
+
+** encryption
+#+BEGIN_SRC emacs-lisp
+(require 'epa-file)
+(epa-file-enable)
+(defvar epa-pinentry-mode)
+(setf epa-pinentry-mode 'loopback)
+#+END_SRC
