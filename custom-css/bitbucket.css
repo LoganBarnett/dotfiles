@@ -35,6 +35,21 @@ form.aui .checkbox>label, form.aui .radio>label {
   color: var(--general-text-color) !important;
 }
 
+/* The logo needs its own override. */
+#footer-logo {
+  background-color: var(--general-background-color) !important;
+}
+
+/* Part of the footer */
+#footer .footer-body, #footer-logo a {
+  background-color: var(--general-background-color) !important;
+}
+
+/* Also part of the footer. */
+.aui-page-sidebar.aui-sidebar-collapsed #footer {
+  background-color: var(--general-background-color) !important;
+}
+
 /* side bar */
 .aui-sidebar .aui-sidebar-wrapper,
 .aui-sidebar-submenu .aui-sidebar-wrapper {
