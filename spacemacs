@@ -427,6 +427,7 @@ before packages are loaded. If you are unsure, you should try in setting them in
   "This is a safe place to stick user-specific configuration for Spacemacs."
   (message "Loading user config")
   (org-babel-load-file "~/.emacs.d/emacs-config.org")
+  (message "Done loading emacs-config.org")
   ;; get tern on the path
   ;; TODO: Make this home dir agnostic - maybe just use which
   ;; (add-to-list 'load-path "/Users/logan/.nvm/versions/node/v5.11.1/bin")
@@ -630,10 +631,6 @@ layers configuration. You are free to put any user code."
   ;; handle long lines
   (load-library "config-so-long-mode")
   (config-so-long-mode)
-  (load-library "config-org-mode")
-  (config-org-mode)
-  (load-library "config-email")
-  (config-email)
 
 
   (message "TODO: Find out how to use the current nvm version to find the bin dir for global node modules")

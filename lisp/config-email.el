@@ -1,4 +1,4 @@
-;;; config-email --- configure elm support
+;;; config-email --- configure email support
 ;;; Commentary:
 ;; Sets up email for use with gmail, Gnus, and gpg encryption.
 
@@ -19,20 +19,23 @@ This moves them into the Spam folder."
   (gnus-summary-move-article nil "nnimap+imap.gmail.com:[Gmail]/Spam"))
 
 (defun my/gnus-summary-keys ()
-  (local-set-key (kbd "RET") 'gnus-summary-select-article)
+  "Set some keybindings for gnus to make more sense as a vim user."
+  ;; (local-set-key (kbd "RET") 'gnus-summary-select-article)
   (local-set-key "C-w" 'evil-window-map)
   )
 
 ;; configure email
 (defun config-email ()
   "Configure Email."
-  (defvar-local this-file (or load-file-name buffer-file-name))
-  (defvar-local this-dir (file-name-directory this-file))
   ;; No idea why setq-local is needed here, and elsewhere defvar-local works.
   ;; This would be a great question for the emacs user group.
+
+  ;; Copy key-id.template.txt to ~/emacs.d/private/key-id.txt and populate with
+  ;; the key ID.
   (setq-local key-id
-           (my-utils/get-string-from-file
-            (concat this-dir "key-id.txt")))
+              (my-utils/get-string-from-file  "~/.emacs.d/private/key-id.txt")
+              )
+  (message "loaded key id %s" key-id)
   (setq-default
    user-mail-address "logustus@gmail.com"
    mml-2015-signers key-id
