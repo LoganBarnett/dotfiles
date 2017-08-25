@@ -12,6 +12,7 @@ CASKS="
 chromium
 diffmerge
 discord
+docker
 gimp
 google-chrome
 haskell-platform

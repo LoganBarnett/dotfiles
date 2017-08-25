@@ -41,8 +41,6 @@ if [ $(uname) = 'Darwin' ]; then
     BREWS="
 cask
 coreutils
-docker
-docker-machine
 dos2unix
 elm
 ffmpeg
