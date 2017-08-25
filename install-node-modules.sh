@@ -25,7 +25,7 @@ npm i -g $NODE_MODULES
 
 ln -f -s -n $PWD/jshintrc ~/.jshintrc
 # This makes nvm work with avn
-ln -f -s -n ~/.nvm/nvm.sh /usr/local/opt/nvm/nvm.sh
+ln -f -s -n /usr/local/opt/nvm/nvm.sh ~/.nvm/nvm.sh
 
 # avn has this as a post install setup command.
 avn setup
