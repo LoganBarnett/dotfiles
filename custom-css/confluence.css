@@ -1,9 +1,15 @@
+/* generic header bar */
+body.dashboard #main-header {
+  color: var(--head1-color) !important;
+  background-color: var(--head1-background-color) !important;
+}
+
 body.theme-documentation #footer .footer-body {
-  background-color: #222 !important;
+  background-color: var(--general-background-color) !important;
 }
 
 #footer .footer-body {
-  color: #ddd !important;
+  color: var(--text-color) !important;
 }
 
 #content .code {
@@ -24,7 +30,7 @@ body .syntaxhighlighter.sh-default .line.alt1 {
 
 code {
   border: 0.1em solid #646;
-  color: #eee !important;
+  color: var(--text-color) !important;
   background-color: #323 !important;
   font-style: normal !important;
 }
@@ -39,31 +45,104 @@ body.mceContentBody {
 }
 
 .aui-page-panel {
-  background-color: #222 !important;
+  background-color: var(--general-background-color) !important;
 }
 
 #title-text a {
-  color: #58d !important;
+  color: var(--head1-color) !important;
+  background-color: var(--head1-background-color) !important;
 }
+
 
 h1, h2, h3, h4, .wiki-content h1, .wiki-content h2, .wiki-content h3, .wiki-content h4, .pagetitle, .steptitle, .substeptitle, .formtitle, table.confluenceTable td.confluenceTd.highlight, table.confluenceTable td.confluenceTd.highlight > p, table.confluenceTable th.confluenceTh, table.confluenceTable th.confluenceTh > p, .wiki-content .tablesorter-header-inner, table.admin th, .form-element-large, .form-element-small, #toolbar #format-dropdown .format-h1 a, #toolbar #format-dropdown .format-h2 a, #toolbar #format-dropdown .format-h3 a, #toolbar #format-dropdown .format-h4 a {
   color: #5a8 !important;
 }
 
+/* headings */
+h1,
+h1 span,
+.wiki-content h1,
+#toolbar #format-dropdown .format-h1 a {
+  color: var(--head1-color) !important;
+  background-color: var(--head1-background-color) !important;
+}
+
+h2,
+.wiki-content h2,
+#toolbar #format-dropdown .format-h2 a {
+  color: var(--head2-color) !important;
+  background-color: var(--head2-background-color) !important;
+}
+
+h3,
+.wiki-content h3,
+#toolbar #format-dropdown .format-h3 a {
+  color: var(--head3-color) !important;
+  background-color: var(--head3-background-color) !important;
+}
+
+h4,
+.wiki-content h4,
+#toolbar #format-dropdown .format-h4 a {
+  color: var(--head4-color) !important;
+  background-color: var(--head4-background-color) !important;
+}
+
 body, p, table, tr, td, .bodytext, .stepfield, .wiki-content p, .panelContent, span {
-  color: #ddd !important;
+  color: var(--text-color) !important;
 }
 
 .wiki-content a, .wiki-content a:link, .wiki-content a:visited, .wiki-content a:focus, .wiki-content a:hover, .wiki-content a:active {
-  color: #4aa !important;
+  color: var(--link-color) !important;
   text-decoration: underline !important;
 }
 
 .wiki-content a span, .wiki-content a:link span, .wiki-content a:visited span, .wiki-content a:focus span, .wiki-content a:hover span, .wiki-content a:active span {
-  color: #4aa !important;
+  color: var(--link-color) !important;
   text-decoration: underline !important;
 }
 
+/* calendar entries */
+div.fc-event.leaves {
+  background: var(--calendar-leave-entry-background) !important;
+  color: var(--calendar-leave-entry-color) !important;
+}
+
+/* buttons! */
+.aui-button,
+a.aui-button,
+.aui-button:visited,
+.aui-button.add-calendar-button,
+.aui-button.add-event-button .trigger-text,
+.aui-button.add-event-button .icon {
+  color: var(--button-color) !important;
+  background: var(--button-background) !important;
+}
+
+.aui-button.add-event-button .icon:after {
+  /* should be a calendar icon */
+  content: '\1F4C5';
+  position: relative;
+  height: 16px;
+  width: 16px;
+  font-size: 14px;
+}
+
+/* footer */
+#footer {
+  background-color: var(--general-background-color) !important;
+  color: var(--text-color) !important;
+}
+
+#footer-logo {
+  background-color: var(--general-background-color) !important;
+  color: var(--text-color) !important;
+}
+
+#footer .footer-body {
+  background-color: var(--general-background-color) !important;
+  color: var(--text-color) !important;
+}
 
 #splitter-sidebar {
   background-color: #333 !important;

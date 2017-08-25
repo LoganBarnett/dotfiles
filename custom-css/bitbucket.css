@@ -30,10 +30,70 @@ h1,
   color: var(--text-color) !important;
 }
 
+/* Form labels */
+form.aui .checkbox>label, form.aui .radio>label {
+  color: var(--general-text-color) !important;
+}
+
+/* The logo needs its own override. */
+#footer-logo {
+  background-color: var(--general-background-color) !important;
+}
+
+/* Part of the footer */
+#footer .footer-body, #footer-logo a {
+  background-color: var(--general-background-color) !important;
+}
+
+/* Also part of the footer. */
+.aui-page-sidebar.aui-sidebar-collapsed #footer {
+  background-color: var(--general-background-color) !important;
+}
+
+/* side bar */
 .aui-sidebar .aui-sidebar-wrapper,
 .aui-sidebar-submenu .aui-sidebar-wrapper {
-  background-color: var(--tab-active-background-color) !important;
-  color: var(--tab-active-color) !important;
+  background-color: var(--general-background-color) !important;
+  color: var(--general-text-color) !important;
+}
+
+/* side bar links */
+.aui-navgroup-vertical .aui-nav>li>a, .aui-nav-vertical>li>a {
+  color: var(--link-color) !important;
+}
+
+/* side bar link icons */
+.aui-sidebar .aui-nav>li>.aui-nav-item>.aui-icon,
+.aui-sidebar-submenu .aui-nav>li>.aui-nav-item>.aui-icon {
+  color: var(--link-color) !important;
+}
+
+/* sidebar footer */
+.aui-sidebar .aui-sidebar-footer, .aui-sidebar-submenu .aui-sidebar-footer {
+  background-color: var(--button-background) !important;
+}
+
+/* sidebar footer expando button */
+.aui-sidebar[aria-expanded="false"] .aui-sidebar-footer>.aui-button,
+.aui-sidebar-submenu[aria-expanded="false"] .aui-sidebar-footer>.aui-button {
+  background-color: var(--button-background) !important;
+}
+
+/* sidebar footer expand/contract button */
+.aui-sidebar .aui-sidebar-footer>.aui-sidebar-toggle>.aui-icon,
+.aui-sidebar-submenu .aui-sidebar-footer>.aui-sidebar-toggle>.aui-icon {
+  color: var(--button-color) !important;
+  /* Deliberately squash the background here, instead of just color. */
+  background-url: none !important;
+  background: var(--button-background) !important;
+}
+
+
+/* sidebar footer expand/contract button TEXT EXPANDED */
+/* There is a transform: rotate(180deg); that flips the arrows. */
+.aui-sidebar .aui-sidebar-footer>.aui-sidebar-toggle>.aui-icon:before,
+.aui-sidebar-submenu .aui-sidebar-footer>.aui-sidebar-toggle>.aui-icon:before {
+  content: '<<';
 }
 
 .aui-tabs.horizontal-tabs>.tabs-menu>.menu-item {
@@ -100,6 +160,12 @@ h3, .aui-page-header-hero .aui-page-header-main p, .aui-page-header-marketing .a
   background: var(--general-background) !important;
 }
 
+/* build failure icon */
+.aui-icon.build-icon.failed-build-icon {
+  background-color: var(--error-background-color) !important;
+  color: var(--error-color) !important;
+}
+
 .aui-button, a.aui-button, .aui-button:visited {
   background-color: #497 !important;
   color: #ddd !important;
@@ -127,6 +193,16 @@ h3, .aui-page-header-hero .aui-page-header-main p, .aui-page-header-marketing .a
 
 .pull-request-content > .commit-files .diff-tree-toolbar {
   background: var(--general-background) !important;
+}
+
+/* Markdown code block */
+.code-block {
+  background-color: var(--general-background-color) !important;
+}
+
+/* Markdown code block text */
+.code-block pre code {
+  color: var(--text-color) !important;
 }
 
 .CodeMirror-gutter.gutter-border {

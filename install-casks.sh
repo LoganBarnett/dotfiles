@@ -27,6 +27,7 @@ slack
 steam
 virtualbox
 xbox360-controller-driver
+zoomus
 "
 
 echo "installing homebrew casks"

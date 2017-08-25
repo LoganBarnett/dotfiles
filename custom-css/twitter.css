@@ -8,12 +8,27 @@ body {
   display: none !important;
 }
 
+/* trending topics/hashtags section */
+.module.Trends.trends {
+  display: none !important;
+}
+
 /* default buttons have reversed color schemes here because they are designed to
    have no borders
 */
 button {
   background-color: var(--button-color) !important;
   color: var(--button-background-color) !important;
+}
+
+/* top bar with tab-like things */
+.global-nav-inner {
+  background-color: var(--tab-list-background-color) !important;
+}
+
+.nav > .active {
+  background-color: var(--tab-active-background-color) !important;
+  color: var(--tab-active-color) !important;
 }
 
 .home-tweet-box, .LiveVideo-tweetBox, .RetweetDialog-commentBox {

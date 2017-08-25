@@ -22,7 +22,6 @@ values."
    ;; of a list then all discovered layers will be installed.
    dotspacemacs-configuration-layers
    '(
-     lua
      ;; ----------------------------------------------------------------
      ;; Example of useful layers you may want to use right away.
      ;; Uncomment some layer names and press <SPC f e R> (Vim style) or
@@ -39,11 +38,14 @@ values."
      docker
      elm
      emacs-lisp
+     flow-type
      git
+     gnus
      helm
      html
      java
      javascript
+     lua
      markdown
      org
      osx
@@ -69,6 +71,7 @@ values."
      ;; hopefully managed by a spacemacs layer
      company-flow
      floobits
+     ;; flow-minor-mode
      flycheck
      flycheck-flow
      flycheck-purescript
@@ -423,8 +426,8 @@ before packages are loaded. If you are unsure, you should try in setting them in
 (defun dotspacemacs/user-config ()
   "This is a safe place to stick user-specific configuration for Spacemacs."
   (message "Loading user config")
-  ;; add load-path for packages not in the melpa database
-  (add-to-list 'load-path "~/.emacs.d/private/local/dotfiles")
+  (org-babel-load-file "~/.emacs.d/emacs-config.org")
+  (message "Done loading emacs-config.org")
   ;; get tern on the path
   ;; TODO: Make this home dir agnostic - maybe just use which
   ;; (add-to-list 'load-path "/Users/logan/.nvm/versions/node/v5.11.1/bin")
@@ -434,73 +437,7 @@ before packages are loaded. If you are unsure, you should try in setting them in
   ;; fixes tramp startup times
   (eval-after-load 'tramp '(setenv "SHELL" "/bin/bash"))
 
-  ;; encryption
-  (require 'epa-file)
-  (epa-file-enable)
-  ;; (paradox-require 'pinentry)
-  (defvar epa-pinentry-mode)
-  (setf epa-pinentry-mode 'loopback)
-
-
-  ;; turn off the menu bar so we can see things like the time on small screens
-  (menu-bar-mode -1)
-
-  ;; modeline settings
-  ;; (paradox-require 'diminish nil t)
-  ;; (setq-default diminish-mode-alist '(company-mode))
-  ;; (eval-after-load "company-mode" '(diminish 'company-mode 'auto-complete-mode))
-  ;; (eval-after-load 'yas-minor-mode '(diminish 'yas-minor-mode nil))
-  ;; (with-eval-after-load 'company-mode
-  ;;   (spacemacs|diminish 'company-mode nil))
-  ;; (spacemacs|diminish 'yas-minor-mode nil)
-  ;; (spacemacs|diminish 'flyspell-mode nil)
-  ;; (spacemacs|diminish 'which-key-mode nil)
-  ;; (spacemacs|diminish 'smartparens-mode nil)
-  ;; (require 'delight)
-  ;; (delight 'yas-minor-mode)
-  ;; (require 'delight-powerline)
-  ;; (when (paradox-require 'dim nil t)
-  ;;                    (dim-minor-names '((
-  ;;                                        yas-minor-mode "foo"
-  ;;                                        company-mode ""
-  ;;                                        flycheck-mode ""
-  ;;                                        flyspell-mode "")))
-  ;;                    )
-
-  ;; turning off individual lighters doesn't work using the "blessed"
-  ;; spacemacs|diminish function (see commented code above)
-  ;; so just turn the damn thing off entirely
-  (spaceline-toggle-minor-modes-off)
-  ;; (setq-default spaceline-separator-dir-left '(left . left))
-  ;; (setq-default spaceline-separator-dir-right '(right . right))
-  (setq-default powerline-default-separator nil)
-  (spaceline-compile)
-
   ;; osx settings
-  (setq-default mac-command-key-is-meta t)
-  (setq-default mac-option-modifier 'alt)
-  (setq-default osx-use-option-as-meta nil)
-  (setq-default mac-option-key-is-meta nil)
-  (setq-default mac-command-modifier 'meta)
-  ;; set keys for Apple keyboard, for emacs in OS X
-  ;; for other OSes and reference, see
-  ;; http://ergoemacs.org/emacs/emacs_hyper_super_keys.html
-  (setq-default mac-command-modifier 'meta) ; make cmd key do Meta
-  ;; (setq mac-option-modifier 'super) ; make opt key do Super
-  (setq-default mac-right-command-modifier 'super)
-  ;; (setq mac-control-modifier 'control) ; make Control key do Control
-  (setq-default ns-function-modifier 'hyper)  ; make Fn key do Hyper
-  ;; not an osx setting, but keyboard related (maybe move all of these to
-  ;; keyboard section)
-  ;; (define-key 'key-translation-map (kbd "<menu>") 'super)
-  ;; (setq-default w32-apps-modifier 'super)
-  ;; (global-unset-key (kbd "<menu>"))
-  ;; TODO: this doesn't seem to do anything useful
-  ;; (define-key key-translation-map (kbd "C-p") (kbd "<menu>"))
-  ;; (global-set-key (kbd "<menu>") (lambda () (interactive) 'super))
-  (setq-default ns-right-alternate-modifier 'super)
-  ;; (define-key key-translation-map (kbd "C-p") 'super)
-  ;; (key-chord-define-global "<menu>" (lambda () (interactive) 'super))
 
   ;; web-mode
   (paradox-require 'web-mode)
@@ -671,6 +608,7 @@ layers configuration. You are free to put any user code."
 
   ;; (add-hook 'post-self-insert-hook 'animated-self-insert)
 
+  (load-library "my-utils")
   (my/init-flycheck)
   (load-library "config-whitespace")
   (config-whitespace)
@@ -693,8 +631,6 @@ layers configuration. You are free to put any user code."
   ;; handle long lines
   (load-library "config-so-long-mode")
   (config-so-long-mode)
-  (load-library "config-org-mode")
-  (config-org-mode)
 
 
   (message "TODO: Find out how to use the current nvm version to find the bin dir for global node modules")
@@ -754,7 +690,7 @@ layers configuration. You are free to put any user code."
  '(flycheck-javascript-flow-args nil)
  '(package-selected-packages
    (quote
-    (lua-mode nvm plantuml-mode prettier-js dockerfile-mode docker tablist docker-tramp tide typescript-mode org-projectile org-present org-pomodoro alert log4e gntp org-download htmlize gnuplot floobits multi-term diminish s rainbow-mode winum fuzzy f smeargle orgit org magit-gitflow helm-gitignore gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link evil-magit magit magit-popup packed auto-complete evil flyspell-correct async multiple-cursors avy simple-httpd haml-mode dash multi-line shut-up company-emacs-eclim eclim iedit markdown-mode bind-key tern smartparens bind-map highlight flycheck git-commit with-editor company projectile helm helm-core yasnippet skewer-mode js2-mode hydra purescript-mode vimrc-mode dactyl-mode rainbow-identifiers color-identifiers-mode color-identifiers define-word yaml-mode ws-butler window-numbering which-key web-mode web-beautify volatile-highlights vi-tilde-fringe uuidgen use-package toc-org tagedit spacemacs-theme spaceline slim-mode scss-mode sass-mode reveal-in-osx-finder restart-emacs request rainbow-delimiters quelpa pug-mode psci psc-ide popwin persp-mode pcre2el pbcopy paradox osx-trash osx-dictionary org-plus-contrib org-bullets open-junk-file nyan-mode neotree move-text mmm-mode markdown-toc macrostep lorem-ipsum livid-mode linum-relative link-hint less-css-mode launchctl json-mode js2-refactor js-doc info+ indent-guide ido-vertical-mode hungry-delete hl-todo highlight-parentheses highlight-numbers highlight-indentation hide-comnt help-fns+ helm-themes helm-swoop helm-projectile helm-mode-manager helm-make helm-flx helm-descbinds helm-css-scss helm-company helm-c-yasnippet helm-ag graphviz-dot-mode google-translate golden-ratio git-gutter-fringe git-gutter-fringe+ gh-md flyspell-correct-helm flycheck-purescript flycheck-pos-tip flycheck-flow flycheck-elm flx-ido fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state evil-indent-plus evil-iedit-state evil-exchange evil-escape evil-ediff evil-args evil-anzu eval-sexp-fu emmet-mode elm-mode elisp-slime-nav dumb-jump diff-hl company-web company-tern company-statistics company-flow column-enforce-mode coffee-mode clean-aindent-mode auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line ac-ispell)))
+    (flow-minor-mode lua-mode nvm plantuml-mode prettier-js dockerfile-mode docker tablist docker-tramp tide typescript-mode org-projectile org-present org-pomodoro alert log4e gntp org-download htmlize gnuplot floobits multi-term diminish s rainbow-mode winum fuzzy f smeargle orgit org magit-gitflow helm-gitignore gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link evil-magit magit magit-popup packed auto-complete evil flyspell-correct async multiple-cursors avy simple-httpd haml-mode dash multi-line shut-up company-emacs-eclim eclim iedit markdown-mode bind-key tern smartparens bind-map highlight flycheck git-commit with-editor company projectile helm helm-core yasnippet skewer-mode js2-mode hydra purescript-mode vimrc-mode dactyl-mode rainbow-identifiers color-identifiers-mode color-identifiers define-word yaml-mode ws-butler window-numbering which-key web-mode web-beautify volatile-highlights vi-tilde-fringe uuidgen use-package toc-org tagedit spacemacs-theme spaceline slim-mode scss-mode sass-mode reveal-in-osx-finder restart-emacs request rainbow-delimiters quelpa pug-mode psci psc-ide popwin persp-mode pcre2el pbcopy paradox osx-trash osx-dictionary org-plus-contrib org-bullets open-junk-file nyan-mode neotree move-text mmm-mode markdown-toc macrostep lorem-ipsum livid-mode linum-relative link-hint less-css-mode launchctl json-mode js2-refactor js-doc info+ indent-guide ido-vertical-mode hungry-delete hl-todo highlight-parentheses highlight-numbers highlight-indentation hide-comnt help-fns+ helm-themes helm-swoop helm-projectile helm-mode-manager helm-make helm-flx helm-descbinds helm-css-scss helm-company helm-c-yasnippet helm-ag graphviz-dot-mode google-translate golden-ratio git-gutter-fringe git-gutter-fringe+ gh-md flyspell-correct-helm flycheck-purescript flycheck-pos-tip flycheck-flow flycheck-elm flx-ido fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state evil-indent-plus evil-iedit-state evil-exchange evil-escape evil-ediff evil-args evil-anzu eval-sexp-fu emmet-mode elm-mode elisp-slime-nav dumb-jump diff-hl company-web company-tern company-statistics company-flow column-enforce-mode coffee-mode clean-aindent-mode auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line ac-ispell)))
  '(psc-ide-add-import-on-completion t t)
  '(psc-ide-rebuild-on-save nil t)
  '(safe-local-variable-values (quote ((js2-indent-level . 4)))))
@@ -766,3 +702,28 @@ layers configuration. You are free to put any user code."
  )
 
 ;;; spacemacs ends here
+(defun dotspacemacs/emacs-custom-settings ()
+  "Emacs custom settings.
+This is an auto-generated function, do not modify its content directly, use
+Emacs customize menu instead.
+This function is called at the very end of Spacemacs initialization."
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(evil-want-Y-yank-to-eol t)
+ '(flycheck-javascript-flow-args (quote ("--respect-pragma")))
+ '(package-selected-packages
+   (quote
+    (spinner parent-mode fringe-helper git-gutter+ git-gutter pos-tip pkg-info epl flx anzu goto-chg json-snatcher json-reformat web-completion-data dash-functional popup powerline undo-tree zenburn-theme symon string-inflection solarized-theme password-generator org-brain monokai-theme meghanada impatient-mode helm-purpose window-purpose imenu-list groovy-mode groovy-imports pcache gradle-mode evil-org evil-lion ensime sbt-mode scala-mode editorconfig company-lua browse-at-remote flow-minor-mode lua-mode nvm plantuml-mode prettier-js dockerfile-mode docker tablist docker-tramp tide typescript-mode org-projectile org-present org-pomodoro alert log4e gntp org-download htmlize gnuplot floobits multi-term diminish s rainbow-mode winum fuzzy f smeargle orgit org magit-gitflow helm-gitignore gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link evil-magit magit magit-popup packed auto-complete evil flyspell-correct async multiple-cursors avy simple-httpd haml-mode dash multi-line shut-up company-emacs-eclim eclim iedit markdown-mode bind-key tern smartparens bind-map highlight flycheck git-commit with-editor company projectile helm helm-core yasnippet skewer-mode js2-mode hydra purescript-mode vimrc-mode dactyl-mode rainbow-identifiers color-identifiers-mode color-identifiers define-word yaml-mode ws-butler window-numbering which-key web-mode web-beautify volatile-highlights vi-tilde-fringe uuidgen use-package toc-org tagedit spacemacs-theme spaceline slim-mode scss-mode sass-mode reveal-in-osx-finder restart-emacs request rainbow-delimiters quelpa pug-mode psci psc-ide popwin persp-mode pcre2el pbcopy paradox osx-trash osx-dictionary org-plus-contrib org-bullets open-junk-file nyan-mode neotree move-text mmm-mode markdown-toc macrostep lorem-ipsum livid-mode linum-relative link-hint less-css-mode launchctl json-mode js2-refactor js-doc info+ indent-guide ido-vertical-mode hungry-delete hl-todo highlight-parentheses highlight-numbers highlight-indentation hide-comnt help-fns+ helm-themes helm-swoop helm-projectile helm-mode-manager helm-make helm-flx helm-descbinds helm-css-scss helm-company helm-c-yasnippet helm-ag graphviz-dot-mode google-translate golden-ratio git-gutter-fringe git-gutter-fringe+ gh-md flyspell-correct-helm flycheck-purescript flycheck-pos-tip flycheck-flow flycheck-elm flx-ido fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state evil-indent-plus evil-iedit-state evil-exchange evil-escape evil-ediff evil-args evil-anzu eval-sexp-fu emmet-mode elm-mode elisp-slime-nav dumb-jump diff-hl company-web company-tern company-statistics company-flow column-enforce-mode coffee-mode clean-aindent-mode auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line ac-ispell)))
+ '(psc-ide-add-import-on-completion t t)
+ '(psc-ide-rebuild-on-save nil t)
+ '(safe-local-variable-values (quote ((js2-indent-level . 4)))))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
+)

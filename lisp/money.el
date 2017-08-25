@@ -7,12 +7,6 @@
 ;; port-wise) on this site:
 ;; https://home.ubalt.edu/ntsbarsh/Business-stat/otherapplets/CompoundCal.htm#rjava9
 ;; in the "Accelerating Mortgage Payments" form.
-;; (defun my/debt-months-remaining2 (principle monthly-payment interest-rate)
-;;   (/
-;;    (log (/ monthly-payment (- monthly-payment (* principle interest-rate))))
-;;    (log (+ 1 interest-rate))
-;;    )
-;;   )
 (defun my/debt-months-remaining (principle monthly-payment interest-rate)
   "Calculates the months (payments) remaining on a PRINCIPLE given a MONTHLY-PAYMENT with an INTEREST-RATE."
   (- (log
@@ -26,9 +20,9 @@
                                                 monthly-payment
                                                 interest-rate)
   "(Assumes an org table for inputs) Calculates the months (payments) remaining on a PRINCIPLE given a MONTHLY-PAYMENT with an INTEREST-RATE."
-  (my/debt-months-remaining (string-to-number monthly-payment)
+  (my/debt-months-remaining (string-to-number principle)
                             (string-to-number monthly-payment)
-                            (string-to-number interest-rate))
-  )
+                            (/ (string-to-number interest-rate) 1200)
+  ))
 
 ;;; money.el ends here

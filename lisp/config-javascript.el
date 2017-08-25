@@ -73,7 +73,9 @@
   :init
   (require 'grep)
   (require 'nvm)
+  ;; (require 'flow-minor-mode)
   :config
+  ;; (add-hook 'js2-mode-hook 'flow-minor-enable-automatically)
   (nvm-use "8.1.3")
   (add-to-list 'grep-find-ignored-directories "node_modules")
   (setq-default js-indent-level 2)

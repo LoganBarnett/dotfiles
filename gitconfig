@@ -30,3 +30,5 @@
 	default = current
 [alias]
 	wdiff = diff --color-words
+[diff]
+	algorithm = patience

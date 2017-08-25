@@ -11,4 +11,9 @@ ln -s -n $PWD/lisp ~/.emacs.d/private/local/dotfiles
 
 echo "This directory managed by dotfiles" >> ~/.emacs.d/private/local/dotfiles/README.org
 
+# we can preload the packages with this:
+# emacs --batch --load=~/.emacs.d/init.el
+# OR:
+emacs --batch --load=~/.spacemacs
+
 echo "emacs installation complete!"
