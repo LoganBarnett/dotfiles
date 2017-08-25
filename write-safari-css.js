@@ -25,6 +25,12 @@ const childProcess = require('child_process')
 const os = require('os')
 const Iconv = require('iconv').Iconv
 
+const tmpDir = path.resolve(__dirname, './.tmp-css-write')
+if(!fs.existsSync(tmpDir)) {
+  fs.mkdirSync(tmpDir)
+}
+
+
 const names = fs.readdirSync('custom-css')
   .filter(f => f.match(/.+\.json$/))
   .map(f => f.replace(/\.json$/, ''))
