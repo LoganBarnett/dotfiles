@@ -1,0 +1,8 @@
+# emacs directory specific configuration
+.dir-locals.el
+# osx finder metadata
+.DS_Store
+# vim swap files
+.*.swp
+# emacs swap files
+.\#*
