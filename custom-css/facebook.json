@@ -1,0 +1,12 @@
+{
+  "includes": [
+    "https://*.facebook.com/*",
+    "https://facebook.com/*"
+  ],
+  "excludes": [
+    ""
+  ],
+  "name": "facebook",
+  "enabled": true,
+  "key": "facebook"
+}
