@@ -10,6 +10,11 @@
 /* #141823 is Messenger's normal text colour, white is normal background colour */
 /* #1E1E1E and #2D2D30 are Visual Studio, don't ask */
 
+/* Fucking Everwing */
+._497p._11es {
+  display: none !important;
+}
+
 /* timestamp of message list bar */
 .timestamp {
   color: white !important;
