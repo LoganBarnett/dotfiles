@@ -51,6 +51,7 @@ gnutls
 graphviz
 htop
 ispell
+jq
 markdown
 mongodb
 mtr
