@@ -8,7 +8,7 @@
 (require 'use-package)
 (defvar module-directory)
 
-(defun my/use-checker-from-node-modules (checker-name)
+(defun my/use-checker-from-node-modules (checker-name bin-name)
   "Make flycheck look for an executable for CHECKER-NAME inside the node_modules directory for a project."
   (defvar-local path "invalid")
   (setq-local path "invalid")
@@ -17,7 +17,7 @@
                 (or (buffer-file-name) default-directory)
                 "node_modules"))
          (path (and root
-                     (expand-file-name (concat "node_modules/.bin/" checker-name)
+                     (expand-file-name (concat "node_modules/.bin/" bin-name)
                                        root))))
     (if path
         (let ((checker-exec-sym (intern (concat "flycheck-javascript-" checker-name "-executable"))))
@@ -44,7 +44,8 @@
     (pcase-dolist (`(,checker . ,module) '((javascript-jshint . "jshint")
                                            (javascript-eslint . "eslint")
                                            (javascript-jscs   . "jscs")
-                                           (javascript-flow   . "flow")))
+                                           (javascript-flow   . "flow")
+                                           (javascript-flow-coverage . "flow")))
       (let ((package-directory (expand-file-name module module-directory))
             (executable-var (flycheck-checker-executable-variable checker)))
         (when (file-directory-p package-directory)
