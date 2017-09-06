@@ -45,7 +45,7 @@
      '(
        (shell . t)
        (python . t)
-       (R . t)
+       ;; (R . t)
        (ruby . t)
        (ditaa . t)
        (dot . t)
