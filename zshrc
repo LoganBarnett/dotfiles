@@ -298,3 +298,6 @@ function timer_prompt() {
 
 set_prompt
 export PATH="/usr/local/opt/gnupg@2.1/bin:$PATH"
+
+# Get ocaml's package manager on the PATH and other ocaml config.
+eval $(opam config env)
