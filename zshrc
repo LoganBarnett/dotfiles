@@ -262,7 +262,10 @@ function host_prompt() {
 }
 
 function set_prompt() {
-  PROMPT='$(path_color_prompt)$(pwd_prompt)$(git_prompt_info) $(host_prompt) $(exit_status_prompt) $(timer_prompt) $(timestamp_prompt)
+  # Line break intentional. Sometimes the last line of stdout would be cut off
+  # without it.
+  PROMPT='
+$(path_color_prompt)$(pwd_prompt)$(git_prompt_info) $(host_prompt) $(exit_status_prompt) $(timer_prompt) $(timestamp_prompt)
 $(vim_mode_prompt)'
 }
 
