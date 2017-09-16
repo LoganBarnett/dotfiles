@@ -110,3 +110,54 @@ Just load the email file for now.
   (load-library "config-email")
   (config-email)
 #+END_SRC
+** web-mode
+=web-mode= is its own beast that manages to cobble together a =css-mode=,
+=html-mode=, and some variation on =js-mode=. It has some really odd things it
+imposes, and needs its own overrides.
+
+#+BEGIN_SRC emacs-lisp
+(message "[BABEL-CONFIG]: setting up web-mode use-package...")
+  (require 'use-package)
+  (use-package "web-mode"
+      :init
+      :config
+      (message "[BABEL-CONFIG] - Configuring web-mode.")
+      ;; (setq-default web-mode-comment-formats
+        ;; (remove '("javascript" . "/*") web-mode-comment-formats))
+      ;; (add-to-list 'web-mode-comment-formats '("javascript" . "//"))
+      (setq-default web-mode-comment-formats '())
+      (add-to-list 'web-mode-comment-formats '("javascript" . "//"))
+      (message "[BABEL-CONFIG] - web-mode configured.")
+    )
+#+END_SRC
+** facebook-flow
+
+Flow is a strict type system that sits on top of Javascript as an
+additional develop-time only annotation syntax.
+
+There's a Flow spacemacs layer currently configured elsewhere. I'm slowly
+migrating things in.
+
+Flow is designed for incrementally adding typing. Also some things can be typed
+as =any=, which basically means Flow will not type check that variable. As such,
+it's possible for a lack of typing to leak into the code. Being able to
+visualize type coverage is a really handy tool. It can be printed from the
+command line like so:
+
+#+BEGIN_EXAMPLE bash
+./node_modules/.bin/flow coverage path/to/foo.js
+#+END_EXAMPLE
+
+But we live in the civilized world of Emacs, so we can just visualize this
+inline for a given JS file.
+
+#+BEGIN_SRC emacs-lisp
+  ;; Actually, none of this works right now because it's held up due to some big
+  ;; changes desired in flycheck. See
+  ;; https://github.com/flycheck/flycheck/issues/836
+  ;; and
+  ;; https://github.com/flycheck/flycheck/pull/789
+
+  ;; (load-library "flycheck-flow")
+  ;; (flycheck-add-next-checker 'javascript-flow 'javascript-flow-coverage)
+#+END_SRC

@@ -1,5 +1,8 @@
 #! /usr/bin/env bash
 
+# Make sure we're using the node version that emacs will use (8.1.3 currently).
+nvm use 8.1.3
+
 # avn switches the node version using n based on a .node-version when
 # cd/pushd/popd into a directory.
 # tern for JS autocomplete and other hinting

@@ -27,6 +27,7 @@ This moves them into the Spam folder."
 ;; configure email
 (defun config-email ()
   "Configure Email."
+  (load-library "my-utils")
   ;; No idea why setq-local is needed here, and elsewhere defvar-local works.
   ;; This would be a great question for the emacs user group.
 

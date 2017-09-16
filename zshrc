@@ -126,7 +126,6 @@ alias curl-json='curl -v -H "Accept: application/json"'
 
 
 # completions
-# eval "$(/usr/local/bin/gulp --completion=zsh)"
 
 # omz placation
 # export PATH="$HOME/.rvm/bin:$PATH" # Add RVM to PATH for scripting
@@ -148,12 +147,6 @@ grepp() {
 
 # Upload image to Imgur and return its URL. Get API key at http://imgur.com/register/api_anon
 # imgur() { curl -F "image=@$1" -F "key=ANONYMOUS_IMGUR_API_KEY" https://api.imgur.com/2/upload | egrep -o "<original>.+?</original>" | egrep -o "http://imgur\.com/[^<]+" | sed "s/imgur.com/i.imgur.com/" | tee >(pbcopy); }
-
-# IP addresses I don't want to memorize
-export AWS_IRC=52.7.174.243
-export AWS_ROID_MINER=52.2.198.173
-export USER_AWS_IRC=ubuntu@$AWS_IRC   # I should probably just make 'logan' on that system
-export USER_AWS_ROID_MINER=ubuntu@$AWS_ROID_MINER
 
 # oh java
 # JAVA_HOME="/Library/Java/JavaVirtualMachines/jdk1.8.0_102.jdk/Contents/Home"
@@ -262,7 +255,10 @@ function host_prompt() {
 }
 
 function set_prompt() {
-  PROMPT='$(path_color_prompt)$(pwd_prompt)$(git_prompt_info) $(host_prompt) $(exit_status_prompt) $(timer_prompt) $(timestamp_prompt)
+  # Line break intentional. Sometimes the last line of stdout would be cut off
+  # without it.
+  PROMPT='
+$(path_color_prompt)$(pwd_prompt)$(git_prompt_info) $(host_prompt) $(exit_status_prompt) $(timer_prompt) $(timestamp_prompt)
 $(vim_mode_prompt)'
 }
 
@@ -298,3 +294,6 @@ function timer_prompt() {
 
 set_prompt
 export PATH="/usr/local/opt/gnupg@2.1/bin:$PATH"
+
+# Get ocaml's package manager on the PATH and other ocaml config.
+eval $(opam config env)

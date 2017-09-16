@@ -8,8 +8,10 @@ Xdefaults
 avnrc
 floorc.json
 gitconfig
+gitignore_global
 ideavim
 jsbeautifyrc
+npmrc
 oh-my-zsh
 pentadactylrc
 spacemacs
