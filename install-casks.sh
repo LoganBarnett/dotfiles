@@ -13,6 +13,7 @@ chromium
 diffmerge
 discord
 docker
+electric-sheep
 gimp
 google-chrome
 haskell-platform
