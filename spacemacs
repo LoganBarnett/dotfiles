@@ -50,7 +50,8 @@ values."
      org
      osx
      purescript
-     react
+     ;; react uses web-mode and it makes editing jsx files all kinds of goofy.
+     ;; react
      spell-checking
      syntax-checking
      typescript

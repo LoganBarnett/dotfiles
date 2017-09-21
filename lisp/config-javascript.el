@@ -79,6 +79,7 @@
   ;; (add-hook 'js2-mode-hook 'flow-minor-enable-automatically)
   (nvm-use "8.1.3")
   (add-to-list 'grep-find-ignored-directories "node_modules")
+  (add-to-list 'auto-mode-alist '("\\.jsx" . js2-mode))
   (setq-default js-indent-level 2)
   (setq-default js2-strict-missing-semi-warning nil)
   (setq-default js2-strict-trailing-comma-warning nil)
