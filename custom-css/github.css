@@ -56,6 +56,11 @@ ul.top-nav li :hover
   color: var(--closed-ticket-color) !important;
 }
 
+/* issue titles (renamed) */
+.discussion-item .renamed-was, .discussion-item .renamed-is {
+  color: var(--dim-text) !important;
+}
+
 /* Language percentage usage. */
 .repository-lang-stats ol.repository-lang-stats-numbers li .lang {
   color: var(--link-color) !important;
