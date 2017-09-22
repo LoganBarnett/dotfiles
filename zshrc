@@ -3,6 +3,7 @@
 # prevent emacs tramp from barfing on startup
 if [[ "$TERM" == "dumb" ]]
 then
+  echo "[ZSHRC] Setting as dumb terminal (likely for Tramp)..."
   unsetopt zle
   unsetopt prompt_cr
   unsetopt prompt_subst
