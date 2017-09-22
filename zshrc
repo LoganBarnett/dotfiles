@@ -1,17 +1,15 @@
 # -*- mode: sh -*-
 
 # prevent emacs tramp from barfing on startup
-if [[ "$TERM" == "dumb" ]]
-then
-  echo "[ZSHRC] Setting as dumb terminal (likely for Tramp)..."
-  unsetopt zle
-  unsetopt prompt_cr
-  unsetopt prompt_subst
-  # unfunction precmd
-  # unfunction preexec
-  PS1='$ '
-  exit
-fi
+[[ "$TERM" == "dumb" ]] &&
+  echo "[ZSHRC] Setting as dumb terminal (likely for Tramp)..." &&
+  unsetopt zle &&
+  unsetopt prompt_cr &&
+  unsetopt prompt_subst &&
+  # unfunction precmd &&
+  # unfunction preexec &&
+  PS1='$ ' &&
+  return
 
 # Path to your oh-my-zsh installation.
 export ZSH=$HOME/.oh-my-zsh
