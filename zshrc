@@ -9,6 +9,7 @@ then
   unfunction precmd
   unfunction preexec
   PS1='$ '
+  exit
 fi
 
 # Path to your oh-my-zsh installation.
