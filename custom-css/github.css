@@ -241,6 +241,16 @@ div.discussion-timeline-actions {
   color: #099 !important;
 }
 
+/* stuff inside string interpolations - used as a reset? */
+.pl-s1 {
+  color: var(--text-color) !important;
+}
+
+/* string interpolations */
+.pl-pse {
+  color: var(--code-string-interpolation) !important;
+}
+
 
 ul#user-links {
   /* color of box behind the buttons */

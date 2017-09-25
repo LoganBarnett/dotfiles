@@ -52,4 +52,5 @@ module.exports = {
   '--error-background-color': '#3c2a2c',
   '--calendar-leave-entry-background': '#29422d',
   '--calendar-leave-entry-color': '#67b11d',
+  'code-string-interpolation': '#86dc2f',
 }
