@@ -8,8 +8,37 @@ input {
   background-color: var(--input-background-color) !important;
 }
 
-code {
+pre code, code {
+  color: var(--text-color) !important;
   background-color: var(--code-background-color) !important;
+}
+
+/* This is to fix a bug more than apply dark styling. It prevents tasks growing
+   too wide to fit. */
+.left-control + .task-content {
+  overflow-wrap: break-word;
+  width: 14rem;
+}
+
+.task-content {
+  background: var(--general-background) !important;
+}
+
+.tasks-list {
+  background: var(--border) !important;
+}
+
+.spell {
+  background: var(--button-background) !important;
+  color: var(--button-color) !important;
+}
+
+.task-title {
+  color: var(--text-color) !important;
+}
+
+.task-notes {
+  color: var(--dim-text) !important;
 }
 
 .form-control {
