@@ -363,18 +363,6 @@ before packages are loaded. If you are unsure, you should try in setting them in
     ;; (add-hook 'flycheck-after-syntax-check-hook #'my/flycheck-list-errors-only-when-errors)
     ;; (add-hook 'flycheck-mode-hook #'my/flycheck-list-errors-only-when-errors)
     ;; (add-hook 'flycheck-mode-hook #'my/use-eslint-from-node-modules)
-    (add-hook 'flycheck-mode-hook
-              (apply-partially #'my/use-checker-from-node-modules "flow" "flow"))
-    (add-hook 'flycheck-mode-hook
-              (apply-partially #'my/use-checker-from-node-modules "eslint"
-                               "eslint"))
-    (add-hook 'flycheck-mode-hook
-              (apply-partially #'my/use-checker-from-node-modules "jshint"
-                               "jshint"))
-    (add-hook 'flycheck-mode-hook
-              (apply-partially #'my/use-checker-from-node-modules
-                               "flow-coverage"
-                               "flow"))
 
     ;; use the npm version for the check
     ;; this breaks flycheck when we enter json-mode and perhaps others
@@ -384,8 +372,8 @@ before packages are loaded. If you are unsure, you should try in setting them in
     ;;                       '(javascript-jshint)))
 
     ;; use eslint with web-mode for jsx files
-    (flycheck-add-mode 'javascript-eslint 'web-mode)
-    (flycheck-add-mode 'javascript-jshint 'web-mode)
+    ;; (flycheck-add-mode 'javascript-eslint 'web-mode)
+    ;; (flycheck-add-mode 'javascript-jshint 'web-mode)
 
 
     ;; purescript
@@ -393,8 +381,8 @@ before packages are loaded. If you are unsure, you should try in setting them in
     (paradox-require 'flycheck-flow)
     (use-package "flycheck-flow"
       :init
-      (flycheck-add-mode 'javascript-flow 'js-mode)
-      (flycheck-add-mode 'javascript-flow 'web-mode)
+      ;; (flycheck-add-mode 'javascript-flow 'js-mode)
+      ;; (flycheck-add-mode 'javascript-flow 'web-mode)
       :config
       ;; (add-hook 'flycheck-mode-hook #'my/use-flow-from-node-modules)
       ;; only check flow annotated files with flow
