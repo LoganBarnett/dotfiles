@@ -15,6 +15,15 @@
   display: none !important;
 }
 
+/* Event invites */
+._3nta {
+  background-color: var(--general-background-color) !important;
+}
+
+._2n3u {
+  color: var(--text-color) !important;
+}
+
 /* timestamp of message list bar */
 .timestamp {
   color: white !important;
