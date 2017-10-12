@@ -3,9 +3,6 @@
 ;; the layer sets up a lot of this
 
 ;;; Code:
-(make-variable-buffer-local 'path)
-(make-variable-buffer-local 'root)
-
 (require 'flycheck)
 (require 'rainbow-identifiers)
 (require 'use-package)
