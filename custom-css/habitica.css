@@ -3,6 +3,22 @@ body {
   background-color: #121212 !important;
 }
 
+h3 {
+  color: var(--head3-color) !important;
+  background: var(--head3-background-color) !important;
+}
+
+h4 {
+  color: var(--head4-color) !important;
+  background: var(--head4-background-color) !important;
+}
+
+body textarea {
+  background: var(--general-background) !important;
+  border: var(--thin-border) !important;
+  color: var(--text-color) !important;
+}
+
 input {
   color: var(--input-color) !important;
   background-color: var(--input-background-color) !important;
@@ -11,6 +27,50 @@ input {
 pre code, code {
   color: var(--text-color) !important;
   background-color: var(--code-background-color) !important;
+}
+/**
+ * Buttons.
+ */
+.btn-secondary {
+  color: var(--button-color) !important;
+  background: var(--button-background) !important;
+}
+
+.btn-secondary:hover {
+  background: var(--button-background) !important;
+}
+
+/* Event/chat entries in the party view */
+.card {
+  background: var(--general-background) !important;
+}
+
+/**
+ * Sidebar for the party. Normally it has an attribute selector so body makes
+ * this the most specific.
+ */
+body .sidebar {
+  background: var(--general-background) !important;
+}
+
+/**
+ * Not an "item" in the RPG sense. This shows the member count and an icon
+ * (Bronze? Implies some kind of rating, but not documented). Scoped to
+ * .standard-page because other things use it too (like the
+ * gem/money/notification containers on the top right).
+ */
+body .standard-page .item-with-icon {
+  background: var(--general-background) !important;
+  border: var(--thin-border) !important;
+  color: var(--text-color) !important;
+}
+
+/**
+ * The quest progress area in the sidebar.
+ */
+.quest-active-section .quest-box {
+  background: var(--general-background) !important;
+  border: var(--thin-border) !important;
 }
 
 /* This is to fix a bug more than apply dark styling. It prevents tasks growing
