@@ -31,7 +31,7 @@ This moves them into the Spam folder."
   ;; No idea why setq-local is needed here, and elsewhere defvar-local works.
   ;; This would be a great question for the emacs user group.
 
-  ;; Copy key-id.template.txt to ~/emacs.d/private/key-id.txt and populate with
+  ;; Copy key-id.template.txt to ~/.emacs.d/private/key-id.txt and populate with
   ;; the key ID.
   (setq-local key-id
               (my-utils/get-string-from-file  "~/.emacs.d/private/key-id.txt")
