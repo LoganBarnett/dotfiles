@@ -12,6 +12,8 @@
   (use-package "plantuml-mode"
   ;; :init
   :config
+  (setq-default plantuml-jar-path
+                "/usr/local/opt/plantuml/libexec/plantuml.jar")
   (setq-default org-plantuml-jar-path
                 "/usr/local/opt/plantuml/libexec/plantuml.jar")
   ))
