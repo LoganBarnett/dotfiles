@@ -100,8 +100,6 @@ bar items, but it disables enough that this isn't a problem.
 ** org-mode
 Just load the org-mode file for now.
 #+BEGIN_SRC emacs-lisp
-  (load-library "config-org-mode")
-  (config-org-mode)
 #+END_SRC
 
 ** email
