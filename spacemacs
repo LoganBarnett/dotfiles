@@ -38,7 +38,6 @@ values."
      docker
      elm
      emacs-lisp
-     flow-type
      git
      gnus
      helm
