@@ -15,6 +15,7 @@
 ;; configure org-mode
 (defun config-org-mode ()
   "Configure 'org-mode'."
+  (package-initialize)
   ;; (use-package "org-mode"
     ;; :init
     ;; :config
@@ -40,6 +41,7 @@
     ;; Some initial langauges we want org-babel to support
     (require 'ob-js)
     (require 'ob-sh)
+    (require 'ob-plantuml)
     (org-babel-do-load-languages
      'org-babel-load-languages
      '(
@@ -48,14 +50,15 @@
        (emacs-lisp . t)
        (js . t)
        (octave . t)
-       (perl . t)
+       ;; (perl . t)
        (plantuml . t)
-       (python . t)
-       (ruby . t)
+       ;; (python . t)
+       ;; (ruby . t)
        (shell . t)
-       (sqlite . t)
+       ;; (sqlite . t)
        ;; (R . t)
        ))
+      ;; (org-babel-do-load-languages 'org-babel-load-languages '((plantuml . t)))
     )
 ;; )
 (provide 'config-org-mode)

@@ -49,6 +49,7 @@ values."
      markdown
      org
      osx
+     plantuml
      purescript
      ;; react uses web-mode and it makes editing jsx files all kinds of goofy.
      ;; react
@@ -629,6 +630,10 @@ layers configuration. You are free to put any user code."
   ;; handle long lines
   (load-library "config-so-long-mode")
   (config-so-long-mode)
+  (message "[EMACS-CONFIG] Configuring org-mode...")
+  (load-library "config-org-mode")
+  (config-org-mode)
+  (message "[EMACS-CONFIG] org-mode configured...")
 
 
   (message "TODO: Find out how to use the current nvm version to find the bin dir for global node modules")
