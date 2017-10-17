@@ -6,9 +6,11 @@ echo "installing spacemacs"
 git clone https://github.com/syl20bnr/spacemacs ~/.emacs.d || true
 
 echo "linking elisp dir"
-rm ~/.emacs.d/private/local/dotfiles
-ln -s -n $PWD/lisp ~/.emacs.d/private/local/dotfiles
-ln -s -n $PWD/yasnippets ~/.emacs.d/private/snippets
+rm ~/.emacs.d/private/local/dotfiles || true
+ln -s -n -f $PWD/lisp ~/.emacs.d/private/local/dotfiles
+rm -rf ~/.emacs.d/private/snippets
+ln -s -n -f $PWD/yasnippets ~/.emacs.d/private/snippets
+ln -s -n -f $PWD/emacs-config.org ~/.emacs.d/emacs-config.org
 
 echo "This directory managed by dotfiles" >> ~/.emacs.d/private/local/dotfiles/README.org
 

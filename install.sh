@@ -32,10 +32,6 @@ ln -F -s -n $PWD/awesome ~/.config/awesome
 
 ln -F -s -n $PWD/bin ~/bin
 
-ln -F -s -n $PWD/lisp ~/.emacs.d/private/local/dotfiles
-
-ln -F -s -n $PWD/emacs-config.org ~/.emacs.d/emacs-config.org
-
 if [ $(uname) = 'Darwin' ]; then
 
     xcode-select --install || true
