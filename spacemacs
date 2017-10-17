@@ -424,6 +424,10 @@ before packages are loaded. If you are unsure, you should try in setting them in
 
 (defun dotspacemacs/user-config ()
   "This is a safe place to stick user-specific configuration for Spacemacs."
+
+  ;; Works around this issue: https://github.com/syl20bnr/spacemacs/issues/9549
+  (require 'helm-bookmark)
+
   (message "Loading user config")
   (org-babel-load-file "~/.emacs.d/emacs-config.org")
   (message "Done loading emacs-config.org")
