@@ -132,6 +132,8 @@
                              "flow-coverage"
                              "flow"))
   (message "[CONFIG-JAVASCRIPT] configured javascript support")
+  (flycheck-add-next-checker 'javascript-flow 'javascript-flow-coverage)
+  (flycheck-add-next-checker 'javascript-flow-coverage 'javascript-eslint)
   )
 (provide 'config-javascript)
 
