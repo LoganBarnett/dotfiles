@@ -6,6 +6,8 @@ emacs.d/recentf
 .tmp-css
 .tmp-css-write
 node_modules/
+org/private.org
+org/*.el
 
 # Ignore our private key ID.
 # You need to copy and modify lisp/key-id.template.txt.

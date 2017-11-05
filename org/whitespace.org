@@ -1,0 +1,33 @@
+#+TITLE:  Whitespace
+#+AUTHOR: Logan Barnett
+#+EMAIL:  logustus@gmail.com
+#+DATE:   <2017-10-18 Wed>
+#+TAGS:   whitespace code
+
+Managing whitespace settings is something a computer can and should do. Having
+the human control this seems a bit absurd to me, but automatic code cleanup
+tools can often be few and far between. Fortunately Emacs has some options for
+cleaning up whitespace.
+
+There's a few packages out there, but the one that interests me is [[https://github.com/lewang/ws-butler][ws-butler]].
+A notable thing about =ws-butler= is that it cleans whitespace on only the lines
+that have been edited. This means _my_ changes can be clean, but my pull
+requests won't be full of unrelated whitespace fixes. My general philosophy to
+editing code is that every line I change is a line I now own, so =ws-butler=
+fits nicely with that.
+
+I mostly want this for any kind of programming mode, but also =org-mode= seems
+like a place where I'd want it as well.
+
+#+BEGIN_SRC emacs-lisp
+
+  (use-package ws-butler
+    :ensure t
+    :config
+    (setq-default ws-butler-keep-whitespace-before-point nil)
+    (add-hook 'prog-mode-hook 'ws-butler-mode)
+    (add-hook 'org-mode-hook 'ws-butler-mode)
+    (message "ws-butler configured.")
+  )
+  (require "ws-butler")
+#+END_SRC
