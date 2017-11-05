@@ -10,6 +10,7 @@ set -e
 
 # Ensure we don't have an existing gpg in the way.
 brew uninstall gnupg2 gpg-agent dirmngr --force
+brew install gnupg
 
 echo "linking gpg settings..."
 mkdir -p ~/.gnupg
@@ -20,3 +21,6 @@ mkdir -p ~/.gnupg
     ln -s -n -f $PWD/gpg-agent.conf ~/.gnupg/gpg-agent.conf
     ln -s -n -f $PWD/gpg.conf ~/.gnupg/gpg.conf
 # fi
+echo "fixing .gnupg perms..."
+
+chmod 700 ~/.gnupg

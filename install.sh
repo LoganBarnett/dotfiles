@@ -42,7 +42,6 @@ coreutils
 dos2unix
 elm
 ffmpeg
-gnupg
 gnutls
 graphviz
 htop
