@@ -9,6 +9,7 @@ brew tap caskroom/drivers
 # NOTE: I omitted razer-synpase due to its intrusive nature. Install manually
 # and then uninstall when keyboard config is complete.
 CASKS="
+arduino
 chromium
 diffmerge
 discord
