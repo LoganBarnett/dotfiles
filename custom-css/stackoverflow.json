@@ -5,7 +5,9 @@
     "https://*.stackoverflow.com/*",
     "https://stackoverflow.com/*",
     "https://*.stackexchange.com/*",
-    "http://*.stackexchange.com/*"
+    "http://*.stackexchange.com/*",
+    "https://askubuntu.com/*",
+    "http://askubuntu.com/*"
   ],
   "excludes": [
     ""
