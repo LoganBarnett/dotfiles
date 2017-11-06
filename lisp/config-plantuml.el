@@ -16,6 +16,7 @@
                 "/usr/local/opt/plantuml/libexec/plantuml.jar")
   (setq-default org-plantuml-jar-path
                 "/usr/local/opt/plantuml/libexec/plantuml.jar")
+  (setq-default plantuml-java-args "java.awt.headless=true")
   ))
 (provide 'config-plantuml)
 

@@ -12,6 +12,12 @@
   (org-clock-report)
   (widen))
 
+;; Lifted from
+;; https://emacs.stackexchange.com/questions/21124/execute-org-mode-source-blocks-without-security-confirmation
+(defun my/org-confirm-babel-evaluate (lang body)
+  "Prevents evaluation of LANG if it is in the list below. BODY is not used."
+  (not (member lang '("plantuml"))))
+
 ;; configure org-mode
 (defun config-org-mode ()
   "Configure 'org-mode'."
@@ -58,7 +64,7 @@
        ;; (sqlite . t)
        ;; (R . t)
        ))
-      ;; (org-babel-do-load-languages 'org-babel-load-languages '((plantuml . t)))
+    (setq-default org-confirm-babel-evaluate 'my/org-confirm-babel-evaluate)
     )
 ;; )
 (provide 'config-org-mode)
