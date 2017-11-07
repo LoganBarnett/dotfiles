@@ -20,8 +20,7 @@ I mostly want this for any kind of programming mode, but also =org-mode= seems
 like a place where I'd want it as well.
 
 #+BEGIN_SRC emacs-lisp
-
-  (use-package ws-butler
+  (use-package "ws-butler"
     :ensure t
     :config
     (setq-default ws-butler-keep-whitespace-before-point nil)
@@ -29,5 +28,4 @@ like a place where I'd want it as well.
     (add-hook 'org-mode-hook 'ws-butler-mode)
     (message "ws-butler configured.")
   )
-  (require "ws-butler")
 #+END_SRC
