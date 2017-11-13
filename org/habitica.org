@@ -2,7 +2,7 @@
 #+AUTHOR: Logan Barnett
 #+EMAIL:  logustus@gmail.com
 #+DATE:   <2017-10-18 Wed>
-#+TAGS:   habitica lisp
+#+TAGS:   habitica org-mode config
 
 A vast majority of the credit here goes towards [[http://www.howardism.org][Howard Abrams]], whose [[https://github.com/howardabrams/dot-files/blob/master/emacs-habitica.org][public
 Habitica]] config I shamelessly appropriated.
