@@ -48,6 +48,8 @@
     (require 'ob-js)
     (require 'ob-sh)
     (require 'ob-plantuml)
+    ;; Exporters.
+    (require 'ox-confluence-en) ;; This one adds PlantUML support.
     (org-babel-do-load-languages
      'org-babel-load-languages
      '(
