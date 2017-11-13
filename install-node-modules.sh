@@ -21,7 +21,6 @@ elm-test
 iconv
 js-beautify
 marked
-tern
 "
 
 npm i -g $NODE_MODULES

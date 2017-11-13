@@ -10,11 +10,13 @@
   "Do initializtion."
   (message "[INIT] Starting init.")
   (message "[INIT] private.org")
-  (org-babel-load-file (expand-file-name "org/private.org"))
+  (org-babel-load-file (expand-file-name "org/private.org" "~/dev/dotfiles"))
   (message "[INIT] whitespace.org")
-  (org-babel-load-file (expand-file-name "org/whitespace.org"))
+  (org-babel-load-file (expand-file-name "org/whitespace.org" "~/dev/dotfiles"))
   (message "[INIT] habitica.org")
-  (org-babel-load-file (expand-file-name "org/habitica.org"))
+  (org-babel-load-file (expand-file-name "org/habitica.org" "~/dev/dotfiles"))
+  (message "[INIT] javascript.org")
+  (org-babel-load-file (expand-file-name "org/javascript.org" "~/dev/dotfiles"))
   (message "[INIT] Init Done.")
   )
 
