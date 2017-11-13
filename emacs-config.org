@@ -97,11 +97,9 @@ bar items, but it disables enough that this isn't a problem.
 (defvar epa-pinentry-mode)
 (setf epa-pinentry-mode 'loopback)
 #+END_SRC
-** org-mode
-Just load the org-mode file for now.
-#+BEGIN_SRC emacs-lisp
-#+END_SRC
-
+** TODO org-mode
+Configuring org-mode from within org mode would need some kind of bootstrap.
+That's potentially ok, but it's work for another day.
 ** email
 Just load the email file for now.
 #+BEGIN_SRC emacs-lisp
