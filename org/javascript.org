@@ -109,8 +109,21 @@ when this happens, and Emacs eats a lot of processing power for no good reason.
 
 #+BEGIN_SRC emacs-lisp
 (defun my/config-javascript-company-backends ()
+  (require 'company-flow)
   (my/find-javascript-company-backends)
-  (setq-default company-backends (remove 'company-tern company-backends))
+  (setq-default company-backends
+    ;; tern works its way in here multiple times.
+    (remove 'company-tern (remove-duplicates company-backends))
+  )
+  (add-to-list 'company-backends 'company-flow)
+
+  ;; NOTE: We also need to configure flow's backend on a per major-mode basis.
+  (setq-default company-backends-js2-mode
+    ;; tern works its way in here multiple times.
+    (remove 'company-tern (remove-duplicates company-backends-js2-mode))
+  )
+  (add-to-list 'company-backends-js2-mode 'company-flow)
+  (message "company backends (js2mode) (after JS config): %s" company-backends-js2-mode)
 )
 #+END_SRC
 
@@ -206,6 +219,13 @@ Finally, tie it all together on demand.
   (setq-default js2-pretty-multiline-declarations nil)
   (my/find-javascript-flycheck-backends)
   (my/connect-javascript-flycheck-backends)
-  (my/find-javascript-company-backends)
+  (my/config-javascript-company-backends)
+
+  ;; ugh debugging company
+  (defun company-flow-prefix ()
+    (interactive)
+    (message "result: %s" (company-flow--prefix)
+)
+  )
 )
 #+END_SRC

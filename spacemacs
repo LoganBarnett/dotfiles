@@ -35,7 +35,6 @@ values."
      ;; this breaks tests?
      ;; psc-ide
      auto-completion
-     company-flow
      docker
      elm
      emacs-lisp
