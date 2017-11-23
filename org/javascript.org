@@ -1,0 +1,211 @@
+#+TITLE:  Javascript configuration
+#+AUTHOR: Logan Barnett
+#+EMAIL:  logustus@gmail.com
+#+DATE:   <2017-11-12 Sun>
+#+TAGS:   javascript org-mode config
+
+Javascript is "the bytecode of the web". It runs on more things that Java does
+at this point. It's quite a statement, considering that Java has had immense
+committees governing what kinds of object structures they use, and Javascript
+was thrown together in a very small amount time. Many (all?) of its oddities are
+still present to this day. A powerful strength of it is it runs on both the
+server and the browser. Much code can be shared.
+
+Much of the work I do is using [[https://flow.org][Flow]]. Javascript's functions are first class
+citizens. This combination allows me to work with a highly functional style.
+Everything is still imperative, but Flow's strength is when you're not
+constantly mutating things and structures are inert. I don't have Flow globally
+installed. I let the project I'm on dictate the Flow version - but that means
+the tooling needs to follow that too. As such, there's a utility that gets us
+the =flow= executable from the project's =node_modules=.
+=my/getnode-modules-bin= is very generically applicable, but Flow is the
+ultimate motivator for me.
+
+#+BEGIN_SRC emacs-lisp
+(defun my/get-node-modules-bin (bin-name)
+  "Find BIN-NAME inside of =./node_modules/.bin/= ."
+  (let* ((root (locate-dominating-file
+                (or (buffer-file-name) default-directory)
+                "node_modules")
+               ))
+    (expand-file-name (concat "node_modules/.bin/" bin-name) root)
+    )
+  )
+#+END_SRC
+
+This function works specifically with =flycheck=, which is a general checker
+employed to integrate linters, type checkers, compilers, and coverage utilities.
+
+#+BEGIN_SRC emacs-lisp
+(defun my/use-checker-from-node-modules (checker-name bin-name)
+  "For a given CHECKER-NAME, find the BIN-NAME inside of node_modules."
+  (let* ((path (my/get-node-modules-bin bin-name)))
+    (if path
+        (let ((checker-exec-sym (intern (concat "flycheck-javascript-" checker-name "-executable"))))
+             (make-local-variable checker-exec-sym)
+             (set checker-exec-sym path)
+             )
+      (message "flycheck -- checker %s not available for mode %s with file %s"
+               checker-name major-mode buffer-file-name)
+      )
+    )
+  )
+#+END_SRC
+
+The flow checkers in the past needed a specific order of setup, but I haven't
+observed that lately. Type check errors coexist with linter errors as far as I
+can see. I have =jshint= as a means of supporting some of the older applications
+during my time at NWEA.
+
+#+BEGIN_SRC emacs-lisp
+(defun my/find-javascript-flycheck-backends ()
+  (message "Setting up find hooks for Javascript Flycheck backends")
+  (add-hook 'flycheck-mode-hook
+            (apply-partially #'my/use-checker-from-node-modules "flow" "flow"))
+  (add-hook 'flycheck-mode-hook
+            (apply-partially #'my/use-checker-from-node-modules "eslint"
+                             "eslint"))
+  (add-hook 'flycheck-mode-hook
+            (apply-partially #'my/use-checker-from-node-modules "jshint"
+                             "jshint"))
+  (add-hook 'flycheck-mode-hook
+            (apply-partially #'my/use-checker-from-node-modules
+                             "flow-coverage"
+                             "flow"))
+)
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp
+(defun my/use-company-backend-from-node-modules (bin-name)
+  "For a given CHECKER-NAME, find the BIN-NAME inside of node_modules."
+  (let* ((path (my/get-node-modules-bin bin-name)))
+    (if path
+        (let ((backend-exec-sym (intern
+          (concat "company-" bin-name "-executable"))))
+             (make-local-variable backend-exec-sym)
+             (set backend-exec-sym path)
+             )
+      (message
+        "company-mode -- backend %s not available for mode %s with file %s"
+        bin-name major-mode buffer-file-name)
+      )
+    )
+  )
+#+END_SRC
+
+https://github.com/aaronjensen/company-flow
+
+#+BEGIN_SRC emacs-lisp
+(defun my/find-javascript-company-backends ()
+  (message "Setting up find hooks for Javascript Company backends")
+  (add-hook 'company-mode-hook
+    (apply-partially #'my/use-company-backend-from-node-modules "flow"))
+)
+#+END_SRC
+
+Stitch together all of the company backends. Remove Tern's backend as it has a
+lot of trouble when looking at Flow's libdef files. Many processes are created
+when this happens, and Emacs eats a lot of processing power for no good reason.
+
+#+BEGIN_SRC emacs-lisp
+(defun my/config-javascript-company-backends ()
+  (my/find-javascript-company-backends)
+  (setq-default company-backends (remove 'company-tern company-backends))
+)
+#+END_SRC
+
+Tying together Flow, Flow's coverage, and ESLint is documented to run the
+checker after the present one finishes. That said, linter errors and Flow errors
+have been clearly seen side-by-side. I think these functions actually tie
+linting together and make them all show up at once.
+
+#+BEGIN_SRC emacs-lisp
+(defun my/connect-javascript-flycheck-backends ()
+  (message "Connecting Javascript Flycheck backends")
+  (flycheck-add-next-checker 'javascript-flow 'javascript-flow-coverage)
+  (flycheck-add-next-checker 'javascript-flow-coverage 'javascript-eslint)
+)
+#+END_SRC
+
+Flow uses a _lot_ of type inferencing. There's also type refinement. This can
+lead to a lot of confusion over what a given type is for a variable. Flow gives
+us the capability to determine a type where our cursor is located. This is handy
+for hunting down issues with Flow errors.
+
+#+BEGIN_SRC emacs-lisp
+(defun flow-type-at-pos ()
+  "Show flow type at the cursor."
+  (interactive)
+  (let ((file (buffer-file-name))
+        (line (line-number-at-pos))
+        (col (current-column))
+        (buffer (current-buffer)))
+    (switch-to-buffer-other-window "*Shell Command Output*")
+    (shell-command
+     (format "%s type-at-pos --from emacs %s %d %d"
+             (my/get-node-modules-bin "flow")
+             file
+             line
+             (1+ col)))
+    (compilation-mode)
+    (switch-to-buffer-other-window buffer))
+)
+
+#+END_SRC
+
+Finally, tie it all together on demand.
+
+#+BEGIN_SRC emacs-lisp
+(defun my/js2-disable-global-variable-highlight ()
+  "Disable js2 global variable highlight.  Wait.  Am I using this?"
+  (font-lock-remove-keywords 'js2-mode 'js2-external-variable)
+  )
+
+(defun my/fix-js2-rainbow-identifiers ()
+  "Plea to the gods to fix rainbow-identifiers with js2-mode."
+  (message "HACK: turning off rainbow-identifiers-mode")
+  (rainbow-identifiers-mode 0)
+  (message "HACK: turning back on rainbow-identifiers-mode")
+  (rainbow-identifiers-mode 1)
+  )
+
+(defun my/js2-disable-global-variable-highlight ()
+  "Disable js2 global variable highlight.  Wait.  Am I using this?"
+  (font-lock-remove-keywords 'js2-mode 'js2-external-variable)
+  )
+
+(message "initializing js")
+(require 'use-package)
+  (use-package "js2-mode"
+  :init
+  (message "initializing Javascript")
+  (require 'grep)
+  (require 'nvm)
+  (require 'flycheck)
+  (require 'rainbow-identifiers)
+  (require 'flycheck-flow)
+  :config
+  (message "Configuring Javascript")
+  ;; (add-hook 'js2-mode-hook 'flow-minor-enable-automatically)
+  (setq-default flycheck-javascript-flow-args '("--respect-pragma"))
+  (nvm-use "8.1.3")
+  (add-to-list 'grep-find-ignored-directories "node_modules")
+  (add-to-list 'auto-mode-alist '("\\.jsx" . js2-mode))
+  (setq-default js-indent-level 2)
+  (setq-default js2-strict-missing-semi-warning nil)
+  (setq-default js2-strict-trailing-comma-warning nil)
+  (setq-default js2-mode-show-parse-errors nil)
+  (setq-default js2-highlight-external-variables nil)
+  ;; (setq-default js2-mode-toggle-warnings-and-errors 0)
+  (setq-default js2-mode-show-strict-warnings nil)
+  ;; (add-hook 'js2-mode 'js2-mode-toggle-warnings-and-errors)
+  ;; (add-hook 'js2-mode 'my/disable-js2-global-var-highlight)
+
+  ;; prevent indentation from lining up with a prior line's glyph
+  ;; this will make it so fighting is less necessary to appease linters
+  (setq-default js2-pretty-multiline-declarations nil)
+  (my/find-javascript-flycheck-backends)
+  (my/connect-javascript-flycheck-backends)
+  (my/find-javascript-company-backends)
+)
+#+END_SRC
