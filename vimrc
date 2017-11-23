@@ -1,3 +1,6 @@
+set textwidth=80
+set colorcolumn=+1
+
 let UseVimplug=1
 
 let PluginsInstalled=0
