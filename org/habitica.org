@@ -35,7 +35,9 @@ Emacs. Fortunately, there is already Emacs integration!
 
   #+BEGIN_SRC emacs-lisp
     (use-package habitica
-      :ensure t)
+      :ensure t
+      :init
+      (require 'noflet))
   #+END_SRC
 
   A function for creating tasks based on an associated list. To do this, we
@@ -47,7 +49,7 @@ Emacs. Fortunately, there is already Emacs integration!
       (when (not (assoc 'type task))
         (setq task (cons '(type . "todo") task)))
 
-      (cl-flet ((combine-tuple (tup) (format "%s=%s" (car tup) (cdr tup))))
+      (noflet ((combine-tuple (tup) (format "%s=%s" (car tup) (cdr tup))))
         (let ((data (mapconcat 'combine-tuple task "&")))
           (habitica--send-request "/tasks/user" "POST" data))))
   #+END_SRC
@@ -107,7 +109,7 @@ Emacs. Fortunately, there is already Emacs integration!
             (org-md-export-as-markdown)
             (setq results (buffer-string))
 
-            ;; (bury-buffer) ... still trying to figure this out
+            (kill-buffer)
             (format "%s \n\n See: [%s](%s)" results filename filepath)))))
   #+END_SRC
 

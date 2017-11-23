@@ -83,6 +83,7 @@ values."
      habitica
      multi-line
      multi-term
+     noflet
      nvm
      nyan-mode
      plantuml-mode
