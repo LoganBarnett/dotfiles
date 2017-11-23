@@ -28,6 +28,7 @@
 	trustExitCode = true
 [push]
 	default = current
+	followTags = true
 [alias]
 	wdiff = diff --color-words
 [diff]
