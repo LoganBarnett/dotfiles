@@ -29,7 +29,23 @@
     (setq-default diary-file "~/notes/diary.org")
     ;; (setq-default appt-audible t)
     (setq-default calendar-date-style 'iso)
-    (setq-default org-agenda-files '("~/notes/planner.org"))
+    ;; Having to manually specify these is a drag. Scanning all of ~/notes
+    ;; sounds great on paper, but Emacs takes a long time to finish that scan. I
+    ;; believe the ultimate solution is to condense my org files further into
+    ;; larger files.
+    ;; (require 'find-lisp)
+    (setq-default org-agenda-files
+                  '(
+                    "~/notes/computing.org"
+                    "~/notes/crafting.org"
+                    "~/notes/emacs.org"
+                    "~/notes/nwea.org"
+                    "~/notes/planner.org"
+                    "~/notes/roid-miner.org"
+                    "~/notes/social.org"
+                    "~/notes/warhammer40k.org"
+                    )
+                  )
     ;; shrink inline images see:
     ;; http://lists.gnu.org/archive/html/emacs-orgmode/2012-08/msg01388.html
     (setq-default org-src-fontify-natively t)
