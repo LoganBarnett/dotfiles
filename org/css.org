@@ -1,0 +1,17 @@
+#+TITLE: CSS Emacs Config
+#+AUTHOR: Logan Barnett
+#+EMAIL: logustus@gmail.com
+#+TAGS: config css
+
+* Introduction
+
+CSS has its quirks, but it's a very expressive means of building layout and
+appearance of a UI. Complain as many people do, I've yet to see its better.
+
+* css-mode
+
+I don't know where people get a tab width of 4 from, but let's fix that pronto.
+
+#+BEGIN_SRC emacs-lisp
+  (setq-default css-indent-offset 2)
+#+END_SRC

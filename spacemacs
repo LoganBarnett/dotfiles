@@ -430,7 +430,6 @@ before packages are loaded. If you are unsure, you should try in setting them in
   ;; css-mode
 
   ;; indentation
-  (setq-default css-indent-offset 2)
   (paradox-require 'cc-mode)
   (defvar c-offsets-alist)
   (add-to-list 'c-offsets-alist '(arglist-close . c-lineup-close-paren))

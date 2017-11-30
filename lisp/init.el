@@ -6,17 +6,21 @@
 
 ;;; Code:
 
+(defun init-org-file (file)
+  "Logs FILE before it loading a file to help with debugging init issues."
+  (message "[INIT] %s" file)
+  (org-babel-load-file (expand-file-name (format "org/%s" file) "~/dev/dotfiles"))
+  )
+
 (defun my/init ()
   "Do initializtion."
   (message "[INIT] Starting init.")
-  (message "[INIT] private.org")
-  (org-babel-load-file (expand-file-name "org/private.org" "~/dev/dotfiles"))
-  (message "[INIT] whitespace.org")
-  (org-babel-load-file (expand-file-name "org/whitespace.org" "~/dev/dotfiles"))
-  (message "[INIT] habitica.org")
-  (org-babel-load-file (expand-file-name "org/habitica.org" "~/dev/dotfiles"))
-  (message "[INIT] javascript.org")
-  (org-babel-load-file (expand-file-name "org/javascript.org" "~/dev/dotfiles"))
+  (init-org-file "private.org")
+  (init-org-file "buffer.org")
+  (init-org-file "whitespace.org")
+  (init-org-file "habitica.org")
+  (init-org-file "javascript.org")
+  (init-org-file "purescript.org")
   (message "[INIT] Init Done.")
   )
 
