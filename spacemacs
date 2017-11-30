@@ -47,7 +47,10 @@ values."
      javascript
      lua
      markdown
-     org
+     (org :variables
+          org-enable-github-support t
+          org-enable-reveal-js-support t
+          )
      osx
      plantuml
      purescript

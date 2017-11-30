@@ -23,8 +23,17 @@
   "Configure 'org-mode'."
   (package-initialize)
   ;; (use-package "org-mode"
-    ;; :init
-    ;; :config
+  ;;   :requires (
+  ;;              ;; Cover some languages we want supported.
+  ;;              ob-js
+  ;;              ob-sh
+  ;;              ob-plantuml
+  ;;              ;; Exporters.
+  ;;              ox-confluence-en ;; Adds PlantUML support to Confluence exports.
+  ;;              ox-gfm ;; Github Flavored Markdown.
+  ;;              )
+  ;;   :init
+  ;;   :config
     ;; set default diary location
     (setq-default diary-file "~/notes/diary.org")
     ;; (setq-default appt-audible t)
@@ -66,6 +75,7 @@
     (require 'ob-plantuml)
     ;; Exporters.
     (require 'ox-confluence-en) ;; This one adds PlantUML support.
+    (require 'ox-gfm) ;; Github Flavored Markdown.
     (org-babel-do-load-languages
      'org-babel-load-languages
      '(
