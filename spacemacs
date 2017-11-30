@@ -427,8 +427,6 @@ before packages are loaded. If you are unsure, you should try in setting them in
     )
   (add-hook 'web-mode-hook  'my-web-mode-hook)
 
-  ;; css-mode
-
   ;; indentation
   (paradox-require 'cc-mode)
   (defvar c-offsets-alist)
