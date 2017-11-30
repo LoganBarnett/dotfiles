@@ -356,7 +356,6 @@ before packages are loaded. If you are unsure, you should try in setting them in
     ;; turn on flychecking globally
     ;; (add-hook 'after-init-hook #'global-flycheck-mode)
     ;; (add-hook 'js-mode-hook 'flycheck-mode)
-    ;; (add-hook 'flycheck-mode-hook #'flycheck-purescript-setup)
     ;; (add-hook 'prog-mode #'flycheck-mode)
     ;; (global-flycheck-mode)
     (add-hook 'prog-mode-hook #'flycheck-mode)
@@ -383,10 +382,6 @@ before packages are loaded. If you are unsure, you should try in setting them in
     ;; use eslint with web-mode for jsx files
     ;; (flycheck-add-mode 'javascript-eslint 'web-mode)
     ;; (flycheck-add-mode 'javascript-jshint 'web-mode)
-
-
-    ;; purescript
-    ;; (setq-default flycheck-purescript-compile-output-dir "output")
     )
   ;; (setq flycheck-check-syntax-automatically '(mode-enabled save idle-change new-line))
   )
@@ -412,9 +407,6 @@ before packages are loaded. If you are unsure, you should try in setting them in
   (message "Loading user config")
   (org-babel-load-file "~/.emacs.d/emacs-config.org")
   (message "Done loading emacs-config.org")
-  ;; get tern on the path
-  ;; TODO: Make this home dir agnostic - maybe just use which
-  ;; (add-to-list 'load-path "/Users/logan/.nvm/versions/node/v5.11.1/bin")
 
   ;; debug
   ;; (setq-default tramp-verbose 6)
@@ -516,15 +508,6 @@ layers configuration. You are free to put any user code."
   (paradox-require 'markdown-mode)
   (add-hook 'markdown-mode-hook 'auto-fill-mode)
   (add-hook 'markdown-mode-hook 'flyspell-mode)
-  ;; (add-hook 'markdown-mode-hook (lambda () (auto-fill-mode)))
- ;;(setq-default fci-rule-width 1)
-  ;;(setq-default fci-rule-color "darkblue")
-
-  ;; purescript-mode
-  (setq-default psc-ide-client-executable "/usr/local/bin/psc-ide-client")
-  (setq-default psc-ide-server-executable "/usr/local/bin/psc-ide-server")
-  (setq-default psc-ide-rebuild-on-save t)
-  (add-hook 'purescript-mode-hook 'turn-on-purescript-indentation)
 
   ;; graphviz dot support
   (package-initialize)
@@ -639,30 +622,6 @@ layers configuration. You are free to put any user code."
                                                ".tmp"
                                                ))
 
-  ;; (if (locate-library "flycheck-purescript-mode")
-  ;;     (autoload "flycheck-purescript-mode" "flycheck-purescript-mode" "checker for purescript" t)
-  ;;   ;; TODO: make this a mode hook for purescript-mode
-  ;;   (eval-after-load 'flycheck
-  ;;     '(flycheck-purescript-setup))
-  ;;   )
-
-  ;; old flycheck settings - didn't work
-  ;; (paradox-require 'flycheck)
-  ;; disable jshint since we prefer eslint checking
-;;  (setq-default flycheck-disabled-checkers
-;;    (append flycheck-disabled-checkers
-;;      '(javascript-jshint)))
-  ;; (eval-after-load
-  ;;     'flycheck
-  ;;   (lambda ()
-  ;;     (flycheck-add-mode 'javascript-eslint 'js2-mode)
-  ;;     ;; Disable jshint
-  ;;     ;; wait, why are we doing this?
-  ;;     (setq-default
-  ;;      flycheck-disabled-checkers
-  ;;      (append flycheck-disabled-checkers
-  ;; 	     '(javascript-jshint)))))
-
   (load-library "init")
   (my/init)
 )
@@ -678,7 +637,7 @@ layers configuration. You are free to put any user code."
  '(flycheck-javascript-flow-args nil)
  '(package-selected-packages
    (quote
-    (noflet feature-mode habitica evil-commentary powerline spinner org-category-capture parent-mode fringe-helper git-gutter+ git-gutter pos-tip pkg-info epl flx anzu goto-chg undo-tree json-snatcher json-reformat web-completion-data dash-functional popup flow-minor-mode lua-mode nvm plantuml-mode prettier-js dockerfile-mode docker tablist docker-tramp tide typescript-mode org-projectile org-present org-pomodoro alert log4e gntp org-download htmlize gnuplot floobits multi-term diminish s rainbow-mode winum fuzzy f smeargle orgit org magit-gitflow helm-gitignore gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link evil-magit magit magit-popup packed auto-complete evil flyspell-correct async multiple-cursors avy simple-httpd haml-mode dash multi-line shut-up company-emacs-eclim eclim iedit markdown-mode bind-key tern smartparens bind-map highlight flycheck git-commit with-editor company projectile helm helm-core yasnippet skewer-mode js2-mode hydra purescript-mode vimrc-mode dactyl-mode rainbow-identifiers color-identifiers-mode color-identifiers define-word yaml-mode ws-butler window-numbering which-key web-mode web-beautify volatile-highlights vi-tilde-fringe uuidgen use-package toc-org tagedit spacemacs-theme spaceline slim-mode scss-mode sass-mode reveal-in-osx-finder restart-emacs request rainbow-delimiters quelpa pug-mode psci psc-ide popwin persp-mode pcre2el pbcopy paradox osx-trash osx-dictionary org-plus-contrib org-bullets open-junk-file nyan-mode neotree move-text mmm-mode markdown-toc macrostep lorem-ipsum livid-mode linum-relative link-hint less-css-mode launchctl json-mode js2-refactor js-doc info+ indent-guide ido-vertical-mode hungry-delete hl-todo highlight-parentheses highlight-numbers highlight-indentation hide-comnt help-fns+ helm-themes helm-swoop helm-projectile helm-mode-manager helm-make helm-flx helm-descbinds helm-css-scss helm-company helm-c-yasnippet helm-ag graphviz-dot-mode google-translate golden-ratio git-gutter-fringe git-gutter-fringe+ gh-md flyspell-correct-helm flycheck-purescript flycheck-pos-tip flycheck-flow flycheck-elm flx-ido fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state evil-indent-plus evil-iedit-state evil-exchange evil-escape evil-ediff evil-args evil-anzu eval-sexp-fu emmet-mode elm-mode elisp-slime-nav dumb-jump diff-hl company-web company-statistics company-flow column-enforce-mode coffee-mode clean-aindent-mode auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line ac-ispell)))
+    (ox-reveal ox-gfm noflet feature-mode habitica evil-commentary powerline spinner org-category-capture parent-mode fringe-helper git-gutter+ git-gutter pos-tip pkg-info epl flx anzu goto-chg undo-tree json-snatcher json-reformat web-completion-data dash-functional popup flow-minor-mode lua-mode nvm plantuml-mode prettier-js dockerfile-mode docker tablist docker-tramp tide typescript-mode org-projectile org-present org-pomodoro alert log4e gntp org-download htmlize gnuplot floobits multi-term diminish s rainbow-mode winum fuzzy f smeargle orgit org magit-gitflow helm-gitignore gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link evil-magit magit magit-popup packed auto-complete evil flyspell-correct async multiple-cursors avy simple-httpd haml-mode dash multi-line shut-up company-emacs-eclim eclim iedit markdown-mode bind-key tern smartparens bind-map highlight flycheck git-commit with-editor company projectile helm helm-core yasnippet skewer-mode js2-mode hydra purescript-mode vimrc-mode dactyl-mode rainbow-identifiers color-identifiers-mode color-identifiers define-word yaml-mode ws-butler window-numbering which-key web-mode web-beautify volatile-highlights vi-tilde-fringe uuidgen use-package toc-org tagedit spacemacs-theme spaceline slim-mode scss-mode sass-mode reveal-in-osx-finder restart-emacs request rainbow-delimiters quelpa pug-mode psci psc-ide popwin persp-mode pcre2el pbcopy paradox osx-trash osx-dictionary org-plus-contrib org-bullets open-junk-file nyan-mode neotree move-text mmm-mode markdown-toc macrostep lorem-ipsum livid-mode linum-relative link-hint less-css-mode launchctl json-mode js2-refactor js-doc info+ indent-guide ido-vertical-mode hungry-delete hl-todo highlight-parentheses highlight-numbers highlight-indentation hide-comnt help-fns+ helm-themes helm-swoop helm-projectile helm-mode-manager helm-make helm-flx helm-descbinds helm-css-scss helm-company helm-c-yasnippet helm-ag graphviz-dot-mode google-translate golden-ratio git-gutter-fringe git-gutter-fringe+ gh-md flyspell-correct-helm flycheck-purescript flycheck-pos-tip flycheck-flow flycheck-elm flx-ido fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state evil-indent-plus evil-iedit-state evil-exchange evil-escape evil-ediff evil-args evil-anzu eval-sexp-fu emmet-mode elm-mode elisp-slime-nav dumb-jump diff-hl company-web company-statistics company-flow column-enforce-mode coffee-mode clean-aindent-mode auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line ac-ispell)))
  '(psc-ide-add-import-on-completion t t)
  '(psc-ide-rebuild-on-save nil t)
  '(safe-local-variable-values (quote ((js2-indent-level . 4)))))

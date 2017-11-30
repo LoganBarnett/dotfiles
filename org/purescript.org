@@ -1,0 +1,32 @@
+#+TITLE: PureScript Emacs Config
+#+AUTHOR: Logan Barnett
+#+EMAIL: logustus@gmail.com
+#+TAGS: config purescript
+
+* Introduction
+PureScript is statically typed functional language that is very similar to
+Haskell. Notable differences between them is that PureScript has a much more
+nuanced means of doing IO and other externally monadic operations, and it
+compiles directly into JavaScript. There is also a C backend, but I don't
+believe it is production ready.
+
+* purescript-mode
+
+PureScript has some IDE utilities. There's an actual =purescript= Spacemacs
+layer. I don't know how to use =use-package= with layers just yet, but we can
+set some harmless config here:
+
+#+BEGIN_SRC emacs-lisp
+  (setq-default psc-ide-client-executable "/usr/local/bin/psc-ide-client")
+  (setq-default psc-ide-server-executable "/usr/local/bin/psc-ide-server")
+  (setq-default psc-ide-rebuild-on-save t)
+  (add-hook 'purescript-mode-hook 'turn-on-purescript-indentation)
+#+END_SRC
+
+A build on save will force a type check on save - I want that. I don't know that
+=turn-on-purescript-indentation= exists and I should check on that.
+
+** With Flycheck
+I had a lot of commented settings for Flycheck and PureScript. I don't know what
+I should do to fix it, but be aware that I'll probably need to revisit it. Now
+that there is a layer for PureScript, I'm not sure this setup is even necessary.
