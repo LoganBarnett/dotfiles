@@ -1,0 +1,38 @@
+#+TITLE: Buffers Emacs Config
+#+AUTHOR: Logan Barnett
+#+EMAIL: logustus@gmail.com
+#+TAGS: config buffers
+
+* Introduction
+Emacs manipulates text files by using something it calls "buffers". A buffer is
+simply a place Emacs places text that can be manipulated using a large suite a
+functions. As I write this, I'm typing into an Emacs buffer right now. When I
+save the file, the buffer will be written to disk.
+
+* Utilities
+
+** Delete and Kill
+
+There are times when I want to delete the file that the buffer is bound to, and
+then kill the buffer. This way I'm unlikely to flip to it, and try saving it.
+Killing the buffer at that point will prompt me for some kind of message akin to
+"There are changes in this buffer. Save before killing?". I can easily forget
+that I deleted the file. Saving it in this way will recreate the file. This is a
+huge source of confusion for me. Fortunately, I found [[http://rejeep.github.io/emacs/elisp/2010/11/16/delete-file-and-buffer-in-emacs.html][this post]] that has a
+function that takes care of this for me.
+
+#+BEGIN_SRC emacs-lisp
+(defun my/delete-file-and-kill-buffer ()
+    "Remove file connected to current buffer and kill buffer."
+    (interactive)
+    (let ((filename (buffer-file-name))
+          (buffer (current-buffer))
+          (name (buffer-name)))
+      (if (not (and filename (file-exists-p filename)))
+          (error "Buffer '%s' is not visiting a file!" name)
+        (when (yes-or-no-p "Are you sure you want to remove this file? ")
+          (delete-file filename)
+          (kill-buffer buffer)
+          (projectile-invalidate-cache projectile-project-root)
+          (message "File '%s' successfully removed" filename)))))
+#+END_SRC
