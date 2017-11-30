@@ -146,23 +146,31 @@ us the capability to determine a type where our cursor is located. This is handy
 for hunting down issues with Flow errors.
 
 #+BEGIN_SRC emacs-lisp
-(defun flow-type-at-pos ()
-  "Show flow type at the cursor."
-  (interactive)
-  (let ((file (buffer-file-name))
-        (line (line-number-at-pos))
-        (col (current-column))
-        (buffer (current-buffer)))
-    (switch-to-buffer-other-window "*Shell Command Output*")
-    (shell-command
-     (format "%s type-at-pos --from emacs %s %d %d"
-             (my/get-node-modules-bin "flow")
-             file
-             line
-             (1+ col)))
-    (compilation-mode)
-    (switch-to-buffer-other-window buffer))
-)
+  (defun flow-type-at-pos ()
+    "Show flow type at the cursor."
+    (interactive)
+    (let ((file (buffer-file-name))
+          (line (line-number-at-pos))
+          (col (current-column))
+          (buffer (current-buffer)))
+      (display-buffer (get-buffer-create "*Shell Command Output*")
+        '((
+            display-buffer-reuse-window
+            display-buffer-pop-up-window
+            display-buffer-pop-up-frame
+          )
+          (reusable-frames . 0))
+        )
+      (switch-to-buffer-other-window "*Shell Command Output*")
+      (shell-command
+        (format "%s type-at-pos --from emacs %s %d %d"
+                (my/get-node-modules-bin "flow")
+                file
+                line
+                (1+ col)))
+      (compilation-mode)
+      (switch-to-buffer-other-window buffer))
+  )
 
 #+END_SRC
 
