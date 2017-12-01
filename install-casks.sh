@@ -22,6 +22,7 @@ haskell-platform
 hipchat
 microsoft-lync
 mumble
+obs
 robomongo
 screenhero
 silverlight
