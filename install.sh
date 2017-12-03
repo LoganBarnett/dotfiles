@@ -35,8 +35,10 @@ ln -F -s -n $PWD/bin ~/bin
 if [ $(uname) = 'Darwin' ]; then
 
     xcode-select --install || true
+    brew tap osx-cross/avr
     # ispell so flyspell works on emacs
     BREWS="
+avr-libc
 cask
 coreutils
 dos2unix
@@ -81,16 +83,6 @@ zsh-syntax-highlighting
     echo "installing sed"
     brew install gnu-sed --with-default-names || brew upgrade gnu-sed --with-default-names
 
-    # spacemacs is special
-    echo "installing emacs for eventually installing spacemacs"
-    brew tap d12frosted/emacs-plus
-    echo "emacs tapped"
-    # "already installed" should not appear if emacs was not upgraded, so the
-    # check we have should be ok.
-    brew install emacs-plus --with-cocoa --with-gnutls --with-librsvg --with-imagemagick --with-spacemacs-icon 2>&1 | grep "just not linked" || brew upgrade emacs-plus --with-cocoa --with-gnutls --with-librsvg --with-imagemagick --with-spacemacs-icon 2>&1 | grep "already installed"
-    echo "emacs-plus installed"
-    brew link --overwrite emacs-plus
-    echo "linked emacs-plus"
     brew linkapps
     echo "linked apps"
 
@@ -160,7 +152,6 @@ opam update
 # Contributing to Flow was the primary motivator here.
 opam install -y ocamlfind sedlex js_of_ocaml
 
-# This is really spacemacs installation.
 echo "setting up spacemacs"
 ./emacs-install.sh
 
