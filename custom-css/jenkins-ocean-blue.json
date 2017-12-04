@@ -1,0 +1,18 @@
+{
+  "includes": [
+    "http://jenkins-pisa.americas.nwea.pvt/blue/*",
+    "http://webmap.americas.nwea.pvt/blue/*",
+    "http://jenkins-webmap.americas.nwea.pvt/blue/*",
+    "http://jenkins-cicd.americas.nwea.pvt/blue/*",
+    "https://jenkins-pisa.americas.nwea.pvt/blue/*",
+    "https://webmap.americas.nwea.pvt/blue/*",
+    "https://jenkins-webmap.americas.nwea.pvt/blue/*",
+    "https://jenkins-cicd.americas.nwea.pvt/blue/*"
+  ],
+  "excludes": [
+    ""
+  ],
+  "name": "jenkins-ocean-blue",
+  "enabled": true,
+  "key": "jenkins-ocean-blue"
+}

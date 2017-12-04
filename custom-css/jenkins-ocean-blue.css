@@ -1,0 +1,8 @@
+body {
+  background-color: var(--general-background-color) !important;
+  color: var(--text-color) !important;
+}
+
+.FullScreen-contents {
+  background-color: var(--general-background-color) !important;
+}
