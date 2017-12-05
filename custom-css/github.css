@@ -46,6 +46,16 @@ ul.top-nav li :hover
 */
 /****************************************************/
 
+/* CI in-progress status information shows up here. */
+.merge-status-item {
+  background-color: var(--general-background-color) !important;
+}
+
+/* branch "actions" - merge conflict status, CI server results, etc */
+.branch-action-body {
+  background-color: var(--general-background-color) !important;
+}
+
 /* open issue icon */
 .open.octicon {
   color: var(--open-ticket-color) !important;
