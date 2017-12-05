@@ -35,7 +35,7 @@ module.exports = {
   '--tab-list-background-color': '#292b2e',
   '--button-background': '#2aa1ae',
   '--button-background-color': '#2aa1ae',
-  '--button-color': '#292e34',
+  '--button-color': '#0a0814',
   '--input-color': '#2aa1ae',
   '--input-background-color': '#292e34',
   '--thin-border': '0.1em solid #5d4d7a',
