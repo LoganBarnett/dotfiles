@@ -107,6 +107,17 @@ ul.top-nav li :hover
   background-color: #95b !important;
   color: #ddd !important;
 }
+
+/* Comments on pull requests. */
+.Box {
+  background-color: var(--general-background-color) !important;
+}
+
+/* Outdated expand button on pull requests. Code has changed since comment. */
+.discussion-item-body .outdated-comment-label {
+  color: var(--text-color) !important;
+}
+
 /* comments on issues */
 .timeline-comment-header {
   background-color: #77d !important;
@@ -310,6 +321,29 @@ body, #main, .unread_count, .pagehead, #browser table th, .tree-browser th, .mai
   -moz-border-radius: 5px !important;
   -webkit-border-radius: 5px !important;
  }
+
+/* Subscription/watch status (seen on right side). */
+.thread-subscription-status {
+  background-color: var(--general-background-color) !important;
+  color: var(--text-color) !important;
+}
+
+/* Subscription/watch status TEXT (seen on right side). */
+.reason.text-small.text-gray {
+  color: var(--text-color) !important;
+}
+
+/* Buttons! */
+.btn {
+  background-color: var(--button-background-color) !important;
+  color: var(--button-color) !important;
+  background-image: none !important;
+}
+
+/* The number seen next to buttons on a repo. */
+.social-count {
+  background-color: var(--button-background-color) !important;
+}
 
  .pagehead ul.tabs li a:hover, .pagehead ul.tabs li.contextswitch, #dashboard .repos, #dashboard .repos .top-bar, #dashboard .repos .bottom-bar,
  #footer, #commit .envelope, .wikistyle, #languages .popular, .fieldgroup .fields, .issue, #directory .repo, a.selected, table.upgrades td,
