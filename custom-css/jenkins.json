@@ -7,7 +7,7 @@
     "https://jenkins-pisa.americas.nwea.pvt/*",
     "https://webmap.americas.nwea.pvt/*",
     "https://jenkins-webmap.americas.nwea.pvt/*",
-    "https://jenkins-cicd.americas.nwea.pvt/"
+    "https://jenkins-cicd.americas.nwea.pvt/*"
   ],
   "excludes": [
     ""
