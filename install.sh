@@ -60,6 +60,7 @@ pinentry-mac
 plantuml
 postgresql
 stack
+terraform
 thefuck
 vim
 wget
