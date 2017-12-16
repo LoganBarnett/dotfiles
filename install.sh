@@ -37,6 +37,7 @@ if [ $(uname) = 'Darwin' ]; then
     xcode-select --install || true
     # ispell so flyspell works on emacs
     BREWS="
+awscli
 cask
 coreutils
 dos2unix
