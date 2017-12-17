@@ -82,6 +82,7 @@
        (ditaa . t)
        (dot . t)
        (emacs-lisp . t)
+       (gnuplot . t)
        (js . t)
        (octave . t)
        ;; (perl . t)

@@ -43,6 +43,7 @@ coreutils
 dos2unix
 elm
 ffmpeg
+gnuplot
 gnutls
 graphviz
 htop
