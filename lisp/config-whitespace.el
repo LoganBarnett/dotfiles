@@ -35,7 +35,6 @@
                           )
   (message "applied > 80 column highlighting")
   )
-
 ;; configure whitespace
 (defun config-whitespace ()
   "Configure Whitespace."
@@ -61,6 +60,20 @@
   (add-hook 'web-mode-hook (lambda () (fci-mode 0)))
 
 
+  ;; This prevents fci-mode from inserting junk characters at the ends of lines
+  ;; during an export. The characters for me usually would show up as: "",
+  ;; which doesn't seem to render in emacs. These are character codes 57345 and
+  ;; 57344 (which vary based on what is seen in the document vs what is
+  ;; exported?). See more about this here:
+  ;; https://github.com/alpaker/Fill-Column-Indicator/issues/45 which also
+  ;; includes the nice solution below.
+  (defun fci-mode-override-advice (&rest args))
+  (advice-add 'org-html-fontify-code :around
+              (lambda (fun &rest args)
+                (advice-add 'fci-mode :override #'fci-mode-override-advice)
+                (let ((result  (apply fun args)))
+                  (advice-remove 'fci-mode #'fci-mode-override-advice)
+                  result)))
   ;; (add-hook 'buffer-list-update-hook 'turn-on-fci-mode)
   )
   )
