@@ -31,5 +31,11 @@
 	followTags = true
 [alias]
 	wdiff = diff --color-words
+  fast-amend=commit --amend --no-edit
+  unstage=reset HEAD --
+  tip=log -1
+  # Removes branches that have been merged already.
+  tidy=!git branch --merged | sed /^\\*/d | xargs git branch -d
+  branchg=!git branch -avv | grep
 [diff]
 	algorithm = patience
