@@ -118,6 +118,7 @@ source /usr/local/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 # Vars
 export NOTES_DIR="$HOME/notes"
 
+alias ls='ls -aG'
 alias grep='grep --color=auto'
 alias b='bundle exec'
 # run node in ES6 mode
