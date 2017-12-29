@@ -125,6 +125,10 @@ alias b='bundle exec'
 alias node='node --harmony'
 alias curl-json='curl -v -H "Accept: application/json"'
 
+# yarn flow management because it happens a lot.
+alias yf="yarn flow"
+alias yfs="yarn flow stop"
+alias yfr="yfs && yf"
 
 # completions
 
