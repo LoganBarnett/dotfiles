@@ -1,0 +1,10 @@
+#! /usr/bin/env bash
+
+echo "Polling CPU usage for process named $1..."
+pid=`pgrep $1`
+while true
+do
+  cpu=`ps -o %cpu -p $pid | grep -v CPU`
+  echo "$( date ) $cpu"
+  sleep 1
+done
