@@ -20,6 +20,7 @@
   (init-org-file "whitespace.org")
   (init-org-file "habitica.org")
   (init-org-file "javascript.org")
+  (init-org-file "groovy.org")
   (init-org-file "purescript.org")
   (init-org-file "css.org")
   (message "[INIT] Init Done.")
