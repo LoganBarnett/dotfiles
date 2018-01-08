@@ -1,0 +1,20 @@
+#+TITLE:  Groovy configuration
+#+AUTHOR: Logan Barnett
+#+EMAIL:  logustus@gmail.com
+#+DATE:   <2017-12-27 Wed>
+#+TAGS:   groovy org-mode config
+
+Groovy is a scripty build tool thing for the Java ecosystem. It also happens to
+be the same language used in a =Jenkinsfile=.
+
+#+begin_src emacs-lisp
+
+(message "initializing groovy with use-package...")
+(require 'use-package)
+(use-package "groovy-mode"
+  :init
+  (message "initializing groovy...")
+  :config
+  (setq-default groovy-indent-offset 2)
+)
+#+end_src

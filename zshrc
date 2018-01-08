@@ -118,12 +118,17 @@ source /usr/local/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 # Vars
 export NOTES_DIR="$HOME/notes"
 
+alias ls='ls -aG'
 alias grep='grep --color=auto'
 alias b='bundle exec'
 # run node in ES6 mode
 alias node='node --harmony'
 alias curl-json='curl -v -H "Accept: application/json"'
 
+# yarn flow management because it happens a lot.
+alias yf="yarn flow"
+alias yfs="yarn flow stop"
+alias yfr="yfs && yf"
 
 # completions
 

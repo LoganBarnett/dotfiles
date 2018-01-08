@@ -1,0 +1,22 @@
+#+TITLE: Makefile Emacs Config
+#+AUTHOR: Logan Barnett
+#+EMAIL: logustus@gmail.com
+#+TAGS: config makefile
+
+* introduction
+
+Makefiles are files used for build processes. Commonly seen in Linux C projects,
+they have other uses as well. They essentially run a shell script (often bash),
+but there's a few caveats.
+
+* tabs
+
+Being a product of the paleolithic era, Makefiles require tabs for at least the
+first indentations (spaces can used for breaks between commands when using =\=,
+but not between the target and the command).
+
+#+begin_src emacs-lisp
+(add-hook 'makefile-mode-hook
+  '(lambda () (setq-local indent-tabs-mode 1))
+)
+#+end_src

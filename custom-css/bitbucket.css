@@ -179,6 +179,12 @@ h3, .aui-page-header-hero .aui-page-header-main p, .aui-page-header-marketing .a
   background-color: #121212 !important;
 }
 
+/* The editable area for adding comments. */
+.markup-editor textarea {
+  background-color: var(--general-background-color) !important;
+  color: var(--text-color) !important;
+}
+
 .comment-container .comment.focused > .content {
   background-color: #333 !important;
 }

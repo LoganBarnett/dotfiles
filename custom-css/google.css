@@ -3,6 +3,11 @@
  * Author:  Nass O
  * Version: 21052016.01
  */
+
+/* calendar form fields */
+label.gp-text, label.gp-checkbox, label.gp-radio, label.gp-radio-group {
+  color: var(--text-color) !important;
+}
  
 /* search suggestions */
 div.sbqs_c {

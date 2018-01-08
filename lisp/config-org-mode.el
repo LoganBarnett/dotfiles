@@ -58,8 +58,8 @@
     ;; shrink inline images see:
     ;; http://lists.gnu.org/archive/html/emacs-orgmode/2012-08/msg01388.html
     (setq-default org-src-fontify-natively t)
-    ;; (setq-default org-image-actual-width '(400))
-    (setq-default org-image-actual-width nil)
+    (setq-default org-image-actual-width '(564))
+    ;; (setq-default org-image-actual-width nil)
     (add-hook 'org-mode-hook 'auto-fill-mode)
     ;; Use my custom org clock report function, which prevents narrowing. I find
     ;; narrowing during this operation confusing.
@@ -82,6 +82,7 @@
        (ditaa . t)
        (dot . t)
        (emacs-lisp . t)
+       (gnuplot . t)
        (js . t)
        (octave . t)
        ;; (perl . t)

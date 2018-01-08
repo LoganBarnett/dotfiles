@@ -1,19 +1,43 @@
+/* This covers just about everything I think. */
+#full-height-container {
+  background-color: var(--general-background-color) !important;
+}
+
 /* generic header bar */
 body.dashboard #main-header {
   color: var(--head1-color) !important;
   background-color: var(--head1-background-color) !important;
 }
 
+/* Header area with page name, some icons, and action buttons. */
+#main #main-header.overlay-header {
+  background-color: var(--general-background-color) !important;
+}
+
 body.theme-documentation #footer .footer-body {
   background-color: var(--general-background-color) !important;
 }
+
+/* The "current" or "focused" comment. Whatever that means. */
+#comments-section .comment.focused {
+  background-color: var(--general-background-color) !important;
+  border: var(--thin-border) !important;
+}
+
+.quick-comment-prompt:active {
+  border: var(--thin-border) !important;
+}
+.quick-comment-prompt {
+  border: var(--thin-border) !important;
+}
+
 
 #footer .footer-body {
   color: var(--text-color) !important;
 }
 
 #content .code {
-  background-color: #323 !important;
+  background-color: var(--code-background-color) !important;
 }
 
 .panelHeader.pdl>b {
@@ -21,7 +45,7 @@ body.theme-documentation #footer .footer-body {
 }
 
 body .syntaxhighlighter.sh-default .line.alt2 {
-  background-color: #323 !important;
+  background-color: var(--code-background-color) !important;
 }
 
 body .syntaxhighlighter.sh-default .line.alt1 {
@@ -29,9 +53,9 @@ body .syntaxhighlighter.sh-default .line.alt1 {
 }
 
 code {
-  border: 0.1em solid #646;
+  border: var(--thin-border) !important;
   color: var(--text-color) !important;
-  background-color: #323 !important;
+  background-color: var(--code-background-color) !important;
   font-style: normal !important;
 }
 
@@ -55,7 +79,7 @@ body.mceContentBody {
 
 
 h1, h2, h3, h4, .wiki-content h1, .wiki-content h2, .wiki-content h3, .wiki-content h4, .pagetitle, .steptitle, .substeptitle, .formtitle, table.confluenceTable td.confluenceTd.highlight, table.confluenceTable td.confluenceTd.highlight > p, table.confluenceTable th.confluenceTh, table.confluenceTable th.confluenceTh > p, .wiki-content .tablesorter-header-inner, table.admin th, .form-element-large, .form-element-small, #toolbar #format-dropdown .format-h1 a, #toolbar #format-dropdown .format-h2 a, #toolbar #format-dropdown .format-h3 a, #toolbar #format-dropdown .format-h4 a {
-  color: #5a8 !important;
+  color: var(--link-color) !important;
 }
 
 /* headings */
@@ -119,6 +143,45 @@ a.aui-button,
   background: var(--button-background) !important;
 }
 
+/* Buttons in the page header bar area need to be overridden again. */
+.aui-button:focus, .aui-button:hover, .aui-button-subtle.aui-button:focus,
+.aui-button-subtle.aui-button:hover, .aui-button.aui-button-subtle {
+  color: var(--button-color) !important;
+}
+
+/* Buttons in the page header bar area need to be overridden again. */
+.content-navigation .ajs-menu-bar .ajs-button a>span>span.aui-icon,
+.content-navigation .ajs-menu-bar .ajs-menu-item a>span>span.aui-icon {
+  color: var(--button-color) !important;
+}
+
+/**
+ * Because we color spans by tag alone, we need to override this one for page
+ * header buttons.
+ */
+.ajs-button.normal span {
+  color: var(--button-color) !important;
+}
+
+/**
+ * Because we color spans by tag alone, we need to override this one for page
+ * header buttons.
+ */
+.aui-button-label {
+  color: var(--button-color) !important;
+}
+
+/* Buttons and links below the sidebar. */
+.space-tools-section {
+  background-color: var(--general-background-color) !important;
+}
+
+/* Expand/collapse button on the bottom left in the sidebar */
+.expand-collapse-trigger {
+  background-color: var(--button-background-color) !important;
+  color: var(--button-color) !important;
+}
+
 .aui-button.add-event-button .icon:after {
   /* should be a calendar icon */
   content: '\1F4C5';
@@ -144,31 +207,51 @@ a.aui-button,
   color: var(--text-color) !important;
 }
 
+/* THE sidebar? Or just one of them? */
+.acs-side-bar {
+  background-color: var(--general-background-color) !important;
+}
+
+/* Link of current page in the sidebar */
+.ia-fixed-sidebar div.plugin_pagetree ul.plugin_pagetree_children_list li
+.plugin_pagetree_children_content .plugin_pagetree_current a {
+  color: var(--link-color) !important;
+}
+
 #splitter-sidebar {
-  background-color: #333 !important;
+  background-color: var(--general-background-color) !important;
 }
 
 #splitter-sidebar .plugin_pagetree li a, #splitter-sidebar .plugin_pagetree ul {
-  color: #58d !important;
-  text-decoration: underline !important;
+  color: var(--head1-color) !important;
 }
 
 #splitter-sidebar .plugin_pagetree li ul li a, #splitter-sidebar .plugin_pagetree ul li ul {
-  color: #5a8 !important;
+  color: var(--head2-color) !important;
 }
 
 #splitter-sidebar .plugin_pagetree li ul li ul li a, #splitter-sidebar .plugin_pagetree ul li ul ul li {
-  color: #5c5 !important;
+  color: var(--head3-color) !important;
 }
 
 .panel, #content .panel {
-  background-color: #333 !important;
+  background-color: var(--general-background-color) !important;
 }
 
 .panel .panelHeader {
-  color: #ddd !important;
+  color: var(--text-color) !important;
 }
 
 .panelHeader {
-  background-color: #333 !important;
+  background-color: var(--general-background-color) !important;
+}
+
+/* Table headers */
+.wiki-content table.tablesorter>thead>tr>th {
+  background-color: var(--general-background-color) !important;
+}
+
+/* Table cells */
+.confluenceTh, .confluenceTd {
+  border: var(--thin-border) !important;
 }

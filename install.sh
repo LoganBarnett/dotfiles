@@ -39,11 +39,13 @@ if [ $(uname) = 'Darwin' ]; then
     # ispell so flyspell works on emacs
     BREWS="
 avr-libc
+awscli
 cask
 coreutils
 dos2unix
 elm
 ffmpeg
+gnuplot
 gnutls
 graphviz
 htop
@@ -62,6 +64,7 @@ pinentry-mac
 plantuml
 postgresql
 stack
+terraform
 thefuck
 vim
 wget

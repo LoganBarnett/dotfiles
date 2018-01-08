@@ -11,6 +11,7 @@ brew tap caskroom/drivers
 CASKS="
 adobe-connect
 arduino
+aws-vault
 chromium
 diffmerge
 discord
