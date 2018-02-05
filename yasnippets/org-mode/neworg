@@ -1,0 +1,11 @@
+# -*- mode: snippet -*-
+# name: There's several headers that are great to have in a new org-mode doc.
+# key: neworg
+# group: org
+# --
+#+title:    $1
+#+author:   Logan Barnett
+#+email:    logustus@gmail.com
+#+date:     `(format-time-string "<%Y-%m-%d %a>" (org-current-time))`
+#+language: en
+#+tags:     $2
