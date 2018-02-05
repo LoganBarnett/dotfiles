@@ -32,85 +32,6 @@ ln -F -s -n $PWD/awesome ~/.config/awesome
 
 ln -F -s -n $PWD/bin ~/bin
 
-if [ $(uname) = 'Darwin' ]; then
-
-    xcode-select --install || true
-    brew tap osx-cross/avr
-    # ispell so flyspell works on emacs
-    BREWS="
-avr-libc
-awscli
-cask
-coreutils
-dos2unix
-elm
-ffmpeg
-gnuplot
-gnutls
-graphviz
-htop
-ispell
-jq
-markdown
-mongodb
-mtr
-nmap
-node
-npm
-nvm
-ocaml
-opam
-pinentry-mac
-plantuml
-postgresql
-stack
-terraform
-thefuck
-vim
-wget
-yarn
-zsh-syntax-highlighting
-"
-
-    echo "updating homebrew"
-    brew update
-    echo "installing brews"
-    for brew in $BREWS
-    do
-      brew install $brew || brew upgrade $brew
-    done
-
-    ./install-gpg.sh
-
-    # sed is special
-    echo "installing sed"
-    brew install gnu-sed --with-default-names || brew upgrade gnu-sed --with-default-names
-
-    brew linkapps
-    echo "linked apps"
-
-    # java needs a special section because of ordering
-    echo "installing java and maven"
-    brew cask install java
-    brew install maven || brew upgrade maven
-elif [ $(uname) = 'Linux' ]; then
-    if [ $(which apt-get) != '' ]; then
-        echo "installing packages via apt-get"
-        # how can you not have curl? ugh
-        APTS="curl zsh emacs python3-dev python3-pip"
-        sudo apt-get install -y -qq $APTS
-    else
-        # we must be in some redhat based distro
-        echo "yum not supported yet!"
-    fi
-
-    # thefuck is installed via pip on linux
-    sudo -H pip install thefuck
-
-else
-    echo "skipping brew install - not on osx"
-fi
-
 # install zsh
 echo "installing oh-my-zsh"
 sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"
@@ -182,5 +103,11 @@ if [ $(uname) = 'Darwin' ]; then
 else
     echo "skipping alfred install - not on osx"
 fi
+
+echo "Installing email support..."
+./install-email.sh
+
+echo "writing out private settings"
+./install-private.sh
 
 echo "all installation is successful"

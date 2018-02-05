@@ -17,6 +17,7 @@
   (message "[INIT] Starting init.")
   (init-org-file "private.org")
   (init-org-file "buffer.org")
+  (init-org-file "email.org")
   (init-org-file "whitespace.org")
   (init-org-file "habitica.org")
   (init-org-file "javascript.org")

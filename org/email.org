@@ -1,0 +1,93 @@
+#+title:    Email Emacs Configuration
+#+author:   Logan Barnett
+#+email:    logustus@gmail.com
+#+date:     <2018-01-31 Wed 06:48>
+#+language: en
+#+tags:     email config
+
+* introduction
+
+  There's a lot of benefits to using Emacs to read and write emails.
+
+  1. I can use text and tagging to search for emails easily.
+  2. I can keep keybindings that I am familiar with for both reading and writing
+     emails.
+  3. Copying text out of emails is easy.
+  4. Writing emails can be done with =org-mode=, which means I can use code for
+     composing some parts of emails.
+  5. I can handle GPG encryption automatically.
+  6. My emails can be stored in some universal open source format.
+  7. Color scheme is dark.
+
+  Reading and writing email is kind of the holy grail of Emacs configurations.
+  Emacs can author emails in =org-mode= and then export them to some email
+  format. Amusingly, I think one of the bigger reasons I want email inside of
+  emacs right now is the combined vim bindings plus a dark color scheme. Once I
+  have replaced Apple Mail as my primary email client, all I have remaining as a
+  major hurdle is Apple Calendar, which I think I can replace with Emacs as well
+  (but in time).
+
+* tools used
+** isync
+
+   =isync= is a library/tool that syncs with an IMAP account (Gmail speaks
+   IMAP). =isync= isn't the name of the executable itself. Instead this is
+   =mbsync=, and generally I use it with =mbsync -a=. I've found a few blog
+   posts to help get me started.
+
+** mu4e
+
+   =mu4e= is the Emacs interface for =mu=, which does email tagging and
+   searching. I haven't set this up yet. I found a Spacemacs layer for it as
+   [[https://github.com/cmiles74/spacemacs-notmuch-layer][spacemacs-notmuch-layer]]. It needs =mu= itself installed.
+
+** notmuch
+
+   =notmuch= is installed as a =spacemacs= layer. There's a
+   [[https://github.com/cmiles74/spacemacs-notmuch-layer][spacemacs-notmuch-layer]] repository for this, as it is not built in. Not much
+   is just a way of navigating and tagging emails. It doesn't handle the
+   syncing.
+
+*** keybindings
+
+    The keybindings here are in sore need of love for something that works for
+    my muscle memory.
+
+    |   |   |   |
+    |---+---+---|
+    | s |   | search emails |
+    |   |   |   |
+    |   |   |   |
+    |   |   |   |
+
+
+* research
+
+  - [[https://www.reddit.com/r/emacs/comments/4rl0a9/email_in_emacs_i_want_to_but_wow_its_overwhelming/d52q08p/][IceDane's Emacs email setup]] :: =IceDane= has very good rationale of the
+       setup they use and goes through all of the things they have tried. I want
+       to closely follow this setup.
+  - [[https://notmuchmail.org/notmuch-emacs/][notmuch Emacs interface]] :: Official documentation for using =notmuch= with
+       Emacs.
+  - [[https://wiki.archlinux.org/index.php/Isync][ArchLinux isync config]] :: Tutorial on setting up =isync=.
+  - [[http://www.ict4g.net/adolfo/notes/2014/12/27/emacs-imap.html][Adolfo Villafiorita's IMAP in Emacs + MacOS setup]] :: This has been a rich
+       trove of information about a setup similar to =IceDane='s. It includes a
+       little bit alternatives and also different approaches with additional
+       passes on existing configs (such as adding oauth support via Gmail).
+  - [[https://www.reddit.com/r/emacs/comments/7me0vn/help_configuring_mbsyncrc_for_gmail_on_osx/][isync "unknown section keyword" problem]] :: I ran into this problem. The fix
+       is that sections are grouped together by a lack of an extra line break.
+       Extra linebreak (two in a row) means there's a new section.
+  - [[https://docwhat.org/el-capitan-and-the-evils-of-openssl/][OpenSSL and CertificateFile]] :: Homebrew provides a pem file that can be used
+       in the =CertificateFile= field for =.mbsyncrc= (=isync='s config file).
+       This gives us the root certificate authority needed to establish a chain
+       of trust with gmail's certificates.
+
+* alternative tools
+
+*** gnus
+
+    I have tried =gnus= which is built into Spacemacs as a layer. =gnus= is
+    meant as more of an RSS aggregator than anything else. I had a lot of
+    trouble syncing with Gmail, writing emails, and reading them. The
+    documentation for evilication is sparse at best, and I just get the feel
+    that while using =gnus= for email is clever, it just feels like stretching a
+    tool to be something it isn't.
