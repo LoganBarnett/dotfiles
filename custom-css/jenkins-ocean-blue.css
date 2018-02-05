@@ -6,3 +6,8 @@ body {
 .FullScreen-contents {
   background-color: var(--general-background-color) !important;
 }
+
+.JTable-row--rollOver:hover {
+  background-color: var(--highlight-background-color) !important;
+  color: var(--highlight-color) !important;
+}
