@@ -2,8 +2,7 @@
 
 set -e
 
-# spacemacs is special
-echo "installing emacs for eventually installing spacemacs"
+echo "Installing Emacs (emacs-plus)"
 brew tap d12frosted/emacs-plus
 echo "emacs tapped"
 # "already installed" should not appear if emacs was not upgraded, so the
@@ -22,8 +21,12 @@ ln -s -n -f $PWD/lisp ~/.emacs.d/private/local/dotfiles
 rm -rf ~/.emacs.d/private/snippets
 ln -s -n -f $PWD/yasnippets ~/.emacs.d/private/snippets
 ln -s -n -f $PWD/emacs-config.org ~/.emacs.d/emacs-config.org
-
 echo "This directory managed by dotfiles" > ~/.emacs.d/private/local/dotfiles/README.org
+
+echo "Setting up additional layers"
+
+mkdir -p ~/.emacs.d/private/layers
+cd ~/.emacs.d/private/layers
 
 # we can preload the packages with this:
 # emacs --batch --load=~/.emacs.d/init.el
