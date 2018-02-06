@@ -60,7 +60,6 @@
     |   |   |   |
     |   |   |   |
 
-
 * research
 
   - [[https://www.reddit.com/r/emacs/comments/4rl0a9/email_in_emacs_i_want_to_but_wow_its_overwhelming/d52q08p/][IceDane's Emacs email setup]] :: =IceDane= has very good rationale of the
@@ -99,3 +98,8 @@
      over the =notmuch= official Emacs plugin yet. =company= support?
 - [[https://github.com/cmiles74/spacemacs-notmuch-layer][Spacemacs notmuch layer]] :: =notmuch= for Spacemacs. Use =SPC a n= to activate.
 - [[https://notmuchmail.org/notmuch-emacs/][notmuch-emacs]] :: Official docs on setting up =notmuch= with Emacs.
+* artifacts
+
+#+begin_src emacs-lisp
+(message "Done in %s" (buffer-file-name))
+#+end_src
