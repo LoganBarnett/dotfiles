@@ -91,3 +91,11 @@
     documentation for evilication is sparse at best, and I just get the feel
     that while using =gnus= for email is clever, it just feels like stretching a
     tool to be something it isn't.
+* reference
+
+- [[https://www.emacswiki.org/emacs/NotMuch][Emacs Wiki - NotMuch]] :: Has some scripts that might be helpful later, and
+     links to other sources and integrations with other tools.
+- [[https://github.com/tjim/nevermore][nevermore]] :: A =notmuch= interface for Emacs. I'm not sure what it provides
+     over the =notmuch= official Emacs plugin yet. =company= support?
+- [[https://github.com/cmiles74/spacemacs-notmuch-layer][Spacemacs notmuch layer]] :: =notmuch= for Spacemacs. Use =SPC a n= to activate.
+- [[https://notmuchmail.org/notmuch-emacs/][notmuch-emacs]] :: Official docs on setting up =notmuch= with Emacs.
