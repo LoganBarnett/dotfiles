@@ -67,6 +67,9 @@ else
     echo "skipping cask installs - not osx"
 fi
 
+echo "Installing packages..."
+./install-packages.sh
+
 # node modules
 echo "installing node modules"
 ./install-node-modules.sh
