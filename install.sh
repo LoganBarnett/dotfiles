@@ -68,6 +68,7 @@ else
 fi
 
 # node modules
+echo "installing node modules"
 ./install-node-modules.sh
 
 echo "settting up ocaml's opam"
