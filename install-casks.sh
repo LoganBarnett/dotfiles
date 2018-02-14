@@ -24,7 +24,6 @@ hipchat
 microsoft-lync
 mumble
 obs
-robomongo
 screenhero
 silverlight
 skype
