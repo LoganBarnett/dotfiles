@@ -6,6 +6,7 @@ IMAPAccount gmail
 # Address to connect to
 Host imap.gmail.com
 User logustus@gmail.com
+PipelineDepth 5
 # Pass %PASS%
 # To store the password in an encrypted file use PassCmd instead of Pass
 # PassCmd "gpg2 -q --for-your-eyes-only --no-tty -d ~/.mailpass.gpg"
@@ -28,9 +29,11 @@ IMAPStore gmail-remote
 Account gmail
 
 MaildirStore gmail-local
+SubFolders Legacy
 # The trailing "/" is important
 Path ~/mail/gmail/
 Inbox ~/mail/gmail/Inbox
+
 
 Channel gmail
 Master :gmail-remote:
