@@ -17,8 +17,8 @@ notmuch new
 
 echo "Installing Spacemacs notmuch layer..."
 # Consider https://github.com/tj/git-extras/blob/master/man/git-force-clone.md
-git clone git@github.com:cmiles74/spacemacs-notmuch-layer.git notmuch || true
+cd ~/.emacs.d/layers && git clone git@github.com:cmiles74/spacemacs-notmuch-layer.git notmuch || true
 # Use a commit and we can update manually.
-cd spacemacs-notmuch-layer && git checkout c81b2fd1bdb4294edef6d16041bfc880d26b2774
+cd ~/.emacs.d/layers/notmuch && git checkout c81b2fd1bdb4294edef6d16041bfc880d26b2774
 
 echo "Done setting up email support."
