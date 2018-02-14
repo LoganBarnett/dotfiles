@@ -19,9 +19,9 @@ gnuplot
 gnutls
 graphviz
 ispell
-java
 jq
 markdown
+maven
 mongodb
 mtr
 nmap
@@ -43,6 +43,10 @@ zsh-syntax-highlighting
 
     echo "updating homebrew"
     brew update
+
+    # Java needs to come first.
+    echo "installing Java first..."
+    brew cask install java
     echo "installing brews"
     for brew in $BREWS
     do
@@ -57,10 +61,6 @@ zsh-syntax-highlighting
 
     brew linkapps
     echo "linked apps"
-
-    # maven needs a special section because of ordering
-    echo "installing java and maven"
-    ./install-package.sh maven
 elif [ $(uname) = 'Linux' ]; then
     if [ $(which apt-get) != '' ]; then
         echo "installing packages via apt-get"
