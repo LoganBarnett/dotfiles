@@ -19,6 +19,7 @@ gnuplot
 gnutls
 graphviz
 ispell
+java
 jq
 markdown
 mongodb
@@ -45,7 +46,7 @@ zsh-syntax-highlighting
     echo "installing brews"
     for brew in $BREWS
     do
-      brew install $brew || (brew upgrade $brew && brew link --overwrite $brew)
+      ./install-package.sh $brew
     done
 
     ./install-gpg.sh
@@ -57,10 +58,9 @@ zsh-syntax-highlighting
     brew linkapps
     echo "linked apps"
 
-    # java needs a special section because of ordering
+    # maven needs a special section because of ordering
     echo "installing java and maven"
-    brew cask install java
-    brew install maven || brew upgrade maven
+    ./install-package.sh maven
 elif [ $(uname) = 'Linux' ]; then
     if [ $(which apt-get) != '' ]; then
         echo "installing packages via apt-get"
