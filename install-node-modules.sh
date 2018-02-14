@@ -25,7 +25,7 @@ js-beautify
 marked
 "
 
-npm i -g $NODE_MODULES
+yarn i -g $NODE_MODULES
 
 # This makes nvm work with avn
 ln -f -s -n /usr/local/opt/nvm/nvm.sh ~/.nvm/nvm.sh
