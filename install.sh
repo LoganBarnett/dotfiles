@@ -46,9 +46,6 @@ if [ $(uname) = 'Linux' ]; then
     git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
 fi
 
-# node modules
-./install-node-modules.sh
-
 #zsh customizations
 echo "installing oh my zsh customizations"
 if [ $(uname) = 'Darwin' ]; then
@@ -65,6 +62,9 @@ if [ $(uname) = 'Darwin' ]; then
 else
     echo "skipping cask installs - not osx"
 fi
+
+# node modules
+./install-node-modules.sh
 
 echo "settting up ocaml's opam"
 # I'm guessing that -y will accept the shell integration question. Perhaps it
