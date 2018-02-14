@@ -14,7 +14,7 @@ do
     name=$1
     url=$2
     echo "installing workflow \"$name\""
-    mkdir "$WORKFLOW_DIR/$name"
+    mkdir -p "$WORKFLOW_DIR/$name"
     cd "$WORKFLOW_DIR/$name"
     wget -qO- "$url" | bsdtar -xf-
 done
