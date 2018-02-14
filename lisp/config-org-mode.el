@@ -104,12 +104,10 @@ Adapt image size via `iimage-scale-to-fit-width' when the window size changes."
 (defun anchorize-headline-title (title)
   "Convert TITLE to an HTML anchor-worthy name.
 This is kebob case, with no quotes, spaces, or punctuation marks."
-  (replace-regexp-in-string "?" ""
-                            (replace-regexp-in-string
-                             "\"" ""
-                             (downcase (replace-regexp-in-string " " "-" title))
-                             )
-                            )
+  (replace-regexp-in-string
+   "\"\\|)\\|(\\|,\\|?" ""
+   (downcase (replace-regexp-in-string " " "-" title))
+   )
   )
 
 ;; configure org-mode
