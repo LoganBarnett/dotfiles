@@ -36,4 +36,7 @@ zoomus
 echo "installing homebrew casks"
 brew cask install $CASKS
 
+echo "installing Source Code Pro font"
+brew tap caskroom/fonts && brew cask install font-source-code-pro
+
 echo "done installing casks"
