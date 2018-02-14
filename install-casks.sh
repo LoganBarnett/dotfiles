@@ -29,7 +29,7 @@ skype
 slack
 steam
 virtualbox
-xbox360-controller-driver
+xbox360-controller-driver-unofficial
 zoomus
 "
 
