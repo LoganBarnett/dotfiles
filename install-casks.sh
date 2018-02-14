@@ -6,11 +6,11 @@ set -e
 echo "tapping drivers"
 brew tap caskroom/drivers
 
-# TODO: add alfred and istat-menus
 # NOTE: I omitted razer-synpase due to its intrusive nature. Install manually
 # and then uninstall when keyboard config is complete.
 CASKS="
 adobe-connect
+alfred
 arduino
 aws-vault
 chromium
@@ -22,6 +22,7 @@ gimp
 google-chrome
 haskell-platform
 hipchat
+istat-menus
 microsoft-lync
 mumble
 obs
