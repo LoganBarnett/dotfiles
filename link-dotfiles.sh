@@ -12,7 +12,6 @@ gitignore_global
 ideavim
 jsbeautifyrc
 npmrc
-oh-my-zsh
 pentadactylrc
 spacemacs
 tmux.conf
