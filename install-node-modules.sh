@@ -2,7 +2,7 @@
 
 set -e
 
-brew install nvm
+brew install nvm || (brew upgrade nvm && brew link --overwrite nvm)
 
 mkdir -p ~/.nvm
 
