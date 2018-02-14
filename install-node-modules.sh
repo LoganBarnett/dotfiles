@@ -34,9 +34,10 @@ js-beautify
 marked
 "
 
-yarn global add $NODE_MODULES
+npm i -g $NODE_MODULES
 
 # This makes nvm work with avn
+rm /usr/local/opt/nvm/nvm.sh
 ln -f -s -n /usr/local/opt/nvm/nvm.sh ~/.nvm/nvm.sh
 
 # avn has this as a post install setup command.
