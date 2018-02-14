@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+set -e
 
 # drivers is necessary for tools such as razer-synapse
 echo "tapping drivers"

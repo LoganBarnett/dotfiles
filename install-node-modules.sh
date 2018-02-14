@@ -1,5 +1,7 @@
 #! /usr/bin/env bash
 
+set -e
+
 # Make sure we're using the node version that emacs will use (8.1.3 currently).
 nvm use 8.1.3
 
