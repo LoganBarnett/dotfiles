@@ -84,12 +84,16 @@ opam update
 # Contributing to Flow was the primary motivator here.
 opam install -y ocamlfind sedlex js_of_ocaml
 
+echo "installing GPG..."
+./install-gpg.sh
+
 echo "setting up spacemacs"
 ./emacs-install.sh
 
 # TODO: add a way of reading in the paradox-github token or generating it if it doesn't exist
 
 echo "installing rvm"
+gpg --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3
 \curl -sSL https://get.rvm.io | bash -s stable
 
 echo "sourcing rvm"
