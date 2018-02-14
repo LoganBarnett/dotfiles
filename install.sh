@@ -57,6 +57,8 @@ fi
 
 if [ $(uname) = 'Darwin' ]; then
     cd $start_dir
+    echo "installing homebrew..."
+    /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
     echo "installing casks"
     ./install-casks.sh
 else
