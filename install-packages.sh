@@ -26,7 +26,6 @@ mtr
 nmap
 node
 npm
-nvm
 ocaml
 opam
 pinentry-mac

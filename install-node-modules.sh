@@ -2,6 +2,15 @@
 
 set -e
 
+brew install nvm
+
+mkdir -p ~/.nvm
+
+# Temporarily setup nvm for this run.
+
+export NVM_DIR="$HOME/.nvm"
+. "/usr/local/opt/nvm/nvm.sh"
+
 # Make sure we're using the node version that emacs will use (8.1.3 currently).
 nvm use 8.1.3
 
