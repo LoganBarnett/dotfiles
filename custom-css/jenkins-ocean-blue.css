@@ -7,7 +7,106 @@ body {
   background-color: var(--general-background-color) !important;
 }
 
+button.inverse, .btn.inverse, .btn-default.inverse, .btn-primary.inverse,
+.btn-secondary.inverse, .btn-danger.inverse, a.btn-link.inverse, .inverse
+button, .inverse .btn, .inverse .btn-default, .inverse .btn-primary, .inverse
+.btn-secondary, .inverse .btn-danger, .inverse a.btn-link, .inverse-background
+button, .inverse-background .btn, .inverse-background .btn-default,
+.inverse-background .btn-primary, .inverse-background .btn-secondary,
+.inverse-background .btn-danger, .inverse-background a.btn-link {
+  color: var(--button-color) !important;
+  background-color: var(--button-background-color) !important;
+}
+
+
+button.inverse:hover, .btn.inverse:hover, .btn-default.inverse:hover,
+.btn-primary.inverse:hover, .btn-secondary.inverse:hover,
+.btn-danger.inverse:hover, a.btn-link.inverse:hover, .inverse:hover button,
+.inverse .btn:hover, .inverse .btn-default:hover, .inverse .btn-primary:hover,
+.inverse .btn-secondary:hover, .inverse .btn-danger:hover, .inverse
+a.btn-link:hover, .inverse-background button:hover, .inverse-background
+.btn:hover, .inverse-background .btn-default:hover, .inverse-background
+.btn-primary:hover, .inverse-background .btn-secondary:hover,
+.inverse-background .btn-danger:hover, .inverse-background a.btn-link:hover {
+  color: var(--button-hover-color) !important;
+  background-color: var(--button-hover-background-color) !important;
+}
+
+.Header-pageTabs a {
+  color: var(--tab-inactive-color) !important;
+  background-color: var(--tab-inactive-background-color) !important;
+}
+
+.selected.Header-pageTabs a {
+  color: var(--tab-active-color) !important;
+  background-color: var(--tab-active-background-color) !important;
+  border-radius: var(--tab-active-border-radius) !important;
+}
+
 .JTable-row--rollOver:hover {
   background-color: var(--highlight-background-color) !important;
   color: var(--highlight-color) !important;
+}
+
+.JTable-header {
+  color: var(--text-color) !important;
+}
+
+/**
+ * Action icons for branches/jobs.
+ */
+.ParametersRunButton .run-button-component.icon-button .run-button .svg-icon,
+.ParametersRunButton .run-button-component.icon-button .stop-button .svg-icon {
+  fill: var(--button-color-rgba) !important;
+}
+
+.history-button-component .history-button svg {
+  fill: var(--button-color) !important;
+}
+
+.ParametersRunButton .run-button-component.icon-button .run-button
+.svg-icon:hover, .ParametersRunButton .run-button-component.icon-button
+                  .stop-button .svg-icon:hover {
+  fill: var(--button-hover-color) !important;
+}
+
+.Favorite .Checkbox-indicator .star-icon {
+  fill: var(--button-color) !important;
+}
+
+.history-button-component {
+  background-color: var(--button-background-color) !important;
+  border-radius: 0.2rem !important;
+}
+
+.run-button-component {
+  background-color: var(--button-background-color) !important;
+  border-radius: 0.2rem !important;
+}
+
+.Checkbox.Favorite {
+  background-color: var(--button-background-color) !important;
+  border-radius: 0.2rem !important;
+}
+/**
+ * Hovered action icons for branches/job.
+ */
+.history-button-component .history-button svg:hover {
+  fill: var(--button-hover-color) !important;
+}
+
+.history-button-component:hover {
+  background-color: var(--button-hover-background-color) !important;
+}
+
+.run-button-component:hover {
+  background-color: var(--button-hover-background-color) !important;
+}
+
+.Favorite .Checkbox-indicator .star-icon:hover {
+  fill: var(--button-hover-color) !important;
+}
+
+.Favorite .Checkbox-indicator:hover {
+  background-color: var(--button-hover-background-color) !important;
 }

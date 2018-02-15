@@ -1,4 +1,22 @@
-module.exports = {
+function hexToRgba(hex) {
+  if(hex[0] == '#') {
+    return hexToRgba(hex.substring(1))
+  }
+  else {
+    const hexes = [
+      hex.substring(0, 2),
+      hex.substring(2, 4),
+      hex.substring(4, 6),
+    ]
+    const [r, g, b] = hexes.map(h => parseInt(h, 16))
+    return `rgba(${r}, ${g}, ${b}, 1)`
+  }
+}
+
+
+const buttonColor = '#0a0814'
+
+const vars = {
   '--border': '#5d4d7a',
   '--text': '#b2b2b2',
   '--text-color': '#b2b2b2',
@@ -36,6 +54,9 @@ module.exports = {
   '--button-background': '#2aa1ae',
   '--button-background-color': '#2aa1ae',
   '--button-color': '#0a0814',
+  '--button-color-rgba': hexToRgba(buttonColor),
+  '--button-hover-color': buttonColor,
+  '--button-hover-background-color': '#6ae1ee',
   '--input-color': '#2aa1ae',
   '--input-background-color': '#292e34',
   '--thin-border': '0.1em solid #5d4d7a',
@@ -54,3 +75,5 @@ module.exports = {
   '--calendar-leave-entry-color': '#67b11d',
   'code-string-interpolation': '#86dc2f',
 }
+
+module.exports = vars
