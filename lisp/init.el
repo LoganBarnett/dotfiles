@@ -23,7 +23,6 @@
     ;; (add-hook 'after-init-hook #'global-flycheck-mode)
     ;; (add-hook 'js-mode-hook 'flycheck-mode)
     ;; (add-hook 'prog-mode #'flycheck-mode)
-    ;; (global-flycheck-mode)
     (add-hook 'prog-mode-hook #'flycheck-mode)
     (setq-default syntax-checking-enable-by-default t)
     :config
@@ -281,6 +280,8 @@ layers configuration. You are free to put any user code."
                                                "tmp"
                                                ".tmp"
                                                ))
+
+  (setq-default yas-snippet-dirs '("~/.emacs.d/private/snippets"))
 
   )
 (defun my/init ()
