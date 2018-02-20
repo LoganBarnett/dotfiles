@@ -9,7 +9,8 @@ somewhere), I have a dotfiles directory containing .el files from my
 =dotfiles/lisp= directory.
 
 #+BEGIN_SRC emacs-lisp
-(add-to-list 'load-path "~/.emacs.d/private/local/dotfiles")
+(message "skipping load paths in emacs-config.org")
+;; (add-to-list 'load-path "~/.emacs.d/private/local/dotfiles")
 #+END_SRC
 
 ** look and feel
