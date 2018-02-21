@@ -1,0 +1,150 @@
+#+title:    Hipchat Config
+#+author:   Logan Barnett
+#+email:    logustus@gmail.com
+#+date:     <2018-02-20 Tue>
+#+language: en
+#+tags:     hipchat chat config
+
+* introduction
+  :PROPERTIES:
+  :CUSTOM_ID: introduction
+  :END:
+
+Hipchat is a chat program not unlike Slack and Discord. Primarily used in the
+business side, Hipchat's pull is that it's another Atlassian product. Hipchat
+was pulled in by Atlassian later, so it doesn't quite have the same integration
+that the rest of Atlassian's suite enjoys.
+
+* standup
+  :PROPERTIES:
+  :CUSTOM_ID: standup
+  :END:
+
+At work there is a standup plugin used to give a daily standup report. I have a
+work file in =org-mode= and for each day I create a new heading which is an org
+timestamp. Under that heading I have =standup out=, =standup in=, and =tasks=.
+=standup out= is a report of what I got done, which will cover the "yesterday"
+section in the standup report. =standup in= is what I intend to accomplish this
+day, which covers the "today" section of the standup report. Standup reports are
+in markdown (whatever the strict version is - perhaps the original).
+
+Finding today's report is relatively easy.
+
+#+begin_src emacs-lisp
+  (defun hipchat/today-olp ()
+     (message "---- getting current day")
+     (list
+      "log"
+      (format-time-string "<%Y-%m-%d %a>" (org-current-time))
+      "standup in"
+      )
+    )
+#+end_src
+
+Yesterday's (or the prior day really) is a little trickier. We basically want to
+find the first headline that comes after today's headline we found with
+=hipchat/get-today=
+
+#+begin_src emacs-lisp
+  (defun hipchat/get-previous-day ()
+    (save-excursion
+      (message "----getting previous day")
+      (set-buffer helm-current-buffer)
+      (widen)
+      (message "current buffer is %s" (current-buffer))
+      (let ((today (org-find-olp (list
+              "log"
+              (format-time-string "<%Y-%m-%d %a>" (org-current-time))
+              )
+              (current-buffer)
+              )
+            ))
+            (goto-char today)
+            (message "currently on %s" (org-get-heading))
+            (message "going to next heading")
+            (org-forward-heading-same-level 1)
+            (message "at next heading?")
+            (let ((heading (org-get-heading)))
+              (message "heading is %s" heading)
+              heading
+            )
+          )
+      )
+  )
+#+end_src
+
+Once we have the headline, we can get the =standup in= and =standup out=
+headings.
+
+#+begin_src emacs-lisp
+  (defun hipchat/export-olp (olp)
+    ;; (save-excursion
+    (progn
+      (message "------exporting olp")
+      (set-buffer helm-current-buffer)
+      (message "current buffer is %s" (current-buffer))
+      (widen)
+      (goto-char 1)
+      (message "at start of buffer")
+      (message "olp %s" olp)
+      (let ((heading-point (org-find-olp olp helm-current-buffer)))
+        (message "heading point %s" heading-point)
+        (message "point before goto %s" (point))
+        (goto-char heading-point)
+        (message "current point %s" (point))
+        (message "olp (again) %s" olp)
+        (message "found, marking...")
+        (outline-back-to-heading t)
+        (message "------marked heading: %s" (org-get-heading))
+        (org-narrow-to-subtree)
+        (message "exporting heading: %s" (org-get-heading))
+        (org-md-export-as-markdown)
+        (message "switching to markdown buffer")
+        (set-buffer "*Org MD Export*")
+        (message "replacing text")
+        (let ((markdown (replace-regexp-in-string "^[\0-\377[:nonascii:]]*# standup out"
+                                  "# The previous day I worked on:"
+                                  (replace-regexp-in-string "^[\0-\377[:nonascii:]]*# standup in"
+                                                            "# Today I will be:"
+                                                            (buffer-string))
+                                                            )))
+            (kill-buffer "*Org MD Export*")
+            (message "------resulting markdown: %s" markdown)
+            markdown
+        )
+      )
+    )
+  )
+
+  (defun hipchat/export-standup-status ()
+    (interactive)
+
+    (defvar previous-log nil)
+    (defvar today-log nil)
+    (let* (
+      (previous-log (hipchat/export-olp (list
+                    "log"
+                    (hipchat/get-previous-day)
+                    "standup out"
+                    )))
+      (test "foo")
+      (today-log (hipchat/export-olp (hipchat/today-olp)))
+      )
+      (message "previous-log %s" previous-log)
+      (message "test %s" test)
+      (message "today-log %s" today-log)
+      (let ((result (concat previous-log today-log)))
+        (kill-new result)
+        (message "sent to kill ring:\n%s" result)
+        (switch-to-buffer helm-current-buffer)
+        (message "final buffer is %s" (current-buffer))
+        ;; save-excursion is used internally but since we switch buffers I think
+        ;; it loses its effects.
+        (widen)
+      )
+    )
+  )
+#+end_src
+
+#+RESULTS:
+: hipchat/export-standup-status
