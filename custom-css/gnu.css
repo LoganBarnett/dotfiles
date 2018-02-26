@@ -1,14 +1,27 @@
 body {
-  background-color: #282828 !important;
-  color: #ddd !important;
+  background-color: var(--general-background-color) !important;
+  color: var(--text-color) !important;
 }
 
 h1, h2, h3, h4 {
-  color: #eee !important;
+  color: var(--text-color) !important;
 }
 
 h5, h6, dt {
-  color: white !important;
+  color: var(--text-color) !important;
+}
+
+div.node {
+  background-color: var(--tab-active-background-color) !important;
+  color: var(--tab-active-color) !important;
+}
+
+a[href] {
+  color: var(--link-color) !important;
+}
+
+a[href]:visited {
+  color: var(--visited-link-color) !important;
 }
 
 div.example, pre.example {
