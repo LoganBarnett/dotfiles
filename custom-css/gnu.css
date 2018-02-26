@@ -26,5 +26,6 @@ a[href]:visited {
 
 div.example, pre.example {
   background-color: #111 !important;
-  color: #d6d !important;
+  border: var(--thin-border) !important;
+  color: var(--text-color) !important;
 }
