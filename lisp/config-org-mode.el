@@ -4,6 +4,7 @@
 ;;; Code:
 (require 'use-package)
 (require 'org)
+(require 'org-mode-auto-id-headlines)
 
 ;; TODO: Setup a keybinding to replace org-clock-report with this function.
 (defun my/org-clock-report ()
@@ -46,69 +47,6 @@
   "Hook function for major mode that display inline images:
 Adapt image size via `iimage-scale-to-fit-width' when the window size changes."
   (add-hook 'window-configuration-change-hook #'iimage-scale-to-fit-width t t))
-
-;; IDs for HTML anchors from exported org-mode docs are not deterministic nor
-;; human friendly. Set the ID to be a derivation of the headline hierarchy.
-(defun use-friendly-deterministic-headline-html-anchors ()
-  "Add a hook to `org-mode' to write out CUSTOM_IDs to all headlines in the doc."
-  (require 'org-id)
-  (setq-default org-id-link-to-org-use-id 'create-if-interactive-and-no-custom-id)
-
-  (add-hook 'org-mode-hook
-            (lambda ()
-              (add-hook 'before-save-hook
-                        (lambda ()
-                          (when (and (eq major-mode 'org-mode)
-                                     (eq buffer-read-only nil))
-                            (add-friendly-headlines)
-                            ))
-                        )
-              )
-            )
-  )
-
-(defun add-friendly-headlines ()
-  "Add friendly and deterministic ids to the current buffer."
-  (save-excursion
-    (widen)
-    ;; (beginning-of-buffer)
-    (goto-char (point-min))
-
-    (org-element-map
-      (org-element-parse-buffer 'headline)
-      'headline
-     (lambda (el)
-       (let ((id (org-element-property :raw-value el)))
-         (let ((path-id (string-join (heading-hierarchy-list el (list id)) "--")))
-               (outline-next-heading)
-               (org-entry-put (point) "CUSTOM_ID" (anchorize-headline-title path-id))
-               )
-           )
-     ))))
-
-(defun heading-hierarchy-list (child hierarchy)
-  "Recurse from CHILD to build a parent-first HIERARCHY list of headline titles."
-  (let* ((parent (org-element-property :parent child))
-        (parent-title (org-element-property :raw-value parent)))
-    (if (and parent parent-title)
-        (heading-hierarchy-list parent
-                                (add-to-list 'hierarchy
-                                             parent-title
-                                             )
-                                )
-      hierarchy
-      )
-    )
-  )
-
-(defun anchorize-headline-title (title)
-  "Convert TITLE to an HTML anchor-worthy name.
-This is kebob case, with no quotes, spaces, or punctuation marks."
-  (replace-regexp-in-string
-   "\"\\|)\\|(\\|,\\|?" ""
-   (downcase (replace-regexp-in-string " " "-" title))
-   )
-  )
 
 ;; configure org-mode
 (defun config-org-mode ()
