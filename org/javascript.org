@@ -4,6 +4,7 @@
 #+DATE:   <2017-11-12 Sun>
 #+TAGS:   javascript org-mode config
 
+* javascript
 Javascript is "the bytecode of the web". It runs on more things that Java does
 at this point. It's quite a statement, considering that Java has had immense
 committees governing what kinds of object structures they use, and Javascript
@@ -21,6 +22,8 @@ the =flow= executable from the project's =node_modules=.
 =my/getnode-modules-bin= is very generically applicable, but Flow is the
 ultimate motivator for me.
 
+* emacs settings
+** project specific paths
 #+BEGIN_SRC emacs-lisp
 (defun my/get-node-modules-bin (bin-name)
   "Find BIN-NAME inside of =./node_modules/.bin/= ."
@@ -33,8 +36,13 @@ ultimate motivator for me.
   )
 #+END_SRC
 
+*** flycheck
+    :PROPERTIES:
+    :CUSTOM_ID: emacs-settings--project-specific-paths--flycheck
+    :END:
 This function works specifically with =flycheck=, which is a general checker
 employed to integrate linters, type checkers, compilers, and coverage utilities.
+
 
 #+BEGIN_SRC emacs-lisp
 (defun my/use-checker-from-node-modules (checker-name bin-name)
@@ -75,6 +83,23 @@ during my time at NWEA.
 )
 #+END_SRC
 
+Tying together Flow, Flow's coverage, and ESLint is documented to run the
+checker after the present one finishes. That said, linter errors and Flow errors
+have been clearly seen side-by-side. I think these functions actually tie
+linting together and make them all show up at once.
+
+#+BEGIN_SRC emacs-lisp
+(defun my/connect-javascript-flycheck-backends ()
+  (message "Connecting Javascript Flycheck backends")
+  (flycheck-add-next-checker 'javascript-flow 'javascript-flow-coverage)
+  (flycheck-add-next-checker 'javascript-flow-coverage 'javascript-eslint)
+)
+#+END_SRC
+
+*** company
+    :PROPERTIES:
+    :CUSTOM_ID: emacs-settings--project-specific-paths--company
+    :END:
 #+BEGIN_SRC emacs-lisp
 (defun my/use-company-backend-from-node-modules (bin-name)
   "For a given CHECKER-NAME, find the BIN-NAME inside of node_modules."
@@ -127,19 +152,7 @@ when this happens, and Emacs eats a lot of processing power for no good reason.
 )
 #+END_SRC
 
-Tying together Flow, Flow's coverage, and ESLint is documented to run the
-checker after the present one finishes. That said, linter errors and Flow errors
-have been clearly seen side-by-side. I think these functions actually tie
-linting together and make them all show up at once.
-
-#+BEGIN_SRC emacs-lisp
-(defun my/connect-javascript-flycheck-backends ()
-  (message "Connecting Javascript Flycheck backends")
-  (flycheck-add-next-checker 'javascript-flow 'javascript-flow-coverage)
-  (flycheck-add-next-checker 'javascript-flow-coverage 'javascript-eslint)
-)
-#+END_SRC
-
+** flow
 Flow uses a _lot_ of type inferencing. There's also type refinement. This can
 lead to a lot of confusion over what a given type is for a variable. Flow gives
 us the capability to determine a type where our cursor is located. This is handy
@@ -174,6 +187,7 @@ for hunting down issues with Flow errors.
 
 #+END_SRC
 
+** big config
 Finally, tie it all together on demand.
 
 #+BEGIN_SRC emacs-lisp
