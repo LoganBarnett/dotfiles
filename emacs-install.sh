@@ -28,6 +28,9 @@ echo "Setting up additional layers"
 mkdir -p ~/.emacs.d/private/layers
 cd ~/.emacs.d/private/layers
 
+echo "Setting up notmuch layer"
+git clone https://github.com/cmiles74/spacemacs-notmuch-layer.git notmuch || true
+
 # we can preload the packages with this:
 # emacs --batch --load=~/.emacs.d/init.el
 # OR:
