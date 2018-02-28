@@ -60,7 +60,7 @@ from lines like:
 
 Property names are always lowercase in the returned structure."
   (org-element-map (org-element-parse-buffer 'element) 'keyword
-    (lambda (keyword) (message "keyword %s" keyword)(cons (lowercase (org-element-property :key keyword))
+    (lambda (keyword) (cons (org-element-property :key keyword)
                             (org-element-property :value keyword))))
   )
 
@@ -83,19 +83,15 @@ Will yield:
   (require 'org-id)
   (setq-default org-id-link-to-org-use-id 'create-if-interactive-and-no-custom-id)
 
-  (add-hook 'org-mode-hook
+  (add-hook 'before-save-hook
             (lambda ()
-              (add-hook 'before-save-hook
-                        (lambda ()
-                          (message "auto_id %s" (get-org-keyword "auto_id"))
-                          (when (and (eq major-mode 'org-mode)
-                                     (eq buffer-read-only nil)
-                                     (eq (get-org-keyword "auto_id") "t")
-                                     )
-                            (add-friendly-headlines)
-                            ))
-                        )
-              )
+              (when (and (eq major-mode 'org-mode)
+                         (eq buffer-read-only nil)
+                         (not (eq (get-org-keyword "AUTO_ID") nil))
+                         )
+                (message "Adding auto ids to org buffer \"%s\"" (buffer-name))
+                (add-friendly-headlines)
+                ))
             )
   )
 
