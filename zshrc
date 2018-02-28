@@ -11,6 +11,24 @@
   PS1='$ ' &&
   return
 
+# Which plugins would you like to load? (plugins can be found in ~/.oh-my-zsh/plugins/*)
+# Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
+# Example format: plugins=(rails git textmate ruby lighthouse)
+# Add wisely, as too many plugins slow down shell startup.
+
+# TODO: add osx conditionally
+plugins=(
+    brew,
+    command-not-found,
+    git,
+    node,
+    noreallyjustfuckingstopalready,
+    npm,
+    osx,
+    rsync,
+    yarn
+)
+
 # Path to your oh-my-zsh installation.
 export ZSH=$HOME/.oh-my-zsh
 
@@ -58,23 +76,6 @@ ZSH_THEME="robbyrussell"
 # Would you like to use another custom folder than $ZSH/custom?
 # ZSH_CUSTOM=/path/to/new-custom-folder
 
-# Which plugins would you like to load? (plugins can be found in ~/.oh-my-zsh/plugins/*)
-# Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
-# Example format: plugins=(rails git textmate ruby lighthouse)
-# Add wisely, as too many plugins slow down shell startup.
-
-# TODO: add osx conditionally
-plugins=(
-    brew,
-    command-not-found,
-    git,
-    node,
-    noreallyjustfuckingstopalready,
-    npm,
-    rsync,
-    yarn
-)
-
 # User configuration
 
 # export MANPATH="/usr/local/man:$MANPATH"
@@ -87,6 +88,8 @@ plugins=(
 
 # ZSH_THEME=flazz
 source $ZSH/oh-my-zsh.sh
+
+source $ZSH/plugins/osx/osx.plugin.zsh
 
 # You may need to manually set your language environment
 # export LANG=en_US.UTF-8
