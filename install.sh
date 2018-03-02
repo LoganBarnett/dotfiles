@@ -93,12 +93,16 @@ echo "setting up spacemacs"
 # TODO: add a way of reading in the paradox-github token or generating it if it doesn't exist
 
 echo "installing rvm"
-gpg --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3
-\curl -sSL https://get.rvm.io | bash -s stable
+# We need to add the key from Michal Papis so we can verify RVM is the real
+# deal. This is found in the installation instructions. This command fails
+# though. I'm not sure why. "no route to host"
+# gpg --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3
+# \curl -sSL https://get.rvm.io | bash -s stable
 
 echo "sourcing rvm"
 if [ $(uname) = 'Darwin' ]; then
-    source $HOME/.rvm/scripts/rvm
+    # source $HOME/.rvm/scripts/rvm
+    echo "skipping rvm sourcing until we can install it reliably"
 else
     echo "skipping rvm source - not on OSX"
     echo "you know, you really should add support for other envs for rvm..."
