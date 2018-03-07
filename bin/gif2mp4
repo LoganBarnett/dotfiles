@@ -3,8 +3,11 @@
 # Taken from:
 # https://unix.stackexchange.com/questions/40638/how-to-do-i-convert-an-animated-gif-to-an-mp4-or-mv4-on-the-command-line
 
+# See https://trac.ffmpeg.org/wiki/Encode/H.264 for more information about
+# encoding to mp4.
 ffmpeg -i $1\
   -movflags faststart\
   -pix_fmt yuv420p\
+  -preset slow\
   -vf "scale=trunc(iw/2)*2:trunc(ih/2)*2"\
   $2
