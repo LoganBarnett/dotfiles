@@ -1,0 +1,38 @@
+#+title:    Tramp Emacs Config
+#+author:   Logan Barnett
+#+email:    logustus@gmail.com
+#+date:     <2018-03-07 Wed>
+#+language: en
+#+tags:     config tramp ssh remote
+
+* shell settings
+
+Tramp logs in via =ssh= as one of its modes. When it does so, it interacts with
+the shell over =ssh=. It doesn't understand custom prompts very well, let alone
+things specific to =zsh=. Generally Tramp expects =bash=. This setting makes
+Tramp use bash regardless of what the remote machine is set to use.
+
+#+begin_src emacs-lisp
+;; (setq-default explicit-shell-file-name "/bin/bash")
+#+end_src
+
+* debugging
+
+Tramp can be debugged with a verbose number. I know you can set it as high as 6.
+
+#+begin_src emacs-lisp
+  (defun set-tramp-logging ()
+    ;; (setq-default tramp-verbose 6)
+  )
+#+end_src
+
+* all together
+
+#+begin_src emacs-lisp
+  (require 'use-package)
+  (use-package "tramp"
+    :init
+    :config
+    (set-tramp-logging)
+  )
+#+end_src

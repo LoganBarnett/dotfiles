@@ -300,6 +300,7 @@ layers configuration. You are free to put any user code."
   (init-org-file "css.org")
   (init-org-file "makefile.org")
   (init-org-file "hipchat.org")
+  (init-org-file "tramp.org")
   (message "[INIT] Init Done.")
   )
 
