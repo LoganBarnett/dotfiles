@@ -9,6 +9,8 @@
   # unfunction precmd &&
   # unfunction preexec &&
   PS1='$ ' &&
+  # gls respects the --dired flag, which dired + tramp uses.
+  alias ls='gls' &&
   return
 
 # Which plugins would you like to load? (plugins can be found in ~/.oh-my-zsh/plugins/*)
