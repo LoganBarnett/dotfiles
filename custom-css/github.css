@@ -147,6 +147,27 @@ body ul#user-links {
   background-color: #648 !important;
 }
 
+/* commit header */
+.full-commit p.commit-title {
+  color: var(--head1-color) !important;
+  background-color: var(--head1-background-color) !important;
+}
+
+/* pull request commit text */
+.commit-desc pre {
+  color: var(--text-color) !important;
+}
+
+/* commit branch links */
+.full-commit .branches-list li a {
+  color: var(--link-color) !important;
+}
+
+/* commit hash links */
+.full-commit .sha-block>.sha {
+  color: var(--link-color) !important;
+}
+
 /* top right icons */
 .octicon {
   color: #ccc !important;
@@ -560,6 +581,12 @@ table.files td {
 div.data.syntax table pre {
   //background-color: #444 !important;
   background-color: #505050 !important; 
+}
+
+/* comments I think */
+.form-control, .form-select {
+  background-color: var(--general-background-color) !important;
+  color: var(--text-color) !important;
 }
 
 div.file div.input textarea {
