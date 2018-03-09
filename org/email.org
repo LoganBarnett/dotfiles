@@ -41,12 +41,28 @@
    searching. I haven't set this up yet. I found a Spacemacs layer for it as
    [[https://github.com/cmiles74/spacemacs-notmuch-layer][spacemacs-notmuch-layer]]. It needs =mu= itself installed.
 
+   I do have =mu= installed.
+
+**** mail dir
+     By default =mu4e= looks for =~/Maildir= which is not where I have my mail
+     synced.
+
+#+begin_src emacs-lisp
+  (setq-default mu4e-maildir (expand-file-name "~/mail"))
+  (setq-default mu4e-change-filenames-when-moving t)
+#+end_src
+
+
 ** notmuch
 
    =notmuch= is installed as a =spacemacs= layer. There's a
    [[https://github.com/cmiles74/spacemacs-notmuch-layer][spacemacs-notmuch-layer]] repository for this, as it is not built in. Not much
    is just a way of navigating and tagging emails. It doesn't handle the
    syncing.
+
+   Aside from the layer linked above, there's also a =notmuch= layer sitting in
+   the =develop= branch of Spacemacs [[https://github.com/syl20bnr/spacemacs/issues/2163][spacemacs #2163]]. It has not made its way to
+   a release branch yet.
 
 *** keybindings
 
