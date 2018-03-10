@@ -1,5 +1,22 @@
 #! /usr/bin/env sh
 
+set -e
+# TODO: Make this work for any host and password file.
+# TODO: Make this work on Linux too.
+# https://unix.stackexchange.com/questions/46915/get-the-chmod-numerical-value-for-a-file
+PASSWD_FILE="$HOME/.nwea-passwd"
+STAT=`stat -f "%OLp" $PASSWD_FILE`
+if [[ "$STAT" != "0" ]]; then
+    echo "Refusing to run because $PASSWD_FILE is insecure (perms are $STAT)."
+    exit 1
+fi
+
+OWNER=`stat -f "%Su" $PASSWD_FILE`
+if [[ "$OWNER" != "root" ]]; then
+    echo "Refusing to run because $PASSWD_FILE is insecure (owner is $OWNER)."
+    exit 2
+fi
+
 # TODO: in the future use this, since we get a 302 there anyways:
 # https://secure.nwea.org/+webvpn+/index.html
 sudo cat "$HOME/.nwea-passwd" | sudo openconnect \
