@@ -94,3 +94,7 @@ command control it, as those still work.
   )
 
 #+end_src
+
+* link dump
+https://github.com/flycheck/flycheck/issues/883#issuecomment-188248824
+https://github.com/flycheck/flycheck/issues/181
