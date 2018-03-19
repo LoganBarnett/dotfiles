@@ -85,6 +85,9 @@ command control it, as those still work.
     (setq-default insert-directory-program "/usr/local/bin/gls")
     (setq-default dired-use-ls-dired t)
     (setq-default dired-listing-switches "-al")
+    ;; This should fix issues with stalling when bringing up helm while tramp is
+    ;; connected. See
+    ;; https://github.com/syl20bnr/spacemacs/blob/master/doc/FAQ.org#why-is-spacemacs-hanging-on-startup
     (setq-default tramp-ssh-controlmaster-options
     "-o ControlMaster=auto -o ControlPath='tramp.%%C' -o ControlPersist=no")
     ;; (override-tramp-get-ls-command)
