@@ -60,6 +60,20 @@ of =gls= and there are no other means of overriding.
       (tramp-error vec 'file-error "Couldn't find a proper `ls' command"))))
       )
 #+end_src
+* keybindings
+
+Tramp freezes up for me quite frequently. When it does so, things like =helm=
+don't work anymore either. It basically locks me out of using Emacs entirely. I
+want to call =tramp-cleanup-all-connections= but =M-x= invokes =helm=, which
+joins the freeze. I've been about to =C-g= out of the =helm= freeze, but I'm
+still stuck in an Emacs instance that's effectively broken. I want a =SPC=
+command control it, as those still work.
+
+#+begin_src emacs-lisp
+    (spacemacs/declare-prefix "aT" "tramp")
+    (spacemacs/set-leader-keys (kbd "SPC a T c") 'tramp-cleanup-all-connections)
+#+end_src
+
 * all together
 
 #+begin_src emacs-lisp
