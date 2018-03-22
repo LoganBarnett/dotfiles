@@ -43,13 +43,64 @@
 
    I do have =mu= installed.
 
+**** archiving
+     Archiving in =mu4e='s vernacular is "refile". We can set the folder to go
+     to the "all mail" folder and then it will work like it should for =gmail=.
+#+begin_src emacs-lisp
+(defun config/mu4e-set-archive-folder ()
+  (setq-default mu4e-refile-folder "/gmail/[Gmail]/.All Mail")
+)
+#+end_src
+
 **** mail dir
      By default =mu4e= looks for =~/Maildir= which is not where I have my mail
      synced.
 
 #+begin_src emacs-lisp
+(defun config/mu4e-set-maildir ()
   (setq-default mu4e-maildir (expand-file-name "~/mail"))
   (setq-default mu4e-change-filenames-when-moving t)
+)
+#+end_src
+
+**** materials
+http://pragmaticemacs.com/emacs/fixing-duplicate-uid-errors-when-using-mbsync-and-mu4e/
+http://pragmaticemacs.com/emacs/migrating-from-offlineimap-to-mbsync-for-mu4e/
+https://github.com/syl20bnr/spacemacs/issues/6028 - I ran into this issue and
+needed to modify the package directly.
+http://pragmaticemacs.com/emacs/master-your-inbox-with-mu4e-and-org-mode/
+
+**** images
+
+     Turning on image support is simple.
+
+#+begin_src emacs-lisp
+(defun config/mu4e-enable-images ()
+  (setq-default mu4e-view-show-images t)
+  (setq-default mu4e-view-prefer-html t)
+  ;; I think this needs to be registered first? Ensures.
+  (when (fboundp 'imagemagick-register-types)
+    (imagemagick-register-types))
+  )
+#+end_src
+
+**** TODO add =get-mail= command to mu4e update command
+     http://spacemacs.org/layers/+email/mu4e/README.html#configuration
+
+     I should also look at other interesting settings there too.
+**** TODO encryption and GPG key
+**** apply mu4e
+
+#+begin_src emacs-lisp
+  (require 'use-package)
+  (message "initializing mu4e with use-package...")
+  (use-package "mu4e"
+    :config
+    (message "initializing mu4e...")
+    (config/mu4e-enable-images)
+    (config/mu4e-set-maildir)
+    (config/mu4e-set-archive-folder)
+  )
 #+end_src
 
 
