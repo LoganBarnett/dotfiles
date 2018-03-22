@@ -282,7 +282,10 @@ layers configuration. You are free to put any user code."
                                                ))
 
   (setq-default yas-snippet-dirs '("~/.emacs.d/private/snippets"))
+  ;; This might be excessive. Needs more testing!
+  (yas-load-directory "~/.emacs.d/private/snippets")
 
+  (message "[DIRTY INIT] INIT DONE!")
   )
 (defun my/init ()
   "Do initializtion."
