@@ -28,6 +28,9 @@ echo "Setting up additional layers"
 mkdir -p ~/.emacs.d/private/layers
 cd ~/.emacs.d/private/layers
 
+# Deft is for searching - I use it for my org-mode files.
+ln -snf ~/Dropbox/notes ~/.deft
+
 echo "Setting up notmuch layer"
 git clone https://github.com/cmiles74/spacemacs-notmuch-layer.git notmuch || true
 

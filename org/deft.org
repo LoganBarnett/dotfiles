@@ -11,12 +11,8 @@ Deft builds a list of org files that is searchable (only in =holy-mode=?). The
 entries are listed by title with a small snippet of the content to fill the
 gaps. When you search it searches the contents of the all of the files.
 
-* directory
-
-My notes directory is what I want to search, so let's configure it for that.
-
-#+begin_src sh
-ln -snf ~/Dropbox/notes ~/.deft
+#+begin_src emacs-lisp
+(message "Nothing to do for Deft for now...")
 #+end_src
 
 * privacy
