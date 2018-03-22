@@ -1,0 +1,34 @@
+#+title:    Deft Config
+#+author:   Logan Barnett
+#+email:    logustus@gmail.com
+#+date:     <2018-03-21 Wed>
+#+language: en
+#+tags:     config deft
+
+* introduction
+
+Deft builds a list of org files that is searchable (only in =holy-mode=?). The
+entries are listed by title with a small snippet of the content to fill the
+gaps. When you search it searches the contents of the all of the files.
+
+* directory
+
+My notes directory is what I want to search, so let's configure it for that.
+
+#+begin_src sh
+ln -snf ~/Dropbox/notes ~/.deft
+#+end_src
+
+* privacy
+
+Some files I don't want to search. I need to look into some kind of privacy
+settings.
+
+* bad results
+Files without =org-mode= titles display kind of funny, which I should
+clean up anyways.
+
+* just org-mode?
+
+Looks like it was picking up my old markdown files too. I think I just want it
+to search =org-mode= so I'll need to look at that too, or just fix the data.

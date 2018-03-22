@@ -291,6 +291,7 @@ layers configuration. You are free to put any user code."
   (dirty-init)
   (init-org-file "private.org")
   (init-org-file "buffer.org")
+  (init-org-file "deft.org")
   (init-org-file "email.org")
   (init-org-file "whitespace.org")
   (init-org-file "habitica.org")
