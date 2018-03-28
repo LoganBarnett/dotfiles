@@ -45,5 +45,7 @@ Patterns * ![Gmail]* "[Gmail]/Sent Mail" "[Gmail]/Starred" "[Gmail]/All Mail"
 #Patterns *
 # Automatically create missing mailboxes, both locally and on the server
 Create Both
+# Propagate removals on either side.
+Remove Both
 # Save the synchronization state files in the relevant directory
 SyncState *
