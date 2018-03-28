@@ -59,6 +59,12 @@ const vars = {
   '--button-hover-background-color': '#6ae1ee',
   '--input-color': '#2aa1ae',
   '--input-background-color': '#292e34',
+  /**
+   * Active items are usually the ones important under a context. They will
+   * typically be whatever the "selected" thing is.
+   */
+  '--item-active-color': '#e3dedd',
+  '--item-active-background-color': '#5d4d7a',
   '--thin-border': '0.1em solid #5d4d7a',
   '--thin-border-color': '#5d4d7a',
   '--diff-add-color': '#293235',
