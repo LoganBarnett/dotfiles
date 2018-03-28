@@ -1,0 +1,3 @@
+#! /usr/bin/env bash
+
+mbsync -a && mu index -m ~/mail
