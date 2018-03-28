@@ -1,0 +1,11 @@
+{
+  "includes": [
+    "https://outlook.office.com/*"
+  ],
+  "excludes": [
+    ""
+  ],
+  "name": "outlook.office.com",
+  "enabled": true,
+  "key": "outlook.office.com"
+}
