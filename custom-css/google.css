@@ -34,8 +34,8 @@ body {
 }
 
 /* groups post text */
-.IVILX2C-tb-P,.IVILX2C-nb-P {
-  color: #ddd !important;
+.IVILX2C-tb-P,.IVILX2C-nb-P,.F0XO1GC-nb-P {
+  color: var(--text-color) !important;
 }
 
 /* Background */
