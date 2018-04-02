@@ -6,6 +6,22 @@ body {
   color: var(--text-color) !important;
 }
 
+a {
+  color: var(--link-color) !important;
+}
+
+a:visited {
+  color: var(--visited-link-color) !important;
+  background-color: var(--visited-link-background-color) !important;
+}
+
+/**
+ * MS decree is that all tables should be white because reasons.
+ */
+table {
+  background-color: var(--general-background-color) !important;
+}
+
 /**
  * Used for some headings I think.
  */
@@ -23,14 +39,28 @@ body {
 /* } */
 
 /**
- * Normally this is some faded color.
+ * Normalish colored stuff?
+ */
+.ms-font-m {
+  color: var(--text-color) !important;
+}
+
+/**
+ * Used in TO: email section (filtering out my address, visually).
+ */
+.ms-font-s {
+  color: var(--dim-text) !important;
+}
+
+/**
+ * Normally this is some faded color, but sometimes not.
  */
 .ms-font-color-neutralPrimary, .ms-fontColor-neutralPrimary, .ms-fcl-np,
 .ms-font-color-neutralPrimary-hover:hover,
 .ms-font-color-neutralPrimary-focus:focus,
 .ms-font-color-neutralPrimary-before:before, .ms-fcl-np-h:hover,
 .ms-fcl-np-f:focus, .ms-fcl-np-b:before {
-  color: var(--dim-text) !important;
+  color: var(--text-color) !important;
 }
 
 /**
@@ -123,6 +153,18 @@ button.o365button {
   background-color: var(--general-background-color) !important;
 }
 
+
+/**
+ * (more) Far left "folders" section.
+ */
+.ms-bg-color-themeLight, .ms-bgc-tl, .ms-bg-color-themeLight-hover:hover,
+.ms-bg-color-themeLight-focus:focus, .ms-bg-color-themeLight-before::before,
+.ms-bgc-tl-h:hover, .ms-bgc-tl-f:focus, .ms-bgc-tl-b::before {
+  color: var(--text-color) !important;
+  background-color: var(--general-background-color) !important;
+}
+
+
 /**
  * Email text color.
  */
@@ -130,5 +172,12 @@ button.o365button {
 .ms-font-color-neutralDark-hover:hover, .ms-font-color-neutralDark-focus:focus,
 .ms-font-color-neutralDark-before:before, .ms-fcl-nd-h:hover,
 .ms-fcl-nd-f:focus, .ms-fcl-nd-b:before {
+  color: var(--text-color) !important;
+}
+
+/**
+ * Some text comments have a custom color applied to them.
+ */
+div.x_zd-comment[style], p[style] {
   color: var(--text-color) !important;
 }
