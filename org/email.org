@@ -89,6 +89,31 @@ http://pragmaticemacs.com/emacs/master-your-inbox-with-mu4e-and-org-mode/
 
      I should also look at other interesting settings there too.
 **** TODO encryption and GPG key
+**** sending mail
+
+#+begin_src emacs-lisp
+  (defun config/send-email ()
+    ;; TODO: Many settings are inherited from ../lisp/config-email.el - move them
+    ;; here.
+    (setq-default
+      user-mail-address "logustus@gmail.com"
+      user-full-name "Logan Barnett"
+      ;; message-send-mail-function 'smtpmail-send-it
+      ;; starttls-use-gnutls t
+      ;; smtpmail-starttls-credentials '(("smtp.gmail.com" 587 nil nil))
+      ;; smtpmail-auth-credentials
+      ;;   '(("smtp.gmail.com" 587 "logustus@gmail.com" nil))
+      ;; smtpmail-default-smtp-server "smtp.gmail.com"
+      ;; smtpmail-smtp-server "smtp.gmail.com"
+      ;; smtpmail-smtp-service 587)
+  )
+  ;; This allows using `dired' to add attachments. When in `dired-mode', use
+  ;; `gnus-dired-attach'. Instructions are more complicated but I'm not sure what
+  ;; they are adding since the below is all I needed. See:
+  ;; https://www.djcbsoftware.nl/code/mu/mu4e/Dired.html#Dired
+  (add-hook 'dired-mode-hook 'turn-on-gnus-dired-mode)
+#+end_src
+
 **** apply mu4e
 
 #+begin_src emacs-lisp
@@ -100,6 +125,7 @@ http://pragmaticemacs.com/emacs/master-your-inbox-with-mu4e-and-org-mode/
     (config/mu4e-enable-images)
     (config/mu4e-set-maildir)
     (config/mu4e-set-archive-folder)
+    (config/send-email)
   )
 #+end_src
 

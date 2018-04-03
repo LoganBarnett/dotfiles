@@ -21,4 +21,16 @@ cd ~/.emacs.d/layers && git clone git@github.com:cmiles74/spacemacs-notmuch-laye
 # Use a commit and we can update manually.
 cd ~/.emacs.d/layers/notmuch && git checkout c81b2fd1bdb4294edef6d16041bfc880d26b2774
 
+echo "Setting up email authentication..."
+# ~/.email-creds.txt comes from install-private.sh Per instructions here:
+# http://www.macs.hw.ac.uk/~rs46/posts/2014-01-13-mu4e-email-client.html
+# ~/.email-creds.txt is a file that needs to match the following template:
+# machine <smtp-host> login <email-address> port 587 password <password> Once
+# encrypted, the ~/.email-creds.txt is no longer needed. TODO: Make the
+# plaintext storage of the email password more secure, or move it to the
+# keychain perhaps.
+echo "machine smtp.gmail.com login logustus@gmail.com port 587 password $(echo ~/.email-creds.txt)" > ~/.authinfo.txt
+gpg --output ~/.authinfo.gpg --symmetric ~/.authinfo.txt
+rm ~/.authinfo.txt
+rm ~/.email-creds.txt
 echo "Done setting up email support."

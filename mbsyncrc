@@ -9,8 +9,8 @@ User logustus@gmail.com
 PipelineDepth 50
 # Pass %PASS%
 # To store the password in an encrypted file use PassCmd instead of Pass
-# PassCmd "gpg2 -q --for-your-eyes-only --no-tty -d ~/.mailpass.gpg"
-PassCmd "cat ~/.email-creds.txt"
+PassCmd "gpg2 -q --for-your-eyes-only --no-tty -d ~/.authinfo.gpg"
+# PassCmd "cat ~/.email-creds.txt"
 AuthMechs PLAIN
 #
 # Use SSL
