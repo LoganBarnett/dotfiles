@@ -29,8 +29,11 @@ echo "Setting up email authentication..."
 # encrypted, the ~/.email-creds.txt is no longer needed. TODO: Make the
 # plaintext storage of the email password more secure, or move it to the
 # keychain perhaps.
-echo "machine smtp.gmail.com login logustus@gmail.com port 587 password $(echo ~/.email-creds.txt)" > ~/.authinfo.txt
-gpg --output ~/.authinfo.gpg --symmetric ~/.authinfo.txt
-rm ~/.authinfo.txt
+echo "machine smtp.gmail.com login logustus@gmail.com port 587 password $(cat ~/.email-creds.txt)" > ~/.gmail-authinfo.txt
+gpg --output ~/.authinfo.gpg --symmetric ~/.gmail-authinfo.txt
+gpg --output ~/.gmail-imap-authinfo.gpg --symmetric ~/.email-creds.txt
+# gpg --output ~/.authinfo.gpg --symmetric ~/.email-creds.txt
+rm ~/.gmail-authinfo.txt
+# Leaving this in for a little while longer.
 rm ~/.email-creds.txt
 echo "Done setting up email support."

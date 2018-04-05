@@ -98,14 +98,15 @@ http://pragmaticemacs.com/emacs/master-your-inbox-with-mu4e-and-org-mode/
     (setq-default
       user-mail-address "logustus@gmail.com"
       user-full-name "Logan Barnett"
-      ;; message-send-mail-function 'smtpmail-send-it
-      ;; starttls-use-gnutls t
-      ;; smtpmail-starttls-credentials '(("smtp.gmail.com" 587 nil nil))
-      ;; smtpmail-auth-credentials
-      ;;   '(("smtp.gmail.com" 587 "logustus@gmail.com" nil))
-      ;; smtpmail-default-smtp-server "smtp.gmail.com"
-      ;; smtpmail-smtp-server "smtp.gmail.com"
-      ;; smtpmail-smtp-service 587)
+      message-send-mail-function 'smtpmail-send-it
+      starttls-use-gnutls t
+      smtpmail-starttls-credentials '(("smtp.gmail.com" 587 nil nil))
+      smtpmail-auth-credentials
+        '(("smtp.gmail.com" 587 "logustus@gmail.com" nil))
+      smtpmail-default-smtp-server "smtp.gmail.com"
+      smtpmail-smtp-server "smtp.gmail.com"
+      smtpmail-smtp-service 587
+      )
   )
   ;; This allows using `dired' to add attachments. When in `dired-mode', use
   ;; `gnus-dired-attach'. Instructions are more complicated but I'm not sure what
