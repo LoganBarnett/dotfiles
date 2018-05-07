@@ -84,3 +84,6 @@ elif [ $(uname) = 'Linux' ]; then
 else
     echo "skipping brew install - not on a supported OS."
 fi
+
+echo "installing pup for html parsing with css selectors"
+go get github.com/ericchiang/pup
