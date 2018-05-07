@@ -303,6 +303,7 @@ layers configuration. You are free to put any user code."
   (init-org-file "makefile.org")
   (init-org-file "hipchat.org")
   (init-org-file "tramp.org")
+  (init-org-file "time.org")
   (message "[INIT] Init Done.")
   )
 

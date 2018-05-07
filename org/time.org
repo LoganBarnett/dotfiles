@@ -1,0 +1,292 @@
+#+title:    Time Config
+#+author:   Logan Barnett
+#+email:    logustus@gmail.com
+#+date:     <2018-04-09 Mon>
+#+language: en
+#+tags:     time
+
+* billing hours
+
+  As part of working for various entities I need a means of tracking my team and
+  posting it to some kind of external software so I can have my hours billed.
+
+*** pro unlimited
+
+
+**** logging in
+
+     Logging in is a two-part process. First we have to get the =JSESSIONID=
+     cookie populated. This involves a =GET= to the login page. The second
+     step is actually submitting the login =POST= with my credentials.
+
+#+begin_src bash
+curl --version
+#+end_src
+
+#+RESULTS:
+| curl       | 7.54.0    | (x86_64-apple-darwin17.0) | libcurl/7.54.0 | LibreSSL/2.0.20 | zlib/1.2.11 | nghttp2/1.24.0 |       |         |       |      |       |             |             |      |     |      |      |       |        |      |
+| Protocols: | dict      | file                      | ftp            | ftps            | gopher      | http           | https | imap    | imaps | ldap | ldaps | pop3        | pop3s       | rtsp | smb | smbs | smtp | smtps | telnet | tftp |
+| Features:  | AsynchDNS | IPv6                      | Largefile      | GSS-API         | Kerberos    | SPNEGO         | NTLM  | NTLM_WB | SSL   | libz | HTTP2 | UnixSockets | HTTPS-proxy |      |     |      |      |       |        |      |
+
+#+begin_src bash
+which curl
+#+end_src
+
+#+RESULTS:
+: /usr/bin//curl
+
+#+name: jsessionid-curl
+#+begin_src sh :dir ~/dev/dotfiles
+curl \
+'https://prowand.pro-unlimited.com/login.html' \
+-b 'wand-cookies.txt' \
+-c 'wand-cookies.txt'
+#+end_src
+
+#+RESULTS: jsessionid-curl
+
+
+#+name: login-curl
+#+begin_src sh :dir ~/dev/dotfiles :var username=(url-hexify-string wand-username) :var password=(url-hexify-string wand-password)
+# --data "username=logustus%40gmail.com&password=XE6-bVP-2ST-S7B" \
+curl \
+'https://prowand.pro-unlimited.com/login.html' \
+-b 'wand-cookies.txt' \
+-c 'wand-cookies.txt' \
+-H 'Pragma: no-cache' \
+-H 'Origin: https://prowand.pro-unlimited.com' \
+-H 'Accept-Encoding: gzip, deflate, br' \
+-H 'Accept-Language: en-US,en;q=0.8' \
+-H 'Upgrade-Insecure-Requests: 1' \
+-H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3169.0 Safari/537.36' \
+-H 'Content-Type: application/x-www-form-urlencoded' \
+-H 'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8' \
+-H 'Cache-Control: no-cache' \
+-H 'Referer: https://prowand.pro-unlimited.com/login.html' \
+-H 'Connection: keep-alive' \
+--data "username=$username&password=$password" \
+-L \
+--compressed \
+-v
+#+end_src
+
+#+RESULTS: login-curl
+
+Sometimes the web app wants me to verify that my information has not changed. I
+am not interested in addressing this at this time. I can manually do this part.
+
+**** getting weeks
+     I need to select a week to work with. Weeks start on Monday and end on
+     Sunday. For now I'm just going to grab the most recent week. The URL here
+     is a little wonky because of how the post-back mechanism works. The data we
+     need isn't provided until this second XHR is made, but it's a request for
+     the entirely new page that just happens to include a little bit of the data
+     we want.
+
+     Here is the call to get the current page:
+
+#+name blugh
+#+begin_src bash :noweb yes :results none :dir ~/dev/dotfiles
+  curl \
+  'https://prowand.pro-unlimited.com/worker/standard/standard_home.html' \
+  -H 'Pragma: no-cache' \
+  -H 'Origin: https://prowand.pro-unlimited.com' \
+  -H 'Accept-Encoding: gzip, deflate, br' \
+  -H 'Accept-Language: en-US,en;q=0.8' \
+  -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3169.0 Safari/537.36' \
+  -H 'Content-type: application/x-www-form-urlencoded' \
+  -H 'Accept: */*' -H 'Cache-Control: no-cache' \
+  -H 'Referer: https://prowand.pro-unlimited.com/worker/standard/standard_home.html' \
+  -H 'Connection: keep-alive' \
+  -b 'wand-cookies.txt' \
+  -c 'wand-cookies.txt' \
+  --compressed \
+  -s
+#+end_src
+
+#+name get-wand-week
+#+begin_src bash :noweb yes :results output replace :dir ~/dev/dotfiles
+  curl \
+  'https://prowand.pro-unlimited.com/worker/standard/standard_home.html?_target1&_page=0&selectedType=Time' \
+  -H 'Pragma: no-cache' \
+  -H 'Origin: https://prowand.pro-unlimited.com' \
+  -H 'Accept-Encoding: gzip, deflate, br' \
+  -H 'Accept-Language: en-US,en;q=0.8' \
+  -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3169.0 Safari/537.36' \
+  -H 'Content-type: application/x-www-form-urlencoded' \
+  -H 'Accept: */*' -H 'Cache-Control: no-cache' \
+  -H 'Referer: https://prowand.pro-unlimited.com/worker/standard/standard_home.html' \
+  -H 'Connection: keep-alive' \
+  --data 'select=pendingTimeAndExpense&selectedBillingTypeHidden=&tripInfoCheck=true&_tripInfoCheck=on' \
+  -b 'wand-cookies.txt' \
+  -c 'wand-cookies.txt' \
+  --compressed \
+  -s \
+  | $HOME/golang/bin/pup '#dateRangeString option:nth-child(3) attr{value}'
+#+end_src
+
+#+name: get-wand-week
+#+RESULTS:
+: 04/02/2018 - 04/08/2018
+
+Submit the value to produce a timesheet once done.
+
+#+begin_src shell :dir ~/dev/dotfiles :var date_range=get-wand-week
+curl \
+'https://prowand.pro-unlimited.com/worker/standard/standard_home.html?_finish&_page=0' \
+-H 'Pragma: no-cache' \
+-H 'Origin: https://prowand.pro-unlimited.com' \
+-H 'Accept-Encoding: gzip, deflate, br' \
+-H 'Accept-Language: en-US,en;q=0.8' \
+-H 'Upgrade-Insecure-Requests: 1' \
+-H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3169.0 Safari/537.36' \
+-H 'Content-Type: application/x-www-form-urlencoded' \
+-H 'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8' \
+-H 'Cache-Control: no-cache' \
+-H 'Referer: https://prowand.pro-unlimited.com/worker/standard/standard_home.html' \
+-H 'Connection: keep-alive' \
+--data-urlencode 'select=pendingTimeAndExpense' \
+--data-urlencode 'selectedRequisition=5609020' \
+--data-urlencode 'selectedBillingTypeHidden=Time' \
+--data-urlencode 'selectedBillingType=Time' \
+--data-urlencode "dateRangeString=$date_range" \
+--data-urlencode 'startDate=' \
+--data-urlencode 'tripInfoCheck=true' \
+--data-urlencode '_tripInfoCheck=on' \
+--compressed \
+-b 'wand-cookies.txt' \
+-c 'wand-cookies.txt' \
+-s
+#+end_src
+
+**** timesheet creation
+
+     The app creates a timesheet using unix formatted timestamps (which are
+     milliseconds since epoch).
+
+     A sample URL: https://prowand.pro-unlimited.com/worker/standard/billing/billingedit/cntrl_time_create_edit_hourly-4.html?reqId=5609020&billingType=Time&startDate=1522652400000&endDate=1523170800000&wpEndDate=1523170800000&isNew=true
+
+     We need the time in seconds since epoch from the US formatted dates given.
+     =convert-us-date-to-unix-time= takes a single date in the US format
+     (=MM/DD/YYYY=) and converts it into a number (which will be very large).
+
+#+begin_src emacs-lisp :results none
+(defun convert-us-date-to-unix-time (input)
+  (let ((date (mapcar 'string-to-number (split-string input "/"))))
+    (let ((unix-pair (encode-time 0 0 0 (nth 1 date) (nth 0 date) (nth 2 date))))
+      (* (+ (* 65536 (nth 0 unix-pair)) (nth 1 unix-pair)) 1000)
+    )
+  )
+)
+#+end_src
+
+      Here we split the dates into two and run them through our converter.
+
+#+name: convert-wand-week-to-unix-times
+#+begin_src emacs-lisp :var get-wand-week=get-wand-week
+(mapcar 'convert-us-date-to-unix-time (split-string get-wand-week " - "))
+#+end_src
+
+#+RESULTS:
+| 1522652400000 | 1523170800000 |
+
+      Here's a test:
+
+#+call: convert-wand-week-to-unix-times("04/02/2018 - 04/08/2018")
+
+#+RESULTS:
+| 1522652400000 | 1523170800000 |
+
+      Desired result:
+| 1522652400000 | 1523170800000 |
+
+#+header: :var startDate=(car convert-wand-week-to-unix-times)
+#+header: :var endDate=(cdr (car convert-wand-week-to-unix-times))
+#+begin_src shell :dir ~/dev/dotfiles
+curl "https://prowand.pro-unlimited.com/worker/standard/billing/billingedit/cntrl_time_create_edit_hourly-4.html?reqId=5609020&billingType=Time&startDate=$startDate&endDate=$endDate&wpEndDate=$endDate&isNew=true" \
+-H 'Pragma: no-cache' \
+-H 'Accept-Encoding: gzip, deflate, br' \
+-H 'Accept-Language: en-US,en;q=0.8' \
+-H 'Upgrade-Insecure-Requests: 1' \
+-H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3169.0 Safari/537.36' \
+-H 'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8' \
+-H 'Referer: https://prowand.pro-unlimited.com/worker/standard/standard_home.html' \
+-H 'Connection: keep-alive' \
+-H 'Cache-Control: no-cache' \
+--compressed
+#+end_src
+
+      The time segments come over as the following:
+      - =billingDetailItems= :: This reflects the day of the week (0 being
+           Monday).
+      - =billingTimeSpans= :: This reflects the start and end hours. The index
+           on this variable indicates additional time entries.
+      - =startHourM= :: The starting hour, 12 hour based. I don't know what the
+                        =M= stands for.
+      - =startMinute= :: The minute of the hour - it displays always with two
+                         digits, but the HTML value is one for < 10 and 2 for >=
+        1. 0-59.
+      - =startMeridiem= :: Ante or post meridiem. AM or PM. 0 is AM and 1 is PM.
+      - =endHourM= :: Same as =startHourM=, but for the end.
+      - =endMinute= :: Same as =startMinute=, but for the end.
+      - =endMeridiem= :: Same as =startMeridiem=, but for the end.
+      - =timeEntrySpanType= :: Type of time entry. Can be =Labor=, =Lunch=, or
+           =Sick=. I always want =Labor= for now, and never =Lunch=. Ever.
+      - =noBreakTaken= :: Hangs directly off of =billingDetailItems[i]=. It
+                          should always be =true=.
+
+      A full path looks something like this:
+#+begin_example
+billingDetailItems[0].billingTimeSpans[0].startHourM
+#+end_example
+
+      Stringing all of this together is going to require some conversion.
+
+      Here's the base URL we will send a =POST= to:
+#+begin_example
+/worker/standard/billing/billingedit/cntrl_time_create_edit_hourly-4.html?_page=0&_target2';
+#+end_example
+
+      The =LOGBOOK= entries in there seem to be exactly what I want. I'm not
+      sure about running the =org-clock-report= on it as I could get really
+      tripped up in conversion, and I don't know of a great place for it to live
+      within that file since I'm not breaking things out by week (I decided this
+      was too much hardship on my Hipchat status reporting). Slurping up the
+      =LOGBOOK= entries should be fairly easy. Also if I use =:ARCHIVE:= I think
+      the org-mode functions that walk the AST will ignore those entries, which
+      reduces filtering I have to do here.
+
+      Here's some Lisp declaring how this is done:
+
+#+begin_src emacs-lisp
+  (defun time/get-work-logbook-entries (start end path)
+    "Get `LOGBOOK' entries between and including START and END that exist in PATH."
+    (let* ((work-buffer (find-file path))
+          (start-days (time-to-days start))
+          (end-days (time-to-days end))
+          (days-apart (- end-days start-days))
+          (date-range (reduce (lambda (dates number)
+                                (time-add start (* 86400 number)))
+                              (number-sequence days-apart)) :initial-value '())
+          )
+      (save-exursion
+       (let* ((olps (mapcar (lambda (date)
+                 (list
+                  "log"
+                  (format-time-string "<%Y-%m-%d %a>" date)
+                  ":LOGBOOK:"
+                  )
+                 ) date-range)
+               )
+              (points (mapcar (lambda (olp) (org-find-olp olp work-buffer)) olps))
+              ;; TODO: convert the points into text pulled from the org-mode doc
+              ;; TODO: Convert text to time ranges.
+              ;; TODO: Convert time ranges into POST body for time entries
+              ;; TODO: Convert each day into its part of the POST body (lunch box checked mostly)
+              (mapcar points)
+              )
+         )
+      )
+    )
+  )
+#+end_src
