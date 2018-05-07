@@ -48,6 +48,16 @@
 Adapt image size via `iimage-scale-to-fit-width' when the window size changes."
   (add-hook 'window-configuration-change-hook #'iimage-scale-to-fit-width t t))
 
+(defvar-local journal-file "/journal/.+\\.org")
+(defun config/org-journal-file-p (path)
+  "Return non-nil if PATH refers to a journal org-file."
+  (string-match-p journal-file path)
+  )
+(defun config/org-not-journal-file-p (path)
+  "Return non-nil if PATH refers _does not match_ a journal org-file."
+  (not (config/org-journal-file-p path))
+  )
+
 ;; configure org-mode
 (defun config-org-mode ()
   "Configure 'org-mode'."
@@ -72,18 +82,16 @@ Adapt image size via `iimage-scale-to-fit-width' when the window size changes."
     ;; sounds great on paper, but Emacs takes a long time to finish that scan. I
     ;; believe the ultimate solution is to condense my org files further into
     ;; larger files.
-    ;; (require 'find-lisp)
+    (require 'find-lisp)
     (setq-default org-agenda-files
-                  '(
-                    "~/notes/computing.org"
-                    "~/notes/crafting.org"
-                    "~/notes/emacs.org"
-                    "~/notes/nwea.org"
-                    "~/notes/planner.org"
-                    "~/notes/roid-miner.org"
-                    "~/notes/social.org"
-                    "~/notes/warhammer40k.org"
-                    )
+                  (seq-concatenate
+                   'list
+                   (seq-filter 'config/org-not-journal-file-p
+                               (find-lisp-find-files
+                                (expand-file-name "~/Dropbox/notes")
+                                ".+\\.org"))
+                   '("~/work-notes/nwea.org")
+                   )
                   )
     ;; shrink inline images see:
     ;; http://lists.gnu.org/archive/html/emacs-orgmode/2012-08/msg01388.html
