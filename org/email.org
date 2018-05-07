@@ -89,6 +89,17 @@ http://pragmaticemacs.com/emacs/master-your-inbox-with-mu4e-and-org-mode/
 
      I should also look at other interesting settings there too.
 **** TODO encryption and GPG key
+**** getting mail
+  =~/bin/mail-sync= gets email and then runs =mu= to perform indexing. This is
+  =mu4e= seems to run indexing on its own, so we can just use =mbsync -a= like
+  =mail-sync= uses.
+
+#+begin_src emacs-lisp
+(defun config/mu4e-sync ()
+  (setq-default mu4e-get-mail-command "mbsync -a")
+)
+#+end_src
+
 **** sending mail
 
 #+begin_src emacs-lisp
@@ -126,6 +137,7 @@ http://pragmaticemacs.com/emacs/master-your-inbox-with-mu4e-and-org-mode/
     (config/mu4e-enable-images)
     (config/mu4e-set-maildir)
     (config/mu4e-set-archive-folder)
+    (config/mu4e-sync)
     (config/send-email)
   )
 #+end_src
