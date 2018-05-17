@@ -304,6 +304,7 @@ layers configuration. You are free to put any user code."
   (init-org-file "hipchat.org")
   (init-org-file "tramp.org")
   (init-org-file "time.org")
+  (init-org-file "diagram.org")
   (message "[INIT] Init Done.")
   )
 

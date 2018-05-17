@@ -120,6 +120,9 @@ else
     echo "skipping alfred install - not on osx"
 fi
 
+echo "Installing diagramming support..."
+./install-diagram.sh
+
 echo "Installing email support..."
 ./install-email.sh
 
