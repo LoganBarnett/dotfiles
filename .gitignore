@@ -15,3 +15,7 @@ org/*.el
 # Ignore our private key ID.
 # You need to copy and modify lisp/key-id.template.txt.
 lisp/key-id.txt
+
+# Beause of the symlink, yas will compile these snippets and they wind up in
+# this repository.
+.yas-compiled-snippets.el
