@@ -40,7 +40,7 @@ Master :gmail-remote:
 Slave :gmail-local:
 # Exclude everything under the internal [Gmail] folder, except the interesting
 # folders
-Patterns * ![Gmail]* "[Gmail]/Sent Mail" "[Gmail]/Starred" "[Gmail]/All Mail"
+Patterns * ![Gmail]* "[Gmail]/Spam" "[Gmail]/Sent Mail" "[Gmail]/Starred" "[Gmail]/All Mail"
 # Or include everything
 #Patterns *
 # Automatically create missing mailboxes, both locally and on the server
