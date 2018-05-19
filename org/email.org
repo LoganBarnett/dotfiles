@@ -126,6 +126,28 @@ http://pragmaticemacs.com/emacs/master-your-inbox-with-mu4e-and-org-mode/
   (add-hook 'dired-mode-hook 'turn-on-gnus-dired-mode)
 #+end_src
 
+**** bookmarks
+     Bookmarks are the initial =b= shortcuts that quickly let me jump to certain
+     views. It doesn't come with one that just shows your inbox. I'm not a fan
+     of looking at "today's" email unless I can make sure I handle everything in
+     a single day.
+
+     #+begin_src emacs-lisp
+       (defun config/mu4e-add-bookmarks ()
+         "Add mu4e bookmarks."
+         (add-to-list 'mu4e-bookmarks
+           (make-mu4e-bookmark
+             :name  "inbox"
+             :query "maildir:/gmail/Inbox"
+             :key ?i))
+       )
+     #+end_src
+
+     Bookmarks can contain lisp expressions as well as parameters in the queries
+     themselves.
+
+     [[https://www.djcbsoftware.nl/code/mu/mu4e/Bookmarks.html][mu4e bookmarks docs]]
+
 **** apply mu4e
 
 #+begin_src emacs-lisp
@@ -134,11 +156,13 @@ http://pragmaticemacs.com/emacs/master-your-inbox-with-mu4e-and-org-mode/
   (use-package "mu4e"
     :config
     (message "initializing mu4e...")
+    (config/mu4e-add-bookmarks)
     (config/mu4e-enable-images)
     (config/mu4e-set-maildir)
     (config/mu4e-set-archive-folder)
     (config/mu4e-sync)
     (config/send-email)
+    (message "done initializing mu4e")
   )
 #+end_src
 
@@ -205,7 +229,3 @@ http://pragmaticemacs.com/emacs/master-your-inbox-with-mu4e-and-org-mode/
 - [[https://github.com/cmiles74/spacemacs-notmuch-layer][Spacemacs notmuch layer]] :: =notmuch= for Spacemacs. Use =SPC a n= to activate.
 - [[https://notmuchmail.org/notmuch-emacs/][notmuch-emacs]] :: Official docs on setting up =notmuch= with Emacs.
 * artifacts
-
-#+begin_src emacs-lisp
-(message "Done in %s" (buffer-file-name))
-#+end_src
