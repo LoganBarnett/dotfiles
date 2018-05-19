@@ -7,7 +7,18 @@ brew tap d12frosted/emacs-plus
 echo "emacs tapped"
 # "already installed" should not appear if emacs was not upgraded, so the
 # check we have should be ok.
-brew install emacs-plus --with-cocoa --with-gnutls --with-librsvg --with-imagemagick --with-spacemacs-icon 2>&1 | grep "just not linked" || brew upgrade emacs-plus --with-cocoa --with-gnutls --with-librsvg --with-imagemagick --with-spacemacs-icon 2>&1 | grep "already installed"
+brew install emacs-plus \
+     --with-cocoa \
+     --with-gnutls \
+     --with-librsvg \
+     --with-imagemagick \
+     --with-spacemacs-icon 2>&1 | grep "just not linked" || \
+    brew upgrade emacs-plus \
+         --with-cocoa \
+         --with-gnutls \
+         --with-librsvg \
+         --with-imagemagick \
+         --with-spacemacs-icon 2>&1 | grep "already installed"
 echo "emacs-plus installed"
 brew link --overwrite emacs-plus
 echo "linked emacs-plus"
