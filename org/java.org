@@ -1,0 +1,35 @@
+#+title:    Java Config
+#+author:   Logan Barnett
+#+email:    logustus@gmail.com
+#+date:     <2018-05-29 Tue>
+#+language: en
+#+tags:     java config
+
+Java support in Emacs is surprisingly new, despite the age of both
+tools/ecosystems.
+
+* lsp
+  The Language Server Protocol (LSP) can work with Java.
+
+** eclipse language server
+
+   At time of writing there's no Homebrew for this. Another script will download
+   and unpack it in a location. We have to tell =lsp-java= where to find it.
+
+#+begin_src emacs-lisp
+(defun config/set-eclipse-language-server-dir ()
+ (setq-default lsp-java-server-install-dir "/usr/local/opt/eclipse-language-server")
+)
+#+end_src
+
+* hooking it up
+
+#+begin_src emacs-lisp
+(use-package "java"
+  :init
+  (require "lsp-java")
+  (add-hook 'java-mode-hook #'lsp-java-enable)
+  :config
+  (config/set-eclipse-language-server-dir)
+)
+#+end_src
