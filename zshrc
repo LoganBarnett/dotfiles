@@ -118,6 +118,11 @@ source $ZSH/plugins/osx/osx.plugin.zsh
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 
+# AUTO_CD means if you type a directory name, it's the same as doing `pushd
+# dirname`. I guess it's nice for some but odd and doesn't sit well with me in
+# terms of least surprising operations.
+unsetopt AUTO_CD
+
 source /usr/local/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
 # Vars
