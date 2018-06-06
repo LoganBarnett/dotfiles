@@ -68,8 +68,6 @@ zsh-syntax-highlighting
     echo "installing sed"
     brew install gnu-sed --with-default-names || brew upgrade gnu-sed --with-default-names
 
-    brew linkapps
-    echo "linked apps"
 elif [ $(uname) = 'Linux' ]; then
     if [ $(which apt-get) != '' ]; then
         echo "installing packages via apt-get"
