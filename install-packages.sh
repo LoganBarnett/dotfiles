@@ -26,6 +26,7 @@ elm
 ffmpeg
 gnuplot
 gnutls
+go
 graphviz
 ispell
 jq
