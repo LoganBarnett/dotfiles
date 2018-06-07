@@ -258,7 +258,11 @@ ZSH_THEME_GIT_PROMPT_UNTRACKED="%{$fg[green]%}?"
 ZSH_THEME_GIT_PROMPT_CLEAN=""
 
 function timestamp_prompt() {
-  echo "$fg[blue][$reset_color%D{$fg[green]%H$fg[yellow]:$fg[green]%M$fg[yellow]:$fg[green]%S}$fg[blue]]$reset_color"
+  echo "%{$fg[blue]%}\
+[$reset_color\
+%D{$fg[green]%H$fg[yellow]:$fg[green]%M$fg[yellow]:$fg[green]%S}\
+%{$fg[blue]%}]\
+$reset_color"
 }
 
 function exit_status_prompt() {
@@ -266,7 +270,7 @@ function exit_status_prompt() {
 }
 
 function host_prompt() {
-  echo "$fg[yellow]%n@%M$reset_color"
+  echo "%{$fg[yellow]%}%n@%M$reset_color"
 }
 
 function set_prompt() {

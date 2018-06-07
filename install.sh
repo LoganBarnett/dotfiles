@@ -32,28 +32,7 @@ ln -F -s -n $PWD/awesome ~/.config/awesome
 
 ln -F -s -n $PWD/bin ~/bin
 
-# install zsh
-echo "installing oh-my-zsh"
-sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"
-if [ $SHELL != '/bin/zsh' ];
-then
-    chsh -s /bin/zsh
-fi
-
-if [ $(uname) = 'Linux' ]; then
-    # in Ubuntu apt-get does not provide this package, so install manually
-    echo "installing zsh syntax highlighting"
-    git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
-fi
-
-#zsh customizations
-echo "installing oh my zsh customizations"
-if [ $(uname) = 'Darwin' ]; then
-    echo "installing osx dns flushing for oh my zsh"
-    cd ~/.oh-my-zsh/custom/plugins && git clone git@github.com:eventi/noreallyjustfuckingstopalready.git || true
-else
-    echo "skipping osx dns flushing for oh my zsh - not osx"
-fi
+./install-shell.sh
 
 if [ $(uname) = 'Darwin' ]; then
     cd $start_dir
@@ -108,10 +87,7 @@ else
     echo "you know, you really should add support for other envs for rvm..."
 fi
 
-echo "installing gems"
-GEMS="heroku jekyll github-pages bundler"
-gem install $GEMS
-
+./install-rubygems.sh
 if [ $(uname) = 'Darwin' ]; then
     # alfred workflows
     cd $start_dir
