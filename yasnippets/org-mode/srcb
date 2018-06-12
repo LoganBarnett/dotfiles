@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# name: Create a #+begin_src block with the language.
+# key: srcb
+# group: org
+# --
+#+begin_src ${1: $$(yas-choose-value (seq-map #'car org-babel-load-languages))}
+  $0
+#+end_src
