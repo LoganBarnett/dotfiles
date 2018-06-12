@@ -10,10 +10,8 @@
   As part of working for various entities I need a means of tracking my team and
   posting it to some kind of external software so I can have my hours billed.
 
-*** pro unlimited
-
-
-**** logging in
+** pro unlimited
+*** logging in
 
      Logging in is a two-part process. First we have to get the =JSESSIONID=
      cookie populated. This involves a =GET= to the login page. The second
@@ -75,7 +73,7 @@ curl \
 Sometimes the web app wants me to verify that my information has not changed. I
 am not interested in addressing this at this time. I can manually do this part.
 
-**** getting weeks
+*** getting weeks
      I need to select a week to work with. Weeks start on Monday and end on
      Sunday. For now I'm just going to grab the most recent week. The URL here
      is a little wonky because of how the post-back mechanism works. The data we
@@ -159,8 +157,9 @@ curl \
 -s
 #+end_src
 
-**** timesheet creation
+** timesheet creation
 
+*** Unix time in the URL
      The app creates a timesheet using unix formatted timestamps (which are
      milliseconds since epoch).
 
@@ -200,6 +199,10 @@ curl \
       Desired result:
 | 1522652400000 | 1523170800000 |
 
+*** data structure
+
+    This sample call can get our data structure:
+
 #+header: :var startDate=(car convert-wand-week-to-unix-times)
 #+header: :var endDate=(cdr (car convert-wand-week-to-unix-times))
 #+begin_src shell :dir ~/dev/dotfiles
@@ -215,7 +218,6 @@ curl "https://prowand.pro-unlimited.com/worker/standard/billing/billingedit/cntr
 -H 'Cache-Control: no-cache' \
 --compressed
 #+end_src
-
       The time segments come over as the following:
       - =billingDetailItems= :: This reflects the day of the week (0 being
            Monday).
@@ -258,35 +260,96 @@ billingDetailItems[0].billingTimeSpans[0].startHourM
 
       Here's some Lisp declaring how this is done:
 
-#+begin_src emacs-lisp
-  (defun time/get-work-logbook-entries (start end path)
-    "Get `LOGBOOK' entries between and including START and END that exist in PATH."
-    (let* ((work-buffer (find-file path))
-          (start-days (time-to-days start))
-          (end-days (time-to-days end))
-          (days-apart (- end-days start-days))
-          (date-range (reduce (lambda (dates number)
-                                (time-add start (* 86400 number)))
-                              (number-sequence days-apart)) :initial-value '())
-          )
-      (save-exursion
-       (let* ((olps (mapcar (lambda (date)
-                 (list
-                  "log"
-                  (format-time-string "<%Y-%m-%d %a>" date)
-                  ":LOGBOOK:"
-                  )
-                 ) date-range)
-               )
-              (points (mapcar (lambda (olp) (org-find-olp olp work-buffer)) olps))
-              ;; TODO: convert the points into text pulled from the org-mode doc
-              ;; TODO: Convert text to time ranges.
-              ;; TODO: Convert time ranges into POST body for time entries
-              ;; TODO: Convert each day into its part of the POST body (lunch box checked mostly)
-              (mapcar points)
+*** parsing the logbook
+#+begin_src emacs-lisp :results none
+      (defun time/get-work-logbook-entries (start end path)
+        "Get `LOGBOOK' entries between and including START and END that exist in PATH."
+    (message "called")
+        (let* ((work-buffer (find-file path))
+              (start-days (time-to-days start))
+              (end-days (time-to-days end))
+              (days-apart (- end-days start-days))
+              (date-range (reduce (lambda (dates number)
+                                    (cons (time-add start (* 86400 number)) dates))
+                                  (number-sequence 1 days-apart) :initial-value '()))
               )
-         )
+  (message "start %s" start)
+  (message "end %s" end)
+  (message "start-days %s" start-days)
+  (message "end-days %s" end-days)
+    (message "days apart %s" days-apart)
+  (message "list %s" (number-sequence 1 days-apart))
+    (message "date-range %s" date-range)
+          (save-excursion
+           (let* (
+                  ;; (to-org-timestamp (-partial #'))
+                  ;; (org-timestamps (mapcar 'to-org-timestamp date-range))
+                  (olps (mapcar (lambda (date)
+                     (list
+                      "log"
+                      (format-time-string "<%Y-%m-%d %a>" date)
+                      ;; ":LOGBOOK:"
+                      )
+                     ) date-range)
+                   )
+                  (points (mapcar (lambda (olp)
+                                    (org-find-olp olp work-buffer)
+                                    ) olps))
+                  (els (mapcar (lambda (p)
+                                 (message "point %s" p)
+                                 (goto-char p)
+                                 (goto-char (org-log-beginning))
+                                 ;; (message "el %s" (org-element-at-point))
+                                 (org-element-at-point)
+                                 ;; (org-entry-get p "LOGBOOK")
+                                 ;; (org-entry-properties)
+                                 ;; (org-element-property :properties (org-element-at-point))
+                                 ;; (org-entry-get (point) "CLOCK:")
+                                 ) points))
+                  (contents (mapcar (lambda (e)
+                    (let (
+                    (begin (org-element-property :contents-begin e))
+                    (end (org-element-property :contents-end e))
+                    )
+                    (message "begin %s end %s point %s" begin end (point))
+                    (buffer-substring-no-properties begin end)
+                    )
+                  ) els))
+                  ;; TODO: Convert time ranges into POST body for time entries
+                  ;; TODO: Convert each day into its part of the POST body (lunch box checked mostly)
+                  ;; (mapc #'message points)
+                  ;; (res (mapcar (lambda (c) (message "%s" c)) content))
+                  ;; (mapcar (lambda (p) (message "%s" p)) points)
+             )
+            (-filter (lambda (x) x) (mapcar (lambda (c)
+              (message "content %s" c)
+              (let ((lines (split-string c "\n")))
+                (mapcar (lambda (line)
+                  (save-match-data
+                    (mapcar (lambda (time-segment)
+                      (if (string-match "\\[\\([0-9]\\{4\\}-[0-9]\\{2\\}-[0-9]\\{2\\}\\) \\w+ \\([0-9]\\{2\\}:[0-9]\\{2\\}\\)\\]" line)
+                        (concat (match-string 1 line) " " (match-string 2 line))
+                        nil)
+                      )
+                      (split-string line "--"))
+                    )
+                  )
+                (-filter (lambda (x) (not (seq-empty-p x))) lines))
+              )
+            ) contents))
+          )
+        )
       )
-    )
-  )
+      )
 #+end_src
+
+*** TODO figure out how to only run this block manually
+#+begin_src emacs-lisp
+  (time/get-work-logbook-entries (date-to-time "2018-06-04 00:00:00") (date-to-time "2018-06-08 00:00:00") "~/work-notes/nwea-log.org")
+#+end_src
+
+#+RESULTS:
+| (2018-06-08 09:17 2018-06-08 09:17) |                                     |
+| (2018-06-07 10:20 2018-06-07 10:20) |                                     |
+| (2018-06-06 09:51 2018-06-06 09:51) |                                     |
+| (2018-06-05 12:29 2018-06-05 12:29) | (2018-06-05 08:38 2018-06-05 08:38) |
