@@ -17,9 +17,11 @@ if [[ "$OWNER" != "root" ]]; then
     exit 2
 fi
 
+# The endpoint used to use a self-signed cert. If that happens you can use an
+# arg like this:
+# --servercert sha256:9beb22eba61a8dbc53a865c8ef74d3a704c4cf8b8534ef48a332567711ccaf39 \
 # TODO: in the future use this, since we get a 302 there anyways:
 # https://secure.nwea.org/+webvpn+/index.html
 sudo cat "$HOME/.nwea-passwd" | sudo openconnect \
      -u logan.barnett https://secure.nwea.org \
-     --servercert sha256:9beb22eba61a8dbc53a865c8ef74d3a704c4cf8b8534ef48a332567711ccaf39 \
      --passwd-on-stdin
