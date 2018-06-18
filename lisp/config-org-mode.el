@@ -109,7 +109,7 @@ Adapt image size via `iimage-scale-to-fit-width' when the window size changes."
     (bind-key (kbd "C-c C-x C-r") 'my/org-clock-report)
     ;; Some initial langauges we want org-babel to support
     (require 'ob-js)
-    (require 'ob-sh)
+    (require 'ob-shell)
     (require 'ob-plantuml)
     ;; Exporters.
     (require 'ox-confluence-en) ;; This one adds PlantUML support.
