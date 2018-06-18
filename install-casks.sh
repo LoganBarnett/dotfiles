@@ -30,6 +30,7 @@ silverlight
 skype
 slack
 steam
+stride
 virtualbox
 xbox360-controller-driver-unofficial
 zoomus
