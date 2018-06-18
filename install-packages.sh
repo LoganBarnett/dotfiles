@@ -46,6 +46,7 @@ stack
 terraform
 thefuck
 vim
+w3m
 wget
 yarn
 zsh-syntax-highlighting
