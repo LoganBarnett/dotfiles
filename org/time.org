@@ -17,16 +17,17 @@
      cookie populated. This involves a =GET= to the login page. The second
      step is actually submitting the login =POST= with my credentials.
 
-#+begin_src bash
+#+begin_src bash :tangle no
 curl --version
 #+end_src
 
 #+RESULTS:
-| curl       | 7.54.0    | (x86_64-apple-darwin17.0) | libcurl/7.54.0 | LibreSSL/2.0.20 | zlib/1.2.11 | nghttp2/1.24.0 |       |         |       |      |       |             |             |      |     |      |      |       |        |      |
-| Protocols: | dict      | file                      | ftp            | ftps            | gopher      | http           | https | imap    | imaps | ldap | ldaps | pop3        | pop3s       | rtsp | smb | smbs | smtp | smtps | telnet | tftp |
-| Features:  | AsynchDNS | IPv6                      | Largefile      | GSS-API         | Kerberos    | SPNEGO         | NTLM  | NTLM_WB | SSL   | libz | HTTP2 | UnixSockets | HTTPS-proxy |      |     |      |      |       |        |      |
+| curl       | 7.54.0    | (x86_64-apple-darwin16.0) | libcurl/7.54.0 | SecureTransport | zlib/1.2.8 |        |       |         |       |      |             |      |       |      |     |      |      |       |        |      |
+| Protocols: | dict      | file                      | ftp            | ftps            | gopher     | http   | https | imap    | imaps | ldap | ldaps       | pop3 | pop3s | rtsp | smb | smbs | smtp | smtps | telnet | tftp |
+| Features:  | AsynchDNS | IPv6                      | Largefile      | GSS-API         | Kerberos   | SPNEGO | NTLM  | NTLM_WB | SSL   | libz | UnixSockets |      |       |      |     |      |      |       |        |      |
 
-#+begin_src bash
+
+#+begin_src bash :tangle no
 which curl
 #+end_src
 
@@ -34,7 +35,7 @@ which curl
 : /usr/bin//curl
 
 #+name: jsessionid-curl
-#+begin_src sh :dir ~/dev/dotfiles
+#+begin_src sh :dir ~/dev/dotfiles :tangle no
 curl \
 'https://prowand.pro-unlimited.com/login.html' \
 -b 'wand-cookies.txt' \
@@ -45,7 +46,7 @@ curl \
 
 
 #+name: login-curl
-#+begin_src sh :dir ~/dev/dotfiles :var username=(url-hexify-string wand-username) :var password=(url-hexify-string wand-password)
+#+begin_src sh :dir ~/dev/dotfiles :var username=(url-hexify-string wand-username) :var password=(url-hexify-string wand-password) :tangle no
 # --data "username=logustus%40gmail.com&password=XE6-bVP-2ST-S7B" \
 curl \
 'https://prowand.pro-unlimited.com/login.html' \
@@ -84,7 +85,7 @@ am not interested in addressing this at this time. I can manually do this part.
      Here is the call to get the current page:
 
 #+name blugh
-#+begin_src bash :noweb yes :results none :dir ~/dev/dotfiles
+#+begin_src bash :noweb yes :results none :dir ~/dev/dotfiles :tangle no
   curl \
   'https://prowand.pro-unlimited.com/worker/standard/standard_home.html' \
   -H 'Pragma: no-cache' \
@@ -103,7 +104,7 @@ am not interested in addressing this at this time. I can manually do this part.
 #+end_src
 
 #+name get-wand-week
-#+begin_src bash :noweb yes :results output replace :dir ~/dev/dotfiles
+#+begin_src bash :noweb yes :results output replace :dir ~/dev/dotfiles :tangle no
   curl \
   'https://prowand.pro-unlimited.com/worker/standard/standard_home.html?_target1&_page=0&selectedType=Time' \
   -H 'Pragma: no-cache' \
@@ -129,7 +130,7 @@ am not interested in addressing this at this time. I can manually do this part.
 
 Submit the value to produce a timesheet once done.
 
-#+begin_src shell :dir ~/dev/dotfiles :var date_range=get-wand-week
+#+begin_src shell :dir ~/dev/dotfiles :var date_range=get-wand-week :tangle no
 curl \
 'https://prowand.pro-unlimited.com/worker/standard/standard_home.html?_finish&_page=0' \
 -H 'Pragma: no-cache' \
@@ -182,7 +183,7 @@ curl \
       Here we split the dates into two and run them through our converter.
 
 #+name: convert-wand-week-to-unix-times
-#+begin_src emacs-lisp :var get-wand-week=get-wand-week
+#+begin_src emacs-lisp :var get-wand-week=get-wand-week :tangle no
 (mapcar 'convert-us-date-to-unix-time (split-string get-wand-week " - "))
 #+end_src
 
@@ -205,7 +206,7 @@ curl \
 
 #+header: :var startDate=(car convert-wand-week-to-unix-times)
 #+header: :var endDate=(cdr (car convert-wand-week-to-unix-times))
-#+begin_src shell :dir ~/dev/dotfiles
+#+begin_src shell :dir ~/dev/dotfiles :tangle no
 curl "https://prowand.pro-unlimited.com/worker/standard/billing/billingedit/cntrl_time_create_edit_hourly-4.html?reqId=5609020&billingType=Time&startDate=$startDate&endDate=$endDate&wpEndDate=$endDate&isNew=true" \
 -H 'Pragma: no-cache' \
 -H 'Accept-Encoding: gzip, deflate, br' \
@@ -343,8 +344,7 @@ billingDetailItems[0].billingTimeSpans[0].startHourM
       )
 #+end_src
 
-*** TODO figure out how to only run this block manually
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
   (time/get-work-logbook-entries (date-to-time "2018-06-04 00:00:00") (date-to-time "2018-06-08 00:00:00") "~/work-notes/nwea-log.org")
 #+end_src
 
