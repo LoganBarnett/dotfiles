@@ -16,6 +16,18 @@ Tramp use bash regardless of what the remote machine is set to use.
 ;; (setq-default explicit-shell-file-name "/bin/bash")
 #+end_src
 
+* file transfers
+** large files
+   Tramp tries to inline the transfer for certain files and use =scp= for
+   others. Per this [[https://emacs.stackexchange.com/questions/22304/invalid-base64-data-error-when-using-tramp][SO post]], =scp= is preferred to use always. It fixes a
+   problem I have run into where the last message is "Invalid base64 data".
+
+#+begin_src emacs-lisp
+(defun config/fix-tramp-large-file-issue ()
+  (setq-default tramp-copy-size-limit nil)
+)
+#+end_src
+
 * debugging
 
 Tramp can be debugged with a verbose number. I know you can set it as high as 6.
@@ -91,6 +103,7 @@ command control it, as those still work.
     (setq-default tramp-ssh-controlmaster-options
     "-o ControlMaster=auto -o ControlPath='tramp.%%C' -o ControlPersist=no")
     ;; (override-tramp-get-ls-command)
+    (config/fix-tramp-large-file-issue)
   )
 
 #+end_src
