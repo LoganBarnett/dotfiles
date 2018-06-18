@@ -1,0 +1,44 @@
+#+title:    Language Server Protocol Config
+#+author:   Logan Barnett
+#+email:    logustus@gmail.com
+#+date:     <2018-05-30 Wed>
+#+language: en
+#+tags:     language-server-protocol lsp config
+
+Language Server Protocol (LSP) is a server that can communicate aspects of a
+language in a generic means to an IDE in a standardized and abstracted manner.
+The language providers can communicate with the language server which in turn
+communicates with the IDE. The IDE only needs to know how to speak LSP.
+
+https://github.com/emacs-lsp/lsp-ui
+
+
+* company
+  #+begin_src emacs-lisp :results none
+(defun config/company-lsp ()
+  (require 'company-lsp)
+  (push 'company-lsp company-backends)
+)
+  #+end_src
+
+* flycheck
+
+  Flycheck support arrives automatically as part of configuring =lsp-ui=.
+
+  #+begin_src emacs-lisp :results none
+(defun config/flycheck-lsp ()
+  (require 'lsp-ui)
+  (add-hook 'lsp-mode-hook 'lsp-ui-mode)
+)
+  #+end_src
+
+* combined
+
+  #+begin_src emacs-lisp :results none
+  (add-hook 'prog-mode-hook (lambda ()
+    (require 'lsp-mode)
+    (lsp-mode)
+    (config/company-lsp)
+    (config/flycheck-lsp)
+  ))
+  #+end_src

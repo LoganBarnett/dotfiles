@@ -25,11 +25,9 @@ tools/ecosystems.
 * hooking it up
 
 #+begin_src emacs-lisp
-(use-package "java"
-  :init
-  (require "lsp-java")
+(add-hook 'java-mode-hook (lambda ()
+  (require 'lsp-java)
   (add-hook 'java-mode-hook #'lsp-java-enable)
-  :config
   (config/set-eclipse-language-server-dir)
-)
+))
 #+end_src

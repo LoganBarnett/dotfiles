@@ -86,6 +86,7 @@ values."
      ;; flycheck-json
      ;; hopefully managed by a spacemacs layer
      company-flow
+     company-lsp
      deft
      feature-mode
      find-lisp
@@ -97,6 +98,9 @@ values."
      graphviz-dot-mode
      groovy-mode
      habitica
+     lsp-java
+     lsp-mode
+     lsp-ui
      multi-line
      multi-term
      noflet
