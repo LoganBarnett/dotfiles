@@ -16,6 +16,7 @@
     trustExitCode = false
 [merge]
   tool = diffmerge
+	ff-only = true
 [core]
 	excludesfile = /Users/logan/.gitignore_global
 	editor = /usr/local/bin/vim
@@ -39,3 +40,5 @@
   branchg=!git branch -avv | grep
 [diff]
 	algorithm = patience
+[pull]
+	ff-only = true
