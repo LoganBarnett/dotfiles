@@ -1,17 +1,23 @@
+body {
+  background-color: var(--general-background-color) !important;
+  color: var(--text-color) !important;
+}
+
 p, td {
-  color: #ddd !important;
+  color: var(--text-color) !important;
 }
 
 h1 {
-  background-color: inherit !important;
+  background-color: var(--head1-background-color) !important;
+  color: var(--head1-color) !important;
 }
 
 h2, h3, h4, h5 {
-  color: #ddd !important;
+  color: var(--text-color) !important;
 }
 
 a, a:visited {
-  color: #5a8 !important;
+  color: var(--link-color) !important;
 }
 
 #navbar {
