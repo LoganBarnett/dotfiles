@@ -1,0 +1,9 @@
+#! /usr/bin/env bash
+
+# This should fix issues when I can't connect to a VPN source,
+# such as "Failed to connect to <ip>:443: Can't assign requested address"
+# https://www.ibvpn.com/billing/knowledgebase/145/OpenVPN-error-write-UDPv4-Canandsharp039t-assign-requested-address-codeequals49.html
+
+sudo ifconfig en0 down
+sudo route flush
+sudo ifconfig en0 up
