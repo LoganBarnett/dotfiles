@@ -86,10 +86,9 @@ Adapt image size via `iimage-scale-to-fit-width' when the window size changes."
     (setq-default org-agenda-files
                   (seq-concatenate
                    'list
-                   (seq-filter 'config/org-not-journal-file-p
-                               (find-lisp-find-files
-                                (expand-file-name "~/Dropbox/notes")
-                                ".+\\.org"))
+                   (find-lisp-find-files
+                    (expand-file-name "~/Dropbox/notes")
+                    "agenda.org")
                    '("~/work-notes/nwea.org")
                    )
                   )
