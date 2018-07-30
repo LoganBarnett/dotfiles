@@ -281,13 +281,19 @@ layers configuration. You are free to put any user code."
                                                ".tmp"
                                                ))
 
-  (setq-default yas-snippet-dirs '("~/.emacs.d/private/snippets"))
+  (use-package "yasnippet"
+    :init
+    :config
+    (setq-default yas-snippet-dirs '("~/dev/dotfiles/yasnippets"))
+    (yas-reload-all)
+    )
 
   (message "[DIRTY INIT] INIT DONE!")
   )
 (defun my/init ()
   "Do initializtion."
   (message "[INIT] Starting init.")
+  (auto-compile-on-load-mode 1)
   (init-org-file "emacs-config.org")
   (dirty-init)
   (init-org-file "private.org")
