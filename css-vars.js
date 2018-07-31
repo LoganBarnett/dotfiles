@@ -59,6 +59,7 @@ const vars = {
   '--button-hover-background-color': '#6ae1ee',
   '--input-color': '#2aa1ae',
   '--input-background-color': '#292e34',
+  '--input-label-color': '#2aa1ae',
   /**
    * Active items are usually the ones important under a context. They will
    * typically be whatever the "selected" thing is.
@@ -80,6 +81,10 @@ const vars = {
   '--calendar-leave-entry-background': '#29422d',
   '--calendar-leave-entry-color': '#67b11d',
   'code-string-interpolation': '#86dc2f',
+  '--panel-border': '0.1em solid #5d4d7a',
+  '--panel-title-color': '#b2b2b2',
+  '--panel-title-background': '#5d4d7a',
+  '--panel-title-padding': '1em',
 }
 
 module.exports = vars

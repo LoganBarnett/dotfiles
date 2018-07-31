@@ -57,6 +57,13 @@ form.aui .checkbox>label, form.aui .radio>label {
   color: var(--general-text-color) !important;
 }
 
+/**
+ * This prevents the scrollbar from appearing.
+ */
+.aui-sidebar[aria-expanded="false"] .aui-sidebar-body {
+  overflow-y: hidden !important;
+}
+
 /* side bar links */
 .aui-navgroup-vertical .aui-nav>li>a, .aui-nav-vertical>li>a {
   color: var(--link-color) !important;
@@ -96,6 +103,51 @@ form.aui .checkbox>label, form.aui .radio>label {
   content: '<<';
 }
 
+/**
+ * Pull request buttons and avatar list.
+ */
+.pull-request-header .reviewer-avatar-list {
+  background-color: var(--general-background-color) !important;
+  border: var(--panel-border);
+}
+
+/**
+ * Dialogs.
+ */
+.aui-dialog {
+  background-color: var(--general-background-color) !important;
+  border: var(--panel-border) !important;
+  border-radius: 0 !important;
+}
+
+.aui-dialog .dialog-title {
+  color: var(--panel-title-color) !important;
+  background-color: var(--panel-title-background) !important;
+}
+
+.aui-dialog .dialog-page-body {
+  background-color: var(--panel-background-color) !important;
+}
+
+/**
+ * Forms
+ */
+
+/* Form labels */
+form.aui legend, form.aui label {
+  color: var(--input-label-color) !important;
+}
+
+/* Lots of input sources... */
+form.aui .text, form.aui .password, form.aui .upfile, form.aui .textarea,
+form.aui .select, form.aui .multi-select, form.aui .aui-select2-container {
+  background: var(--input-background-color) !important;
+  color: var(--text-color) !important;
+}
+
+/**
+ * Tabs?
+ */
 .aui-tabs.horizontal-tabs>.tabs-menu>.menu-item {
   background-color: var(--tab-inactive-background-color) !important;
   color: var(--tab-inactive-color) !important;
