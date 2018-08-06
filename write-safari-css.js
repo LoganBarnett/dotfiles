@@ -19,6 +19,16 @@ const readFileData = (path) => {
   }
 }
 
+const replaceJsVars = (js) => {
+  // TODO: Handle error gracefully if I forgot to make this file.
+  const vars = require('./js-vars.private.js')
+  let result = js
+  for(let key in vars) {
+    result = result.replace(`process.${key}`, vars[key])
+  }
+  return result
+}
+
 const process = require('process')
 const path = require('path')
 const childProcess = require('child_process')
@@ -60,7 +70,8 @@ names.forEach(name => {
   catch(e) {
     console.error(`error processing file ${name}`, e)
   }
-  meta.script = js
+
+  meta.script = replaceJsVars(js)
 
   const convertedMeta = new Iconv('UTF-8', 'UTF-16LE')
       .convert(JSON.stringify(meta))

@@ -11,6 +11,7 @@ org/*.el
 
 # Hide all private files.
 *.priv.txt
+*.private.js
 
 # Ignore our private key ID.
 # You need to copy and modify lisp/key-id.template.txt.
