@@ -1,0 +1,12 @@
+.logo {
+  background-image: url(https://asciisandwich.neocities.org/ASCII%20Sandwich.png);
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  height: 115px !important;
+  margin: 0 !important;
+}
+
+.logo img {
+  display: none;
+}

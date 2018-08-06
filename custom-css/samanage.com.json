@@ -1,0 +1,11 @@
+{
+  "includes": [
+    "https://*.samanage.com/*"
+  ],
+  "excludes": [
+    ""
+  ],
+  "name": "samanage.com",
+  "enabled": true,
+  "key": "samanage.com"
+}
