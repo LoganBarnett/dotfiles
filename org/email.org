@@ -84,7 +84,8 @@ http://pragmaticemacs.com/emacs/master-your-inbox-with-mu4e-and-org-mode/
   )
 #+end_src
 
-**** TODO add =get-mail= command to mu4e update command
+**** DONE add =get-mail= command to mu4e update command
+     CLOSED: [2018-08-01 Wed 10:06]
      http://spacemacs.org/layers/+email/mu4e/README.html#configuration
 
      I should also look at other interesting settings there too.
