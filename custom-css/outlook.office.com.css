@@ -176,6 +176,14 @@ button.o365button {
 }
 
 /**
+ * Wait, what? Putting stuff in a font tag? This seems to take a weird
+ * precedence with specificity.
+ */
+font {
+  color: var(--text-color) !important;
+}
+
+/**
  * Some text comments have a custom color applied to them.
  */
 div.x_zd-comment[style], p[style] {
