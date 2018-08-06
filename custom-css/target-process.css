@@ -1,5 +1,19 @@
 /* i-role-card.tau-card-v2.tau-card-v2_type_task.ui-draggable-handle[style] */
 
+/**
+ * Loading area when the app is first coming up.
+ */
+.tau-load-progress-content__wrap {
+  background-color: var(--general-background-color) !important;
+}
+
+/**
+ * The areas above and below the main loading area.
+ */
+.i-role-tp-load-progress-overlay.tau-load-progress__overlay {
+  background-color: var(--general-background-color) !important;
+}
+
 /* highlighted text */
 [style="background-color: #ffff00"] {
   color: var(--highlight-color) !important;
