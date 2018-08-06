@@ -45,19 +45,21 @@ employed to integrate linters, type checkers, compilers, and coverage utilities.
 
 
 #+BEGIN_SRC emacs-lisp
-(defun my/use-checker-from-node-modules (checker-name bin-name)
-  "For a given CHECKER-NAME, find the BIN-NAME inside of node_modules."
-  (let* ((path (my/get-node-modules-bin bin-name)))
-    (if path
-        (let ((checker-exec-sym (intern (concat "flycheck-javascript-" checker-name "-executable"))))
-             (make-local-variable checker-exec-sym)
-             (set checker-exec-sym path)
-             )
-      (message "flycheck -- checker %s not available for mode %s with file %s"
-               checker-name major-mode buffer-file-name)
+  (defun my/use-checker-from-node-modules (checker-name bin-name)
+    "For a given CHECKER-NAME, find the BIN-NAME inside of node_modules."
+    (let* ((path (my/get-node-modules-bin bin-name)))
+      (if path
+          (let ((checker-exec-sym (intern (concat "flycheck-javascript-" checker-name "-executable"))))
+               (make-local-variable checker-exec-sym)
+               (set checker-exec-sym path)
+               (add-to-list 'tramp-remote-path (file-name-directory path))
+               (message "using flycheck checker %s" path)
+               )
+        (message "flycheck -- checker %s not available for mode %s with file %s"
+                 checker-name major-mode buffer-file-name)
+        )
       )
     )
-  )
 #+END_SRC
 
 The flow checkers in the past needed a specific order of setup, but I haven't
