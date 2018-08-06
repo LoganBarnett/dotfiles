@@ -40,7 +40,7 @@ values."
      ;; Disabled until https://github.com/syl20bnr/spacemacs/issues/10316 can be
      ;; resolved. I should figure out a better way to do this until then.
 
-     ;; auto-completion
+     auto-completion
      docker
      elm
      evil-commentary
@@ -98,9 +98,9 @@ values."
      graphviz-dot-mode
      groovy-mode
      habitica
-     lsp-java
-     lsp-mode
-     lsp-ui
+     ;; lsp-java
+     ;; lsp-mode
+     ;; lsp-ui
      multi-line
      multi-term
      noflet
