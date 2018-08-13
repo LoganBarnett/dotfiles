@@ -3,7 +3,8 @@
 }
 
 body {
-  color: #ddd !important;
+  color: var(--text-color) !important;
+  background-color: var(--general-background-color) !important;
 }
 
 .container {
@@ -58,4 +59,47 @@ code {
 
 .kwd, .dec {
   color: #a0a !important;
+}
+
+.top-bar {
+  background-color: var(--head1-background-color) !important;
+}
+
+/**
+ * Job postings I don't care about.
+ */
+#hireme {
+  display: none !important;
+}
+
+/**
+ * "Featured posts" as if I somehow want to randomly see unrelated questions...
+ */
+.module.community-bulletin {
+  display: none !important;
+}
+
+/**
+ * More "featured" kinds of questions.
+ */
+#hot-network-questions {
+  display: none !important;
+}
+
+.top-bar .searchbar input[type="text"].f-input {
+  color: var(--input-color) !important;
+  background-color: var(--input-backgroud-color) !important;
+}
+
+textarea {
+  background-color: var(--input-background-color) !important;
+  color: var(--input-color) !important;
+}
+
+/**
+ * Help callouts.
+ */
+.answer-help-background, .comment-help {
+  color: var(--callout-color) !important;
+  background-color: var(--callout-background-color) !important;
 }

@@ -85,6 +85,8 @@ const vars = {
   '--panel-title-color': '#b2b2b2',
   '--panel-title-background': '#5d4d7a',
   '--panel-title-padding': '1em',
+  '--callout-color': '#e3dedd',
+  '--callout-background-color': '#5d4d7a',
 }
 
 module.exports = vars
