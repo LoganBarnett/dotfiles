@@ -292,6 +292,8 @@ layers configuration. You are free to put any user code."
   )
 (defun my/init ()
   "Do initializtion."
+  ;; TODO: Move to macos.org when it gets merged.
+  (set-frame-parameter nil 'fullscreen 'fullscreen)
   (message "[INIT] Starting init.")
   (auto-compile-on-load-mode 1)
   (init-org-file "emacs-config.org")
