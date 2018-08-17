@@ -48,6 +48,6 @@ git clone https://github.com/cmiles74/spacemacs-notmuch-layer.git notmuch || tru
 # we can preload the packages with this:
 # emacs --batch --load=~/.emacs.d/init.el
 # OR:
-emacs --batch --load=~/.spacemacs
+# emacs --batch --load=~/.spacemacs
 
 echo "emacs installation complete!"
