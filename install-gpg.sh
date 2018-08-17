@@ -12,7 +12,7 @@ set -e
 # packages might have it locked down to use them.
 # brew uninstall gnupg2 gpg-agent dirmngr --force || true
 # Actually we probably don't need to do this repair step anymore.
-brew install gnupg
+brew install gnupg || brew upgrade gnupg
 
 echo "linking gpg settings..."
 mkdir -p ~/.gnupg
