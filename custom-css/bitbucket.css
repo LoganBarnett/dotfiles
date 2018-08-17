@@ -30,6 +30,11 @@ h1,
   color: var(--text-color) !important;
 }
 
+/* Markdown rendered README */
+.wiki-content pre {
+  background-color: var(--general-background-color) !important;
+}
+
 /* Form labels */
 form.aui .checkbox>label, form.aui .radio>label {
   color: var(--general-text-color) !important;
