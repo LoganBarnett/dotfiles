@@ -86,7 +86,7 @@ values."
      ;; flycheck-json
      ;; hopefully managed by a spacemacs layer
      company-flow
-     company-lsp
+     ;; company-lsp
      deft
      feature-mode
      find-lisp

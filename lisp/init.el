@@ -311,7 +311,7 @@ layers configuration. You are free to put any user code."
   (init-org-file "tramp.org")
   (init-org-file "time.org")
   (init-org-file "diagram.org")
-  (init-org-file "language-server-protocol.org")
+  ;; (init-org-file "language-server-protocol.org")
   (init-org-file "java.org")
   (message "[INIT] Init Done.")
   )
