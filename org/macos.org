@@ -1,3 +1,12 @@
+* killing buffers
+  =emacs-mac= doesn't have the =s-k= keybinding that kills the current buffer
+  for some reason, so let's just add it.
+
+  #+begin_src emacs-lisp :results none
+    (global-set-key (kbd "s-k") 'kill-current-buffer)
+  #+end_src
+
+* dirty config
 
 #+BEGIN_SRC emacs-lisp
 (message "[CONFIG] Configuring for MacOS...")
