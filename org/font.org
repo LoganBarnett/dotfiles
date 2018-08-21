@@ -1,0 +1,30 @@
+#+title:    Fonts
+#+author:   Logan Barnett
+#+email:    logustus@gmail.com
+#+date:     <2018-08-21 Tue>
+#+language: en
+#+tags:     emacs config fonts
+
+This config section goes over all font related things.
+
+* faces
+
+  The font face system (I don't know the package name at this time) covers
+  "fontification" and is a kind of system where font settings (bold, color,
+  background color, size, etc) can be applied in an additive fashion. This is
+  typically called a face or font face in the Emacs lexicon.
+** what-face
+
+   This utility lifted from [[https://stackoverflow.com/a/1242366/4618043][this stack overflow post]] covers getting font face
+   information from the cursor.
+
+   #+begin_src emacs-lisp :results none
+     (defun what-face (&optional pos)
+       "Determine the font face under POS."
+       (interactive "d")
+       (let ((pos (or pos (point))))
+             (let ((face (or (get-char-property pos 'read-face-name)
+                             (get-char-property pos 'face))))
+               (if face (message "Face: %s" face) (message "No face at %d" pos)))
+         ))
+   #+end_src

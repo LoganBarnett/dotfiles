@@ -315,6 +315,7 @@ layers configuration. You are free to put any user code."
   (init-org-file "diagram.org")
   ;; (init-org-file "language-server-protocol.org")
   (init-org-file "java.org")
+  (init-org-file "font.org")
   (message "[INIT] Init Done.")
   )
 
