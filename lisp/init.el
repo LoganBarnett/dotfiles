@@ -75,20 +75,6 @@
   ;; fixes tramp startup times
   (eval-after-load 'tramp '(setenv "SHELL" "/bin/bash"))
 
-  ;; osx settings
-
-  ;; web-mode
-  (paradox-require 'web-mode)
-  (defun my-web-mode-hook ()
-    "Hooks for Web mode."
-    (defvar web-mode-markup-indent-offset)
-    (defvar web-mode-code-indent-offset)
-    ;; why not setq-default?
-    (setq web-mode-markup-indent-offset 2)
-    (setq web-mode-code-indent-offset 2)
-    )
-  (add-hook 'web-mode-hook  'my-web-mode-hook)
-
   ;; indentation
   (paradox-require 'cc-mode)
   (defvar c-offsets-alist)
@@ -315,6 +301,7 @@ layers configuration. You are free to put any user code."
   (init-org-file "diagram.org")
   ;; (init-org-file "language-server-protocol.org")
   (init-org-file "java.org")
+  (init-org-file "web.org")
   (init-org-file "font.org")
   (message "[INIT] Init Done.")
   )

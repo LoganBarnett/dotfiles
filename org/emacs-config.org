@@ -107,26 +107,6 @@ Just load the email file for now.
   (load-library "config-email")
   (config-email)
 #+END_SRC
-** web-mode
-=web-mode= is its own beast that manages to cobble together a =css-mode=,
-=html-mode=, and some variation on =js-mode=. It has some really odd things it
-imposes, and needs its own overrides.
-
-#+BEGIN_SRC emacs-lisp
-(message "[BABEL-CONFIG]: setting up web-mode use-package...")
-  (require 'use-package)
-  (use-package "web-mode"
-      :init
-      :config
-      (message "[BABEL-CONFIG] - Configuring web-mode.")
-      ;; (setq-default web-mode-comment-formats
-        ;; (remove '("javascript" . "/*") web-mode-comment-formats))
-      ;; (add-to-list 'web-mode-comment-formats '("javascript" . "//"))
-      (setq-default web-mode-comment-formats '())
-      (add-to-list 'web-mode-comment-formats '("javascript" . "//"))
-      (message "[BABEL-CONFIG] - web-mode configured.")
-    )
-#+END_SRC
 ** facebook-flow
 
 Flow is a strict type system that sits on top of Javascript as an
