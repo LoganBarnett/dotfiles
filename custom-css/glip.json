@@ -1,0 +1,9 @@
+{
+  "includes": [
+    "https://*.glip.com/*"
+  ],
+  "excludes": [],
+  "name": "glip",
+  "enabled": true,
+  "key": "glip"
+}

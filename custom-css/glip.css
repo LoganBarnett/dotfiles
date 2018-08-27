@@ -1,0 +1,86 @@
+.postslist {
+  background-color: var(--general-background-color) !important;
+}
+
+.rightrail {
+  background-color: var(--general-background-color) !important;
+}
+
+#topbar {
+  background-color: var(--general-background-color) !important;
+}
+
+#postswrapper .compose {
+  background-color: var(--general-background-color) !important;
+}
+
+.first-post {
+  background-color: var(--general-background-color) !important;
+}
+
+/* This descriptor already has !important so we use a more specific selector */
+body h1.stream-header {
+  background-color: var(--general-background-color) !important;
+}
+
+.topbar-search .topbar-search-input-container input:hover {
+  background-color: var(--general-background-color) !important;
+}
+
+.topbar-search .topbar-search-input-container input {
+  background-color: var(--general-background-color) !important;
+}
+
+/* Override the style attribute. */
+body .mentions {
+  background-color: var(--general-background-color) !important;
+}
+
+.plugin-content h1, .contentpad h1, h1.page-header {
+  color: var(--head1-color) !important;
+  background-color: var(--head1-background-color) !important;
+}
+
+.calls-to-action-welcome-title {
+  color: var(--head1-color) !important;
+  background-color: var(--head1-background-color) !important;
+}
+
+.call-to-action-block .round-button {
+  background-color: var(--button-background-color) !important;
+  color: var(--button-color) !important;
+}
+
+div.content {
+  background-color: var(--general-background-color) !important;
+}
+
+.team_name, .person_name, .model_name {
+  color: var(--text-color) !important;
+}
+
+.team_members, .person_info, .model_description, .created_by {
+  color: var(--text-color) !important;
+}
+
+div.select {
+  background-color: var(--general-background-color) !important;
+}
+
+.filters .select input.plain {
+  color: var(--input-color) !important;
+  background-color: var(--input-background-color) !important;
+}
+
+.alphabet_letter {
+  color: var(--link-color) !important;
+}
+
+.chat-textarea {
+  color: var(--input-color) !important;
+  background-color: var(--input-background-color) !important;
+}
+
+.post .post_text {
+  color: var(--text-color) !important;
+}
