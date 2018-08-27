@@ -6,9 +6,6 @@
 #+tags:     hipchat chat config
 
 * introduction
-  :PROPERTIES:
-  :CUSTOM_ID: introduction
-  :END:
 
 Hipchat is a chat program not unlike Slack and Discord. Primarily used in the
 business side, Hipchat's pull is that it's another Atlassian product. Hipchat
@@ -16,9 +13,6 @@ was pulled in by Atlassian later, so it doesn't quite have the same integration
 that the rest of Atlassian's suite enjoys.
 
 * standup
-  :PROPERTIES:
-  :CUSTOM_ID: standup
-  :END:
 
 At work there is a standup plugin used to give a daily standup report. I have a
 work file in =org-mode= and for each day I create a new heading which is an org
