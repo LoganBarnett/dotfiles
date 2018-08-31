@@ -1,5 +1,10 @@
 #! /usr/bin/env sh
 
+# TROUBLESHOOTING
+# "Username:fgets (stdin): Resource temporarily unavailable"
+# This error shows up if the password is incorrect. Some online reading
+# indicates it can also pop up when the vpn server is having trouble.
+
 set -e
 # TODO: Make this work for any host and password file.
 # TODO: Make this work on Linux too.
