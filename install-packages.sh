@@ -1,9 +1,6 @@
 #!/usr/bin/env bash
 set -e
 
-# Needed for avr-gcc
-brew tap osx-cross/avr
-
 # TODO: Install rvm and source it.
 # TODO: Lock postgres to 9.5 until I can upgrade the DB.
 # This looks promising: https://gist.github.com/giannisp/ebaca117ac9e44231421f04e7796d5ca
@@ -13,6 +10,10 @@ if [ $(uname) = 'Darwin' ]; then
         /usr/bin/ruby -e \
             "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
     xcode-select --install || true
+
+    # Needed for avr-gcc
+    brew tap osx-cross/avr
+
     # ispell so flyspell works on emacs
     BREWS="
 ag
@@ -69,6 +70,8 @@ zsh-syntax-highlighting
     # sed is special
     echo "installing sed"
     brew install gnu-sed --with-default-names || brew upgrade gnu-sed --with-default-names
+
+    ./install-aws-cli-tools.sh
 
 elif [ $(uname) = 'Linux' ]; then
     if [ $(which apt-get) != '' ]; then
