@@ -1,0 +1,11 @@
+{
+  "includes": [
+    "https://jira.americas.nwea.pvt/*"
+  ],
+  "excludes": [
+    ""
+  ],
+  "name": "jira",
+  "enabled": true,
+  "key": "jira"
+}

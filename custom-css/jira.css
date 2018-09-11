@@ -1,0 +1,83 @@
+body {
+  color: var(--text-color) !important;
+  background-color: var(--general-background-color) !important;
+}
+
+.aui-page-panel {
+  background-color: var(--general-background-color) !important;
+}
+
+#issue-content {
+  background-color: var(--general-background-color) !important;
+}
+
+.issue-view>.issue-container .issue-header {
+  background-color: var(--general-background-color) !important;
+}
+
+h1 {
+  color: var(--head1-color) !important;
+  background-color: var(--head1-background-color) !important;
+}
+
+h2 {
+  color: var(--head2-color) !important;
+  background-color: var(--head2-background-color) !important;
+}
+
+h3 {
+  color: var(--head3-color) !important;
+  background-color: var(--head3-background-color) !important;
+}
+
+h4 {
+  color: var(--head4-color) !important;
+  background-color: var(--head4-background-color) !important;
+}
+
+h5 {
+  color: var(--head5-color) !important;
+  background-color: var(--head5-background-color) !important;
+}
+
+.issue-header .issue-header-content>.command-bar {
+  background-color: var(--general-background-color) !important;
+}
+
+.issue-body-content .module>.mod-header>h1,
+.issue-body-content .module>.mod-header>h2,
+.issue-body-content .module>.mod-header>h3,
+.issue-body-content .module>.mod-header>h4,
+.issue-body-content .module>.mod-header>h5,
+.issue-body-content .module>.mod-header>h6 {
+  background-color: var(--general-background-color) !important;
+}
+
+.preformatted, .code {
+  background-color: var(--code-background-color) !important;
+}
+
+.editable-field:hover {
+  background-color: var(--general-background-color) !important;
+}
+
+/**
+ * Buttons (even though they use anchor tags).
+ */
+.aui-toolbar .toolbar-group .toolbar-trigger,
+.aui-toolbar .aui-dd-parent a.aui-dd-trigger {
+  color: var(--button-color) !important;
+  background-color: var(--button-background-color) !important;
+  text-shadow: none !important;
+}
+
+.aui-toolbar .toolbar-group .toolbar-trigger:hover,
+.aui-toolbar .aui-dd-parent a.aui-dd-trigger:hover {
+  color: var(--button-hover-color) !important;
+  background-color: var(--button-hover-background-color) !important;
+}
+
+.aui-sidebar .aui-sidebar-wrapper,
+.aui-sidebar-submenu .aui-sidebar-wrapper {
+  background-color: var(--general-background-color) !important;
+}
