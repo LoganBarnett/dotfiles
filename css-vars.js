@@ -51,6 +51,7 @@ const vars = {
   '--tab-active-border-radius': '0.5em 0.5em 0 0',
   '--tab-active-color': '#b2b2b2',
   '--tab-list-background-color': '#292b2e',
+  '--table-row-alternate-background-color': '#100a14',
   '--button-background': '#2aa1ae',
   '--button-background-color': '#2aa1ae',
   '--button-color': '#0a0814',

@@ -1,16 +1,59 @@
 body {
-  color: #ddd !important;
+  color: var(--text-color) !important;
 }
 
 tr {
-  background-color: #222 !important;
+  background-color: var(--general-background-color) !important;
 }
 
 tr.odd, table.billPayAddPayments tr.oddStart, table.billPayAddPayments tr.odd {
-  background-color: #333 !important;
+  background-color: var(--table-row-alternate-background-color) !important;
 }
 
-.ui-state-default, .ui-widget-content .ui-state-default, .ui-widget-header .ui-state-default {
-  background-image: none;
+/**
+ * Pending transactions table header and footer.
+ */
+.ui-state-default,
+.ui-widget-content .ui-state-default,
+.ui-widget-header .ui-state-default {
+  background-image: none !important;
   background-color: #424 !important;
+  color: var(--text-color) !important;
+}
+
+/**
+ * Let the contrasting text color bleed through to the pending transactions
+ * modal.
+ */
+.ui-widget-content {
+  color: inherit !important;
+}
+
+/**
+ * This is the "padding" area of a modal body.
+ */
+.ModalPopupContent {
+  background-color: var(--general-background-color) !important;
+}
+
+/**
+ * Footer for the modal.
+ */
+.ModalPopupFooter {
+  background-color: var(--general-background-color) !important;
+}
+
+/**
+ * Header for the modal.
+ */
+.ModalPopupHeader {
+  background-color: var(--head1-background-color) !important;
+}
+
+/**
+ * Modal header title.
+ */
+.ModalPopupTitle {
+  color: var(--head1-color) !important;
+  background-color: var(--head1-background-color) !important;
 }
