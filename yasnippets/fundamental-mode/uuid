@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: Generate UUIDs/GUIDs on the fly.
+# key: uuid
+# group: fundamental
+# --
+`(s-trim-right (shell-command-to-string "uuidgen"))`

@@ -1,0 +1,31 @@
+#+title:    yasnippet
+#+author:   Logan Barnett
+#+email:    logustus@gmail.com
+#+date:     <2018-09-11 Tue>
+#+language: en
+#+tags:     yasnippet emacs config
+
+* fundamental-mode
+  Per this [[https://github.com/joaotavora/yasnippet/issues/557][ticket]], =fundamental-mode= doesn't have a =fundamental-mode-hook=. We
+  can get around this issue for emacs-wide snippets by adding a hook onto the
+  =yasnippet= minor mode.
+
+  #+begin_src emacs-lisp
+    (defun config/yasnippet-fundamental-mode ()
+      "Make sure we use snippets in `fundamental-mode' globally."
+      (add-hook 'yas-minor-mode-hook
+                (lambda ()
+                  (yas-activate-extra-mode 'fundamental-mode)))
+      )
+  #+end_src
+
+* apply
+
+  #+begin_src emacs-lisp
+    (require 'use-package)
+
+    (use-package "yasnippet"
+      :config
+      (config/yasnippet-fundamental-mode)
+      )
+  #+end_src
