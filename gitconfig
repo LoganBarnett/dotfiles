@@ -18,8 +18,8 @@
   tool = diffmerge
 	ff-only = true
 [core]
-	excludesfile = /Users/logan/.gitignore_global
-	editor = /usr/local/bin/vim
+	excludesfile = ~/.gitignore_global
+	editor = /usr/bin/vim
 	#autocrlf = true
 [difftool "sourcetree"]
 	cmd = opendiff \"$LOCAL\" \"$REMOTE\"
