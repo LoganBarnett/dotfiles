@@ -61,6 +61,11 @@ h5 {
   background-color: var(--general-background-color) !important;
 }
 
+.issue-data-block:hover,
+.issue-data-block.focused {
+  background-color: var(--highlight-backgorund-color) !important;
+}
+
 /**
  * Buttons (even though they use anchor tags).
  */
