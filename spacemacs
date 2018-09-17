@@ -49,6 +49,7 @@ values."
      gnus
      helm
      html
+     idris
      java
      javascript
      lua
