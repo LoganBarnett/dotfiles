@@ -6,6 +6,7 @@
 const fs = require('fs')
 const postcss = require('postcss')
 const customProperties = require('postcss-custom-properties')
+const process = require('process')
 const cssVars = require('./css-vars.js')
 
 const readFileData = (path) => {
@@ -29,7 +30,6 @@ const replaceJsVars = (js) => {
   return result
 }
 
-const process = require('process')
 const path = require('path')
 const childProcess = require('child_process')
 const os = require('os')
@@ -110,6 +110,7 @@ insert into itemtable
       updateSql,
       sqliteProcess.stderr.toString()
     )
+    process.exit(1)
   }
 })
 console.log('success')
