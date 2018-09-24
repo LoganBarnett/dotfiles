@@ -1,5 +1,12 @@
 #! /usr/bin/env bash
 
+################################################################################
+# Dumps everything in the local storage for Injector onto disk. The result will
+# include all transformations. This includes substitutions (which might be
+# sensitive) and CSS variables.
+################################################################################
+
+set -e
 # user_css_file=$(ls -1 ~/Library/Safari/LocalStorage/safari-extension_com.gridth.usercss*.localstorage);
 user_css_file=$(ls -1 ~/Library/Safari/LocalStorage/safari-extension_com.tsbehlman.injector-*.localstorage);
 

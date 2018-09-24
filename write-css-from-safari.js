@@ -1,5 +1,14 @@
 #! /usr/bin/env node
 
+/**
+ * This script is expected to be called by read-safari-usercss.sh as it iterates
+ * over all of the keys.
+ *
+ * $1: Path to the JSON file that links to the other files.
+ * $2: Directory to write resulting output to.
+ * $3: Key of the JSON file (used for file names).
+ */
+
 // TODO: Install the extension for this dynamically. Links of relevance:
 // https://github.com/tsbehlman/Injector/issues/1
 // http://tbehlman.com/safari/Injector.safariextz
