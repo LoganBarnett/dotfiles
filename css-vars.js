@@ -24,6 +24,7 @@ const vars = {
   '--background': '#292b2e',
   '--general-background-color': '#292b2e',
   '--general-background': '#292b2e',
+  '--highlight-background-color': '#100a14',
   '--code-background-color': '#100a14',
   '--link-color': '#2d9574',
   '--visited-link-color': '#4f97d7',
