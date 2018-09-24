@@ -6,6 +6,7 @@
     ""
   ],
   "name": "unitus",
+  "onload": true,
   "enabled": true,
   "key": "unitus"
 }
