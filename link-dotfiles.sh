@@ -17,6 +17,7 @@ spacemacs
 tmux.conf
 urxvt
 vimrc
+yarnrc
 zshenv
 zshrc
 "
