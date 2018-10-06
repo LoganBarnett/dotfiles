@@ -242,6 +242,34 @@ h3, .aui-page-header-hero .aui-page-header-main p, .aui-page-header-marketing .a
   color: var(--text-color) !important;
 }
 
+/**
+ * This is the table from rendered markdown in README's and the like.
+ */
+.markup table > tbody > tr,
+.markup table > tfoot > tr {
+  background-color: var(--general-background-color) !important;
+}
+
+.markup h1 {
+  color: var(--head1-color) !important;
+  background-color: var(--head1-background-color) !important;
+}
+
+.markup h2 {
+  color: var(--head2-color) !important;
+  background-color: var(--head2-background-color) !important;
+}
+
+.markup h3 {
+  color: var(--head3-color) !important;
+  background-color: var(--head3-background-color) !important;
+}
+
+.markup h4 {
+  color: var(--head4-color) !important;
+  background-color: var(--head4-background-color) !important;
+}
+
 .comment-container .comment.focused > .content {
   background-color: #333 !important;
 }
