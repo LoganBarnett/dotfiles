@@ -93,3 +93,7 @@ fi
 
 echo "installing pup for html parsing with css selectors"
 go get github.com/ericchiang/pup
+
+echo "installing misc python packages..."
+
+pip install upsidedown # Needed for tflip.

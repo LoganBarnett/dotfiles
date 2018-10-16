@@ -1,0 +1,7 @@
+#! /usr/bin/env bash
+
+# Requires upsidedown. Run this:
+# pip install upsidedown
+
+flipped=$(echo "${1}" | upsidedown)
+echo "(╯°□°）╯︵ $flipped"
