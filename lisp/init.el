@@ -280,6 +280,7 @@ layers configuration. You are free to put any user code."
   "Do initializtion."
   ;; TODO: Move to macos.org when it gets merged.
   (set-frame-parameter nil 'fullscreen 'fullscreen)
+  (load-library "redshift-indent")
   (message "[INIT] Starting init.")
   (auto-compile-on-load-mode 1)
   (init-org-file "emacs-config.org")
