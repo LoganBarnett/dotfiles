@@ -16,6 +16,17 @@ Tramp use bash regardless of what the remote machine is set to use.
 ;; (setq-default explicit-shell-file-name "/bin/bash")
 #+end_src
 
+* directory variables
+
+  By default using =.dir-locals.el= is disabled by default due to performance
+  reasons. My work repos that I have less control over are the most demanding of
+  custom settings though, so let's enable it.
+
+  #+begin_src emacs-lisp
+  (defun config/enable-remote-dir-locals ()
+    (setq-default enable-remote-dir-locals t)
+    )
+  #+end_src
 * file transfers
 ** large files
    Tramp tries to inline the transfer for certain files and use =scp= for
@@ -104,6 +115,7 @@ command control it, as those still work.
     "-o ControlMaster=auto -o ControlPath='tramp.%%C' -o ControlPersist=no")
     ;; (override-tramp-get-ls-command)
     (config/fix-tramp-large-file-issue)
+    (config/enable-remote-dir-locals)
   )
 
 #+end_src
