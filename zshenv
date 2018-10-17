@@ -3,6 +3,9 @@ export PATH="$HOME/.opam/system/bin:/bin:/usr/local/bin:$HOME/bin:/opt/local/bin
 
 export NOTES_DIR=~/Dropbox/notes
 
+# Should take care of some prompt issues.
+export LC_ALL=en_US.UTF-8
+
 # add Go support
 export GOPATH=$HOME/golang
 export GOROOT=/usr/local/opt/go/libexec

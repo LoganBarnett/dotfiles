@@ -13,6 +13,8 @@
   alias ls='gls' &&
   return
 
+setopt prompt_subst
+
 # Which plugins would you like to load? (plugins can be found in ~/.oh-my-zsh/plugins/*)
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
@@ -253,9 +255,9 @@ KEYTIMEOUT=1
 
 ZSH_THEME_GIT_PROMPT_PREFIX=" on %{$fg[magenta]%}"
 ZSH_THEME_GIT_PROMPT_SUFFIX="%{$reset_color%}"
-ZSH_THEME_GIT_PROMPT_DIRTY="%{$fg[green]%}!"
-ZSH_THEME_GIT_PROMPT_UNTRACKED="%{$fg[green]%}?"
-ZSH_THEME_GIT_PROMPT_CLEAN=""
+ZSH_THEME_GIT_PROMPT_DIRTY="%{$fg[green]%}!%{$reset_color%}"
+ZSH_THEME_GIT_PROMPT_UNTRACKED="%{$fg[green]%}?%{$reset_color%}"
+ZSH_THEME_GIT_PROMPT_CLEAN="✓%{$reset_color%}"
 
 function timestamp_prompt() {
   echo "%{$fg[blue]%}\
@@ -276,10 +278,13 @@ function host_prompt() {
 function set_prompt() {
   # Line break intentional. Sometimes the last line of stdout would be cut off
   # without it.
-  PROMPT='
-$(path_color_prompt)$(pwd_prompt)$(git_prompt_info) $(host_prompt) $(exit_status_prompt) $(timer_prompt) $(timestamp_prompt)
+  PROMPT='$(path_color_prompt)$(pwd_prompt)$(git_prompt_info) $(host_prompt) $(exit_status_prompt) $(timestamp_prompt)
 $(vim_mode_prompt)'
 }
+
+# Print an empty line before the prompt. The prompt is still jiggly with long
+# prompts but at least it's working now.
+function precmd() { print "" }
 
 # zsh redefined function
 # function preexec() {
