@@ -8,3 +8,9 @@ export GOPATH=$HOME/golang
 export GOROOT=/usr/local/opt/go/libexec
 export PATH=$PATH:$GOPATH/bin
 export PATH=$PATH:$GOROOT/bin
+# This really should be included in the homebrew jenv caveats list:
+# https://github.com/gcuisinier/jenv/wiki/Trouble-Shooting
+export JENV_ROOT=/usr/local/opt/jenv
+
+export PATH="$JENV_ROOT:$PATH"
+eval "$(jenv init -)"
