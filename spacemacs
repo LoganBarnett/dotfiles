@@ -141,6 +141,13 @@ values."
   ;; This setq-default sexp is an exhaustive list of all the supported
   ;; spacemacs settings.
   (setq-default
+   ;; CUSTOM to allow local melpa packages.
+   ;; configuration-layer--elpa-archives
+   ;; TODO add org and gnu archives here as well.
+   ;; See https://github.com/syl20bnr/spacemacs/issues/7103
+   ;; and https://github.com/d12frosted/environment/blob/master/emacs/spacemacs/spacemacs.el#L80
+   ;; for examples.
+    ;; `(("melpa" . ,(concat "" "/Users/logan/dev/melpa/")))
    ;; If non nil ELPA repositories are contacted via HTTPS whenever it's
    ;; possible. Set it to nil if you have no way to use HTTPS in your
    ;; environment, otherwise it is strongly recommended to let it set to t.
