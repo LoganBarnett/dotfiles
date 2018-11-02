@@ -33,6 +33,7 @@ This moves them into the Spam folder."
 
   ;; Copy key-id.template.txt to ~/.emacs.d/private/key-id.txt and populate with
   ;; the key ID.
+  ;; What key ID?
   (setq-local key-id
               (my-utils/get-string-from-file  "~/.emacs.d/private/key-id.txt")
               )
