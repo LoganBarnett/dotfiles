@@ -8,7 +8,8 @@
 
 set -e
 # user_css_file=$(ls -1 ~/Library/Safari/LocalStorage/safari-extension_com.gridth.usercss*.localstorage);
-user_css_file=$(ls -1 ~/Library/Safari/LocalStorage/safari-extension_com.tsbehlman.injector-*.localstorage);
+# user_css_file=$(ls -1 ~/Library/Safari/LocalStorage/safari-extension_com.tsbehlman.injector-*.localstorage);
+user_css_file=$(ls -1 ~/Library/Safari/LocalStorage/safari-extension_com.logustus.injector-*.localstorage);
 
 get_keys_sql="select key from itemtable;"
 

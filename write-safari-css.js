@@ -45,6 +45,19 @@ const names = fs.readdirSync('custom-css')
   .filter(f => f.match(/.+\.json$/))
   .map(f => f.replace(/\.json$/, ''))
 
+
+const localStorageDir = '~/Library/Safari/LocalStorage'
+      .replace('~', os.homedir())
+
+const files = fs.readdirSync(localStorageDir)
+const findSqliteFile = /safari-extension_com\.logustus\.injector-(.+?)\.localstorage/
+
+const sqlitePath = path.join(
+  localStorageDir,
+  files.find(f => f.match(findSqliteFile))
+)
+console.log('Writing to path: ' + sqlitePath)
+
 names.forEach(name => {
   const meta = JSON.parse(fs.readFileSync(
     path.join('custom-css', name + '.json'),
@@ -79,24 +92,17 @@ names.forEach(name => {
   fs.writeFileSync(`.tmp-css-write/${name}.json`, convertedMeta, 'binary')
 
 
-  const localStorageDir = '~/Library/Safari/LocalStorage'
-    .replace('~', os.homedir())
-
-  const files = fs.readdirSync(localStorageDir)
-  const findSqliteFile = /safari-extension_com\.tsbehlman\.injector-(.+?)\.localstorage/
-
-  const sqlitePath = path.join(
-    localStorageDir,
-    files.find(f => f.match(findSqliteFile))
-  )
-
   const updateSql = `
 pragma encoding = "UTF-8";
+PRAGMA journal_mode=DELETE;
+BEGIN EXCLUSIVE;
 delete from itemtable where key='${meta.key}';
 insert into itemtable
 (key, value) values
 ('${meta.key}', readfile('.tmp-css-write/${meta.name}.json'))
-;`
+;
+COMMIT;
+`
 
   // console.log(updateSql)
   const sqliteProcess = childProcess.spawnSync('sqlite3', [
@@ -104,11 +110,13 @@ insert into itemtable
     updateSql,
   ])
 
+  // console.log(sqliteProcess.stdout.toString())
+  // console.log(sqliteProcess.stderr.toString())
   if(sqliteProcess.status != 0) {
     console.error(
       'Error executing update of injection',
       updateSql,
-      sqliteProcess.stderr.toString()
+      sqliteProcess.stderr.toString(),
     )
     process.exit(1)
   }
