@@ -8,6 +8,8 @@ brew tap caskroom/drivers
 
 # NOTE: I omitted razer-synpase due to its intrusive nature. Install manually
 # and then uninstall when keyboard config is complete.
+# TODO: Find a better way to reinstall istat-menus (cannot be stopped once
+# running, short of an "uninstall").
 CASKS="
 adobe-connect
 alfred
@@ -16,13 +18,11 @@ aws-vault
 chromium
 diffmerge
 discord
-docker
 electric-sheep
 gimp
 google-chrome
 haskell-platform
 hipchat
-istat-menus
 microsoft-lync
 mumble
 obs
