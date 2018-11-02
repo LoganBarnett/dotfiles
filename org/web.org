@@ -39,6 +39,7 @@
   (use-package "web-mode"
     :init
     :config
+    (config/web-mode-indentation)
     (add-hook 'web-mode-hook #'config/web-mode-indentation)
     (add-hook 'web-mode-hook #'config/web-mode-comments)
   )
