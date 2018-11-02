@@ -1,0 +1,29 @@
+#+title:    prog-mode
+#+author:   Logan Barnett
+#+email:    logustus@gmail.com
+#+date:     <2018-08-16 Thu>
+#+language: en
+#+tags:     emacs config
+
+=prog-mode= is a general mode for any programming mode. Settings applied in
+=prog-mode= will be reflected in practically any mode with code or configuration
+files. It generally doesn't effect text files.
+
+* auto fill comments
+  I'm not sure how I feel about using =auto-fill-mode= for normal code, but for
+  comments this is a must to me. Fortunately =auto-fill-mode= comes with
+  =comment-auto-fill-only-comments=.
+
+  #+begin_src emacs-lisp
+    (defun config/auto-fill-comments ()
+      "Turn on `auto-fill-mode' and disable it for everything but comments."
+      (setq-local comment-auto-fill-only-comments t)
+      (auto-fill-mode 1)
+      )
+  #+end_src
+
+* all together
+
+  #+begin_src emacs-lisp
+    (add-hook 'prog-mode-hook #'config/auto-fill-comments)
+  #+end_src

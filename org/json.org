@@ -1,0 +1,26 @@
+#+title:    JSON config
+#+author:   Logan Barnett
+#+email:    logustus@gmail.com
+#+date:     <2018-10-30 Tue>
+#+language: en
+#+tags:     json config
+
+* show line numbers
+  It's puzzling to me why we hate line numbers so much in our editors. Line
+  numbers are life!
+
+  #+begin_src emacs-lisp :results none
+    (defun config/json-mode-show-line-numbers ()
+      (add-hook 'json-mode-hook 'display-line-numbers-mode)
+    )
+  #+end_src
+
+* altogether
+
+  #+begin_src emacs-lisp :results none
+    (require 'use-package)
+    (use-package "json-mode"
+      :config
+      (config/json-mode-show-line-numbers)
+      )
+  #+end_src
