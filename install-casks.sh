@@ -6,6 +6,10 @@ set -e
 echo "tapping drivers"
 brew tap caskroom/drivers
 
+# Lifted from
+# https://gist.github.com/christopheranderton/9929502185dd0a6545c900cca0f5f614
+brew cask reinstall `brew cask outdated`
+
 # NOTE: I omitted razer-synpase due to its intrusive nature. Install manually
 # and then uninstall when keyboard config is complete.
 # TODO: Find a better way to reinstall istat-menus (cannot be stopped once
@@ -14,7 +18,6 @@ CASKS="
 adobe-connect
 alfred
 arduino
-aws-vault
 chromium
 diffmerge
 discord

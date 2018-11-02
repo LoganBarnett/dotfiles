@@ -14,6 +14,9 @@ if [ $(uname) = 'Darwin' ]; then
     # Needed for avr-gcc
     brew tap osx-cross/avr
 
+    # Upgrade existing packages before installing (potentially) new ones.
+    brew outdated | xargs brew reinstall
+
     # ispell so flyspell works on emacs
     BREWS="
 ag
