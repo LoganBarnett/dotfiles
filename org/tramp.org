@@ -97,6 +97,26 @@ command control it, as those still work.
     (spacemacs/set-leader-keys (kbd "SPC a T c") 'tramp-cleanup-all-connections)
 #+end_src
 
+* git-gutter
+
+  I had some trouble with =git-gutter= when doing a =helm-ag= replace operation.
+  I followed up on [[https://github.com/nonsequitur/git-gutter-plus/pull/39][this ticket]] and was able to "advice" these functions using
+  the workarounds listed in there. It seems to have worked so far.
+
+  #+begin_src emacs-lisp
+    (defun git-gutter+-remote-default-directory (dir file)
+      (let* ((vec (tramp-dissect-file-name file))
+              (method (tramp-file-name-method vec))
+              (user (tramp-file-name-user vec))
+              (domain (tramp-file-name-domain vec))
+              (host (tramp-file-name-host vec))
+              (port (tramp-file-name-port vec)))
+         (tramp-make-tramp-file-name method user domain host port dir)))
+
+    (defun git-gutter+-remote-file-path (dir file)
+      (let ((file (tramp-file-name-localname (tramp-dissect-file-name file))))
+        (replace-regexp-in-string (concat "\\`" dir) "" file)))
+  #+end_src
 * all together
 
 #+begin_src emacs-lisp
