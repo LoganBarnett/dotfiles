@@ -37,9 +37,6 @@ ultimate motivator for me.
 #+END_SRC
 
 *** flycheck
-    :PROPERTIES:
-    :CUSTOM_ID: emacs-settings--project-specific-paths--flycheck
-    :END:
 This function works specifically with =flycheck=, which is a general checker
 employed to integrate linters, type checkers, compilers, and coverage utilities.
 
@@ -135,23 +132,23 @@ lot of trouble when looking at Flow's libdef files. Many processes are created
 when this happens, and Emacs eats a lot of processing power for no good reason.
 
 #+BEGIN_SRC emacs-lisp
-(defun my/config-javascript-company-backends ()
-  (require 'company-flow)
-  (my/find-javascript-company-backends)
-  (setq-default company-backends
-    ;; tern works its way in here multiple times.
-    (remove 'company-tern (remove-duplicates company-backends))
-  )
-  (add-to-list 'company-backends 'company-flow)
+  (defun my/config-javascript-company-backends ()
+    (require 'company-flow)
+    (my/find-javascript-company-backends)
+    (setq-default company-backends
+      ;; tern works its way in here multiple times.
+      (remove 'company-tern (remove-duplicates company-backends))
+    )
+    (add-to-list 'company-backends 'company-flow)
 
-  ;; NOTE: We also need to configure flow's backend on a per major-mode basis.
-  (setq-default company-backends-js2-mode
-    ;; tern works its way in here multiple times.
-    (remove 'company-tern (remove-duplicates company-backends-js2-mode))
+    ;; NOTE: We also need to configure flow's backend on a per major-mode basis.
+    ;; (setq-default company-backends-js2-mode
+    ;;   ;; tern works its way in here multiple times.
+    ;;   (remove 'company-tern (remove-duplicates company-backends-js2-mode))
+    ;; )
+    ;; (add-to-list 'company-backends-js2-mode 'company-flow)
+    ;; (message "company backends (js2mode) (after JS config): %s" company-backends-js2-mode)
   )
-  (add-to-list 'company-backends-js2-mode 'company-flow)
-  (message "company backends (js2mode) (after JS config): %s" company-backends-js2-mode)
-)
 #+END_SRC
 
 ** flow
@@ -193,63 +190,68 @@ for hunting down issues with Flow errors.
 Finally, tie it all together on demand.
 
 #+BEGIN_SRC emacs-lisp
-(defun my/js2-disable-global-variable-highlight ()
-  "Disable js2 global variable highlight.  Wait.  Am I using this?"
-  (font-lock-remove-keywords 'js2-mode 'js2-external-variable)
+  (defun my/js2-disable-global-variable-highlight ()
+    "Disable js2 global variable highlight.  Wait.  Am I using this?"
+    (font-lock-remove-keywords 'js2-mode 'js2-external-variable)
+    )
+
+  (defun my/fix-js2-rainbow-identifiers ()
+    "Plea to the gods to fix rainbow-identifiers with js2-mode."
+    (message "HACK: turning off rainbow-identifiers-mode")
+    (rainbow-identifiers-mode 0)
+    (message "HACK: turning back on rainbow-identifiers-mode")
+    (rainbow-identifiers-mode 1)
+    )
+
+  (defun my/js2-disable-global-variable-highlight ()
+    "Disable js2 global variable highlight.  Wait.  Am I using this?"
+    (font-lock-remove-keywords 'js2-mode 'js2-external-variable)
+    )
+
+  (message "initializing js")
+  (require 'use-package)
+    (use-package "js2-mode"
+    :init
+    (message "initializing Javascript")
+    (require 'grep)
+    (require 'nvm)
+    (require 'flycheck)
+    (require 'rainbow-identifiers)
+    (require 'flycheck-flow)
+    :config
+    (message "Configuring Javascript")
+    ;; (add-hook 'js2-mode-hook 'flow-minor-enable-automatically)
+    (setq-default flycheck-javascript-flow-args '("--respect-pragma"))
+    (nvm-use "8.1.3")
+    (add-to-list 'grep-find-ignored-directories "node_modules")
+    (add-to-list 'auto-mode-alist '("\\.jsx" . js2-mode))
+    (setq-default js-indent-level 2)
+    (setq-default js2-strict-missing-semi-warning nil)
+    (setq-default js2-strict-trailing-comma-warning nil)
+    (setq-default js2-mode-show-parse-errors nil)
+    (setq-default js2-highlight-external-variables nil)
+    ;; (setq-default js2-mode-toggle-warnings-and-errors 0)
+    (setq-default js2-mode-show-strict-warnings nil)
+    ;; (add-hook 'js2-mode 'js2-mode-toggle-warnings-and-errors)
+    ;; (add-hook 'js2-mode 'my/disable-js2-global-var-highlight)
+
+    ;; TODO: See what this setting does. It relates to this issue, which I'm not
+    ;; necessarily having trouble with, but am curious about.
+    ;; https://www.reddit.com/r/spacemacs/comments/9owc4b/javascript_typescript_indentation/
+    ;; (setq js-indent-align-list-continuation nil)
+
+    ;; prevent indentation from lining up with a prior line's glyph
+    ;; this will make it so fighting is less necessary to appease linters
+    (setq-default js2-pretty-multiline-declarations nil)
+    (my/find-javascript-flycheck-backends)
+    (my/connect-javascript-flycheck-backends)
+    (my/config-javascript-company-backends)
+
+    ;; ugh debugging company
+    (defun company-flow-prefix ()
+      (interactive)
+      (message "result: %s" (company-flow--prefix)
   )
-
-(defun my/fix-js2-rainbow-identifiers ()
-  "Plea to the gods to fix rainbow-identifiers with js2-mode."
-  (message "HACK: turning off rainbow-identifiers-mode")
-  (rainbow-identifiers-mode 0)
-  (message "HACK: turning back on rainbow-identifiers-mode")
-  (rainbow-identifiers-mode 1)
+    )
   )
-
-(defun my/js2-disable-global-variable-highlight ()
-  "Disable js2 global variable highlight.  Wait.  Am I using this?"
-  (font-lock-remove-keywords 'js2-mode 'js2-external-variable)
-  )
-
-(message "initializing js")
-(require 'use-package)
-  (use-package "js2-mode"
-  :init
-  (message "initializing Javascript")
-  (require 'grep)
-  (require 'nvm)
-  (require 'flycheck)
-  (require 'rainbow-identifiers)
-  (require 'flycheck-flow)
-  :config
-  (message "Configuring Javascript")
-  ;; (add-hook 'js2-mode-hook 'flow-minor-enable-automatically)
-  (setq-default flycheck-javascript-flow-args '("--respect-pragma"))
-  (nvm-use "8.1.3")
-  (add-to-list 'grep-find-ignored-directories "node_modules")
-  (add-to-list 'auto-mode-alist '("\\.jsx" . js2-mode))
-  (setq-default js-indent-level 2)
-  (setq-default js2-strict-missing-semi-warning nil)
-  (setq-default js2-strict-trailing-comma-warning nil)
-  (setq-default js2-mode-show-parse-errors nil)
-  (setq-default js2-highlight-external-variables nil)
-  ;; (setq-default js2-mode-toggle-warnings-and-errors 0)
-  (setq-default js2-mode-show-strict-warnings nil)
-  ;; (add-hook 'js2-mode 'js2-mode-toggle-warnings-and-errors)
-  ;; (add-hook 'js2-mode 'my/disable-js2-global-var-highlight)
-
-  ;; prevent indentation from lining up with a prior line's glyph
-  ;; this will make it so fighting is less necessary to appease linters
-  (setq-default js2-pretty-multiline-declarations nil)
-  (my/find-javascript-flycheck-backends)
-  (my/connect-javascript-flycheck-backends)
-  (my/config-javascript-company-backends)
-
-  ;; ugh debugging company
-  (defun company-flow-prefix ()
-    (interactive)
-    (message "result: %s" (company-flow--prefix)
-)
-  )
-)
 #+END_SRC
