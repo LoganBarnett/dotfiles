@@ -113,6 +113,7 @@ headings.
   (defun hipchat/export-standup-status ()
     (interactive)
 
+    (save-excursion
     (defvar previous-log nil)
     (defvar today-log nil)
     (let* (
@@ -136,7 +137,7 @@ headings.
         ;; it loses its effects.
         (widen)
       )
-    )
+    ))
   )
 #+end_src
 
