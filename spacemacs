@@ -133,6 +133,11 @@ values."
    ;; Spacemacs and never uninstall them. (default is `used-only')
    dotspacemacs-install-packages 'used-only))
 
+;; If the SPC f e R shortcut brings up an error buffer showing missing config
+;; options, that's likely because there's a variable missing or out of sync with
+;; a newly updated .spacemacs template. The template (for develop) can be found
+;; here:
+;; https://github.com/syl20bnr/spacemacs/blob/develop/core/templates/.spacemacs.template
 (defun dotspacemacs/init ()
   "Initialization function.
 This function is called at the very startup of Spacemacs initialization
