@@ -1,0 +1,12 @@
+{
+  "includes": [
+    "https://*.wikipedia.org/*"
+  ],
+  "excludes": [
+    ""
+  ],
+  "name": "wikipedia",
+  "enabled": true,
+  "key": "wikipedia",
+  "onload": true
+}

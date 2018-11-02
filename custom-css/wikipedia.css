@@ -1,0 +1,53 @@
+body {
+  background-color: var(--general-background-color) !important;
+  color: var(--text-color) !important;
+}
+
+.mw-body {
+  background-color: var(--general-background-color) !important;
+  color: var(--text-color) !important;
+}
+
+h1 {
+  color: var(--head1-color) !important;
+  background-color: var(--head1-background-color) !important;
+}
+
+h2 {
+  color: var(--head2-color) !important;
+  background-color: var(--head2-background-color) !important;
+}
+
+h3 {
+  color: var(--head3-color) !important;
+  background-color: var(--head3-background-color) !important;
+}
+
+h4 {
+  color: var(--head4-color) !important;
+  background-color: var(--head4-background-color) !important;
+}
+
+h5 {
+  color: var(--head5-color) !important;
+  background-color: var(--head5-background-color) !important;
+}
+
+h6 {
+  color: var(--head6-color) !important;
+  background-color: var(--head6-background-color) !important;
+}
+
+a {
+  color: var(--link-color) !important;
+}
+
+a:visited {
+  color: var(--visted-link-color) !important;
+  background-color: var(--visted-link-background-color) !important;
+}
+
+.toc, .mw-warning, .toccolours {
+  border: var(--panel-border) !important;
+  background-color: var(--panel-background-color) !important;
+}
