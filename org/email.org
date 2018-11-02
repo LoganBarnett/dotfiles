@@ -84,6 +84,22 @@ http://pragmaticemacs.com/emacs/master-your-inbox-with-mu4e-and-org-mode/
   )
 #+end_src
 
+**** toggling plain-text
+     Toggling to plain text is shadowed by =evil-mode=. For now let's provide an
+     interactive function to handle it.
+
+     #+begin_src emacs-lisp :results none
+       (defun my/mu4e-view-plaintext ()
+         "Provide an interactive toggle of plain text and html of mail messages."
+         (interactive)
+         (setq-default mu4e-view-show-images nil)
+         (setq-default mu4e-view-prefer-html nil)
+         (setq-default mu4e~view-html-text 'text)
+         (setq-default mu4e~message-body-html 'text)
+         (mu4e-view-refresh)
+         )
+     #+end_src
+
 **** DONE add =get-mail= command to mu4e update command
      CLOSED: [2018-08-01 Wed 10:06]
      http://spacemacs.org/layers/+email/mu4e/README.html#configuration
@@ -158,7 +174,7 @@ http://pragmaticemacs.com/emacs/master-your-inbox-with-mu4e-and-org-mode/
     :config
     (message "initializing mu4e...")
     (config/mu4e-add-bookmarks)
-    (config/mu4e-enable-images)
+    ;; (config/mu4e-enable-images)
     (config/mu4e-set-maildir)
     (config/mu4e-set-archive-folder)
     (config/mu4e-sync)
