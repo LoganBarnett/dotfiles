@@ -75,11 +75,18 @@
   ;; fixes tramp startup times
   (eval-after-load 'tramp '(setenv "SHELL" "/bin/bash"))
 
+
+  ;; Purescript settings that drifted into the spacemacs config somehow.
+  ;; (setq-default psc-ide-add-import-on-completion t t)
+  ;; (setq-default psc-ide-rebuild-on-save nil t)
+
+  ;; Allow these variables in .dir-locals.el
+  (setq-default safe-local-variable-values (quote ((js-indent-level 4) (js2-indent-level . 4))))
+
   ;; indentation
   (paradox-require 'cc-mode)
   (defvar c-offsets-alist)
   (add-to-list 'c-offsets-alist '(arglist-close . c-lineup-close-paren))
-
 
   (load-library "config-company")
   (config-company)
@@ -89,7 +96,15 @@
   (defvar paradox-github-token)
   ;; actually this was dropped because we check this into github
   (setq paradox-github-token '663d5d3c21b2c6a716848fa00653bb92e6aeee68)
-  (global-linum-mode) ; show line numbers by default
+  ;; (global-linum-mode) ; show line numbers by default
+  ;; Turn off line-number-mode so it doesn't overlap with
+  ;; display-line-number-mode.
+  (line-number-mode 0)
+  ;; This calculates the current width of the line number column by doing an
+  ;; initial count of the lines in the buffer. Without this, buffers with >=
+  ;; 1000 lines will have an odd offset in them for lines >= the 1000 line
+  ;; count.
+  (setq-default display-line-numbers-width-start t)
   (setq-default indent-tabs-mode nil)
   (setq-default tab-width 2)
 
@@ -285,6 +300,9 @@ layers configuration. You are free to put any user code."
   (auto-compile-on-load-mode 1)
   (init-org-file "emacs-config.org")
   (dirty-init)
+  (init-org-file "macos.org")
+  (init-org-file "prog-mode.org")
+  (init-org-file "json.org")
   (init-org-file "private.org")
   (init-org-file "buffer.org")
   (init-org-file "deft.org")
