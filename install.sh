@@ -96,6 +96,9 @@ else
     echo "skipping alfred install - not on osx"
 fi
 
+echo "Installing (some) Java support..."
+./install-java.sh
+
 echo "Installing diagramming support..."
 ./install-diagram.sh
 

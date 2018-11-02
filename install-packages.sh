@@ -30,6 +30,7 @@ gnutls
 go
 graphviz
 ispell
+jenv
 jq
 markdown
 maven
