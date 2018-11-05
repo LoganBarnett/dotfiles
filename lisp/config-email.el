@@ -51,7 +51,8 @@ This moves them into the Spam folder."
    smtpmail-smtp-server "smtp.gmail.com"
    smtpmail-smtp-service 587
    message-send-mail-function 'smtpmail-send-it
-   nntp-authinfo-file "~/.nntp-authinfo.gpg"
+   ;; nntp-authinfo-file "~/.nntp-authinfo.gpg"
+   nntp-authinfo-file "~/.authinfo.gpg"
    ;; Gmail system labels have the prefix [Gmail], which matches the default
    ;; value of gnus-ignored-newsgroups. That's why we redefine it.
    gnus-ignored-newsgroups "^to\\.\\|^[0-9. ]+\\( \\|$\\)\\|^[\"]\"[#'()]"
