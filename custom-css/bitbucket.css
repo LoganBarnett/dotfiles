@@ -176,11 +176,14 @@ form.aui .select, form.aui .multi-select, form.aui .aui-select2-container {
 }
 
 aui-inline-dialog .aui-inline-dialog-contents, .aui-inline-dialog .aui-inline-dialog-contents, aui-inline-dialog .contents, .aui-inline-dialog .contents {
-  background-color: #333 !important;
+  background-color: var(--general-background-color) !important;
 }
 
 .commits-table .message .message-subject {
-  color: #ddd !important;
+  color: var(--text-color) !important;
+}
+.commits-table .message .message-subject .commit-link  {
+  color: var(--link-color) !important;
 }
 
 .jstree .jstree-clicked {
