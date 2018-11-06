@@ -17,3 +17,7 @@ export JENV_ROOT=/usr/local/opt/jenv
 
 export PATH="$JENV_ROOT:$PATH"
 eval "$(jenv init -)"
+
+# This allows commands to be excluded from history if they are prefixed with a
+# space.
+export HISTCONTROL=ignorespace
