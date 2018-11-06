@@ -26,4 +26,5 @@ files. It generally doesn't effect text files.
 
   #+begin_src emacs-lisp
     (add-hook 'prog-mode-hook #'config/auto-fill-comments)
+    (add-hook 'prog-mode-hook #'display-line-numbers-mode)
   #+end_src
