@@ -12,57 +12,6 @@
   (org-babel-load-file (expand-file-name (format "org/%s" file) "~/dev/dotfiles"))
   )
 
-;; flycheck
-(defun my/init-flycheck ()
-  "Setup flycheck to my liking."
-  (use-package "flycheck"
-    ;; :defer t
-    :ensure t
-    :init
-    ;; turn on flychecking globally
-    ;; (add-hook 'after-init-hook #'global-flycheck-mode)
-    ;; (add-hook 'js-mode-hook 'flycheck-mode)
-    ;; (add-hook 'prog-mode #'flycheck-mode)
-    (add-hook 'prog-mode-hook #'flycheck-mode)
-    (setq-default syntax-checking-enable-by-default t)
-    :config
-
-    ;; node-modules support shamelessly lifted from here
-    ;; https://github.com/lunaryorn/.emacs.d/blob/master/lisp/lunaryorn-flycheck.el#L62
-    ;; (add-hook 'flycheck-mode-hook #'my/use-node-modules-bin)
-    ;; can't use flycheck-syntax-check-failed-hook because it's for
-    ;; when flycheck itself has an error
-    ;; TODO: As of emacs 25 there's some huge bugginesss with automatically showing errors
-    ;; (add-hook 'flycheck-after-syntax-check-hook #'my/flycheck-list-errors-only-when-errors)
-    ;; (add-hook 'flycheck-mode-hook #'my/flycheck-list-errors-only-when-errors)
-    ;; (add-hook 'flycheck-mode-hook #'my/use-eslint-from-node-modules)
-
-    ;; use the npm version for the check
-    ;; this breaks flycheck when we enter json-mode and perhaps others
-    ;; an update seems to replace this anyways
-    ;; (setq-default flycheck-disabled-checkers
-    ;;               (append flycheck-disabled-checkers
-    ;;                       '(javascript-jshint)))
-
-    ;; use eslint with web-mode for jsx files
-    ;; (flycheck-add-mode 'javascript-eslint 'web-mode)
-    ;; (flycheck-add-mode 'javascript-jshint 'web-mode)
-    )
-  ;; (setq flycheck-check-syntax-automatically '(mode-enabled save idle-change new-line))
-  )
-
-(defun my/flycheck-list-errors-only-when-errors ()
-  "Show flycheck error list when there are errors in the current buffer."
-  (defvar flycheck-current-errors)
-  (defvar flycheck-error-list-buffer)
-  (defvar-local buffer "")
-  (message "checking for current errors")
-  (if flycheck-current-errors
-      (flycheck-list-errors)
-    (-when-let (buffer (get-buffer flycheck-error-list-buffer))
-      (dolist (window (get-buffer-window-list buffer))
-        (quit-window nil window)))))
-
 (defun dirty-init ()
   "A dump of init stuff found in dotspacemacs/user-config but is custom."
 
@@ -87,9 +36,6 @@
   (paradox-require 'cc-mode)
   (defvar c-offsets-alist)
   (add-to-list 'c-offsets-alist '(arglist-close . c-lineup-close-paren))
-
-  (load-library "config-company")
-  (config-company)
 
   ;; non-nil indicates spacemacs should start with fullscreen
   (setq-default dotspacemacs-fullscreen-at-startup t)
@@ -161,59 +107,16 @@
     :diminish 'rainbow-identifiers-mode
   )
 
-
-  "Configuration function for user code.
-This function is called at the very end of Spacemacs initialization after
-layers configuration. You are free to put any user code."
-  (paradox-require 'markdown-mode)
-  (add-hook 'markdown-mode-hook 'auto-fill-mode)
-  (add-hook 'markdown-mode-hook 'flyspell-mode)
-
-  ;; graphviz dot support
-  (package-initialize)
-  (paradox-require 'graphviz-dot-mode)
-  (setq-default graphviz-dot-preview-extension "png")
-  (defun compile-dot ()
-    "compile a graphviz dot file"
-    ;; (compile graphviz-dot-dot-program))
-    (defvar graphviz-dot-dot-program)
-    (defvar graphviz-dot-preview-extension)
-    (compile (concat graphviz-dot-dot-program
-            " -T" graphviz-dot-preview-extension " "
-            (shell-quote-argument buffer-file-name)
-            " -o "
-            (shell-quote-argument
-             (concat (file-name-sans-extension buffer-file-name)
-                     "." graphviz-dot-preview-extension))))
-    )
-  (add-hook 'graphviz-dot-mode-hook
-            (lambda ()
-             (add-hook 'after-save-hook 'compile-dot nil 'make-it-local)))
-
-  ;; compilation
-  ;; no need to show compile window on success - just interested in errors
-  (defun compilation-exit-autoclose (STATUS code msg)
-    "Close the compilation window if there was no error at all."
-    ;; If M-x compile exists with a 0
-    (when (and (eq STATUS 'exit) (zerop code))
-      ;; then bury the *compilation* buffer, so that C-x b doesn't go there
-      (bury-buffer)
-      ;; and delete the *compilation* window
-      (delete-window (get-buffer-window (get-buffer "*compilation*"))))
-    ;; Always return the anticipated result of compilation-exit-message-function
-    (cons msg code))
-  (defvar compilation-exit-message-function)
-  (setq compilation-exit-message-function 'compilation-exit-autoclose)
-
   ;; git gutter
   (setq-default git-gutter-fr+-side 'left-fringe)
 
   ;; fun!
-  (paradox-require 'nyan-mode)
-  (setq-default nyan-wavy-trail t)
-  (setq-default nyan-animate-nyancat t)
-  (setq-default nyan-animation-frame-interval 0.075)
-  (setq-default nyan-bar-length 16)
+  ;; (paradox-require 'nyan-mode)
+  ;; (setq-default nyan-wavy-trail t)
+  ;; (setq-default nyan-animate-nyancat t)
+  ;; (setq-default nyan-animation-frame-interval 0.075)
+  ;; (setq-default nyan-bar-length 16)
+
   ;; as of spacemacs 0.200 this eats a ton of cpu time
   ;; (add-hook 'nyan-mode 'nyan-start-animation)
   ;; (add-hook 'change-major-mode-hook 'nyan-start-animation)
@@ -236,7 +139,6 @@ layers configuration. You are free to put any user code."
   ;; (add-hook 'post-self-insert-hook 'animated-self-insert)
 
   (load-library "my-utils")
-  (my/init-flycheck)
   (load-library "config-whitespace")
   (config-whitespace)
   (load-library "config-flyspell")
@@ -272,7 +174,6 @@ layers configuration. You are free to put any user code."
   ;; (load-library "config-common-header-mode-line")
   ;; (config-common-header-mode-line)
 
-  (load-library "org-to-jekyll")
   (load-library "renumber-list")
   (load-library "money")
 
@@ -281,13 +182,6 @@ layers configuration. You are free to put any user code."
                                                "tmp"
                                                ".tmp"
                                                ))
-
-  (use-package "yasnippet"
-    :init
-    :config
-    (setq-default yas-snippet-dirs '("~/dev/dotfiles/yasnippets"))
-    (yas-reload-all)
-    )
 
   (message "[DIRTY INIT] INIT DONE!")
   )
@@ -300,6 +194,8 @@ layers configuration. You are free to put any user code."
   (auto-compile-on-load-mode 1)
   (init-org-file "emacs-config.org")
   (dirty-init)
+  (init-org-file "flycheck.org")
+  (init-org-file "company.org")
   (init-org-file "macos.org")
   (init-org-file "prog-mode.org")
   (init-org-file "json.org")
@@ -321,6 +217,8 @@ layers configuration. You are free to put any user code."
   (init-org-file "yasnippet.org")
   ;; (init-org-file "language-server-protocol.org")
   (init-org-file "java.org")
+  (init-org-file "graphviz-dot.org")
+  (init-org-file "markdown.org")
   (init-org-file "web.org")
   (init-org-file "font.org")
   (init-org-file "cucumber.org")

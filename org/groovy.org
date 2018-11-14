@@ -9,13 +9,14 @@ be the same language used in a =Jenkinsfile=.
 
 * groovy-mode
 #+begin_src emacs-lisp
-(message "initializing groovy with use-package...")
-(require 'use-package)
-(use-package "groovy-mode"
-  :init
-  (message "initializing groovy...")
-  :config
-  (message "configuring groovy settings...")
-  (setq-default groovy-indent-offset 2)
-)
+  (message "initializing groovy with use-package...")
+  (require 'use-package)
+  (use-package "groovy-mode"
+    :defer t
+    :init
+    (message "initializing groovy...")
+    :config
+    (message "configuring groovy settings...")
+    (setq-default groovy-indent-offset 2)
+  )
 #+end_src

@@ -1,0 +1,58 @@
+#+title:    Graphviz Dot Config
+#+author:   Logan Barnett
+#+email:    logustus@gmail.com
+#+date:     <2018-11-14 Wed>
+#+language: en
+#+tags:     config
+
+* compile on save
+  #+begin_src emacs-lisp
+    (defun config/compile-dot ()
+      "compile a graphviz dot file"
+      ;; (compile graphviz-dot-dot-program))
+      (defvar graphviz-dot-dot-program)
+      (defvar graphviz-dot-preview-extension)
+      (compile (concat graphviz-dot-dot-program
+                       " -T" graphviz-dot-preview-extension " "
+                       (shell-quote-argument buffer-file-name)
+                       " -o "
+                       (shell-quote-argument
+                        (concat (file-name-sans-extension buffer-file-name)
+                                "." graphviz-dot-preview-extension))))
+      )
+  #+end_src
+
+  #+begin_src emacs-lisp
+    ;; no need to show compile window on success - just interested in errors
+    (defun compilation-exit-autoclose (STATUS code msg)
+      "Close the compilation window if there was no error at all."
+      ;; If M-x compile exists with a 0
+      (when (and (eq STATUS 'exit) (zerop code))
+        ;; then bury the *compilation* buffer, so that C-x b doesn't go there
+        (bury-buffer)
+        ;; and delete the *compilation* window
+        (delete-window (get-buffer-window (get-buffer "*compilation*"))))
+      ;; Always return the anticipated result of compilation-exit-message-function
+      (cons msg code))
+  #+end_src
+
+* use-package
+
+  #+begin_src emacs-lisp
+    (use-package "graphviz-dot-mode"
+      :defer t
+      :init
+      :config
+      (setq-default graphviz-dot-preview-extension "png")
+      (add-hook 'graphviz-dot-mode-hook
+                (lambda ()
+                  (add-hook
+                   'after-save-hook
+                   'config/compile-dot nil
+                   'make-it-local
+                   )))
+
+      (defvar compilation-exit-message-function)
+      (setq compilation-exit-message-function 'compilation-exit-autoclose)
+      )
+  #+end_src

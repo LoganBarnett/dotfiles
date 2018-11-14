@@ -1,0 +1,61 @@
+#+title:    Flycheck
+#+author:   Logan Barnett
+#+email:    logustus@gmail.com
+#+date:     <2018-11-14 Wed>
+#+language: en
+#+tags:     config
+
+* showing the error list automatically for errors only
+  I don't think I use this anymore. This is kept for reference. This brings up
+  the =flycheck= error list when there are errors, but shouldn't for warnings. I
+  took this out because I found it too invasive and cut into performance.
+  #+begin_src emacs-lisp
+
+    (defun my/flycheck-list-errors-only-when-errors ()
+      "Show flycheck error list when there are errors in the current buffer."
+      (defvar flycheck-current-errors)
+      (defvar flycheck-error-list-buffer)
+      (defvar-local buffer "")
+      (message "checking for current errors")
+      (if flycheck-current-errors
+          (flycheck-list-errors)
+        (-when-let (buffer (get-buffer flycheck-error-list-buffer))
+          (dolist (window (get-buffer-window-list buffer))
+            (quit-window nil window)))))
+
+  #+end_src
+
+* use-package
+
+#+begin_src emacs-lisp
+  (use-package "flycheck"
+    ;; :defer t
+    :ensure t
+    :init
+    ;; turn on flychecking globally
+    (add-hook 'prog-mode-hook #'flycheck-mode)
+    (setq-default syntax-checking-enable-by-default t)
+    :config
+
+    ;; node-modules support shamelessly lifted from here
+    ;; https://github.com/lunaryorn/.emacs.d/blob/master/lisp/lunaryorn-flycheck.el#L62
+    ;; (add-hook 'flycheck-mode-hook #'my/use-node-modules-bin)
+    ;; can't use flycheck-syntax-check-failed-hook because it's for
+    ;; when flycheck itself has an error
+    ;; TODO: As of emacs 25 there's some huge bugginesss with automatically showing errors
+    ;; (add-hook 'flycheck-after-syntax-check-hook #'my/flycheck-list-errors-only-when-errors)
+    ;; (add-hook 'flycheck-mode-hook #'my/flycheck-list-errors-only-when-errors)
+    ;; (add-hook 'flycheck-mode-hook #'my/use-eslint-from-node-modules)
+
+    ;; use the npm version for the check
+    ;; this breaks flycheck when we enter json-mode and perhaps others
+    ;; an update seems to replace this anyways
+    ;; (setq-default flycheck-disabled-checkers
+    ;;               (append flycheck-disabled-checkers
+    ;;                       '(javascript-jshint)))
+
+    ;; use eslint with web-mode for jsx files
+    ;; (flycheck-add-mode 'javascript-eslint 'web-mode)
+    ;; (flycheck-add-mode 'javascript-jshint 'web-mode)
+    )
+#+end_src

@@ -211,14 +211,15 @@ Finally, tie it all together on demand.
   (message "initializing js")
   (require 'use-package)
     (use-package "js2-mode"
+    :defer t
     :init
     (message "initializing Javascript")
+    :config
     (require 'grep)
     (require 'nvm)
     (require 'flycheck)
     (require 'rainbow-identifiers)
     (require 'flycheck-flow)
-    :config
     (message "Configuring Javascript")
     ;; (add-hook 'js2-mode-hook 'flow-minor-enable-automatically)
     (setq-default flycheck-javascript-flow-args '("--respect-pragma"))

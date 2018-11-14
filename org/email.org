@@ -168,9 +168,29 @@ http://pragmaticemacs.com/emacs/master-your-inbox-with-mu4e-and-org-mode/
 **** apply mu4e
 
 #+begin_src emacs-lisp
+
+  (defun gmail-archive ()
+    "Archive the current or marked mails.
+  This moves them into the All Mail folder."
+    (interactive)
+    (gnus-summary-move-article nil "nnimap+imap.gmail.com:[Gmail]/All Mail"))
+
+  (defun gmail-report-spam ()
+    "Report the current or marked mails as spam.
+  This moves them into the Spam folder."
+    (interactive)
+    (gnus-summary-move-article nil "nnimap+imap.gmail.com:[Gmail]/Spam"))
+
+  (defun my/gnus-summary-keys ()
+    "Set some keybindings for gnus to make more sense as a vim user."
+    ;; (local-set-key (kbd "RET") 'gnus-summary-select-article)
+    (local-set-key "C-w" 'evil-window-map)
+    )
+
   (require 'use-package)
   (message "initializing mu4e with use-package...")
   (use-package "mu4e"
+    :defer t
     :config
     (message "initializing mu4e...")
     (config/mu4e-add-bookmarks)

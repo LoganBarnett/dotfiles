@@ -88,8 +88,8 @@ Adapt image size via `iimage-scale-to-fit-width' when the window size changes."
 ;; configure org-mode
 (defun config-org-mode ()
   "Configure 'org-mode'."
-  (package-initialize)
-  ;; (use-package "org-mode"
+  ;; (package-initialize)
+  (use-package "org"
   ;;   :requires (
   ;;              ;; Cover some languages we want supported.
   ;;              ob-js
@@ -99,12 +99,14 @@ Adapt image size via `iimage-scale-to-fit-width' when the window size changes."
   ;;              ox-confluence-en ;; Adds PlantUML support to Confluence exports.
   ;;              ox-gfm ;; Github Flavored Markdown.
   ;;              )
-  ;;   :init
-  ;;   :config
+    :init
+    :config
     ;; set default diary location
     (setq-default diary-file "~/notes/diary.org")
     ;; (setq-default appt-audible t)
     (setq-default calendar-date-style 'iso)
+
+    (load-library "org-to-jekyll")
     ;; Having to manually specify these is a drag. Scanning all of ~/notes
     ;; sounds great on paper, but Emacs takes a long time to finish that scan. I
     ;; believe the ultimate solution is to condense my org files further into
@@ -169,7 +171,7 @@ Adapt image size via `iimage-scale-to-fit-width' when the window size changes."
 
     (use-friendly-deterministic-headline-html-anchors)
     )
-;; )
+  )
 (provide 'config-org-mode)
 
 ;;; config-org-mode.el ends here

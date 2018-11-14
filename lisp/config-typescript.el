@@ -4,8 +4,6 @@
 
 ;;; Code:
 (require 'use-package)
-(require 'flycheck)
-(require 'cl-lib)
 (defvar flycheck-current-errors)
 (defvar typescript-indent-level)
 
@@ -46,6 +44,8 @@
   (use-package "tide"
     :init
     :config
+    (require 'flycheck)
+    (require 'cl-lib)
     (use-package "typescript-mode"
       :config
       (setq-default typescript-indent-level 2)

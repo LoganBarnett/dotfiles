@@ -20,6 +20,7 @@
   #+begin_src emacs-lisp :results none
     (require 'use-package)
     (use-package "json-mode"
+      :defer t
       :config
       (config/json-mode-show-line-numbers)
       )

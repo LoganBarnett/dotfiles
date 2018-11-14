@@ -37,6 +37,7 @@
 
 #+begin_src emacs-lisp
   (use-package "web-mode"
+    :defer t
     :init
     :config
     (config/web-mode-indentation)
