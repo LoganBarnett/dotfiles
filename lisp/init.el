@@ -323,6 +323,7 @@ layers configuration. You are free to put any user code."
   (init-org-file "java.org")
   (init-org-file "web.org")
   (init-org-file "font.org")
+  (init-org-file "cucumber.org")
   (message "[INIT] Init Done.")
   )
 
