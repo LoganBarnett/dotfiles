@@ -23,9 +23,12 @@ div.CodeMirror-selected {
 }
 
 table.stripped-odd tr:nth-child(odd) {
-  background-color: #333 !important;
+  background-color: var(--general-background-color) !important;
 }
 
+table.pane tr:nth-child(odd) td {
+  background-color: var(--general-background-color) !important;
+}
 
 table.stripped tr:nth-child(even) {
   background-color: #222 !important;
