@@ -194,6 +194,7 @@
   (auto-compile-on-load-mode 1)
   (init-org-file "emacs-config.org")
   (dirty-init)
+  (init-org-file "messages.org")
   (init-org-file "flycheck.org")
   (init-org-file "company.org")
   (init-org-file "macos.org")
