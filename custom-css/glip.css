@@ -84,3 +84,40 @@ div.select {
 .post .post_text {
   color: var(--text-color) !important;
 }
+
+/**
+ * The list of links on the right sidebar.
+ */
+.rightrail .item .text {
+  color: var(--link-color) !important;
+}
+
+/**
+ * The bubble inside the separator that typically says "New Messages" and such.
+ */
+.postslist .sep label {
+  color: var(--callout-color) !important;
+  background-color: var(--callout-background-color) !important;
+  border: 1px solid var(--callout-background-color) !important;
+}
+
+/**
+ * The separator for new posts.
+ */
+.postslist .sep {
+  border-bottom: 1px solid var(--callout-background-color) !important;
+}
+
+/**
+ * This is the background of the send button.
+ */
+.compose_type {
+  background-color: var(--button-background-color) !important;
+}
+
+/**
+ * This is the "+" character on the send button.
+ */
+.compose_type .content-type {
+  color: var(--button-color) !important;
+}
