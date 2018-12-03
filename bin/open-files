@@ -1,0 +1,12 @@
+#!/bin/bash
+lsof +c 0 | gawk '
+{
+    if (! $1 in count)
+        count[$1] = 0
+    count[$1]++
+}
+END {
+    for (var in count)
+        print var, count[var]
+}
+' | sort -n --key=2
