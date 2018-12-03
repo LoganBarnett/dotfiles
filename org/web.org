@@ -13,14 +13,21 @@
   modes that it adopts as minor modes. This puts the indentation back in line (2
   spaces for life!).
 
-#+begin_src emacs-lisp
+  #+begin_src emacs-lisp
 
-  (defun config/web-mode-indentation ()
-    "Set the indentation to 2 for web-mode."
-    (setq-default web-mode-markup-indent-offset 2)
-    (setq-default web-mode-code-indent-offset 2)
-    )
-#+end_src
+    (defun config/web-mode-indentation ()
+      "Set the indentation to 2 for web-mode."
+      (setq-default
+       web-mode-attr-indent-offset 2
+       web-mode-code-indent-offset 2
+       web-mode-css-indent-offset 2
+       web-mode-markup-indent-offset 2
+       )
+      (add-to-list 'web-mode-indentation-params '("lineup-args" . nil))
+      (add-to-list 'web-mode-indentation-params '("lineup-concats" . nil))
+      (add-to-list 'web-mode-indentation-params '("lineup-calls" . nil))
+      )
+  #+end_src
 
 * comments
   =web-mode= defaults to using =/* */= style comments for JavaScript code, and

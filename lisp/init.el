@@ -151,8 +151,8 @@
   (config-elm)
   (load-library "config-plantuml")
   (config-plantuml)
-  (load-library "config-typescript")
-  (config-typescript)
+  ;; (load-library "config-typescript")
+  ;; (config-typescript)
   (load-library "config-rainbow-mode")
   (config-rainbow-mode)
   ;; handle long lines
