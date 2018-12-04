@@ -19,6 +19,13 @@
   "Prevents evaluation of LANG if it is in the list below. BODY is not used."
   (not (member lang '("plantuml"))))
 
+(defun config/hidden-content-indicator ()
+  "Use something besides '...' to indicate hidden content in `org-mode'.
+
+A common form of hidden content is collapsed headings."
+  (setq-default org-ellipsis "⤵")
+  )
+
 (defun image-p (obj)
   "Return non-nil if OBJ is an image"
   (eq (car-safe obj) 'image))
@@ -170,6 +177,7 @@ Adapt image size via `iimage-scale-to-fit-width' when the window size changes."
     (add-hook 'org-mode-hook #'iimage-scale-on-window-configuration-change)
 
     (use-friendly-deterministic-headline-html-anchors)
+    (config/hidden-content-indicator)
     )
   )
 (provide 'config-org-mode)
