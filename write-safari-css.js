@@ -1,5 +1,24 @@
 #! /usr/bin/env node
 
+// To get this working after a system restart, I don't have precise instructions
+// yet but I'm starting to build up a list:
+// 1. Go into Safari's extension builder.
+// 2. Remove the Injector extension.
+// 3. Add the Injector extension back in.
+// 4. Add an injection (right click, inject, save).
+// 5. Quit Safari.
+// 6. Start Safari back up.
+// 7. BEFORE RE-OPENING TABS - run this script - it should succeed.
+// 8. Re open tabs.
+// 9. Run the extension builder.
+// 10. Run the Injector extension.
+//
+// Usually it fails because either the database file is locked (which means the
+// extension must be shut down) or the file doesn't exist (the shm and wal files
+// may remain though). If the file doesn't exist, it isn't in a state where it
+// would save its values anyways (even with manually providing and saving
+// injections).
+
 // NOTE: If the db is ever corrupted by a bad set of 'value', the first record
 // is always key = 'StyleStorageVersion', and the value = '1.7.0'. The value is
 // also in the same utf16le encoding that the rest of it is.
@@ -50,7 +69,7 @@ const localStorageDir = '~/Library/Safari/LocalStorage'
       .replace('~', os.homedir())
 
 const files = fs.readdirSync(localStorageDir)
-const findSqliteFile = /safari-extension_com\.logustus\.injector-(.+?)\.localstorage/
+const findSqliteFile = /safari-extension_com\.logustus\.injector-(.+?)\.localstorage$/
 
 const sqlitePath = path.join(
   localStorageDir,
