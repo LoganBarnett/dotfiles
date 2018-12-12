@@ -1,0 +1,30 @@
+#+title:    org-agenda
+#+author:   Logan Barnett
+#+email:    logustus@gmail.com
+#+date:     <2018-12-12 Wed>
+#+language: en
+#+tags:     emacs config org-agenda
+
+* save buffers on changing todos
+
+  Changes in =org-agenda= write to the buffers that own the original TODO items
+  but they do not save the buffer (which means a crash or other problem could
+  remove my progress recorded). Auto-save may take care of this, but I don't see
+  why we wouldn't just save the results anyways.
+
+  I found a solution on this [[https://emacs.stackexchange.com/questions/21754/how-to-automatically-save-all-org-files-after-marking-a-repeating-item-as-done-i][SO post]], which I have adopted slightly (mostly so I
+  don't have a function named after a glyph I can't readily type).
+
+  #+begin_src emacs-lisp :results none
+    (defmacro unrest (fnc)
+      "Return function that ignores its arguments and invokes FNC."
+      `(lambda (&rest _rest)
+         (funcall ,fnc)))
+  #+end_src
+
+  #+begin_src emacs-lisp :results none
+    (advice-add 'org-deadline       :after (unrest #'org-save-all-org-buffers))
+    (advice-add 'org-schedule       :after (unrest #'org-save-all-org-buffers))
+    (advice-add 'org-store-log-note :after (unrest #'org-save-all-org-buffers))
+    (advice-add 'org-todo           :after (unrest #'org-save-all-org-buffers))
+  #+end_src

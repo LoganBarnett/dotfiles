@@ -223,6 +223,7 @@
   (init-org-file "web.org")
   (init-org-file "font.org")
   (init-org-file "cucumber.org")
+  (init-org-file "org-agenda.org")
   (message "[INIT] Init Done.")
   )
 
