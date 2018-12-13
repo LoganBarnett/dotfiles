@@ -28,6 +28,14 @@ div.i-role-card.ui-draggable-handle[style] {
   background-image: linear-gradient(-5deg, #243 1%, #243 49%, #364 51%, #364 99%) !important;
 }
 
+/**
+ * Copy "link" (but really a button).
+ */
+.tau-copylink {
+  color: var(--button-color) !important;
+  background-color: var(--button-background-color) !important;
+}
+
 .tau-entity-full-name {
   color: #ddd !important;
 }
@@ -67,8 +75,17 @@ div.i-role-card.ui-draggable-handle[style] {
   background: var(--button-background) !important;
 }
 
-.tau-board-view .tau-backlog-body .tau-cellholder, .tau-board-view .tau-rows-header .tau-cellholder, .tau-board-view .tau-timeline .tau-cellholder {
+.tau-board-view .tau-backlog-body .tau-cellholder,
+.tau-board-view .tau-rows-header .tau-cellholder,
+.tau-board-view .tau-timeline .tau-cellholder {
   background-color: #333 !important;
+}
+
+/**
+ * Empty areas that could hold cards in a grid.
+ */
+.tau-board-view .tau-grid .tau-cellholder {
+  border: var(--thin-border) !important;
 }
 
 .tau-clientinput h1, .tau-clientinput h2, .tau-clientinput h3, .tau-clientinput h4, .tau-clientinput h5, .tau-clientinput h6 {
@@ -177,6 +194,21 @@ body, button, input, select, textarea {
   color: #ddd !important;
 }
 
+/**
+ * Name/value pair stacks.
+ */
+.ui-additionalinfo_editable_true:hover .ui-additionalinfo__label,
+.ui-additionalinfo_editable_true:hover .ui-additionalinfo__value {
+  background-color: var(--highlight-background-color) !important;
+}
+
+/**
+ * Name part of the name/value pairs.
+ */
+.ui-additionalinfo__label {
+  color: var(--text-color) !important;
+}
+
 .ui-collapsible .ui-collapsible-header {
   background-color: #709 !important;
   color: #ddd !important;
@@ -229,6 +261,15 @@ body, button, input, select, textarea {
 .entity-tabs .tab-item.selected {
   background-color: #498 !important;
   color: #ddd !important;
+}
+
+/**
+ * Tabs and other(?).
+ */
+.entity-tabs .entity-tabs__quick-add,
+.entity-tabs .tab-item,
+.entity-tabs .ui-menu-actions {
+  border: var(--thin-border) !important;
 }
 
 .view-header .entity-id__link {
