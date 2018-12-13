@@ -24,6 +24,9 @@
   ;; fixes tramp startup times
   (eval-after-load 'tramp '(setenv "SHELL" "/bin/bash"))
 
+  ;; Fixes issue where recentf runs into race conditions.
+  ;; See https://github.com/syl20bnr/spacemacs/issues/5186 for more details.
+  (cancel-timer recentf-auto-save-timer)
 
   ;; Purescript settings that drifted into the spacemacs config somehow.
   ;; (setq-default psc-ide-add-import-on-completion t t)
