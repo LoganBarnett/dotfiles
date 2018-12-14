@@ -199,10 +199,74 @@ http://pragmaticemacs.com/emacs/master-your-inbox-with-mu4e-and-org-mode/
     (config/mu4e-set-archive-folder)
     (config/mu4e-sync)
     (config/send-email)
-    (message "done initializing mu4e")
-  )
-#+end_src
 
+    (load-library "my-utils")
+    ;; No idea why setq-local is needed here, and elsewhere defvar-local works.
+    ;; This would be a great question for the emacs user group.
+
+    ;; Copy key-id.template.txt to ~/.emacs.d/private/key-id.txt and populate with
+    ;; the key ID.
+    ;; What key ID?
+    (setq-local key-id
+                (my-utils/get-string-from-file  "~/.emacs.d/private/key-id.txt")
+                )
+    (message "loaded key id %s" key-id)
+    (setq-default
+    user-mail-address "logustus@gmail.com"
+    mml-2015-signers key-id
+    gnus-select-method
+    '(nnimap "gmail"
+              (nnimap-address "imap.gmail.com")
+              (nnimap-server-port 993)
+              (nnimap-stream ssl)
+              )
+    ;; u 41E46FB1ACEA3EF0 Logan Barnett (gpg key) <logustus@gmail.com>
+    smtpmail-smtp-server "smtp.gmail.com"
+    smtpmail-smtp-service 587
+    message-send-mail-function 'smtpmail-send-it
+    ;; nntp-authinfo-file "~/.nntp-authinfo.gpg"
+    nntp-authinfo-file "~/.authinfo.gpg"
+    ;; Gmail system labels have the prefix [Gmail], which matches the default
+    ;; value of gnus-ignored-newsgroups. That's why we redefine it.
+    gnus-ignored-newsgroups "^to\\.\\|^[0-9. ]+\\( \\|$\\)\\|^[\"]\"[#'()]"
+    ;; The agent seems to confuse nnimap, therefore we'll disable it.
+    gnus-agent nil
+    ;; We don't want local, unencrypted copies of emails we write.
+    gnus-message-archive-group nil
+    ;; We want to be able to read the emails we wrote.
+    mml2015-encrypt-to-self t
+    )
+    ;; Attempt to encrypt all the mails we'll be sending.
+    (add-hook 'message-setup-hook 'mml-secure-message-encrypt)
+    (add-hook 'gnus-summary-mode-hook 'my/gnus-summary-keys)
+
+    ;; (use-package "email"
+    ;; :init
+    ;; :config
+    ;; (setq-default email-indent-offset 2)
+    ;; )
+    ;; Variant 4: I wonder if this will break other things?
+    ;; (setq-default use-hard-newlines t)
+    ;; Variant 3: Doesn't seem to work.
+    ;; (setq-default mu4e-compose-format-flowed t)
+    ;; Used for Variants 1, 2, and 4.
+    (add-hook
+    'mu4e-compose-mode-hook
+    'config/mu4e-prevent-hard-line-wrap-on-export
+    )
+    ;; Variant 8:
+    (setq-default mu4e-compose-format-flowed t)
+    ;; (add-hook
+    ;;  'message-send-hook
+    ;;  'config/mu4e-prevent-hard-line-wrap-on-export
+    ;;  )
+    ;; (add-hook
+    ;;  'message-sent-hook
+    ;;  'config/mu4e-prevent-hard-line-wrap-on-export
+    ;;  )
+    (message "done initializing mu4e")
+    )
+#+end_src
 
 ** notmuch
 
@@ -259,10 +323,10 @@ http://pragmaticemacs.com/emacs/master-your-inbox-with-mu4e-and-org-mode/
     tool to be something it isn't.
 * reference
 
-- [[https://www.emacswiki.org/emacs/NotMuch][Emacs Wiki - NotMuch]] :: Has some scripts that might be helpful later, and
-     links to other sources and integrations with other tools.
-- [[https://github.com/tjim/nevermore][nevermore]] :: A =notmuch= interface for Emacs. I'm not sure what it provides
-     over the =notmuch= official Emacs plugin yet. =company= support?
-- [[https://github.com/cmiles74/spacemacs-notmuch-layer][Spacemacs notmuch layer]] :: =notmuch= for Spacemacs. Use =SPC a n= to activate.
-- [[https://notmuchmail.org/notmuch-emacs/][notmuch-emacs]] :: Official docs on setting up =notmuch= with Emacs.
+  - [[https://www.emacswiki.org/emacs/NotMuch][Emacs Wiki - NotMuch]] :: Has some scripts that might be helpful later, and
+       links to other sources and integrations with other tools.
+  - [[https://github.com/tjim/nevermore][nevermore]] :: A =notmuch= interface for Emacs. I'm not sure what it provides
+       over the =notmuch= official Emacs plugin yet. =company= support?
+  - [[https://github.com/cmiles74/spacemacs-notmuch-layer][Spacemacs notmuch layer]] :: =notmuch= for Spacemacs. Use =SPC a n= to activate.
+  - [[https://notmuchmail.org/notmuch-emacs/][notmuch-emacs]] :: Official docs on setting up =notmuch= with Emacs.
 * artifacts
