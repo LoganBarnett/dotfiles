@@ -29,11 +29,37 @@ div.i-role-card.ui-draggable-handle[style] {
 }
 
 /**
- * Copy "link" (but really a button).
+ * Copy "link" (but really a span that works like a button).
  */
 .tau-copylink {
   color: var(--button-color) !important;
   background-color: var(--button-background-color) !important;
+  border-radius: 0.1rem !important;
+}
+
+/**
+ * Copy "link" icon. Just hide the damn thing since it's an inline image we
+ * can't style.
+ */
+.tau-icon-share__general-icon__2-2-1 {
+  display: none !important;
+}
+
+/**
+ * Follow "link" (but really a span that works like a button).
+ */
+.tau-followlink {
+  color: var(--button-color) !important;
+  background-color: var(--button-background-color) !important;
+  border-radius: 0.1rem !important;
+}
+
+/**
+ * Copy "link" icon. Just hide the damn thing since it's an inline image we
+ * can't style.
+ */
+.tau-icon-follow__general-icon__2-2-1 {
+  display: none !important;
 }
 
 .tau-entity-full-name {
@@ -209,6 +235,13 @@ body, button, input, select, textarea {
   color: var(--text-color) !important;
 }
 
+/**
+ * Name part of _custom_ name/value pairs.
+ */
+.ui-customfield__label {
+  color: var(--text-color) !important;
+}
+
 .ui-collapsible .ui-collapsible-header {
   background-color: #709 !important;
   color: #ddd !important;
@@ -270,6 +303,23 @@ body, button, input, select, textarea {
 .entity-tabs .tab-item,
 .entity-tabs .ui-menu-actions {
   border: var(--thin-border) !important;
+}
+
+/**
+ * Link to ticket.
+ */
+.tau-board-unit_type_entity-icon-id a,
+.tau-board-unit_type_id a,
+.tau-board-unit_type_process a {
+  color: var(--link-color) !important;
+  text-decoration: underline !important;
+}
+
+/**
+ * Ticket number in ticket view.
+ */
+.view-header .entity-id {
+  color: var(--head1-color) !important;
 }
 
 .view-header .entity-id__link {
