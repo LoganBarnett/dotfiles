@@ -66,14 +66,15 @@ const names = fs.readdirSync('custom-css')
 
 
 const localStorageDir = '~/Library/Safari/LocalStorage'
-      .replace('~', os.homedir())
+  .replace('~', os.homedir())
 
 const files = fs.readdirSync(localStorageDir)
 const findSqliteFile = /safari-extension_com\.logustus\.injector-(.+?)\.localstorage$/
 
 const sqlitePath = path.join(
   localStorageDir,
-  files.find(f => f.match(findSqliteFile))
+  'safari-extension_com.logustus.injector-0000000000_0.localstorage'
+  // files.find(f => f.match(findSqliteFile))
 )
 console.log('Writing to path: ' + sqlitePath)
 
@@ -111,11 +112,13 @@ names.forEach(name => {
   fs.writeFileSync(`.tmp-css-write/${name}.json`, convertedMeta, 'binary')
 
 
+// delete from itemtable where key='${meta.key}';
   const updateSql = `
 pragma encoding = "UTF-8";
 PRAGMA journal_mode=DELETE;
 BEGIN EXCLUSIVE;
-delete from itemtable where key='${meta.key}';
+drop table if exists itemtable;
+CREATE TABLE ItemTable (key TEXT UNIQUE ON CONFLICT REPLACE, value BLOB NOT NULL ON CONFLICT FAIL);
 insert into itemtable
 (key, value) values
 ('${meta.key}', readfile('.tmp-css-write/${meta.name}.json'))
