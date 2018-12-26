@@ -176,6 +176,23 @@ button.o365button {
 }
 
 /**
+ * Tables in emails get some funky styling I guess. Add a border to help show
+ * cells in the table.
+ */
+.rps_3619 .x_dlm {
+  background-color: var(--general-background-color) !important;
+  border: var(--thin-border) !important;
+}
+
+/**
+ * Tables with inline styling should be fixed.
+ */
+table[style] {
+  background-color: var(--general-background-color) !important;
+  color: var(--text-color) !important;
+}
+
+/**
  * Wait, what? Putting stuff in a font tag? This seems to take a weird
  * precedence with specificity.
  */
