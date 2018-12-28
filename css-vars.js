@@ -45,6 +45,7 @@ const vars = {
   '--tab-inactive-background-color': '#292b2e',
   '--tab-left-inactive-border-radius': '0 0 0.5em 0',
   '--tab-right-inactive-border-radius': '0 0 0 0.5em',
+  '--meta-color': '#b1951d',
   // Setting the container's background-color makes it so we get the S shaped
   // border radius on the tabs, because the border-radius on the bottom allows
   // the background-color of the container to leak through.

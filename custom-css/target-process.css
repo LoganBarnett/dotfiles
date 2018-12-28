@@ -70,6 +70,17 @@ div.i-role-card.ui-draggable-handle[style] {
   color: #ddd !important;
 }
 
+/**
+ * Status for tickets in the taskboard view.
+ */
+.tau-board-grid-view .tau-rows-header.tau-header-epic .tau-cell .tau-axiscell__item .tau-state,
+.tau-board-grid-view .tau-rows-header.tau-header-feature .tau-cell .tau-axiscell__item .tau-state,
+.tau-board-grid-view .tau-rows-header.tau-header-portfolioepic .tau-cell .tau-axiscell__item .tau-state,
+.tau-board-grid-view .tau-rows-header.tau-header-testplan .tau-cell .tau-axiscell__item .tau-state,
+.tau-board-grid-view .tau-rows-header.tau-header-userstory .tau-cell .tau-axiscell__item .tau-state {
+  color: var(--meta-color) !important;
+}
+
 .tau-card-v2 {
   background-color: #333 !important;
   color: #ddd !important;
