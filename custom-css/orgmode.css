@@ -1,3 +1,8 @@
+/**
+ * This file is pretty much a copy of gnu.css, and they might use the same
+ * structure. Don't hesitate long to merge the overrides.
+ */
+
 body {
   background-color: var(--general-background-color) !important;
   color: var(--text-color) !important;
@@ -29,11 +34,6 @@ h6 {
 
 dt {
   color: var(--text-color) !important;
-}
-
-div.node {
-  background-color: var(--tab-active-background-color) !important;
-  color: var(--tab-active-color) !important;
 }
 
 a[href] {

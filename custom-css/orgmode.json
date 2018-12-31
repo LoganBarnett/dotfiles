@@ -1,0 +1,11 @@
+{
+  "includes": [
+    "https://*.orgmode.org/*"
+  ],
+  "excludes": [
+    ""
+  ],
+  "name": "orgmode",
+  "enabled": true,
+  "key": "orgmode"
+}
