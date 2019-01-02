@@ -1,0 +1,65 @@
+body {
+  background-color: var(--general-background-color) !important;
+  color: var(--text-color) !important;
+}
+
+a {
+  color: var(--link-color) !important;
+  text-decoration: underline !important;
+}
+
+a:visited {
+  background-color: var(--visited-link-background-color) !important;
+  color: var(--visited-link-color) !important;
+}
+
+.my-account-layout .my-account {
+  background-color: var(--general-background-color) !important;
+}
+
+.my-account-layout .my-account .my-account-header {
+  background-color: var(--head1-background-color) !important;
+  color: var(--head1-color) !important;
+}
+
+.my-account-layout .my-account .my-account-content {
+  background-color: var(--general-background-color) !important;
+}
+
+.my-account-layout .my-account .my-account-content .contact-info>div,
+.my-account-layout .my-account .my-account-content .user-password>div {
+  background-color: var(--input-background-color) !important;
+  color: var(--input-color) !important;
+  border: var(--thin-border) !important;
+}
+
+.my-account-layout .my-account .my-account-content .contact-info .password,
+.my-account-layout .my-account .my-account-content .user-password .password {
+  background-color: var(--input-background-color) !important;
+  color: var(--input-color) !important;
+  border: var(--thin-border) !important;
+}
+
+.my-account-layout .my-account .my-account-content .contact-info>div>a,
+.my-account-layout .my-account .my-account-content .user-password>div>a {
+  color: var(--link-color) !important;
+}
+
+.main-layout {
+  background-color: var(--general-background-color) !important;
+}
+
+.main-layout .content {
+  background-color: var(--general-background-color) !important;
+  border: var(--thin-border) !important;
+}
+
+.slideout-panel {
+  background-color: var(--general-background-color) !important;
+}
+
+.navbar {
+  background-image: none;
+  background-color: var(--panel-title-background) !important;
+  color: var(--panel-title-color) !important;
+}

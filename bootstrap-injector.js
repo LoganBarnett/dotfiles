@@ -19,5 +19,8 @@ localStorage.setItem( "${m.key}", JSON.stringify(${JSON.stringify(m)}))\
 
 fs.writeFileSync(
   '/Users/logan/dev/Injector.safariextension/share/bootstrap.js',
-  lines.join('\n')
+  lines.join('\n') + `
+styleStorage.update()
+reloadStyles()
+`
 )

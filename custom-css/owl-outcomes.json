@@ -1,0 +1,11 @@
+{
+  "includes": [
+    "https://*.owloutcomes.net/*"
+  ],
+  "excludes": [
+    ""
+  ],
+  "name": "owl-outcomes",
+  "enabled": true,
+  "key": "owl-outcomes"
+}
