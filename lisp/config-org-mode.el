@@ -92,6 +92,13 @@ Adapt image size via `iimage-scale-to-fit-width' when the window size changes."
   (not (config/org-journal-file-p path))
   )
 
+;; Taken from https://emacs.stackexchange.com/a/12124/14851
+(defun my/html2org-clipboard ()
+  "Convert clipboard contents from HTML to Org and then paste (yank)."
+  (interactive)
+  (kill-new (shell-command-to-string "osascript -e 'the clipboard as \"HTML\"' | perl -ne 'print chr foreach unpack(\"C*\",pack(\"H*\",substr($_,11,-3)))' | pandoc -f html -t json | pandoc -f json -t org"))
+  (yank))
+
 ;; configure org-mode
 (defun config-org-mode ()
   "Configure 'org-mode'."

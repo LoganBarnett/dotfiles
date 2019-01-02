@@ -18,6 +18,7 @@ if [ $(uname) = 'Darwin' ]; then
     brew outdated | xargs brew reinstall
 
     # ispell so flyspell works on emacs
+    # pandoc allows converting HTML to org syntax.
     BREWS="
 ag
 ack
@@ -44,6 +45,7 @@ node
 npm
 ocaml
 opam
+pandoc
 pinentry-mac
 plantuml
 postgresql
