@@ -121,3 +121,38 @@ div.select {
 .compose_type .content-type {
   color: var(--button-color) !important;
 }
+
+/**
+ * The presence indicator has a float-y behavior to it. We want it in the
+ * document flow though because that's way easier to manage for my purposes.
+ */
+.presence {
+  position: initial !important;
+  float: none !important;
+}
+
+/**
+ * This uses flexbox to align the presence dots so they look better without
+ * making me jump through a bunch of float hoops. This is overriding inline
+ * styles, so it needs to be more specific.
+ */
+body .grouptab.smooth-fade {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: baseline !important;
+}
+
+/**
+ * Sidebar items don't need all that negative space. Cram it together! I can see
+ * more that way.
+ */
+.grouptab {
+  padding: 0 !important;
+}
+
+/**
+ * Clear padding for selected items in the sidebar, because that's just silly.
+ */
+.grouptab.selected {
+  padding: 0 !important;
+}
