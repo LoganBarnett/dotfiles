@@ -6,14 +6,12 @@
 #+tags:     evil-mode emacs config
 
 * evil-mode
+  #+begin_src emacs-lisp
+  (message "nothing to do in evil-mode config")
+  #+end_src
 ** evil-collection
-   Trying to add =evil-mode= bindings has been problematic for me, partly I
-   think because there are problems with setting key bindings (see
-   [[https://github.com/emacs-evil/evil/issues/301][emacs-evil#301]] for the author's frustration with the system).
-
-   =evil-collection= is a user maintained list of =evil-mode= bindings. Let's
-   just turn it on globally.
-
-   #+begin_src emacs-lisp :results none
-   (evil-collection-init)
-   #+end_src
+   =evil-collection= is a user maintained list of =evil-mode= bindings. It's not
+   very compatible with the Spacemacs way of doing things, and I've had trouble
+   getting some of the keybindings to work properly. For now I've opted to not
+   use =evil-collection= and instead wire up my own bindings by hand. I've found
+   a way to do this that seems to work consistently enough.
