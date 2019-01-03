@@ -1,0 +1,19 @@
+#+title:    evil-mode
+#+author:   Logan Barnett
+#+email:    logustus@gmail.com
+#+date:     <2019-01-02 Wed>
+#+language: en
+#+tags:     evil-mode emacs config
+
+* evil-mode
+** evil-collection
+   Trying to add =evil-mode= bindings has been problematic for me, partly I
+   think because there are problems with setting key bindings (see
+   [[https://github.com/emacs-evil/evil/issues/301][emacs-evil#301]] for the author's frustration with the system).
+
+   =evil-collection= is a user maintained list of =evil-mode= bindings. Let's
+   just turn it on globally.
+
+   #+begin_src emacs-lisp :results none
+   (evil-collection-init)
+   #+end_src
