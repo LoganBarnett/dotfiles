@@ -165,9 +165,97 @@ http://pragmaticemacs.com/emacs/master-your-inbox-with-mu4e-and-org-mode/
 
      [[https://www.djcbsoftware.nl/code/mu/mu4e/Bookmarks.html][mu4e bookmarks docs]]
 
+**** writing: line wrapping
+     Wrapping at 80 columns is king, but it's not without some management to
+     make happen. By default =mu4e= seems to respect single line breaks when
+     exporting to the email. This means email readers (such as gmail) will break
+     the email at about 78 columns or so, which makes for very poor looking,
+     jagged paragraphs. This is partly due to GMail's interaction with
+     =format=flowed= for plain text emails, and the RFC governing it.
+
+     Some additional reading:
+     + [[https://www.djcbsoftware.nl/code/mu/mu4e/Writing-messages.html][mu4e docs on writing messages]]
+     + [[https://mathiasbynens.be/notes/gmail-plain-text][GMail plain text and line wrapping]]
+     + [[https://github.com/djcb/mu/issues/569][mu#569]] Support format=flowed on outgoing mails
+
+***** unfill
+      I like to edit my emails using =auto-fill-mode= and =fill-paragraph=.
+      However we need to "unfill" just before ending. Fortunately a [[https://emacs.stackexchange.com/a/45380/14851][Stack
+      Overflow answer]] already does this for us. Below is the code for that,
+      mostly verbatim. I changed the call from =fill-paragraph= to
+      =mu4e-fill-paragraph= since =fill-paragraph= does the opposite of what we
+      want, and =mu4e-fill-paragraph= effectively does the "unfill".
+
+    #+begin_src emacs-lisp :results none
+      (defun config/mu4e-unfill-body ()
+        (let ((fill-column most-positive-fixnum)
+              (top ))
+          (mu4e-compose-goto-top)
+          (setq top (point))
+          (mu4e-compose-goto-bottom)
+          ;; now go backward by paragraph and unfill them unless the paragraph starts
+          ;; with >
+          (while (and (> (point) top)
+                      (backward-paragraph))
+            (unless (looking-at ">")
+              (mu4e-fill-paragraph))))
+        )
+    #+end_src
+
+***** fill when writing
+    For more line wrapping goodness, we need to set up =auto-fill-mode= in this
+    buffer again, and also set =fill-column= to 72. 78 should be the target, but
+    I'm trying to be conservative here. Once the email is sent, it should be
+    "unfilled" (see [[unfill]]) so clients can respect line wraps properly.
+
+    We also want to fill some arbitrary text if it was pasted in from a source
+    that's not set to our =fill-column= beforehand. By default, =mu4e= remaps
+    =M-q= (the standard =fill-paragraph= binding) to =mu4e-fill-paragraph=. We
+    want to bring that back as well.
+
+    #+begin_src emacs-lisp :results none
+
+      (defun config/mu4e-prevent-hard-line-wrap-on-export ()
+        "Sets `use-hard-newlines' to t for the mu4e buffer."
+        (message "opting to use hardlines")
+        (setq-default mu4e-compose-format-flowed t)
+        (add-hook
+         'message-send-hook
+         'config/mu4e-unfill-body
+         )
+        (add-hook
+         'mu4e-compose-mode-hook
+         (lambda ()
+           (setq-local fill-column 72)
+           (auto-fill-mode 1)
+           (local-set-key (kbd "M-q") 'fill-paragraph)
+           )
+         )
+        )
+    #+end_src
+***** unfill woes
+
+      Sometimes the paragraph doesn't wrap properly. I've included an example
+      below. I'm not sure this is a great problem, nor how it should be fixed. I
+      haven't seen it in normal text yet, and I think line wrapping still works
+      on clients in most cases. The important part is it doesn't hard wrap
+      *abruptly*.
+
+      #+begin_quote
+      Pellentesque dapibus suscipit ligula. Donec posuere augue in quam.
+      Etiam vel tortor sodales tellus ultricies commodo. Suspendisse potenti.
+      Aenean in sem ac leo mollis blandit. Donec neque quam, dignissim in,
+      mollis nec, sagittis eu, wisi. Phasellus lacus. Etiam laoreet quam sed
+      arcu. Phasellus at dui in ligula mollis ultricies. Integer
+      placerat tristique nisl. Praesent augue. Fusce commodo. Vestibulum convallis, lorem a tempus semper, dui dui euismod elit, vitae placerat urna tortor
+      vitae lacus. Nullam libero mauris, consequat quis, varius et, dictum id,
+      arcu. Mauris mollis tincidunt felis. Aliquam feugiat tellus ut
+      neque. Nulla facilisis, risus a rhoncus fermentum, tellus tellus lacinia purus,
+      et dictum nunc justo sit amet elit.
+      #+end_quote
 **** apply mu4e
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :results none
 
   (defun gmail-archive ()
     "Archive the current or marked mails.
@@ -234,30 +322,7 @@ http://pragmaticemacs.com/emacs/master-your-inbox-with-mu4e-and-org-mode/
     ;; Attempt to encrypt all the mails we'll be sending.
     (add-hook 'message-setup-hook 'mml-secure-message-encrypt)
 
-    ;; (use-package "email"
-    ;; :init
-    ;; :config
-    ;; (setq-default email-indent-offset 2)
-    ;; )
-    ;; Variant 4: I wonder if this will break other things?
-    ;; (setq-default use-hard-newlines t)
-    ;; Variant 3: Doesn't seem to work.
-    ;; (setq-default mu4e-compose-format-flowed t)
-    ;; Used for Variants 1, 2, and 4.
-    (add-hook
-    'mu4e-compose-mode-hook
-    'config/mu4e-prevent-hard-line-wrap-on-export
-    )
-    ;; Variant 8:
-    (setq-default mu4e-compose-format-flowed t)
-    ;; (add-hook
-    ;;  'message-send-hook
-    ;;  'config/mu4e-prevent-hard-line-wrap-on-export
-    ;;  )
-    ;; (add-hook
-    ;;  'message-sent-hook
-    ;;  'config/mu4e-prevent-hard-line-wrap-on-export
-    ;;  )
+    (config/mu4e-prevent-hard-line-wrap-on-export)
     (message "done initializing mu4e")
     )
 #+end_src
