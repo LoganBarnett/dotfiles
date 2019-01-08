@@ -69,6 +69,20 @@ form.aui .checkbox>label, form.aui .radio>label {
   overflow-y: hidden !important;
 }
 
+/**
+ * Commit links in the file view.
+ */
+.filebrowser-table .directory-file-history.message a {
+  color: var(--link-color) !important;
+}
+
+/**
+ * Project links in the right sidebar in the dashboard view.
+ */
+.repository-list-container .search-results-container .search-results-item a {
+  color: var(--link-color) !important;
+}
+
 /* side bar links */
 .aui-navgroup-vertical .aui-nav>li>a, .aui-nav-vertical>li>a {
   color: var(--link-color) !important;
