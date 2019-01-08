@@ -44,9 +44,6 @@ cd ~/.emacs.d/private/layers
 # Deft is for searching - I use it for my org-mode files.
 ln -snf ~/Dropbox/notes ~/.deft
 
-echo "Setting up notmuch layer"
-git clone https://github.com/cmiles74/spacemacs-notmuch-layer.git notmuch || true
-
 # we can preload the packages with this:
 # emacs --batch --load=~/.emacs.d/init.el
 # OR:
