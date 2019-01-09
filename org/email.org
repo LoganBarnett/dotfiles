@@ -253,6 +253,39 @@ http://pragmaticemacs.com/emacs/master-your-inbox-with-mu4e-and-org-mode/
       neque. Nulla facilisis, risus a rhoncus fermentum, tellus tellus lacinia purus,
       et dictum nunc justo sit amet elit.
       #+end_quote
+**** evilication
+
+     #+begin_src emacs-lisp :results none
+       (defun config/mu4e-evilify-evil-window-prefix ()
+         "Setup window prefixed commands"
+         (interactive)
+         ;; The docs state you can use the mode name directly instead of a map within
+         ;; it. This resolves problems where certain modes seem to ignore
+         ;; `evil-define-key'.
+         ;; https://github.com/noctuid/evil-guide#why-dont-keys-defined-with-evil-define-key-work-immediately
+         (evil-define-key 'evilified 'mu4e-headers-mode-map
+           (kbd "C-w h") 'evil-window-left
+           (kbd "C-w j") 'evil-window-down
+           (kbd "C-w k") 'evil-window-up
+           (kbd "C-w l") 'evil-window-right
+           ;; TODO: More to come with other window functions.
+           ;; TODO: Consider using https://github.com/emacs-evil/evil-collection
+           ;; TODO: Consider generalizing this for other modes
+           )
+         (evil-define-key 'evilified 'mu4e-view-mode-map
+           (kbd "C-w h") 'evil-window-left
+           (kbd "C-w j") 'evil-window-down
+           (kbd "C-w k") 'evil-window-up
+           (kbd "C-w l") 'evil-window-right
+           ;; TODO: More to come with other window functions.
+           ;; TODO: Consider using https://github.com/emacs-evil/evil-collection
+           ;; TODO: Consider generalizing this for other modes
+           )
+         (evil-normalize-keymaps)
+         (message "window prefix configured")
+         )
+     #+end_src
+
 **** apply mu4e
 
 #+begin_src emacs-lisp :results none
