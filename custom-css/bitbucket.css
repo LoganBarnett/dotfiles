@@ -7,19 +7,32 @@
 */
 
 body {
-  color: #ddd !important;
+  color: var(--text-color) !important;
+}
+
+h1 {
+  background-color: var(--head1-background-color) !important;
+  color: var(--head1-color) !important;
 }
 
 h2 {
-  color: #ddd !important;
+  background-color: var(--head2-background-color) !important;
+  color: var(--head2-color) !important;
+}
+
+h3 {
+  background-color: var(--head3-background-color) !important;
+  color: var(--head3-color) !important;
 }
 
 h4 {
-  color: var(--text-color) !important;
+  background-color: var(--head4-background-color) !important;
+  color: var(--head4-color) !important;
 }
 
 h5 {
-  color: var(--text-color) !important;
+  background-color: var(--head5-background-color) !important;
+  color: var(--head5-color) !important;
 }
 
 h1,
@@ -377,4 +390,19 @@ table.aui>tbody>tr, table.aui>tfoot>tr {
 
 ak-editor-bitbucket .mono, code, tt {
   background-color: #333 !important;
+}
+
+/**
+ * Badges. Shows near things like "Recently Closed".
+ */
+aui-badge, .aui-badge {
+  color: var(--badge-color) !important;
+}
+
+/**
+ * "Recently Closed" text.
+ */
+.dashboard .table-expander {
+  background-color: var(--head1-background-color) !important;
+  color: var(--head1-color) !important;
 }
