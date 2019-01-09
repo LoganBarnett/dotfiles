@@ -63,3 +63,23 @@ a:visited {
   background-color: var(--panel-title-background) !important;
   color: var(--panel-title-color) !important;
 }
+
+/**
+ * Question text.
+ */
+.single-measure .outer-flex-container .question-container .prompt>span {
+  background-color: var(--head1-background-color) !important;
+  color: var(--head1-color) !important;
+}
+
+.single-measure .outer-flex-container .question-container p {
+  background-color: var(--head2-background-color) !important;
+  color: var(--head2-color) !important;
+}
+
+/**
+ * Question container.
+ */
+.single-measure .outer-flex-container .options-container {
+  background-image: none !important;
+}
