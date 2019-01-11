@@ -149,6 +149,16 @@ Adapt image size via `iimage-scale-to-fit-width' when the window size changes."
     (global-set-key (kbd "C-c C-x C-r") 'my/org-clock-report)
     ;; For some reason this doesn't work. How do I override key bindings?
     (bind-key (kbd "C-c C-x C-r") 'my/org-clock-report)
+
+    (setq-default org-modules '(
+                                ;; `org-checklist' clears checklists on tasks if
+                                ;; `:RESET_CHECK_BOXES: t' is set for the
+                                ;; properties on the task. I find this very
+                                ;; useful for checklists in repeating tasks.
+                                org-checklist
+                                ))
+    (require 'org-checklist)
+
     ;; Some initial langauges we want org-babel to support
     (require 'ob-js)
     (require 'ob-shell)
