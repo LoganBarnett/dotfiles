@@ -59,7 +59,7 @@
 
   ;; prog-mode stuff
   ;; multi-line
-  ;; always add new line rather than flowing like fci-mode
+  ;; always add new line rather than flowing
   (paradox-require 'multi-line)
   (defvar multi-line-always-newline)
   (setq-default multi-line-current-strategy
@@ -142,8 +142,6 @@
   ;; (add-hook 'post-self-insert-hook 'animated-self-insert)
 
   (load-library "my-utils")
-  (load-library "config-whitespace")
-  (config-whitespace)
   (load-library "config-flyspell")
   (config-flyspell)
   (load-library "config-vc")
