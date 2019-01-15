@@ -15,6 +15,9 @@ export PATH=$PATH:$GOROOT/bin
 # https://github.com/gcuisinier/jenv/wiki/Trouble-Shooting
 export JENV_ROOT=/usr/local/opt/jenv
 
+# GNU commands are generally way better.
+PATH="/usr/local/opt/gnu-sed/libexec/gnubin:$PATH"
+
 export PATH="$JENV_ROOT:$PATH"
 eval "$(jenv init -)"
 
