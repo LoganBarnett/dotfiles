@@ -9,7 +9,7 @@
 * dirty config
 
 #+BEGIN_SRC emacs-lisp
-(message "[CONFIG] Configuring for MacOS...")
+  (message "[CONFIG] Configuring for MacOS...")
   (setq-default mac-command-key-is-meta t)
   (setq-default mac-option-modifier 'alt)
   (setq-default osx-use-option-as-meta nil)
@@ -20,7 +20,13 @@
   ;; http://ergoemacs.org/emacs/emacs_hyper_super_keys.html
   (setq-default mac-command-modifier 'meta) ; make cmd key do Meta
   ;; (setq mac-option-modifier 'super) ; make opt key do Super
-  (setq-default mac-right-command-modifier 'super)
+
+  ;; I used to use mac-right-command-modifier or (not sure which worked)
+  ;; ns-right-alternate-modifier to super. This no longer seems to work and
+  ;; instead binds left command to super.
+  ;; (setq-default mac-right-command-modifier 'super)
+  ;; (setq-default ns-right-alternate-modifier 'super)
+
   ;; (setq mac-control-modifier 'control) ; make Control key do Control
   (setq-default ns-function-modifier 'hyper)  ; make Fn key do Hyper
   ;; not an osx setting, but keyboard related (maybe move all of these to
@@ -31,7 +37,6 @@
   ;; TODO: this doesn't seem to do anything useful
   ;; (define-key key-translation-map (kbd "C-p") (kbd "<menu>"))
   ;; (global-set-key (kbd "<menu>") (lambda () (interactive) 'super))
-  (setq-default ns-right-alternate-modifier 'super)
   ;; (define-key key-translation-map (kbd "C-p") 'super)
   ;; (key-chord-define-global "<menu>" (lambda () (interactive) 'super))
 #+END_SRC
