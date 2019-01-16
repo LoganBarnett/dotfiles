@@ -93,6 +93,15 @@ div.select {
 }
 
 /**
+ * The sidebar category separators (bookmarks, favorites, people, teams, etc).
+ * It's got too much padding. Added body to selector because the current style
+ * already uses !important.
+ */
+body .plugintab label {
+  padding: 0 !important;
+}
+
+/**
  * The bubble inside the separator that typically says "New Messages" and such.
  */
 .postslist .sep label {
