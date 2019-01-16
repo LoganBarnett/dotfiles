@@ -215,7 +215,6 @@ Finally, tie it all together on demand.
     (rainbow-identifiers-mode 1)
     )
 
-  (message "initializing js")
   (require 'use-package)
     (use-package "rjsx-mode"
     :defer t

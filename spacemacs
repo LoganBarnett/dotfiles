@@ -161,7 +161,24 @@ values."
    ;; See https://github.com/syl20bnr/spacemacs/issues/7103
    ;; and https://github.com/d12frosted/environment/blob/master/emacs/spacemacs/spacemacs.el#L80
    ;; for examples.
-    ;; `(("melpa" . ,(concat "" "/Users/logan/dev/melpa/")))
+   ;; configuration-layer--elpa-archives
+   ;;   `(
+   ;;     ("melpa" . ,(concat "" "/Users/logan/dev/melpa/"))
+   ;;     ;; ("org" . ,(concat "" "/Users/logan/dev/org-mode/"))
+   ;;     ("gnu" . ,(concat "" "/Users/logan/dev/gnu-elpa/"))
+   ;;     )
+   ;; configuration-layer-elpa-archives
+   ;;   `(
+   ;;     ("melpa" . ,(concat "" "/Users/logan/dev/melpa/"))
+   ;;     ;; ("org" . ,(concat "" "/Users/logan/dev/org-mode/"))
+   ;;     ("gnu" . ,(concat "" "/Users/logan/dev/gnu-elpa/"))
+   ;;     )
+   ;; package-archives
+   ;;   `(
+   ;;     ("melpa" . ,(concat "" "/Users/logan/dev/melpa/"))
+   ;;     ("org" . ,(concat "" "/Users/logan/dev/org-mode/"))
+   ;;     ("gnu" . ,(concat "" "/Users/logan/dev/gnu-elpa/"))
+   ;;     )
    ;; If non nil ELPA repositories are contacted via HTTPS whenever it's
    ;; possible. Set it to nil if you have no way to use HTTPS in your
    ;; environment, otherwise it is strongly recommended to let it set to t.

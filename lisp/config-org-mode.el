@@ -27,7 +27,7 @@ A common form of hidden content is collapsed headings."
   )
 
 (defun image-p (obj)
-  "Return non-nil if OBJ is an image"
+  "Return non-nil if OBJ is an image."
   (eq (car-safe obj) 'image))
 
 
