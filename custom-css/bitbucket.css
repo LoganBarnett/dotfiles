@@ -107,6 +107,17 @@ form.aui .checkbox>label, form.aui .radio>label {
   color: var(--link-color) !important;
 }
 
+/**
+ * Sidebar links. They are too spacious. This makes them less spacious and we're
+ * less likely to scroll.
+ */
+.aui-sidebar .aui-navgroup-vertical .aui-nav > li > a.aui-nav-item,
+.aui-sidebar-submenu .aui-navgroup-vertical .aui-nav > li > a.aui-nav-item,
+.aui-sidebar .aui-navgroup-vertical .aui-nav > li > button.aui-nav-item,
+.aui-sidebar-submenu .aui-navgroup-vertical .aui-nav > li > button.aui-nav-item {
+  padding: 0 !important;
+}
+
 /* sidebar footer */
 .aui-sidebar .aui-sidebar-footer, .aui-sidebar-submenu .aui-sidebar-footer {
   background-color: var(--button-background) !important;
