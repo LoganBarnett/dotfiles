@@ -351,6 +351,15 @@ http://pragmaticemacs.com/emacs/master-your-inbox-with-mu4e-and-org-mode/
     gnus-message-archive-group nil
     ;; We want to be able to read the emails we wrote.
     mml2015-encrypt-to-self t
+    mu4e-view-prefer-html nil
+    ;; mu4e-html2text-command "html2text -utf8 -width 72"
+    ;; mu4e-html2text-command "html2markdown | grep -v '&nbsp_place_holder;'"
+
+    ;; This is a MacOS specific solution. It just flattens the text so it's not
+    ;; very preferable, but unlike the shr stuff, it doesn't create a bunch of
+    ;; hanging file handles that require a reboot sometime later.
+    mu4e-html2text-command "textutil -stdin -format html -convert txt -stdout"
+    mu4e-view-html-plaintext-ratio-heuristic most-positive-fixnum
     )
     ;; Attempt to encrypt all the mails we'll be sending.
     (add-hook 'message-setup-hook 'mml-secure-message-encrypt)
