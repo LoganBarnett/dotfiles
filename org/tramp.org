@@ -45,7 +45,7 @@ Tramp can be debugged with a verbose number. I know you can set it as high as 6.
 
 #+begin_src emacs-lisp
   (defun set-tramp-logging ()
-    (setq-default tramp-verbose 6)
+    ;; (setq-default tramp-verbose 6)
   )
 #+end_src
 
@@ -103,19 +103,25 @@ command control it, as those still work.
   I followed up on [[https://github.com/nonsequitur/git-gutter-plus/pull/39][this ticket]] and was able to "advice" these functions using
   the workarounds listed in there. It seems to have worked so far.
 
-  #+begin_src emacs-lisp
-    (defun git-gutter+-remote-default-directory (dir file)
-      (let* ((vec (tramp-dissect-file-name file))
-              (method (tramp-file-name-method vec))
-              (user (tramp-file-name-user vec))
-              (domain (tramp-file-name-domain vec))
-              (host (tramp-file-name-host vec))
-              (port (tramp-file-name-port vec)))
-         (tramp-make-tramp-file-name method user domain host port dir)))
+  Since updating packages, this happens when opening any file remotely. A second
+  open makes it work, but that's very undesirable.
 
-    (defun git-gutter+-remote-file-path (dir file)
-      (let ((file (tramp-file-name-localname (tramp-dissect-file-name file))))
-        (replace-regexp-in-string (concat "\\`" dir) "" file)))
+  #+begin_src emacs-lisp :results none
+    (defun config/fix-tramp-git-gutter-interaction ()
+      (interactive)
+      (defun git-gutter+-remote-default-directory (dir file)
+        (let* ((vec (tramp-dissect-file-name file))
+                (method (tramp-file-name-method vec))
+                (user (tramp-file-name-user vec))
+                (domain (tramp-file-name-domain vec))
+                (host (tramp-file-name-host vec))
+                (port (tramp-file-name-port vec)))
+           (tramp-make-tramp-file-name method user domain host port dir)))
+
+      (defun git-gutter+-remote-file-path (dir file)
+        (let ((file (tramp-file-name-localname (tramp-dissect-file-name file))))
+          (replace-regexp-in-string (concat "\\`" dir) "" file)))
+      )
   #+end_src
 * all together
 
@@ -136,6 +142,7 @@ command control it, as those still work.
     ;; (override-tramp-get-ls-command)
     (config/fix-tramp-large-file-issue)
     (config/enable-remote-dir-locals)
+    (config/fix-tramp-git-gutter-interaction)
   )
 
 #+end_src
