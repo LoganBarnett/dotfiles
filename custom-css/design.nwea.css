@@ -1,0 +1,129 @@
+body {
+  background-color: var(--general-background-color) !important;
+  color: var(--text-color) !important;
+}
+
+h1 {
+  background-color: var(--head1-background-color) !important;
+  color: var(--head1-color) !important;
+}
+
+h2 {
+  background-color: var(--head2-background-color) !important;
+  color: var(--head2-color) !important;
+}
+
+h3 {
+  background-color: var(--head3-background-color) !important;
+  color: var(--head3-color) !important;
+}
+
+h4 {
+  background-color: var(--head4-background-color) !important;
+  color: var(--head4-color) !important;
+}
+
+h5 {
+  background-color: var(--head5-background-color) !important;
+  color: var(--head5-color) !important;
+}
+
+a {
+  color: var(--link-color) !important;
+}
+
+a:visited {
+  color: var(--visited-link-color) !important;
+}
+
+td {
+  color: var(--text-color) !important;
+  font-size: inherit !important;
+  font-weight: inherit !important;
+  height: auto !important;
+  line-height: inherit !important;
+  padding: 0 !important;
+}
+
+/**
+ * Friends don't let friends <hr>.
+ */
+hr {
+  display: none !important;
+}
+
+/**
+ * Fix grid stuff.
+ */
+.nwea__grid__container.nwea__grid__fixed {
+  width: auto !important;
+}
+
+.nwea__grid__column.nwea__grid__offset-1 {
+  margin-left: 0 !important;
+}
+
+.nwea__grid__column.nwea__grid__width-3 {
+  width: auto !important;
+}
+
+/**
+ * Headings shouldn't take half the page.
+ */
+.lHelpersSectionTitle, .lHelpersSectionTitleFirst {
+  margin-bottom: 0 !important;
+}
+
+.lHelpersSectionTitleFirst {
+  margin-top: 0 !important;
+}
+
+.nwea__grid__column {
+  padding: 0 !important;
+}
+
+/**
+ * This is like a heading and a paragraph in one.
+ */
+.introTitleBody {
+  color: var(--text-color) !important;
+  font-size: inherit !important;
+  font-weight: inherit !important;
+  letter-spacing: inherit !important;
+  line-height: inherit !important;
+}
+
+.repoLinkLabel {
+  color: var(--text-color) !important;
+  font-size: inherit !important;
+  font-weight: inherit !important;
+  letter-spacing: inherit !important;
+  line-height: inherit !important;
+  padding: 0 !important;
+}
+
+.lHelpersSectionPara {
+  font-size: inherit !important;
+}
+
+.lHelpersSectionPara, .lHelpersSectionSubLight {
+  color: var(--text-color) !important;
+  letter-spacing: inherit !important;
+  line-height: inherit !important;
+  margin: 0 !important;
+}
+
+/**
+ * Elevation examples.
+ */
+.fig1Box03, .fig1Box04 {
+  background-color: var(--panel-background-color) !important;
+}
+
+/**
+ * Elevation table is so spacious I could move in.
+ */
+#elevation-table>tbody>tr>td {
+  font-size: inherit !important;
+  height: auto !important;
+}
