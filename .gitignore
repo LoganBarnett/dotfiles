@@ -9,6 +9,9 @@ node_modules/
 org/private.org
 org/*.el
 
+# Cookies from curl usages.
+wand-cookies.txt
+
 # Hide all private files.
 *.priv.txt
 *.private.js
