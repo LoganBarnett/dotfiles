@@ -9,6 +9,29 @@
 =prog-mode= will be reflected in practically any mode with code or configuration
 files. It generally doesn't effect text files.
 
+* parens, braces, oh my
+  =smartparens= is rather cumbersome with =evil-mode= around. Staying in the
+  insert state can be great on occasion, but it makes commands harder to
+  compose, and oftentimes =smartparens= will incorrectly attempt to help me
+  close a brace when I'm inserting something on the inside that might be
+  temporarily incorrect. After all, I'm still typing. Keeping it disabled is
+  vital, but it can also provide some additional functionality, such as
+  highlighting unmatched pairs. I've tried excluding =smartparens= from the
+  =spacemacs= packages, but some other layer or package pulls it in anyways.
+  Instead, let's toss it some config to disable it per this [[https://github.com/syl20bnr/spacemacs/issues/6144][ticket]].
+
+  #+begin_src emacs-lisp
+    (eval-after-load 'smartparens
+      '(progn
+         (sp-pair "(" nil :actions :rem)
+         (sp-pair "[" nil :actions :rem)
+         (sp-pair "'" nil :actions :rem)
+         (sp-pair "`" nil :actions :rem)
+         (sp-pair "{" nil :actions :rem)
+         (sp-pair "\"" nil :actions :rem)
+         )
+      )
+  #+end_src
 * auto fill comments
   I'm not sure how I feel about using =auto-fill-mode= for normal code, but for
   comments this is a must to me. Fortunately =auto-fill-mode= comes with
