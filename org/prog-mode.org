@@ -27,6 +27,7 @@ files. It generally doesn't effect text files.
          (sp-pair "[" nil :actions :rem)
          (sp-pair "'" nil :actions :rem)
          (sp-pair "`" nil :actions :rem)
+         (sp-pair "<" nil :actions :rem)
          (sp-pair "{" nil :actions :rem)
          (sp-pair "\"" nil :actions :rem)
          )
