@@ -46,9 +46,20 @@ files. It generally doesn't effect text files.
       )
   #+end_src
 
+* line wrapping
+  Disable line wrapping for any =prog-mode= based buffer. =truncate-lines= set
+  to =t= will mean the line is simply "clipped" when it goes off the side of the
+  buffer, rather than "folded" (the docs' term) or wrapped.
+
+  #+begin_src emacs-lisp
+  (defun config/disable-line-wrapping ()
+    (setq-local truncate-lines t)
+  )
+  #+end_src
 * all together
 
   #+begin_src emacs-lisp
     (add-hook 'prog-mode-hook #'config/auto-fill-comments)
     (add-hook 'prog-mode-hook #'display-line-numbers-mode)
+    (add-hook 'prog-mode-hook #'config/disable-line-wrapping)
   #+end_src
