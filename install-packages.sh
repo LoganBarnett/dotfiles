@@ -78,6 +78,11 @@ zsh-syntax-highlighting
     # sed is special
     echo "installing sed"
     brew install gnu-sed --with-default-names || brew upgrade gnu-sed --with-default-names
+    # Some systems have workarounds expecting the original sed to remain in
+    # place. This makes the system work for both cases assuming the check is an
+    # OS check. It should be assumed that "sed" is the right sed, and not the
+    # impostor FreeBSD sed.
+    ln -s /usr/local/bin/{,g}sed
 
     ./install-aws-cli-tools.sh
 
