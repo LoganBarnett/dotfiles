@@ -1,0 +1,19 @@
+# -*- mode: snippet -*-
+# name: Writing spells means several headers I don't always remember.
+# key: spell
+# group: org
+# --
+#+school:       ${1: $$(yas-choose-value '(
+"unknown"
+"abjuration"
+"divination"
+"enchantment"
+"evocation"
+"illusion"
+"necromancy"
+"transmutation"
+))}
+#+casting_time: $2
+#+range:        $3
+#+components:   VSM
+#+duration:     instantaneous
