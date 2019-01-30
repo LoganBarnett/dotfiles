@@ -81,6 +81,8 @@ const buttonColor = '#0a0814'
 
 const vars = {
   '--border': '#5d4d7a',
+  '--func-color': '#bc6ec5',
+  '--keyword-color': '#4f97d7',
   '--text': '#b2b2b2',
   '--text-color': '#b2b2b2',
   '--dim-text': '#686868',

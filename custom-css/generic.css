@@ -1,0 +1,38 @@
+/**
+ * This file has a generic set of styles I should be able to apply to any
+ * unstyled or minimally styled page to get a quick effect going.
+ */
+
+body {
+  background-color: var(--general-background-color) !important;
+  color: var(--text-color) !important;
+}
+
+a {
+  color: var(--link-color) !important;
+}
+
+a:visited {
+  background-color: var(--visited-link-background-color) !important;
+  color: var(--visited-link-color) !important;
+}
+
+h1 {
+  background-color: var(--head1-background-color) !important;
+  color: var(--head1-color) !important;
+}
+
+h2 {
+  background-color: var(--head2-background-color) !important;
+  color: var(--head2-color) !important;
+}
+
+h3 {
+  background-color: var(--head3-background-color) !important;
+  color: var(--head3-color) !important;
+}
+
+h4 {
+  background-color: var(--head4-background-color) !important;
+  color: var(--head4-color) !important;
+}

@@ -118,9 +118,29 @@ button.o365button {
 /**
  * Highlighted mail heading list items.
  */
-.ms-bg-color-themeLight, .ms-bgc-tl, .ms-bg-color-themeLight-hover:hover,
-.ms-bg-color-themeLight-focus:focus, .ms-bg-color-themeLight-before:before,
-.ms-bgc-tl-h:hover, .ms-bgc-tl-f:focus, .ms-bgc-tl-b:before {
+.ms-bg-color-themeLight,
+.ms-bgc-tl,
+.ms-bg-color-themeLight-hover:hover,
+.ms-bg-color-themeLight-focus:focus,
+.ms-bg-color-themeLight-before:before,
+.ms-bgc-tl-h:hover,
+.ms-bgc-tl-f:focus,
+.ms-bgc-tl-b:before {
+  color: var(--item-active-color) !important;
+  background-color: var(--item-active-background-color) !important;
+}
+
+/**
+ * Actually the selector used for highlighted mail heading list items.
+ */
+.ms-bg-color-neutralLight,
+.ms-bgc-nl,
+.ms-bg-color-neutralLight-hover:hover,
+.ms-bg-color-neutralLight-focus:focus,
+.ms-bg-color-neutralLight-before:before,
+.ms-bgc-nl-h:hover,
+.ms-bgc-nl-f:focus,
+.ms-bgc-nl-b:before {
   color: var(--item-active-color) !important;
   background-color: var(--item-active-background-color) !important;
 }
@@ -205,4 +225,40 @@ font {
  */
 div.x_zd-comment[style], p[style] {
   color: var(--text-color) !important;
+}
+
+/**
+ * Spam notifications have some custom styling.
+ */
+.rps_5e86 .x_dlm {
+  background-color: var(--panel-background-color) !important;
+}
+
+/**
+ * Vertical resize areas.
+ */
+.vResize {
+  border-color: var(--thin-border-color) !important;
+}
+
+/**
+ * Horizontal border between folder and folder items.
+ */
+._n_v1 {
+  border-color: var(--thin-border-color) !important;
+}
+
+/**
+ * Items in the tree (folder) list are very padded, and include a style tag.
+ */
+body ._n_w4 ._n_y4 {
+  padding: 0 !important;
+}
+
+/**
+ * Items in the tree (folder) list are made artificially tall which is like a
+ * padding of sorts. Make it auto instead.
+ */
+._n_G4 {
+  height: auto !important;
 }

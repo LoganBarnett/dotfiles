@@ -1,0 +1,9 @@
+{
+  "includes": [
+    "https://*.threejs.org/*"
+  ],
+  "excludes": [],
+  "name": "threejs",
+  "enabled": true,
+  "key": "threejs"
+}
