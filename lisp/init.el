@@ -141,6 +141,9 @@
 
   ;; (add-hook 'post-self-insert-hook 'animated-self-insert)
 
+  ;; decide-mode comes from
+  ;; https://github.com/lifelike/decide-mode/blob/master/decide.el
+  (load-library "decide")
   (load-library "my-utils")
   (load-library "config-flyspell")
   (config-flyspell)
