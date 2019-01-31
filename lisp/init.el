@@ -199,6 +199,7 @@
   (init-org-file "emacs-config.org")
   (dirty-init)
   (init-org-file "evil.org")
+  (init-org-file "flyspell.org")
   (init-org-file "messages.org")
   (init-org-file "flycheck.org")
   (init-org-file "company.org")
