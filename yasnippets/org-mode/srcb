@@ -7,5 +7,5 @@
   '("html" "json" "xml")
   (seq-map #'symbol-name (seq-map #'car org-babel-load-languages))
 ))}
-  $0
+
 #+end_src
