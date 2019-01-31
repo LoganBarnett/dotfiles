@@ -612,3 +612,11 @@ div.comment-content {
   background-color: #404040 !important; 
  color: #C0C0C0;
 }
+
+/**
+ * The sticky header that shows you the issue title and status because you
+ * scrolled down.
+ */
+.gh-header .gh-header-sticky.is-stuck+.gh-header-shadow {
+  background-color: var(--panel-background-color) !important;
+}
