@@ -417,3 +417,61 @@ aui-badge, .aui-badge {
   background-color: var(--head1-background-color) !important;
   color: var(--head1-color) !important;
 }
+
+/**
+ * Header for section such as Repository Settings.
+ */
+#content .aui-sidebar+.aui-page-header {
+  background: var(--general-background-color) !important;
+}
+
+/**
+ * Side bar for a section.
+ */
+.aui-navgroup~.aui-page-panel .aui-page-panel-nav,
+.aui-sidebar~.aui-page-panel .aui-page-panel-nav,
+.aui-page-header~.aui-page-panel .aui-page-panel-nav {
+  background: var(--general-background-color) !important;
+  border-right: var(--thin-border) !important;
+}
+
+/**
+ * Section side bar headings.
+ */
+.aui-nav-heading {
+  background-color: var(--head3-background-color) !important;
+  color: var(--head3-color) !important;
+  padding: 0 !important;
+  text-transform: inherit !important;
+}
+
+/**
+ * More section side bar headings.
+ * Remove their vertical spacing.
+ */
+.aui-navgroup-vertical .aui-nav+.aui-nav-heading {
+  margin: 0 !important;
+}
+
+/**
+ * Section side bar items.
+ */
+.aui-navgroup-vertical .aui-nav>li>a, .aui-nav-vertical>li>a {
+  text-decoration: inherit !important;
+  padding: 0 !important;
+}
+
+/**
+ * Section side bar items, hovered.
+ */
+.aui-navgroup-vertical .aui-nav>li>a:hover, .aui-nav-vertical>li>a:hover {
+  background-color: var(--highlight-background-color) !important;
+}
+
+/**
+ * Section side bar items, selected.
+ */
+.aui-navgroup-vertical .aui-nav .aui-nav-selected>a,
+.aui-nav-vertical .aui-nav .aui-nav-selected>a {
+  background-color: var(--highlight-dim-background-color) !important;
+}
