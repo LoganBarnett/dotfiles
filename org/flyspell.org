@@ -15,10 +15,12 @@
    don't care what the function is - I don't want it). There was no replacement
    for =flyspell-correct-at-point=. So let's bring it back.
 
-   #+begin_src emacs-lisp
+   #+begin_src emacs-lisp :results none
      (defun config/flyspell-config-keybindings ()
         (define-key text-mode-map (kbd "C-;") 'flyspell-correct-at-point)
         (define-key prog-mode-map (kbd "C-;") 'flyspell-correct-at-point)
+        (define-key evil-insert-state-map (kbd "C-;") 'flyspell-correct-at-point)
+        (define-key evil-normal-state-map (kbd "C-;") 'flyspell-correct-at-point)
         )
    #+end_src
 
