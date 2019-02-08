@@ -1,6 +1,6 @@
 # -*- mode: snippet -*-
 # name: Writing spells means several headers I don't always remember.
-# key: spell
+# key: dndspell
 # group: org
 # --
 #+school:       ${1: $$(yas-choose-value '(
