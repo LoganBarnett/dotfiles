@@ -1,6 +1,7 @@
 {
   "includes": [
-    "https://bbrathwaite.wordpress.com/*"
+    "https://bbrathwaite.wordpress.com/*",
+    "https://azgaar.wordpress.com/*"
   ],
   "excludes": [
     ""

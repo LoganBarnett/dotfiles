@@ -1,11 +1,20 @@
+body {
+  background-color: var(--general-background-color) !important;
+  color: var(--text-color) !important;
+}
+
+.site {
+  background-color: var(--general-background-color) !important;
+}
+
 #wrapper {
-  background-color: #222 !important;
+  background-color: var(--panel-background-color) !important;
 }
 
 .c-body {
-  background-color: #333 !important;
+  background-color: var(--general-background-color) !important;
 }
 
 #content a:link, #content a:visited {
-  color: #398 !important;
+  color: var(--link-color) !important;
 }
