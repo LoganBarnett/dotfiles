@@ -38,3 +38,10 @@ a.a-color-base, a:active.a-color-base, a:link.a-color-base, a:visited.a-color-ba
 div.imageInformation {
   background-color: #333 !important;
 }
+
+/**
+ * Amazon Prime Video episode list.
+ */
+.dv-episode-container {
+  background-color: var(--general-background-color) !important;
+}
