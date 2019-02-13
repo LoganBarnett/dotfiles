@@ -475,3 +475,17 @@ aui-badge, .aui-badge {
 .aui-nav-vertical .aui-nav .aui-nav-selected>a {
   background-color: var(--highlight-dim-background-color) !important;
 }
+
+/**
+ * Modal.
+ */
+.aui-dialog2 {
+  background-color: var(--panel-background-color) !important;
+}
+
+/**
+ * Modal content area.
+ */
+.aui-dialog2-content {
+  background-color: var(--panel-background-color) !important;
+}
