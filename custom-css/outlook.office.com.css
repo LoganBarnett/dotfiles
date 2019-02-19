@@ -213,6 +213,13 @@ table[style] {
 }
 
 /**
+ * Table cells with inline styling should be fixed.
+ */
+td[style] {
+  color: var(--text-color) !important;
+}
+
+/**
  * Wait, what? Putting stuff in a font tag? This seems to take a weird
  * precedence with specificity.
  */
@@ -228,9 +235,11 @@ div.x_zd-comment[style], p[style] {
 }
 
 /**
- * Spam notifications have some custom styling.
+ * Spam notifications have some custom styling. The selectors can be a little
+ * slippery here.
  */
-.rps_5e86 .x_dlm {
+.rps_5e86 .x_dlm,
+.rps_dc .x_dlm {
   background-color: var(--panel-background-color) !important;
 }
 
