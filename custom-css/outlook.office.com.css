@@ -236,10 +236,10 @@ div.x_zd-comment[style], p[style] {
 
 /**
  * Spam notifications have some custom styling. The selectors can be a little
- * slippery here.
+ * slippery here. Fortunately we can cleverly do a partial match.
  */
-.rps_5e86 .x_dlm,
-.rps_dc .x_dlm {
+[class*="rps_"] [class*="x_"]
+{
   background-color: var(--panel-background-color) !important;
 }
 
