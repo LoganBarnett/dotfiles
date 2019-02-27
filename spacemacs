@@ -152,6 +152,8 @@ This function is called at the very startup of Spacemacs initialization
 before layers configuration.
 You should not put any user code in there besides modifying the variable
 values."
+  ;; TODO: Use non-expanded file name.
+  ;; (setq configuration-layer-elpa-archives '(("myelpa" . "/Users/logan/dev/my-elpa/")))
   ;; This setq-default sexp is an exhaustive list of all the supported
   ;; spacemacs settings.
   (setq-default
@@ -411,6 +413,11 @@ executes.
  This function is mostly useful for variables that need to be set
 before packages are loaded. If you are unsure, you should try in setting them in
 `dotspacemacs/user-config' first."
+  (add-to-list 'load-path "~/.emacs.d/private/local/dotfiles")
+  (require 'elpa-mirror)
+  (setq elpamr-default-output-directory "~/dev/dotfiles/elpa")
+  (message "original package-archives %s" package-archives)
+  (setq-default package-archives '("myelpa" . "~/dev/dotfiles/elpa/"))
   )
 
 (defun dotspacemacs/user-config ()
@@ -420,7 +427,6 @@ layers configuration.
 This is the place where most of your configurations should be done. Unless it is
 explicitly specified that a variable should be set before a package is loaded,
 you should place your code here."
-  (add-to-list 'load-path "~/.emacs.d/private/local/dotfiles")
   (load-library "init")
   (my/init)
   )

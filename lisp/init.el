@@ -141,6 +141,12 @@
 
   ;; (add-hook 'post-self-insert-hook 'animated-self-insert)
 
+  ;; `elpa-mirror' provides a means of capturing the locally installed set of
+  ;; packages in a form that can be consumed as an elpa mirror. This means we
+  ;; can revert to a known working state in the case of a failed package
+  ;; upgrade.
+  (require 'elpa-mirror)
+  (setq elpamr-default-output-directory (expand-file-name "~/dev/my-elpa"))
   ;; decide-mode comes from
   ;; https://github.com/lifelike/decide-mode/blob/master/decide.el
   (load-library "decide")
