@@ -6,6 +6,7 @@
 #+school:       ${1: $$(yas-choose-value '(
 "unknown"
 "abjuration"
+"conjuration"
 "divination"
 "enchantment"
 "evocation"
@@ -13,7 +14,55 @@
 "necromancy"
 "transmutation"
 ))}
-#+casting_time: $2
-#+range:        $3
-#+components:   VSM
-#+duration:     instantaneous
+#+casting_time: ${2: $$(yas-choose-value '(
+"1 action"
+"1 bonus action"
+"1 minute"
+"10 minutes"
+"1 hour"
+"unknown"
+))}
+#+range:        ${3: $$(yas-choose-value '(
+"self"
+"self (30 foot radius)"
+"self (15 foot cone)"
+"touch"
+"10 feet"
+"30 feet"
+"60 feet"
+"90 feet"
+"120 feet"
+"unknown"
+))}
+#+components:   ${4: $$(yas-choose-value '(
+"V"
+"VS"
+"VSM"
+"VM"
+"S"
+"SM"
+"M"
+))}
+#+duration:     ${5: $$(yas-choose-value '(
+"instantaneous"
+"1 round"
+"1 minute"
+"1 hour"
+"8 hours"
+"24 hours"
+"10 days"
+"concentration"
+"concentration, up to 1 round"
+"concentration, up to 1 minute"
+"concentration, up to 10 minutes"
+"concentration, up to 1 hour"
+"up to 1 hour"
+"special"
+"until dispelled"
+"unknown"
+))}
+#+ritual:       ${6: $$(yas-choose-value '(
+"no"
+"yes"
+"unknown"
+))}
