@@ -46,6 +46,7 @@ npm
 ocaml
 opam
 pandoc
+percol
 pinentry-mac
 plantuml
 postgresql
