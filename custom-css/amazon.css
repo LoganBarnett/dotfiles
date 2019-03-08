@@ -45,3 +45,19 @@ div.imageInformation {
 .dv-episode-container {
   background-color: var(--general-background-color) !important;
 }
+
+/**
+ * Prices for items in the thumbnail view.
+ */
+.a-price[data-a-color=base] {
+  color: var(--link-color) !important;
+  background-color: var(--link-background-color) !important;
+}
+
+/**
+ * The dash on item prices to indicate a price range.
+ */
+.a-price-dash[data-a-color=base] {
+  color: var(--link-color) !important;
+  background-color: var(--link-background-color) !important;
+}
