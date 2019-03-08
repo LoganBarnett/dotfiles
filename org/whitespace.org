@@ -43,10 +43,10 @@ cleaning up whitespace.
       :ensure t
       :init
       (setq-default
-            whitespace-line-column 80
-            whitespace-style '(face lines-tail)
-            )
+       whitespace-line-column 80
+       whitespace-style '(face lines-tail)
+       )
+      (add-hook 'prog-mode-hook 'whitespace-mode)
       :config
-      (global-whitespace-mode)
       )
   #+end_src
