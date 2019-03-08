@@ -30,8 +30,7 @@ values."
    dotspacemacs-configuration-layer-path '()
    ;; List of configuration layers to load.
    dotspacemacs-configuration-layers
-   '(react
-     python
+   '(
      ;; ----------------------------------------------------------------
      ;; Example of useful layers you may want to use right away.
      ;; Uncomment some layer names and press <SPC f e R> (Vim style) or
@@ -42,6 +41,9 @@ values."
      ;; resolved. I should figure out a better way to do this until then.
 
      auto-completion
+     ;; I should research these settings.
+     ;; (auto-completion :variables
+     ;;                  auto-completion-enable-snippets-in-popup t)
      colors
      docker
      elm
@@ -65,6 +67,8 @@ values."
      osx
      plantuml
      purescript
+     python
+     react
      ruby
      (shell :variables
             shell-default-height 30
