@@ -200,7 +200,11 @@ Adapt image size via `iimage-scale-to-fit-width' when the window size changes."
        ;; (sqlite . t)
        ;; (R . t)
        ))
-    (setq-default org-confirm-babel-evaluate 'my/org-confirm-babel-evaluate)
+    (setq-default
+     org-confirm-babel-evaluate 'my/org-confirm-babel-evaluate
+     org-default-notes-file "~/Dropbox/notes/inbox.org"
+     org-directory "~/Dropbox/notes"
+     )
     ;; (setq-default imagemagick-enabled-types t)
     ;; imagemagick-register-types must be invoked after changing enabled types.
     (imagemagick-register-types)
