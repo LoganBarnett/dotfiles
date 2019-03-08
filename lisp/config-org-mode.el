@@ -28,19 +28,31 @@ A common form of hidden content is collapsed headings."
 
 (defun config/google-calendar-sync ()
   "Setup `org-gcal' to sync with Google Calendar to create `org-agenda' items."
-  ;; (use-package org-gcal
-  ;;   :ensure t
-  ;;   :config
+  ;; Leave interactive so I can debug.
+  (interactive)
   (load-library "org-gcal")
     (setq-default
-     org-gcal-client-id "189233698887-m9l0ni0tk3297cf36avnrn6hd1hetodd.apps.googleusercontent.com"
-     ;; DO NOT CHECK THIS IN
-     org-gcal-client-secret "yTHrTaygY8ts4e41sPZNSiyi"
+     org-gcal-client-id
+     (funcall (plist-get
+               (car
+                (auth-source-search
+                 :host "calendar.google.com"
+                 :user "client-id")
+                )
+                :secret))
+     org-gcal-client-secret
+     (funcall (plist-get
+               (car
+                (auth-source-search
+                 :host "calendar.google.com"
+                 :user "client-secret")
+                )
+               :secret))
      org-gcal-file-alist '(("logustus@gmail.com" . "~/Dropbox/notes/calendar.org")
                           )
      org-gcal-header-alist '(("logustus@gmail.com" . "personal"))
      )
-    ;; )
+    ;; (message "id %s secret %s" org-gcal-client-id org-gcal-client-secret)
   )
 
 (defun image-p (obj)
