@@ -26,6 +26,23 @@ A common form of hidden content is collapsed headings."
   (setq-default org-ellipsis "⤵")
   )
 
+(defun config/google-calendar-sync ()
+  "Setup `org-gcal' to sync with Google Calendar to create `org-agenda' items."
+  ;; (use-package org-gcal
+  ;;   :ensure t
+  ;;   :config
+  (load-library "org-gcal")
+    (setq-default
+     org-gcal-client-id "189233698887-m9l0ni0tk3297cf36avnrn6hd1hetodd.apps.googleusercontent.com"
+     ;; DO NOT CHECK THIS IN
+     org-gcal-client-secret "yTHrTaygY8ts4e41sPZNSiyi"
+     org-gcal-file-alist '(("logustus@gmail.com" . "~/Dropbox/notes/calendar.org")
+                          )
+     org-gcal-header-alist '(("logustus@gmail.com" . "personal"))
+     )
+    ;; )
+  )
+
 (defun image-p (obj)
   "Return non-nil if OBJ is an image."
   (eq (car-safe obj) 'image))
@@ -195,6 +212,7 @@ Adapt image size via `iimage-scale-to-fit-width' when the window size changes."
 
     (use-friendly-deterministic-headline-html-anchors)
     (config/hidden-content-indicator)
+    (config/google-calendar-sync)
     )
   )
 (provide 'config-org-mode)

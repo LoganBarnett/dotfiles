@@ -117,6 +117,8 @@ values."
      prettier-js
      rainbow-identifiers
      rainbow-mode
+     ;; Needed for org-gcal.
+     request-deferred
      terraform-mode
      tramp
      web-beautify
