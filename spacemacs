@@ -418,11 +418,17 @@ executes.
  This function is mostly useful for variables that need to be set
 before packages are loaded. If you are unsure, you should try in setting them in
 `dotspacemacs/user-config' first."
+  ;; When a package upgrade goes awry, I should be able to delete the
+  ;; ~/.emacs.d/elpa directory and run Emacs again. This should install all of
+  ;; the packages locally from this other repository. After upgrades I'll need
+  ;; to remember to write the changes out with
+  ;; `elpamr-create-mirror-for-installed' and then commit them.
+  ;; If I ran into trouble here, it would be due to the my-elpa repo not being
+  ;; cloned. I can clone the repo thusly:
+  ;; pushd ~/dev && git clone git@bitbucket.org:LoganBarnett/my-elpa.git
+  ;; TODO: Use non-expanded file name.
+  (setq configuration-layer-elpa-archives '(("myelpa" . "/Users/logan/dev/my-elpa/")))
   (add-to-list 'load-path "~/.emacs.d/private/local/dotfiles")
-  (require 'elpa-mirror)
-  (setq elpamr-default-output-directory "~/dev/dotfiles/elpa")
-  (message "original package-archives %s" package-archives)
-  (setq-default package-archives '("myelpa" . "~/dev/dotfiles/elpa/"))
   )
 
 (defun dotspacemacs/user-config ()
