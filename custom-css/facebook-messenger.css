@@ -368,3 +368,10 @@ div._4-i2, div._5a8u, ._4t2a {
 ._17cj ._2ze8, ._17cj ._cen, ._5sr7 {
 	color: rgba(255, 255, 255, .6) !important;
 }
+
+/**
+ * Typing indicator.
+ */
+._4gd0 {
+  background-color: var(--general-background-color) !important;
+}
