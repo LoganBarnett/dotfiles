@@ -340,3 +340,24 @@ body, button, input, select, textarea {
 .notification__entity-wrap>.entity-card__task:hover, .tau-entity-color--task, .tau-entity-icon.tau-entity-icon--task, .tau-text_type_task, .tau-text_type_task:hover, .tau-text_type_task:visited {
   color: #ddd !important;
 }
+
+/**
+ * Number of selected cards.
+ */
+.tau-selection-group__counter.tau-selected {
+  color: black !important;
+}
+
+/**
+ * Table headers.
+ */
+.tau-rows-header, .tau-cols-header {
+  background-color: var(--general-background-color) !important;
+}
+
+/**
+ * Loading area.
+ */
+.tau-loader-logo {
+  background-color: var(--general-background-color) !important;
+}
