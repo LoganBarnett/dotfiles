@@ -86,6 +86,14 @@ div.select {
 }
 
 /**
+ * The entire post.
+ */
+.post .post-body {
+  padding: 0px 0 0px 51px !important;
+  margin: 0 5px !important;
+}
+
+/**
  * The list of links on the right sidebar.
  */
 .rightrail .item .text {
@@ -99,6 +107,13 @@ div.select {
  */
 body .plugintab label {
   padding: 0 !important;
+}
+
+/**
+ * Categories on the left panel.
+ */
+.plugintab {
+  margin: 0 !important;
 }
 
 /**
