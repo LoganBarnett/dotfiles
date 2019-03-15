@@ -23,8 +23,37 @@
   #+end_src
 
   #+begin_src emacs-lisp :results none
-    (advice-add 'org-deadline       :after (unrest #'org-save-all-org-buffers))
-    (advice-add 'org-schedule       :after (unrest #'org-save-all-org-buffers))
-    (advice-add 'org-store-log-note :after (unrest #'org-save-all-org-buffers))
-    (advice-add 'org-todo           :after (unrest #'org-save-all-org-buffers))
+    (defun config/org-agenda-autosave ()
+      (advice-add 'org-deadline       :after (unrest #'org-save-all-org-buffers))
+      (advice-add 'org-schedule       :after (unrest #'org-save-all-org-buffers))
+      (advice-add 'org-store-log-note :after (unrest #'org-save-all-org-buffers))
+      (advice-add 'org-todo           :after (unrest #'org-save-all-org-buffers))
+      )
+  #+end_src
+
+* make day view default view
+  Taken from the documentation on =org-agenda-list=:
+
+  #+begin_quote
+  With a numeric prefix argument in an interactive call, the agenda will
+  span ARG days.  Lisp programs should instead specify SPAN to change
+  the number of days.  SPAN defaults to ‘org-agenda-span’.
+  #+end_quote
+
+  #+begin_src emacs-lisp :results none
+    (defun config/org-agenda-default-view ()
+      (setq-default org-agenda-span 1)
+      )
+  #+end_src
+
+* all together
+
+  #+begin_src emacs-lisp :results none
+    (use-package "org-agenda"
+      :defer t
+      :init
+      :config
+      (config/org-agenda-autosave)
+      (config/org-agenda-default-view)
+      )
   #+end_src
