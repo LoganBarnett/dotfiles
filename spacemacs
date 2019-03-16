@@ -54,9 +54,10 @@ values."
      helm
      html
      idris
-     java
+     (java :variables java-backend 'lsp)
      javascript
      lua
+     lsp
      markdown
      mu4e
      ;; notmuch
@@ -105,9 +106,8 @@ values."
      graphviz-dot-mode
      groovy-mode
      habitica
-     ;; lsp-java
-     ;; lsp-mode
-     ;; lsp-ui
+     lsp-mode
+     lsp-ui
      multi-line
      multi-term
      noflet
@@ -164,30 +164,6 @@ values."
   ;; This setq-default sexp is an exhaustive list of all the supported
   ;; spacemacs settings.
   (setq-default
-   ;; CUSTOM to allow local melpa packages.
-   ;; configuration-layer--elpa-archives
-   ;; TODO add org and gnu archives here as well.
-   ;; See https://github.com/syl20bnr/spacemacs/issues/7103
-   ;; and https://github.com/d12frosted/environment/blob/master/emacs/spacemacs/spacemacs.el#L80
-   ;; for examples.
-   ;; configuration-layer--elpa-archives
-   ;;   `(
-   ;;     ("melpa" . ,(concat "" "/Users/logan/dev/melpa/"))
-   ;;     ;; ("org" . ,(concat "" "/Users/logan/dev/org-mode/"))
-   ;;     ("gnu" . ,(concat "" "/Users/logan/dev/gnu-elpa/"))
-   ;;     )
-   ;; configuration-layer-elpa-archives
-   ;;   `(
-   ;;     ("melpa" . ,(concat "" "/Users/logan/dev/melpa/"))
-   ;;     ;; ("org" . ,(concat "" "/Users/logan/dev/org-mode/"))
-   ;;     ("gnu" . ,(concat "" "/Users/logan/dev/gnu-elpa/"))
-   ;;     )
-   ;; package-archives
-   ;;   `(
-   ;;     ("melpa" . ,(concat "" "/Users/logan/dev/melpa/"))
-   ;;     ("org" . ,(concat "" "/Users/logan/dev/org-mode/"))
-   ;;     ("gnu" . ,(concat "" "/Users/logan/dev/gnu-elpa/"))
-   ;;     )
    ;; If non nil ELPA repositories are contacted via HTTPS whenever it's
    ;; possible. Set it to nil if you have no way to use HTTPS in your
    ;; environment, otherwise it is strongly recommended to let it set to t.

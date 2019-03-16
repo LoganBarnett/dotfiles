@@ -35,10 +35,11 @@ https://github.com/emacs-lsp/lsp-ui
 * combined
 
   #+begin_src emacs-lisp :results none
-  (add-hook 'prog-mode-hook (lambda ()
-    (require 'lsp-mode)
-    (lsp-mode)
-    (config/company-lsp)
-    (config/flycheck-lsp)
-  ))
+    ;; (use-package "lsp-mode"
+    ;;   :defer t
+    ;;   :init
+    ;;   :config
+    ;;   (config/company-lsp)
+    ;;   (config/flycheck-lsp)
+    ;;   )
   #+end_src
