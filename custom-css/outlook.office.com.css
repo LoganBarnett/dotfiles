@@ -271,3 +271,56 @@ body ._n_w4 ._n_y4 {
 ._n_G4 {
   height: auto !important;
 }
+
+/**
+ * Off-hours time slots in the calendar view.
+ */
+._wx_u1.ms-border-color-neutralLight div div:last-child,
+._wx_u1.ms-border-color-neutralLight div div:nth-last-child(2)
+{
+  background-color: black !important;
+}
+
+/**
+ * Borders around cells in the calendar view.
+ */
+.ms-border-color-neutralLight,
+.ms-bcl-nl,
+.ms-border-color-neutralLight-hover:hover,
+.ms-border-color-neutralLight-focus:focus,
+.ms-border-color-neutralLight-before:before,
+.ms-bcl-nl-h:hover,
+.ms-bcl-nl-f:focus,
+.ms-bcl-nl-b:before {
+  border-color: var(--thin-border-color) !important;
+}
+
+/**
+ * Day column headers (not current day).
+ */
+.ms-font-color-neutralSecondary,
+.ms-fontColor-neutralSecondary,
+.ms-fcl-ns,
+.ms-font-color-neutralSecondary-hover:hover,
+.ms-font-color-neutralSecondary-focus:focus,
+.ms-font-color-neutralSecondary-before:before,
+.ms-fcl-ns-h:hover,
+.ms-fcl-ns-f:focus,
+.ms-fcl-ns-b:before {
+  background-color: var(--tab-inactive-background-color) !important;
+  color: var(--tab-inactive-color) !important;
+}
+
+/**
+ * Day column headers (current day).
+ */
+.ms-bg-color-white,
+.ms-bgc-w,
+.ms-bg-color-white-hover:hover,
+.ms-bg-color-white-focus:focus,
+.ms-bg-color-white-before:before,
+.ms-bgc-w-h:hover,
+.ms-bgc-w-b:before {
+  background-color: var(--tab-active-background-color) !important;
+  color: var(--tab-active-color) !important;
+}
