@@ -203,6 +203,7 @@
   (message "[INIT] Starting init.")
   (auto-compile-on-load-mode 1)
   (init-org-file "emacs-config.org")
+  (init-org-file "macos.org")
   (dirty-init)
   (init-org-file "evil.org")
   (init-org-file "flyspell.org")

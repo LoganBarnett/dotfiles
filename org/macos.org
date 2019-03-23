@@ -9,34 +9,54 @@
 * dirty config
 
 #+BEGIN_SRC emacs-lisp
+  (defun config/configure-for-mac-internal-keyboard ()
+    "Configures keybindings for internal mac keyboards. Externals may be treated differently."
+    (setq-default mac-command-key-is-meta t)
+    (setq-default mac-option-modifier 'alt)
+    (setq-default osx-use-option-as-meta nil)
+    (setq-default mac-option-key-is-meta nil)
+    ;; set keys for Apple keyboard, for emacs in OS X
+    ;; for other OSes and reference, see
+    ;; http://ergoemacs.org/emacs/emacs_hyper_super_keys.html
+    (setq-default mac-command-modifier 'meta) ; make cmd key do Meta
+    ;; (setq mac-option-modifier 'super) ; make opt key do Super
+    (setq-default mac-right-command-modifier 'super)
+    ;; (setq mac-control-modifier 'control) ; make Control key do Control
+    (setq-default ns-function-modifier 'hyper)  ; make Fn key do Hyper
+    ;; not an osx setting, but keyboard related (maybe move all of these to
+    ;; keyboard section)
+    ;; (define-key 'key-translation-map (kbd "<menu>") 'super)
+    ;; (setq-default w32-apps-modifier 'super)
+    ;; (global-unset-key (kbd "<menu>"))
+    ;; TODO: this doesn't seem to do anything useful
+    ;; (define-key key-translation-map (kbd "C-p") (kbd "<menu>"))
+    ;; (global-set-key (kbd "<menu>") (lambda () (interactive) 'super))
+    (setq-default ns-right-alternate-modifier 'super)
+    ;; (define-key key-translation-map (kbd "C-p") 'super)
+    ;; (key-chord-define-global "<menu>" (lambda () (interactive) 'super))
+  )
+#+end_src
+
+I haven't had full time to investigate yet, but I suspect
+=mac-right-command-modifier= is tripping over =mac-command-modifier=. It's the
+most notable difference I see here.
+#+begin_src emacs-lisp
+  (defun config/configure-mac-for-external-keyboard ()
+    "Configures keybindings for external mac keyboards.
+  Often times the key arrangement needs to be swapped in system
+  preferences, but that doesn't work in Emacs apparently."
+    (message "[CONFIG] Skipping internal keyboard keybinding setup for nitrogen...")
+    (setq-default mac-command-key-is-meta t)
+    (setq-default mac-command-modifier 'meta)
+  )
+#+end_src
+
+* account for external keyboards
+#+begin_src emacs-lisp
+
   (message "[CONFIG] Configuring for MacOS...")
-  (setq-default mac-command-key-is-meta t)
-  (setq-default mac-option-modifier 'alt)
-  (setq-default osx-use-option-as-meta nil)
-  (setq-default mac-option-key-is-meta nil)
-  (setq-default mac-command-modifier 'meta)
-  ;; set keys for Apple keyboard, for emacs in OS X
-  ;; for other OSes and reference, see
-  ;; http://ergoemacs.org/emacs/emacs_hyper_super_keys.html
-  (setq-default mac-command-modifier 'meta) ; make cmd key do Meta
-  ;; (setq mac-option-modifier 'super) ; make opt key do Super
-
-  ;; I used to use mac-right-command-modifier or (not sure which worked)
-  ;; ns-right-alternate-modifier to super. This no longer seems to work and
-  ;; instead binds left command to super.
-  ;; (setq-default mac-right-command-modifier 'super)
-  ;; (setq-default ns-right-alternate-modifier 'super)
-
-  ;; (setq mac-control-modifier 'control) ; make Control key do Control
-  (setq-default ns-function-modifier 'hyper)  ; make Fn key do Hyper
-  ;; not an osx setting, but keyboard related (maybe move all of these to
-  ;; keyboard section)
-  ;; (define-key 'key-translation-map (kbd "<menu>") 'super)
-  ;; (setq-default w32-apps-modifier 'super)
-  ;; (global-unset-key (kbd "<menu>"))
-  ;; TODO: this doesn't seem to do anything useful
-  ;; (define-key key-translation-map (kbd "C-p") (kbd "<menu>"))
-  ;; (global-set-key (kbd "<menu>") (lambda () (interactive) 'super))
-  ;; (define-key key-translation-map (kbd "C-p") 'super)
-  ;; (key-chord-define-global "<menu>" (lambda () (interactive) 'super))
+  (if (string-match "nitrogen" (system-name))
+    (config/configure-mac-for-external-keyboard)
+    (config/configure-mac-for-internal-keyboard)
+    )
 #+END_SRC
