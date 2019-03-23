@@ -203,6 +203,7 @@ Adapt image size via `iimage-scale-to-fit-width' when the window size changes."
        (emacs-lisp . t)
        (gnuplot . t)
        (js . t)
+       (lilypond . t)
        (octave . t)
        ;; (perl . t)
        (plantuml . t)
