@@ -18,8 +18,6 @@ echo "Outdated Homebrew package definitions should be fixed."
 
 brew cask upgrade
 
-# NOTE: I omitted razer-synpase due to its intrusive nature. Install manually
-# and then uninstall when keyboard config is complete.
 # TODO: Find a better way to reinstall istat-menus (cannot be stopped once
 # running, short of an "uninstall").
 CASKS="
@@ -37,11 +35,11 @@ haskell-platform
 hipchat
 mumble
 obs
+razer-synapse
 silverlight
 skype
 slack
 steam
-stride
 virtualbox
 xbox360-controller-driver-unofficial
 zoomus
