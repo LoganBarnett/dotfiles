@@ -51,6 +51,7 @@ pinentry-mac
 plantuml
 postgresql
 python3
+sed
 sqlite
 stack
 terraform
@@ -78,7 +79,12 @@ zsh-syntax-highlighting
 
     # sed is special
     echo "installing sed"
-    brew install gnu-sed --with-default-names || brew upgrade gnu-sed --with-default-names
+    # notes from sed install:
+    # If you really need to use these commands with their normal names, you
+    # can add a "gnubin" directory to your PATH from your bashrc like:
+
+    # PATH="/usr/local/opt/coreutils/libexec/gnubin:$PATH"
+
     # Some systems have workarounds expecting the original sed to remain in
     # place. This makes the system work for both cases assuming the check is an
     # OS check. It should be assumed that "sed" is the right sed, and not the
