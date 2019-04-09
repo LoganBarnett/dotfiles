@@ -34,6 +34,8 @@ ln -F -s -n $PWD/bin ~/bin
 
 ./install-shell.sh
 
+./install-nix.sh
+
 if [ $(uname) = 'Darwin' ]; then
     cd $start_dir
     echo "installing homebrew..."
