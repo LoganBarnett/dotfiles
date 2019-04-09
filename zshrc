@@ -175,19 +175,8 @@ export JAVA_HOME=$(/usr/libexec/java_home)
 # thefuck - `fuck` after a failed command and it will try to do the right thing
 eval $(thefuck --alias)
 
-# nvm
-# This is what nvm wants us to use by default. The maintainer for nvm is
-# pretty vocal about not supporting homebrew. We need to point to homebrew's dir
-# to get proper support (otherwise scripts cannot find the "nvm"
-#  binary/function)
-#
-# export NVM_DIR="$HOME/.nvm"
-# export NVM_DIR="/usr/local/opt/nvm"
- # . "/usr/local/opt/nvm/nvm.sh"
-# . "$(brew --prefix nvm)/nvm.sh"
-export NVM_DIR="$HOME/.nvm"
-. "/usr/local/opt/nvm/nvm.sh"
-[[ -s "$HOME/.avn/bin/avn.sh" ]] && source "$HOME/.avn/bin/avn.sh" # load avn
+# nodenv requires a quick init
+eval "$(nodenv init -)"
 
 # When we're running ansi-term from emacs, we don't want the evil-mode bindings
 # and zsh's vim bindings stumbling over each other. See
