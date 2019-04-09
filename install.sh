@@ -56,14 +56,7 @@ echo "installing node modules"
 ./install-node-modules.sh
 
 echo "settting up ocaml's opam"
-# I'm guessing that -y will accept the shell integration question. Perhaps it
-# should be -n and we just check in the configured settings.
-opam init -y --comp 4.03.0
-eval `opam config env`
-echo "getting other ocaml dev tools"
-opam update
-# Contributing to Flow was the primary motivator here.
-opam install -y ocamlfind sedlex js_of_ocaml
+./install-opam.sh
 
 echo "installing GPG..."
 ./install-gpg.sh
