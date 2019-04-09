@@ -167,6 +167,9 @@ grepp() {
 # Upload image to Imgur and return its URL. Get API key at http://imgur.com/register/api_anon
 # imgur() { curl -F "image=@$1" -F "key=ANONYMOUS_IMGUR_API_KEY" https://api.imgur.com/2/upload | egrep -o "<original>.+?</original>" | egrep -o "http://imgur\.com/[^<]+" | sed "s/imgur.com/i.imgur.com/" | tee >(pbcopy); }
 
+# Bootstrap Nix.
+. ~/.nix-profile/etc/profile.d/nix.sh
+
 # oh java
 # JAVA_HOME="/Library/Java/JavaVirtualMachines/jdk1.8.0_102.jdk/Contents/Home"
 # JAVA_HOME="/Library/Java/Home"
