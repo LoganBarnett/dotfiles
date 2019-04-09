@@ -22,7 +22,7 @@ fi
 #zsh customizations
 echo "installing oh my zsh customizations"
 if [ $(uname) = 'Darwin' ]; then
-    echo "installing osx dns flushing for oh my zsh"
+    echo "installing osx dns flushing for oh my zsh ----- ignore the error if it already exists."
     cd ~/.oh-my-zsh/custom/plugins && git clone git@github.com:eventi/noreallyjustfuckingstopalready.git || true
 else
     echo "skipping osx dns flushing for oh my zsh - not osx"

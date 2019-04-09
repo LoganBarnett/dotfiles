@@ -22,14 +22,14 @@ setopt prompt_subst
 
 # TODO: add osx conditionally
 plugins=(
-    brew,
-    command-not-found,
-    git,
-    node,
-    noreallyjustfuckingstopalready,
-    npm,
-    osx,
-    rsync,
+    brew
+    command-not-found
+    git
+    node
+    noreallyjustfuckingstopalready
+    npm
+    osx
+    rsync
     yarn
 )
 
@@ -153,7 +153,8 @@ alias yfr="yfs && yf"
 
 # functions
 
-# Change 'regex' to '[r]egex' in grep to prevent grep from showing up in its own results when doing a `ps ... | grep ...`
+# Change 'regex' to '[r]egex' in grep to prevent grep from showing up in its own
+# results when doing a `ps ... | grep ...`
 grepp() {
         first_char=$(echo $1 | cut -c -1);
         left_bracket='[';
