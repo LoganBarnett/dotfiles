@@ -37,6 +37,7 @@ elm
 ffmpeg
 gnuplot
 gnutls
+gnu-sed
 go
 graphviz
 ispell
@@ -57,7 +58,6 @@ pinentry-mac
 plantuml
 postgresql
 python3
-sed
 sqlite
 stack
 terraform
@@ -95,7 +95,7 @@ zsh-syntax-highlighting
     # place. This makes the system work for both cases assuming the check is an
     # OS check. It should be assumed that "sed" is the right sed, and not the
     # impostor FreeBSD sed.
-    ln -s /usr/local/bin/{,g}sed
+    ln -f -s /usr/local/bin/{,g}sed
 
     ./install-aws-cli-tools.sh
 
