@@ -15,4 +15,4 @@ sh ./install-nix
 rm ./install-nix{,.sig}
 
 echo "Setting up the shell for nix"
-. /Users/logan/.nix-profile/etc/profile.d/nix.sh
+. ~/.nix-profile/etc/profile.d/nix.sh
