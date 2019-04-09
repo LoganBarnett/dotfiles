@@ -2,15 +2,11 @@
 
 set -e
 echo "installing gems"
-GEMS="heroku jekyll bundler"
-# 10.12 needs a sudoer to install gems.
-if [[ `defaults read loginwindow SystemVersionStampAsString` =~ 10\.12 ]]; then
-    echo "Need sudoer access to install gems."
-    sudo gem install $GEMS
-else
-    echo "Installing gems normally..."
-    gem install $GEMS
-fi
+GEMS="jekyll bundler"
+# 10.12+ needs a sudoer to install gems. All of my systems are on 10.12+ so just
+# sudo by default.
+echo "Need sudoer access to install gems."
+sudo gem install $GEMS
 
 echo "github-pages needs a specific version to be compatible with older ruby"
-gem install github-pages -v 156
+sudo gem install github-pages -v 156
