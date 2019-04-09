@@ -9,17 +9,11 @@ cp $PWD/certs/* /usr/local/etc/openssl/certs/
 ./link-dotfile.sh mbsyncrc
 ./link-dotfile.sh notmuch-config
 brew-upstall isync
-brew-upstall mu --with-emacs
-brew-upstall notmuch --with-emacs
+brew-upstall mu
+brew-upstall notmuch
 
 echo "Creating notmuch index. This may take a while."
 notmuch new
-
-echo "Installing Spacemacs notmuch layer..."
-# Consider https://github.com/tj/git-extras/blob/master/man/git-force-clone.md
-cd ~/.emacs.d/layers && git clone git@github.com:cmiles74/spacemacs-notmuch-layer.git notmuch || true
-# Use a commit and we can update manually.
-cd ~/.emacs.d/layers/notmuch && git checkout c81b2fd1bdb4294edef6d16041bfc880d26b2774
 
 echo "Setting up email authentication..."
 # ~/.email-creds.txt comes from install-private.sh Per instructions here:
@@ -30,8 +24,11 @@ echo "Setting up email authentication..."
 # plaintext storage of the email password more secure, or move it to the
 # keychain perhaps.
 echo "machine smtp.gmail.com login logustus@gmail.com port 587 password $(cat ~/.email-creds.txt)" > ~/.gmail-authinfo.txt
-gpg --output ~/.authinfo.gpg --symmetric ~/.gmail-authinfo.txt
-gpg --output ~/.gmail-imap-authinfo.gpg --symmetric ~/.email-creds.txt
+# TODO this needs some improvement because it seems to crush the existing auth
+# settings. I want to use authinfo for more than one thing.
+gpg --batch --yes --output ~/.authinfo.gpg --symmetric ~/.gmail-authinfo.txt
+gpg --batch --yes \
+    --output ~/.gmail-imap-authinfo.gpg --symmetric ~/.email-creds.txt
 # gpg --output ~/.authinfo.gpg --symmetric ~/.email-creds.txt
 rm ~/.gmail-authinfo.txt
 # Leaving this in for a little while longer.

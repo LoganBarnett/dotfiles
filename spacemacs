@@ -113,6 +113,7 @@ values."
      noflet
      nvm
      nyan-mode
+     pinentry
      plantuml-mode
      prettier-js
      rainbow-identifiers

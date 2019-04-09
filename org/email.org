@@ -165,6 +165,19 @@ http://pragmaticemacs.com/emacs/master-your-inbox-with-mu4e-and-org-mode/
 
      [[https://www.djcbsoftware.nl/code/mu/mu4e/Bookmarks.html][mu4e bookmarks docs]]
 
+**** reading: indexing
+     This should make reading emails faster. At first blush this seems to also
+     fix =company-mode= integration.
+
+     #+begin_src emacs-lisp :results none
+       (defun config/mu4e-indexing ()
+         (setq-default
+          mu4e-index-cleanup nil
+          mu4e-index-lazy-check t
+          )
+         )
+     #+end_src
+
 **** writing: line wrapping
      Wrapping at 80 columns is king, but it's not without some management to
      make happen. By default =mu4e= seems to respect single line breaks when
@@ -314,6 +327,7 @@ http://pragmaticemacs.com/emacs/master-your-inbox-with-mu4e-and-org-mode/
     (config/mu4e-sync)
     (config/send-email)
     (config/mu4e-evilify-evil-window-prefix)
+    (config/mu4e-indexing)
 
     (load-library "my-utils")
     ;; No idea why setq-local is needed here, and elsewhere defvar-local works.
