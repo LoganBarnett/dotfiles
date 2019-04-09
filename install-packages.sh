@@ -128,5 +128,5 @@ pip3 install xdice # xdice requires python3.
 # pip3 doesn't have a PATH location, or xdice doesn't provide a binary (the docs
 # suggest that pip3 is at fault though). Either way we're left fixing it
 # manually for now.
-ln -s /usr/local/lib/python3.7/site-packages/xdice.py /usr/local/bin/xdice
+ln -f -s /usr/local/lib/python3.7/site-packages/xdice.py /usr/local/bin/xdice
 chmod +x /usr/local/lib/python3.7/site-packages/xdice.py
