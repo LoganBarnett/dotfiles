@@ -46,6 +46,21 @@ ul.top-nav li :hover
 */
 /****************************************************/
 
+/**
+ * Basic links.
+ */
+a {
+  color: var(--link-color) !important;
+}
+
+/**
+ * I'm not sure what a muted link represents. It already uses !important though,
+ * so we have to use a more specific selector.
+ */
+body .muted-link {
+  color: var(--link-color) !important;
+}
+
 /* CI in-progress status information shows up here. */
 .merge-status-item {
   background-color: var(--general-background-color) !important;
@@ -266,6 +281,10 @@ div.discussion-timeline-actions {
 /* ordinary code bits */
 .blob-code-inner {
   color: #aaa !important;
+  /* Can you believe some people still use tabs? Github or the browser has this at
+   * 12 spaces!
+   */
+  tab-size: 2;
 }
 
 /* string literals I think */
@@ -614,9 +633,23 @@ div.comment-content {
 }
 
 /**
+ * Header for pull requests and possibly other things.
+ */
+.gh-header {
+  background-color: var(--panel-background-color) !important;
+}
+
+/**
  * The sticky header that shows you the issue title and status because you
  * scrolled down.
  */
 .gh-header .gh-header-sticky.is-stuck+.gh-header-shadow {
+  background-color: var(--panel-background-color) !important;
+}
+
+/**
+ * Header for tabular or stack-like data.
+ */
+.Box-header {
   background-color: var(--panel-background-color) !important;
 }
