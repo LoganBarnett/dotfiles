@@ -489,3 +489,10 @@ aui-badge, .aui-badge {
 .aui-dialog2-content {
   background-color: var(--panel-background-color) !important;
 }
+
+/**
+ * Tasks in pull request comments.
+ */
+.task textarea {
+  color: var(--input-text-color) !important;
+}
