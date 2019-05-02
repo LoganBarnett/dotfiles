@@ -94,6 +94,25 @@ div.select {
 }
 
 /**
+ * The timestamp shown in a post.
+ */
+.post .timestamp {
+  /**
+   * When things are more condensed as I have done it, the timestamp overlaps
+   * with existing content. This prevents that overlap by squishing it deep into
+   * the top-right corner of the post.
+   */
+  top: 0 !important;
+}
+
+/**
+ * The text input area when editing an existing post.
+ */
+.post.editing #edit_chat_form textarea {
+  color: var(--input-color) !important;
+}
+
+/**
  * The list of links on the right sidebar.
  */
 .rightrail .item .text {
