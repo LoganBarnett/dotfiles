@@ -17,6 +17,7 @@
 #+casting_time: ${2: $$(yas-choose-value '(
 "1 action"
 "1 bonus action"
+"1 reaction"
 "1 minute"
 "10 minutes"
 "1 hour"
