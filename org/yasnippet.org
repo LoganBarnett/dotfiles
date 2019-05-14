@@ -25,7 +25,7 @@
     (require 'use-package)
 
     (use-package "yasnippet"
-      :config
+      :init
       (config/yasnippet-fundamental-mode)
       (setq-default yas-snippet-dirs '("~/dev/dotfiles/yasnippets"))
       (yas-reload-all)
