@@ -135,7 +135,7 @@ body .muted-link {
 
 /* comments on issues */
 .timeline-comment-header {
-  background-color: #77d !important;
+  background-color: var(--panel-background-color) !important;
   color: #ddd !important;
 }
 
