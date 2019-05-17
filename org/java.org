@@ -22,12 +22,27 @@ tools/ecosystems.
 )
 #+end_src
 
+** organizing imports
+   By default organizing imports is done automatically. This creates a large
+   churn in the diffs for commits. Disabling it is the sensible thing to do.
+
+   #+begin_src emacs-lisp
+     (defun config/disable-organize-imports-on-save()
+       (setq-default lsp-java-save-action-organize-imports nil)
+     )
+   #+end_src
 * hooking it up
 
 #+begin_src emacs-lisp
-  ;; (add-hook 'java-mode-hook (lambda ()
-  ;;   (require 'lsp-java)
-  ;;   (add-hook 'java-mode-hook #'lsp-java-enable)
-  ;;   (config/set-eclipse-language-server-dir)
-  ;; ))
+  (require 'use-package)
+
+  (use-package "lsp-java"
+    :config
+    (config/disable-organize-imports-on-save)
+  )
+    ;; (add-hook 'java-mode-hook (lambda ()
+    ;;   (require 'lsp-java)
+    ;;   (add-hook 'java-mode-hook #'lsp-java-enable)
+    ;;   (config/set-eclipse-language-server-dir)
+    ;; ))
 #+end_src
