@@ -1,7 +1,12 @@
 #! /usr/bin/env bash
 
-# TODO: Setup java versions here.
+set -e
 
+brew tap AdoptOpenJDK/openjdk
+
+brew cask install adoptopenjdk8
+
+jenv add /Library/Java/JavaVirtualMachines/adoptopenjdk-8.jdk/Contents/Home
 
 # https://github.com/gcuisinier/jenv/issues/212
 # Heads up that you'll need to restart the terminal session after doing this.
