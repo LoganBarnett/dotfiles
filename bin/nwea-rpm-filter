@@ -1,0 +1,5 @@
+#! /usr/bin/env bash
+
+# This finds all of the rpms bundled from the Jenkins build log ($1).
+
+grep -oE '[^/]+-server-[0-9]+\.[0-9]+\.[0-9]+-[0-9]+branch_[0-9]{8}_[0-9]{4}\.noarch\.rpm' "$1" | sort | uniq

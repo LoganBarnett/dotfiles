@@ -1,0 +1,3 @@
+#! /usr/bin/env bash
+
+echo '['"$1"'](https://nwea.tpondemand.com/entity/'"$1"')'
