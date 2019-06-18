@@ -168,9 +168,6 @@ grepp() {
 # Upload image to Imgur and return its URL. Get API key at http://imgur.com/register/api_anon
 # imgur() { curl -F "image=@$1" -F "key=ANONYMOUS_IMGUR_API_KEY" https://api.imgur.com/2/upload | egrep -o "<original>.+?</original>" | egrep -o "http://imgur\.com/[^<]+" | sed "s/imgur.com/i.imgur.com/" | tee >(pbcopy); }
 
-# Bootstrap Nix.
-. ~/.nix-profile/etc/profile.d/nix.sh
-
 # oh java
 # JAVA_HOME="/Library/Java/JavaVirtualMachines/jdk1.8.0_102.jdk/Contents/Home"
 # JAVA_HOME="/Library/Java/Home"
@@ -178,9 +175,6 @@ export JAVA_HOME=$(/usr/libexec/java_home)
 
 # thefuck - `fuck` after a failed command and it will try to do the right thing
 eval $(thefuck --alias)
-
-# nodenv requires a quick init
-eval "$(nodenv init -)"
 
 # When we're running ansi-term from emacs, we don't want the evil-mode bindings
 # and zsh's vim bindings stumbling over each other. See
@@ -312,7 +306,40 @@ function timer_prompt() {
 
 
 set_prompt
-export PATH="/usr/local/opt/gnupg@2.1/bin:$PATH"
+
+export PATH="$HOME/.opam/system/bin:/bin:/usr/local/bin:$HOME/bin:/opt/local/bin:/opt/local/sbin:$HOME/dev/adt-bundle-mac/sdk/platform-tools:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/X11/bin:/usr/local/sbin:$HOME/node_modules/.bin"
+
+export NOTES_DIR=~/Dropbox/notes
+
+# Should take care of some prompt issues.
+export LC_ALL=en_US.UTF-8
+
+# add Go support
+export GOPATH=$HOME/golang
+export GOROOT=/usr/local/opt/go/libexec
+export PATH=$PATH:$GOPATH/bin
+export PATH=$PATH:$GOROOT/bin
+# This really should be included in the homebrew jenv caveats list:
+# https://github.com/gcuisinier/jenv/wiki/Trouble-Shooting
+export JENV_ROOT=/usr/local/opt/jenv
+
+export PATH="$JENV_ROOT:$PATH"
+eval "$(jenv init -)"
+
+# Bootstrap Nix.
+. ~/.nix-profile/etc/profile.d/nix.sh
+
+# nodenv requires a quick init
+eval "$(nodenv init -)"
 
 # Get ocaml's package manager on the PATH and other ocaml config.
 eval $(opam config env)
+
+export PATH="/usr/local/opt/gnupg@2.1/bin:$PATH"
+
+# GNU commands are generally way better.
+export PATH="/usr/local/opt/gnu-sed/libexec/gnubin:$PATH"
+
+# This allows commands to be excluded from history if they are prefixed with a
+# space.
+export HISTCONTROL=ignorespace
