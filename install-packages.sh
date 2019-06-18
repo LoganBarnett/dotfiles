@@ -40,6 +40,7 @@ gnutls
 gnu-sed
 go
 graphviz
+grep
 ispell
 jenv
 jq
