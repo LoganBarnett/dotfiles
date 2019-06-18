@@ -1,0 +1,46 @@
+#+title:     git
+#+author:    Logan Barnett
+#+email:     logustus@gmail.com
+#+date:      <2019-06-18 Tue>
+#+language:  en
+#+file_tags: git config
+
+* blame output
+  =magit= uses the committer date of a commit, which is misleading on branches that
+  have undergone a rebase. The committer date will show as the rebase date, rather
+  than the date of the commit. The standard blame output uses the author date,
+  and I strongly feel like we should do the same here without
+
+  The formatting below is what is used by default, plus modification of the
+  author date shown rather than committer date.
+
+#+begin_src emacs-lisp :results none
+  (defun config/git-blame-output ()
+    (interactive)
+    (setq-default magit-blame-styles
+                  '((headings
+                    (heading-format . "%-20a %A %s
+  "))
+                   (margin
+                    (margin-format " %s%f" " %A %a" " %H")
+                    (margin-width . 42)
+                    (margin-face . magit-blame-margin)
+                    (margin-body-face magit-blame-dimmed))
+                   (highlight
+                    (highlight-face . magit-blame-highlight))
+                   (lines
+                    (show-lines . t)
+                    (show-message . t)))
+                  )
+  )
+#+end_src
+
+* all together
+  #+begin_src emacs-lisp :results none
+    (require 'use-package)
+
+    (use-package "magit"
+      :init
+      (config/git-blame-output)
+      )
+  #+end_src
