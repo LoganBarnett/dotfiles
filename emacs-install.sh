@@ -26,20 +26,27 @@ echo "emacs-plus installed"
 echo "linked emacs-plus"
 
 echo "installing spacemacs"
-git clone https://github.com/syl20bnr/spacemacs ~/.emacs.d || true
+# git clone https://github.com/syl20bnr/spacemacs ~/.emacs.d || true
+git clone https://github.com/syl20bnr/spacemacs ~/.spacemacs.d || true
+
+mkdir -p ~/.vanilla-emacs.d
+
+# I want to maintain a vanilla Emacs configuration alongside Spacemacs.
+ln -snf ~/.emacs.d ~/.vanilla-emacs.d
 
 echo "linking elisp dir"
-rm ~/.emacs.d/private/local/dotfiles || true
-ln -s -n -f $PWD/lisp ~/.emacs.d/private/local/dotfiles
-rm -rf ~/.emacs.d/private/snippets
-ln -s -n -f $PWD/yasnippets ~/.emacs.d/private/snippets
+rm ~/.spacemacs.d/private/local/dotfiles || true
+ln -s -n -f $PWD/lisp ~/.spacemacs.d/private/local/dotfiles
+ln -snf $PWD/lisp/vanilla-init.el ~/.vanilla-emacs.d/init.el
+rm -rf ~/.spacemacs.d/private/snippets
+ln -s -n -f $PWD/yasnippets ~/.spacemacs.d/private/snippets
 # ln -s -n -f $PWD/emacs-config.org ~/.emacs.d/emacs-config.org
-echo "This directory managed by dotfiles" > ~/.emacs.d/private/local/dotfiles/README.org
+echo "This directory managed by dotfiles" > ~/.spacemacs.d/private/local/dotfiles/README.org
 
 echo "Setting up additional layers"
 
-mkdir -p ~/.emacs.d/private/layers
-cd ~/.emacs.d/private/layers
+mkdir -p ~/.spacemacs.d/private/layers
+cd ~/.spacemacs.d/private/layers
 
 # Deft is for searching - I use it for my org-mode files.
 ln -snf ~/Dropbox/notes ~/.deft
