@@ -36,3 +36,21 @@ function that takes care of this for me.
           (projectile-invalidate-cache projectile-project-root)
           (message "File '%s' successfully removed" filename)))))
 #+END_SRC
+** copy full path
+   Shameless theft from here:
+   https://emacsredux.com/blog/2013/03/27/copy-filename-to-the-clipboard/
+
+   #+begin_src emacs-lisp :results none
+     (defun my/copy-file-path-to-clipboard ()
+       "Copy the current buffer file name (full path) to the clipboard."
+       (interactive)
+       (let ((filename (if (equal major-mode 'dired-mode)
+                           default-directory
+                         (buffer-file-name))))
+         (when filename
+           (kill-new filename)
+           (message "Copied buffer file name '%s' to the clipboard." filename)
+           )
+         )
+       )
+   #+end_src
