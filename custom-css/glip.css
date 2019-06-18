@@ -199,3 +199,7 @@ body .grouptab.smooth-fade {
 .grouptab.selected {
   padding: 0 !important;
 }
+
+.loading {
+  background-color: var(--general-background-color) !important;
+}
