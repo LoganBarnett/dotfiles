@@ -1,0 +1,6 @@
+#! /usr/bin/env bash
+
+set -euo pipefail
+
+newargs="$(echo "$@" | sed 's/\-\-ignore .* //')"
+rg $newargs

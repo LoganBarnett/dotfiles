@@ -59,6 +59,7 @@ pinentry-mac
 plantuml
 postgresql
 python3
+ripgrep
 sqlite
 stack
 terraform
