@@ -11,14 +11,15 @@
 #+BEGIN_SRC emacs-lisp
   (defun config/configure-mac-for-internal-keyboard ()
     "Configures keybindings for internal mac keyboards. Externals may be treated differently."
-    (setq-default mac-command-key-is-meta t)
-    (setq-default mac-option-modifier 'alt)
-    (setq-default osx-use-option-as-meta nil)
-    (setq-default mac-option-key-is-meta nil)
+    ;; (setq-default mac-command-key-is-meta t)
+    ;; (setq-default mac-option-modifier 'alt)
+    ;; (setq-default osx-use-option-as-meta nil)
+    ;; (setq-default mac-option-key-is-meta nil)
+    ;; (setq-default mac-command-modifier 'meta) ; make cmd key do Meta
+
     ;; set keys for Apple keyboard, for emacs in OS X
     ;; for other OSes and reference, see
     ;; http://ergoemacs.org/emacs/emacs_hyper_super_keys.html
-    (setq-default mac-command-modifier 'meta) ; make cmd key do Meta
     ;; (setq mac-option-modifier 'super) ; make opt key do Super
     ;; (setq-default mac-right-command-modifier 'super)
     ;; (setq mac-control-modifier 'control) ; make Control key do Control
@@ -46,8 +47,8 @@ most notable difference I see here.
   Often times the key arrangement needs to be swapped in system
   preferences, but that doesn't work in Emacs apparently."
     (message "[CONFIG] Skipping internal keyboard keybinding setup for nitrogen...")
-    (setq-default mac-command-key-is-meta t)
-    (setq-default mac-command-modifier 'meta)
+    ;; (setq-default mac-command-key-is-meta t)
+    ;; (setq-default mac-command-modifier 'meta)
   )
 #+end_src
 
