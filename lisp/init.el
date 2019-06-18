@@ -206,6 +206,7 @@
   (init-org-file "macos.org")
   (dirty-init)
   (init-org-file "evil.org")
+  (init-org-file "helm.org")
   (init-org-file "flyspell.org")
   (init-org-file "messages.org")
   (init-org-file "flycheck.org")

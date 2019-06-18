@@ -1,0 +1,73 @@
+#+title:     Helm
+#+author:    Logan Barnett
+#+email:     logustus@gmail.com
+#+date:      <2019-06-13 Thu>
+#+language:  en
+#+file_tags: helm config
+
+* frame display
+  By default, =spacemacs= will display =helm= in a window, which causes a resize
+  event (or many, from what I can see in the profiler). This is incredibly
+  performance draining, especially in large buffers. Disabling line numbers
+  (=display-line-number-mode= at time of writing) seems to make a small
+  difference, but it's not the culprit as many tickets I have read seem to
+  indicate. Making =helm= display in a frame rather than a window fixes
+  performance issues relating to what windows I presently have open.
+
+  #+begin_src emacs-lisp :results none
+    (defun config/helm-use-frame ()
+      (setq-default
+        ;; Normally this is spacemacs//display-helm-window.
+        helm-display-function #'helm-display-buffer-in-own-frame
+        helm-display-buffer-reuse-frame t
+        helm-use-undecorated-frame-option t
+        ;; Do not change helm-always-two-windows, if t it will split when in a full
+        ;; frame.
+        ;;
+        ;; helm-always-two-windows nil
+
+        ;; Do not change helm-full-frame, because it seems to play a part in
+        ;; making a split for the full frame.
+        ;;
+        ;; helm-full-frame t
+       )
+      )
+  #+end_src
+
+* event timeout
+  The [[https://github.com/emacs-helm/helm/wiki/FAQ#slow-frame-and-window-popup-in-emacs-26][helm faq]] mentions if =x-wait-for-event-timeout= is =nil= in Emacs 26, the
+  =helm= delays should be fixed.
+
+  I have used this and it seems to speed up =helm= significantly. There are
+  still delays on large files, so it's worth investigating having its own frame.
+
+  #+begin_src emacs-lisp :results none
+    (defun config/helm-fix-slowdown ()
+      (setq-default
+        x-wait-for-event-timeout nil
+       )
+      )
+  #+end_src
+
+* all together
+  #+begin_src emacs-lisp :results none
+    (require 'use-package)
+
+    (use-package "helm"
+      :defer t
+      :config
+      ;; Frames seem really buggy. I run into multiple problems with them:
+      ;;
+      ;; 1. Magit will frequently suspend a permanant frame pointed at the
+      ;;    *spacemacs* buffer during interactions.
+      ;; 2. On multiple monitors, the frame will show up on the wrong monitor
+      ;;    initially, and then later won't show up at all even though it has
+      ;;    keyboard focus.
+      ;;
+      ;; Until these are resolved, I'll just put up with the slowness and weird
+      ;; layout rearranging.
+
+      ;; (config/helm-use-frame)
+      (config/helm-fix-slowdown)
+    )
+  #+end_src
