@@ -62,3 +62,66 @@ body, table, form, td, th, p {
 #jenkins .jenkins-config {
   background-color: #333 !important;
 }
+
+/**
+ * Auto complete section.
+ */
+.yui-ac-content {
+  background-color: var(--general-background-color) !important;
+}
+
+#header #search-box {
+  background-color: var(--general-background-color) !important;
+  color: var(--text-color) !important;
+}
+
+#header {
+  background-color: var(--panel-background-color) !important;
+}
+
+/**
+ * The "back arrow" section of the header.
+ */
+.task-icon-link[href="/"] {
+  background-color: var(--panel-background-color) !important;
+}
+
+/**
+ * None of these placeholder selectors seem to be working. If I manually inject
+ * CSS (as in from the console's resources view), it works. I suspect this is a
+ * technical limitation, and I should make my input areas look in a way that
+ * works better with unstyled placeholder values.
+ */
+::placeholder,
+::-webkit-input-placeholder {
+  display: none !important;
+  color: green !important;
+}
+
+input::placeholder,
+input::-webkit-input-placeholder {
+  display: none !important;
+  color: black !important;
+}
+
+body input {
+  background-color: var(--general-background-color) !important;
+  color: var(--text-color) !important;
+  border: var(--thin-border) !important;
+}
+
+/**
+ * Peel-calendar-like labels showing the date and time of a build run. This
+ * covers the date portion.
+ */
+.jobsTable .stage-start-time .date {
+  background-color: var(--panel-background-color) !important;
+}
+
+/**
+ * Peel-calendar-like labels showing the date and time of a build run. This
+ * covers remaining panel.
+ */
+#pipeline-box .table-box .table-viewPort .stage-start .cell-box .stage-start-time {
+  background-color: var(--general-background-color) !important;
+}
