@@ -48,12 +48,12 @@ bar items, but it disables enough that this isn't a problem.
 #+END_SRC
 
 ** encryption
-#+BEGIN_SRC emacs-lisp
-(require 'epa-file)
-(epa-file-enable)
-(defvar epa-pinentry-mode)
-(setf epa-pinentry-mode 'loopback)
-#+END_SRC
+   #+BEGIN_SRC emacs-lisp :results none
+     (require 'epa-file)
+     (epa-file-enable)
+     (defvar epa-pinentry-mode)
+     (setq epa-pinentry-mode 'loopback)
+   #+END_SRC
 ** facebook-flow
 
 Flow is a strict type system that sits on top of Javascript as an
