@@ -3,9 +3,10 @@
 # key: neworg
 # group: org
 # --
-#+title:    $1
-#+author:   Logan Barnett
-#+email:    logustus@gmail.com
-#+date:     `(format-time-string "<%Y-%m-%d %a>" (org-current-time))`
-#+language: en
-#+tags:     $2
+#+title:     $1
+#+author:    Logan Barnett
+#+email:     logustus@gmail.com
+#+date:      `(format-time-string "<%Y-%m-%d %a>" (org-current-time))`
+#+language:  en
+#+file_tags: $2
+#+tags:
