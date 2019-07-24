@@ -38,6 +38,11 @@
   ;; indentation
   (paradox-require 'cc-mode)
   (defvar c-offsets-alist)
+  ;; This should prevent indentation rules from making argument lists or even
+  ;; other lists from lining up with the last identifier, and instead use a more
+  ;; scope-based approach. However I have not observed this indentation rule, as
+  ;; I understand it, to be honored in all major-modes/languages, such as LISP,
+  ;; HTML, and some others.
   (add-to-list 'c-offsets-alist '(arglist-close . c-lineup-close-paren))
 
   ;; non-nil indicates spacemacs should start with fullscreen
