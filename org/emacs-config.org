@@ -52,7 +52,11 @@ bar items, but it disables enough that this isn't a problem.
      (require 'epa-file)
      (epa-file-enable)
      (defvar epa-pinentry-mode)
-     (setq epa-pinentry-mode 'loopback)
+     (setq
+       epa-pinentry-mode 'loopback
+       pgp-gpg-use-agent t
+       )
+     (pinentry-start)
    #+END_SRC
 ** facebook-flow
 
