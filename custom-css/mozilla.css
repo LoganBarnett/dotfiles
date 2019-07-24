@@ -1,0 +1,39 @@
+html {
+  background-color: var(--general-background-color) !important;
+  color: var(--text-color) !important;
+}
+
+#main-header {
+  background-color: var(--panel-background-color) !important;
+}
+
+main {
+  background-color: var(--general-background-color) !important;
+}
+
+.document-head {
+  background-color: var(--panel-background-color) !important;
+}
+
+.deprecated, .deprecatedBadge, .indicator-danger, .nonStandard,
+.nonstandardBadge, .obsolete, .obsoleteBadge, .unimplemented,
+.unimplementedBadge, .warning {
+  background-color: var(--error-background-color) !important;
+  color: var(--error-color) !important;
+}
+
+:not(pre)>*>code, :not(pre)>code {
+  background-color: var(--panel-background-color) !important;
+}
+
+.text-content .cssprop, .text-content .htmlelt, .text-content .learn-box,
+.text-content .properties, .text-content .summary-box-events, .text-content
+.summary-box-js {
+  background-color: var(--panel-background-color) !important;
+}
+
+.draft, .indicator-warning, .note, .notice, .prefixBox, .privilegedBadge,
+.renamed, .secureContexts, .todo, .translationInProgress,
+.warning.warning-review {
+  background-color: var(--meta-color) !important;
+}
