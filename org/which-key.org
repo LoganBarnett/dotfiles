@@ -1,0 +1,28 @@
+#+title:     which-key
+#+author:    Logan Barnett
+#+email:     logustus@gmail.com
+#+date:      <2019-06-13 Thu>
+#+language:  en
+#+file_tags: which-key config
+
+* frame
+  In large/expensive buffers, =which-key= can be very unresponsive to bring up
+  because resizing the minibuffer is also expensive. To keep =which-key= from
+  invoking the minibuffer, open it as a frame instead.
+
+  #+begin_src emacs-lisp :results none
+    (defun config/which-key-use-frame ()
+      (setq-default which-key-popup-type 'frame)
+      )
+  #+end_src
+
+* all together
+  #+begin_src emacs-lisp
+    (require 'use-package)
+
+    (use-package "which-key"
+      :defer t
+      :config
+      (config/which-key-use-frame)
+      )
+  #+end_src
