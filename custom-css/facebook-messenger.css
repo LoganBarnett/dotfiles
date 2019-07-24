@@ -375,3 +375,18 @@ div._4-i2, div._5a8u, ._4t2a {
 ._4gd0 {
   background-color: var(--general-background-color) !important;
 }
+
+/**
+ * New message area.
+ */
+._5irm._7mkm {
+  background-color: var(--panel-background-color) !important;
+}
+
+/**
+ * Typing area.
+ */
+._7kpk {
+  background-color: var(--input-background-color) !important;
+  color: var(--input-color) !important;
+}
