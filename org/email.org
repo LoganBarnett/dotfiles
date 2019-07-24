@@ -375,9 +375,14 @@ http://pragmaticemacs.com/emacs/master-your-inbox-with-mu4e-and-org-mode/
                 (my-utils/get-string-from-file  "~/.emacs.d/private/key-id.txt")
                 )
     (message "loaded key id %s" key-id)
+    (require 'epg-config)
+    (require 'mml-sec)
     (setq-default
     user-mail-address "logustus@gmail.com"
     mml-2015-signers key-id
+    mml2015-use 'epg
+    ;; epg-user-id "???" ; Was "gpg_key_id" in docs: https://www.djcbsoftware.nl/code/mu/mu4e/Reading-messages.html
+    mml2015-sign-with-sender t
     gnus-select-method
     '(nnimap "gmail"
               (nnimap-address "imap.gmail.com")
