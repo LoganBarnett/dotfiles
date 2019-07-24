@@ -406,7 +406,7 @@ before packages are loaded. If you are unsure, you should try in setting them in
   ;; cloned. I can clone the repo thusly:
   ;; pushd ~/dev && git clone git@bitbucket.org:LoganBarnett/my-elpa.git
   ;; TODO: Use non-expanded file name.
-  (setq configuration-layer-elpa-archives '(("myelpa" . "/Users/logan/dev/my-elpa/")))
+  ;; (setq configuration-layer-elpa-archives '(("myelpa" . "/Users/logan/dev/my-elpa/")))
   (add-to-list 'load-path "~/.emacs.d/private/local/dotfiles")
   )
 
