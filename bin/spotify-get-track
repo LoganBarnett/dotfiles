@@ -1,0 +1,23 @@
+#! /usr/bin/env bash
+
+set -e
+
+if [ "$1" = '' ]; then
+    echo 'Usage: spotify-get-track <track id>' &2>1
+    exit 1
+fi
+
+track=$1
+
+# TODO: Get the token programmatically.
+
+curl "https://api.spotify.com/v1/tracks/$1?market=from_token" \
+     -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:67.0) Gecko/20100101 Firefox/67.0' \
+     -H 'Accept: application/json' \
+     -H 'Accept-Language: en' \
+     --compressed \
+     -H "Referer: https://open.spotify.com/track/$1" \
+     -H "Authorization: Bearer $TOKEN" \
+     -H 'Origin: https://open.spotify.com' \
+     -H 'Connection: keep-alive' \
+     -H 'TE: Trailers'
