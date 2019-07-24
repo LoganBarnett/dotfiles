@@ -142,7 +142,6 @@ http://pragmaticemacs.com/emacs/master-your-inbox-with-mu4e-and-org-mode/
   ;; https://www.djcbsoftware.nl/code/mu/mu4e/Dired.html#Dired
   (add-hook 'dired-mode-hook 'turn-on-gnus-dired-mode)
 #+end_src
-
 **** bookmarks
      Bookmarks are the initial =b= shortcuts that quickly let me jump to certain
      views. It doesn't come with one that just shows your inbox. I'm not a fan
@@ -166,14 +165,25 @@ http://pragmaticemacs.com/emacs/master-your-inbox-with-mu4e-and-org-mode/
      [[https://www.djcbsoftware.nl/code/mu/mu4e/Bookmarks.html][mu4e bookmarks docs]]
 
 **** reading: indexing
-     This should make reading emails faster. At first blush this seems to also
-     fix =company-mode= integration.
-
+     This should make reading emails faster. It may, but I've noticed it also
+     makes messages in my inbox get lost sometimes. They aren't even in the
+     all-mail section. The mail server still shows the message as present in the
+     inbox. Removing these statements seems to have fixed it.
      #+begin_src emacs-lisp :results none
        (defun config/mu4e-indexing ()
+         ;; (setq-default
+          ;; mu4e-index-cleanup nil
+          ;; mu4e-index-lazy-check t
+          ;; )
+         )
+     #+end_src
+
+**** reading: mail list
+
+     #+begin_src emacs-lisp :results none
+       (defun config/mu4e-viewing ()
          (setq-default
-          mu4e-index-cleanup nil
-          mu4e-index-lazy-check t
+          mu4e-view-scroll-to-next nil
           )
          )
      #+end_src
