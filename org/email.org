@@ -353,6 +353,7 @@ http://pragmaticemacs.com/emacs/master-your-inbox-with-mu4e-and-org-mode/
     :defer t
     :config
     (message "initializing mu4e...")
+    (require 'org-mime)
     (config/mu4e-add-bookmarks)
     ;; (config/mu4e-enable-images)
     (config/mu4e-set-maildir)
@@ -361,6 +362,7 @@ http://pragmaticemacs.com/emacs/master-your-inbox-with-mu4e-and-org-mode/
     (config/send-email)
     (config/mu4e-evilify-evil-window-prefix)
     (config/mu4e-indexing)
+    (config/mu4e-viewing)
 
     (load-library "my-utils")
     ;; No idea why setq-local is needed here, and elsewhere defvar-local works.
@@ -397,19 +399,20 @@ http://pragmaticemacs.com/emacs/master-your-inbox-with-mu4e-and-org-mode/
     gnus-message-archive-group nil
     ;; We want to be able to read the emails we wrote.
     mml2015-encrypt-to-self t
-    mu4e-view-prefer-html nil
+    ;; mu4e-view-prefer-html nil
     ;; mu4e-html2text-command "html2text -utf8 -width 72"
     ;; mu4e-html2text-command "html2markdown | grep -v '&nbsp_place_holder;'"
 
     ;; This is a MacOS specific solution. It just flattens the text so it's not
     ;; very preferable, but unlike the shr stuff, it doesn't create a bunch of
     ;; hanging file handles that require a reboot sometime later.
-    mu4e-html2text-command "textutil -stdin -format html -convert txt -stdout"
-    mu4e-view-html-plaintext-ratio-heuristic most-positive-fixnum
+    ;; mu4e-html2text-command "textutil -stdin -format html -convert txt -stdout"
+    ;; mu4e-view-html-plaintext-ratio-heuristic most-positive-fixnum
     )
     ;; Attempt to encrypt all the mails we'll be sending.
     (add-hook 'message-setup-hook 'mml-secure-message-encrypt)
 
+    (config/mu4e-reading-format)
     (config/mu4e-prevent-hard-line-wrap-on-export)
     (message "done initializing mu4e")
     )
