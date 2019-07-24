@@ -84,3 +84,15 @@ input:not([type="submit"]), textarea, .roundfield textarea, .roundfield input[ty
   color: var(--visited-link-color) !important;
   background-color: var(--visited-link-background-color) !important;
 }
+
+/**
+ * New skin.
+ */
+
+/**
+ * Code blocks.
+ */
+._3GnarIQX9tD_qsgXkfSDz1, ._34q3PgLsx9zIU5BiSOjFoM {
+  background-color: var(--code-background-color) !important;
+  color: var(--text-color) !important;
+}
