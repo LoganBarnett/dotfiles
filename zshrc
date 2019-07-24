@@ -332,6 +332,9 @@ eval "$(jenv init -)"
 # nodenv requires a quick init
 eval "$(nodenv init -)"
 
+# nodenv's build-update-defs plugin needs an environment variable set.
+export NODE_BUILD_DEFINITIONS=$(brew --prefix node-build-update-defs)/share/node-build
+
 # Get ocaml's package manager on the PATH and other ocaml config.
 eval $(opam config env)
 

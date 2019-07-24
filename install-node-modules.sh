@@ -6,6 +6,10 @@ set -e
 # mine will have nvm so it will need to be removed.
 brew remove nvm || true
 ./install-package.sh nodenv
+# This plugin gives us `nodenv update-version-defs` to upgrade available node
+# versions. See also the zshrc file for setting up its require environment
+# variable, NODE_BUILD_DEFINITIONS.
+./install-package.sh nodenv/nodenv/node-build-update-defs
 
 nodenv install -s 10.15.3
 
