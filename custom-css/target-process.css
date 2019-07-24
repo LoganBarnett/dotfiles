@@ -361,3 +361,45 @@ body, button, input, select, textarea {
 .tau-loader-logo {
   background-color: var(--general-background-color) !important;
 }
+
+/**
+ * Some search items are colored this way...
+ */
+.search-item__name > a {
+  color: var(--link-color) !important;
+  background-color: var(--link-background-color) !important;
+}
+
+.search-results {
+  color: var(--text-color) !important;
+}
+
+.tau-entity-id {
+  color: var(--link-color) !important;
+  background-color: var(--link-background-color) !important;
+}
+
+.search-results__content {
+  background-color: var(--general-background-color) !important;
+}
+
+.search-results__block {
+  background-color: var(--general-background-color) !important;
+}
+
+.search-item-info__line__label {
+  color: var(--text-color) !important;
+}
+
+.search-item__comment__date {
+  color: var(--text-color) !important;
+}
+
+.help-note__text {
+  color: var(--text-color) !important;
+}
+
+.tau-paging a {
+  color: var(--link-color) !important;
+  background-color: var(--link-background-color) !important;
+}
