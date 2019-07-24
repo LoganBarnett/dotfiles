@@ -1,6 +1,9 @@
 {
   "includes": [
-    "https://jira.americas.nwea.pvt/*"
+    "https://jira.americas.nwea.pvt/*",
+    "https://jira.sonarsource.com/*",
+    "https://jira.*",
+    "http://jira.*"
   ],
   "excludes": [
     ""

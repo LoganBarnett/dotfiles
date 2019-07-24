@@ -86,3 +86,16 @@ h5 {
 .aui-sidebar-submenu .aui-sidebar-wrapper {
   background-color: var(--general-background-color) !important;
 }
+
+.aui-header {
+  background: var(--panel-background-color) !important;
+  color: var(--text-color) !important;
+}
+
+.aui-header .aui-dropdown2-trigger {
+  color: var(--link-color) !important;
+}
+
+.aui-header a {
+  color: var(--link-color) !important;
+}
