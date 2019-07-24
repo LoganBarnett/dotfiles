@@ -1,0 +1,12 @@
+#! /usr/bin/env bash
+
+# Lists processes that are listening on ports.
+# It is unknown if this covers UDP.
+
+if [ $# -eq 0 ]; then
+    sudo lsof -i -sTCP:LISTEN -n -P
+elif [ $# -eq 1 ]; then
+    sudo lsof -i -sTCP:LISTEN -n -P | grep -i --color $1
+else
+    echo "Usage: listening [pattern]"
+fi
