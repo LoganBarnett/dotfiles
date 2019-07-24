@@ -10,6 +10,7 @@ PipelineDepth 50
 # Pass %PASS%
 # To store the password in an encrypted file use PassCmd instead of Pass
 PassCmd "gpg -q --for-your-eyes-only --no-tty -d ~/.gmail-imap-authinfo.gpg"
+# PassCmd "gpg -q --for-your-eyes-only --no-tty -d ~/.gmail-imap-authinfo.gpg | awk '/machine imap.gmail.com login logustus@gmail.com/ {print $NF}'"
 # PassCmd "cat ~/.email-creds.txt"
 AuthMechs PLAIN
 #
