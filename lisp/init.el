@@ -217,7 +217,6 @@
   (init-org-file "private.org")
   (init-org-file "buffer.org")
   (init-org-file "deft.org")
-  (init-org-file "email.org")
   (init-org-file "whitespace.org")
   (init-org-file "habitica.org")
   (init-org-file "javascript.org")
@@ -239,6 +238,23 @@
   (init-org-file "cucumber.org")
   (init-org-file "org-agenda.org")
   (init-org-file "git.org")
+  ;; Require mu4e directly due to some startup error I'm having trouble tracking
+  ;; down. With an essentially blank email.org file (a single source block with
+  ;; just a message call in it) causes an error whose stack ends near
+  ;; org-store-link and within that org-mu4e-store-link. org-mu4e-store-link is
+  ;; part of org-mu4e, which shouldn't have been required yet, except for maybe
+  ;; the mu4e layer itself. I still don't know why this adviced function is
+  ;; being invoked. For now just require the file that makes it work.
+  ;;
+  ;; Historically, I've been able to remove the mu4e related elpa packages and
+  ;; let Emacs reconstruct them on startup. I would have to do this on any
+  ;; change to the email.org file, but other changes may have triggered the
+  ;; issue as well.
+  ;;
+  ;; I have confirmed that this manual require of mu4e does indeed workaround
+  ;; the issue.
+  (require 'mu4e)
+  (init-org-file "email.org")
   (message "[INIT] Init Done.")
   )
 

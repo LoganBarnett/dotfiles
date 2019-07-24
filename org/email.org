@@ -169,6 +169,7 @@ http://pragmaticemacs.com/emacs/master-your-inbox-with-mu4e-and-org-mode/
      makes messages in my inbox get lost sometimes. They aren't even in the
      all-mail section. The mail server still shows the message as present in the
      inbox. Removing these statements seems to have fixed it.
+
      #+begin_src emacs-lisp :results none
        (defun config/mu4e-indexing ()
          ;; (setq-default
