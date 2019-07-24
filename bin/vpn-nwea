@@ -27,6 +27,9 @@ fi
 # --servercert sha256:9beb22eba61a8dbc53a865c8ef74d3a704c4cf8b8534ef48a332567711ccaf39 \
 # TODO: in the future use this, since we get a 302 there anyways:
 # https://secure.nwea.org/+webvpn+/index.html
+# Disabling IPv6 should get around some DNS issues I've been experiencing.
+# I found this answer on https://unix.stackexchange.com/a/450320/171055
 sudo cat "$HOME/.nwea-passwd" | sudo openconnect \
      -u logan.barnett https://secure.nwea.org \
-     --passwd-on-stdin
+     --passwd-on-stdin \
+     --disable-ipv6
