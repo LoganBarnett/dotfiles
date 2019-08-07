@@ -10,7 +10,6 @@ cp $PWD/certs/* /usr/local/etc/openssl/certs/
 ./link-dotfile.sh notmuch-config
 brew-upstall isync
 brew-upstall mu
-brew-upstall notmuch
 
 echo "Creating notmuch index. This may take a while."
 notmuch new
