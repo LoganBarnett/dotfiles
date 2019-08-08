@@ -289,14 +289,19 @@ http://pragmaticemacs.com/emacs/master-your-inbox-with-mu4e-and-org-mode/
        neque. Nulla facilisis, risus a rhoncus fermentum, tellus tellus lacinia purus,
        et dictum nunc justo sit amet elit.
        #+end_quote
-***** composition
+***** prevent replying to self during reply-all
 
-      We shouldn't reply to ourselves when doing a reply.
+      We shouldn't reply to ourselves when doing a reply. This also requires
+      that we know what our email address is, which seems to be the combination
+      of =user-mail-address= and =mu4e-user-mail-address-list=. One of them is
+      host dependent (which can change on local network switching, I think).
+
       #+begin_src emacs-lisp :results none
         (defun config/mu4e-composing ()
           (setq-default
-           mu4e-compose-dont-reply-to-self t
-           )
+            mu4e-compose-dont-reply-to-self t
+            mu4e-user-mail-address-list '("logustus@gmail.com")
+            )
           )
       #+end_src
 **** evilication
