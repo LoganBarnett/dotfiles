@@ -210,6 +210,19 @@
   (init-org-file "emacs-config.org")
   (init-org-file "macos.org")
   (dirty-init)
+  (message "[INIT] Loading mu4e to fix startup issue...")
+  ;; There is a startup error whose stack ends near org-store-link and within
+  ;; that org-mu4e-store-link. org-mu4e-store-link is part of org-mu4e, which
+  ;; shouldn't have been required yet, except for maybe the mu4e layer itself. I
+  ;; still don't know why this adviced function is being invoked. For now just
+  ;; require the file that makes it work.
+  ;;
+  ;; Historically, I've been able to remove the mu4e related elpa packages and
+  ;; let Emacs reconstruct them on startup. I would have to do this on any
+  ;; change to the email.org file, but other changes may have triggered the
+  ;; issue as well.
+  (require 'mu4e)
+  (message "[INIT] mu4e load DONE")
   (init-org-file "evil.org")
   (init-org-file "helm.org")
   (init-org-file "flyspell.org")
@@ -241,25 +254,13 @@
   (init-org-file "web.org")
   (init-org-file "font.org")
   (init-org-file "cucumber.org")
-  (init-org-file "org-agenda.org")
   (init-org-file "git.org")
-  ;; Require mu4e directly due to some startup error I'm having trouble tracking
-  ;; down. With an essentially blank email.org file (a single source block with
-  ;; just a message call in it) causes an error whose stack ends near
-  ;; org-store-link and within that org-mu4e-store-link. org-mu4e-store-link is
-  ;; part of org-mu4e, which shouldn't have been required yet, except for maybe
-  ;; the mu4e layer itself. I still don't know why this adviced function is
-  ;; being invoked. For now just require the file that makes it work.
-  ;;
-  ;; Historically, I've been able to remove the mu4e related elpa packages and
-  ;; let Emacs reconstruct them on startup. I would have to do this on any
-  ;; change to the email.org file, but other changes may have triggered the
-  ;; issue as well.
-  ;;
-  ;; I have confirmed that this manual require of mu4e does indeed workaround
-  ;; the issue.
-  (require 'mu4e)
   (init-org-file "email.org")
+  ;; org-agenda must be loaded after mu4e. The file itself does not call upon
+  ;; mu4e directly, but perhaps something in org-agenda? This has been difficult
+  ;; to track down. I might need to hook up some dependency hooks with
+  ;; use-package to properly fix this.
+  (init-org-file "org-agenda.org")
   (message "[INIT] Init Done.")
   )
 
