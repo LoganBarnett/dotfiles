@@ -22,14 +22,24 @@ if [[ "$OWNER" != "root" ]]; then
     exit 2
 fi
 
+HOSTS="\
+americas.nwea.pvt \
+artifacts.americas.nwea.pvt \
+confluence.americas.nwea.pvt \
+jenkins-cicd.americas.nwea.pvt \
+jenkins-webmap.americas.nwea.pvt \
+jira.americas.nwea.pvt \
+nweacolo.pvt \
+stash.americas.nwea.pvt \
+yum01.mgmt.nweacolo.pvt \
+"
+
 # The endpoint used to use a self-signed cert. If that happens you can use an
 # arg like this:
 # --servercert sha256:9beb22eba61a8dbc53a865c8ef74d3a704c4cf8b8534ef48a332567711ccaf39 \
 # TODO: in the future use this, since we get a 302 there anyways:
 # https://secure.nwea.org/+webvpn+/index.html
-# Disabling IPv6 should get around some DNS issues I've been experiencing.
-# I found this answer on https://unix.stackexchange.com/a/450320/171055
 sudo cat "$HOME/.nwea-passwd" | sudo openconnect \
      -u logan.barnett https://secure.nwea.org \
      --passwd-on-stdin \
-     --disable-ipv6
+     --script "vpn-slice -v -i 10.0.0.0/8 $HOSTS" \

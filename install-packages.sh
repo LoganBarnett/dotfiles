@@ -126,6 +126,7 @@ echo "installing misc python packages..."
 
 pip install upsidedown # Needed for tflip.
 pip3 install xdice # xdice requires python3.
+pip3 install vpn-slice # vpn-slice is needed for openconnect DNS issues.
 
 # pip3 doesn't have a PATH location, or xdice doesn't provide a binary (the docs
 # suggest that pip3 is at fault though). Either way we're left fixing it
