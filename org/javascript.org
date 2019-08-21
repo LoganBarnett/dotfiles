@@ -169,7 +169,7 @@ lead to a lot of confusion over what a given type is for a variable. Flow gives
 us the capability to determine a type where our cursor is located. This is handy
 for hunting down issues with Flow errors.
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :results none
   (defun flow-type-at-pos ()
     "Show flow type at the cursor."
     (interactive)
@@ -177,14 +177,14 @@ for hunting down issues with Flow errors.
           (line (line-number-at-pos))
           (col (current-column))
           (buffer (current-buffer)))
-      (display-buffer (get-buffer-create "*Shell Command Output*")
-        '((
-            display-buffer-reuse-window
-            display-buffer-pop-up-window
-            display-buffer-pop-up-frame
-          )
-          (reusable-frames . 0))
-        )
+      ;; (display-buffer (get-buffer-create "*Shell Command Output*")
+      ;;   '((
+      ;;       display-buffer-reuse-window
+      ;;       ;; display-buffer-pop-up-window
+      ;;       ;; display-buffer-pop-up-frame
+      ;;     )
+      ;;     (reusable-frames . 0))
+      ;;   )
       (switch-to-buffer-other-window "*Shell Command Output*")
       (shell-command
         (format "%s type-at-pos --from emacs %s %d %d"
