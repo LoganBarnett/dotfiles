@@ -42,3 +42,4 @@
 	algorithm = patience
 [pull]
 	ff-only = true
+  rebase = true
