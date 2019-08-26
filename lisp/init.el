@@ -242,6 +242,7 @@
   (init-org-file "purescript.org")
   (init-org-file "css.org")
   (init-org-file "makefile.org")
+  (init-org-file "shell.org")
   (init-org-file "hipchat.org")
   (init-org-file "tramp.org")
   (init-org-file "time.org")

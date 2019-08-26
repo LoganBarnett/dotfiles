@@ -1,0 +1,28 @@
+#+title:     Shell Config
+#+author:    Logan Barnett
+#+email:     logustus@gmail.com
+#+date:      <2019-08-21 Wed>
+#+language:  en
+#+file_tags: config shell
+#+tags:
+
+* shell config
+** indentation
+   2 spaces is king, especially with 80 columns. Also use spaces instead of
+   tabs!
+
+   #+begin_src emacs-lisp
+     (defun config/shell-indentation ()
+       (setq-default sh-basic-offset 2)
+       )
+   #+end_src
+
+** all together
+
+   #+begin_src emacs-lisp
+     (use-package 'shell-mode
+       :init
+       :config
+       (config/shell-indentation)
+       )
+   #+end_src
