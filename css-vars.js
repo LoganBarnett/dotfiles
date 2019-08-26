@@ -161,6 +161,10 @@ const vars = {
   // Emacs calls this "war" and it's typically used for callouts on headings
   // such as [1/3] and [50%] that are shown from TODO check lists.
   '--badge-color': '#dc752f',
+  '--time-slice': '#2d9574',
+  '--time-slice-background': '#29422d',
+  '--time-slice-inactive-background': '#100a14',
+  '--time-slice-cursor-background': '#5d4d7a',
 }
 
 module.exports = vars

@@ -324,3 +324,30 @@ body ._n_w4 ._n_y4 {
   background-color: var(--tab-active-background-color) !important;
   color: var(--tab-active-color) !important;
 }
+
+/*******************************************************************************
+ * Calendar section.
+ ******************************************************************************/
+
+/**
+ * Calendar entries.
+ */
+.content-114 {
+  background: var(--time-slice-background) !important;
+  color: var(--time-slice) !important;
+}
+
+/**
+ * Off-hours (before 08:00 and after 17:00 typically).
+ */
+html[dir] ._2wibpKYTQAHkWUESD5N19R {
+  background: var(--time-slice-inactive-background) !important;
+}
+
+/**
+ * Current time marker. Normally set via a style attribute so it needs a more
+ * specific selector.
+ */
+html .q6WWJlZX3qcuZ15kE7duJ {
+  background-color: var(--time-slice-cursor-background) !important;
+}
