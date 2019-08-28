@@ -32,20 +32,29 @@ font-source-code-pro
 gimp
 google-chrome
 haskell-platform
-hipchat
-mumble
-obs
 razer-synapse
 silverlight
 skype
 slack
-steam
 virtualbox
-xbox360-controller-driver-unofficial
 zoomus
 "
 
 echo "installing homebrew casks"
 brew cask install $CASKS
+
+# For my personal machines I can install packages but these are not appropriate
+# for work machines.
+if ! [[ "$HOST" =~ "lbarnett" ]]; then
+  PERSONAL_CASKS="
+arduino
+discord
+obs
+steam
+xbox360-controller-driver-unofficial
+"
+  brew cask install $PERSONAL_CASKS
+fi
+
 
 echo "done installing casks"
