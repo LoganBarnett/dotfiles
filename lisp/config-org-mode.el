@@ -150,19 +150,11 @@ Adapt image size via `iimage-scale-to-fit-width' when the window size changes."
     (setq-default calendar-date-style 'iso)
 
     (load-library "org-to-jekyll")
-    ;; Having to manually specify these is a drag. Scanning all of ~/notes
-    ;; sounds great on paper, but Emacs takes a long time to finish that scan. I
-    ;; believe the ultimate solution is to condense my org files further into
-    ;; larger files.
-    (require 'find-lisp)
     (setq-default org-agenda-files
-                  (seq-concatenate
-                   'list
-                   (find-lisp-find-files
-                    (expand-file-name "~/Dropbox/notes")
-                    "agenda.org")
-                   '("~/work-notes/nwea.org")
-                   )
+                  '(
+                    "~/Dropbox/notes/agenda.org"
+                    "~/work-notes/nwea.org"
+                    )
                   )
     ;; shrink inline images see:
     ;; http://lists.gnu.org/archive/html/emacs-orgmode/2012-08/msg01388.html
@@ -229,7 +221,7 @@ Adapt image size via `iimage-scale-to-fit-width' when the window size changes."
 
     (use-friendly-deterministic-headline-html-anchors)
     (config/hidden-content-indicator)
-    (config/google-calendar-sync)
+    ;; (config/google-calendar-sync)
     )
   )
 (provide 'config-org-mode)
