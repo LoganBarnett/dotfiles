@@ -19,8 +19,8 @@
 
 ** all together
 
-   #+begin_src emacs-lisp
-     (use-package 'shell-mode
+   #+begin_src emacs-lisp :results none
+     (use-package shell
        :init
        :config
        (config/shell-indentation)
