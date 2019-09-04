@@ -170,31 +170,51 @@ us the capability to determine a type where our cursor is located. This is handy
 for hunting down issues with Flow errors.
 
 #+BEGIN_SRC emacs-lisp :results none
+
+  (defun my/display-in-frame (display-buffer-name)
+    (let (
+          (buffer (get-buffer display-buffer-name))
+          (frame (make-frame '(
+                               (name . "dedicated-frame")
+                               )
+                             ))
+          )
+      (set-window-buffer (frame-first-window frame) buffer nil)
+      (delete-other-windows (get-buffer-window buffer frame))
+      (set-window-dedicated-p (get-buffer-window buffer frame) t)
+      (set-buffer buffer)
+      ;; `help-mode' allows q to be pressed to quit, and separates the stdout
+      ;; and stderr visually.
+      (help-mode 1)
+      (local-set-key (kbd "q") 'delete-frame)
+      )
+    )
+
   (defun flow-type-at-pos ()
     "Show flow type at the cursor."
     (interactive)
     (let ((file (buffer-file-name))
           (line (line-number-at-pos))
           (col (current-column))
-          (buffer (current-buffer)))
-      ;; (display-buffer (get-buffer-create "*Shell Command Output*")
-      ;;   '((
-      ;;       display-buffer-reuse-window
-      ;;       ;; display-buffer-pop-up-window
-      ;;       ;; display-buffer-pop-up-frame
-      ;;     )
-      ;;     (reusable-frames . 0))
-      ;;   )
-      (switch-to-buffer-other-window "*Shell Command Output*")
-      (shell-command
-        (format "%s type-at-pos --from emacs %s %d %d"
-                (my/get-node-modules-bin "flow")
-                file
-                line
-                (1+ col)))
-      (compilation-mode)
-      (switch-to-buffer-other-window buffer))
-  )
+          (flow-bin (my/get-node-modules-bin "flow"))
+          )
+      (let (
+            (command (format "%s type-at-pos --from emacs %s %d %d"
+                             flow-bin
+                             file
+                             line
+                             (1+ col)))
+            )
+        (message "Running Flow from %s" flow-bin)
+        (message (shell-command-to-string (format "%s --version" flow-bin)))
+        (message "Running type-at-pos with %s" command)
+
+        (get-buffer-create "*flow-type*")
+        (shell-command command "*flow-type*" "*flow-type*")
+        (my/display-in-frame "*flow-type*")
+        )
+      )
+    )
 
 #+END_SRC
 
