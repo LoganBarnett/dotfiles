@@ -205,6 +205,7 @@ Adapt image size via `iimage-scale-to-fit-width' when the window size changes."
        ;; (sqlite . t)
        ;; (R . t)
        ))
+    (add-to-list 'org-src-lang-modes '("javascript" . js2))
     (setq-default
      org-confirm-babel-evaluate 'my/org-confirm-babel-evaluate
      org-default-notes-file "~/Dropbox/notes/inbox.org"

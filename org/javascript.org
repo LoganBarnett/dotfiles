@@ -215,24 +215,18 @@ Finally, tie it all together on demand.
     (rainbow-identifiers-mode 1)
     )
 
-  (require 'use-package)
-    (use-package "rjsx-mode"
-    :defer t
-    :init
-    (message "initializing Javascript")
-    (add-to-list 'auto-mode-alist '("\\.js" . rjsx-mode))
-    (add-hook 'rjsx-mode 'my/config-javascript-company-backends)
-
-    :config
+  ;; This is in its own function so it can be shared across javascript modes.
+  ;; Sometimes we want to be in rjsx mode but other, lighter configurations
+  ;; such as the inner-mode that org-babel uses can just get away with
+  ;; js2-mode or something similar.
+  (defun config/configure-javascript-mode ()
     (require 'grep)
-    (require 'nvm)
     (require 'flycheck)
     (require 'rainbow-identifiers)
     (require 'flycheck-flow)
     (message "Configuring Javascript")
     ;; (add-hook 'js2-mode-hook 'flow-minor-enable-automatically)
     (setq-default flycheck-javascript-flow-args '("--respect-pragma"))
-    (nvm-use "8.1.3")
     (add-to-list 'grep-find-ignored-directories "node_modules")
     (setq-default js-indent-level 2)
     (setq-default js2-strict-missing-semi-warning nil)
@@ -259,8 +253,29 @@ Finally, tie it all together on demand.
     ;; ugh debugging company
     (defun company-flow-prefix ()
       (interactive)
-      (message "result: %s" (company-flow--prefix)
-  )
+      (message "result: %s" (company-flow--prefix))
     )
+  )
+
+  (require 'use-package)
+  (use-package "js2-mode"
+    :defer t
+    :init
+    (message "initializing Javascript via js2-mode")
+    (add-hook 'js2-mode 'my/config-javascript-company-backends)
+
+    :config
+    (config/configure-javascript-mode)
+  )
+
+  (use-package "rjsx-mode"
+    :defer t
+    :init
+    (message "initializing Javascript via rjsx-mode")
+    (add-to-list 'auto-mode-alist '("\\.js" . rjsx-mode))
+    (add-hook 'rjsx-mode 'my/config-javascript-company-backends)
+
+    :config
+    (config/configure-javascript-mode)
   )
 #+END_SRC
