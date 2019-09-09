@@ -223,6 +223,7 @@
   ;; issue as well.
   (require 'mu4e)
   (message "[INIT] mu4e load DONE")
+  (init-org-file "ui.org")
   (init-org-file "evil.org")
   (init-org-file "helm.org")
   (init-org-file "flyspell.org")
