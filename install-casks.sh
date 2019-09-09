@@ -23,18 +23,13 @@ brew cask upgrade
 CASKS="
 adobe-connect
 alfred
-arduino
 chromium
 diffmerge
-discord
 electric-sheep
 font-source-code-pro
 gimp
 google-chrome
 haskell-platform
-razer-synapse
-silverlight
-skype
 slack
 virtualbox
 zoomus
@@ -45,15 +40,23 @@ brew cask install $CASKS
 
 # For my personal machines I can install packages but these are not appropriate
 # for work machines.
-if ! [[ "$HOST" =~ "lbarnett" ]]; then
+if [[ "$HOST" =~ "lbarnett" ]]; then
+  WORK_CASKS="
+razer-synapse
+zoomus
+"
+else
   PERSONAL_CASKS="
 arduino
 discord
 obs
+silverlight
+skype
 steam
 xbox360-controller-driver-unofficial
 "
   brew cask install $PERSONAL_CASKS
+
 fi
 
 
