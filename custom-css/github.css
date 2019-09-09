@@ -133,6 +133,13 @@ body .muted-link {
   color: var(--text-color) !important;
 }
 
+/**
+ * Timeline comments (could be issues but also pull requests and other things).
+ */
+.timeline-comment {
+  color: var(--text-color) !important;
+}
+
 /* comments on issues */
 .timeline-comment-header {
   background-color: var(--panel-background-color) !important;
@@ -652,4 +659,36 @@ div.comment-content {
  */
 .Box-header {
   background-color: var(--panel-background-color) !important;
+}
+
+/**
+ * Branch actions.
+ */
+.branch-action-body .merge-branch-form, .branch-action-body .merge-message {
+  background-color: var(--general-background-color) !important;
+}
+
+/**
+ * Pull request push commits blurb.
+ */
+.merge-pr-more-commits {
+  background-color: var(--head3-background-color) !important;
+  color: var(--head3-color) !important;
+}
+
+/**
+ * Commit refs.
+ */
+.commit-ref {
+  background-color: var(--link-background-color) !important;
+  color: var(--link-color) !important;
+}
+
+/**
+ * This gets added to links and other things that _should_ be underlined. Screw
+ * that. I like my links looking like links. Uses !important, so use the "body"
+ * specificity trick.
+ */
+body .no-underline {
+  text-decoration: underline !important;
 }
