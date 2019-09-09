@@ -326,13 +326,248 @@ body ._n_w4 ._n_y4 {
 }
 
 /*******************************************************************************
+ * New (2019-09-06) Mail section.
+ ******************************************************************************/
+body {
+  background-color: var(--general-background-color) !important;
+}
+
+/**
+ * Action area.
+ */
+html[dir] ._3oKObV8zI7k4ePSXxNGo4I {
+  background-color: var(--general-background-color) !important;
+}
+
+/**
+ * Normal buttons.
+ */
+._1ThK9dT4toWCphxfLMD8kj:not(._29VxQ7VLCQ6dh3W6DiyF5o)._1k4GGnHH2xGQnV0Bsgx4m5,
+._1ThK9dT4toWCphxfLMD8kj:not(._29VxQ7VLCQ6dh3W6DiyF5o),
+._1ThK9dT4toWCphxfLMD8kj:not(._29VxQ7VLCQ6dh3W6DiyF5o) {
+  background-color: var(--button-background-color) !important;
+  color: var(--button-color) !important;
+}
+
+/**
+ * Hovered and active buttons.
+ */
+._1ThK9dT4toWCphxfLMD8kj:not(._29VxQ7VLCQ6dh3W6DiyF5o)._1k4GGnHH2xGQnV0Bsgx4m5,
+._1ThK9dT4toWCphxfLMD8kj:not(._29VxQ7VLCQ6dh3W6DiyF5o):active,
+._1ThK9dT4toWCphxfLMD8kj:not(._29VxQ7VLCQ6dh3W6DiyF5o):hover {
+  background-color: var(--button-hover-background-color) !important;
+  color: var(--button-hover-color) !important;
+}
+
+/**
+ * Message view empty panel.
+ */
+html[dir] ._3Ad19uWCrJfZmaKfs-hR2p {
+  background-color: var(--general-background-color) !important;
+}
+
+/**
+ * Message view empty panel announcement text.
+ */
+._12x3EFWPe3LGNm6mV745C2 {
+  color: var(--text-color) !important;
+}
+
+/**
+ * Other mail panel text.
+ */
+.root-40 {
+  color: var(--text-color) !important;
+}
+
+/**
+ * Folder action area.
+ */
+html[dir] .HWDcgTrRzWs8-3feN1tMa {
+  background-color: var(--general-background-color) !important;
+}
+
+/**
+ * Mail header sender.
+ */
+._3zsve4Dj3IzGN1UkKP1vTT,
+._2w33pJvkmet3fVYAp0m4xf,
+._3J_S6fOI4B5tFT8R6qMqT7,
+._3zJzxRam-s-FYVZNqcZ0BW {
+  color: var(--text-color) !important;
+}
+
+/**
+ * Mail header subject.
+ */
+.WHHpfJX04sHbd6jCFcPxS ._2mXnm2n6WGzdKWTbrXEerf {
+  background-color: var(--head3-background-color) !important;
+  color: var(--head3-color) !important;
+}
+/**
+ * Mail selected header subject.
+ */
+._3y98JUDT2d04xKfdZTf0VR ._2mXnm2n6WGzdKWTbrXEerf {
+  background-color: var(--head3-background-color) !important;
+  color: var(--head3-color) !important;
+}
+
+/**
+ * Mail header body preview.
+ */
+._23MaDl_3Fxg1oLteZqM5nN, ._2u3hHNiXhuwDjHbsX6STzW, .ggucHldzYouSPjkewTdAT {
+  color: var(--text-color) !important;
+}
+
+/**
+ * Mail header timestamp (other?).
+ */
+.WHHpfJX04sHbd6jCFcPxS ._3CVfKgKkHqB5r8nCZCwRgG {
+  background-color: var(--head4-background-color) !important;
+  color: var(--head4-color) !important;
+}
+
+/**
+ * Mail header timestamp.
+ */
+.WHHpfJX04sHbd6jCFcPxS ._33kDu8YhkrBqlQy3HACYoN {
+  background-color: var(--head4-background-color) !important;
+  color: var(--head4-color) !important;
+}
+
+/**
+ * Mail header timestamp selected.
+ */
+._3y98JUDT2d04xKfdZTf0VR ._33kDu8YhkrBqlQy3HACYoN {
+  background-color: var(--head4-background-color) !important;
+  color: var(--head4-color) !important;
+}
+
+/**
+ * Mail header timestamp (other?).
+ */
+._3CkppxCH8qP59F-gLT9K7W, ._3CVfKgKkHqB5r8nCZCwRgG, ._33kDu8YhkrBqlQy3HACYoN {
+  background-color: var(--head4-background-color) !important;
+  color: var(--head4-color) !important;
+}
+
+/**
+ * Mail header background.
+ */
+html[dir=ltr] ._1E-ojjaYGhOxCgHp9Pe315._3y98JUDT2d04xKfdZTf0VR {
+  background-color: var(--general-background-color) !important;
+}
+
+/**
+ * Mail header scrollbar.
+ */
+html[dir] .laGnUXZu6QC88ONZDEBcE {
+  background: var(--general-background-color) !important;
+}
+
+/**
+ * Mail header action area.
+ */
+html[dir] ._1o7uVfs1ooIN78PbtKWnd1 {
+  background-color: var(--general-background-color) !important;
+}
+
+
+/**
+ * Mail header filter button.
+ */
+._2HxQ4wKES5wjvIgnjfLcQK {
+  background: var(--button-background-color) !important;
+  color: var(--button-color) !important;
+}
+
+/**
+ * Mail header filter button (hover).
+ */
+._2HxQ4wKES5wjvIgnjfLcQK:hover {
+  background: var(--button-hover-background-color) !important;
+  color: var(--button-chover-olor) !important;
+}
+
+/**
+ * Mail header filter button (active).
+ */
+._2HxQ4wKES5wjvIgnjfLcQK:active {
+  background: var(--button-hover-background-color) !important;
+  color: var(--button-chover-olor) !important;
+}
+
+/**
+ * Mail header favorite button.
+ */
+html[dir] ._19TKX4tBlljz2PUG1z7tpG:after {
+  background: var(--button-background-color) !important;
+  color: var(--button-color) !important;
+}
+
+/**
+ * Mail header favorite button (hover).
+ */
+html[dir] ._19TKX4tBlljz2PUG1z7tpG:hover:after {
+  background: var(--button-hover-background-color) !important;
+  color: var(--button-hover-color) !important;
+}
+
+/**
+ * Mail header favorite button (active).
+ */
+html[dir] ._19TKX4tBlljz2PUG1z7tpG:active:after {
+  background: var(--button-background-color) !important;
+  color: var(--button-color) !important;
+}
+
+/**
+ * Mail header background (other?).
+ */
+html[dir] ._1zRzYBa3Ymm8oRb7igyJMT {
+  background: var(--general-background-color) !important;
+}
+
+/**
+ * Message view subject background.
+ */
+html[dir] ._1fmZ_av0AzpX0WDUx7Rxsi {
+  background-color: var(--head3-background-color) !important;
+  color: var(--head3-color) !important;
+}
+
+/**
+ * Message view subject text.
+ */
+.nd61WdEGM_AYd1pkT3C0- {
+  background-color: var(--head3-background-color) !important;
+  color: var(--head3-color) !important;
+}
+
+/**
+ * Message view body text.
+ */
+.ebEAqI6ObWNy7SHYOElkN, .B1IVVpQay0rPzznhParFr {
+  color: var(--text-color) !important;
+}
+
+/**
+ * Message view body text (other?).
+ */
+html[dir] .B1IVVpQay0rPzznhParFr {
+  background: var(--general-background-color) !important;
+  color: var(--text-color) !important;
+}
+
+/*******************************************************************************
  * Calendar section.
  ******************************************************************************/
 
 /**
  * Calendar entries.
+ * It uses some arbitrary numbering of content-000. Just match them all.
  */
-.content-114 {
+[class*="content-"] {
   background: var(--time-slice-background) !important;
   color: var(--time-slice) !important;
 }
@@ -350,4 +585,18 @@ html[dir] ._2wibpKYTQAHkWUESD5N19R {
  */
 html .q6WWJlZX3qcuZ15kE7duJ {
   background-color: var(--time-slice-cursor-background) !important;
+}
+
+/**
+ * Side panel in calendar.
+ */
+html[dir] .O0VoCp2Pdm6eUS4HjTWpF {
+  background-color: var(--panel-background-color) !important;
+}
+
+/**
+ * Day numbers for the month in the mini calendar.
+ */
+.dayCell-84 {
+  color: var(--text-color) !important;
 }
