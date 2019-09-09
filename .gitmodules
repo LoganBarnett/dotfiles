@@ -1,0 +1,3 @@
+[submodule "vpn-slice"]
+	path = vpn-slice
+	url = git@github.com:dlenski/vpn-slice.git
