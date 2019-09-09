@@ -171,50 +171,104 @@ for hunting down issues with Flow errors.
 
 #+BEGIN_SRC emacs-lisp :results none
 
-  (defun my/display-in-frame (display-buffer-name)
-    (let (
-          (buffer (get-buffer display-buffer-name))
-          (frame (make-frame '(
-                               (name . "dedicated-frame")
-                               )
-                             ))
-          )
-      (set-window-buffer (frame-first-window frame) buffer nil)
-      (delete-other-windows (get-buffer-window buffer frame))
-      (set-window-dedicated-p (get-buffer-window buffer frame) t)
-      (set-buffer buffer)
-      ;; `help-mode' allows q to be pressed to quit, and separates the stdout
-      ;; and stderr visually.
-      (help-mode 1)
-      (local-set-key (kbd "q") 'delete-frame)
-      )
-    )
+    ;; (defun config/show-in-frame (buffer alist)
+    ;;   ;; Get the frame named 'Help' or create one if such a frame does not exist
+    ;;   (message "showing dedicated frame...")
+    ;;   (let (
+    ;;     (dedicated-frame (select-frame
+    ;;       (or (cdr (assoc-string "flow-type" (make-frame-names-alist)))
+    ;;         (make-frame '(
+    ;;           (name . "flow-type")
+    ;;           ;; (buffer-list . nil)
+    ;;           ))
+    ;;         )
+    ;;       )
+    ;;     ))
+    ;;     ;; This assumes you want to display just one window in the dedicated frame
+    ;;     (set-window-buffer (car (window-list dedicated-frame)) buffer nil)
+    ;;     (display-buffer-pop-up-frame buffer alist)
+    ;;     )
+    ;;   )
 
-  (defun flow-type-at-pos ()
-    "Show flow type at the cursor."
-    (interactive)
-    (let ((file (buffer-file-name))
-          (line (line-number-at-pos))
-          (col (current-column))
-          (flow-bin (my/get-node-modules-bin "flow"))
-          )
+    ;; (add-to-list 'display-buffer-alist
+    ;;   '("^\\*flow-type\\*$" config/show-in-frame)
+    ;; )
+
+    (defun my/display-in-frame (display-buffer-name)
       (let (
-            (command (format "%s type-at-pos --from emacs %s %d %d"
+            (buffer (get-buffer display-buffer-name))
+            (frame (make-frame '(
+                                 (name . "dedicated-frame")
+                                 )
+                               ))
+            )
+        (set-window-buffer (frame-first-window frame) buffer nil)
+        (delete-other-windows (get-buffer-window buffer frame))
+        (set-window-dedicated-p (get-buffer-window buffer frame) t)
+        (set-buffer buffer)
+        ;; `help-mode' allows q to be pressed to quit, and separates the stdout
+        ;; and stderr visually.
+        (help-mode)
+        (local-set-key (kbd "q") 'delete-frame)
+        )
+      )
+
+    (defun run-flow-type-at-pos ()
+      (let (
+            ;; (command (format "%s type-at-pos --from emacs %s %d %d"
+            ;;                  flow-bin
+            ;;                  file
+            ;;                  line
+            ;;                  (1+ col)))
+            (command (format "cd %s && echo %s | %s type-at-pos --from emacs --path %s %d %d"
+                           (file-name-directory (buffer-file-name))
+                           (shell-quote-argument (buffer-string))
                              flow-bin
-                             file
+                           (buffer-file-name)
                              line
-                             (1+ col)))
+                             (1+ col)
+  ))
             )
         (message "Running Flow from %s" flow-bin)
         (message (shell-command-to-string (format "%s --version" flow-bin)))
+        (message (shell-command-to-string "echo \"$SHELL\""))
         (message "Running type-at-pos with %s" command)
 
+        ;; (shell-command-to-string command "*flow-type*" "*flow-type*")
+        (with-output-to-string
+          (with-current-buffer
+              standard-output
+            (shell-command-on-region
+             (point-min)
+             (point-max)
+             command
+             "*flow-type*"
+             nil
+             nil
+             t)
+            )))
+      )
+
+    ;; (defun shell-command-to-string (command)
+    ;;   "Execute shell command COMMAND and return its output as a string."
+    ;;   (with-output-to-string
+    ;;     (with-current-buffer
+    ;;         standard-output
+    ;;       (process-file shell-file-name nil t nil shell-command-switch command))))
+
+    (defun flow-type-at-pos ()
+      "Show flow type at the cursor."
+      (interactive)
+      (let ((file (buffer-file-name))
+            (line (line-number-at-pos))
+            (col (current-column))
+            (flow-bin (my/get-node-modules-bin "flow"))
+            )
         (get-buffer-create "*flow-type*")
-        (shell-command command "*flow-type*" "*flow-type*")
+        (run-flow-type-at-pos)
         (my/display-in-frame "*flow-type*")
         )
       )
-    )
 
 #+END_SRC
 
