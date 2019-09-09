@@ -19,12 +19,6 @@ if [ $(uname) = 'Darwin' ]; then
 
     # ispell so flyspell works on emacs
     # pandoc allows converting HTML to org syntax.
-    # mongodb is locked in version 4.0.3_1 due to licensing issues that I don't
-    # think can impact me. I don't mind if it updates, but if I have trouble
-    # installing mongodb on my various machines, it could be due to having
-    # installed a version with the later license. In this case I should
-    # reinstall mongodb in order to make my life easier. I am not aware of fixes
-    # between the patch-versions here that I need.
     BREWS="
 ag
 ack
@@ -46,7 +40,6 @@ jenv
 jq
 markdown
 maven
-mongodb
 mtr
 nmap
 node

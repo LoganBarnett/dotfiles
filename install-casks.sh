@@ -20,6 +20,13 @@ brew cask upgrade
 
 # TODO: Find a better way to reinstall istat-menus (cannot be stopped once
 # running, short of an "uninstall").
+#
+# mongodb is locked in version 4.0.3_1 due to licensing issues that I don't
+# think can impact me. I don't mind if it updates, but if I have trouble
+# installing mongodb on my various machines, it could be due to having
+# installed a version with the later license. In this case I should
+# reinstall mongodb in order to make my life easier. I am not aware of fixes
+# between the patch-versions here that I need.
 CASKS="
 adobe-connect
 alfred
@@ -30,6 +37,7 @@ font-source-code-pro
 gimp
 google-chrome
 haskell-platform
+mongodb
 slack
 virtualbox
 zoomus
