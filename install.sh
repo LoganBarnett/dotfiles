@@ -34,8 +34,6 @@ ln -F -s -n $PWD/bin ~/bin
 
 ./install-shell.sh
 
-./install-nix.sh
-
 if [ $(uname) = 'Darwin' ]; then
     cd $start_dir
     echo "installing homebrew..."
@@ -60,6 +58,9 @@ echo "settting up ocaml's opam"
 
 echo "installing GPG..."
 ./install-gpg.sh
+
+# nix must come after gpg since it uses gpg.
+./install-nix.sh
 
 echo "setting up spacemacs"
 ./emacs-install.sh
