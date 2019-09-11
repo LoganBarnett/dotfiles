@@ -30,8 +30,9 @@ where logs are stored.
         ;; TODO: Consider using https://github.com/emacs-evil/evil-collection
         ;; TODO: Consider generalizing this for other modes
         )
-      (evil-set-initial-state 'messages-buffer-mode 'evil-evilified-state)
-      (evil-normalize-maps)
+      (evil-set-initial-state 'messages-buffer-mode 'evilified)
+      (add-hook 'messages-buffer-mode #'evil-normalize-keymaps)
+      (evil-normalize-keymaps)
       (message "window prefix configured")
       )
   #+end_src
