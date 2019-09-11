@@ -201,6 +201,22 @@ http://pragmaticemacs.com/emacs/master-your-inbox-with-mu4e-and-org-mode/
          )
      #+end_src
 
+**** urls
+     =mu4e= uses numbered URLs, which are generally aggregated at the bottom of
+     a message. One can jump to these URLs under the standard keybindings, but
+     much of that is shadowed by =evil-mode=.
+
+     #+begin_src emacs-lisp :results none
+       (defun config/mu4e-urls ()
+         (interactive)
+         (evil-define-key 'evilified 'mu4e-view-mode
+           (kbd "g u") 'mu4e-view-go-to-url
+           )
+         (evil-normalize-keymaps)
+         (add-hook 'mu4e-view-mode #'evil-normalize-keymaps)
+         )
+     #+end_src
+
 **** writing
 ***** line wrapping
       Wrapping at 80 columns is king, but it's not without some management to
@@ -426,6 +442,7 @@ http://pragmaticemacs.com/emacs/master-your-inbox-with-mu4e-and-org-mode/
 
     (config/mu4e-reading-format)
     (config/mu4e-prevent-hard-line-wrap-on-export)
+    (config/mu4e-urls)
     (message "done initializing mu4e")
     )
 #+end_src
