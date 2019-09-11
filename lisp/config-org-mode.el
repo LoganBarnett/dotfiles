@@ -142,6 +142,7 @@ Adapt image size via `iimage-scale-to-fit-width' when the window size changes."
   ;;              ox-confluence-en ;; Adds PlantUML support to Confluence exports.
   ;;              ox-gfm ;; Github Flavored Markdown.
   ;;              )
+    :ensure org-plus-contrib
     :init
     :config
     ;; set default diary location
@@ -224,7 +225,28 @@ Adapt image size via `iimage-scale-to-fit-width' when the window size changes."
     (config/hidden-content-indicator)
     ;; (config/google-calendar-sync)
     )
+
+  (use-package org-contacts
+    :ensure nil
+    :after org
+    :preface
+    (defvar my/org-contacts-template "* %(org-contacts-template-name)
+:PROPERTIES:
+:ADDRESS: %^{289 Cleveland St. Brooklyn, 11206 NY, USA}
+:BIRTHDAY: %^{yyyy-mm-dd}
+:EMAIL: %(org-contacts-template-email)
+:NOTE: %^{NOTE}
+:END:" "Template for org-contacts.")
+    :custom
+    (org-capture-templates
+     `(("c" "Contact" entry (file+headline "~/Dropbox/notes/contacts.org" "Friends"),
+        my/org-contacts-template
+        :empty-lines 1))
+     )
+     (org-contacts-files '("~/Dropbox/notes/contacts.org"))
   )
+)
+
 (provide 'config-org-mode)
 
 ;;; config-org-mode.el ends here
