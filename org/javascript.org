@@ -65,21 +65,22 @@ can see. I have =jshint= as a means of supporting some of the older applications
 during my time at NWEA.
 
 #+BEGIN_SRC emacs-lisp
-(defun my/find-javascript-flycheck-backends ()
-  (message "Setting up find hooks for Javascript Flycheck backends")
-  (add-hook 'flycheck-mode-hook
-            (apply-partially #'my/use-checker-from-node-modules "flow" "flow"))
-  (add-hook 'flycheck-mode-hook
-            (apply-partially #'my/use-checker-from-node-modules "eslint"
-                             "eslint"))
-  (add-hook 'flycheck-mode-hook
-            (apply-partially #'my/use-checker-from-node-modules "jshint"
-                             "jshint"))
-  (add-hook 'flycheck-mode-hook
-            (apply-partially #'my/use-checker-from-node-modules
-                             "flow-coverage"
-                             "flow"))
-)
+  (defun my/find-javascript-flycheck-backends (hook)
+    "HOOK should be a quoted string."
+    (message "Setting up find hooks for Javascript Flycheck backends")
+    (add-hook hook
+              (apply-partially #'my/use-checker-from-node-modules "flow" "flow"))
+    (add-hook hook
+              (apply-partially #'my/use-checker-from-node-modules "eslint"
+                               "eslint"))
+    (add-hook hook
+              (apply-partially #'my/use-checker-from-node-modules "jshint"
+                               "jshint"))
+    (add-hook hook
+              (apply-partially #'my/use-checker-from-node-modules
+                               "flow-coverage"
+                               "flow"))
+  )
 #+END_SRC
 
 Tying together Flow, Flow's coverage, and ESLint is documented to run the
@@ -293,7 +294,8 @@ Finally, tie it all together on demand.
   ;; Sometimes we want to be in rjsx mode but other, lighter configurations
   ;; such as the inner-mode that org-babel uses can just get away with
   ;; js2-mode or something similar.
-  (defun config/configure-javascript-mode ()
+  (defun config/configure-javascript-mode (hook)
+    "HOOK should be a quoted variable."
     (require 'grep)
     (require 'flycheck)
     (require 'rainbow-identifiers)
@@ -320,7 +322,7 @@ Finally, tie it all together on demand.
     ;; prevent indentation from lining up with a prior line's glyph
     ;; this will make it so fighting is less necessary to appease linters
     (setq-default js2-pretty-multiline-declarations nil)
-    (my/find-javascript-flycheck-backends)
+    (my/find-javascript-flycheck-backends hook)
     (my/connect-javascript-flycheck-backends)
     (my/config-javascript-company-backends)
 
@@ -339,7 +341,7 @@ Finally, tie it all together on demand.
     (add-hook 'js2-mode 'my/config-javascript-company-backends)
 
     :config
-    (config/configure-javascript-mode)
+    (config/configure-javascript-mode 'js2-mode-hook)
   )
 
   (use-package "rjsx-mode"
@@ -350,6 +352,6 @@ Finally, tie it all together on demand.
     (add-hook 'rjsx-mode 'my/config-javascript-company-backends)
 
     :config
-    (config/configure-javascript-mode)
+    (config/configure-javascript-mode 'rjsx-mode-hook)
   )
 #+END_SRC
