@@ -8,6 +8,7 @@
 // changes. bootstrap.js might need to get imported last and then run some
 // function that applies the injections.
 const fs = require('fs')
+const path = require('path')
 const loader = require('./load-injector-data.js')
 
 const lines = loader().map(m => {
@@ -18,7 +19,7 @@ localStorage.setItem( "${m.key}", JSON.stringify(${JSON.stringify(m)}))\
 
 
 fs.writeFileSync(
-  '/Users/logan/dev/Injector.safariextension/share/bootstrap.js',
+  path.resolve('../Injector.safariextension/share/bootstrap.js'),
   lines.join('\n') + `
 styleStorage.update()
 reloadStyles()
