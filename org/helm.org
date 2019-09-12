@@ -52,7 +52,7 @@
 * helm-ag
   =helm-ag= uses =ag= but [[https://blog.burntsushi.net/ripgrep/][ripgrep]] claims to be better in every way. Using
   [[https://gist.github.com/pesterhazy/fabd629fbb89a6cd3d3b92246ff29779][this gist]], =helm-ag= can be configured to use =ripgrep=. =helm-projectile=
-  adds some incompatible arguments, so we need to sue the =rg-projectile=
+  adds some incompatible arguments, so we need to use the =rg-projectile=
   wrapper instead.
 
   #+begin_src emacs-lisp

@@ -2,7 +2,7 @@
 
 set -e
 
-echo "Installing Emacs (emacs-plus)"
+echo "Installing Emacs (emacs-mac)"
 # brew tap d12frosted/emacs-plus
 brew tap railwaycat/emacsmacport
 echo "emacs tapped"
@@ -20,10 +20,24 @@ echo "emacs tapped"
 #          --with-librsvg \
 #          --with-imagemagick \
 #          --with-spacemacs-icon 2>&1 | grep "already installed"
-./install-package.sh emacs-mac
-echo "emacs-plus installed"
+# ./install-package.sh emacs-mac
+
+brew install emacs-mac \
+  --with-glib \
+  --with-spacemacs-icon \
+  --with-modules \
+  --with-xml2 \
+  --with-imagemagick || \
+  brew upgrade emacs-mac \
+    --with-glib \
+    --with-spacemacs-icon \
+    --with-modules \
+    --with-xml2 \
+    --with-imagemagick
+echo "emacs installed"
 # brew link --overwrite emacs-plus
-echo "linked emacs-plus"
+brew link --overwrite emacs-mac
+echo "linked emacs"
 
 echo "installing spacemacs"
 # git clone https://github.com/syl20bnr/spacemacs ~/.emacs.d || true
@@ -32,7 +46,12 @@ git clone https://github.com/syl20bnr/spacemacs ~/.spacemacs.d || true
 mkdir -p ~/.vanilla-emacs.d
 
 # I want to maintain a vanilla Emacs configuration alongside Spacemacs.
-ln -snf ~/.emacs.d ~/.vanilla-emacs.d
+# This is not fully baked. Spacemacs does not like seeing itself in a symlink,
+# and will add a lot of startup cost trying to deal with "duplicate packages".
+#
+# ln -snf ~/.vanilla-emacs.d ~/.emacs.d
+# ln -snf ~/.spacemacs.d ~/.emacs.d
+ln -snf ~/.emacs.d ~/.spacemacs.d
 
 echo "linking elisp dir"
 rm ~/.spacemacs.d/private/local/dotfiles || true
@@ -47,9 +66,6 @@ echo "Setting up additional layers"
 
 mkdir -p ~/.spacemacs.d/private/layers
 cd ~/.spacemacs.d/private/layers
-
-# Deft is for searching - I use it for my org-mode files.
-ln -snf ~/Dropbox/notes ~/.deft
 
 # we can preload the packages with this:
 # emacs --batch --load=~/.emacs.d/init.el

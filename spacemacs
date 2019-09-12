@@ -60,7 +60,6 @@ values."
      lsp
      markdown
      mu4e
-     ;; notmuch
      (org :variables
           org-enable-github-support t
           ;; org-enable-reveal-js-support t
@@ -80,7 +79,6 @@ values."
      ;; typescript
      version-control
      vimscript
-     w3m
      yaml
      )
    ;; List of additional packages that will be installed without being
@@ -96,7 +94,6 @@ values."
      ;; hopefully managed by a spacemacs layer
      company-flow
      ;; company-lsp
-     deft
      feature-mode
      find-lisp
      floobits
