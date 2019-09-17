@@ -1,0 +1,125 @@
+#+title:     Dungeons & Dragons
+#+author:    Logan Barnett
+#+email:     logustus@gmail.com
+#+date:      <2019-09-15 Sun>
+#+language:  en
+#+file_tags:
+#+tags:
+
+* tracking the current round
+  I frequently lose track of which round it is as I apply effects between
+  creatures that exist in the initiative order. Having a stark visual counter
+  that I advance with a key binding would be just dandy.
+
+  Combat tables will be expressed with the following format:
+
+  | turn | name | ord | ac | chp | thp | hit | dmg | spec | dist |
+  |------+------+-----+----+-----+-----+-----+-----+------+------|
+
+  The =turn= column should indicate the current turn with a series of glyphs
+  such as =>>>>= or similar, and I can at some point make it work with a font
+  face.
+** indicator
+   The indicator will be =>>>>= but I should be able to change it.
+
+   #+begin_src emacs-lisp :results none
+     (defcustom dnd/turn-indicator-string ">>>>" "String to use for the current turn.")
+   #+end_src
+
+** get table lines
+
+   #+begin_src emacs-lisp :results none
+
+     (defun dnd//get-table-lines ()
+       (let* (
+              (beg (org-table-begin))
+              (end (copy-marker (org-table-end)))
+              )
+         (- (length (split-string
+                     (filter-buffer-substring beg end)
+                     "\n"
+                     t
+                     )
+                    )
+            3))
+       )
+
+   #+end_src
+
+** find turn indicator
+   The turn indicator will be =>>>>= on the =turn= column. We should go to the
+   column and then walk down it until we find it. If we don't find it, return
+   =nil=.
+
+   #+begin_src emacs-lisp :results none
+     (defun dnd//walk-column-for-indicator (lines line)
+       (message "value %s" (org-table-get (+ 2 line) 1))
+       (if (< line (+ 1 lines))
+           (if (string-equal (org-table-get (+ 2 line) 1) dnd/turn-indicator-string)
+               line
+             (dnd//walk-column-for-indicator lines (+ 1 line))
+             )
+         nil
+         )
+       )
+
+     (defun dnd//add-indicator (line)
+       (org-table-put line 1 dnd/turn-indicator-string)
+       2
+       )
+
+
+     (defun dnd/find-turn-indicator ()
+       (if (org-at-table-p)
+           (let* (
+                  (lines (dnd//get-table-lines))
+                  (indicator (dnd//walk-column-for-indicator lines 0))
+                  )
+             (message "indicator? %s" indicator)
+             (if indicator (+ 2 indicator) nil)
+             )
+         nil
+         )
+       )
+   #+end_src
+
+** next round
+
+   #+begin_src emacs-lisp :results none
+
+          (defun dnd/next-round ()
+            (interactive)
+            (message "in next-round")
+            (if (org-at-table-p)
+                (let* (
+                       (indicator (dnd/find-turn-indicator))
+                       (next (+ (or indicator 0) 1))
+                       (lines (dnd//get-table-lines))
+                       )
+                  (message "in table with indicator %s" indicator)
+                  (if indicator
+                      (progn
+                        (org-table-put indicator 1 "" t)
+
+                        (if (< next (+ 3 lines))
+                            (progn
+                         (message " < condition %s" next)
+                              (org-table-put next 1 dnd/turn-indicator-string t)
+                              )
+                     (progn
+                         (message " >= condition")
+                          (org-table-put 2 1 dnd/turn-indicator-string t)
+                          )
+                          )
+                        )
+               (progn
+                    (org-table-put 2 1 dnd/turn-indicator-string t)
+                    (message "no indicator condition")
+     )
+                    )
+                  )
+              (message "Not on a table!")
+              )
+            )
+
+   #+end_src

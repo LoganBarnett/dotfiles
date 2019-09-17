@@ -263,6 +263,7 @@
   ;; to track down. I might need to hook up some dependency hooks with
   ;; use-package to properly fix this.
   (init-org-file "org-agenda.org")
+  (init-org-file "dnd.org")
   (message "[INIT] Init Done.")
   )
 
