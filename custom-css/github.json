@@ -2,7 +2,8 @@
   "name": "github",
   "enabled": true,
   "includes": [
-    "https://*.github.com/*"
+    "https://*.github.com/*",
+    "https://github.com/*"
   ],
   "excludes": [],
   "onload": false,
