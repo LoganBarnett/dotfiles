@@ -45,6 +45,7 @@ values."
      ;; (auto-completion :variables
      ;;                  auto-completion-enable-snippets-in-popup t)
      colors
+     dap ;; DAP handles debugging tools for other languages. Works with LSP.
      docker
      elm
      evil-commentary
@@ -55,7 +56,7 @@ values."
      html
      idris
      (java :variables java-backend 'lsp)
-     javascript
+     (javascript :variables javascript-backend 'lsp)
      lua
      lsp
      markdown

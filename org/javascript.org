@@ -299,7 +299,7 @@ Finally, tie it all together on demand.
     (require 'grep)
     (require 'flycheck)
     (require 'rainbow-identifiers)
-    (require 'flycheck-flow)
+    ;; (require 'flycheck-flow)
     (message "Configuring Javascript")
     ;; (add-hook 'js2-mode-hook 'flow-minor-enable-automatically)
     (setq-default flycheck-javascript-flow-args '("--respect-pragma"))
@@ -322,15 +322,20 @@ Finally, tie it all together on demand.
     ;; prevent indentation from lining up with a prior line's glyph
     ;; this will make it so fighting is less necessary to appease linters
     (setq-default js2-pretty-multiline-declarations nil)
-    (my/find-javascript-flycheck-backends hook)
-    (my/connect-javascript-flycheck-backends)
-    (my/config-javascript-company-backends)
+    ;; (my/find-javascript-flycheck-backends hook)
+    ;; (my/connect-javascript-flycheck-backends)
+    ;; (my/config-javascript-company-backends)
+    ;; Setting this locally should work because it's only for this individual
+    ;; buffer, and not the project. This should survive buffer renames/moves.
+    ;; (setq-local lsp-clients-flow-server
+    ;;             (concat (projectile-project-root) "node_modules/.bin/flow")
+    ;;             )
 
     ;; ugh debugging company
-    (defun company-flow-prefix ()
-      (interactive)
-      (message "result: %s" (company-flow--prefix))
-    )
+    ;; (defun company-flow-prefix ()
+    ;;   (interactive)
+    ;;   (message "result: %s" (company-flow--prefix))
+    ;; )
   )
 
   (require 'use-package)
@@ -338,7 +343,10 @@ Finally, tie it all together on demand.
     :defer t
     :init
     (message "initializing Javascript via js2-mode")
+    (require 'lsp)
+    (add-to-list 'lsp-language-id-configuration '(js2-mode . "javascript"))
     (add-hook 'js2-mode 'my/config-javascript-company-backends)
+    ;; (add-hook 'js2-mode 'lsp)
 
     :config
     (config/configure-javascript-mode 'js2-mode-hook)
@@ -348,10 +356,16 @@ Finally, tie it all together on demand.
     :defer t
     :init
     (message "initializing Javascript via rjsx-mode")
-    (add-to-list 'auto-mode-alist '("\\.js" . rjsx-mode))
+    (require 'lsp)
+    (add-to-list 'lsp-language-id-configuration '(rjsx-mode . "javascript"))
+    ;; (add-to-list 'auto-mode-alist '("\\.js" . rjsx-mode))
     (add-hook 'rjsx-mode 'my/config-javascript-company-backends)
 
     :config
     (config/configure-javascript-mode 'rjsx-mode-hook)
+    ;; Turn off auto closing of tags (it's usually wrong anyways).
+    (define-key rjsx-mode-map "<" nil)
+    (define-key rjsx-mode-map (kbd "C-d") nil)
+    (define-key rjsx-mode-map ">" nil)
   )
 #+END_SRC

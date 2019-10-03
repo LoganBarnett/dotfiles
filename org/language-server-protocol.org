@@ -42,4 +42,34 @@ https://github.com/emacs-lsp/lsp-ui
     ;;   (config/company-lsp)
     ;;   (config/flycheck-lsp)
     ;;   )
+    (require 'use-package)
+
+    (use-package lsp-mode
+      :init
+      :config
+      (require 'projectile)
+      (require 'lsp-ui)
+      (lsp-register-client
+       (make-lsp-client :new-connection (lsp-stdio-connection (lambda ()
+                                                                (cons (concat (projectile-project-root) "node_modules/.bin/" lsp-clients-flow-server)
+                                                                      lsp-clients-flow-server-args)))
+                        :priority 0
+                        :activation-fn 'lsp-clients-flow-activate-p
+                        :server-id 'flow-ls))
+
+      ;; The type information just floats over the ordinary text with no real
+      ;; framing or context. Setting the background color should help.
+      ;; (custom-set-faces
+       ;; '(lsp-lens-face ((t (:background "#511"))))
+       ;; '(lsp-face-highlight-write ((t (:background "#511"))))
+       ;; )
+      ;; (set-face-background 'lsp-face-highlight-read "#511")
+      ;; (set-face-background 'lsp-face-highlight-textual "#511")
+      ;; (set-face-background 'lsp-face-highlight-write "#511")
+      ;; (set-face-background 'lsp-lens-face "#511")
+      ;; (set-face-background 'lsp-lens-mouse-face "#511")
+      ;; (set-face-background 'completions-annotations "#511")
+      (set-face-background 'lsp-ui-sideline-symbol-info "#511")
+      (setq-default lsp-enable-semantic-highlighting t)
+      )
   #+end_src

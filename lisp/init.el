@@ -249,7 +249,7 @@
   (init-org-file "time.org")
   (init-org-file "diagram.org")
   (init-org-file "yasnippet.org")
-  ;; (init-org-file "language-server-protocol.org")
+  (init-org-file "language-server-protocol.org")
   (init-org-file "java.org")
   (init-org-file "graphviz-dot.org")
   (init-org-file "markdown.org")
