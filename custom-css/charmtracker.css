@@ -1,0 +1,18 @@
+body {
+  background-color: var(--general-background-color) !important;
+  color: var(--text-color) !important;
+}
+
+/**
+ * The background-color uses !important, so use the body trick to get a higher
+ * specificity.
+ */
+body .menu-nav li.sel {
+  background-color: var(--tab-active-background-color) !important;
+  color: var(--tab-active-color) !important;
+}
+
+.menu-nav li {
+  background-color: var(--tab-inactive-background-color) !important;
+  color: var(--tab-inactive-color) !important;
+}

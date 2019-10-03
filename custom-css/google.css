@@ -1,4 +1,4 @@
-/* 
+/**
  * Name:    DarkSearch for Google
  * Author:  Nass O
  * Version: 21052016.01
@@ -8,7 +8,22 @@
 label.gp-text, label.gp-checkbox, label.gp-radio, label.gp-radio-group {
   color: var(--text-color) !important;
 }
- 
+
+/* Search bar */
+.RNNXgb {
+  background: var(--general-background-color) !important;
+}
+
+/* Search suggestion/autocomplete panel */
+.aajZCb {
+  background: var(--general-background-color) !important;
+}
+
+/* Search suggestion/autocomplete entries */
+.sbl1 {
+  color: var(--keyword-color) !important;
+}
+
 /* search suggestions */
 div.sbqs_c {
   color: #8866c5 !important;

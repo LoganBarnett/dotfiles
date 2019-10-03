@@ -1,0 +1,11 @@
+{
+  "name": "charmtracker",
+  "enabled": true,
+  "includes": [
+    "https://*.charmtracker.com/*",
+    "https://charmtracker.com/*"
+  ],
+  "excludes": [],
+  "onload": false,
+  "key": "charmtracker"
+}

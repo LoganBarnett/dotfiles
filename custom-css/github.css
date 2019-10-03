@@ -287,11 +287,16 @@ div.discussion-timeline-actions {
 
 /* ordinary code bits */
 .blob-code-inner {
-  color: #aaa !important;
-  /* Can you believe some people still use tabs? Github or the browser has this at
-   * 12 spaces!
+  color: var(--text-color) !important;
+  /**
+   * Can you believe some people still use tabs? Github or the browser has this
+   * at 12 spaces!
    */
   tab-size: 2;
+}
+
+.blob-code-addition {
+  background-color: var(--diff-add-background-color) !important;
 }
 
 /* string literals I think */
@@ -691,4 +696,16 @@ div.comment-content {
  */
 body .no-underline {
   text-decoration: underline !important;
+}
+
+.review-comment {
+  color: var(--text-color) !important;
+}
+
+.diffbar {
+  background-color: var(--panel-background-color) !important;
+}
+
+.pr-toolbar {
+  background-color: var(--panel-background-color) !important;
 }

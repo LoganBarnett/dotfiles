@@ -139,8 +139,14 @@ const vars = {
   '--thin-border': '0.1em solid #5d4d7a',
   '--thin-border-color': '#5d4d7a',
   '--diff-add-color': '#293235',
-  '--diff-add-background-color': '#86dc2f',
-  '--diff-minor-add-background-color': '#67b11d',
+  /**
+   * The standard Spacemacs diff colors are a bit harsh. I intend to update them
+   * in the theme as well.
+   */
+  // '--diff-add-background-color': '#86dc2f',
+  '--diff-add-background-color': '#141',
+  // '--diff-minor-add-background-color': '#67b11d',
+  '--diff-minor-add-background-color': '#030',
   '--diff-remove-color': '#3c2a2c',
   '--diff-remove-background-color': '#e0616d',
   '--diff-minor-remove-background-color': '#ce537a',

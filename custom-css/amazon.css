@@ -23,6 +23,14 @@ a.a-color-base, a:active.a-color-base, a:link.a-color-base, a:visited.a-color-ba
   color: #ddd !important;
 }
 
+/**
+ * Links use !important already, so make it more specific with the body trick.
+ */
+body .a-color-base {
+  background-color: var(--link-background-color) !important;
+  color: var(--link-color) !important;
+}
+
 .a-popover-wrapper {
   background-color: #333 !important;
 }
