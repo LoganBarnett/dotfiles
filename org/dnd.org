@@ -123,3 +123,13 @@
             )
 
    #+end_src
+
+** key binding
+   =dnd/next-round= is a function for tables, in =org-mode=, so it might be
+   reasonable to place this table operation in the =, t= prefix, but I suspect a
+   suite of D&D bindings may be on the way. =, D= is available.
+
+   #+begin_src emacs-lisp :results none
+     (spacemacs/declare-prefix-for-mode 'org-mode "mD" "dnd" "dnd")
+     (spacemacs/set-leader-keys-for-major-mode 'org-mode (kbd "D n") 'dnd/next-round)
+   #+end_src
