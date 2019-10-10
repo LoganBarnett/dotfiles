@@ -93,6 +93,7 @@ const vars = {
   '--general-background': '#292b2e',
   '--code-background-color': '#100a14',
   '--link-color': '#2d9574',
+  '--hover-link-color': '#4b9',
   '--visited-link-color': '#4f97d7',
   '--visited-link-background-color': '#44505c',
   '--heading-background-color': '#292b2e',
@@ -115,8 +116,8 @@ const vars = {
   // Setting the container's background-color makes it so we get the S shaped
   // border radius on the tabs, because the border-radius on the bottom allows
   // the background-color of the container to leak through.
-  '--tab-inactive-sibling-container-background-color': '#5d4d7a',
-  '--tab-active-background-color': '#5d4d7a',
+  '--tab-inactive-sibling-container-background-color': '#424',
+  '--tab-active-background-color': '#424',
   '--tab-active-border-radius': '0.5em 0.5em 0 0',
   '--tab-active-color': '#b2b2b2',
   '--tab-list-background-color': '#292b2e',
@@ -138,11 +139,12 @@ const vars = {
   '--item-active-background-color': '#5d4d7a',
   '--thin-border': '0.1em solid #5d4d7a',
   '--thin-border-color': '#5d4d7a',
-  '--diff-add-color': '#293235',
   /**
    * The standard Spacemacs diff colors are a bit harsh. I intend to update them
    * in the theme as well.
    */
+  // '--diff-add-color': '#293235',
+  '--diff-add-color': '#86dc2f',
   // '--diff-add-background-color': '#86dc2f',
   '--diff-add-background-color': '#141',
   // '--diff-minor-add-background-color': '#67b11d',

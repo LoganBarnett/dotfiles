@@ -52,6 +52,14 @@ body .syntaxhighlighter.sh-default .line.alt1 {
   background-color: #323 !important;
 }
 
+/**
+ * Use the body trick to override this rule's !important.
+ */
+body .syntaxhighlighter.sh-default .plain,
+body .syntaxhighlighter.sh-default .plain a {
+  color: var(--text-color) !important;
+}
+
 code {
   border: var(--thin-border) !important;
   color: var(--text-color) !important;

@@ -43,6 +43,15 @@ h1,
   color: var(--text-color) !important;
 }
 
+a {
+  color: var(--link-color) !important;
+  text-decoration: underline !important;
+}
+
+a:hover {
+  color: var(--hover-link-color) !important;
+}
+
 /* Markdown rendered README */
 .wiki-content pre {
   background-color: var(--general-background-color) !important;
