@@ -43,3 +43,5 @@
 [pull]
 	ff-only = true
   rebase = true
+[rebase]
+  autoStash = true
