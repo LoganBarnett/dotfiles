@@ -333,6 +333,72 @@ body {
 }
 
 /**
+ * Hamburger/pancake/nav menu.
+ *
+ * I'm sure we'll have more names soon.
+ */
+html[dir] ._3gdNmT4jTLXmeDgn968BfI {
+  background-color: var(--button-background-color) !important;
+  color: var(--button-color) !important;
+}
+
+/**
+ * Mail app command/button area.
+ */
+html[dir] .qtRcagoPZ5dw3xsr114ze {
+  background-color: var(--panel-background-color) !important;
+}
+
+/**
+ * Mail message command/button area.
+ */
+.root-66 {
+  background-color: var(--panel-background-color) !important;
+}
+
+/**
+ * Side panel in mail.
+ */
+html[dir] ._2uIW6I_1SKuzoss6jjAHdO {
+  background-color: var(--panel-background-color) !important;
+}
+
+/**
+ * Side panel entries.
+ */
+._16aPYHYIOVxzNYTA4BGnwS {
+  background-color: var(--link-background-color) !important;
+  color: var(--link-color) !important;
+}
+
+/**
+ * Side panel entries. (hover)
+ */
+.qDw7SZ9r6S7r0_qZS1aIG:hover .qI0miNbM8RNNeR4_SQSa7,
+.qDw7SZ9r6S7r0_qZS1aIG:hover ._16aPYHYIOVxzNYTA4BGnwS,
+.yM6ioiXgtQ4G9DIFvnHHU:hover .qI0miNbM8RNNeR4_SQSa7,
+.yM6ioiXgtQ4G9DIFvnHHU:hover ._16aPYHYIOVxzNYTA4BGnwS {
+  background-color: var(--link-background-color) !important;
+  color: var(--hover-link-color) !important;
+}
+
+/**
+ * Side panel entry icons.
+ */
+._1IolX_6rKX93IRLO1O_oCP {
+  background-color: var(--link-background-color) !important;
+  color: var(--link-color) !important;
+}
+
+/**
+ * Side panel entry counts.
+ */
+._3znt5bn-HsoKLR4JiGNhgk {
+  background-color: var(--link-background-color) !important;
+  color: var(--link-color) !important;
+}
+
+/**
  * Action area.
  */
 html[dir] ._3oKObV8zI7k4ePSXxNGo4I {
@@ -385,6 +451,13 @@ html[dir] ._3Ad19uWCrJfZmaKfs-hR2p {
  */
 html[dir] .HWDcgTrRzWs8-3feN1tMa {
   background-color: var(--general-background-color) !important;
+}
+
+/**
+ * Mail header currently viewing.
+ */
+html[dir] ._5CGGutaz4d1vhT3GzbRJq {
+  background-color: var(--tab-inactive-background-color) !important;
 }
 
 /**
@@ -463,6 +536,14 @@ html[dir=ltr] ._1E-ojjaYGhOxCgHp9Pe315._3y98JUDT2d04xKfdZTf0VR {
  */
 html[dir] .laGnUXZu6QC88ONZDEBcE {
   background: var(--general-background-color) !important;
+}
+
+/**
+ * Mail header grouping (usually by date clusters such as "Yesterday").
+ */
+html[dir] ._3Ib_26e5i7pKHbAhry3OpA {
+  background-color: var(--separator-background-color) !important;
+  color: var(--separator-color) !important;
 }
 
 /**

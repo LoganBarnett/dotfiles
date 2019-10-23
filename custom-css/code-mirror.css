@@ -1,0 +1,41 @@
+/**
+ * CodeMirror gets shared by various sites such as Bitbucket and Glip.
+ */
+
+.CodeMirror {
+  background: var(--code-background-color) !important;
+  color: var(--text-color) !important;
+  border: var(--thin-border) !important;
+  border: 1px solid var(--border-color) !important;
+}
+
+.CodeMirror-gutters {
+  background-color: var(--code-gutter-background-color) !important;
+  border-right: 1px solid var(--code-gutter-border-color) !important;
+  color: var(--code-gutter-color) !important;
+}
+
+.CodeMirror-gutter.gutter-border {
+  border-color: var(--thin-border-color) !important;
+}
+
+.text-view .line, .text-view .line .CodeMirror-gutter-elt > * {
+  background-color: var(--code-background-color) !important;
+  color: var(--text-color) !important;
+}
+
+.unified-diff .CodeMirror-scroll {
+  background-color: var(--code-background-color) !important;
+}
+
+.CodeMirror-gutters > .blame {
+  background-color: var(--code-background-color) !important;
+  color: var(--text-color) !important;
+}
+
+/**
+ * This might be Glip specific.
+ */
+.code_snippet_container .CodeMirror {
+  border-bottom: none !important;
+}

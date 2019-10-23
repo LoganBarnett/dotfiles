@@ -79,10 +79,11 @@ function hexToRgba(hex) {
 | yellow-bg     | #32322c |
  */
 
-const buttonColor = '#0a0814'
+const buttonColor = '#2aa1ae'
 
 const vars = {
   '--border': '#5d4d7a',
+  '--border-color': '#5d4d7a',
   '--func-color': '#bc6ec5',
   '--keyword-color': '#4f97d7',
   '--text': '#b2b2b2',
@@ -92,6 +93,7 @@ const vars = {
   '--general-background-color': '#292b2e',
   '--general-background': '#292b2e',
   '--code-background-color': '#100a14',
+  '--code-color': '#686868',
   '--link-color': '#2d9574',
   '--hover-link-color': '#4b9',
   '--visited-link-color': '#4f97d7',
@@ -109,25 +111,29 @@ const vars = {
   '--highlight-dim-background-color': '#3b314d',
   '--highlight-background-color': '#444155',
   '--tab-inactive-color': '#2aa1ae',
-  '--tab-inactive-background-color': '#292b2e',
+  '--tab-inactive-background-color': '#244',
   '--tab-left-inactive-border-radius': '0 0 0.5em 0',
   '--tab-right-inactive-border-radius': '0 0 0 0.5em',
   '--meta-color': '#b1951d',
+  '--separator-background-color': '#125',
+  '--separator-color': '#78d',
   // Setting the container's background-color makes it so we get the S shaped
   // border radius on the tabs, because the border-radius on the bottom allows
   // the background-color of the container to leak through.
   '--tab-inactive-sibling-container-background-color': '#424',
   '--tab-active-background-color': '#424',
   '--tab-active-border-radius': '0.5em 0.5em 0 0',
-  '--tab-active-color': '#b2b2b2',
+  '--tab-active-color': '#75d',
   '--tab-list-background-color': '#292b2e',
+  '--table-header-color': '#79e',
+  '--table-header-background-color': '#235',
   '--table-row-alternate-background-color': '#100a14',
-  '--button-background': '#2aa1ae',
-  '--button-background-color': '#2aa1ae',
-  '--button-color': '#0a0814',
+  '--button-background': '#0a0814',
+  '--button-background-color': '#0a0814',
+  '--button-color': '#2aa1ae',
   '--button-color-rgba': hexToRgba(buttonColor),
-  '--button-hover-color': buttonColor,
-  '--button-hover-background-color': '#6ae1ee',
+  '--button-hover-color':  '#6ae1ee',
+  '--button-hover-background-color': '#0a0814',
   '--input-color': '#2aa1ae',
   '--input-background-color': '#292e34',
   '--input-label-color': '#2aa1ae',
@@ -137,7 +143,11 @@ const vars = {
    */
   '--item-active-color': '#e3dedd',
   '--item-active-background-color': '#5d4d7a',
-  '--thin-border': '0.1em solid #5d4d7a',
+  /**
+   * A composite like this doesn't seem to work - at least in Firefox. I thought
+   * I witnessed this working in Safari.
+   */
+  '--thin-border': '1px solid #5d4d7a',
   '--thin-border-color': '#5d4d7a',
   /**
    * The standard Spacemacs diff colors are a bit harsh. I intend to update them
@@ -156,9 +166,14 @@ const vars = {
   '--closed-ticket-color': '#ce537a',
   '--error-color': '#ce537a',
   '--error-background-color': '#3c2a2c',
+  '--fancy-color': '#97d',
+  '--fancy-background-color': '#536',
   '--calendar-leave-entry-background': '#29422d',
   '--calendar-leave-entry-color': '#67b11d',
   'code-string-interpolation': '#86dc2f',
+  '--code-gutter-background-color': '#212026',
+  '--code-gutter-color': '#686868',
+  '--code-gutter-border-color': '#5d4d7a',
   '--panel-border': '0.1em solid #5d4d7a',
   '--panel-title-color': '#b2b2b2',
   '--panel-title-background': '#5d4d7a',
@@ -173,6 +188,9 @@ const vars = {
   '--time-slice-background': '#29422d',
   '--time-slice-inactive-background': '#100a14',
   '--time-slice-cursor-background': '#5d4d7a',
+  '--warning-background': '#441',
+  '--warning-background-color': '#441',
+  '--warning-color': '#dc2',
 }
 
 module.exports = vars

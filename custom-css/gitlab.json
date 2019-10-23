@@ -1,0 +1,10 @@
+{
+  "includes": [
+    "https://*.gitlab.com/*",
+    "https://gitlab.com/*"
+  ],
+  "excludes": [],
+  "name": "gitlab",
+  "enabled": true,
+  "key": "gitlab"
+}

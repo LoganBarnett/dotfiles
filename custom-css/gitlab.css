@@ -1,0 +1,230 @@
+body {
+  color: var(--text-color) !important;
+  background-color: var(--general-background-color) !important;
+}
+
+h1 {
+  background-color: var(--head1-background-color) !important;
+  color: var(--head1-color) !important;
+}
+
+h2 {
+  background-color: var(--head2-background-color) !important;
+  color: var(--head2-color) !important;
+}
+
+h3 {
+  background-color: var(--head3-background-color) !important;
+  color: var(--head3-color) !important;
+}
+
+h4 {
+  background-color: var(--head4-background-color) !important;
+  color: var(--head4-color) !important;
+}
+
+h5 {
+  background-color: var(--head1-background-color) !important;
+  color: var(--head1-color) !important;
+}
+
+h6 {
+  background-color: var(--head2-background-color) !important;
+  color: var(--head2-color) !important;
+}
+
+/**
+ * The icon of a project, which is sometimes a big single letter.
+ */
+.identicon {
+  background-color: var(--fancy-background-color) !important;
+  color: var(--fancy-color) !important;
+}
+
+/**
+ * The icon of a project, which is sometimes a big single letter.
+ */
+.identicon.bg3 {
+  background-color: var(--fancy-background-color) !important;
+}
+
+/**
+ * Files in the details view.
+ */
+.tree-holder .tree-item .tree-item-file-name i,
+.tree-holder .tree-item .tree-item-file-name a {
+  color: var(--link-color) !important;
+}
+
+/**
+ * Tables...?
+ */
+table.table tr th,
+.md table:not(.code) tr th {
+  background-color: var(--table-header-background-color) !important;
+  color: var(--table-header-color) !important;
+}
+
+.tree-holder .tree-table tr:hover:not(.tree-truncated-warning) td {
+  background-color: var(--highlight-background-color) !important;
+}
+
+/**
+ * Borders.
+ */
+.bordered-box {
+  border: 1px solid var(--thin-border-color) !important;
+}
+
+.tree-holder .tree-table tr:hover:not(.tree-truncated-warning) td {
+  border-bottom: 1px solid var(--thin-border-color) !important;
+  border-top: 1px solid var(--thin-border-color) !important;
+}
+
+.tree-holder .tree-table tr {
+  border-bottom: 1px solid var(--thin-border-color) !important;
+  border-top: 1px solid var(--thin-border-color) !important;
+}
+
+.tree-holder .tree-table tr:last-of-type {
+  border-bottom-color: var(--thin-border-color) !important;
+}
+
+.tree-holder .tree-table tr td {
+  border-color: var(--thin-border-color) !important;
+}
+
+.tree-holder .tree-commit .tree-commit-link {
+  color: var(--text-color) !important;
+}
+
+.tree-holder .tree-commit .tree-commit-link:hover {
+  color: var(--hover-link-color) !important;
+}
+
+/**
+ * The last commit or probably most recent "event".
+ */
+.info-well .well-segment {
+  /* This war on whitespace must end. */
+  padding: 0.5rem !important;
+}
+
+table.table tr td,
+.md table:not(.code) tr td,
+table.table tr th,
+.md table:not(.code) tr th {
+  /* This war on whitespace must end. */
+  padding: 0.5rem 0.5rem !important;
+}
+
+.info-well {
+  background: var(--panel-background-color) !important;
+  border: 1px solid var(--thin-border-color) !important;
+  color: var(--text-color) !important;
+  margin-bottom: 0.5rem !important;
+}
+
+.commit a, .generic-commit-status a {
+  color: var(--text-color) !important;
+}
+
+.commit-content .committer .commit-author-link {
+  color: var(--link-color) !important;
+  text-decoration: underline !important;
+}
+
+.commit-content .committer .commit-author-link:hover {
+  color: var(--hover-link-color) !important;
+}
+
+.commit-content .committer .commit-author-link:visited {
+  background-color: var(--visited-link-background-color) !important;
+  color: var(--visited-link-color) !important;
+}
+
+/**
+ * README previews.
+ */
+.file-holder {
+  border: 1px solid var(--thin-border-color) !important;
+}
+
+.file-holder .file-title {
+  background-color: var(--head1-background-color) !important;
+  color: var(--head1-color) !important;
+}
+
+.file-holder .file-content {
+  background: var(--general-background-color) !important;
+}
+
+.md {
+  color: var(--text-color) !important;
+}
+
+.md p {
+  color: var(--text-color) !important;
+}
+
+.file-holder .file-content.md {
+  padding: 0.5rem !important;
+}
+
+code {
+  background-color: var(--code-background-color) !important;
+  color: var(--code-color) !important;
+}
+
+pre {
+  background-color: var(--code-background-color) !important;
+  border: 1px solid var(--thin-background-color) !important;
+  color: var(--code-color) !important;
+}
+
+.context-header > a:hover,
+.participants-more .context-header > .btn-link:hover,
+.user-list-more .context-header > .btn-link:hover,
+.context-header > a:focus,
+.context-header > button:hover,
+.context-header > button:focus {
+  background-color: var(--general-backgorund-color) !important;
+}
+
+.context-header > a,
+.context-header > button {
+  background-color: var(--general-backgorund-color) !important;
+  color: var(--text-color) !important;
+}
+
+body.ui-indigo .nav-sidebar li.active > a {
+  color: var(--tab-active-color) !important;
+  background-color: var(--tab-active-background-color) !important;
+}
+
+.sidebar-top-level-items > li.active {
+  background: var(--tab-active-background-color) !important;
+}
+
+.nav-sidebar li a {
+  color: var(--link-text-color) !important;
+  padding: 0 !important;
+  text-decoration: underline;
+}
+
+.sidebar-sub-level-items {
+  padding-bottom: 0 !important;
+}
+
+.sidebar-sub-level-items > li a {
+  padding: 0.5rem !important;
+}
+
+.nav-sidebar {
+  background-color: var(--general-background-color) !important;
+}
+
+.toggle-sidebar-button, .close-nav-button {
+  background-color: var(--button-background-color) !important;
+  color: var(--button-color) !important;
+}

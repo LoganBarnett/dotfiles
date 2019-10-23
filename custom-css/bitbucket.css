@@ -1,7 +1,7 @@
 /*
 
 .diff-view.text-view .added.line, .diff-view.text-view .added.segment-connector, .diff-view.text-view .added.line .comment-box, .diff-view.text-view .added.line .bitbucket-gutter-marker {
-  background-color: #222 !important;
+  background-color: var(--panel-background-color) !important;
   color: #4c4 !important;
 }
 */
@@ -75,6 +75,14 @@ form.aui .checkbox>label, form.aui .radio>label {
 /* Also part of the footer. */
 .aui-page-sidebar.aui-sidebar-collapsed #footer {
   background-color: var(--general-background-color) !important;
+}
+
+/**
+ * Warning panels.
+ */
+.aui-message.warning, .aui-message-warning {
+  background: var(--warning-background) !important;
+  color: var(--warning-color) !important;
 }
 
 /* side bar */
@@ -247,7 +255,7 @@ aui-inline-dialog .aui-inline-dialog-contents, .aui-inline-dialog .aui-inline-di
   color: var(--text-color) !important;
 }
 h3, .aui-page-header-hero .aui-page-header-main p, .aui-page-header-marketing .aui-page-header-main p {
-  color: #ddd !important;
+  color: var(--text-color) !important;
 }
 
 .file-toolbar {
@@ -275,7 +283,7 @@ h3, .aui-page-header-hero .aui-page-header-main p, .aui-page-header-marketing .a
 
 .aui-button, a.aui-button, .aui-button:visited {
   background-color: #497 !important;
-  color: #ddd !important;
+  color: var(--text-color) !important;
 }
 
 .markup-preview {
@@ -346,10 +354,6 @@ h3, .aui-page-header-hero .aui-page-header-main p, .aui-page-header-marketing .a
   color: var(--text-color) !important;
 }
 
-.CodeMirror-gutter.gutter-border {
-  border-color: var(--thin-border-color) !important;
-}
-
 .removed.line .ediff-change, .removed.line .ediff-delete {
   color: #121212 !important;
 }
@@ -368,24 +372,9 @@ h3, .aui-page-header-hero .aui-page-header-main p, .aui-page-header-marketing .a
   color: var(--diff-remove-color) !important;
 }
 
-.text-view .line, .text-view .line .CodeMirror-gutter-elt > * {
-  background-color: #222 !important;
-  color: #ddd !important;
-}
-
-.unified-diff .CodeMirror-scroll {
-  background-color: #222 !important;
-}
-
-.CodeMirror-gutters > .blame {
-  background-color: #222 !important;
-  color: #ddd !important;
-}
-
-
 .comment-container .panel {
   background-color: #121212 !important;
-  color: #ddd !important;
+  color: var(--text-color) !important;
 }
 
 .comment.unread > .content {
@@ -405,7 +394,7 @@ table.aui>tbody>tr, table.aui>tfoot>tr {
 }
 
 .aui-page-panel {
-  background-color: #222 !important;
+  background-color: var(--panel-background-color) !important;
 }
 
 ak-editor-bitbucket .mono, code, tt {

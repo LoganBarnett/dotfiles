@@ -1,0 +1,14 @@
+{
+  "includes": [
+    "https://bitbucket.org/*",
+    "http://stash.americas.nwea.pvt/*",
+    "https://stash.americas.nwea.pvt/*",
+    "https://*.glip.com/*"
+  ],
+  "excludes": [
+    ""
+  ],
+  "name": "codemirror",
+  "enabled": true,
+  "key": "codemirror"
+}
