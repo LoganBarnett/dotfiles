@@ -87,6 +87,8 @@ Will yield:
             (lambda ()
               (when (and (eq major-mode 'org-mode)
                          (eq buffer-read-only nil)
+                         ;; This isn't working properly and should probably
+                         ;; check for "nil" (string) as well.
                          (not (eq (get-org-keyword "AUTO_ID") nil))
                          )
                 (message "Adding auto ids to org buffer \"%s\"" (buffer-name))
