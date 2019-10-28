@@ -83,8 +83,9 @@ zsh-syntax-highlighting
     # notes from sed install:
     # If you really need to use these commands with their normal names, you
     # can add a "gnubin" directory to your PATH from your bashrc like:
-
+    #
     # PATH="/usr/local/opt/coreutils/libexec/gnubin:$PATH"
+    ln -s /usr/local/opt/gnu-sed/libexec/gnubin/sed /usr/local/bin/gsed
 
     # Some systems have workarounds expecting the original sed to remain in
     # place. This makes the system work for both cases assuming the check is an
