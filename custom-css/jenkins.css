@@ -1,5 +1,5 @@
 body {
-  background-color: #121212 !important;
+  background-color: var(--general-background-color) !important;
 }
 
 a:link {

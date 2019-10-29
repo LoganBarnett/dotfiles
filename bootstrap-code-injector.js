@@ -39,7 +39,14 @@ const rules = loader().map(m => {
       // path: path.resolve(`./custom-css/${m.name}.css`),
       // local: true,
       // local: true,
-      // onLoad: true,
+      /**
+       * We want CSS to be loaded afterwards, otherwise the event doesn't fire
+       * for simple navigation actions and then requires a page refresh. Waiting
+       * for the assets to load leaves an annoying white flash though. To remedy
+       * this we have a preload CSS file that sets the background to something
+       * tolerable right from the start.
+       */
+      onLoad: m.name == 'global',
     },
     {
       // The code is read as a string and presumably processed or simply used
@@ -55,7 +62,7 @@ const rules = loader().map(m => {
       local: false,
       // path: path.resolve(`./custom-css/${m.name}.js`),
       // local: true,
-      // onLoad: true,
+      onLoad: true,
     },
   ]
 })

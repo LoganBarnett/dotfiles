@@ -1,5 +1,5 @@
 body {
-  /* background-color: #222 !important; */
+  background-color: var(--general-background-color) !important;
   /* color: #ddd !important; */
 /*  font-family: "Source Code Pro" !important; */
 }
