@@ -10,6 +10,7 @@
 const fs = require('fs')
 const path = require('path')
 const loader = require('./load-injector-data.js')
+const preCssIncludes = require('./apply-global-pre-css.js')
 
 /**
  * The old injector style uses wildcards (*), whereas the new code-injector uses
@@ -30,7 +31,9 @@ const rules = loader().map(m => {
       code: m.styles,
       type: 'css',
       enabled: true,
-      selector: wildcardToRegex(m.includes.join('|')),
+      selector: wildcardToRegex(
+        (m.name == 'preload' ? preCssIncludes() : m.includes).join('|'),
+      ),
       // path: null,
       // Local files are read from disk, but we want to be able to process them
       // first. So set this to false and the system will accept the rule's
@@ -46,7 +49,7 @@ const rules = loader().map(m => {
        * this we have a preload CSS file that sets the background to something
        * tolerable right from the start.
        */
-      onLoad: m.name == 'global',
+      onLoad: m.name == 'preload',
     },
     {
       // The code is read as a string and presumably processed or simply used
