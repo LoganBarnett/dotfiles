@@ -1,0 +1,11 @@
+{
+  "includes": [
+    "https://*.stoplight.io/*"
+  ],
+  "excludes": [
+    ""
+  ],
+  "name": "stoplight",
+  "enabled": true,
+  "key": "stoplight"
+}

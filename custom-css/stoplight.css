@@ -1,0 +1,62 @@
+body {
+  color: var(--text-color) !important;
+}
+
+/**
+ * This is the row of buttons above the main content.
+ */
+.GridEditorHeader {
+  background-color: var(--general-background-color) !important;
+}
+
+/**
+ * One of the main content panels.
+ */
+.GridPanel.is-noGrid {
+  background-color: var(--general-background-color) !important;
+}
+
+/**
+ * The inner side-bar. This is not overriding anything since the style is not
+ * actually supplied. Here we simply supply the style to use.
+ */
+.PageColumn-content {
+  background-color: var(--general-background-color);
+}
+
+/**
+ * Side-bar "links", but just clickable divs really.
+ */
+.MLI-top {
+  color: var(--link-color) !important;
+  text-decoration: underline;
+}
+
+/**
+ * The type of a schema definition.
+ */
+.u-schemaColors .sl--object,
+.sl-schema-colors .sl--object {
+  color: var(--keyword-color) !important;
+}
+
+/**
+ * Zebra stripes for a table.
+ */
+.JSV-row:nth-child(2n) {
+  background-color: var(--table-row-alternate-background-color) !important;
+}
+
+/**
+ * Hovering over a table.
+ */
+.JSV-row:hover {
+  background-color: var(--table-row-hover-background-color) !important;
+}
+
+/**
+ * Inline styles for various things like disabled labels and inputs...
+ */
+[style*="rgba(14, 23, 34, 0.3)"] {
+  color: var(--disabled-color) !important;
+}
