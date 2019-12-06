@@ -179,6 +179,8 @@
   (message "[EMACS-CONFIG] org-mode configured...")
 
 
+  (message "add rust to path manually...")
+  (add-to-list 'exec-path "/Users/logan/.cargo/bin")
   (message "TODO: Find out how to use the current nvm version to find the bin dir for global node modules")
   (add-to-list 'exec-path "/Users/logan/.nvm/versions/node/v8.1.3/bin/")
   ;; TODO: move this into a general shell config file
@@ -233,6 +235,7 @@
   (init-org-file "macos.org")
   (init-org-file "prog-mode.org")
   (init-org-file "json.org")
+  (init-org-file "conf-mode.org")
   (init-org-file "private.org")
   (init-org-file "buffer.org")
   (init-org-file "deft.org")

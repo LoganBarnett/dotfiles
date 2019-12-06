@@ -1,0 +1,18 @@
+#+title:     conf-mode
+#+author:    Logan Barnett
+#+email:     logustus@gmail.com
+#+date:      <2019-12-05 Thu>
+#+language:  en
+#+file_tags: emacs config
+#+tags:
+
+* config
+
+  #+begin_src emacs-lisp :results none
+    (require 'use-package)
+    (use-package "conf-mode"
+      :defer t
+      :config
+      (add-hook 'conf-mode-hook 'display-line-numbers-mode)
+    )
+  #+end_src
