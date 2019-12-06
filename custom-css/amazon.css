@@ -24,6 +24,49 @@ a.a-color-base, a:active.a-color-base, a:link.a-color-base, a:visited.a-color-ba
 }
 
 /**
+ * Box used for wish lists, but probably a lot of other things given the generic
+ * name.
+ */
+.a-box {
+  background-color: var(--general-background-color) !important;
+  color: var(--text-color) !important;
+}
+
+/**
+ * Tab list used for wish lists, but probably a lot of other things given the
+ * generic name.
+ */
+ul.a-tabs {
+  background-color: var(--tab-inactive-background-color) !important;
+  color: var(--tab-inactive-color) !important;
+}
+
+ul.a-tabs .a-tab-heading.a-active a, ul.a-tabs li.a-active a {
+  background-color: var(--tab-active-background-color) !important;
+  color: var(--tab-active-color) !important;
+}
+
+a.a-link-section-expander:link {
+  color: var(--link-color) !important;
+}
+
+a.a-link-section-expander:hover {
+  color: var(--hover-link-color) !important;
+}
+
+.g-expander-borderless a.a-link-section-expander {
+  background-color: var(--general-background-color) !important;
+}
+
+/**
+ * The search bar at the top.
+ */
+#nav-search .nav-search-field .nav-input {
+  background-color: var(--input-background-color) !important;
+  color: var(--input-color) !important;
+}
+
+/**
  * Links use !important already, so make it more specific with the body trick.
  */
 body .a-color-base {
