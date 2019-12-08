@@ -7,7 +7,8 @@
 
 * evil-mode
   #+begin_src emacs-lisp
-  (message "nothing to do in evil-mode config")
+    ;; (message "nothing to do in evil-mode config")
+    (setq-default evil-want-Y-yank-to-eol t)
   #+end_src
 ** evil-collection
    =evil-collection= is a user maintained list of =evil-mode= bindings. It's not
