@@ -98,6 +98,7 @@ values."
      feature-mode
      find-lisp
      floobits
+     flow-js2-mode
      ;; flow-minor-mode
      flycheck
      flycheck-flow
