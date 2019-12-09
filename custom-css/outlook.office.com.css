@@ -626,6 +626,28 @@ html[dir] ._1fmZ_av0AzpX0WDUx7Rxsi {
 }
 
 /**
+ * Message view sender.
+ */
+._1rGM6k3hzSX422VWT9OCcr,
+._2LDBlAH0cF64rqMHa4viCd,
+.VHquDtYElxQkNvZKxCJct {
+  color: var(--link-color) !important;
+}
+
+/**
+ * Message view recipients.
+ *
+ * Use the html tag to win specificity.
+ */
+html ._3ZeDxoI_1Pg9tQFD8AZ2z3._3fSP4ilIbk0dZZ-I9MElKw {
+  color: var(--link-color) !important;
+}
+
+._3ZeDxoI_1Pg9tQFD8AZ2z3 {
+  color: var(--link-color) !important;
+}
+
+/**
  * Message view body text.
  */
 .ebEAqI6ObWNy7SHYOElkN, .B1IVVpQay0rPzznhParFr {
