@@ -57,6 +57,7 @@ sqlite
 stack
 terraform
 thefuck
+tmux
 vim
 w3m
 wget
