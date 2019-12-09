@@ -1,3 +1,13 @@
 #! /usr/bin/env bash
 
-ps aux | awk '/[_]sophos/ {print $2}' | while read P; do sudo kill -STOP $P; done
+if [ "$1" == "pause" ]; then
+  sudo ps aux | \
+    awk 'BEGIN {IGNORECASE = 1} /[_]sophos/ {print $2}' | \
+    while read P; do sudo kill -STOP $P; done
+elif [ "$1" == "resume" ]; then
+  sudo ps aux | \
+    awk 'BEGIN {IGNORECASE = 1} /[_]sophos/ {print $2}' | \
+    while read P; do sudo kill -CONT $P; done
+else
+  echo "Usage: sophos-virus pause or sophos-virus resume"
+fi
