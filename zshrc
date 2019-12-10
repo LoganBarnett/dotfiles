@@ -120,8 +120,6 @@ source $ZSH/plugins/osx/osx.plugin.zsh
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 
-alias gs="git status"
-
 # AUTO_CD means if you type a directory name, it's the same as doing `pushd
 # dirname`. I guess it's nice for some but odd and doesn't sit well with me in
 # terms of least surprising operations.
@@ -138,6 +136,10 @@ alias b='bundle exec'
 # run node in ES6 mode
 alias node='node --harmony'
 alias curl-json='curl -v -H "Accept: application/json"'
+
+# git
+alias gs="git status"
+alias gfp="git push --force-with-lease"
 
 # yarn flow management because it happens a lot.
 alias yf="yarn flow"
