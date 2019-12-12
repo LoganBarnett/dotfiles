@@ -32,6 +32,26 @@ https://github.com/emacs-lsp/lsp-ui
 )
   #+end_src
 
+* sideline
+** showing symbols
+   Some of my systems do not enable this by default, but others will do this.
+   Let's ensure it's enabled for all systems.
+
+   #+begin_src emacs-lisp :results none
+     (defun config/lsp-ui-sideline-enable-symbols ()
+       (setq-default lsp-ui-sideline-show-hover t)
+       )
+   #+end_src
+** colors
+   The default color of the sideline is the same as ordinary symbols in the
+   code. Put a red background on it to make the sideline very apparent.
+
+   #+begin_src emacs-lisp :results none
+     (defun config/lsp-ui-sideline-colors ()
+       (set-face-background 'lsp-ui-sideline-symbol-info "#511")
+       )
+   #+end_src
+
 * combined
 
   #+begin_src emacs-lisp :results none
@@ -69,7 +89,8 @@ https://github.com/emacs-lsp/lsp-ui
       ;; (set-face-background 'lsp-lens-face "#511")
       ;; (set-face-background 'lsp-lens-mouse-face "#511")
       ;; (set-face-background 'completions-annotations "#511")
-      (set-face-background 'lsp-ui-sideline-symbol-info "#511")
       (setq-default lsp-enable-semantic-highlighting t)
+      (config/lsp-ui-sideline-colors)
+      (config/lsp-ui-sideline-enable-symbols)
       )
   #+end_src
