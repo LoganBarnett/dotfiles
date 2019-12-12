@@ -184,16 +184,19 @@
    #+begin_src emacs-lisp :results none
       (defun dnd//open-profile (row)
         (let ((kind (org-table-get row dnd/kind-column)))
-     (message "found kind %s" kind)
-     ;; TODO: bail out if no kind present
-          (org-link-open-from-string
-          (format "[[file:%s::*%s][%s]]"
-                  dnd/profile-path
-                  kind
-                  kind
-                  ))
-          (org-show-entry)
-          (select-window (previous-window))
+          (if (string-empty-p kind)
+              nil
+              (progn
+                (org-link-open-from-string
+                 (format "[[file:%s::*%s][%s]]"
+                         dnd/profile-path
+                         kind
+                         kind
+                         ))
+                (org-show-entry)
+                (select-window (previous-window))
+                )
+            )
           ;; (org-mark-ring-goto)
           )
         )
