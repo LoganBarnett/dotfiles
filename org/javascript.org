@@ -24,7 +24,23 @@ ultimate motivator for me.
 
 * emacs settings
 ** project specific paths
-#+BEGIN_SRC emacs-lisp
+*** local package executables
+    The Node.JS Way(TM) is to make projects as self contained as possible. This
+    means importing packages used for build time. Global installs lead to
+    problems with compatibility across projects, so a local installation is
+    highly preferred. In =npm= vernacular, this is a "dev dependency" (see in
+    =devDependencies= in =package.json=).
+
+    When using =yarn= or =npm script=, =./node_modules/.bin= is placed upon the
+    =PATH= so the executables that locally installed packages provide can be
+    executed.
+
+    Emacs tooling doesn't really seem to favor this, and most of it expects the
+    executable to be in some global context. We can detect the project's path and
+    the =./node_modules/.bin= directory from that in a given JavaScript file and
+    set that path by hand.
+
+   #+BEGIN_SRC emacs-lisp
 (defun my/get-node-modules-bin (bin-name)
   "Find BIN-NAME inside of =./node_modules/.bin/= ."
   (let* ((root (locate-dominating-file
@@ -69,8 +85,6 @@ during my time at NWEA.
     "HOOK should be a quoted string."
     (message "Setting up find hooks for Javascript Flycheck backends")
     (add-hook hook
-              (apply-partially #'my/use-checker-from-node-modules "flow" "flow"))
-    (add-hook hook
               (apply-partially #'my/use-checker-from-node-modules "eslint"
                                "eslint"))
     (add-hook hook
@@ -89,11 +103,18 @@ have been clearly seen side-by-side. I think these functions actually tie
 linting together and make them all show up at once.
 
 #+BEGIN_SRC emacs-lisp
-(defun my/connect-javascript-flycheck-backends ()
-  (message "Connecting Javascript Flycheck backends")
-  (flycheck-add-next-checker 'javascript-flow 'javascript-flow-coverage)
-  (flycheck-add-next-checker 'javascript-flow-coverage 'javascript-eslint)
-)
+  (defun my/connect-javascript-flycheck-backends ()
+    (message "Connecting Javascript Flycheck backends...")
+    (flycheck-add-next-checker 'lsp-ui 'javascript-eslint)
+    (flycheck-add-next-checker 'javascript-eslint 'javascript-flow-coverage)
+    ;; lsp-ui unsets this, but we still want it to run for other checkers.
+    ;; However setting it causes the lsp-ui checks to not refresh properly, nor
+    ;; do the other checkers function for that matter.
+    ;;
+    ;; (setq-default flycheck-check-syntax-automatically
+    ;;               '(save idle-change new-line mode-enabled)
+    ;;               )
+  )
 #+END_SRC
 
 *** company
@@ -165,10 +186,11 @@ when this happens, and Emacs eats a lot of processing power for no good reason.
 #+END_SRC
 
 ** flow
-Flow uses a _lot_ of type inferencing. There's also type refinement. This can
-lead to a lot of confusion over what a given type is for a variable. Flow gives
-us the capability to determine a type where our cursor is located. This is handy
-for hunting down issues with Flow errors.
+*** type-at-pos
+    Flow uses a _lot_ of type inferencing. There's also type refinement. This
+    can lead to a lot of confusion over what a given type is for a variable.
+    Flow gives us the capability via =type-at-pos= to determine a type where our
+    cursor is located. This is handy for hunting down issues with Flow errors.
 
 #+BEGIN_SRC emacs-lisp :results none
 
@@ -298,8 +320,8 @@ Finally, tie it all together on demand.
     "HOOK should be a quoted variable."
     (require 'grep)
     (require 'flycheck)
+    (require 'flycheck-flow)
     (require 'rainbow-identifiers)
-    ;; (require 'flycheck-flow)
     (message "Configuring Javascript")
     ;; (add-hook 'js2-mode-hook 'flow-minor-enable-automatically)
     (setq-default flycheck-javascript-flow-args '("--respect-pragma"))
@@ -326,8 +348,8 @@ Finally, tie it all together on demand.
     ;; prevent indentation from lining up with a prior line's glyph
     ;; this will make it so fighting is less necessary to appease linters
     (setq-default js2-pretty-multiline-declarations nil)
-    ;; (my/find-javascript-flycheck-backends hook)
-    ;; (my/connect-javascript-flycheck-backends)
+    (my/find-javascript-flycheck-backends hook)
+    (my/connect-javascript-flycheck-backends)
     ;; (my/config-javascript-company-backends)
     ;; Setting this locally should work because it's only for this individual
     ;; buffer, and not the project. This should survive buffer renames/moves.
