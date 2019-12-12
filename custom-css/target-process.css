@@ -186,6 +186,67 @@ body, button, input, select, textarea {
   color: #ddd !important;
 }
 
+/* Selected hover for table row in task list. */
+.tau-board-list-view.ctrl-hover .tau-list-entity:not(.i-role-axis-card-no-value):not(.tau-selected):hover .tau-list-line,
+.tau-board-view .ctrl-hover .tau-card-v2:not(.tau-selected):not(.tau-is-selected-duplicate):hover,
+.tau-card-v2.i-role-permanent-context-menu-action-activated,
+.tau-card-v2.tau-context-menu-selected {
+  background-color: var(--table-row-hover-background-color) !important;
+}
+
+/* Hover for table row in task list. */
+.tau-board-list-view .list-singleclick .tau-card_focusedit_true .tau-list-line,
+.tau-board-list-view .list-singleclick .tau-context-menu-selected .tau-list-line,
+.tau-board-list-view .list-singleclick .tau-list-entity:not(.no-hover):hover .tau-list-line {
+  background-color: var(--table-row-hover-background-color) !important;
+}
+
+/* Hover for table cell in task list. */
+.list-singleclick .tau-elems-cell_unit-user-editable.cell_unit-click-edit .click-edit:hover .click-edit__edit-icon,
+.list-singleclick .tau-elems-cell_unit-user-editable.cell_unit-click-edit .click-edit:hover .click-edit__link,
+.list-singleclick .tau-elems-cell_unit-user-editable.cell_unit-click-edit .tau-elems-cell_unit-empty-text:hover,
+.list-singleclick .tau-elems-cell_unit-user-editable:not(.cell_unit-click-edit):hover {
+  background-color: var(--table-row-hover-background-color) !important;
+}
+
+/* Links in table cells */
+.click-edit__link-text {
+  color: var(--link-color) !important;
+}
+
+/* The "pt" units on points. */
+.tau-board-unit__points {
+  color: var(--dim-text) !important;
+}
+
+/* "click to edit" - will be hidden until hover because Reasons. */
+.tau-elems-cell_unit-empty-text {
+  color: var(--text-color) !important;
+}
+
+/**
+ * Pagination buttons.
+ */
+.tau-list-paging .tau-pages-navigator .tau-first .tau-pages-navigator__text,
+.tau-list-paging .tau-pages-navigator .tau-last .tau-pages-navigator__text,
+.tau-list-paging .tau-pages-navigator .tau-next .tau-pages-navigator__text,
+.tau-list-paging .tau-pages-navigator .tau-prev .tau-pages-navigator__text {
+  background-color: var(--button-background-color) !important;
+  color: var(--button-color) !important;
+  padding: 0.5rem !important;
+}
+
+/**
+ * Pagination buttons (hover).
+ */
+.tau-list-paging .tau-pages-navigator .tau-first:hover .tau-pages-navigator__text,
+.tau-list-paging .tau-pages-navigator .tau-last:hover .tau-pages-navigator__text,
+.tau-list-paging .tau-pages-navigator .tau-next:hover .tau-pages-navigator__text,
+.tau-list-paging .tau-pages-navigator .tau-prev:hover .tau-pages-navigator__text {
+  background-color: var(--button-hover-background-color) !important;
+  color: var(--button-hover-color) !important;
+}
+
 .tau-cover-view--animated:before {
   background-color: #121212 !important;
 }
@@ -288,10 +349,12 @@ body, button, input, select, textarea {
 .entity-tabs__holder {
   color: #498 !important;
 }
+
 .tau-btn.tau-success:not(:disabled) {
-  background-color: #377 !important;
+  background-color: var(--button-background-color) !important;
   background-image: none !important;
   border-color: #ddd !important;
+  color: var(--button-color) !important;
 }
 
 .category-assignments__item:hover {
