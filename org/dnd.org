@@ -19,12 +19,36 @@
   The =turn= column should indicate the current turn with a series of glyphs
   such as =>>>>= or similar, and I can at some point make it work with a font
   face.
+** turn hook
+   We can fire an event when we arrive at a turn, and provide information about
+   whose turn it is.
+
+   #+begin_src emacs-lisp :results none
+     (defvar dnd/turn-functions '()
+       "A hook for arriving upon a turn. Provides a ROW."
+       )
+   #+end_src
+
 ** indicator
+*** format
    The indicator will be =>>>>= but I should be able to change it.
 
    #+begin_src emacs-lisp :results none
      (defcustom dnd/turn-indicator-string ">>>>" "String to use for the current turn.")
    #+end_src
+
+*** setting
+    Setting the indicator will populate the cell with
+    =dnd/turn-indicator-string=.
+
+    #+begin_src emacs-lisp :results none
+      (defun dnd//set-turn (row)
+        (org-table-put row 1 dnd/turn-indicator-string t)
+        (org-table-goto-line row)
+        ;; It would be nice to send the row data, but alas.
+        (run-hook-with-args 'dnd/turn-functions row)
+        )
+    #+end_src
 
 ** get table lines
 
@@ -87,40 +111,36 @@
 
    #+begin_src emacs-lisp :results none
 
-          (defun dnd/next-round ()
-            (interactive)
-            (message "in next-round")
-            (if (org-at-table-p)
-                (let* (
-                       (indicator (dnd/find-turn-indicator))
-                       (next (+ (or indicator 0) 1))
-                       (lines (dnd//get-table-lines))
-                       )
-                  (message "in table with indicator %s" indicator)
-                  (if indicator
-                      (progn
-                        (org-table-put indicator 1 "" t)
-
-                        (if (< next (+ 3 lines))
-                            (progn
-                         (message " < condition %s" next)
-                              (org-table-put next 1 dnd/turn-indicator-string t)
-                              )
-                     (progn
-                         (message " >= condition")
-                          (org-table-put 2 1 dnd/turn-indicator-string t)
-                          )
-                          )
-                        )
-               (progn
-                    (org-table-put 2 1 dnd/turn-indicator-string t)
-                    (message "no indicator condition")
-     )
-                    )
+     (defun dnd/next-round ()
+       (interactive)
+       (if (org-at-table-p)
+           (let* (
+                  (indicator (dnd/find-turn-indicator))
+                  (next (+ (or indicator 0) 1))
+                  (lines (dnd//get-table-lines))
                   )
-              (message "Not on a table!")
-              )
-            )
+             (if indicator
+                 (progn
+                   (org-table-put indicator 1 "" t)
+
+                   (if (< next (+ 3 lines))
+                       (progn
+                         (dnd//set-turn next)
+                         )
+                     (progn
+                       (dnd//set-turn 2)
+                       )
+                     )
+                   )
+               (progn
+
+                 (dnd//set-turn 2)
+                 )
+               )
+             )
+         (message "Not on a table!")
+         )
+       )
 
    #+end_src
 
@@ -132,4 +152,58 @@
    #+begin_src emacs-lisp :results none
      (spacemacs/declare-prefix-for-mode 'org-mode "mD" "dnd" "dnd")
      (spacemacs/set-leader-keys-for-major-mode 'org-mode (kbd "D n") 'dnd/next-round)
+   #+end_src
+
+* snap to monster profile
+  When a monster takes its turn, I'd love to know what that monster has for
+  capabilities, notes I might have on that monster (or its kind), and other
+  aspects of it. This is hard to efficiently encode in the combat table. When
+  using =dnd-next-round= the profile should pop up in a vertical split window.
+
+** where to look
+   I keep all of my files in =dnd5e.org=. Maybe there's a better place for it,
+   but for now let's put it there.
+
+   #+begin_src emacs-lisp :results none
+     (defvar dnd/profile-path (expand-file-name "~/Dropbox/notes/dnd5e.org"))
+   #+end_src
+
+** get kind
+   There needs to be a =kind= column in the combat table. This is the name we
+   will key off of.
+
+   #+begin_src emacs-lisp :results none
+    (defvar dnd/kind-column 3)
+   #+end_src
+
+
+** open profile
+
+   Once we land on a monster row and have a kind, we can find its profile.
+
+   #+begin_src emacs-lisp :results none
+      (defun dnd//open-profile (row)
+        (let ((kind (org-table-get row dnd/kind-column)))
+     (message "found kind %s" kind)
+     ;; TODO: bail out if no kind present
+          (org-link-open-from-string
+          (format "[[file:%s::*%s][%s]]"
+                  dnd/profile-path
+                  kind
+                  kind
+                  ))
+          (org-show-entry)
+          (select-window (previous-window))
+          ;; (org-mark-ring-goto)
+          )
+        )
+   #+end_src
+
+** listen for turns
+   We need to listen for turn changes, and we can do this using
+   =dnd/turn-functions= (not =-hook= because it is "abnormal" in that it must
+   pass an argument).
+
+   #+begin_src emacs-lisp :results none
+     (add-hook 'dnd/turn-functions #'dnd//open-profile)
    #+end_src
