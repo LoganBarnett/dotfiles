@@ -144,7 +144,7 @@ const vars = {
   '--table-header-color': '#79e',
   '--table-header-background-color': '#235',
   '--table-row-alternate-background-color': '#212026',
-  '--table-row-hover-background-color': '#222226',
+  '--table-row-hover-background-color': '#383038',
   '--input-color': '#2aa1ae',
   '--input-background-color': '#292e34',
   '--input-label-color': '#2aa1ae',
