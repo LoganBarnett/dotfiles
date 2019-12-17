@@ -1,0 +1,24 @@
+#! /usr/bin/env bash
+
+# Adapted from https://blog.htbaa.com/news/tmux-scripting
+
+if [[ "$1" == "" ]]; then
+  echo "Usage: tmux-3-up <session-id>"
+  exit 1
+fi
+
+SESSION=$1
+
+tmux new-session -d -s $SESSION
+
+# Setup a window for tailing log files
+tmux new-window -t $SESSION -n
+tmux split-window -v
+tmux select-pane -t 1
+tmux split-window -h
+tmux send-keys "htop" C-m
+# tmux new-window -t $SESSION:2 -n 'MySQL' 'mysql -uroot'
+# tmux new-window -t $SESSION:2 -n 'htop' 'htop'
+# tmux new-window -t $SESSION:3 -n 'Commands'
+
+tmux attach-session -t $SESSION
