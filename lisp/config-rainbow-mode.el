@@ -1,6 +1,7 @@
-;;; config-rainbow-mode --- configure elm support
+;;; config-rainbow-mode --- configure rainbow-mode support
 ;;; Commentary:
-;; the layer sets up a lot of this
+;; rainbow-mode highlights CSS color names and expressions (short, long, rgba,
+;; etc) with the color indicated.
 
 ;;; Code:
 (require 'use-package)
