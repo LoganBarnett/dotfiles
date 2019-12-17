@@ -219,3 +219,62 @@ img[src*="gif" i]:after {
   content: 'hover to show gif';
   position: absolute;
 }
+
+/**
+ * Automatically created posts from integrations.
+ */
+.integration_item {
+  color: var(--text-color) !important;
+}
+
+/**
+ * Side panel with description text.
+ */
+#description {
+  color: var(--text-color) !important;
+}
+
+/**
+ * Header for a channel.
+ */
+h1.stream-header {
+  border-bottom: 1px solid var(--border-color) !important;
+}
+
+/**
+ * Header with search and account info.
+ */
+#topbar {
+  border-bottom: 1px solid var(--border-color) !important;
+}
+
+/**
+ * Composition border.
+ */
+.stream-compose .compose_type,
+.stream-compose .chat-textarea {
+  border: 1px solid var(--input-color) !important;
+}
+
+/**
+ * Border for the right sidebar.
+ */
+.rightrail {
+  border-bottom: 1px solid var(--border-color) !important;
+}
+
+/**
+ * Selected "tab" for left side bar.
+ */
+.leftrail-bottom-navigation-update-plugins .plugintab-bottom-navigation.selected {
+  background: var(--tab-active-background-color) !important;
+  color: var(--tab-active-color) !important;
+}
+
+/**
+ * Inactive "tab" for the left side bar.
+ */
+.leftrail-bottom-navigation-update-plugins .plugintab-bottom-navigation {
+  background: var(--tab-inactive-background-color) !important;
+  color: var(--tab-inactive-color) !important;
+}
