@@ -61,6 +61,22 @@
       )
   #+end_src
 
+* completion styles
+** :e bug
+   I have been plagued with this issue:
+   https://github.com/emacs-helm/helm/issues/2234
+
+   It amounts to some issue with old completion modes in Emacs 26. Though the
+   bug seems to be triggered by Emacs 27, it may be something in Emacs 26.3 that
+   has introduced it.
+
+   #+begin_src emacs-lisp :results none
+     (defun config/helm-fix-completion ()
+       (setq-default
+        completion-styles '(helm-flex)
+       )
+     )
+   #+end_src
 * all together
   #+begin_src emacs-lisp :results none
     (require 'use-package)
@@ -82,5 +98,6 @@
       ;; (config/helm-use-frame)
       (config/helm-fix-slowdown)
       (config/helm-ag-use-ripgrep)
+      (config/helm-fix-completion)
     )
   #+end_src
