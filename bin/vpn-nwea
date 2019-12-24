@@ -24,6 +24,7 @@ fi
 
 HOSTS="\
 americas.nwea.pvt \
+m-lbarnett2.americas.nwea.pvt \
 artifacts.americas.nwea.pvt \
 confluence.americas.nwea.pvt \
 jenkins-cicd.americas.nwea.pvt \
@@ -42,4 +43,5 @@ yum01.mgmt.nweacolo.pvt \
 sudo cat "$HOME/.nwea-passwd" | sudo openconnect \
      -u logan.barnett https://secure.nwea.org \
      --passwd-on-stdin \
+     --authgroup=Employees \
      --script "vpn-slice -v -i 10.0.0.0/8 $HOSTS" \
