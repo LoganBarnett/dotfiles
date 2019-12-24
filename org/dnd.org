@@ -6,6 +6,67 @@
 #+file_tags:
 #+tags:
 
+* wish list
+** TODO use names for columns
+   Right now columns are indicated by the number of their appearance. We really
+   shouldn't care about such things, and should use names which can be
+   configurable.
+
+** TODO specify a column list instead of a table template string
+   Normally giving maximum control to the consumer should be a preferred means
+   of building any kind of API, but I think there's value in saying we have
+   certain expectations for the table. It must be an =org-table= compatible
+   table, for example. I'm also not too sure how many of these things are going
+   to work if we start using more sophisticated table layouts as seen in
+   =table.el=, which =org-table= is technically compatible with.
+
+** TODO add a start-combat function
+   This would be handy instead of manually moving the cursor.
+
+** TODO add player character list to automatically insert
+   Somehow it would be nice to specify that player characters should always show
+   up in the combat table. In D&D it's very rare and typically not preferred to
+   split the party. Even if you do, or you have a player short, you could just
+   remove the character(s) manually.
+
+** TODO interactive combat building
+   Being able to express "I need 4 gnolls and 1 maralith" would be amazing.
+
+** TODO insert monster
+   Insert a monster by type. Give it a name. Based on preferences maybe we roll
+   initiative for you, or you give us the initiative. It can also roll hit
+   points, assume standard hit points, use max or min hit points, or allow
+   manual hit points.
+
+** TODO roll dice from expression
+   Having a cursor upon some expression such as =3d6 + 12= would be really nice
+   to interpret. This could be a big undertaking though and perhaps worthy of
+   its own project.
+
+** TODO use keymap
+   Right now key bindings are hard coded and assume Spacemacs. Having Spacemacs
+   specific helpers isn't bad, but we should detect if Spacemacs is even present
+   first.
+
+   And even then, we should provide a configurable keymap.
+
+** TODO literate tests
+   Wouldn't it be great to have something akin to:
+
+   #+begin_example emacs-lisp :results none :export none
+     (dnd/create-combat-table)
+   #+end_example
+
+   #+begin_example org
+   , | turn | name | ac |...
+   , |------+------+----+...
+   #+end_example
+
+   And it just asserted the first block's output matched the next block's?
+
+   Thus far I have not found any pre-written software to explicitly assist with
+   this.
+
 * combat table
 ** template
    #+begin_src emacs-lisp :results none :tangle yes
