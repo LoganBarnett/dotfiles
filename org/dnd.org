@@ -6,15 +6,35 @@
 #+file_tags:
 #+tags:
 
+* combat table
+** template
+   #+begin_src emacs-lisp :results none :tangle yes
+     (defvar dnd/combat-table-template
+       "| turn | name | ord | ac | chp | thp | spec | dist |
+     |------+------+-----+----+-----+-----+------+------|"
+       "Template to use when creating combat table."
+       )
+   #+end_src
+
+** inserting
+   Insert a combat table.
+   #+begin_src emacs-lisp :results none :tangle yes
+     (defun dnd/create-combat-table ()
+       "Inserts a combat table into the document."
+       (interactive)
+       (let ((start (point)))
+         (insert dnd/combat-table-template)
+         (indent-region start (point))
+         )
+       )
+   #+end_src
+
 * tracking the current round
   I frequently lose track of which round it is as I apply effects between
   creatures that exist in the initiative order. Having a stark visual counter
   that I advance with a key binding would be just dandy.
 
-  Combat tables will be expressed with the following format:
-
-  | turn | name | ord | ac | chp | thp | hit | dmg | spec | dist |
-  |------+------+-----+----+-----+-----+-----+-----+------+------|
+  See [[template]] for the default format of a table.
 
   The =turn= column should indicate the current turn with a series of glyphs
   such as =>>>>= or similar, and I can at some point make it work with a font
@@ -144,16 +164,6 @@
 
    #+end_src
 
-** key binding
-   =dnd/next-round= is a function for tables, in =org-mode=, so it might be
-   reasonable to place this table operation in the =, t= prefix, but I suspect a
-   suite of D&D bindings may be on the way. =, D= is available.
-
-   #+begin_src emacs-lisp :results none
-     (spacemacs/declare-prefix-for-mode 'org-mode "mD" "dnd" "dnd")
-     (spacemacs/set-leader-keys-for-major-mode 'org-mode (kbd "D n") 'dnd/next-round)
-   #+end_src
-
 * snap to monster profile
   When a monster takes its turn, I'd love to know what that monster has for
   capabilities, notes I might have on that monster (or its kind), and other
@@ -210,3 +220,9 @@
    #+begin_src emacs-lisp :results none
      (add-hook 'dnd/turn-functions #'dnd//open-profile)
    #+end_src
+* keybinding
+  #+begin_src emacs-lisp :results none :tangle yes
+    (spacemacs/declare-prefix-for-mode 'org-mode "mD" "dnd" "dnd")
+    (spacemacs/set-leader-keys-for-major-mode 'org-mode (kbd "D n") 'dnd/next-round)
+    (spacemacs/set-leader-keys-for-major-mode 'org-mode (kbd "D c") 'dnd/create-combat-table)
+  #+end_src
