@@ -24,12 +24,24 @@
         ;; Do not change helm-always-two-windows, if t it will split when in a full
         ;; frame.
         ;;
-        ;; helm-always-two-windows nil
+        helm-always-two-windows nil
 
         ;; Do not change helm-full-frame, because it seems to play a part in
         ;; making a split for the full frame.
         ;;
-        ;; helm-full-frame t
+        helm-full-frame t
+        helm-actions-inherit-frame-settings nil
+
+        ;; Spacemacs adds some setting that causes new frames to inherit the prior
+        ;; frame. This setting should fix that behavior. It might be useful
+        ;; elsewhere too. See
+        ;; https://github.com/emacs-helm/helm/issues/1983#issuecomment-371795672
+        persp-init-new-frame-behaviour-override nil
+        ;; Setting persp-init-new-frame-behaviour-override isn't good enough. Though
+        ;; turning off persp-init-frame-behavior entirely seems to do the trick.
+        ;; This might need to be promoted to another file since this is generally
+        ;; applicable to any of my frame needs.
+        persp-init-frame-behaviour nil
        )
       )
   #+end_src
@@ -95,7 +107,7 @@
       ;; Until these are resolved, I'll just put up with the slowness and weird
       ;; layout rearranging.
 
-      ;; (config/helm-use-frame)
+      (config/helm-use-frame)
       (config/helm-fix-slowdown)
       (config/helm-ag-use-ripgrep)
       (config/helm-fix-completion)
