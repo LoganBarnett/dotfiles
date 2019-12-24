@@ -104,7 +104,7 @@
    We can fire an event when we arrive at a turn, and provide information about
    whose turn it is.
 
-   #+begin_src emacs-lisp :results none
+   #+begin_src emacs-lisp :results none :tangle yes
      (defvar dnd/turn-functions '()
        "A hook for arriving upon a turn. Provides a ROW."
        )
@@ -114,7 +114,7 @@
 *** format
    The indicator will be =>>>>= but I should be able to change it.
 
-   #+begin_src emacs-lisp :results none
+   #+begin_src emacs-lisp :results none :tangle yes
      (defcustom dnd/turn-indicator-string ">>>>" "String to use for the current turn.")
    #+end_src
 
@@ -122,7 +122,7 @@
     Setting the indicator will populate the cell with
     =dnd/turn-indicator-string=.
 
-    #+begin_src emacs-lisp :results none
+    #+begin_src emacs-lisp :results none :tangle yes
       (defun dnd//set-turn (row)
         (org-table-put row 1 dnd/turn-indicator-string t)
         (org-table-goto-line row)
@@ -133,7 +133,7 @@
 
 ** get table lines
 
-   #+begin_src emacs-lisp :results none
+   #+begin_src emacs-lisp :results none :tangle yes
 
      (defun dnd//get-table-lines ()
        (let* (
@@ -156,7 +156,7 @@
    column and then walk down it until we find it. If we don't find it, return
    =nil=.
 
-   #+begin_src emacs-lisp :results none
+   #+begin_src emacs-lisp :results none :tangle yes
      (defun dnd//walk-column-for-indicator (lines line)
        (message "value %s" (org-table-get (+ 2 line) 1))
        (if (< line (+ 1 lines))
@@ -190,7 +190,7 @@
 
 ** next round
 
-   #+begin_src emacs-lisp :results none
+   #+begin_src emacs-lisp :results none :tangle yes
 
      (defun dnd/next-round ()
        (interactive)
@@ -235,7 +235,7 @@
    I keep all of my files in =dnd5e.org=. Maybe there's a better place for it,
    but for now let's put it there.
 
-   #+begin_src emacs-lisp :results none
+   #+begin_src emacs-lisp :results none :tangle yes
      (defvar dnd/profile-path (expand-file-name "~/Dropbox/notes/dnd5e.org"))
    #+end_src
 
@@ -243,7 +243,7 @@
    There needs to be a =kind= column in the combat table. This is the name we
    will key off of.
 
-   #+begin_src emacs-lisp :results none
+   #+begin_src emacs-lisp :results none :tangle yes
     (defvar dnd/kind-column 3)
    #+end_src
 
@@ -252,7 +252,7 @@
 
    Once we land on a monster row and have a kind, we can find its profile.
 
-   #+begin_src emacs-lisp :results none
+   #+begin_src emacs-lisp :results none :tangle yes
       (defun dnd//open-profile (row)
         (let ((kind (org-table-get row dnd/kind-column)))
           (if (string-empty-p kind)
@@ -278,7 +278,7 @@
    =dnd/turn-functions= (not =-hook= because it is "abnormal" in that it must
    pass an argument).
 
-   #+begin_src emacs-lisp :results none
+   #+begin_src emacs-lisp :results none :tangle yes
      (add-hook 'dnd/turn-functions #'dnd//open-profile)
    #+end_src
 * keybinding
