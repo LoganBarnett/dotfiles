@@ -466,3 +466,9 @@ body, button, input, select, textarea {
   color: var(--link-color) !important;
   background-color: var(--link-background-color) !important;
 }
+
+.tau-clientinput code,
+.tau-clientinput tt {
+  background-color: var(--code-background-color) !important;
+  color: var(--code-color) !important;
+}
