@@ -49,6 +49,9 @@ fi
 echo "Installing packages..."
 ./install-packages.sh
 
+echo "Installing htop..."
+./install-htop.sh
+
 # node modules
 echo "installing node modules"
 ./install-node-modules.sh
