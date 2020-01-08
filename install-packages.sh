@@ -54,7 +54,6 @@ postgresql
 python3
 ripgrep
 sqlite
-stack
 terraform
 thefuck
 tmux

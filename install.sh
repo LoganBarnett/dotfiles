@@ -49,6 +49,9 @@ fi
 echo "Installing packages..."
 ./install-packages.sh
 
+echo "Installing Haskell..."
+./install-haskell.sh
+
 echo "Installing htop..."
 ./install-htop.sh
 

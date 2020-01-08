@@ -31,6 +31,7 @@ plugins=(
     osx
     rsync
     yarn
+    zsh-git-prompt
 )
 
 # Path to your oh-my-zsh installation.
@@ -244,6 +245,9 @@ KEYTIMEOUT=1
 # END VIM PROMPT SECTION
 ################################################################################
 
+# This should make the prompt calculation really zippy. Haskell functionality is
+# borken though, and always thinks that we are MERGING...
+# GIT_PROMPT_EXECUTABLE="haskell"
 ZSH_THEME_GIT_PROMPT_PREFIX=" on %{$fg[magenta]%}"
 ZSH_THEME_GIT_PROMPT_SUFFIX="%{$reset_color%}"
 ZSH_THEME_GIT_PROMPT_DIRTY="%{$fg[green]%}!%{$reset_color%}"
@@ -266,32 +270,56 @@ function host_prompt() {
   echo "%{$fg[yellow]%}%n@%M$reset_color"
 }
 
+autoload -U add-zsh-hook
+
 function set_prompt() {
   # Line break intentional. Sometimes the last line of stdout would be cut off
   # without it.
-  PROMPT='$(path_color_prompt)$(pwd_prompt)$(git_prompt_info) $(host_prompt) $(exit_status_prompt) $(timestamp_prompt)
-$(vim_mode_prompt)'
+  # This was using PROMPT before. Why?
+#   PS1='$(path_color_prompt)$(pwd_prompt)$(git_super_status) $(host_prompt) $(exit_status_prompt) $(timestamp_prompt) $(timer_prompt)
+# $(vim_mode_prompt)'
+  PS1='$(vim_mode_prompt)'
 }
 
 # Print an empty line before the prompt. The prompt is still jiggly with long
 # prompts but at least it's working now.
-function precmd() { print "" }
+# function precmd() { print "" }
+
+# We can just print before we print the prompt. Otherwise zsh does a weird thing
+# where it deletes the prior line when you do certain interactions (such as
+# pressing escape).
+#
+# See: https://superuser.com/a/395784
+function print_prompt() {
+  print -rP '$(path_color_prompt)$(pwd_prompt)$(git_super_status) $(host_prompt) $(exit_status_prompt) $(timestamp_prompt) $(timer_prompt)'
+}
+
+function fix_long_git_branch() {
+  # Intentionally using unicode to save space.
+  (( ${#GIT_BRANCH} > 14)) && GIT_BRANCH="${GIT_BRANCH:0:13}…"
+}
+
+add-zsh-hook precmd fix_long_git_branch
+add-zsh-hook precmd print_prompt
 
 # zsh redefined function
-# function preexec() {
-#   timer=${timer:-$SECONDS}
-# }
+function preexec() {
+  timer=${timer:-$SECONDS}
+}
 
 # timer stuff found here
 # https://coderwall.com/p/kmchbw/zsh-display-commands-runtime-in-prompt
 # zsh hook command
-# function precmd() {
-#   if [ $timer ]; then
-#     timer_show=$(($SECONDS - $timer))
-#     unset timer
-#   fi
-# }
-# 
+function precmd() {
+  if [ $timer ]; then
+    timer_show=$(($SECONDS - $timer))
+    unset timer
+  fi
+  # Print an empty line before the prompt. The prompt is still jiggly with long
+  # prompts but at least it's working now.
+  print ""
+}
+
 function timer_prompt() {
   if [ $timer_show ]; then
     echo $timer_show"s"

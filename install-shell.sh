@@ -27,3 +27,8 @@ if [ $(uname) = 'Darwin' ]; then
 else
     echo "skipping osx dns flushing for oh my zsh - not osx"
 fi
+
+# https://github.com/zsh-git-prompt/zsh-git-prompt
+cd ~/.oh-my-zsh/custom/plugins && git clone git@github.com:zsh-git-prompt/zsh-git-prompt.git || true
+ln -snf ~/.oh-my-zsh/custom/plugins/zsh-git-prompt/{zshrc.sh,zsh-git-prompt.plugin.zsh}
+cd ~/.oh-my-zsh/custom/plugins/zsh-git-prompt/haskell/ && stack build && stack install
