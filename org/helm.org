@@ -98,16 +98,15 @@
       :config
       ;; Frames seem really buggy. I run into multiple problems with them:
       ;;
-      ;; 1. Magit will frequently suspend a permanant frame pointed at the
-      ;;    *spacemacs* buffer during interactions.
+      ;; 1. Magit will frequently suspend a permanent frame during interactions.
       ;; 2. On multiple monitors, the frame will show up on the wrong monitor
       ;;    initially, and then later won't show up at all even though it has
       ;;    keyboard focus.
       ;;
       ;; Until these are resolved, I'll just put up with the slowness and weird
       ;; layout rearranging.
-
-      (config/helm-use-frame)
+      ;;
+      ;; (config/helm-use-frame)
       (config/helm-fix-slowdown)
       (config/helm-ag-use-ripgrep)
       (config/helm-fix-completion)
