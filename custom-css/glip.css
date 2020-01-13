@@ -212,6 +212,10 @@ img[src*="gif" i] {
   visibility: visible;
 }
 
+.post_text:hover img[src*="gif" i] {
+  visibility: visible;
+}
+
 /* Doesn't seem to be working... */
 img[src*="gif" i]:after {
   background-color: var(--button-background-color);
