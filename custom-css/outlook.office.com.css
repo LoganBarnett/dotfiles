@@ -669,6 +669,13 @@ html[dir] .B1IVVpQay0rPzznhParFr {
   color: var(--text-color) !important;
 }
 
+/**
+ * Message view body (forwarded text?).
+ */
+html[dir] ._1_uypmLpuvFfZLEG0VSc1I ._2zX2caDms6Dyd9Ch--6tVn {
+  background: var(--general-background-color) !important;
+}
+
 /*******************************************************************************
  * Calendar section.
  ******************************************************************************/
