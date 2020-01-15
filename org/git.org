@@ -35,6 +35,22 @@
   )
 #+end_src
 
+* syncing git-gutter and magit
+  =git-gutter= shows "fringe" indicators for adds, edits, and removals of lines
+  for a given buffer. This is different than =magit= which serves as a general
+  interface to =git= itself. Both are incredibly useful, but they don't talk to
+  each other. When staging changes in =magit= (and possibly committing), the
+  buffer's fringes are not automatically updated. However a simple hook
+  configuration should bind these together quite well:
+
+  #+begin_src emacs-lisp :results none
+    (defun config/connect-git-gutter-and-magit ()
+      (add-hook 'git-gutter:update-hooks 'magit-after-revert-hook)
+      (add-hook 'git-gutter:update-hooks 'magit-not-reverted-hook)
+     )
+  #+end_src
+
+
 * all together
   #+begin_src emacs-lisp :results none
     (require 'use-package)
@@ -42,5 +58,7 @@
     (use-package "magit"
       :init
       (config/git-blame-output)
+      :config
+      (config/connect-git-gutter-and-magit)
       )
   #+end_src
