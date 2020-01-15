@@ -355,21 +355,30 @@ h3, .aui-page-header-hero .aui-page-header-main p, .aui-page-header-marketing .a
 }
 
 .removed.line .ediff-change, .removed.line .ediff-delete {
-  color: #121212 !important;
+  background-color: var(--diff-major-remove-background-color) !important;
+  color: var(--diff-major-remove-color) !important;
 }
 
 .added.line .ediff-add, .added.line .ediff-change {
-  color: #121212 !important;
+  background-color: var(--diff-major-add-background-color) !important;
+  color: var(--diff-major-add-color) !important;
 }
 
-.diff-view.text-view .added.line, .diff-view.text-view .added.segment-connector, .diff-view.text-view .added.line .comment-box, .diff-view.text-view .added.line .bitbucket-gutter-marker {
-  background-color: var(--diff-add-background-color) !important;
-  color: var(--diff-add-color) !important;
+
+.diff-view.text-view .added.line,
+.diff-view.text-view .added.segment-connector,
+.diff-view.text-view .added.line .comment-box,
+.diff-view.text-view .added.line .bitbucket-gutter-marker {
+  background-color: var(--diff-minor-add-background-color) !important;
+  color: var(--diff-minor-add-color) !important;
 }
 
-.diff-view.text-view .removed.line, .diff-view.text-view .removed.segment-connector, .diff-view.text-view .removed.line .comment-box, .diff-view.text-view .removed.line .bitbucket-gutter-marker {
-  background-color: var(--diff-remove-background-color) !important;
-  color: var(--diff-remove-color) !important;
+.diff-view.text-view .removed.line,
+.diff-view.text-view .removed.segment-connector,
+.diff-view.text-view .removed.line .comment-box,
+.diff-view.text-view .removed.line .bitbucket-gutter-marker {
+  background-color: var(--diff-minor-remove-background-color) !important;
+  color: var(--diff-minor-remove-color) !important;
 }
 
 .comment-container .panel {
@@ -493,4 +502,37 @@ aui-badge, .aui-badge {
  */
 .task textarea {
   color: var(--input-text-color) !important;
+}
+
+/**
+ * The "tear" to show more context in the diff view.
+ */
+.skipped-container .content-above,
+.skipped-container .content-below {
+  background-image: none !important;
+  height: unset !important;
+  display: none;
+}
+
+/**
+ * Replace the container with a button-looking thing.
+ */
+.skipped-container {
+  background-color: var(--button-background-color) !important;
+  color: var(--button-color) !important;
+  height: 2rem;
+  display: flex;
+  justify-content: center;
+}
+
+.skipped-container:hover {
+  background-color: var(--button-hover-background-color) !important;
+  color: var(--button-hover-color) !important;
+}
+
+.skipped-container .showmore {
+  background-color: var(--button-background-color) !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
