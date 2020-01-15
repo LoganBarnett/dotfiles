@@ -95,6 +95,8 @@ values."
      ;; hopefully managed by a spacemacs layer
      company-flow
      ;; company-lsp
+     dap-mode
+     eclim
      feature-mode
      find-lisp
      floobits
