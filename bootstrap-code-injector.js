@@ -108,6 +108,8 @@ fs.writeFileSync(
 // As part of this, write out a file we can import in case we need to bootstrap
 // the system.
 
+// Is this even used?
+
 const exportableRules = loader().map(m => {
   return [
     {
