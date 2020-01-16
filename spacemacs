@@ -131,6 +131,8 @@ values."
    dotspacemacs-frozen-packages '()
    ;; A list of packages that will not be installed and loaded.
    dotspacemacs-excluded-packages '(
+                                    ;; evil-escape causes "fd" to count as ESC.
+                                    evil-escape
                                     diminish-mode
                                     fill-column-indicator
                                     ;; Excluding smartparens here has no effect
