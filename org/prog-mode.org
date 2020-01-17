@@ -56,9 +56,28 @@ files. It generally doesn't effect text files.
     (setq-local truncate-lines t)
   )
   #+end_src
+
+* newlines
+
+** end of file
+   Emacs sometimes likes to put extra newline entries at the end of a file. This
+   creates necessary churn in diffs, and to my knowledge doesn't add anything.
+   Perhaps there are some files or languages that require this, but I don't know
+   of them and don't use them with any notable frequency. I should be safe to
+   disable this globally, and then enable it for specific modes where this might
+   be important.
+
+   #+begin_src emacs-lisp :results none
+     (defun config/turn-off-final-newline ()
+       (setq-default mode-require-final-newline nil)
+     )
+
+   #+end_src
+
 * all together
 
   #+begin_src emacs-lisp
+    (config/turn-off-final-newline)
     (add-hook 'prog-mode-hook #'config/auto-fill-comments)
     (add-hook 'prog-mode-hook #'display-line-numbers-mode)
     (add-hook 'prog-mode-hook #'config/disable-line-wrapping)

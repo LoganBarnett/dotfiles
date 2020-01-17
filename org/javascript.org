@@ -294,6 +294,19 @@ when this happens, and Emacs eats a lot of processing power for no good reason.
       )
 
 #+END_SRC
+** newlines
+*** end of file
+
+    I set this globally, but I think =js2-mode= is overriding the value. I don't
+    want newlines added for no reason, and I've yet to hear any reason I'd want
+    this at all, let alone a good one.
+
+    #+begin_src emacs-lisp :results none
+      (defun config/disable-final-newline-for-js ()
+        (setq-local mode-require-final-newline nil)
+        )
+    #+end_src
+
 
 ** big config
 Finally, tie it all together on demand.
@@ -323,6 +336,7 @@ Finally, tie it all together on demand.
     (require 'flycheck-flow)
     (require 'rainbow-identifiers)
     (message "Configuring Javascript")
+    (config/disable-final-newline-for-js)
     ;; (add-hook 'js2-mode-hook 'flow-minor-enable-automatically)
     (setq-default flycheck-javascript-flow-args '("--respect-pragma"))
     ;; This was found in my .spacemacs file. I don't know how it got there, and
