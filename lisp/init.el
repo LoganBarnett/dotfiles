@@ -72,6 +72,15 @@
                 (multi-line-strategy
                  :respace (multi-line-default-respacers
                            (make-instance multi-line-always-newline))))
+
+  ;; (multi-line-defhook js2
+  ;;   (make-instance multi-line-strategy
+  ;;                  :find (make-instance 'multi-line-forward-sexp-find-strategy
+  ;;                                       :split-regex "[[:space:]\n]+"
+  ;;                                       :done-regex "[[:space:]]*)]}"
+  ;;                                       :split-advance-fn 'js2-mode-forward-sexp)
+  ;;                  :respace multi-line-always-newline-respacer))
+  (multi-line-defhook js2 multi-line-add-trailing-comma-strategy t)
   ;; (use-package "color-identifiers-mode"
   ;;   :ensure t
   ;;   :init
