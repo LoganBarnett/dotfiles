@@ -1,3 +1,4 @@
+;;;  -*- lexical-binding: t; -*-
 ;;; init --- entry point for initializing the emacs config
 ;;; Commentary:
 ;; This is essentially the starting point for all of the Emacs config. Code can
