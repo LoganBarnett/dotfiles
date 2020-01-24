@@ -68,11 +68,43 @@
         (= day last-day-of-month)))
   #+end_src
 
+  %%(diary-last-day-of-month date) Last Day of the Month
+
 * last day of week for the month expression
 
   https://stackoverflow.com/questions/13555385/org-mode-how-to-schedule-repeating-tasks-for-the-first-saturday-of-every-month
   Example:
   # <%%(diary-float t 6 1)>
+* use diary sexps
+  In order to use [[https://www.gnu.org/software/emacs/manual/html_node/emacs/Sexp-Diary-Entries.html][sexp diary entries]], the documentation for
+  [[https://orgmode.org/manual/Weekly_002fdaily-agenda.html][weekly and daily agenda views]] seems pretty clear.
+
+  #+begin_src emacs-lisp
+    (defun config/org-agenda-include-diary-sexp ()
+      (setq org-agenda-include-diary t)
+    )
+  #+end_src
+
+  Using diary functions slows down =org-agenda= significantly, and I'm skeptical
+  that it will work with mobile applications such as BeOrg.
+
+  This [[https://karl-voit.at/2017/01/15/org-clone-subtree-with-time-shift/][post]] talks about =org-clone-subtree-with-time-shift= as a possible
+  answer, which statically creates subtree copies.
+
+  It should also be noted that if a heading is prefixed with time range or even
+  a time stamp, that can help decorate the agenda with the appropriate time
+  slots. For example:
+
+  #+begin_example org
+  *** 13:00-14:30 do a thing
+  #+end_example
+
+  This will make the diary sexp work within the agenda showing the time range.
+
+  Ultimately I think setting up the time-shift function above and having some
+  kind of =cron= job process my agenda files is the way to go.
+
+  See more here, possibly: https://www.reddit.com/r/emacs/comments/86xh8c/what_is_your_calendar_setup/
 * all together
 
   #+begin_src emacs-lisp :results none
@@ -83,5 +115,7 @@
       :config
       (config/org-agenda-autosave)
       (config/org-agenda-default-view)
+      ;; This is disabled until I can figure out how to make it more performant.
+      ;; (config/org-agenda-include-diary-sexp)
       )
   #+end_src
