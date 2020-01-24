@@ -1,6 +1,8 @@
 {
   "includes": [
-    "https://*.gnu.org/*"
+    "https://*.gnu.org/*",
+    "https://*.orgmode.org/*",
+    "https://orgmode.org/*"
   ],
   "excludes": [
     ""
