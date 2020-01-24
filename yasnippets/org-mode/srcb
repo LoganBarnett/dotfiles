@@ -6,6 +6,6 @@
 #+begin_src ${1: $$(yas-choose-value (append
   '("html" "json" "xml")
   (seq-map #'symbol-name (seq-map #'car org-babel-load-languages))
-))}
+))} :results none
 
 #+end_src$>
