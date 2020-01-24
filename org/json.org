@@ -15,6 +15,29 @@
     )
   #+end_src
 
+* indentation
+  I'm not sure why 4 spaces is considered good. It's not! How do you fit
+  anything into the holy 80 columns with 4?
+
+  Also we need to set the indentation when in =json-mode= directly, since it
+  does not inherit from =prog-mode=.
+  
+  Perhaps because of Spacemacs, =js2-basic-offset= and =js-indent-level= are
+  what =json-mode= looks at for formatting variables, according to this
+  [[https://github.com/syl20bnr/spacemacs/issues/2333][spacemacs issue]]. We should set these variables locally as to not clash (if
+  it's even possible) with =.dir-locals.el=.
+
+  #+begin_src emacs-lisp :results none
+    (defun config/json-indentation ()
+      (interactive)
+      (require 'json-reformat)
+      (setq-default json-reformat:indent-width 2)
+      (setq-local js2-basic-offset 2)
+      (setq-local js-indent-level 2)
+      (setq-local standard-indent 2)
+      )
+  #+end_src
+
 * altogether
 
   #+begin_src emacs-lisp :results none
@@ -23,5 +46,7 @@
       :defer t
       :config
       (config/json-mode-show-line-numbers)
+      (config/json-indentation)
+      (add-hook 'json-mode-hook '#config/json-indentation)
       )
   #+end_src
