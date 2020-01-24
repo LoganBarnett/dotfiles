@@ -108,8 +108,6 @@ values."
      graphviz-dot-mode
      groovy-mode
      habitica
-     lsp-mode
-     lsp-ui
      multi-line
      multi-term
      noflet
