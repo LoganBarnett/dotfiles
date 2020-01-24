@@ -113,6 +113,7 @@ values."
      noflet
      nvm
      nyan-mode
+     org-gcal
      pinentry
      plantuml-mode
      prettier-js
