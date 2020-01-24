@@ -79,6 +79,7 @@
     (use-package "org-agenda"
       :defer t
       :init
+      (require 'mu4e)
       :config
       (config/org-agenda-autosave)
       (config/org-agenda-default-view)
