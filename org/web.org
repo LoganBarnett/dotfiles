@@ -1,54 +1,104 @@
-#+title:    web-mode
-#+author:   Logan Barnett
-#+email:    logustus@gmail.com
-#+date:     <2018-08-23 Thu>
-#+language: en
-#+tags:     config emacs web-mode
+#+title:     Web
+#+author:    Logan Barnett
+#+email:     logustus@gmail.com
+#+date:      <2020-01-09 Thu>
+#+language:  en
+#+file_tags:
+#+tags:
 
-=web-mode= combines =html-mode=, =css-mode= and =js2-mode=.
+* capturing web pages (broken)
 
-* indentation
+  None of this works :(
 
-  =web-mode= uses its own indentation settings that are independent of the major
-  modes that it adopts as minor modes. This puts the indentation back in line (2
-  spaces for life!).
+  Capturing is handled via =org-protocol-capture-html=. It requires a template.
+  The instructions provide a copy-paste capture template to work with.
 
-  #+begin_src emacs-lisp
-
-    (defun config/web-mode-indentation ()
-      "Set the indentation to 2 for web-mode."
-      (setq-default
-       web-mode-attr-indent-offset 2
-       web-mode-code-indent-offset 2
-       web-mode-css-indent-offset 2
-       web-mode-markup-indent-offset 2
-       )
-      (add-to-list 'web-mode-indentation-params '("lineup-args" . nil))
-      (add-to-list 'web-mode-indentation-params '("lineup-concats" . nil))
-      (add-to-list 'web-mode-indentation-params '("lineup-calls" . nil))
+  #+begin_src emacs-lisp :results none
+      (defun config/add-web-capture-template ()
+    (interactive)
+        (add-to-list 'org-capture-templates
+                     '("w" "Web site" entry
+                      (file "")
+                      "* %a :website:\n\n%U %?\n\n%:initial")
+                     )
+        (add-to-list 'org-capture-templates
+                     '("p" "Protocol" entry (file+headline ,(concat org-directory "notes.org") "Inbox")
+                      "* %^{Title}\nSource: %u, %c\n #+BEGIN_QUOTE\n%i\n#+END_QUOTE\n\n\n%?")
+        )
+        (add-to-list 'org-capture-templates
+                     '("L" "Protocol Link" entry (file+headline ,(concat org-directory "notes.org") "Inbox")
+                      "* %? [[%:link][%:description]] \nCaptured On: %U")
+        )
       )
   #+end_src
 
-* comments
-  =web-mode= defaults to using =/* */= style comments for JavaScript code, and
-  that's just weird and also inconsistent with my current setup.
+* capturing web pages
+  Being able to save a web page in its entirety is vital for note-taking. Lots
+  of stuff out there exists for capturing selections, but I want the core
+  content of the site, with pictures included. The general approach is to
+  download the page, pipe it through pandoc, and toss the results in some
+  =org-mode= heading (which I am likely already on). Being able to go to my
+  inbox like a normal =org-capture= is bonus points, since I currently don't use
+  =org-capture= right now.
 
-  #+begin_src emacs-lisp
-  (defun config/web-mode-comments ()
-    (setq-default web-mode-comment-formats '())
-    (add-to-list 'web-mode-comment-formats '("javascript" . "//"))
-    )
+** determine where I want this
+   At the moment we're just going to assume the current heading. I want this to
+   happen first in the pipeline in case the landing location influences where we
+   store the HTML data.
+
+** download the page somewhere
+   Downloading the page can be done with =curl= or =wget=.
+
+   #+begin_src emacs-lisp :results none
+     ;; Downloads content from URL.
+     (defun crawl/download (url)
+       (require 'request-deferred)
+       (deferred:$
+         (request-deferred url)
+         (deferred:nextc it ;; what is "it" here?
+           (lambda (response)
+             ;; TODO: parse in HTML.
+             (request-response-data response)
+             )
+         )
+       )
+      )
+   #+end_src
+
+** find images in the HTML
+   Not everyone properly uses the =img= tag, but for sites that do I can include
+   the images in the results. One of the potential issues is that sites include
+   a lot of crufty content. Some day later I might be able to use a reader/print
+   view to exclude the extra stuff.
+
+   This requires =pup= is on =PATH=.
+
+   #+begin_src emacs-lisp :results none
+     (defun crawl/find-html-images (html)
+       (with-output-to-temp-buffer "crawl/find-html-images"
+         (call-process "pup 'img[src]'" html (current-buffer))
+         (buffer-string)
+         )
+       )
+   #+end_src
+
+** download images
+
+** connect images to local image paths
+
+** convert to org with pandoc
+
+** write to buffer/heading
+
+* apply configuration
+
+  #+begin_src emacs-lisp :results none
+    (require 'use-package)
+
+    (use-package "org"
+      :config
+      ;; (config/add-web-capture-template)
+      ;; (require 'org-protocol)
+      ;; (require 'org-protocol-capture-html)
+      )
   #+end_src
-
-* all together
-
-#+begin_src emacs-lisp
-  (use-package "web-mode"
-    :defer t
-    :init
-    :config
-    (config/web-mode-indentation)
-    (add-hook 'web-mode-hook #'config/web-mode-indentation)
-    (add-hook 'web-mode-hook #'config/web-mode-comments)
-  )
-#+end_src

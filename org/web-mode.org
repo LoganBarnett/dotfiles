@@ -1,0 +1,54 @@
+#+title:    web-mode
+#+author:   Logan Barnett
+#+email:    logustus@gmail.com
+#+date:     <2018-08-23 Thu>
+#+language: en
+#+tags:     config emacs web-mode
+
+=web-mode= combines =html-mode=, =css-mode= and =js2-mode=.
+
+* indentation
+
+  =web-mode= uses its own indentation settings that are independent of the major
+  modes that it adopts as minor modes. This puts the indentation back in line (2
+  spaces for life!).
+
+  #+begin_src emacs-lisp
+
+    (defun config/web-mode-indentation ()
+      "Set the indentation to 2 for web-mode."
+      (setq-default
+       web-mode-attr-indent-offset 2
+       web-mode-code-indent-offset 2
+       web-mode-css-indent-offset 2
+       web-mode-markup-indent-offset 2
+       )
+      (add-to-list 'web-mode-indentation-params '("lineup-args" . nil))
+      (add-to-list 'web-mode-indentation-params '("lineup-concats" . nil))
+      (add-to-list 'web-mode-indentation-params '("lineup-calls" . nil))
+      )
+  #+end_src
+
+* comments
+  =web-mode= defaults to using =/* */= style comments for JavaScript code, and
+  that's just weird and also inconsistent with my current setup.
+
+  #+begin_src emacs-lisp
+  (defun config/web-mode-comments ()
+    (setq-default web-mode-comment-formats '())
+    (add-to-list 'web-mode-comment-formats '("javascript" . "//"))
+    )
+  #+end_src
+
+* all together
+
+#+begin_src emacs-lisp
+  (use-package "web-mode"
+    :defer t
+    :init
+    :config
+    (config/web-mode-indentation)
+    (add-hook 'web-mode-hook #'config/web-mode-indentation)
+    (add-hook 'web-mode-hook #'config/web-mode-comments)
+  )
+#+end_src

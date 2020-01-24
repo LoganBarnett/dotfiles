@@ -267,6 +267,7 @@
   (init-org-file "graphviz-dot.org")
   (init-org-file "markdown.org")
   (init-org-file "web.org")
+  (init-org-file "web-mode.org")
   (init-org-file "font.org")
   (init-org-file "cucumber.org")
   (init-org-file "git.org")
