@@ -5,61 +5,85 @@
 #+language:  en
 #+file_tags: helm config
 
-* frame display
-  By default, =spacemacs= will display =helm= in a window, which causes a resize
-  event (or many, from what I can see in the profiler). This is incredibly
-  performance draining, especially in large buffers. Disabling line numbers
-  (=display-line-number-mode= at time of writing) seems to make a small
-  difference, but it's not the culprit as many tickets I have read seem to
-  indicate. Making =helm= display in a frame rather than a window fixes
-  performance issues relating to what windows I presently have open.
+* slowness
+  For non-trivial files (especially my =org-mode= files that get quite large),
+  =helm= seems very slow. On my primary machine it can take > 5 seconds for the
+  minibuffer to show up.
 
-  #+begin_src emacs-lisp :results none
-    (defun config/helm-use-frame ()
-      (setq-default
-        ;; Normally this is spacemacs//display-helm-window.
-        helm-display-function #'helm-display-buffer-in-own-frame
-        helm-display-buffer-reuse-frame t
-        helm-use-undecorated-frame-option t
-        ;; Do not change helm-always-two-windows, if t it will split when in a full
-        ;; frame.
-        ;;
-        helm-always-two-windows nil
+** frame display
+   By default, =spacemacs= will display =helm= in a window, which causes a resize
+   event (or many, from what I can see in the profiler). This is incredibly
+   performance draining, especially in large buffers. Disabling line numbers
+   (=display-line-number-mode= at time of writing) seems to make a small
+   difference, but it's not the culprit as many tickets I have read seem to
+   indicate. Making =helm= display in a frame rather than a window fixes
+   performance issues relating to what windows I presently have open.
 
-        ;; Do not change helm-full-frame, because it seems to play a part in
-        ;; making a split for the full frame.
-        ;;
-        helm-full-frame t
-        helm-actions-inherit-frame-settings nil
+   #+begin_src emacs-lisp :results none
+     (defun config/helm-use-frame ()
+       (setq-default
+         ;; Normally this is spacemacs//display-helm-window.
+         helm-display-function #'helm-display-buffer-in-own-frame
+         helm-display-buffer-reuse-frame t
+         helm-use-undecorated-frame-option t
+         ;; Do not change helm-always-two-windows, if t it will split when in a full
+         ;; frame.
+         ;;
+         helm-always-two-windows nil
 
-        ;; Spacemacs adds some setting that causes new frames to inherit the prior
-        ;; frame. This setting should fix that behavior. It might be useful
-        ;; elsewhere too. See
-        ;; https://github.com/emacs-helm/helm/issues/1983#issuecomment-371795672
-        persp-init-new-frame-behaviour-override nil
-        ;; Setting persp-init-new-frame-behaviour-override isn't good enough. Though
-        ;; turning off persp-init-frame-behavior entirely seems to do the trick.
-        ;; This might need to be promoted to another file since this is generally
-        ;; applicable to any of my frame needs.
-        persp-init-frame-behaviour nil
+         ;; Do not change helm-full-frame, because it seems to play a part in
+         ;; making a split for the full frame.
+         ;;
+         helm-full-frame t
+         helm-actions-inherit-frame-settings nil
+
+         ;; Spacemacs adds some setting that causes new frames to inherit the prior
+         ;; frame. This setting should fix that behavior. It might be useful
+         ;; elsewhere too. See
+         ;; https://github.com/emacs-helm/helm/issues/1983#issuecomment-371795672
+         persp-init-new-frame-behaviour-override nil
+         ;; Setting persp-init-new-frame-behaviour-override isn't good enough. Though
+         ;; turning off persp-init-frame-behavior entirely seems to do the trick.
+         ;; This might need to be promoted to another file since this is generally
+         ;; applicable to any of my frame needs.
+         persp-init-frame-behaviour nil
+        )
+       ;; Maybe we can just remove persp-mode's claws altogether.
+       (remove-hook 'before-make-frame-hook #'persp-init-new-frame)
+       (remove-hook 'after-make-frame-functions #'persp-init-new-frame)
+       ;; eyebrowse does it too - why two libraries that do the same thing?
+       (remove-hook 'after-make-frame-functions #'eyebrowse-init)
+       (add-hook 'before-make-frame-hook (lambda ()
+         ;; Holy hook hackery Batman! These things re-add themselves or something.
+         ;; This is spacemacs, so who knows! Maybe a better solution exists,
+         ;; but this should work for now.
+         (remove-hook 'after-make-frame-functions #'persp-init-new-frame)
+         (remove-hook 'after-make-frame-functions #'eyebrowse-init)
+        ))
        )
-      )
-  #+end_src
+   #+end_src
 
-* event timeout
-  The [[https://github.com/emacs-helm/helm/wiki/FAQ#slow-frame-and-window-popup-in-emacs-26][helm faq]] mentions if =x-wait-for-event-timeout= is =nil= in Emacs 26, the
-  =helm= delays should be fixed.
+** event timeout
+   The [[https://github.com/emacs-helm/helm/wiki/FAQ#slow-frame-and-window-popup-in-emacs-26][helm faq]] mentions if =x-wait-for-event-timeout= is =nil= in Emacs 26, the
+   =helm= delays should be fixed.
 
-  I have used this and it seems to speed up =helm= significantly. There are
-  still delays on large files, so it's worth investigating having its own frame.
+   I have used this and it seems to speed up =helm= significantly. There are
+   still delays on large files, so it's worth investigating having its own frame.
 
-  #+begin_src emacs-lisp :results none
-    (defun config/helm-fix-slowdown ()
-      (setq-default
-        x-wait-for-event-timeout nil
+   #+begin_src emacs-lisp :results none
+     (defun config/helm-fix-slowdown ()
+       (setq-default
+         x-wait-for-event-timeout nil
+        )
        )
-      )
-  #+end_src
+   #+end_src
+
+** next hair brained idea to make it faster
+
+   #+begin_src emacs-lisp :results none
+
+   #+end_src
+
 
 * helm-ag
   =helm-ag= uses =ag= but [[https://blog.burntsushi.net/ripgrep/][ripgrep]] claims to be better in every way. Using
