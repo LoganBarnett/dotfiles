@@ -154,6 +154,7 @@ Adapt image size via `iimage-scale-to-fit-width' when the window size changes."
     (setq-default org-agenda-files
                   '(
                     "~/Dropbox/notes/agenda.org"
+                    "~/Dropbox/notes/inbox.org"
                     "~/work-notes/nwea.org"
                     )
                   )
