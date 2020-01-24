@@ -356,6 +356,9 @@ export JENV_ROOT=/usr/local/opt/jenv
 export PATH="$JENV_ROOT:$PATH"
 eval "$(jenv init -)"
 
+# rbenv for Ruby
+eval "$(rbenv init -)"
+
 # Bootstrap Nix.
 . ~/.nix-profile/etc/profile.d/nix.sh
 
