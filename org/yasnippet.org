@@ -21,13 +21,14 @@
 
 * apply
 
-  #+begin_src emacs-lisp
+  #+begin_src emacs-lisp :results none
     (require 'use-package)
 
     (use-package "yasnippet"
       :init
       (config/yasnippet-fundamental-mode)
       (setq-default yas-snippet-dirs '("~/dev/dotfiles/yasnippets"))
+      (yas-recompile-all)
       (yas/reload-all)
       )
   #+end_src
