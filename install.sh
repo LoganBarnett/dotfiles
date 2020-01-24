@@ -65,6 +65,8 @@ echo "settting up ocaml's opam"
 echo "installing GPG..."
 ./install-gpg.sh
 
+./install-latex.sh
+
 # nix must come after gpg since it uses gpg.
 ./install-nix.sh
 
