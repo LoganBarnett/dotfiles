@@ -140,31 +140,29 @@
    an earlier stage.
    
    #+begin_src emacs-lisp :results none
-      (defun crawl/write-to-heading (title-and-org)
-        (let* (
-               (title (car title-and-org))
-               (org-text (cdr title-and-org))
-               (path (org-get-outline-path))
-               (depth (length path))
-               )
-          (org-insert-heading)
-          (insert title)
-          (org-demote-subtree)
-          (let* (
-                 (demoted-org (with-temp-buffer
-                                (insert org-text)
-                                ;; Our temp buffer must use org-mode to demote.
-                                (org-mode)
-                                (--dotimes (+ depth 1)
-                                           (org-demote-subtree)
-                                           )
-                                (buffer-string)
-                                ))
-                 )
-                 (insert demoted-org)
-            )
-          )
-        )
+     (defun crawl/write-to-heading (title-and-org)
+       (let* (
+              (title (car title-and-org))
+              (org-text (cdr title-and-org))
+              (path (org-get-outline-path))
+              (depth (length path))
+              (demoted-org (with-temp-buffer
+                             (org-insert-heading)
+                             (insert title)
+                             (insert org-text)
+                             ;; Our temp buffer must use org-mode to demote.
+                             (org-mode)
+                             (message "demoting %s times" (+ depth 1))
+                             (goto-char (point-min))
+                             (--dotimes (+ depth 1)
+                               (org-demote-subtree)
+                               )
+                             (buffer-string)
+                             ))
+              )
+         (insert demoted-org)
+         )
+       )
    #+end_src
 
 ** dwim
