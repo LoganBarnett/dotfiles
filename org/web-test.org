@@ -1,0 +1,89 @@
+* heading 1
+** heading 2
+*** Dotted Pair Notation - GNU Emacs Lisp Reference Manual
+<<Dotted-Pair-Notation>>
+Next: [[file:Association-List-Type.html#Association-List-Type][Association
+List Type]], Previous: [[file:Box-Diagrams.html#Box-Diagrams][Box
+Diagrams]], Up: [[file:Cons-Cell-Type.html#Cons-Cell-Type][Cons Cell
+Type]]
+
+******* 2.3.6.2 Dotted Pair Notation
+        :PROPERTIES:
+        :CUSTOM_ID: dotted-pair-notation
+        :CLASS:    subsubsection
+        :END:
+
+  <<index-dotted-pair-notation-102>><<index-g_t_0040samp_007b_002e_007d-in-lists-103>>
+  Dotted pair notation is a general syntax for cons cells that represents
+  the car and cdr explicitly. In this syntax, =(=a= . =b=)= stands for a
+  cons cell whose car is the object a and whose cdr is the object b.
+  Dotted pair notation is more general than list syntax because the cdr
+  does not have to be a list. However, it is more cumbersome in cases
+  where list syntax would work. In dotted pair notation, the list ‘(1 2
+  3)' is written as ‘(1 . (2 . (3 . nil)))'. For =nil=-terminated lists,
+  you can use either notation, but list notation is usually clearer and
+  more convenient. When printing a list, the dotted pair notation is only
+  used if the cdr of a cons cell is not a list.
+
+  Here's an example using boxes to illustrate dotted pair notation. This
+  example shows the pair =(rose . violet)=:
+
+  #+BEGIN_EXAMPLE
+               --- ---
+                  |   |   |--> violet
+                   --- ---
+                    |
+                    |
+                     --> rose
+        
+  #+END_EXAMPLE
+
+  You can combine dotted pair notation with list notation to represent
+  conveniently a chain of cons cells with a non-=nil= final cdr. You write
+  a dot after the last element of the list, followed by the cdr of the
+  final cons cell. For example, =(rose violet     . buttercup)= is
+  equivalent to =(rose . (violet . buttercup))=. The object looks like
+  this:
+
+  #+BEGIN_EXAMPLE
+               --- ---      --- ---
+                  |   |   |--> |   |   |--> buttercup
+                   --- ---      --- ---
+                    |            |
+                    |            |
+                     --> rose     --> violet
+        
+  #+END_EXAMPLE
+
+  The syntax =(rose . violet . buttercup)= is invalid because there is
+  nothing that it could mean. If anything, it would say to put =buttercup=
+  in the cdr of a cons cell whose cdr is already used for =violet=.
+
+  The list =(rose violet)= is equivalent to =(rose . (violet))=, and looks
+  like this:
+
+  #+BEGIN_EXAMPLE
+               --- ---      --- ---
+                  |   |   |--> |   |   |--> nil
+                   --- ---      --- ---
+                    |            |
+                    |            |
+                     --> rose     --> violet
+        
+  #+END_EXAMPLE
+
+  Similarly, the three-element list =(rose violet buttercup)= is
+  equivalent to =(rose . (violet . (buttercup)))=. It looks like this:
+
+  #+BEGIN_EXAMPLE
+               --- ---      --- ---      --- ---
+                  |   |   |--> |   |   |--> |   |   |--> nil
+                   --- ---      --- ---      --- ---
+                    |            |            |
+                    |            |            |
+                     --> rose     --> violet   --> buttercup
+        
+  #+END_EXAMPLE
+
+  EOF
+ 

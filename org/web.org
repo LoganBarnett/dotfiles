@@ -6,7 +6,7 @@
 #+file_tags:
 #+tags:
 
-* capturing web pages (broken)
+* capturing web pages (broken)                                      :ARCHIVE:
 
   None of this works :(
 
@@ -15,7 +15,7 @@
 
   #+begin_src emacs-lisp :results none
       (defun config/add-web-capture-template ()
-    (interactive)
+        (interactive)
         (add-to-list 'org-capture-templates
                      '("w" "Web site" entry
                       (file "")
@@ -46,26 +46,28 @@
    happen first in the pipeline in case the landing location influences where we
    store the HTML data.
 
-** download the page somewhere
-   Downloading the page can be done with =curl= or =wget=.
+** download the page
+   Downloading the page can be done with =curl= or =wget=. =request= (thus
+   =request-deferred=) uses =curl= if present, since it's more performant than
+   the built-in Emacs capabilities.
 
    #+begin_src emacs-lisp :results none
-     ;; Downloads content from URL.
-     (defun crawl/download (url)
+     (defun crawl/download-deferred (download-url) 
        (require 'request-deferred)
        (deferred:$
+         (deferred:call-lambda (lambda () (message "sending request")))
          (request-deferred url)
          (deferred:nextc it ;; what is "it" here?
            (lambda (response)
-             ;; TODO: parse in HTML.
+             (message "got response")
              (request-response-data response)
              )
+           )
          )
-       )
       )
    #+end_src
 
-** find images in the HTML
+** TODO find images in the HTML
    Not everyone properly uses the =img= tag, but for sites that do I can include
    the images in the results. One of the potential issues is that sites include
    a lot of crufty content. Some day later I might be able to use a reader/print
@@ -82,13 +84,107 @@
        )
    #+end_src
 
-** download images
-
-** connect images to local image paths
-
-** convert to org with pandoc
+** TODO download images
+** TODO connect images to local image paths
+** TODO convert to org with pandoc and pup
+   The =pandoc= utility can convert HTML to =org-mode=. =pup= lets us pull out
+   the title of the document's =title= tag.
+   
+   I should also have this eventually include the original URL so we can inject
+   it into a =:PROPERTIES:= drawer or something.
+   
+   #+begin_src emacs-lisp :results none
+     (defun crawl/html-to-title-and-org (html)
+       (message "converting html with pandoc...")
+       (let ((heredoc
+              ;; Tabs added to prevent prematurely triggering EOF in this file.
+              ;; Not that we care much in HTML, but these tabs are truncated by
+              ;; the shell.
+              (string-join (--map (concat "\t" it) (split-string html "\n")) "\n")
+              ))
+         (cons
+           (shell-command-to-string
+            (concat
+             ;; EOF quoted to prevent escaping in this file.
+             "cat <<'EOF' | pup 'title text{}'\n"
+             heredoc
+             "EOF"
+             )
+            )
+           ;; TODO: Find a way to use deferred for this, for maximum
+           ;; non-blocking behavior.
+           (shell-command-to-string
+            ;; Emacs has limited facilities for piping to stdin, but the shell
+            ;; can take care of that for us by using a heredoc. There are other
+            ;; ways to pull this off, but heredocs seem to be the most
+            ;; bullet-proof.
+            (concat
+             ;; EOF quoted to prevent escaping in this file.
+             "cat <<'EOF' | pandoc -f html -t org\n"
+             heredoc
+             "EOF"
+             )
+            )
+           )
+         )
+       )
+   #+end_src
 
 ** write to buffer/heading
+   
+   To write to the current heading we need to know what the current heading is
+   using =org-get-outline-path=. Then we offset the current org text to one
+   less than that heading, and add the site as a subheading.
+   
+   I need to modify this to accept a title, which I can also get from =pup= in
+   an earlier stage.
+   
+   #+begin_src emacs-lisp :results none
+      (defun crawl/write-to-heading (title-and-org)
+        (let* (
+               (title (car title-and-org))
+               (org-text (cdr title-and-org))
+               (path (org-get-outline-path))
+               (depth (length path))
+               )
+          (org-insert-heading)
+          (insert title)
+          (org-demote-subtree)
+          (let* (
+                 (demoted-org (with-temp-buffer
+                                (insert org-text)
+                                ;; Our temp buffer must use org-mode to demote.
+                                (org-mode)
+                                (--dotimes (+ depth 1)
+                                           (org-demote-subtree)
+                                           )
+                                (buffer-string)
+                                ))
+                 )
+                 (insert demoted-org)
+            )
+          )
+        )
+   #+end_src
+
+** dwim
+   
+   Downloads the contents from the given URL and writes it to the document.
+
+   #+begin_src emacs-lisp :results none
+     (defun crawl/dwim-from-url (url)
+       "Downloads the content from URL and converts it to `org-mode' text in the current buffer as a new subheading."
+       (interactive "*sEnter URL to download and insert as .org: ")
+       (require 'deferred)
+       (deferred:$
+         (crawl/download-deferred url)
+         (deferred:nextc it
+           (lambda (html) (crawl/write-to-heading (crawl/html-to-title-and-org html)))
+           )
+         )
+     )
+   #+end_src
+
 
 * apply configuration
 
