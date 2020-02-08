@@ -19,7 +19,7 @@ const readFileData = (path) => {
 
 const replaceJsVars = (js) => {
   // TODO: Handle error gracefully if I forgot to make this file.
-  const vars = require('./js-vars.private.js')
+  const vars = require('../dotfiles-private/js-vars.private.js')
   let result = js
   for(let key in vars) {
     result = result.replace(`process.${key}`, vars[key])
@@ -27,22 +27,22 @@ const replaceJsVars = (js) => {
   return result
 }
 
-module.exports = () => {
-  const names = fs.readdirSync('custom-css')
+const findInjectorsForDir = (dir) => {
+  const names = fs.readdirSync(dir)
         .filter(f => f.match(/.+\.json$/))
         .map(f => f.replace(/\.json$/, ''))
 
 
   const injectorData = names.map(name => {
     const meta = JSON.parse(fs.readFileSync(
-      path.join('custom-css', name + '.json'),
+      path.join(dir, name + '.json'),
       'utf8'
     ))
 
     meta.key = meta.key || name
 
-    const css = readFileData(`custom-css/${name}.css`)
-    let js = readFileData(`custom-css/${name}.js`)
+    const css = readFileData(`${dir}/${name}.css`)
+    let js = readFileData(`${dir}/${name}.js`)
     if(js == 'undefined') js = ''
 
     try {
@@ -64,4 +64,10 @@ module.exports = () => {
   })
 
   return injectorData
+}
+
+module.exports = () => {
+  return findInjectorsForDir('custom-css').concat(
+    findInjectorsForDir('../dotfiles-private/custom-css'),
+  )
 }
