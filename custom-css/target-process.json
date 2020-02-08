@@ -1,6 +1,6 @@
 {
   "includes": [
-    "https://nwea.tpondemand.com/*"
+    "https://*.tpondemand.com/*"
   ],
   "excludes": [
     ""
