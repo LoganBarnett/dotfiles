@@ -47,6 +47,6 @@
       :config
       (config/json-mode-show-line-numbers)
       (config/json-indentation)
-      (add-hook 'json-mode-hook '#config/json-indentation)
+      (add-hook 'json-mode-hook #'config/json-indentation)
       )
   #+end_src
