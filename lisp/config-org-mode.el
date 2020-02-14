@@ -172,6 +172,13 @@ Adapt image size via `iimage-scale-to-fit-width' when the window size changes."
     (global-set-key (kbd "C-c C-x C-r") 'my/org-clock-report)
     ;; For some reason this doesn't work. How do I override key bindings?
     (bind-key (kbd "C-c C-x C-r") 'my/org-clock-report)
+    ;; `org-clone-subtree-with-time-shift' uses some (typically) obscure Emacs
+    ;; binding. Let's bring it into the modern, discoverable era.
+    (spacemacs/set-leader-keys-for-major-mode
+      'org-mode
+      (kbd "s t")
+      'org-clone-subtree-with-time-shift
+      )
 
     (setq-default org-modules '(
                                 ;; `org-checklist' clears checklists on tasks if
