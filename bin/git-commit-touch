@@ -1,0 +1,13 @@
+#! /usr/bin/env bash
+
+# Due to some continuous integration processes, one may need to make an
+# immaterial change to the HEAD commit in order to kick off the continuous
+# integration processes again.
+
+set -e
+
+git commit --amend --no-edit
+
+echo "Touched commit. You will need to run `git push --force-with-lease` for \
+the CI pipeline to pick up these changes.
+"
