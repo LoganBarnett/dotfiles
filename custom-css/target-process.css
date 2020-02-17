@@ -472,3 +472,43 @@ body, button, input, select, textarea {
   background-color: var(--code-background-color) !important;
   color: var(--code-color) !important;
 }
+
+/**
+ * Right side panel for showing ticket state.
+ */
+.layout-renderer__component-container .ui-collapsible > .tau-container {
+  /* Uses background instead of background-color. */
+  background: var(--panel-backgroun-color) !important;
+}
+
+/**
+ * Tab titles.
+ */
+.tabs__header__tab-item__tabs__7-26-0 {
+  background-color: var(--button-background-color) !important;
+  color: var(--button-color) !important;
+}
+
+/**
+ * Tab titles, active and hover.
+ */
+.tabs__header__tab-item__tabs__7-26-0:hover,
+.tabs__header__tab-item--active__tabs__7-26-0 {
+  background-color: var(--button-hover-background-color) !important;
+  color: var(--button-hover-color) !important;
+}
+
+/**
+ * More parts of the right side panel showing ticket state.
+ */
+.layout-renderer__component-container .ui-collapsible {
+  background-color: var(--panel-backgroun-color) !important;
+}
+
+/**
+ * Ticket states. Click to change state.
+ */
+.state-selector .sub-level li .state-selector__value {
+  background-color: var(--button-background-color) !important;
+  color: var(--button-color) !important;
+}
