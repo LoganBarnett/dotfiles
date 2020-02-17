@@ -20,7 +20,7 @@ const preCssIncludes = require('./apply-global-pre-css.js')
  * literals.
  */
 const wildcardToRegex = (s) => {
-  return s.replace(/\./g, '\\.').replace(/\*/g, '.*')
+  return s.replace(/\./g, '\\.').replace(/\*/g, '.*').replace(/\?/g, '.?')
 }
 
 const rules = loader().map(m => {
