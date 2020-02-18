@@ -16,7 +16,7 @@ tmux new-window -t $SESSION -n '3-up'
 tmux split-window -v
 tmux select-pane -t 1
 tmux split-window -h
-tmux send-keys "htop" C-m
+tmux send-keys "sudo htop" C-m
 # tmux new-window -t $SESSION:2 -n 'MySQL' 'mysql -uroot'
 # tmux new-window -t $SESSION:2 -n 'htop' 'htop'
 # tmux new-window -t $SESSION:3 -n 'Commands'
