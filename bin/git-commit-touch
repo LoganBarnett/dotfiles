@@ -8,6 +8,6 @@ set -e
 
 git commit --amend --no-edit
 
-echo "Touched commit. You will need to run `git push --force-with-lease` for \
+echo 'Touched commit. You will need to run `git push --force-with-lease` for \
 the CI pipeline to pick up these changes.
-"
+'
