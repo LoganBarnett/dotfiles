@@ -17,9 +17,19 @@ const readFileData = (path) => {
   }
 }
 
+const loadOrDefault = ($default, path) => {
+  try {
+    return require(path)
+  } catch (e) {
+    console.error(
+      `Could not require ${path}, using ${JSON.stringify($default)} instead.`,
+    )
+    return $default
+  }
+}
+
 const replaceJsVars = (js) => {
-  // TODO: Handle error gracefully if I forgot to make this file.
-  const vars = require('../dotfiles-private/js-vars.private.js')
+  const vars = loadOrDefault({}, '../dotfiles-private/js-vars.private.js')
   let result = js
   for(let key in vars) {
     result = result.replace(`process.${key}`, vars[key])
@@ -31,7 +41,6 @@ const findInjectorsForDir = (dir) => {
   const names = fs.readdirSync(dir)
         .filter(f => f.match(/.+\.json$/))
         .map(f => f.replace(/\.json$/, ''))
-
 
   const injectorData = names.map(name => {
     const meta = JSON.parse(fs.readFileSync(
