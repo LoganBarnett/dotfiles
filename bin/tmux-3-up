@@ -12,7 +12,7 @@ SESSION=$1
 tmux new-session -d -s $SESSION
 
 # Setup a window for tailing log files
-tmux new-window -t $SESSION -n
+tmux new-window -t $SESSION -n '3-up'
 tmux split-window -v
 tmux select-pane -t 1
 tmux split-window -h
