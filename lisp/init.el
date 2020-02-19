@@ -210,6 +210,7 @@
                                                ".tmp"
                                                ))
 
+  (global-highlight-parentheses-mode)
   (message "[DIRTY INIT] INIT DONE!")
   )
 (defun my/init ()
