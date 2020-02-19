@@ -1,0 +1,2 @@
+# -*- mode: gitattributes; -*-
+npmrc filter=npm-auth-token

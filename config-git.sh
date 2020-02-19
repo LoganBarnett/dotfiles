@@ -10,3 +10,15 @@ git config --global core.editor /usr/bin/vim
 # when performing a diff. It takes a little longer, but diffs are pretty fast as
 # it is.
 git config --global diff.algorithm patience
+
+
+DOTFILES="
+gitattributes_global
+gitconfig
+gitignore_global
+"
+
+for dotfile in $DOTFILES
+do
+  ./link-dotfile.sh $dotfile
+done

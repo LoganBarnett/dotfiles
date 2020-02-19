@@ -18,6 +18,7 @@
   tool = diffmerge
 	ff-only = true
 [core]
+  attributesfile = ~/.gitattributes_global
 	excludesfile = ~/.gitignore_global
 	editor = /usr/bin/vim
 	#autocrlf = true
@@ -45,3 +46,11 @@
   rebase = true
 [rebase]
   autoStash = true
+# Filters the npm auth token from the config file, so I don't check it into a
+# public repository accidentally. Also the token stored at .npm-auth-token is
+# used to restore the auth token. At the moment I have to store this token
+# manually, but I could perhaps use tee during the clean filter to write the
+# token to disk.
+[filter "npm-auth-token"]
+  clean = sed -E 's/(.*)_authToken=.*/\\1/g'
+  smudge = sed -E \"s/(.*)_authToken=.*/\\1_authToken=$(cat ~/.npm-auth-token)/g\"
