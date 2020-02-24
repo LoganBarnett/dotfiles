@@ -35,5 +35,6 @@ main {
 .draft, .indicator-warning, .note, .notice, .prefixBox, .privilegedBadge,
 .renamed, .secureContexts, .todo, .translationInProgress,
 .warning.warning-review {
-  background-color: var(--meta-color) !important;
+  background-color: var(--meta-background-color) !important;
+  color: var(--meta-color) !important
 }

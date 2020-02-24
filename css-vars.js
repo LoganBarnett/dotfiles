@@ -130,6 +130,7 @@ const vars = {
   '--tab-inactive-background-color': '#244',
   '--tab-left-inactive-border-radius': '0 0 0.5em 0',
   '--tab-right-inactive-border-radius': '0 0 0 0.5em',
+  '--meta-background-color': '#541',
   '--meta-color': '#b1951d',
   '--separator-background-color': '#125',
   '--separator-color': '#78d',
