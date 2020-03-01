@@ -189,6 +189,8 @@ Adapt image size via `iimage-scale-to-fit-width' when the window size changes."
                                 ))
     (require 'org-checklist)
 
+    ;; Preload org export functions, needed for latex preview.
+    (require 'ox)
     ;; Some initial langauges we want org-babel to support
     (require 'ob-js)
     (require 'ob-shell)
@@ -204,6 +206,7 @@ Adapt image size via `iimage-scale-to-fit-width' when the window size changes."
        (emacs-lisp . t)
        (gnuplot . t)
        (js . t)
+       (latex . t)
        (lilypond . t)
        (octave . t)
        ;; (perl . t)
