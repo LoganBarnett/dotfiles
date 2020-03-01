@@ -1,8 +1,15 @@
 #! /usr/bin/env bash
 
-pushd ..
-git clone git@bitbucket.org:LoganBarnett/dotfiles-private.git || true
-popd
+echo "[CONFIG] Installing private settings..."
+
+if [[ -d ../dotfiles-private/.git ]]; then
+  echo "The dotfiles-private repository is already cloned. Skipping clone."
+else
+  git clone \
+      git@bitbucket.org:LoganBarnett/dotfiles-private.git \
+      ../dotfiles-private
+
+fi
 
 # Use this file to populate private settings files (not to be checked into the
 # public dotfiles repo). This file itself should have _nothing_ sensitive in it.
