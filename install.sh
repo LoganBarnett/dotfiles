@@ -52,6 +52,9 @@ echo "Installing packages..."
 echo "Installing Haskell..."
 ./install-haskell.sh
 
+echo "Installing Rust..."
+./install-rust.sh
+
 echo "Installing htop..."
 ./install-htop.sh
 
