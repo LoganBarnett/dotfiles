@@ -19,3 +19,9 @@ fi
 # See mbsyncrc for usage of this file.
 PRIV_DIR=$PWD/../dotfiles-private
 ln -F -n -s $PRIV_DIR/email-creds.priv.txt ~/.email-creds.txt
+
+# The .mailrc lets me have email aliases. I don't want to share emails with the
+# public though.
+ln -F -n -s $PRIV_DIR/mailrc ~/.mailrc
+
+echo "[CONFIG] Installing private settings... Done!"
