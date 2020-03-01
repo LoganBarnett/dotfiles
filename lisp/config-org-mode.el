@@ -198,6 +198,8 @@ Adapt image size via `iimage-scale-to-fit-width' when the window size changes."
     ;; Exporters.
     (require 'ox-confluence-en) ;; This one adds PlantUML support.
     (require 'ox-gfm) ;; Github Flavored Markdown.
+    ;; Allow using yaml blocks as-is.
+    (defun org-babel-execute:yaml (body params) body)
     (org-babel-do-load-languages
      'org-babel-load-languages
      '(
