@@ -96,26 +96,26 @@ during my time at NWEA.
                                "flow"))
   )
 #+END_SRC
+**** flycheck checker order
+     Tying together Flow, Flow's coverage, and ESLint is documented to run the
+     checker after the present one finishes. That said, linter errors and Flow
+     errors have been clearly seen side-by-side. I think these functions
+     actually tie linting together and make them all show up at once.
 
-Tying together Flow, Flow's coverage, and ESLint is documented to run the
-checker after the present one finishes. That said, linter errors and Flow errors
-have been clearly seen side-by-side. I think these functions actually tie
-linting together and make them all show up at once.
-
-#+BEGIN_SRC emacs-lisp
-  (defun my/connect-javascript-flycheck-backends ()
-    (message "Connecting Javascript Flycheck backends...")
-    (flycheck-add-next-checker 'lsp-ui 'javascript-eslint)
-    (flycheck-add-next-checker 'javascript-eslint 'javascript-flow-coverage)
-    ;; lsp-ui unsets this, but we still want it to run for other checkers.
-    ;; However setting it causes the lsp-ui checks to not refresh properly, nor
-    ;; do the other checkers function for that matter.
-    ;;
-    ;; (setq-default flycheck-check-syntax-automatically
-    ;;               '(save idle-change new-line mode-enabled)
-    ;;               )
-  )
-#+END_SRC
+     #+BEGIN_SRC emacs-lisp
+       (defun config/connect-javascript-flycheck-backends ()
+         (message "Connecting Javascript Flycheck backends...")
+         ;; (flycheck-add-next-checker 'lsp-ui 'javascript-eslint)
+         (flycheck-add-next-checker 'javascript-eslint 'javascript-flow-coverage)
+         ;; lsp-ui unsets this, but we still want it to run for other checkers.
+         ;; However setting it causes the lsp-ui checks to not refresh properly, nor
+         ;; do the other checkers function for that matter.
+         ;;
+         ;; (setq-default flycheck-check-syntax-automatically
+         ;;               '(save idle-change new-line mode-enabled)
+         ;;               )
+         )
+     #+END_SRC
 
 *** company
     :PROPERTIES:
@@ -363,7 +363,7 @@ Finally, tie it all together on demand.
     ;; this will make it so fighting is less necessary to appease linters
     (setq-default js2-pretty-multiline-declarations nil)
     (my/find-javascript-flycheck-backends hook)
-    (my/connect-javascript-flycheck-backends)
+    (config/connect-javascript-flycheck-backends)
     ;; (my/config-javascript-company-backends)
     ;; Setting this locally should work because it's only for this individual
     ;; buffer, and not the project. This should survive buffer renames/moves.

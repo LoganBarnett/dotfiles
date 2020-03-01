@@ -26,10 +26,12 @@ https://github.com/emacs-lsp/lsp-ui
   Flycheck support arrives automatically as part of configuring =lsp-ui=.
 
   #+begin_src emacs-lisp :results none
-(defun config/flycheck-lsp ()
-  (require 'lsp-ui)
-  (add-hook 'lsp-mode-hook 'lsp-ui-mode)
-)
+    (defun config/flycheck-lsp ()
+      (require 'lsp-ui)
+      (require 'lsp-ui-flycheck)
+      (add-hook 'lsp-mode-hook 'lsp-ui-mode)
+      (add-hook 'lsp-after-open-hook (lambda () (lsp-ui-flycheck-enable 1)))
+    )
   #+end_src
 
 * sideline
