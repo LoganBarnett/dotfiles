@@ -54,3 +54,6 @@
 [filter "npm-auth-token"]
   clean = sed -E 's/(.*)_authToken=.*/\\1/g'
   smudge = sed -E \"s/(.*)_authToken=.*/\\1_authToken=$(cat ~/.npm-auth-token)/g\"
+[filter "yarn-update-check"]
+  clean = sed -E 's/(lastUpdateCheck )[0-9]+/\\1/g'
+  smudge = sed -E \"s/(lastUpdateCheck )[0-9]+/\\1$(cat ~/.yarn-update-check)/g\"
