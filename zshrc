@@ -379,6 +379,9 @@ eval "$(rbenv init -)"
 # nodenv requires a quick init
 eval "$(nodenv init -)"
 
+# cargo also requires an init
+source $HOME/.cargo/env
+
 # nodenv's build-update-defs plugin needs an environment variable set.
 export NODE_BUILD_DEFINITIONS=$(brew --prefix node-build-update-defs)/share/node-build
 
