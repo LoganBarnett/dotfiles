@@ -478,7 +478,24 @@ body, button, input, select, textarea {
  */
 .layout-renderer__component-container .ui-collapsible > .tau-container {
   /* Uses background instead of background-color. */
-  background: var(--panel-backgroun-color) !important;
+  background: var(--panel-background-color) !important;
+}
+
+/**
+ * Right side panels that aren't special I guess?
+ */
+.collapsible__body__collapsible-panel__7-21-4 {
+  background: var(--panel-background-color) !important;
+  border: var(--thin-border) !important;
+}
+
+/**
+ * Right side panels that aren't special - this gets used for the heading, and
+ * then the "body" version above clobbers the colors.
+ */
+.collapsible__collapsible-panel__7-21-4 {
+  color: var(--panel-title-color) !important;
+  background-color: var(--panel-title-background) !important;
 }
 
 /**
