@@ -1,3 +1,8 @@
+body {
+  /* The days of mixing up l and I are over. Also 0 and O. */
+  font-family: IBM Plex Sans !important;
+}
+
 .postslist {
   background-color: var(--general-background-color) !important;
 }
