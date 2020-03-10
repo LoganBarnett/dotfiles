@@ -301,12 +301,44 @@ when this happens, and Emacs eats a lot of processing power for no good reason.
     want newlines added for no reason, and I've yet to hear any reason I'd want
     this at all, let alone a good one.
 
-    I've since learned that =wb-butler= ignores this setting. I should look
-    there first before employing this setting.
+    I found these aren't respected because of =ws-butler=. It is very
+    opinionated about this, but I find it obtrusive. The irony is =ws-butler=
+    seeks to avoid obtrusiveness, but this is a deliberate decision.
 
     #+begin_src emacs-lisp :results none
+      ;; This is just a copy of the original, sans `require-final-newline' ignoring.
+      (defun custom/ws-butler-trim-eob-lines (orig-fun)
+        "Trim lines at EOB in efficient manner.
+      Also see `require-final-newline'."
+        (ws-butler-with-save
+         (widen)
+         ;; we need to clean up multiple blank lines at EOF to just one.  Or if
+         ;; there is no blank line and there needs one, we add it.
+         (goto-char (point-max))
+         (skip-chars-backward " \t\n\v")
+         (let ((saved-point (point)))
+           (ws-butler-clean-region saved-point (point-max))
+           (goto-char saved-point)
+           ;; we try to make as few buffer modifications as possible
+           ;;
+           ;; We refuse to remove final-newline regardless of the value of
+           ;; `require-final-newline'
+           (when (looking-at "\n\\(\n\\|\\'\\)")
+             (forward-char 1)))
+         (when require-final-newline
+           (unless (bolp)
+             (insert "\n")))
+         (when (looking-at "\n+")
+           (replace-match ""))))
+
       (defun config/disable-final-newline-for-js ()
         (setq-local mode-require-final-newline nil)
+        (setq-local require-final-newline nil)
+        (advice-add
+         'ws-butler-trim-eob-lines
+         :override
+         #'custom/ws-butler-trim-eob-lines
+         )
         )
     #+end_src
 
