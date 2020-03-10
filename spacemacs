@@ -232,6 +232,16 @@ values."
    dotspacemacs-colorize-cursor-according-to-state t
    ;; Default font, or prioritized list of fonts. `powerline-scale' allows to
    ;; quickly tweak the mode-line size to make separators look not too crappy.
+   ;;
+   ;; I found Menlo is also solid. It matches my need to have serifs on certain
+   ;; ambiguous letters such as i, l, L, I, O, and 0. So does Monaco. Source
+   ;; Code Pro does the same as above, is a little more condensed (in a way I
+   ;; like). It also has a funny g, but I think between p, q, and g it can be a
+   ;; little easier to pick out. It doesn't seem to blend with 8, so that's
+   ;; good.
+   ;;
+   ;; Non-mono fonts I've found (which I will likely never use here): IBM's
+   ;; Plex, and Fira. Ubuntu and Tahoma aren't bad standbys, but could be better.
    dotspacemacs-default-font '("Source Code Pro"
                                ;; :size 13
                                :size 11
