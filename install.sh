@@ -58,6 +58,9 @@ echo "Installing Rust..."
 echo "Installing htop..."
 ./install-htop.sh
 
+echo "Installing mysql (tools?)..."
+./install-mysql.sh
+
 # node modules
 echo "installing node modules"
 ./install-node-modules.sh
