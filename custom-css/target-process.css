@@ -529,3 +529,32 @@ body, button, input, select, textarea {
   background-color: var(--button-background-color) !important;
   color: var(--button-color) !important;
 }
+
+/**
+ * Task links in the chat area.
+ */
+.item-omni .task .tasktext,
+.post .task .tasktext {
+  color: var(--link-color) !important;
+}
+
+.item-omni .task .tasktext,
+.post.read .task .tasktext {
+  background-color: var(--visited-link-background-color) !important;
+  color: var(--visited-link-color) !important;
+}
+
+/**
+ * Chat area task due date label.
+ */
+.markdown b {
+  color: var(--head3-background-color);
+  color: var(--head3-color);
+}
+
+/**
+ * Remainder of chat area tasks.
+ */
+.markdown.details {
+  color: var(--text-color) !important;
+}
