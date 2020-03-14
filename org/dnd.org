@@ -6,284 +6,76 @@
 #+file_tags:
 #+tags:
 
-* wish list
-** TODO use names for columns
-   Right now columns are indicated by the number of their appearance. We really
-   shouldn't care about such things, and should use names which can be
-   configurable.
+* load from disk
+  I don't quite have =dnd.org= published to =elpa= just yet. So I need to load
+  it from my filesystem.
 
-** TODO specify a column list instead of a table template string
-   Normally giving maximum control to the consumer should be a preferred means
-   of building any kind of API, but I think there's value in saying we have
-   certain expectations for the table. It must be an =org-table= compatible
-   table, for example. I'm also not too sure how many of these things are going
-   to work if we start using more sophisticated table layouts as seen in
-   =table.el=, which =org-table= is technically compatible with.
-
-** TODO add a start-combat function
-   This would be handy instead of manually moving the cursor.
-
-** TODO add player character list to automatically insert
-   Somehow it would be nice to specify that player characters should always show
-   up in the combat table. In D&D it's very rare and typically not preferred to
-   split the party. Even if you do, or you have a player short, you could just
-   remove the character(s) manually.
-
-** TODO interactive combat building
-   Being able to express "I need 4 gnolls and 1 maralith" would be amazing.
-
-** TODO insert monster
-   Insert a monster by type. Give it a name. Based on preferences maybe we roll
-   initiative for you, or you give us the initiative. It can also roll hit
-   points, assume standard hit points, use max or min hit points, or allow
-   manual hit points.
-
-** TODO roll dice from expression
-   Having a cursor upon some expression such as =3d6 + 12= would be really nice
-   to interpret. This could be a big undertaking though and perhaps worthy of
-   its own project.
-
-** TODO use keymap
-   Right now key bindings are hard coded and assume Spacemacs. Having Spacemacs
-   specific helpers isn't bad, but we should detect if Spacemacs is even present
-   first.
-
-   And even then, we should provide a configurable keymap.
-
-** TODO literate tests
-   Wouldn't it be great to have something akin to:
-
-   #+begin_example emacs-lisp :results none :export none
-     (dnd/create-combat-table)
-   #+end_example
-
-   #+begin_example org
-   , | turn | name | ac |...
-   , |------+------+----+...
-   #+end_example
-
-   And it just asserted the first block's output matched the next block's?
-
-   Thus far I have not found any pre-written software to explicitly assist with
-   this.
-
-* combat table
-** template
-   #+begin_src emacs-lisp :results none :tangle yes
-     (defvar dnd/combat-table-template
-       "| turn | name | ord | ac | chp | thp | spec | dist |
-     |------+------+-----+----+-----+-----+------+------|"
-       "Template to use when creating combat table."
-       )
-   #+end_src
-
-** inserting
-   Insert a combat table.
-   #+begin_src emacs-lisp :results none :tangle yes
-     (defun dnd/create-combat-table ()
-       "Inserts a combat table into the document."
-       (interactive)
-       (let ((start (point)))
-         (insert dnd/combat-table-template)
-         (indent-region start (point))
-         )
-       )
-   #+end_src
-
-* tracking the current round
-  I frequently lose track of which round it is as I apply effects between
-  creatures that exist in the initiative order. Having a stark visual counter
-  that I advance with a key binding would be just dandy.
-
-  See [[template]] for the default format of a table.
-
-  The =turn= column should indicate the current turn with a series of glyphs
-  such as =>>>>= or similar, and I can at some point make it work with a font
-  face.
-** turn hook
-   We can fire an event when we arrive at a turn, and provide information about
-   whose turn it is.
-
-   #+begin_src emacs-lisp :results none :tangle yes
-     (defvar dnd/turn-functions '()
-       "A hook for arriving upon a turn. Provides a ROW."
-       )
-   #+end_src
-
-** indicator
-*** format
-   The indicator will be =>>>>= but I should be able to change it.
-
-   #+begin_src emacs-lisp :results none :tangle yes
-     (defcustom dnd/turn-indicator-string ">>>>" "String to use for the current turn.")
-   #+end_src
-
-*** setting
-    Setting the indicator will populate the cell with
-    =dnd/turn-indicator-string=.
-
-    #+begin_src emacs-lisp :results none :tangle yes
-      (defun dnd//set-turn (row)
-        (org-table-put row 1 dnd/turn-indicator-string t)
-        (org-table-goto-line row)
-        ;; It would be nice to send the row data, but alas.
-        (run-hook-with-args 'dnd/turn-functions row)
+  #+begin_src emacs-lisp :results none
+    (defun config/dnd-load ()
+      (org-babel-load-file
+       (
+        expand-file-name
+        "../../org-dnd/dnd.org"
+        ;; (file-name-directory dirname)
         )
-    #+end_src
-
-** get table lines
-
-   #+begin_src emacs-lisp :results none :tangle yes
-
-     (defun dnd//get-table-lines ()
-       (let* (
-              (beg (org-table-begin))
-              (end (copy-marker (org-table-end)))
-              )
-         (- (length (split-string
-                     (filter-buffer-substring beg end)
-                     "\n"
-                     t
-                     )
-                    )
-            3))
+       ;; t
        )
+      )
+  #+end_src
 
-   #+end_src
+* music
 
-** find turn indicator
-   The turn indicator will be =>>>>= on the =turn= column. We should go to the
-   column and then walk down it until we find it. If we don't find it, return
-   =nil=.
-
-   #+begin_src emacs-lisp :results none :tangle yes
-     (defun dnd//walk-column-for-indicator (lines line)
-       (message "value %s" (org-table-get (+ 2 line) 1))
-       (if (< line (+ 1 lines))
-           (if (string-equal (org-table-get (+ 2 line) 1) dnd/turn-indicator-string)
-               line
-             (dnd//walk-column-for-indicator lines (+ 1 line))
-             )
-         nil
-         )
-       )
-
-     (defun dnd//add-indicator (line)
-       (org-table-put line 1 dnd/turn-indicator-string)
-       2
-       )
-
-
-     (defun dnd/find-turn-indicator ()
-       (if (org-at-table-p)
-           (let* (
-                  (lines (dnd//get-table-lines))
-                  (indicator (dnd//walk-column-for-indicator lines 0))
-                  )
-             (message "indicator? %s" indicator)
-             (if indicator (+ 2 indicator) nil)
-             )
-         nil
-         )
-       )
-   #+end_src
-
-** next round
-
-   #+begin_src emacs-lisp :results none :tangle yes
-
-     (defun dnd/next-round ()
-       (interactive)
-       (if (org-at-table-p)
-           (let* (
-                  (indicator (dnd/find-turn-indicator))
-                  (next (+ (or indicator 0) 1))
-                  (lines (dnd//get-table-lines))
-                  )
-             (if indicator
-                 (progn
-                   (org-table-put indicator 1 "" t)
-
-                   (if (< next (+ 3 lines))
-                       (progn
-                         (dnd//set-turn next)
-                         )
-                     (progn
-                       (dnd//set-turn 2)
-                       )
-                     )
-                   )
-               (progn
-
-                 (dnd//set-turn 2)
-                 )
-               )
-             )
-         (message "Not on a table!")
-         )
-       )
-
-   #+end_src
-
-* snap to monster profile
-  When a monster takes its turn, I'd love to know what that monster has for
-  capabilities, notes I might have on that monster (or its kind), and other
-  aspects of it. This is hard to efficiently encode in the combat table. When
-  using =dnd-next-round= the profile should pop up in a vertical split window.
-
-** where to look
-   I keep all of my files in =dnd5e.org=. Maybe there's a better place for it,
-   but for now let's put it there.
-
-   #+begin_src emacs-lisp :results none :tangle yes
-     (defvar dnd/profile-path (expand-file-name "~/Dropbox/notes/dnd5e.org"))
-   #+end_src
-
-** get kind
-   There needs to be a =kind= column in the combat table. This is the name we
-   will key off of.
-
-   #+begin_src emacs-lisp :results none :tangle yes
-    (defvar dnd/kind-column 3)
-   #+end_src
-
-
-** open profile
-
-   Once we land on a monster row and have a kind, we can find its profile.
-
-   #+begin_src emacs-lisp :results none :tangle yes
-      (defun dnd//open-profile (row)
-        (let ((kind (org-table-get row dnd/kind-column)))
-          (if (string-empty-p kind)
-              nil
-              (progn
-                (org-link-open-from-string
-                 (format "[[file:%s::*%s][%s]]"
-                         dnd/profile-path
-                         kind
-                         kind
-                         ))
-                (org-show-entry)
-                (select-window (previous-window))
-                )
+  #+begin_src emacs-lisp :results none
+    (defun config/dnd-row-to-track (row)
+      (message "got row %s" row)
+      (let ((name (org-table-get row dnd/name-column)))
+        (message "name %s" name)
+        (format
+        ;; TODO: Parameterize this for other songs.
+        "Symphony Of The Void - %s.mp3"
+        (or
+          (cdr (assoc
+          name
+          '(
+            ("Dee" . "Cello")
+            ("Lakal" . "Tambura")
+            ("Ydrellia" . "Bansuri")
+            ("Zell" . "Oud")
+            ("other" . "Trumpet")
             )
-          ;; (org-mark-ring-goto)
+          ))
+          "Trumpet"
           )
         )
-   #+end_src
+      )
+    )
 
-** listen for turns
-   We need to listen for turn changes, and we can do this using
-   =dnd/turn-functions= (not =-hook= because it is "abnormal" in that it must
-   pass an argument).
+    (defun config/dnd-trigger-personalized-music (row)
+      (message "Requesting track change.")
+      (let ((track (config/dnd-row-to-track row)))
+        (message "Track %s" track)
+        (request
+          "http://localhost:3704/track/switch"
+          :data (json-encode track)
+          :headers '(("Content-Type" . "application/json"))
+          ;; :parser 'json-read
+          ;; :success (cl-function (lambda () (message "Swapped music.")))
+          :type "POST"
+          )
+        )
+      )
 
-   #+begin_src emacs-lisp :results none :tangle yes
-     (add-hook 'dnd/turn-functions #'dnd//open-profile)
-   #+end_src
-* keybinding
-  #+begin_src emacs-lisp :results none :tangle yes
-    (spacemacs/declare-prefix-for-mode 'org-mode "mD" "dnd" "dnd")
-    (spacemacs/set-leader-keys-for-major-mode 'org-mode (kbd "D n") 'dnd/next-round)
-    (spacemacs/set-leader-keys-for-major-mode 'org-mode (kbd "D c") 'dnd/create-combat-table)
+    (defun config/dnd-hook-personalized-music ()
+      (add-hook 'dnd/turn-functions #'config/dnd-trigger-personalized-music)
+      )
+  #+end_src
+
+* using
+  #+begin_src emacs-lisp :results none
+    (with-eval-after-load 'org
+      (message "Loading D&D settings...")
+      (require 'request)
+      (config/dnd-load)
+      (config/dnd-hook-personalized-music)
+      )
   #+end_src
