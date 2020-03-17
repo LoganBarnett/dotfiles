@@ -396,3 +396,6 @@ export PATH="/usr/local/opt/gnu-sed/libexec/gnubin:$PATH"
 # This allows commands to be excluded from history if they are prefixed with a
 # space.
 export HISTCONTROL=ignorespace
+
+# Pull in private stuff.
+source ~/dev/dotfiles-private/zshrc-private
