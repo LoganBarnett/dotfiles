@@ -8,6 +8,7 @@ Xdefaults
 avnrc
 floorc.json
 ideavim
+ispell_english
 jsbeautifyrc
 npmrc
 pentadactylrc
