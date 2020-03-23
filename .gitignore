@@ -23,3 +23,11 @@ lisp/key-id.txt
 # Beause of the symlink, yas will compile these snippets and they wind up in
 # this repository.
 .yas-compiled-snippets.el
+
+# Ignore fonts for now. We expand large zip files in there, and some of it is
+# copyrighted and shouldn't go into a repository. Perhaps they could go into the
+# private repository so they needn't be retrieved again?
+fonts/
+
+# Ignore scratch area. Currently used for font installation.
+scratch/
