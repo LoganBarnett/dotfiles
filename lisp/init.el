@@ -16,6 +16,14 @@
 (defun dirty-init ()
   "A dump of init stuff found in dotspacemacs/user-config but is custom."
 
+  ;; An unintentional command-q (or H-q in Emacs jargon) will close all of
+  ;; Emacs. Sometimes I get a nice warning that I can C-g out of when there's an
+  ;; unsaved file, but if the GUI dialog comes up it seems like a shutdown is
+  ;; all I have as an option. It is not clear if there is an option to abort the
+  ;; shutdown. So we unbind the key. H-w might be next on the list, but that one
+  ;; seems to be invoked less unintentionally.
+  (global-unset-key (kbd "H-q"))
+
   ;; Works around this issue: https://github.com/syl20bnr/spacemacs/issues/9549
   (require 'helm-bookmark)
 
