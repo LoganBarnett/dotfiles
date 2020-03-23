@@ -1,0 +1,11 @@
+#! /usr/bin/env bash
+
+if [[ "$1" == "" ]]; then
+  echo "Needs argument
+
+Usage: rtf2.sh <format>
+" >&2
+  exit 1
+fi
+
+textutil -stdin -convert html  -stdout | pandoc --from=html --to=$1
