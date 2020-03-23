@@ -128,6 +128,18 @@ Adapt image size via `iimage-scale-to-fit-width' when the window size changes."
   (kill-new (shell-command-to-string "osascript -e 'the clipboard as \"HTML\"' | perl -ne 'print chr foreach unpack(\"C*\",pack(\"H*\",substr($_,11,-3)))' | pandoc -f html -t json | pandoc -f json -t org"))
   (yank))
 
+;; Taken from:
+;; https://yiming.dev/blog/2018/03/02/my-org-refile-workflow/
+(defun config/org-opened-buffer-files ()
+  "Return the list of files currently opened in emacs"
+  (delq nil
+        (mapcar (lambda (x)
+                  (if (and (buffer-file-name x)
+                           (string-match "\\.org$"
+                                         (buffer-file-name x)))
+                      (buffer-file-name x)))
+                (buffer-list))))
+
 ;; configure org-mode
 (defun config-org-mode ()
   "Configure 'org-mode'."
@@ -224,6 +236,13 @@ Adapt image size via `iimage-scale-to-fit-width' when the window size changes."
      org-confirm-babel-evaluate 'my/org-confirm-babel-evaluate
      org-default-notes-file "~/Dropbox/notes/inbox.org"
      org-directory "~/Dropbox/notes"
+     org-refile-use-outline-path 'file
+     helm-org-headings-fontify t
+     ;; Everyone claims this makes helm work with org-refile. Who am I to say
+     ;; otherwise?
+     org-outline-path-complete-in-steps nil
+     org-refile-allow-creating-parent-nodes 'confirm
+     org-refile-targets '((config/org-opened-buffer-files :maxlevel . 9))
      )
     ;; (setq-default imagemagick-enabled-types t)
     ;; imagemagick-register-types must be invoked after changing enabled types.
