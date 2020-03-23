@@ -49,23 +49,29 @@ brew cask install $CASKS
 # For my personal machines I can install packages but these are not appropriate
 # for work machines.
 if [[ "$HOST" =~ "lbarnett" ]]; then
-  WORK_CASKS="
+  MACHINE_CASKS="
 razer-synapse
 zoomus
 "
 else
-  PERSONAL_CASKS="
+
+  # The following are forbidden:
+  # corsair-icue - This hogs resources and causes audio to skip when other
+  # processor intensive activities are going. Perhaps a later update will fix
+  # this, but my limited research shows MacOs support to be relatively new.
+  MACHINE_CASKS="
 arduino
 discord
+freecad
+mixxx
 obs
 silverlight
 skype
 steam
 xbox360-controller-driver-unofficial
 "
-  brew cask install $PERSONAL_CASKS
-
 fi
 
+brew cask install $MACHINE_CASKS
 
 echo "done installing casks"
