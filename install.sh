@@ -68,6 +68,9 @@ echo "installing node modules"
 echo "settting up ocaml's opam"
 ./install-opam.sh
 
+echo "Installing python3..."
+./python-install.sh
+
 echo "installing GPG..."
 ./install-gpg.sh
 
