@@ -86,7 +86,7 @@ echo "setting up spacemacs"
 
 # TODO: add a way of reading in the paradox-github token or generating it if it doesn't exist
 
-echo "installing rvm"
+# echo "installing rvm"
 # We need to add the key from Michal Papis so we can verify RVM is the real
 # deal. This is found in the installation instructions. This command fails
 # though. I'm not sure why. "no route to host"

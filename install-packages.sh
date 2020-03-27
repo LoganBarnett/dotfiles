@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 set -e
 
-# TODO: Install rvm and source it.
 # TODO: Lock postgres to 9.5 until I can upgrade the DB.
 # This looks promising: https://gist.github.com/giannisp/ebaca117ac9e44231421f04e7796d5ca
 if [ $(uname) = 'Darwin' ]; then
