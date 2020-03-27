@@ -37,7 +37,6 @@ font-source-code-pro
 gimp
 google-chrome
 haskell-platform
-mongodb
 slack
 virtualbox
 zoomus

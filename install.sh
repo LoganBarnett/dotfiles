@@ -79,6 +79,8 @@ echo "installing GPG..."
 # nix must come after gpg since it uses gpg.
 ./install-nix.sh
 
+./mongodb-install.sh
+
 echo "setting up spacemacs"
 ./emacs-install.sh
 
