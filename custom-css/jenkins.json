@@ -1,13 +1,14 @@
 {
   "includes": [
-    "http://jenkins-pisa.americas.nwea.pvt/*",
-    "http://webmap.americas.nwea.pvt/*",
-    "http://jenkins-webmap.americas.nwea.pvt/*",
-    "http://jenkins-cicd.americas.nwea.pvt/",
-    "https://jenkins-pisa.americas.nwea.pvt/*",
-    "https://webmap.americas.nwea.pvt/*",
-    "https://jenkins-webmap.americas.nwea.pvt/*",
-    "https://jenkins-cicd.americas.nwea.pvt/*"
+    "http://jenkins-pisa.americas.n?ea.pvt/*",
+    "http://webmap.americas.n?ea.pvt/*",
+    "http://jenkins-webmap.americas.n?ea.pvt/*",
+    "http://jenkins-cicd.americas.n?ea.pvt/",
+    "https://jenkins-pisa.americas.n?ea.pvt/*",
+    "https://webmap.americas.n?ea.pvt/*",
+    "https://jenkins-webmap.americas.n?ea.pvt/*",
+    "https://jenkins-cicd.americas.n?ea.pvt/*",
+    "https://jenkins-se.mgmt.n?eacolo.pvt/*"
   ],
   "excludes": [
     ""
