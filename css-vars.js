@@ -148,6 +148,8 @@ const vars = {
   '--table-header-background-color': '#235',
   '--table-row-alternate-background-color': '#212026',
   '--table-row-hover-background-color': '#383038',
+  '--info-background-color': '#060',
+  '--info-color': '#90e030',
   '--input-color': '#2aa1ae',
   '--input-background-color': '#292e34',
   '--input-label-color': '#2aa1ae',
