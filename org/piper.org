@@ -1,0 +1,20 @@
+#+title:     piper
+#+author:    Logan Barnett
+#+email:     logustus@gmail.com
+#+date:      <2020-03-18 Wed>
+#+language:  en
+#+file_tags:
+#+tags:      emacs piper
+
+* load
+  #+begin_src emacs-lisp :results none
+    (use-package piper
+        :load-path "~/dev/emacs-piper/"
+        :config
+        (spacemacs/declare-prefix "o |" "piper")
+        (spacemacs/set-leader-keys
+        "|"     '("piper-ui"        . piper-user-interface)
+        "o | |" '("piper-locally"   . piper)
+        "o | d" '("other-directory" . piper-other)
+        "o | r" '("piper-remotely"  . piper-remote)))
+  #+end_src

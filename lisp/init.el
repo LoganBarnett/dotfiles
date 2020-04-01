@@ -278,6 +278,7 @@
   (init-org-file "web.org")
   (init-org-file "web-mode.org")
   (init-org-file "font.org")
+  (init-org-file "piper.org")
   (init-org-file "cucumber.org")
   (init-org-file "git.org")
   (init-org-file "email.org")
