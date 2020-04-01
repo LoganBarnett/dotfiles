@@ -74,6 +74,8 @@ echo "Installing python3..."
 echo "installing GPG..."
 ./install-gpg.sh
 
+./daw-install.sh
+
 ./install-latex.sh
 
 # nix must come after gpg since it uses gpg.
