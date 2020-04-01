@@ -1,0 +1,11 @@
+{
+  "includes": [
+    "https://www.atlassian.com/blog/*"
+  ],
+  "excludes": [
+    ""
+  ],
+  "name": "siteorigin",
+  "enabled": true,
+  "key": "siteorigin"
+}

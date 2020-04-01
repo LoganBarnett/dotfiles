@@ -1,0 +1,57 @@
+/**
+ * SiteOrigin handles blogs for some sites.
+ */
+
+body {
+  background-color: var(--general-background-color) !important;
+  color: var(--text-color) !important;
+}
+
+h1 {
+  background-color: var(--head1-background-color) !important;
+  color: var(--head1-color) !important;
+}
+
+h2 {
+  background-color: var(--head2-background-color) !important;
+  color: var(--head2-color) !important;
+}
+
+h3 {
+  background-color: var(--head3-background-color) !important;
+  color: var(--head3-color) !important;
+}
+
+h4 {
+  background-color: var(--head4-background-color) !important;
+  color: var(--head4-color) !important;
+}
+
+h5 {
+  background-color: var(--head5-background-color) !important;
+  color: var(--head5-color) !important;
+}
+
+h6 {
+  background-color: var(--head6-background-color) !important;
+  color: var(--head6-color) !important;
+}
+
+/**
+ * Table text color.
+ */
+.is-style-outline {
+  color: var(--text-color) !important;
+}
+
+/**
+ * Table borders.
+ */
+.is-style-outline td {
+  border: var(--thin-border) !important;
+}
+
+.tip {
+  background-color: var(--info-background-color) !important;
+  color: var(--info-color) !important;
+}
