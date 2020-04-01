@@ -2,6 +2,26 @@ body {
   background-color: var(--general-background-color) !important;
 }
 
+/**
+ * Here the html tag trick is employed to increase specificity since Jenkins
+ * uses its own !important.
+ */
+html body, html form, html p, html table, html td, html th {
+  color: var(--text-color) !important;
+}
+
+select {
+  background-color: var(--input-background-color) !important;
+  border: var(--thin-border) !important;
+  color: var(--input-color) !important;
+}
+
+textarea {
+  background-color: var(--input-background-color) !important;
+  border: var(--thin-border) !important;
+  color: var(--input-color) !important;
+}
+
 a:link {
   color: var(--link-color) !important;
 }
