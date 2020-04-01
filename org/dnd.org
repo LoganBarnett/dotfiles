@@ -15,7 +15,7 @@
       (org-babel-load-file
        (
         expand-file-name
-        "../../org-dnd/dnd.org"
+        "~/dev/org-dnd/dnd.org"
         ;; (file-name-directory dirname)
         )
        ;; t
