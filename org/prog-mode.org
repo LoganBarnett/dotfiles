@@ -60,16 +60,17 @@ files. It generally doesn't effect text files.
 * newlines
 
 ** end of file
-   Emacs sometimes likes to put extra newline entries at the end of a file. This
-   creates necessary churn in diffs, and to my knowledge doesn't add anything.
-   Perhaps there are some files or languages that require this, but I don't know
-   of them and don't use them with any notable frequency. I should be safe to
-   disable this globally, and then enable it for specific modes where this might
-   be important.
+   POSIX files are described as always having a final newline. So I should save
+   my files as having a final newline. It can also prevent churn on lines added
+   to the end of a file. Though this means that editors that haven't been
+   respecting this standard will have saved files that we will override. Without
+   a better case I think we should add final newlines, and if that is
+   problematic in some cases I should investigate some kind of means of saving
+   one-off files without their newline.
 
    #+begin_src emacs-lisp :results none
-     (defun config/turn-off-final-newline ()
-       (setq-default mode-require-final-newline nil)
+     (defun config/manage-final-newline ()
+       (setq-default mode-require-final-newline t)
      )
 
    #+end_src
