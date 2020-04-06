@@ -2,6 +2,6 @@
 
 set -e
 
-./install-package stack
+./install-package.sh stack
 
 stack upgrade
