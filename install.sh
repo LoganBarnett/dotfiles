@@ -125,4 +125,6 @@ echo "Installing email support..."
 echo "writing out private settings"
 ./install-private.sh
 
+../dotfiles-private/private-install.sh
+
 echo "all installation is successful"
