@@ -78,7 +78,7 @@ files. It generally doesn't effect text files.
 * all together
 
   #+begin_src emacs-lisp
-    (config/turn-off-final-newline)
+    (config/manage-final-newline)
     (add-hook 'prog-mode-hook #'config/auto-fill-comments)
     (add-hook 'prog-mode-hook #'display-line-numbers-mode)
     (add-hook 'prog-mode-hook #'config/disable-line-wrapping)
