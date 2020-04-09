@@ -23,6 +23,14 @@
   background-color: var(--code-background-color) !important;
   color: var(--text-color) !important;
 }
+/**
+ * Gutter for highlighted lines.
+ */
+.source-view.text-view .line .line-number.target,
+.source-view.text-view .line .CodeMirror-linenumber.target {
+  background: var(--highlight-background-color) !important;
+  background-color: var(--highlight-background-color) !important;
+}
 
 .unified-diff .CodeMirror-scroll {
   background-color: var(--code-background-color) !important;
