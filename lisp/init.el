@@ -41,8 +41,15 @@
   ;; (setq-default psc-ide-add-import-on-completion t t)
   ;; (setq-default psc-ide-rebuild-on-save nil t)
 
-  ;; Allow these variables in .dir-locals.el
-  (setq-default safe-local-variable-values (quote ((js-indent-level 4) (js2-indent-level . 4))))
+  ;; Allow these variables in .dir-locals.el It is now removed because this
+  ;; should be considered safe now, according to
+  ;; https://github.com/mooz/js2-mode/issues/458#issuecomment-363208355 from
+  ;; @eush77.
+  ;;
+  ;; Left for reference. This comes from "Don't know how to make a localized
+  ;; variable an alias".
+  ;;
+  ;; (setq-default safe-local-variable-values (quote ((js-indent-level 4) (js2-indent-level . 4))))
 
   ;; indentation
   (paradox-require 'cc-mode)
