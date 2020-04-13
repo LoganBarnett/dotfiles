@@ -12,3 +12,8 @@ yarn-error.log
 .bundle/
 # tmux logs
 tmux-client-*.log
+# eclim java server stuff
+.classpath
+.factorypath
+.project
+.settings/
