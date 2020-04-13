@@ -17,6 +17,7 @@ tmux.conf
 urxvt
 vimrc
 yarnrc
+zlogin
 zshenv
 zshrc
 "
