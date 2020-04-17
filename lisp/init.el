@@ -104,14 +104,14 @@
   ;;   )
 
   ;; rainbow identifiers (aka semantic syntax highlighting)
-  (use-package "rainbow-identifiers"
-    :ensure t
-    :init
-    ;; (add-hook 'prog-mode-hook 'rainbow-identifiers-mode)
-    ;; (add-hook 'js2-mode-hook #'my/fix-js2-rainbow-identifiers)
-    :config
-    (setq-default rainbow-identifiers-faces-to-override
-                  '(
+  ;; (use-package "rainbow-identifiers"
+  ;;   :ensure t
+  ;;   :init
+  ;;   ;; (add-hook 'prog-mode-hook 'rainbow-identifiers-mode)
+  ;;   ;; (add-hook 'js2-mode-hook #'my/fix-js2-rainbow-identifiers)
+  ;;   :config
+  ;;   (setq-default rainbow-identifiers-faces-to-override
+                  ;; '(
                     ;; font-lock-type-face
 
                     ;; font-lock-variable-name-face
@@ -130,15 +130,15 @@
                     ;; font-lock-constant-face
                     ;; font-lock-highlighting-faces
 
-                    ))
+                    ;; ))
     ;; (setq-default rainbow-identifiers-filter-functions
     ;;               (lambda (face)
     ;;                 (member face (list
     ;;                             "font-lock-comment-delimiter-face"
     ;;                             "font-lock-comment-face"
     ;;                             ))))
-    :diminish 'rainbow-identifiers-mode
-  )
+  ;;   :diminish 'rainbow-identifiers-mode
+  ;; )
 
   ;; git gutter
   (setq-default git-gutter-fr+-side 'left-fringe)
@@ -193,8 +193,8 @@
   (config-plantuml)
   ;; (load-library "config-typescript")
   ;; (config-typescript)
-  (load-library "config-rainbow-mode")
-  (config-rainbow-mode)
+  ;; (load-library "config-rainbow-mode")
+  ;; (config-rainbow-mode)
   ;; handle long lines
   (load-library "config-so-long-mode")
   (config-so-long-mode)
