@@ -393,10 +393,6 @@ export PATH="/usr/local/opt/gnupg@2.1/bin:$PATH"
 # GNU commands are generally way better.
 export PATH="/usr/local/opt/gnu-sed/libexec/gnubin:$PATH"
 
-# Get ssh going. Completely going. Whereas it's partially going beforehand?
-eval `ssh-agent -s`
-ssh-add -K
-
 # This allows commands to be excluded from history if they are prefixed with a
 # space.
 export HISTCONTROL=ignorespace
