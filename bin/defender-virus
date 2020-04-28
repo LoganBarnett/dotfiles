@@ -1,0 +1,20 @@
+#! /usr/bin/env bash
+
+if [ "$1" == "pause" ]; then
+  sudo ps aux | \
+    awk 'BEGIN {IGNORECASE = 1} /[m]icrosoft defender/ {print $2}' | \
+    while read P; do sudo kill -STOP $P; done
+  sudo ps aux | \
+    awk 'BEGIN {IGNORECASE = 1} /[w]davdaemon/ {print $2}' | \
+    while read P; do sudo kill -STOP $P; done
+elif [ "$1" == "resume" ]; then
+  sudo ps aux | \
+    awk 'BEGIN {IGNORECASE = 1} /[m]icrosoft defender/ {print $2}' | \
+    while read P; do sudo kill -CONT $P; done
+  sudo ps aux | \
+    awk 'BEGIN {IGNORECASE = 1} /[w]davdaemon/ {print $2}' | \
+    while read P; do sudo kill -CONT $P; done
+else
+  echo "Usage: defender-virus pause or defender-virus resume"
+fi
+
