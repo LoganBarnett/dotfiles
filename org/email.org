@@ -140,7 +140,7 @@ http://pragmaticemacs.com/emacs/master-your-inbox-with-mu4e-and-org-mode/
     ;; here.
     (setq-default
       user-mail-address "logustus@gmail.com"
-      user-full-name "Logan Barnett"
+      user-full-name "Logan Barnett-Hoy"
       message-send-mail-function 'smtpmail-send-it
       starttls-use-gnutls t
       smtpmail-starttls-credentials '(("smtp.gmail.com" 587 nil nil))
