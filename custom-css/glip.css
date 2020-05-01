@@ -233,7 +233,12 @@ img[src*="gif" i]:after {
  * Automatically created posts from integrations.
  */
 .integration_item {
-  color: var(--text-color) !important;
+  color: var(--meta-color) !important;
+  background-color: var(--meta-background-color) !important;
+}
+
+.post .integration_item b {
+  color: var(--meta-color) !important;
 }
 
 /**
