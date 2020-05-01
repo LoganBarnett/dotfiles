@@ -37,14 +37,14 @@ bar items, but it disables enough that this isn't a problem.
   ;; turning off individual lighters doesn't work using the "blessed"
   ;; spacemacs|diminish function (see commented code above)
   ;; so just turn the damn thing off entirely
-  (spaceline-toggle-minor-modes-off)
+  (on-spacemacs (spaceline-toggle-minor-modes-off))
 #+END_SRC
 
 #+BEGIN_SRC emacs-lisp
   ;; (setq-default spaceline-separator-dir-left '(left . left))
   ;; (setq-default spaceline-separator-dir-right '(right . right))
   (setq-default powerline-default-separator nil)
-  (spaceline-compile)
+  (on-spacemacs (spaceline-compile))
 #+END_SRC
 
 ** encryption

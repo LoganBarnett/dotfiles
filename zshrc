@@ -343,6 +343,7 @@ $HOME/dev/dotfiles-private/bin:\
 /opt/local/bin:\
 /opt/local/sbin:\
 $HOME/dev/adt-bundle-mac/sdk/platform-tools:\
+$HOME/.doom-emacs.d/bin:\
 /usr/local/bin:\
 /usr/bin:\
 /bin:\

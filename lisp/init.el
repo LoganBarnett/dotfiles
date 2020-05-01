@@ -7,6 +7,22 @@
 
 ;;; Code:
 
+(defmacro on-doom (&rest f)
+  "Execute F if this Emacs is running Doom Emacs."
+  (if (boundp 'doom-version)
+    (progn f)
+    nil
+    )
+  )
+
+(defmacro on-spacemacs (&rest f)
+  "Execute F if this Emacs is running Spacemacs."
+  (if (boundp 'spacemacs-version)
+    (progn f)
+    nil
+    )
+  )
+
 (defun init-org-file (file)
   "Logs FILE before it loading a file to help with debugging init issues."
   (message "[INIT] %s" file)
@@ -25,7 +41,7 @@
   (global-unset-key (kbd "H-q"))
 
   ;; Works around this issue: https://github.com/syl20bnr/spacemacs/issues/9549
-  (require 'helm-bookmark)
+  (on-spacemacs (require 'helm-bookmark))
 
   (message "Loading user config")
   ;; debug
@@ -35,7 +51,7 @@
 
   ;; Fixes issue where recentf runs into race conditions.
   ;; See https://github.com/syl20bnr/spacemacs/issues/5186 for more details.
-  (cancel-timer recentf-auto-save-timer)
+  (on-spacemacs (cancel-timer recentf-auto-save-timer))
 
   ;; Purescript settings that drifted into the spacemacs config somehow.
   ;; (setq-default psc-ide-add-import-on-completion t t)
@@ -52,7 +68,8 @@
   ;; (setq-default safe-local-variable-values (quote ((js-indent-level 4) (js2-indent-level . 4))))
 
   ;; indentation
-  (paradox-require 'cc-mode)
+  ;; (on-spacemacs (paradox-require 'cc-mode))
+  (require 'cc-mode)
   (defvar c-offsets-alist)
   ;; This should prevent indentation rules from making argument lists or even
   ;; other lists from lining up with the last identifier, and instead use a more
@@ -62,10 +79,7 @@
   (add-to-list 'c-offsets-alist '(arglist-close . c-lineup-close-paren))
 
   ;; non-nil indicates spacemacs should start with fullscreen
-  (setq-default dotspacemacs-fullscreen-at-startup t)
-  (defvar paradox-github-token)
-  ;; actually this was dropped because we check this into github
-  (setq paradox-github-token '663d5d3c21b2c6a716848fa00653bb92e6aeee68)
+  (on-spacemacs (setq-default dotspacemacs-fullscreen-at-startup t))
   ;; (global-linum-mode) ; show line numbers by default
   ;; Turn off line-number-mode so it doesn't overlap with
   ;; display-line-number-mode.
@@ -81,13 +95,12 @@
   ;; prog-mode stuff
   ;; multi-line
   ;; always add new line rather than flowing
-  (paradox-require 'multi-line)
+  (require 'multi-line)
   (defvar multi-line-always-newline)
   (setq-default multi-line-current-strategy
                 (multi-line-strategy
                  :respace (multi-line-default-respacers
                            (make-instance multi-line-always-newline))))
-
   ;; (multi-line-defhook js2
   ;;   (make-instance multi-line-strategy
   ;;                  :find (make-instance 'multi-line-forward-sexp-find-strategy
@@ -95,7 +108,7 @@
   ;;                                       :done-regex "[[:space:]]*)]}"
   ;;                                       :split-advance-fn 'js2-mode-forward-sexp)
   ;;                  :respace multi-line-always-newline-respacer))
-  (multi-line-defhook js2 multi-line-add-trailing-comma-strategy t)
+    (multi-line-defhook js2 multi-line-add-trailing-comma-strategy t)
   ;; (use-package "color-identifiers-mode"
   ;;   :ensure t
   ;;   :init
@@ -175,8 +188,10 @@
   ;; packages in a form that can be consumed as an elpa mirror. This means we
   ;; can revert to a known working state in the case of a failed package
   ;; upgrade.
-  (require 'elpa-mirror)
-  (setq elpamr-default-output-directory (expand-file-name "~/dev/my-elpa"))
+  (on-spacemacs
+    (require 'elpa-mirror)
+    (setq elpamr-default-output-directory (expand-file-name "~/dev/my-elpa"))
+  )
   ;; decide-mode comes from
   ;; https://github.com/lifelike/decide-mode/blob/master/decide.el
   (load-library "decide")
@@ -185,16 +200,16 @@
   (config-flyspell)
   (load-library "config-vc")
   (config-vc)
-  (load-library "config-java")
-  (config-java)
   (load-library "config-elm")
   (config-elm)
   (load-library "config-plantuml")
   (config-plantuml)
   ;; (load-library "config-typescript")
   ;; (config-typescript)
-  ;; (load-library "config-rainbow-mode")
-  ;; (config-rainbow-mode)
+  ;; This is not rainbow identifiers but highlights color values as their
+  ;; colors.
+  (load-library "config-rainbow-mode")
+  (config-rainbow-mode)
   ;; handle long lines
   (load-library "config-so-long-mode")
   (config-so-long-mode)
@@ -206,8 +221,6 @@
 
   (message "add rust to path manually...")
   (add-to-list 'exec-path "/Users/logan/.cargo/bin")
-  (message "TODO: Find out how to use the current nvm version to find the bin dir for global node modules")
-  (add-to-list 'exec-path "/Users/logan/.nvm/versions/node/v8.1.3/bin/")
   ;; TODO: move this into a general shell config file
   ;; Setting the shell to bash makes it work with things like exec-path. zsh
   ;; does not seem to work with this.
@@ -225,15 +238,18 @@
                                                ".tmp"
                                                ))
 
+  (require 'highlight-parentheses)
   (global-highlight-parentheses-mode)
   (message "[DIRTY INIT] INIT DONE!")
   )
 (defun my/init ()
   "Do initializtion."
+  ;; (toggle-debug-on-error)
   ;; TODO: Move to macos.org when it gets merged.
   (set-frame-parameter nil 'fullscreen 'fullscreen)
   (load-library "redshift-indent")
   (message "[INIT] Starting init.")
+  (setq-default load-prefer-newer t)
   (auto-compile-on-load-mode 1)
   (init-org-file "emacs-config.org")
   (init-org-file "macos.org")
@@ -253,7 +269,7 @@
   (message "[INIT] mu4e load DONE")
   (init-org-file "ui.org")
   (init-org-file "evil.org")
-  (init-org-file "helm.org")
+  (on-spacemacs (init-org-file "helm.org"))
   (init-org-file "flyspell.org")
   (init-org-file "messages.org")
   (init-org-file "flycheck.org")
@@ -264,7 +280,7 @@
   (init-org-file "conf-mode.org")
   (init-org-file "private.org")
   (init-org-file "buffer.org")
-  (init-org-file "deft.org")
+  ;; (init-org-file "deft.org")
   (init-org-file "whitespace.org")
   (init-org-file "habitica.org")
   (init-org-file "javascript.org")

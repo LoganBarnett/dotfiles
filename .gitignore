@@ -15,6 +15,7 @@ wand-cookies.txt
 # Hide all private files.
 *.priv.txt
 *.private.js
+private/
 
 # Ignore our private key ID.
 # You need to copy and modify lisp/key-id.template.txt.

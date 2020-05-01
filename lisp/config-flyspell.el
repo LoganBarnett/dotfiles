@@ -8,9 +8,8 @@
 ;; configure flyspell
 (defun config-flyspell ()
   (use-package "flyspell"
-    :ensure t
     :init
-    (paradox-require 'flyspell-correct-helm)
+    (on-spacemacs (paradox-require 'flyspell-correct-helm))
     :config
     (define-key
       flyspell-mode-map

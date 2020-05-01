@@ -14,7 +14,7 @@
       :config
       ;; Are these still needed?
       (defvar company-active-map)
-      (declare-function paradox-require "ext:paradox-require")
+      (on-spacemacs (declare-function paradox-require "ext:paradox-require"))
       (declare-function global-company-mode "ext:global-company-mode")
       (declare-function evil-declare-change-repeat "ext:evil-declare-change-repeat")
 

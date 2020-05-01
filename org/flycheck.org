@@ -30,7 +30,7 @@
 #+begin_src emacs-lisp
   (use-package "flycheck"
     ;; :defer t
-    :ensure t
+    ;; :ensure t
     :init
     ;; turn on flychecking globally
     (add-hook 'prog-mode-hook #'flycheck-mode)

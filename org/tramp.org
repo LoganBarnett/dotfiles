@@ -93,8 +93,10 @@ still stuck in an Emacs instance that's effectively broken. I want a =SPC=
 command control it, as those still work.
 
 #+begin_src emacs-lisp
+   (on-spacemacs
     (spacemacs/declare-prefix "aT" "tramp")
     (spacemacs/set-leader-keys (kbd "SPC a T c") 'tramp-cleanup-all-connections)
+    )
 #+end_src
 
 * git-gutter

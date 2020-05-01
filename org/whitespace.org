@@ -22,7 +22,7 @@ cleaning up whitespace.
 
   #+BEGIN_SRC emacs-lisp
     (use-package "ws-butler"
-      :ensure t
+      ;; :ensure t
       :config
       (setq-default ws-butler-keep-whitespace-before-point nil)
       (add-hook 'prog-mode-hook 'ws-butler-mode)
@@ -40,7 +40,7 @@ cleaning up whitespace.
 
   #+begin_src emacs-lisp
     (use-package "whitespace"
-      :ensure t
+      ;; :ensure t
       :init
       (setq-default
        whitespace-line-column 80

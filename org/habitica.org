@@ -35,7 +35,6 @@ Emacs. Fortunately, there is already Emacs integration!
 
   #+BEGIN_SRC emacs-lisp
     (use-package habitica
-      :ensure t
       :init
       (require 'noflet))
   #+END_SRC

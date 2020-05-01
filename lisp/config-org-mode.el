@@ -154,7 +154,7 @@ Adapt image size via `iimage-scale-to-fit-width' when the window size changes."
   ;;              ox-confluence-en ;; Adds PlantUML support to Confluence exports.
   ;;              ox-gfm ;; Github Flavored Markdown.
   ;;              )
-    :ensure org-plus-contrib
+    ;; :ensure org-plus-contrib
     :init
     :config
     ;; set default diary location
@@ -186,11 +186,11 @@ Adapt image size via `iimage-scale-to-fit-width' when the window size changes."
     (bind-key (kbd "C-c C-x C-r") 'my/org-clock-report)
     ;; `org-clone-subtree-with-time-shift' uses some (typically) obscure Emacs
     ;; binding. Let's bring it into the modern, discoverable era.
-    (spacemacs/set-leader-keys-for-major-mode
+    (on-spacemacs (spacemacs/set-leader-keys-for-major-mode
       'org-mode
       (kbd "s t")
       'org-clone-subtree-with-time-shift
-      )
+      ))
 
     (setq-default org-modules '(
                                 ;; `org-checklist' clears checklists on tasks if
@@ -259,7 +259,7 @@ Adapt image size via `iimage-scale-to-fit-width' when the window size changes."
     )
 
   (use-package org-contacts
-    :ensure nil
+    ;; :ensure nil
     :after org
     :preface
     (defvar my/org-contacts-template "* %(org-contacts-template-name)
