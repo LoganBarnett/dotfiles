@@ -276,6 +276,7 @@
   (init-org-file "color.org")
   (init-org-file "rainbow-identifiers.org")
   (init-org-file "evil.org")
+  (init-org-file "avy.org")
   (on-spacemacs (init-org-file "helm.org"))
   (init-org-file "flyspell.org")
   (init-org-file "messages.org")
