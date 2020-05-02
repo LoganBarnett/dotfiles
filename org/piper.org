@@ -9,12 +9,31 @@
 * load
   #+begin_src emacs-lisp :results none
     (use-package piper
-        :load-path "~/dev/emacs-piper/"
-        :config
-        (spacemacs/declare-prefix "o |" "piper")
-        (spacemacs/set-leader-keys
-        "|"     '("piper-ui"        . piper-user-interface)
-        "o | |" '("piper-locally"   . piper)
-        "o | d" '("other-directory" . piper-other)
-        "o | r" '("piper-remotely"  . piper-remote)))
+      :load-path "~/dev/emacs-piper/"
+      :config
+        (on-doom
+          (map!
+           :leader
+           (:desc "piper" ;; This doesn't seem to work.
+            :prefix "o |"
+              :desc "other-directory" "d" 'piper-other
+              :desc "piper-locally" "l" 'piper
+              :desc "piper-remotely" "r" 'piper-remote
+              :desc "piper-ui" "|" 'piper-ui
+              )
+           )
+          (evil-global-set-key
+            'normal
+            (kbd "SPC |") '("piper-ui" . piper-user-interface)
+            )
+         )
+        (on-spacemacs
+          (spacemacs/declare-prefix "o |" "piper")
+          (spacemacs/set-leader-keys
+          "|"     '("piper-ui"        . piper-user-interface)
+          "o | |" '("piper-locally"   . piper)
+          "o | d" '("other-directory" . piper-other)
+          "o | r" '("piper-remotely"  . piper-remote))
+          )
+        )
   #+end_src

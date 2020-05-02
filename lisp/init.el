@@ -7,18 +7,18 @@
 
 ;;; Code:
 
-(defmacro on-doom (&rest f)
-  "Execute F if this Emacs is running Doom Emacs."
+(defmacro on-doom (&rest body)
+  "Execute BODY if this Emacs is running Doom Emacs."
   (if (boundp 'doom-version)
-    (progn f)
+    `(progn ,@body)
     nil
     )
   )
 
-(defmacro on-spacemacs (&rest f)
-  "Execute F if this Emacs is running Spacemacs."
+(defmacro on-spacemacs (&rest body)
+  "Execute BODY if this Emacs is running Spacemacs."
   (if (boundp 'spacemacs-version)
-    (progn f)
+    `(progn ,@body)
     nil
     )
   )
