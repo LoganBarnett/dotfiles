@@ -52,6 +52,7 @@
 (package! plantuml-mode)
 (package! prettier-js)
 (package! rainbow-identifiers)
+(package! rainbow-delimiters)
 (package! rainbow-mode)
 (package! request-deferred)
 (package! ruby-mode)

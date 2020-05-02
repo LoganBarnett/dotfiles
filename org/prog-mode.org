@@ -49,6 +49,19 @@ files. It generally doesn't effect text files.
          )
       )
   #+end_src
+** rainbow-delimiters
+=rainbow-delimiters= are incredibly helpful for visually determining nesting of
+delimiters.
+
+#+begin_src emacs-lisp :results none
+(defun config/rainbow-delimiters ()
+  "Add colorful indicators of delimiter nesting."
+  (add-hook 'prog-mode-hook (lambda ()
+    (require 'rainbow-delimiters)
+    (rainbow-delimiters-mode)
+    ))
+  )
+#+end_src
 * auto fill comments
   I'm not sure how I feel about using =auto-fill-mode= for normal code, but for
   comments this is a must to me. Fortunately =auto-fill-mode= comes with
@@ -94,6 +107,8 @@ files. It generally doesn't effect text files.
 * all together
 
   #+begin_src emacs-lisp
+  #+begin_src emacs-lisp :results none
+    (config/rainbow-delimiters)
     (config/manage-final-newline)
     (add-hook 'prog-mode-hook #'config/auto-fill-comments)
     (add-hook 'prog-mode-hook #'display-line-numbers-mode)

@@ -24,7 +24,6 @@
                     font-lock-keyword-face
                     )
                   )
-    (add-hook 'org-mode-hook 'rainbow-mode)
     (add-hook 'css-mode-hook 'rainbow-mode)
     (add-hook 'prog-mode-hook 'rainbow-mode)
     ))
