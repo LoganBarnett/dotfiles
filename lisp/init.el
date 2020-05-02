@@ -245,6 +245,12 @@
 (defun my/init ()
   "Do initializtion."
   ;; (toggle-debug-on-error)
+  ;; (setq-default projectile-indexing-method 'hybrid)
+  (setq-default projectile-project-search-path
+                '(
+                  "~/dev"
+                  )
+                )
   ;; TODO: Move to macos.org when it gets merged.
   (set-frame-parameter nil 'fullscreen 'fullscreen)
   (load-library "redshift-indent")
