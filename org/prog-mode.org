@@ -10,45 +10,50 @@
 files. It generally doesn't effect text files.
 
 * parens, braces, oh my
-  =smartparens= is rather cumbersome with =evil-mode= around. Staying in the
-  insert state can be great on occasion, but it makes commands harder to
-  compose, and oftentimes =smartparens= will incorrectly attempt to help me
-  close a brace when I'm inserting something on the inside that might be
-  temporarily incorrect. After all, I'm still typing. Keeping it disabled is
-  vital, but it can also provide some additional functionality, such as
-  highlighting unmatched pairs. I've tried excluding =smartparens= from the
-  =spacemacs= packages, but some other layer or package pulls it in anyways.
-  Instead, let's toss it some config to disable it per this [[https://github.com/syl20bnr/spacemacs/issues/6144][ticket]].
+** smartparens
+=smartparens= is rather cumbersome with =evil-mode= around. Staying in the
+insert state can be great on occasion, but it makes commands harder to compose,
+and oftentimes =smartparens= will incorrectly attempt to help me close a brace
+when I'm inserting something on the inside that might be temporarily incorrect.
+After all, I'm still typing. Keeping it disabled is vital, but it can also
+provide some additional functionality, such as highlighting unmatched pairs.
 
-  #+begin_src emacs-lisp
-    ;; Disabled until I figure out how to gut this from Doom.
-    (on-doom
-      (eval-after-load 'smartparens
-        '(progn
-          (sp-pair "(" nil :actions :rem)
-          (sp-pair "[" nil :actions :rem)
-          (sp-pair "'" nil :actions :rem)
-          (sp-pair "`" nil :actions :rem)
-          (sp-pair "<" nil :actions :rem)
-          (sp-pair "{" nil :actions :rem)
-          (sp-pair "\"" nil :actions :rem)
-          )
-         )
+I've tried excluding =smartparens= from the =spacemacs= packages, but some other
+layer or package pulls it in anyways. Instead, let's toss it some config to
+disable it per this [[https://github.com/syl20bnr/spacemacs/issues/6144][ticket]].
+
+Perhaps one day I could look into =evil-smartparens=, which combines the power
+of the =smartparens= strict mode (which prevents removal of unbalanced
+delimiters), and ensures that normal motions do not create unbalanced
+delimiters. This means the motions still mostly work though.
+
+https://github.com/expez/evil-smartparens
+
+#+begin_src emacs-lisp :results none
+(defun config/disable-smartparens ()
+  (on-doom
+   ;; This is the recommended way to disable it per
+   ;; https://github.com/hlissner/doom-emacs/issues/1094
+    (after! smartparens (smartparens-global-mode -1))
+  )
+  (on-spacemacs
+   ;; Spacemacs has no means of disabling smartparens as well. So we just yank out
+   ;; every possible pairing.
+   (eval-after-load 'smartparens
+     '(progn
+        (sp-pair "(" nil :actions :rem)
+        (sp-pair "[" nil :actions :rem)
+        (sp-pair "'" nil :actions :rem)
+        (sp-pair "`" nil :actions :rem)
+        (sp-pair "<" nil :actions :rem)
+        (sp-pair "{" nil :actions :rem)
+        (sp-pair "=" nil :actions :rem)
+        (sp-pair "\"" nil :actions :rem)
+        )
      )
-    (on-spacemacs
-      (eval-after-load 'smartparens
-        '(progn
-          (sp-pair "(" nil :actions :rem)
-          (sp-pair "[" nil :actions :rem)
-          (sp-pair "'" nil :actions :rem)
-          (sp-pair "`" nil :actions :rem)
-          (sp-pair "<" nil :actions :rem)
-          (sp-pair "{" nil :actions :rem)
-          (sp-pair "\"" nil :actions :rem)
-          )
-         )
-      )
-  #+end_src
+   )
+  )
+#+end_src
 ** rainbow-delimiters
 =rainbow-delimiters= are incredibly helpful for visually determining nesting of
 delimiters.
@@ -106,9 +111,9 @@ delimiters.
 
 * all together
 
-  #+begin_src emacs-lisp
   #+begin_src emacs-lisp :results none
     (config/rainbow-delimiters)
+    (config/disable-smartparens)
     (config/manage-final-newline)
     (add-hook 'prog-mode-hook #'config/auto-fill-comments)
     (add-hook 'prog-mode-hook #'display-line-numbers-mode)

@@ -59,6 +59,10 @@
 (package! rjsx-mode)
 (package! rust-mode)
 (package! so-long)
+;; I fail to see how this is ever helpful with vim bindings.
+;; Though this attempt to disable it will not work according to
+;; https://github.com/hlissner/doom-emacs/issues/1094
+;; (package! smartparens :disable t)
 ;; (package! sql-mode)
 (package! terraform-mode)
 (package! web-beautify)
