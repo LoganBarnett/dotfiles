@@ -12,18 +12,6 @@
   (use-package "rainbow-mode"
     ;; :init
     :config
-    (setq-default rainbow-identifiers-faces-to-override
-                  '(
-                    js2-object-property-access
-                    js2-function-call
-                    js2-object-property
-                    font-lock-function-name-face
-                    font-lock-variable-name-face
-                    highlight-numbers-number
-                    font-lock-constant-face
-                    font-lock-keyword-face
-                    )
-                  )
     (add-hook 'css-mode-hook 'rainbow-mode)
     (add-hook 'prog-mode-hook 'rainbow-mode)
     ))

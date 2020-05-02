@@ -1,0 +1,52 @@
+#+title:     Rainbow Identifiers
+#+author:    Logan Barnett-Hoy
+#+email:     logustus@gmail.com
+#+date:      <2020-05-02 Sat>
+#+language:  en
+#+file_tags:
+#+tags:
+
+For a long time, editors have color coded keywords in the languages they
+support. This is great when you're a beginner, but quickly the keywords just
+blend into the landscape of the code. The colors help us read, yes, but only in
+that they give us things to semi-ignore. With rainbow identifiers, all
+identifiers (including keywords) become colored. Words are hashed and a color
+chosen based on the hash. Any given word shares the same color with its
+duplicates. This means you still get keyword highlighting but each keyword is
+different. The =rainbow-identifiers= package helps us with this.
+
+* vibrant colors
+If the colors are too muted, I can't pick them out well and it just turns into
+clown-barf on my screen without much gain. Let's make them more vibrant.
+
+#+name rainbow-identifiers-vibrant-colors
+#+begin_src emacs-lisp :results none
+  (setq-default
+   rainbow-identifiers-choose-face-function 'rainbow-identifiers-cie-l*a*b*-choose-face
+   rainbow-identifiers-cie-l*a*b*-lightness 75
+   rainbow-identifiers-cie-l*a*b*-saturation 50
+   )
+#+end_src
+
+* stitch
+#+begin_src emacs-lisp :results none :noweb yes
+(use-package "rainbow-identifiers"
+  :init
+  (add-hook 'prog-mode-hook #'rainbow-identifiers-mode)
+  :config
+  <<rainbow-identifiers-vibrant-colors>>
+  (setq-default
+   rainbow-identifiers-faces-to-override
+                '(
+                  js2-object-property-access
+                  js2-function-call
+                  js2-object-property
+                  font-lock-function-name-face
+                  font-lock-variable-name-face
+                  highlight-numbers-number
+                  font-lock-constant-face
+                  font-lock-keyword-face
+                  )
+                )
+  )
+#+end_src

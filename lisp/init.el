@@ -273,6 +273,7 @@
   (message "[INIT] mu4e load DONE")
   (init-org-file "ui.org")
   (init-org-file "color.org")
+  (init-org-file "rainbow-identifiers.org")
   (init-org-file "evil.org")
   (on-spacemacs (init-org-file "helm.org"))
   (init-org-file "flyspell.org")
