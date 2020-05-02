@@ -1,0 +1,37 @@
+#+title:     Key bindings
+#+author:    Logan Barnett-Hoy
+#+email:     logustus@gmail.com
+#+date:      <2020-05-02 Sat>
+#+language:  en
+#+file_tags:
+#+tags:
+
+This file is specifically for global key bindings that don't belong to a
+particular major or minor mode.
+
+* execute interactive functions
+Generally this is bound to =M-x=. Spacemacs has a good default and I'd like to
+stick with it.
+
+#+name: execute
+#+begin_src emacs-lisp :results none :tangle yes
+(map!
+  :leader
+  :desc "Execute a function"
+  :n "SPC" #'counsel-M-x
+  )
+(on-doom
+  (after! projectile
+    (map!
+      :leader
+      :desc "Execute a function"
+      :n "SPC" #'counsel-M-x
+      )
+    )
+)
+#+end_src
+
+* stitch
+#+begin_src emacs-lisp :results none :noweb yes
+<<execute>>
+#+end_src
