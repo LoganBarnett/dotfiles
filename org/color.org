@@ -6,14 +6,21 @@ not in a dark room. We need to bump up their contrast a bit. Perhaps we could
 even make them the same gray color as vanilla text, but use a separator line.
 
 #+begin_src emacs-lisp :results none
-(defun config/override-line-number-theme ()
+(defun config/do-override-line-number-theme ()
+  (interactive)
   (set-face-attribute 'line-number nil
-                        :foreground "gray"
-                        :background "black"
-                        )
+                      :foreground "gray"
+                      :background "black"
+                      )
+  )
+(defun config/override-line-number-theme ()
+  (on-doom
+   (add-hook! 'doom-load-theme-hook #'config/do-override-line-number-theme)
+   )
   )
 #+end_src
 * load
 #+begin_src emacs-lisp :results none
 (config/override-line-number-theme)
+(config/do-override-line-number-theme)
 #+end_src
