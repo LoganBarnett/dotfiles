@@ -22,7 +22,9 @@
 ;; (package! docker-mode)
 ;; I could leave this enabled to get highlighting from ; and ,.
 ;; See https://github.com/hlissner/doom-emacs/issues/1642
-(package! evil-snipe :disable t)
+;; I decided to try it out, since the author is right - I can do the same things
+;; with cl and cc.
+;; (package! evil-snipe :disable t)
 (package! feature-mode)
 (package! find-lisp)
 (package! floobits)
