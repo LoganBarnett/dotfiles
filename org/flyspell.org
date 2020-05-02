@@ -8,6 +8,16 @@
 * flyspell
 
 =flyspell= handles spellchecking in Emacs.
+** major modes
+=flyspell= should be enabled for at least =text-mode= and maybe some derivatives
+of =prog-mode= as well.
+#+begin_src emacs-lisp :results none
+(defun config/enable-flyspell ()
+  (interactive)
+  (add-hook 'text-mode-hook #'flyspell-mode)
+  (add-hook 'org-mode-hook #'flyspell-mode)
+  )
+#+end_src
 
 ** keybindings
    At some point Spacemacs removed the binding of =flyspell-correct-at-point=
@@ -17,6 +27,11 @@
 
    #+begin_src emacs-lisp :results none
      (defun config/flyspell-config-keybindings ()
+        (define-key
+          flyspell-mode-map
+          (kbd "C-;")
+          'flyspell-correct-previous-word-generic
+          )
         (define-key text-mode-map (kbd "C-;") 'flyspell-correct-at-point)
         (define-key prog-mode-map (kbd "C-;") 'flyspell-correct-at-point)
         (define-key evil-insert-state-map (kbd "C-;") 'flyspell-correct-at-point)
@@ -28,8 +43,11 @@
 ** initialize
    #+begin_src emacs-lisp
      (use-package "flyspell"
+       :init
+       (on-spacemacs (paradox-require 'flyspell-correct-helm))
        :config
        (config/flyspell-config-keybindings)
+       (config/enable-flyspell)
        (add-hook 'flyspell-mode-hook 'config/flyspell-config-keybindings)
      )
    #+end_src

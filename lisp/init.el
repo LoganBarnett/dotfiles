@@ -196,8 +196,6 @@
   ;; https://github.com/lifelike/decide-mode/blob/master/decide.el
   (load-library "decide")
   (load-library "my-utils")
-  (load-library "config-flyspell")
-  (config-flyspell)
   (load-library "config-vc")
   (config-vc)
   (load-library "config-elm")
