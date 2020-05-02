@@ -21,15 +21,31 @@ files. It generally doesn't effect text files.
   Instead, let's toss it some config to disable it per this [[https://github.com/syl20bnr/spacemacs/issues/6144][ticket]].
 
   #+begin_src emacs-lisp
-    (eval-after-load 'smartparens
-      '(progn
-         (sp-pair "(" nil :actions :rem)
-         (sp-pair "[" nil :actions :rem)
-         (sp-pair "'" nil :actions :rem)
-         (sp-pair "`" nil :actions :rem)
-         (sp-pair "<" nil :actions :rem)
-         (sp-pair "{" nil :actions :rem)
-         (sp-pair "\"" nil :actions :rem)
+    ;; Disabled until I figure out how to gut this from Doom.
+    (on-doom
+      (eval-after-load 'smartparens
+        '(progn
+          (sp-pair "(" nil :actions :rem)
+          (sp-pair "[" nil :actions :rem)
+          (sp-pair "'" nil :actions :rem)
+          (sp-pair "`" nil :actions :rem)
+          (sp-pair "<" nil :actions :rem)
+          (sp-pair "{" nil :actions :rem)
+          (sp-pair "\"" nil :actions :rem)
+          )
+         )
+     )
+    (on-spacemacs
+      (eval-after-load 'smartparens
+        '(progn
+          (sp-pair "(" nil :actions :rem)
+          (sp-pair "[" nil :actions :rem)
+          (sp-pair "'" nil :actions :rem)
+          (sp-pair "`" nil :actions :rem)
+          (sp-pair "<" nil :actions :rem)
+          (sp-pair "{" nil :actions :rem)
+          (sp-pair "\"" nil :actions :rem)
+          )
          )
       )
   #+end_src
