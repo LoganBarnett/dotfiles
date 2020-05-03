@@ -30,8 +30,31 @@ stick with it.
     )
 )
 #+end_src
+* local leader
+In Spacemacs, this is defined as =,=. People claim that =,= isn't useful, but
+even with my muscle memory it's missed by me. I don't want to keep it, and =SPC
+m= just doesn't feel good in Doom.
+
+I did some research and found every key in =vim= that doesn't require a some
+kind of wrist bending is already mapped to something useful or potentially
+useful (for me, as I may not have mastered it yet).
+
+Old: =C-SPC= is setup for =abbrev= expansion, and I have no plans on using it. It
+seems like a close cousin to =SPC= so it seems like a great choice to me.
+
+=C-SPC= is a prefix for something else (=dired=, I think?). This will be a giant
+hassle to overcome, so let's pick another key. I don't have any ideas. Perhaps I
+should just try to get used to it for now.
+
+#+name: local-leader-key
+#+begin_src emacs-lisp :results none
+(on-doom
+  ;; (setq doom-localleader-key "C-SPC")
+ )
+#+end_src
 
 * stitch
 #+begin_src emacs-lisp :results none :noweb yes
 <<execute>>
+<<local-leader-key>>
 #+end_src
