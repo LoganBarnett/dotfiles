@@ -42,16 +42,39 @@
 
    I do have =mu= installed.
 
-**** archiving
-     Archiving in =mu4e='s vernacular is "refile". We can set the folder to go
-     to the "all mail" folder and then it will work like it should for =gmail=.
+
+*** opening
+Doom doesn't bind =mu4e= that I have seen.
+
+#+name: mu4e-open
+#+begin_src emacs-lisp :results none
+(on-doom
+ (map!
+  :leader
+  :prefix "o"
+  "m" #'mu4e
+  )
+ )
+#+end_src
+
+*** line numbers when viewing
+I need my line numbers.
+
+#+name: mu4e-line-numbers
+#+begin_src emacs-lisp :results none
+(add-hook 'mu4e-headers-mode-hook #'display-line-numbers-mode)
+#+end_src
+
+*** archiving
+Archiving in =mu4e='s vernacular is "refile". We can set the folder to go
+to the "all mail" folder and then it will work like it should for =gmail=.
 #+begin_src emacs-lisp
 (defun config/mu4e-set-archive-folder ()
   (setq-default mu4e-refile-folder "/gmail/[Gmail]/.All Mail")
-)
+  )
 #+end_src
 
-**** contacts
+*** contacts
      Contacts get synced somewhere by default, but I'm not sure where. That said
      I have my own =org-contacts= file I wish to use. I can also add some
      actions with =o= being the keybinding to add an =org-contact= contact per
@@ -67,7 +90,7 @@
        )
      #+end_src
 
-**** mail dir
+*** mail dir
      By default =mu4e= looks for =~/Maildir= which is not where I have my mail
      synced.
 
@@ -78,14 +101,14 @@
 )
 #+end_src
 
-**** materials
+*** materials
 http://pragmaticemacs.com/emacs/fixing-duplicate-uid-errors-when-using-mbsync-and-mu4e/
 http://pragmaticemacs.com/emacs/migrating-from-offlineimap-to-mbsync-for-mu4e/
 https://github.com/syl20bnr/spacemacs/issues/6028 - I ran into this issue and
 needed to modify the package directly.
 http://pragmaticemacs.com/emacs/master-your-inbox-with-mu4e-and-org-mode/
 
-**** images
+*** images
 
      Turning on image support is simple.
 
@@ -99,7 +122,7 @@ http://pragmaticemacs.com/emacs/master-your-inbox-with-mu4e-and-org-mode/
   )
 #+end_src
 
-**** toggling plain-text
+*** toggling plain-text
      Toggling to plain text is shadowed by =evil-mode=. For now let's provide an
      interactive function to handle it.
 
@@ -115,13 +138,13 @@ http://pragmaticemacs.com/emacs/master-your-inbox-with-mu4e-and-org-mode/
          )
      #+end_src
 
-**** DONE add =get-mail= command to mu4e update command
+*** DONE add =get-mail= command to mu4e update command
      CLOSED: [2018-08-01 Wed 10:06]
      http://spacemacs.org/layers/+email/mu4e/README.html#configuration
 
      I should also look at other interesting settings there too.
-**** TODO encryption and GPG key
-**** getting mail
+*** TODO encryption and GPG key
+*** getting mail
   =~/bin/mail-sync= gets email and then runs =mu= to perform indexing. This is
   =mu4e= seems to run indexing on its own, so we can just use =mbsync -a= like
   =mail-sync= uses.
@@ -132,7 +155,7 @@ http://pragmaticemacs.com/emacs/master-your-inbox-with-mu4e-and-org-mode/
 )
 #+end_src
 
-**** sending mail
+*** sending mail
 
 #+begin_src emacs-lisp
   (defun config/send-email ()
@@ -157,7 +180,7 @@ http://pragmaticemacs.com/emacs/master-your-inbox-with-mu4e-and-org-mode/
     (add-hook 'dired-mode-hook 'turn-on-gnus-dired-mode)
   )
 #+end_src
-**** bookmarks
+*** bookmarks
      Bookmarks are the initial =b= shortcuts that quickly let me jump to certain
      views. It doesn't come with one that just shows your inbox. I'm not a fan
      of looking at "today's" email unless I can make sure I handle everything in
@@ -179,7 +202,7 @@ http://pragmaticemacs.com/emacs/master-your-inbox-with-mu4e-and-org-mode/
 
      [[https://www.djcbsoftware.nl/code/mu/mu4e/Bookmarks.html][mu4e bookmarks docs]]
 
-**** reading: indexing
+*** reading: indexing
      This should make reading emails faster. It may, but I've noticed it also
      makes messages in my inbox get lost sometimes. They aren't even in the
      all-mail section. The mail server still shows the message as present in the
@@ -194,7 +217,7 @@ http://pragmaticemacs.com/emacs/master-your-inbox-with-mu4e-and-org-mode/
          )
      #+end_src
 
-**** reading: mail list
+*** reading: mail list
      This prevents scrolling to the next message if you scroll down too far.
 
      #+begin_src emacs-lisp :results none
@@ -205,7 +228,7 @@ http://pragmaticemacs.com/emacs/master-your-inbox-with-mu4e-and-org-mode/
          )
      #+end_src
 
-**** reading: format
+*** reading: format
      #+begin_src emacs-lisp
        (defun config/mu4e-reading-format ()
          (setq-default
@@ -217,24 +240,32 @@ http://pragmaticemacs.com/emacs/master-your-inbox-with-mu4e-and-org-mode/
          )
      #+end_src
 
-**** urls
-     =mu4e= uses numbered URLs, which are generally aggregated at the bottom of
-     a message. One can jump to these URLs under the standard keybindings, but
-     much of that is shadowed by =evil-mode=.
+*** urls
+=mu4e= uses numbered URLs, which are generally aggregated at the bottom of
+a message. One can jump to these URLs under the standard keybindings, but
+much of that is shadowed by =evil-mode=.
 
-     #+begin_src emacs-lisp :results none
-       (defun config/mu4e-urls ()
-         (interactive)
-         (evil-define-key 'evilified 'mu4e-view-mode
-           (kbd "g u") 'mu4e-view-go-to-url
-           )
-         (evil-normalize-keymaps)
-         (add-hook 'mu4e-view-mode #'evil-normalize-keymaps)
-         )
-     #+end_src
+#+name: mu4e-goto-url
+#+begin_src emacs-lisp :results none
+(on-doom
+ (map!
+  :leader
+  :map mu4e-view-mode-map
+  :prefix "j"
+  "u" #'mu4e-view-go-to-url
+  )
+ )
+(on-spacemacs
+ (evil-define-key 'evilified 'mu4e-view-mode
+   (kbd "g u") 'mu4e-view-go-to-url
+   )
+ (evil-normalize-keymaps)
+ (add-hook 'mu4e-view-mode #'evil-normalize-keymaps)
+ )
+#+end_src
 
-**** writing
-***** line wrapping
+*** writing
+**** line wrapping
       Wrapping at 80 columns is king, but it's not without some management to
       make happen. By default =mu4e= seems to respect single line breaks when
       exporting to the email. This means email readers (such as gmail) will
@@ -247,7 +278,7 @@ http://pragmaticemacs.com/emacs/master-your-inbox-with-mu4e-and-org-mode/
       + [[https://mathiasbynens.be/notes/gmail-plain-text][GMail plain text and line wrapping]]
       + [[https://github.com/djcb/mu/issues/569][mu#569]] Support format=flowed on outgoing mails
 
-****** unfill
+***** unfill
        I like to edit my emails using =auto-fill-mode= and =fill-paragraph=.
        However we need to "unfill" just before ending. Fortunately a [[https://emacs.stackexchange.com/a/45380/14851][Stack
        Overflow answer]] already does this for us. Below is the code for that,
@@ -271,7 +302,7 @@ http://pragmaticemacs.com/emacs/master-your-inbox-with-mu4e-and-org-mode/
          )
      #+end_src
 
-****** fill when writing
+***** fill when writing
        For more line wrapping goodness, we need to set up =auto-fill-mode= in
        this buffer again, and also set =fill-column= to 72. 78 should be the
        target, but I'm trying to be conservative here. Once the email is sent,
@@ -303,7 +334,7 @@ http://pragmaticemacs.com/emacs/master-your-inbox-with-mu4e-and-org-mode/
             )
            )
        #+end_src
-****** unfill woes
+***** unfill woes
 
        Sometimes the paragraph doesn't wrap properly. I've included an example
        below. I'm not sure this is a great problem, nor how it should be fixed.
@@ -323,7 +354,7 @@ http://pragmaticemacs.com/emacs/master-your-inbox-with-mu4e-and-org-mode/
        neque. Nulla facilisis, risus a rhoncus fermentum, tellus tellus lacinia purus,
        et dictum nunc justo sit amet elit.
        #+end_quote
-***** prevent replying to self during reply-all
+**** prevent replying to self during reply-all
 
       We shouldn't reply to ourselves when doing a reply. This also requires
       that we know what our email address is, which seems to be the combination
@@ -338,7 +369,7 @@ http://pragmaticemacs.com/emacs/master-your-inbox-with-mu4e-and-org-mode/
             )
           )
       #+end_src
-**** evilication
+*** evilication
 
      #+begin_src emacs-lisp :results none
        (defun config/mu4e-evilify-evil-window-prefix ()
@@ -370,9 +401,9 @@ http://pragmaticemacs.com/emacs/master-your-inbox-with-mu4e-and-org-mode/
          )
      #+end_src
 
-**** apply mu4e
+*** apply mu4e
 
-#+begin_src emacs-lisp :results none
+#+begin_src emacs-lisp :results none :noweb yes
 
   (defun gmail-archive ()
     "Archive the current or marked mails.
@@ -459,7 +490,8 @@ http://pragmaticemacs.com/emacs/master-your-inbox-with-mu4e-and-org-mode/
     (config/mu4e-reading-format)
     (config/mu4e-prevent-hard-line-wrap-on-export)
     (config/mu4e-org-contacts)
-    (config/mu4e-urls)
+    <<mu4e-goto-url>>
+    <<mu4e-line-numbers>>
     (message "done initializing mu4e")
     )
 #+end_src
