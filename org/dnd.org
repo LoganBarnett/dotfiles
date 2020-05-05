@@ -22,6 +22,20 @@
        )
       )
   #+end_src
+* key bindings
+  #+name: org-dnd-key-bindings
+  #+begin_src emacs-lisp :results none
+  (on-doom
+    (map!
+      :localleader
+      :desc "dnd"
+      (:prefix "D"
+        :map org-mode-map
+        :ne "n" #'dnd/next-round
+       )
+     )
+   )
+  #+end_src
 
 * music
 
@@ -71,9 +85,10 @@
   #+end_src
 
 * using
-  #+begin_src emacs-lisp :results none
+  #+begin_src emacs-lisp :results none :noweb yes
     (with-eval-after-load 'org
       (message "Loading D&D settings...")
+      <<org-dnd-key-bindings>>
       (require 'request)
       (config/dnd-load)
       (config/dnd-hook-personalized-music)
