@@ -30,6 +30,7 @@
 (package! floobits)
 (package! flycheck)
 (package! flyspell)
+(package! flyspell-correct)
 (package! elm-mode)
 (package! graphviz-dot-mode)
 (package! groovy-mode)
