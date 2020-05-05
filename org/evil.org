@@ -16,3 +16,18 @@
    getting some of the keybindings to work properly. For now I've opted to not
    use =evil-collection= and instead wire up my own bindings by hand. I've found
    a way to do this that seems to work consistently enough.
+* evil-snipe
+The =evil-snipe= package promises better/smarter searching for =f=, =F=, =t=, and
+=T=. I am giving it a shot, though I am holding out judgment so far.
+** case sensitivity
+Doom uses the smart case by default. While I enjoy this with =/= I do not enjoy
+it here. The motions =evil-snipe= uses need to be precise in my mind.
+
+#+name: evil-snipe-disable-smart-case
+#+begin_src emacs-lisp :results none
+(setq-default evil-snipe-smart-case nil)
+#+end_src
+** apply
+#+begin_src emacs-lisp :results none :noweb yes
+<<evil-snipe-disable-smart-case>>
+#+end_src
