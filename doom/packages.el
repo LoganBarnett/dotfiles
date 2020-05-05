@@ -52,6 +52,13 @@
 (package! ox-gfm)
 (package! pinentry)
 (package! plantuml-mode)
+;; While perhaps a core package, this vexes me greatly. There are several ways
+;; in which persp-mode offends my senses. One is that killing a buffer leaves it
+;; in the buffer list. While this might be handy in some circumstances, part of
+;; the reason I kill buffers is not only to free resources on my machine but
+;; also remove clutter that my mind must sort through. This is especially
+;; important with long tramp paths.
+(package! persp-mode :disable t)
 (package! prettier-js)
 (package! rainbow-identifiers)
 (package! rainbow-delimiters)
