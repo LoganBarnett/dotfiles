@@ -140,6 +140,9 @@ Adapt image size via `iimage-scale-to-fit-width' when the window size changes."
                       (buffer-file-name x)))
                 (buffer-list))))
 
+(defun config/org-open-in-other-window ()
+  (add-to-list 'org-link-frame-setup '(file . find-file-other-window))
+  )
 ;; configure org-mode
 (defun config-org-mode ()
   "Configure 'org-mode'."
