@@ -91,6 +91,13 @@ delimiters.
   )
   #+end_src
 
+#+name: prog-mode-disable-visual-line-mode
+#+begin_src emacs-lisp :results none
+(load-library "my-utils") ;; Needed for config/disable-visual-line-mode.
+(add-hook 'prog-mode-hook #'config/disable-visual-line-mode)
+#+end_src
+
+
 * newlines
 
 ** end of file
@@ -111,7 +118,8 @@ delimiters.
 
 * all together
 
-  #+begin_src emacs-lisp :results none
+  #+begin_src emacs-lisp :results none :noweb yes
+    <<prog-mode-disable-visual-line-mode>>
     (config/rainbow-delimiters)
     (config/disable-smartparens)
     (config/manage-final-newline)

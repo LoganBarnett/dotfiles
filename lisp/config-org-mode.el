@@ -157,6 +157,8 @@ Adapt image size via `iimage-scale-to-fit-width' when the window size changes."
     ;; :ensure org-plus-contrib
     :init
     :config
+    (load-library "my-utils") ;; Needed for config/disable-visual-line-mode.
+    (add-hook 'org-mode-hook #'config/disable-visual-line-mode)
     ;; set default diary location
     (setq-default diary-file "~/notes/diary.org")
     ;; (setq-default appt-audible t)

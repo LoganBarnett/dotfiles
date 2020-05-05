@@ -10,4 +10,8 @@
     (insert-file-contents file-path)
     (buffer-string)))
 
+;; A function so we can debug better if need be.
+(defun config/disable-visual-line-mode ()
+  (visual-line-mode 0)
+  )
 ;;; my-utils.el ends here
