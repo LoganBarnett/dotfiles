@@ -32,9 +32,19 @@ https://github.com/expez/evil-smartparens
 #+begin_src emacs-lisp :results none
 (defun config/disable-smartparens ()
   (on-doom
-   ;; This is the recommended way to disable it per
-   ;; https://github.com/hlissner/doom-emacs/issues/1094
+    ;; This is the recommended way to disable it per
+    ;; https://github.com/hlissner/doom-emacs/issues/1094
     (after! smartparens (smartparens-global-mode -1))
+    ;; However the recommended way isn't enough. So let's really disable it.
+    ;; Without this, it will also leak into the minibuffer.
+    (sp-pair "(" nil :actions :rem)
+    (sp-pair "[" nil :actions :rem)
+    (sp-pair "'" nil :actions :rem)
+    (sp-pair "`" nil :actions :rem)
+    (sp-pair "<" nil :actions :rem)
+    (sp-pair "{" nil :actions :rem)
+    (sp-pair "=" nil :actions :rem)
+    (sp-pair "\"" nil :actions :rem)
   )
   (on-spacemacs
    ;; Spacemacs has no means of disabling smartparens as well. So we just yank out
