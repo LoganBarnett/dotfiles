@@ -1,0 +1,56 @@
+#+title:     Modeline
+#+author:    Logan Barnett-Hoy
+#+email:     logustus@gmail.com
+#+date:      <2020-05-12 Tue>
+#+language:  en
+#+file_tags: config
+#+tags:
+
+The modeline is the line at the bottom of each window which generally indicates
+the major mode plus some other stuff. It's good for buffer-local information at
+a glance, but poor at showing global information about the system or Emacs
+itself. However no alternative exists. Yet!
+
+* omit cruft
+It would seem that whether or not we're in Doom or Spacemacs, some modeline
+cruft gets added and I have to take it out.
+#+omit-modeline-cruft
+#+begin_src emacs-lisp :results none :tangle yes
+(setq
+ doom-modeline-major-mode-icon nil
+ doom-modeline-minor-modes nil
+ doom-modeline-enable-word-count nil
+ doom-modeline-continuous-word-count-modes '()
+ doom-modeline-checker-simple-format t
+ doom-modeline--flycheck-icon nil
+ doom-modeline-modal-icon nil
+ )
+
+(remove-hook 'flycheck-mode-hook #'doom-modeline-update-flycheck-icon)
+(remove-hook 'flycheck-status-changed-functions #'doom-modeline-update-flycheck-icon)
+
+(doom-modeline-def-modeline 'main
+  '(
+    bar
+    workspace-name
+    window-number
+    matches
+    buffer-info
+    remote-host
+    buffer-position
+    selection-info
+    lsp
+    debug
+    vcs
+    buffer-encoding
+    major-mode
+    checker
+    ))
+  ;; '(objed-state misc-info persp-name battery grip irc mu4e gnus github debug lsp minor-modes input-method indent-info buffer-encoding major-mode process vcs checker))
+#+end_src
+
+* apply
+
+#+begin_src emacs-lisp :results none :noweb yes
+  <<omit-modeline-cruft>>
+#+end_src
