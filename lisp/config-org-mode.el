@@ -256,7 +256,7 @@ Adapt image size via `iimage-scale-to-fit-width' when the window size changes."
     ;; Solution lifted from https://emacs.stackexchange.com/a/33963
     ;; Somehow this doesn't appear to be working for jpegs of large width. They
     ;; get clipped, which is undesirable.
-    (add-hook 'org-mode-hook #'iimage-scale-on-window-configuration-change)
+    ;; (add-hook 'org-mode-hook #'iimage-scale-on-window-configuration-change)
 
     (use-friendly-deterministic-headline-html-anchors)
     (config/hidden-content-indicator)
