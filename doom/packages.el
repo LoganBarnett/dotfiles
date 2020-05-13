@@ -19,7 +19,8 @@
 ;(package! some-package)
 (package! auto-compile)
 (package! dap-mode)
-;; (package! docker-mode)
+(package! docker)
+(package! dockerfile-mode)
 ;; I could leave this enabled to get highlighting from ; and ,.
 ;; See https://github.com/hlissner/doom-emacs/issues/1642
 ;; I decided to try it out, since the author is right - I can do the same things
