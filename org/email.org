@@ -61,7 +61,7 @@ Doom doesn't bind =mu4e= that I have seen.
 I need my line numbers.
 
 #+name: mu4e-line-numbers
-#+begin_src emacs-lisp :results none
+#+begin_src emacs-lisp :results none :tangle yes
 (add-hook 'mu4e-headers-mode-hook #'display-line-numbers-mode)
 #+end_src
 
@@ -246,7 +246,7 @@ a message. One can jump to these URLs under the standard keybindings, but
 much of that is shadowed by =evil-mode=.
 
 #+name: mu4e-goto-url
-#+begin_src emacs-lisp :results none
+#+begin_src emacs-lisp :results none :tangle yes
 (on-doom
  (map!
   :leader

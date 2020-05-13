@@ -27,7 +27,7 @@
 
 * use-package
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :results none :noweb yes
   (use-package "flycheck"
     ;; :defer t
     ;; :ensure t
@@ -36,7 +36,6 @@
     (add-hook 'prog-mode-hook #'flycheck-mode)
     (setq-default syntax-checking-enable-by-default t)
     :config
-
     ;; node-modules support shamelessly lifted from here
     ;; https://github.com/lunaryorn/.emacs.d/blob/master/lisp/lunaryorn-flycheck.el#L62
     ;; (add-hook 'flycheck-mode-hook #'my/use-node-modules-bin)

@@ -11,12 +11,12 @@
 ** major modes
 =flyspell= should be enabled for at least =text-mode= and maybe some derivatives
 of =prog-mode= as well.
-#+begin_src emacs-lisp :results none
-(defun config/enable-flyspell ()
-  (interactive)
-  (add-hook 'text-mode-hook #'flyspell-mode)
-  (add-hook 'org-mode-hook #'flyspell-mode)
-  )
+
+#+name: flyspell-add-to-modes
+#+begin_src emacs-lisp :results none :tangle yes
+(add-hook 'text-mode-hook #'flyspell-mode)
+(add-hook 'org-mode-hook #'flyspell-mode)
+(add-hook 'git-commit-setup-hook #'flyspell-mode)
 #+end_src
 
 ** keybindings
@@ -41,13 +41,13 @@ of =prog-mode= as well.
 
 
 ** initialize
-   #+begin_src emacs-lisp
+   #+begin_src emacs-lisp :results none :noweb yes
      (use-package "flyspell"
        :init
        (on-spacemacs (paradox-require 'flyspell-correct-helm))
        :config
        (config/flyspell-config-keybindings)
-       (config/enable-flyspell)
+       <<flyspell-add-to-modes>>
        (add-hook 'flyspell-mode-hook 'config/flyspell-config-keybindings)
      )
    #+end_src
