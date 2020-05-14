@@ -163,24 +163,96 @@ Adapt image size via `iimage-scale-to-fit-width' when the window size changes."
     (load-library "my-utils") ;; Needed for config/disable-visual-line-mode.
     (add-hook 'org-mode-hook #'config/disable-visual-line-mode)
     ;; set default diary location
-    (setq-default diary-file "~/notes/diary.org")
-    ;; (setq-default appt-audible t)
-    (setq-default calendar-date-style 'iso)
-
-    (load-library "org-to-jekyll")
-    (setq-default org-agenda-files
+    (setq-default
+     diary-file "~/notes/diary.org"
+     ;; appt-audible t
+     calendar-date-style 'iso
+     org-agenda-files
                   '(
                     "~/Dropbox/notes/agenda.org"
                     "~/Dropbox/notes/inbox.org"
                     "~/work-notes/nwea.org"
                     )
-                  )
-    ;; shrink inline images see:
-    ;; http://lists.gnu.org/archive/html/emacs-orgmode/2012-08/msg01388.html
-    (setq-default org-src-fontify-natively t)
+     ;; For optimizations:
+     org-hide-leading-stars nil
+     org-startup-indented nil
+     org-adapt-indentation nil
+     ;; We _must_ require org-indent. We're overriding the mode function, but
+     ;; it's too late. The requiring of the library has done its damage. It will
+     ;; have also set org-hide-leading-stars to t, because fuck you. However we
+     ;; can opt out of the magic with this.
+     org-indent-mode-turns-on-hiding-stars nil
+     ;; shrink inline images see:
+     ;; http://lists.gnu.org/archive/html/emacs-orgmode/2012-08/msg01388.html
+     org-src-fontify-natively t
+    )
+
+    ;; (add-to-list 'org-startup-options '("indent" org-startup-indented nil))
+
+    ;; Holy fucking shit org-indent-mode just fucking stop already. Apparently
+    ;; we have to load org-indent first (not sure what pulls it in). When we do
+    ;; this we can then destroy org-indent-mode for good. It's too bad it
+    ;; inflicts additional load time though.
+    ;; (require 'org-indent)
+    ;; (general-advice-add 'org-indent-mode :override (lambda (&rest _) t))
+
+    ;; (remove-hook 'org-mode-hook #'org-indent-mode)
+    (remove-hook 'org-mode-hook #'org-superstar-mode)
+    ;; (defun config/find-culprit-org-indent-mode (&rest libs)
+    ;;    (message "Lib: %s" libs)
+    ;;    (if (string= (car libs) "org-indent")
+    ;;        (progn
+    ;;         (message "backtrace: %s" (backtrace))
+    ;;         (error! "Someone tried to pull in org-indent?!?!?!")
+    ;;         )
+    ;;        t
+    ;;     )
+    ;;   )
+    ;; (general-advice-add 'require :before #'config/find-culprit-org-indent-mode)
+    (defun config/+org-init-appearance-h ()
+      "Configures the UI for `org-mode'."
+      (setq org-indirect-buffer-display 'current-window
+            org-eldoc-breadcrumb-separator " → "
+            org-enforce-todo-dependencies t
+            org-entities-user
+            '(("flat"  "\\flat" nil "" "" "266D" "♭")
+              ("sharp" "\\sharp" nil "" "" "266F" "♯"))
+            org-fontify-done-headline t
+            org-fontify-quote-and-verse-blocks t
+            org-fontify-whole-heading-line t
+            org-footnote-auto-label 'plain
+            ;; org-hide-leading-stars t
+            ;; org-hide-leading-stars-before-indent-mode t
+            org-image-actual-width nil
+            org-list-description-max-indent 4
+            org-priority-faces
+            '((?A . error)
+              (?B . warning)
+              (?C . success))
+            ;; org-startup-indented t
+            org-tags-column 0
+            org-use-sub-superscripts '{})
+          )
+    (general-advice-add '+org-init-appearance-h :override #'config/+org-init-appearance-h)
+
+    ;; (defun config/find-culprit-startup-indented (symbol newval operation where)
+    ;;   (message "a change")
+    ;;     (message "%s changed to %s!" symbol newval)
+    ;;    (if newval
+    ;;        (progn
+    ;;          (message "where %s" where)
+    ;;         (message "backtrace: %s" (backtrace))
+    ;;         )
+    ;;        nil
+    ;;     )
+    ;;   )
+    ;; (add-variable-watcher 'org-hide-leading-stars #'config/find-culprit-startup-indented)
+
+    (load-library "org-to-jekyll")
     ;; (setq-default org-image-actual-width '(564))
     ;; (setq-default org-image-actual-width nil)
     (add-hook 'org-mode-hook 'auto-fill-mode)
+    (add-hook 'org-mode-hook #'display-line-numbers-mode)
     ;; Use my custom org clock report function, which prevents narrowing. I find
     ;; narrowing during this operation confusing.
     ;; (add-hook 'org-mode-hook (lambda ()
