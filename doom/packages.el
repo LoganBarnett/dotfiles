@@ -49,8 +49,10 @@
 (package! multi-term)
 (package! noflet)
 ;; (package! org-contacts) ; Part of contrib, so this won't work.
+(package! org-indent :disable t)
 (package! org-mime)
 (package! org-mode) ; Pretty sure some of these are built in.
+(package! org-superstar :disable t)
 (package! ox-gfm)
 (package! pinentry)
 (package! plantuml-mode)

@@ -3,7 +3,6 @@
 ;; Configure org-mode to my liking.
 ;;; Code:
 (require 'use-package)
-(require 'org)
 (require 'org-mode-auto-id-headlines)
 
 ;; TODO: Setup a keybinding to replace org-clock-report with this function.
@@ -177,11 +176,8 @@ Adapt image size via `iimage-scale-to-fit-width' when the window size changes."
      org-hide-leading-stars nil
      org-startup-indented nil
      org-adapt-indentation nil
-     ;; We _must_ require org-indent. We're overriding the mode function, but
-     ;; it's too late. The requiring of the library has done its damage. It will
-     ;; have also set org-hide-leading-stars to t, because fuck you. However we
-     ;; can opt out of the magic with this.
-     org-indent-mode-turns-on-hiding-stars nil
+     ;; I think this was removed and no longer used. Verify.
+     ;; org-indent-mode-turns-on-hiding-stars nil
      ;; shrink inline images see:
      ;; http://lists.gnu.org/archive/html/emacs-orgmode/2012-08/msg01388.html
      org-src-fontify-natively t
@@ -189,15 +185,8 @@ Adapt image size via `iimage-scale-to-fit-width' when the window size changes."
 
     ;; (add-to-list 'org-startup-options '("indent" org-startup-indented nil))
 
-    ;; Holy fucking shit org-indent-mode just fucking stop already. Apparently
-    ;; we have to load org-indent first (not sure what pulls it in). When we do
-    ;; this we can then destroy org-indent-mode for good. It's too bad it
-    ;; inflicts additional load time though.
-    ;; (require 'org-indent)
-    ;; (general-advice-add 'org-indent-mode :override (lambda (&rest _) t))
-
-    ;; (remove-hook 'org-mode-hook #'org-indent-mode)
     (remove-hook 'org-mode-hook #'org-superstar-mode)
+    ;; TODO: Generalize this to a helper for any lib.
     ;; (defun config/find-culprit-org-indent-mode (&rest libs)
     ;;    (message "Lib: %s" libs)
     ;;    (if (string= (car libs) "org-indent")
@@ -235,6 +224,7 @@ Adapt image size via `iimage-scale-to-fit-width' when the window size changes."
           )
     (general-advice-add '+org-init-appearance-h :override #'config/+org-init-appearance-h)
 
+    ;; TODO: Generalize this to a helper for any variable.
     ;; (defun config/find-culprit-startup-indented (symbol newval operation where)
     ;;   (message "a change")
     ;;     (message "%s changed to %s!" symbol newval)
