@@ -47,7 +47,7 @@
 Doom doesn't bind =mu4e= that I have seen.
 
 #+name: mu4e-open
-#+begin_src emacs-lisp :results none
+#+begin_src emacs-lisp :results none :tangle yes
 (on-doom
  (map!
   :leader
@@ -420,7 +420,8 @@ much of that is shadowed by =evil-mode=.
   (require 'use-package)
   (message "initializing mu4e with use-package...")
   (use-package "mu4e"
-    :defer t
+    :init
+    <<mu4e-open>>
     :config
     (message "initializing mu4e...")
     (require 'org-mime)
