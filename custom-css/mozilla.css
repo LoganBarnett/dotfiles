@@ -38,3 +38,25 @@ main {
   background-color: var(--meta-background-color) !important;
   color: var(--meta-color) !important
 }
+
+/**
+ * Expandable links on the sidebar.
+ */
+summary::before {
+  color: var(--link-color) !important;
+}
+
+.quick-links .toggle summary {
+  color: var(--link-color) !important;
+}
+
+/**
+ * General preformatted text.
+ */
+.text-content pre,
+.text-content pre[class*="language-"],
+pre.syntaxbox,
+pre.twopartsyntaxbox {
+  background-color: var(--code-background-color) !important;
+  color: var(--code-color) !important;
+}
