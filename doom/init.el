@@ -173,4 +173,4 @@
 
        :config
        ;;literate
-       (default +bindings +smartparens))
+       (default +bindings))
