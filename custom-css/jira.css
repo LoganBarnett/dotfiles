@@ -1,4 +1,4 @@
-body {
+html body {
   color: var(--text-color) !important;
   background-color: var(--general-background-color) !important;
 }
@@ -241,4 +241,37 @@ a.aui-button.aui-button-light,
 
 .ghx-detail-issue {
   color: var(--text-color) !important;
+}
+
+/**
+ * Tables. Some are Confluence styled?
+ */
+
+th.confluenceTh {
+  background: var(--table-header-background-color) !important;
+  border: var(--thin-border) !important;
+  color: var(--table-header-color) !important;
+}
+
+td.confluenceTd {
+  border: var(--thin-border) !important;
+}
+
+/**
+ * Dashboard.
+ */
+#dashboard {
+  background: var(--general-background-color) !important;
+  border-color: var(--border-color) !important;
+}
+
+/**
+ * Scrolling marquee. Seriously?
+ */
+marquee {
+  display: none;
+}
+
+.jira-dialog-content {
+  background: var(--panel-background-color) !important;
 }
