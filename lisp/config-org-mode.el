@@ -311,6 +311,7 @@ Adapt image size via `iimage-scale-to-fit-width' when the window size changes."
      org-refile-allow-creating-parent-nodes 'confirm
      org-refile-targets '((config/org-opened-buffer-files :maxlevel . 9))
      )
+    (config/org-open-in-other-window)
     ;; (setq-default imagemagick-enabled-types t)
     ;; imagemagick-register-types must be invoked after changing enabled types.
     (imagemagick-register-types)
