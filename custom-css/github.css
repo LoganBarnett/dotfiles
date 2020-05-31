@@ -709,3 +709,17 @@ body .no-underline {
 .pr-toolbar {
   background-color: var(--panel-background-color) !important;
 }
+
+/**
+ * Text blurbs in Github's documentation pages.
+ */
+.content {
+  content: var(--general-text-color) !important;
+}
+
+/**
+ * Example code JSON keys.
+ */
+.code nt {
+  color: var(--code-json-string-color) !important;
+}

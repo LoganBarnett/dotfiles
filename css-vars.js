@@ -95,6 +95,7 @@ const vars = {
   '--button-hover-background-color': '#205050',
   '--callout-color': '#e3dedd',
   '--callout-background-color': '#5d4d7a',
+  '--code-json-string-color': '#a45bad ',
   'code-string-interpolation': '#86dc2f',
   '--code-gutter-background-color': '#212026',
   '--code-gutter-color': '#686868',
