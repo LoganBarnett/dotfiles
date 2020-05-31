@@ -292,3 +292,13 @@ h1.stream-header {
   background: var(--tab-inactive-background-color) !important;
   color: var(--tab-inactive-color) !important;
 }
+
+/**
+ * Remove spacing from last team member in a group, but separate with a line.
+ * This increases densitity and removes the need for a bunch of negative
+ * whitespace.
+ */
+.leftrail .grouptab:last-of-type {
+  margin-bottom: 0 !important;
+  border-bottom: var(--thin-border);
+}
