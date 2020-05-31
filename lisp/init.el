@@ -275,7 +275,9 @@
   (init-org-file "modeline.org")
   (init-org-file "ui.org")
   (init-org-file "color.org")
-  (init-org-file "rainbow-identifiers.org")
+  ;; This looks a little too much like clown barf right now. I need to fix it or
+  ;; leave it off. For now it's disabled.
+  ;; (init-org-file "rainbow-identifiers.org")
   (init-org-file "evil.org")
   (init-org-file "avy.org")
   (on-spacemacs (init-org-file "helm.org"))
