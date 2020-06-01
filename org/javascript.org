@@ -320,8 +320,8 @@ Finally, tie it all together on demand.
     "HOOK should be a quoted variable."
     (require 'grep)
     (require 'flycheck)
-    (require 'flycheck-flow)
-    (require 'rainbow-identifiers)
+    ;; (require 'flycheck-flow)
+    ;; (require 'rainbow-identifiers)
     (message "Configuring Javascript")
     ;; (add-hook 'js2-mode-hook 'flow-minor-enable-automatically)
     (setq-default flycheck-javascript-flow-args '("--respect-pragma"))
@@ -349,7 +349,9 @@ Finally, tie it all together on demand.
     ;; this will make it so fighting is less necessary to appease linters
     (setq-default js2-pretty-multiline-declarations nil)
     (my/find-javascript-flycheck-backends hook)
-    (config/connect-javascript-flycheck-backends)
+;; TODO: Fix this. Doesn't work in a post-Doom era.
+    ;; (config/connect-javascript-flycheck-backends)
+
     ;; (my/config-javascript-company-backends)
     ;; Setting this locally should work because it's only for this individual
     ;; buffer, and not the project. This should survive buffer renames/moves.
