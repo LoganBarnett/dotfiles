@@ -275,3 +275,10 @@ marquee {
 .jira-dialog-content {
   background: var(--panel-background-color) !important;
 }
+
+/**
+ * Quoted text areas.
+ */
+.action-body blockquote {
+  color: var(--dim-text) !important;
+}
