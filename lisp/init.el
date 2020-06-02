@@ -294,12 +294,18 @@
   ;; (init-org-file "deft.org")
   (init-org-file "whitespace.org")
   (init-org-file "habitica.org")
+  ;;
+  ;; Begin languages. These should be sorted alphabetically.
+  ;;
   (init-org-file "javascript.org")
   (init-org-file "groovy.org")
   (init-org-file "purescript.org")
   (init-org-file "css.org")
   (init-org-file "makefile.org")
+  (init-org-file "puppet.org")
   (init-org-file "shell.org")
+  (init-org-file "yaml.org")
+  ;; End languages.
   (init-org-file "hipchat.org")
   (init-org-file "tramp.org")
   (init-org-file "time.org")

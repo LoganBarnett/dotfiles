@@ -116,6 +116,11 @@ fi
 echo "Installing (some) Java support..."
 ./install-java.sh
 
+if [[ "$USER" == "logan.barnett" ]]; then
+    echo "Installing puppet for work..."
+    ./puppet-install.sh
+fi
+
 echo "Installing diagramming support..."
 ./install-diagram.sh
 

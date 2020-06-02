@@ -64,6 +64,7 @@
 ;; important with long tramp paths.
 (package! persp-mode :disable t)
 (package! prettier-js)
+(package! puppet-mode)
 (package! rainbow-identifiers)
 (package! rainbow-delimiters)
 (package! rainbow-mode)

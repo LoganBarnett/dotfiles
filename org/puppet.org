@@ -1,0 +1,24 @@
+#+title:     Puppet
+#+author:    Logan Barnett-Hoy
+#+email:     logustus@gmail.com
+#+date:      <2020-06-02 Tue>
+#+language:  en
+#+file_tags:
+#+tags:
+
+* puppet
+Puppet synchronizes settings across machines in an imperative fashion using a
+Ruby-like syntax (though it is not Ruby). Puppet is backed by a Ruby executable
+and requires an agent to run on the puppet manager (I've heard this called a
+"mom") and target hosts. It also uses =erb= templates.
+
+** stitch
+
+#+begin_src emacs-lisp :results none
+(use-package "puppet-mode"
+  :init
+  (add-to-list 'auto-mode-alist '("\\.pp\\'" . puppet-mode))
+  :config
+
+  )
+#+end_src

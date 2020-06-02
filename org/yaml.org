@@ -1,0 +1,30 @@
+#+title:     YAML
+#+author:    Logan Barnett-Hoy
+#+email:     logustus@gmail.com
+#+date:      <2020-06-02 Tue>
+#+language:  en
+#+file_tags:
+#+tags:
+
+* yaml
+"Yaml Ain't a Markup Language". Python has an unholy union with JSON. It
+essentially means a lot of the quoting is removed and significant whitespace
+rules the day.
+
+** word wrap
+=yaml-mode= enables =visual-line-mode= by default. Or perhaps it's the Doom
+module that does it.
+
+#+name: config/yaml-disable-word-wrap
+#+begin_src emacs-lisp :results none :tangle yes
+(add-hook 'yaml-mode-hook (lambda () (visual-line-mode 0)))
+#+end_src
+
+** stitch
+
+#+begin_src emacs-lisp :results none :noweb yes
+(use-package "yaml-mode"
+  :config
+  <<config/yaml-disable-word-wrap>>
+  )
+#+end_src
