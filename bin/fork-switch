@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+# -*- shell-mode -*-
+
+if [ "$1" == "" ]; then
+  echo "Usage: use-fork <forked clone URL>"
+  exit 1
+fi
+
+# Go to the repo involved and click fork
+original_url="$(git remote get-url origin)"
+git remote remove origin
+git remote add origin $1
+git remote add upstream $original_url
