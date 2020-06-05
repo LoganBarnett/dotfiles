@@ -439,11 +439,8 @@ much of that is shadowed by =evil-mode=.
     ;; No idea why setq-local is needed here, and elsewhere defvar-local works.
     ;; This would be a great question for the emacs user group.
 
-    ;; Copy key-id.template.txt to ~/.emacs.d/private/key-id.txt and populate with
-    ;; the key ID.
-    ;; What key ID?
     (setq-local key-id
-                (my-utils/get-string-from-file  "~/.emacs.d/private/key-id.txt")
+                (my-utils/get-string-from-file  "~/dev/dotfiles-private/key-id.txt")
                 )
     (message "loaded key id %s" key-id)
     (require 'epg-config)
