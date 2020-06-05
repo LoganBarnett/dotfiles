@@ -73,7 +73,7 @@ the home page value but that's not as useful as linking to the file itself.
     :prefix ("g y" . "git url")
     :n
     "y" #'browse-at-remote-kill
-    "n" #'+vc/browse-at-remote-homepage
+    "h" #'+vc/browse-at-remote-homepage
     )
    )
   :config
