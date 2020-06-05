@@ -35,7 +35,7 @@ div.sbqs_c {
 }
 
 body {
-  color: #ddd !important;
+  color: var(--general-text-color) !important;
 }
 
 /* groups op name */
@@ -693,4 +693,26 @@ td[style="border-right: 1px solid #161616;width:50%;"], td[style="border-right:1
 }
 .rllt__details, .vk_bk {
     color: #A6A6A6!important;
+}
+
+/**
+ * "People also search for" heading.
+ */
+.eJ7tvc {
+  background-color: var(--heading1-background-color) !important;
+  color: var(--heading1-color) !important;
+}
+
+/**
+ * Text bodies in Google Groups.
+ */
+.BRXD3B-ob-P {
+  color: var(--general-text-color) !important;
+}
+
+/**
+ * Poster name in Google Groups.
+ */
+.BRXD3B-G-a {
+  color: var(--link-text-color) !important;
 }
