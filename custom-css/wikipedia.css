@@ -47,6 +47,14 @@ a:visited {
   background-color: var(--visted-link-background-color) !important;
 }
 
+ul {
+  /**
+   * Wikipedia uses an image to display the same dot, but it doesn't respect
+   * font color. I am unsure as to why they have done this.
+   */
+  list-style-image: none !important;
+}
+
 .toc, .mw-warning, .toccolours {
   border: var(--panel-border) !important;
   background-color: var(--panel-background-color) !important;
