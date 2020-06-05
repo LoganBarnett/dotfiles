@@ -33,6 +33,10 @@
 (package! flyspell)
 (package! flyspell-correct)
 (package! elm-mode)
+;; We already have browse-at-remote, and I think browse-at-remote might be a
+;; better library.
+;;
+;; (package! git-link)
 (package! graphviz-dot-mode)
 (package! groovy-mode)
 (package! habitica)
