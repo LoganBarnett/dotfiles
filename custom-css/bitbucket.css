@@ -10,6 +10,10 @@ body {
   color: var(--text-color) !important;
 }
 
+body, body.aui-page-fixed, body.aui-page-hybrid {
+  background-color: var(--general-background-color) !important;
+}
+
 h1 {
   background-color: var(--head1-background-color) !important;
   color: var(--head1-color) !important;
