@@ -21,7 +21,7 @@
 (package! dap-mode)
 (package! docker)
 (package! dockerfile-mode)
-;; I could leave this enabled to get highlighting from ; and ,.
+;; I could leave evil-snipe enabled to get highlighting from ; and ,.
 ;; See https://github.com/hlissner/doom-emacs/issues/1642
 ;; I decided to try it out, since the author is right - I can do the same things
 ;; with cl and cc.
