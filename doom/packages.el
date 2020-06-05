@@ -59,6 +59,7 @@
 (package! org-superstar :disable t)
 (package! ox-gfm)
 (package! pinentry)
+(package! piper :recipe (:local-repo "~/dev/emacs-piper"))
 (package! plantuml-mode)
 ;; While perhaps a core package, this vexes me greatly. There are several ways
 ;; in which persp-mode offends my senses. One is that killing a buffer leaves it
