@@ -29,6 +29,14 @@
   (org-babel-load-file (expand-file-name (format "org/%s" file) "~/dev/dotfiles"))
   )
 
+(defun config/init-org-file-private (file)
+  "Logs private FILE before it loading a file to help with debugging init issues."
+  (message "[INIT] private %s" file)
+  (org-babel-load-file
+   (expand-file-name (format "org/%s" file) "~/dev/dotfiles-private")
+   )
+  )
+
 (defun dirty-init ()
   "A dump of init stuff found in dotspacemacs/user-config but is custom."
 

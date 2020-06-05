@@ -50,6 +50,36 @@
      )
   #+end_src
 
+* linking to web mirrors
+I'm not sure if "web mirror" is the proper term, but it kind of makes sense: A
+web version of the git repository. Generally we see this when browsing source in
+GitHub, BitBucket, GitLab, etc.
+
+=magit= has =SPC g Y= bound to =+vc/browse-at-remote-kill-homepage=, which gets
+the home page value but that's not as useful as linking to the file itself.
+
+#+begin_src emacs-lisp :results none
+
+(use-package "browse-at-remote"
+  :init
+  (on-doom
+   ;; Unbind browse-at-remote* (not sure what the tail of this is). This allows
+   ;; us to set more specific keybindings.
+   ;;
+   (map! :after magit :leader :prefix "g" "y" nil)
+   (map!
+    :after magit
+    :leader
+    :prefix ("g y" . "git url")
+    :n
+    "y" #'browse-at-remote-kill
+    "n" #'+vc/browse-at-remote-homepage
+    )
+   )
+  :config
+  (config/init-org-file-private "git-private.org")
+  )
+#+end_src
 
 * all together
   #+begin_src emacs-lisp :results none
