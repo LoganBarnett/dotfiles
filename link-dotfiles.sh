@@ -5,7 +5,7 @@ set -e
 PWD=$(pwd)
 EASYFILES="
 Xdefaults
-avnrc
+bash_profile
 floorc.json
 ideavim
 ispell_english
