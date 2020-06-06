@@ -1,0 +1,44 @@
+#+title:     LaTeX
+#+author:    Logan Barnett-Hoy
+#+email:     logustus@gmail.com
+#+date:      <2020-06-06 Sat>
+#+language:  en
+#+file_tags:
+#+tags:
+
+* configuration
+See [[file:./org-mode.org::*latex][org-mode.org::*latex]] for configuration for LaTeX. This file is somewhat for
+reference because I often forget the keybindings and how to apply LaTeX, and
+this is where I will look first for LaTeX settings. It's in the =org-mode= file
+so I can have =use-package= used for =org-mode= once and only once.
+
+* pronounciation
+LaTeX is pronounced "Latek", Because Reasons.
+* latex examples
+
+LaTeX has an atypical relationship with =org-mode=. It can render inline using
+special syntax, notably surrounding with =$= or =\(...\)=. The default
+keybinding to render such syntax inline is =C-c C-x C-l=. The pause should be
+very brief.
+
+** code blocks
+Code blocks like this will not work:
+#+begin_latex :results raw :file test.png
+  x=\sqrt(b)
+#+end_latex
+
+Nor will code blocks like this:
+#+begin_src latex :results raw :file test.png
+\begin{equation} % arbitrary environments
+x=\sqrt(b)       % even tables, figures
+\end{equation}   % etc
+#+end_src
+
+\begin{equation} % arbitrary environments
+x=\sqrt(b)       % even tables, figures
+\end{equation}   % etc
+
+** inline
+
+If $a^2=b$ and \( b=2 \), then the solution must be
+either $$ a=+\sqrt{2} $$ or \[ a=-\sqrt{2} \].
