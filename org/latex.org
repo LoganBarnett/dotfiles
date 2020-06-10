@@ -42,3 +42,10 @@ x=\sqrt(b)       % even tables, figures
 
 If $a^2=b$ and \( b=2 \), then the solution must be
 either $$ a=+\sqrt{2} $$ or \[ a=-\sqrt{2} \].
+** division
+
+To do a column-stacked division, or in other words a fraction, use
+=\dfrac{numerator}{demoninator}=, where =numerator= and =demoninator= are
+expressions for the fraction.
+
+$\dfrac{1}{2}$
