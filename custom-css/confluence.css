@@ -263,3 +263,21 @@ a.aui-button,
 .confluenceTh, .confluenceTd {
   border: var(--thin-border) !important;
 }
+
+/**
+ * Survey radio options.
+ */
+form.aui .checkbox > label, form.aui .radio > label {
+  color: var(--input-color) !important;
+}
+
+form.aui .text,
+form.aui .password,
+form.aui .upfile,
+form.aui .textarea,
+form.aui .select,
+form.aui .multi-select,
+form.aui .aui-select2-container {
+  background-color: var(--input-background-color) !important;
+  color: var(--input-color) !important;
+}
