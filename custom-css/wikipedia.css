@@ -59,3 +59,13 @@ ul {
   border: var(--panel-border) !important;
   background-color: var(--panel-background-color) !important;
 }
+
+/**
+ * The SVGs used by Wikipedia's math system are done with LaTeX (cool!) and I
+ * can pull the definitions from the alt attribute (also cool!), however the
+ * text is forced to black and so my almost-black backgrounds make them very
+ * hard to read. Instead we'll just use text color for the background color.
+ */
+.mwe-math-fallback-image-inline {
+  background-color: var(--general-text-color) !important;
+}
