@@ -1,0 +1,7 @@
+body {
+  color: var(--text-color) !important;
+}
+
+body #maincontent {
+  background-color: var(--general-background-color) !important;
+}

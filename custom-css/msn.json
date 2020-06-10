@@ -1,0 +1,12 @@
+{
+  "includes": [
+    "https://*.msn.com"
+  ],
+  "excludes": [
+    ""
+  ],
+  "name": "msn",
+  "onload": true,
+  "enabled": true,
+  "key": "msn"
+}
