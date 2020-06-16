@@ -1,0 +1,24 @@
+# -*- mode: snippet -*-
+# name: The proper declaration for an HTML5 document with commonly desired goodies.
+# key: new-html
+# group: html
+# condition: t
+# --
+<!doctype html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+
+  <title>$1</title>
+  <meta name="description" content="$1">
+  <meta name="author" content="$2">
+
+  <link rel="stylesheet" href="styles.css">
+
+</head>
+
+<body>
+  <script src="scripts.js"></script>
+</body>
+</html>
