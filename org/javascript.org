@@ -23,6 +23,15 @@ the =flow= executable from the project's =node_modules=.
 ultimate motivator for me.
 
 * emacs settings
+** indentation
+There's a lot of JavaScript modes in Emacs. Wowza. Each will need its
+indentation fixed. Who uses 4 nowadays?
+
+#+name: config/javascript-indentation
+#+begin_src emacs-lisp :results none :tangle yes
+(setq js-indent-level 2)
+#+end_src
+
 ** project specific paths
 *** local package executables
     The Node.JS Way(TM) is to make projects as self contained as possible. This
@@ -397,3 +406,11 @@ Finally, tie it all together on demand.
     (define-key rjsx-mode-map ">" nil)
   )
 #+END_SRC
+
+*** js-mode
+#+begin_src emacs-lisp :results none :noweb yes
+(use-package 'js-mode
+  :config
+  <<config/javascript-indentation>>
+  )
+#+end_src
