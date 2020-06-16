@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+# TODO Make a reusable version of this for other extensions.
+set -ex
+
+# out=$(echo "$1" | sed 's/heic$/png/')
+# ffmpeg -i "$1" -c:v png -frames:v 1 -pix_fmt rgb48 "${1%heic}png"
+
+magick convert "$1" "${1%heic}png"
+
+echo "Converted heic file to '${1%heic}png'."
