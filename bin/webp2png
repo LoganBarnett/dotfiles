@@ -3,6 +3,6 @@
 set -e
 
 out=$(echo "$1" | sed 's/webp$/png/')
-ffmpeg -i $1 $out
+ffmpeg -i "$1" "$out"
 
 echo "Converted webp file to '$out'."
