@@ -13,15 +13,15 @@ Set the default file template for HTML.
 #+name: config/html-set-file-templates
 #+begin_src emacs-lisp :results none :tangle yes
 (on-doom
- set-file-templates! 'web-mode :trigger "new-html"
- set-file-templates! 'mhtml-mode :trigger "new-html"
+ (set-file-template! 'web-mode :trigger "new-html")
+ (set-file-template! 'mhtml-mode :trigger "new-html")
  )
 #+end_src
 
 * stitch
 
 #+begin_src emacs-lisp :results none :noweb yes
-(use-package 'mhtml
+(use-package "mhtml-mode"
   :init
   <<config/html-set-file-templates>>
   )

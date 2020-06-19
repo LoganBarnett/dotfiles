@@ -409,8 +409,10 @@ Finally, tie it all together on demand.
 
 *** js-mode
 #+begin_src emacs-lisp :results none :noweb yes
-(use-package 'js-mode
-  :config
-  <<config/javascript-indentation>>
-  )
+;; (use-package "js-mode"
+;;   :init
+;;   (message "Initializing JavaScript via js-mode.")
+;;   :config
+;;   <<config/javascript-indentation>>
+;;   )
 #+end_src
