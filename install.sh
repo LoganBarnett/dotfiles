@@ -58,6 +58,9 @@ echo "Installing Rust..."
 echo "Installing htop..."
 ./install-htop.sh
 
+echo "Installing oq..."
+./oq-install.sh
+
 echo "Installing mysql (tools?)..."
 ./install-mysql.sh
 
@@ -86,7 +89,8 @@ echo "installing GPG..."
 echo "setting up spacemacs"
 ./emacs-install.sh
 
-# TODO: add a way of reading in the paradox-github token or generating it if it doesn't exist
+# TODO: add a way of reading in the paradox-github token or generating it if it
+# doesn't exist
 
 # echo "installing rvm"
 # We need to add the key from Michal Papis so we can verify RVM is the real
