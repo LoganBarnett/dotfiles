@@ -26,10 +26,34 @@ ultimate motivator for me.
 ** indentation
 There's a lot of JavaScript modes in Emacs. Wowza. Each will need its
 indentation fixed. Who uses 4 nowadays?
-
-#+name: config/javascript-indentation
+*** spacing
+#+name: config/javascript-indentation-spacing
 #+begin_src emacs-lisp :results none :tangle yes
 (setq js-indent-level 2)
+#+end_src
+*** chaining
+Let's take a moment to observe this code:
+
+#+begin_example javascript
+let x = svg.mumble()
+           .chained;
+#+end_example
+
+In the Emacs world this kind of indentation is intentional and it drives me
+crazy about this ecosystem.
+
+This is what I want:
+
+#+begin_example javascript
+let x = svg.mumble()
+  .chained;
+#+end_example
+
+Here is the fix:
+
+#+name: config/javascript-indentation-chaining
+#+begin_src emacs-lisp :results none :tangle yes
+(setq js-chain-indent nil)
 #+end_src
 
 ** project specific paths
@@ -339,7 +363,8 @@ Finally, tie it all together on demand.
     ;; more.
     ;; (custom-set-variables '(flycheck-javascript-flow-args nil t))
     (add-to-list 'grep-find-ignored-directories "node_modules")
-    (setq-default js-indent-level 2)
+    <<config/javascript-indentation-chaining>>
+    <<config/javascript-indentation-spacing>>
     (setq-default js2-strict-missing-semi-warning nil)
     (setq-default js2-strict-trailing-comma-warning nil)
     (setq-default js2-mode-show-parse-errors nil)
