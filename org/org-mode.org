@@ -35,6 +35,22 @@ The rest of the settings seemed fine by me, so they are a duplicate here.
         )
       )
 #+end_src
+* headings
+** folding
+Starting up with everything folded is generally preferable.
+
+#+name: config/org-mode-manage-initial-folding
+#+begin_src emacs-lisp :results none :tangle yes
+(setq org-startup-folded 'fold) ;; Equivalent to 'overview.
+#+end_src
+
+Alternatively this can be controlled on a per document basis:
+
+#+begin_example org
+,#+startup: nofold
+#+end_example
+
+
 * old config
 This is moved from =config-org-mode.el=. I should break this up and add prose as
 necessary.
@@ -364,5 +380,6 @@ Adapt image size via `iimage-scale-to-fit-width' when the window size changes."
   <<config/org-dirty-config-run>>
   <<config/latex-setup-exec>>
   <<config/latex-format>>
+  <<config/org-mode-manage-initial-folding>>
   )
 #+end_src
