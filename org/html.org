@@ -17,6 +17,29 @@ Set the default file template for HTML.
  (set-file-template! 'mhtml-mode :trigger "new-html")
  )
 #+end_src
+* tidy
+
+The built-in =tidy= for MacOS dates back to 2006!
+
+#+begin_src shell
+tidy --version
+#+end_src
+
+#+RESULTS:
+: HTML Tidy for Apple macOS version 5.6.0
+
+Actually that's the correct version, post-install of =tidy-html5= (find the
+installation conducted in [[file:../html-tools-install.sh]]).
+
+Run from my prompt gives me a different answer, but even the other version is
+pretty old. Here's the one using my terminal:
+
+#+begin_example shell
+$ tidy --version
+HTML Tidy for Mac OS X released on 31 October 2006 - Apple Inc. build 16.4
+#+end_example
+
+Since Emacs seems to find it correctly I don't think there's anything to change.
 
 * stitch
 
