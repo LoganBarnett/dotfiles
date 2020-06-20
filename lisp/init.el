@@ -219,11 +219,6 @@
   ;; handle long lines
   (load-library "config-so-long-mode")
   (config-so-long-mode)
-  (message "[EMACS-CONFIG] Configuring org-mode...")
-  (load-library "config-org-mode")
-  (config-org-mode)
-  (message "[EMACS-CONFIG] org-mode configured...")
-
 
   (message "add rust to path manually...")
   (add-to-list 'exec-path "/Users/logan/.cargo/bin")
