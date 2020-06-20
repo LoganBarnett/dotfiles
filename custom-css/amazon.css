@@ -112,3 +112,10 @@ div.imageInformation {
   color: var(--link-color) !important;
   background-color: var(--link-background-color) !important;
 }
+
+/**
+ *  Review area below movies.
+ */
+.dp-customer-reviews-wrapper {
+  background-color: var(--general-background-color) !important;
+}
