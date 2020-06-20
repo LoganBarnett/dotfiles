@@ -29,8 +29,8 @@ delimiters. This means the motions still mostly work though.
 
 https://github.com/expez/evil-smartparens
 
-#+begin_src emacs-lisp :results none
-(defun config/disable-smartparens ()
+#+name: config/prog-mode-disable-smart-parens
+#+begin_src emacs-lisp :results none :tangle yes
   (on-doom
     ;; This is the recommended way to disable it per
     ;; https://github.com/hlissner/doom-emacs/issues/1094
@@ -62,8 +62,8 @@ https://github.com/expez/evil-smartparens
         )
      )
    )
-  )
 #+end_src
+
 ** rainbow-delimiters
 =rainbow-delimiters= are incredibly helpful for visually determining nesting of
 delimiters.
@@ -77,6 +77,7 @@ delimiters.
     ))
   )
 #+end_src
+
 * auto fill comments
   I'm not sure how I feel about using =auto-fill-mode= for normal code, but for
   comments this is a must to me. Fortunately =auto-fill-mode= comes with
@@ -119,11 +120,9 @@ delimiters.
    problematic in some cases I should investigate some kind of means of saving
    one-off files without their newline.
 
-   #+begin_src emacs-lisp :results none
-     (defun config/manage-final-newline ()
-       (setq-default mode-require-final-newline t)
-     )
-
+   #+name: config/prog-mode-manage-final-newline
+   #+begin_src emacs-lisp :results none :tangle yes
+    (setq-default mode-require-final-newline t)
    #+end_src
 * indentation
 Most indentation in Emacs comes from =c-set-offset=. Emacs has a culture of
@@ -213,8 +212,8 @@ bisecting since I'm sure this will come up again later.
   #+begin_src emacs-lisp :results none :noweb yes
     <<prog-mode-disable-visual-line-mode>>
     (config/rainbow-delimiters)
-    (config/disable-smartparens)
-    (config/manage-final-newline)
+    <<config/prog-mode-disable-smart-parens>>
+    <<config/prog-mode-manage-final-newline>>
     (add-hook 'prog-mode-hook #'config/auto-fill-comments)
     (add-hook 'prog-mode-hook #'display-line-numbers-mode)
     (add-hook 'prog-mode-hook #'config/disable-line-wrapping)
