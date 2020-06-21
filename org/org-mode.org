@@ -333,25 +333,25 @@ Adapt image size via `iimage-scale-to-fit-width' when the window size changes."
 ;; Allow using yaml blocks as-is.
 (defun org-babel-execute:yaml (body params) body)
 ;; TODO: Doom docs say bad things about doing this. I should look into it.
-(org-babel-do-load-languages
- 'org-babel-load-languages
- '(
-   (ditaa . t)
-   (dot . t)
-   (emacs-lisp . t)
-   (gnuplot . t)
-   (js . t)
-   (latex . t)
-   (lilypond . t)
-   (octave . t)
-   ;; (perl . t)
-   (plantuml . t)
-   ;; (python . t)
-   ;; (ruby . t)
-   (shell . t)
-   ;; (sqlite . t)
-   ;; (R . t)
-   ))
+;; (org-babel-do-load-languages
+;;  'org-babel-load-languages
+;;  '(
+;;    (ditaa . t)
+;;    (dot . t)
+;;    (emacs-lisp . t)
+;;    (gnuplot . t)
+;;    (js . t)
+;;    (latex . t)
+;;    (lilypond . t)
+;;    (octave . t)
+;;    ;; (perl . t)
+;;    (plantuml . t)
+;;    ;; (python . t)
+;;    ;; (ruby . t)
+;;    (shell . t)
+;;    ;; (sqlite . t)
+;;    ;; (R . t)
+;;    ))
 (add-to-list 'org-src-lang-modes '("javascript" . js2))
 (setq-default
  org-confirm-babel-evaluate 'my/org-confirm-babel-evaluate
@@ -380,6 +380,15 @@ Adapt image size via `iimage-scale-to-fit-width' when the window size changes."
 ;; (config/google-calendar-sync)
 #+end_src
 
+* paths
+
+The =org-directory= needs to be set before =org-mode= is loaded, because
+reasons.
+
+#+name: config/org-mode-set-paths
+#+begin_src emacs-lisp :results none :tangle yes
+(setq org-directory "~/Dropbox/notes")
+#+end_src
 
 * stitch
 
@@ -387,6 +396,7 @@ Adapt image size via `iimage-scale-to-fit-width' when the window size changes."
 (use-package "org"
   :init
   <<config/org-mode-manage-initial-folding>>
+  <<config/org-mode-set-paths>>
   :config
   <<config/org-mode-hack-initial-folding>>
   ;; Needed to set `org-startup-folded'.
