@@ -35,13 +35,16 @@ The rest of the settings seemed fine by me, so they are a duplicate here.
         )
       )
 #+end_src
+
 * headings
 ** folding
 Starting up with everything folded is generally preferable.
 
 #+name: config/org-mode-manage-initial-folding
 #+begin_src emacs-lisp :results none :tangle yes
-(setq org-startup-folded 'fold) ;; Equivalent to 'overview.
+(setq org-startup-folded 'overview) ;; Equivalent to 'fold?
+;; Because setting the variable isn't enough?
+;; (org-set-startup-visibility)
 #+end_src
 
 Alternatively this can be controlled on a per document basis:
@@ -49,6 +52,14 @@ Alternatively this can be controlled on a per document basis:
 #+begin_example org
 ,#+startup: nofold
 #+end_example
+
+But none of this works as advertised per the documentation. I'm not sure what is
+interfering. So let's just rub some Lisp on it.
+
+#+name: config/org-mode-hack-initial-folding
+#+begin_src emacs-lisp :results none :tangle yes
+(add-hook 'org-mode-hook #'+org/close-all-folds)
+#+end_src
 
 
 * old config
@@ -374,12 +385,16 @@ Adapt image size via `iimage-scale-to-fit-width' when the window size changes."
 
 #+begin_src emacs-lisp :results none :noweb yes
 (use-package "org"
+  :init
+  <<config/org-mode-manage-initial-folding>>
   :config
+  <<config/org-mode-hack-initial-folding>>
+  ;; Needed to set `org-startup-folded'.
+  (org-set-startup-visibility)
   (require 'org-mode-auto-id-headlines)
   <<config/org-dirty-config-fns>>
   <<config/org-dirty-config-run>>
   <<config/latex-setup-exec>>
   <<config/latex-format>>
-  <<config/org-mode-manage-initial-folding>>
   )
 #+end_src
