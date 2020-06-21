@@ -23,5 +23,7 @@ ln -F -n -s $PRIV_DIR/email-creds.priv.txt ~/.email-creds.txt
 # The .mailrc lets me have email aliases. I don't want to share emails with the
 # public though.
 ln -F -n -s $PRIV_DIR/mailrc ~/.mailrc
+# Floobits is great!
+ln -F -n -s $PRIV_DIR/floorc.json ~/.floorc.json
 
 echo "[CONFIG] Installing private settings... Done!"
