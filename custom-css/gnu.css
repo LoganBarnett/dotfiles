@@ -1,3 +1,7 @@
+html {
+  background-color: var(--general-background-color) !important;
+}
+
 body {
   background-color: var(--general-background-color) !important;
   color: var(--text-color) !important;
