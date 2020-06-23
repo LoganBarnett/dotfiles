@@ -331,7 +331,7 @@ when this happens, and Emacs eats a lot of processing power for no good reason.
 ** big config
 Finally, tie it all together on demand.
 
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp :noweb yes :results none
   (defun my/js2-disable-global-variable-highlight ()
     "Disable js2 global variable highlight.  Wait.  Am I using this?"
     (font-lock-remove-keywords 'js2-mode 'js2-external-variable)
@@ -430,7 +430,7 @@ Finally, tie it all together on demand.
     (define-key rjsx-mode-map (kbd "C-d") nil)
     (define-key rjsx-mode-map ">" nil)
   )
-#+END_SRC
+#+end_src
 
 *** js-mode
 #+begin_src emacs-lisp :results none :noweb yes
