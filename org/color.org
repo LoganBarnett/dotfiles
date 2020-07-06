@@ -1,6 +1,7 @@
 #+title: Color
 
-* brighter fringes
+* theme
+** brighter fringes
 I like =doom-vibrant= I think, but I can barely see the line numbers when I'm
 not in a dark room. We need to bump up their contrast a bit. Perhaps we could
 even make them the same gray color as vanilla text, but use a separator line.
@@ -19,6 +20,15 @@ even make them the same gray color as vanilla text, but use a separator line.
    )
   )
 #+end_src
+** comments
+Comments shouldn't appear muted. I want to read them!
+
+#+begin_src emacs-lisp :results none
+(set-face-attribute 'font-lock-comment-face nil
+                    :foreground "#bb88ff"
+                    )
+#+end_src
+
 * load
 #+begin_src emacs-lisp :results none
 (config/override-line-number-theme)
