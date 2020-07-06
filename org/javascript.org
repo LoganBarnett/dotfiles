@@ -328,6 +328,27 @@ when this happens, and Emacs eats a lot of processing power for no good reason.
 
 #+END_SRC
 
+*** flow-typed
+The =flow-typed= repo provided third party type definitions for when a project
+has none or doesn't bundle any in the consumed package.
+
+Doom ignores it by default for =projectile= searches. We need to fix that.
+Unfortunately requiring =projectile= from within the =js2-mode= config is the
+only thing I can do to make it load in the correct order. Even after loading
+=projectile= itself, =projectile-globally-ignored-directories= isn't present.
+
+#+name: config/javascript-unignore-flow-typed
+#+begin_src emacs-lisp :results none :tangle yes
+(require 'projectile)
+(setq projectile-globally-ignored-directories
+      (remove "flow-typed" projectile-globally-ignored-directories))
+#+end_src
+
+Then we need to tie it together with projectile itself, and not specifically a
+JavaScript mode. We need it to run if we are in a project with =dired=, not just
+a JavaScript file. We may want to condense this into a single
+[[file:./projectile.org]], but not today.
+
 ** big config
 Finally, tie it all together on demand.
 
@@ -365,6 +386,7 @@ Finally, tie it all together on demand.
     (add-to-list 'grep-find-ignored-directories "node_modules")
     <<config/javascript-indentation-chaining>>
     <<config/javascript-indentation-spacing>>
+    <<config/javascript-unignore-flow-typed>>
     (setq-default js2-strict-missing-semi-warning nil)
     (setq-default js2-strict-trailing-comma-warning nil)
     (setq-default js2-mode-show-parse-errors nil)
