@@ -137,3 +137,5 @@ cd -
 # manually for now.
 ln -f -s /usr/local/lib/python3.7/site-packages/xdice.py /usr/local/bin/xdice
 chmod +x /usr/local/lib/python3.7/site-packages/xdice.py
+
+./youtube-dl-install.sh
