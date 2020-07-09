@@ -141,6 +141,9 @@ alias curl-json='curl -v -H "Accept: application/json"'
 # git
 alias gs="git status"
 alias gfp="git push --force-with-lease"
+alias grc="git rebase --continue"
+alias gro="git restore --ours"
+alias grt="git restore --theirs"
 
 # yarn flow management because it happens a lot.
 alias yf="yarn flow"
