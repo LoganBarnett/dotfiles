@@ -389,6 +389,20 @@ reasons.
 #+begin_src emacs-lisp :results none :tangle yes
 (setq org-directory "~/Dropbox/notes")
 #+end_src
+* org-babel
+** text
+I need json and other text code blocks to be treated as content.
+
+Lifted from https://emacs.stackexchange.com/questions/24247/org-mode-pipe-source-block-output-as-stdin-to-next-source-block
+
+Do I actually need this though?
+
+#+begin_src emacs-lisp :results none :tangle yes
+(defun config/org-mode-org-babel-execute:passthrough (body params)
+  body)
+(defalias 'org-babel-execute:json 'config/org-mode-org-babel-execute:passthrough)
+#+end_src
+
 
 * stitch
 
