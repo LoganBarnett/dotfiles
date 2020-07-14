@@ -126,7 +126,8 @@ source $ZSH/plugins/osx/osx.plugin.zsh
 # terms of least surprising operations.
 unsetopt AUTO_CD
 
-source /usr/local/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+# This is the problem.
+# source /usr/local/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
 # Vars
 export NOTES_DIR="$HOME/notes"
@@ -356,6 +357,15 @@ $HOME/.doom-emacs.d/bin:\
 /usr/local/sbin:\
 $HOME/node_modules/.bin\
 "
+
+# Puppet installs using its own pattern.
+# See https://puppet.com/docs/pdk/1.x/pdk_troubleshooting.html#pdk-not-in-zshell-path-on-mac-os-x
+# This is supposedly needed for zsh, but also mangles the PATH such that rbenv
+# no longer works. I assume it also means other shim-installing things won't
+# work. Let's run this before the _all_ of the shim installers so it doesn't
+# interfere.
+eval $(/usr/libexec/path_helper -s)
+
 
 export NOTES_DIR=~/Dropbox/notes
 
