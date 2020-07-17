@@ -26,6 +26,40 @@ a:link {
   color: var(--link-color) !important;
 }
 
+/**
+ * Visited links on the side panel.
+ */
+#side-panel .pane-header a:visited,
+#side-panel .pane-footer a:visited,
+#side-panel .pane-content a:visited {
+  color: var(--visited-link-color) !important;
+}
+
+/**
+ * Also part of the side panel, but for tasks not executors.
+ */
+.task-link:link {
+  color: var(--link-color) !important;
+}
+
+.task-link:visited {
+  color: var(--visited-link-color) !important;
+}
+
+/**
+ * Strip the crazy padding on side links.
+ */
+.task-link-wrapper {
+  padding: 0 !important;
+}
+
+/* #side-panel .pane-header a:hover, */
+/* #side-panel .pane-footer a:hover, */
+/* #side-panel .pane-content a:hover, */
+/* #side-panel .pane-header a:focus, */
+/* #side-panel .pane-footer a:focus, */
+/* #side-panel .pane-content a:focus */
+
 div.CodeMirror-selected {
   background-color: #444 !important;
 }
