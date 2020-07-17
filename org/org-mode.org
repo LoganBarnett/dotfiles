@@ -111,7 +111,7 @@ A common form of hidden content is collapsed headings."
                  :user "logustus@gmail.com")
                 )
                :secret))
-     org-gcal-file-alist '(("logustus@gmail.com" . "~/Dropbox/notes/calendar.org")
+     org-gcal-file-alist '(("logustus@gmail.com" . "~/notes/calendar.org")
                           )
      org-gcal-header-alist '(("logustus@gmail.com" . "personal"))
      )
@@ -220,8 +220,8 @@ Adapt image size via `iimage-scale-to-fit-width' when the window size changes."
  calendar-date-style 'iso
  org-agenda-files
  '(
-   "~/Dropbox/notes/agenda.org"
-   "~/Dropbox/notes/inbox.org"
+   "~/notes/agenda.org"
+   "~/notes/inbox.org"
    "~/work-notes/nwea.org"
    )
  ;; For optimizations:
@@ -355,8 +355,8 @@ Adapt image size via `iimage-scale-to-fit-width' when the window size changes."
 (add-to-list 'org-src-lang-modes '("javascript" . js2))
 (setq-default
  org-confirm-babel-evaluate 'my/org-confirm-babel-evaluate
- org-default-notes-file "~/Dropbox/notes/inbox.org"
- org-directory "~/Dropbox/notes"
+ org-default-notes-file "~/notes/inbox.org"
+ org-directory "~/notes"
  org-refile-use-outline-path 'file
  helm-org-headings-fontify t
  ;; Everyone claims this makes helm work with org-refile. Who am I to say
@@ -387,7 +387,7 @@ reasons.
 
 #+name: config/org-mode-set-paths
 #+begin_src emacs-lisp :results none :tangle yes
-(setq org-directory "~/Dropbox/notes")
+(setq org-directory "~/notes")
 #+end_src
 * org-babel
 ** text

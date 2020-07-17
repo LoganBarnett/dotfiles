@@ -367,7 +367,7 @@ $HOME/node_modules/.bin\
 eval $(/usr/libexec/path_helper -s)
 
 
-export NOTES_DIR=~/Dropbox/notes
+export NOTES_DIR=~/notes
 
 # Should take care of some prompt issues.
 export LC_ALL=en_US.UTF-8

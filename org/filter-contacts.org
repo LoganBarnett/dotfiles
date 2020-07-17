@@ -229,7 +229,7 @@
     Be ware, this will destroy anything in =contacts.org=. I should find a smarter
     way to generate this data!
     #+name: do-format
-    #+begin_src shell :noweb yes :results value :file ~/Dropbox/notes/contacts.org
+    #+begin_src shell :noweb yes :results value :file ~/notes/contacts.org
       <<format>>
     #+end_src
 

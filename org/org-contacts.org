@@ -21,10 +21,10 @@ This is a quick dump from =config-org-mode.el=.
 :END:" "Template for org-contacts.")
     :custom
     (org-capture-templates
-     `(("c" "Contact" entry (file+headline "~/Dropbox/notes/contacts.org" "Friends"),
+     `(("c" "Contact" entry (file+headline "~/notes/contacts.org" "Friends"),
         my/org-contacts-template
         :empty-lines 1))
      )
-     (org-contacts-files '("~/Dropbox/notes/contacts.org"))
+     (org-contacts-files '("~/notes/contacts.org"))
   )
 #+end_src
