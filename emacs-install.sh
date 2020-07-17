@@ -70,6 +70,8 @@ elif [[ "$distro" == 'doom' ]]; then
   ln -sfn $PWD/doom/init.el ~/.doom.d/init.el
   ln -sfn $PWD/doom/config.el ~/.doom.d/config.el
   ln -sfn $PWD/doom/packages.el ~/.doom.d/packages.el
+  mkdir -p $PWD/doom/snippets
+  ln -sfn $PWD/doom/snippets ~/.doom.d/snippets
 elif [[ "$distro" == 'vanilla' ]]; then
   mkdir -p ~/.vanilla-emacs.d
   ln -snf $PWD/lisp/vanilla-init.el ~/.vanilla-emacs.d/init.el
