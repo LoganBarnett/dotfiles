@@ -75,20 +75,22 @@ to the "all mail" folder and then it will work like it should for =gmail=.
 #+end_src
 
 *** contacts
-     Contacts get synced somewhere by default, but I'm not sure where. That said
-     I have my own =org-contacts= file I wish to use. I can also add some
-     actions with =o= being the keybinding to add an =org-contact= contact per
-     the [[http://www.djcbsoftware.nl/code/mu/mu4e/Maintaining-an-address_002dbook-with-org_002dcontacts.html][documentation]].
+**** org-contacts
+Contacts get synced somewhere by default, but I'm not sure where. That said
+I have my own =org-contacts= file I wish to use. I can also add some
+actions with =o= being the keybinding to add an =org-contact= contact per
+the [[http://www.djcbsoftware.nl/code/mu/mu4e/Maintaining-an-address_002dbook-with-org_002dcontacts.html][documentation]].
 
-     #+begin_src emacs-lisp :results none
-       (defun config/mu4e-org-contacts ()
-         (setq-default mu4e-org-contacts-file "~/Dropbox/notes/contacts.org")
-         (add-to-list 'mu4e-headers-actions
-                      '("org-contact-add" . mu4e-action-add-org-contact) t)
-         (add-to-list 'mu4e-view-actions
-                      '("org-contact-add" . mu4e-action-add-org-contact) t)
-       )
-     #+end_src
+#+begin_src emacs-lisp :results none
+(defun config/mu4e-org-contacts ()
+  (setq-default mu4e-org-contacts-file "~/notes/contacts.org")
+  (add-to-list 'mu4e-headers-actions
+               '("org-contact-add" . mu4e-action-add-org-contact) t)
+  (add-to-list 'mu4e-view-actions
+               '("org-contact-add" . mu4e-action-add-org-contact) t)
+  )
+#+end_src
+**** auto-complete
 
 *** mail dir
      By default =mu4e= looks for =~/Maildir= which is not where I have my mail
