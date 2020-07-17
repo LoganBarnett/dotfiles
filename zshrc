@@ -96,6 +96,15 @@ source $ZSH/oh-my-zsh.sh
 
 source $ZSH/plugins/osx/osx.plugin.zsh
 
+# Yanking args is amazing. In command mode use _. I think using a number will
+# grab a specific one - like 4_ to grab the 4th.
+vi-yank-arg() {
+  NUMERIC=1 zle .vi-add-next
+  zle .insert-last-word
+}
+zle -N vi-yank-arg
+bindkey -M vicmd _ vi-yank-arg
+
 # You may need to manually set your language environment
 # export LANG=en_US.UTF-8
 
