@@ -198,6 +198,7 @@ const vars = {
   '--time-slice-cursor-background': '#5d4d7a',
   '--warning-background': '#441',
   '--warning-background-color': '#441',
+  '--warning-border': '1px solid #dc2',
   '--warning-color': '#dc2',
 }
 
