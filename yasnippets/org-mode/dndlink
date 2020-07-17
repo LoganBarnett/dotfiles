@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: Writing links to my d&d reference page is kind of a hassle.
+# key: dndlink
+# group: org
+# --
+[[file:./dnd5e.org::*${1:variable}][$1]${0:$$(insert "]")}
