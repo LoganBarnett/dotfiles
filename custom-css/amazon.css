@@ -114,6 +114,14 @@ div.imageInformation {
 }
 
 /**
+ * I'm not sure what dp means. This covers the "lower half" (comments, etc) of
+ * pages.
+ */
+#dp {
+  background-color: var(--general-background-color) !important;
+}
+
+/**
  *  Review area below movies.
  */
 .dp-customer-reviews-wrapper {
