@@ -255,6 +255,45 @@ a.message {
   color: black !important;
 }
 
+.bg-gray-light {
+  background-color: var(--general-background-color) !important;
+}
+
+/**
+ * Highlighted navigation tab.
+ */
+.UnderlineNav-item.selected,
+.UnderlineNav-item[aria-current]:not([aria-current="false"]),
+.UnderlineNav-item[role="tab"][aria-selected="true"] {
+  background-color: var(--tab-active-background-color) !important;
+  color: var(--tab-active-color) !important;
+}
+
+.pagehead ul.tabs li a:hover,
+.pagehead ul.tabs li.contextswitch /* , */
+/* #dashboard .repos, */
+/* #dashboard .repos .top-bar, */
+/* #dashboard .repos .bottom-bar, */
+/* #footer, */
+/* #commit .envelope, */
+/* .wikistyle, */
+/* #languages .popular, */
+/* .fieldgroup .fields, */
+/* .issue, */
+/* #directory .repo, */
+/* a.selected, */
+/* table.upgrades td, */
+/* .commit-preview .message, */
+/* .commit-preview .message pre, */
+/* .commit-preview p.error, */
+/* article, */
+/* .entry-content, */
+/* .participation */
+{
+  background-color: var(--tab-active-background-color) !important;
+  color: var(--tab-active-color) !important;
+}
+
 .Box-row--focus-gray.navigation-focus {
   background-color: #424 !important;
 }
@@ -336,12 +375,35 @@ ul.top-nav li :hover
   background: #555 url() !important;
 }
 
-body, #main, .unread_count, .pagehead, #browser table th, .tree-browser th, .main, .news .alert .body, .profilecols ul.stats li strong, .tab-content textarea,
- table.upgrades tr.current td, .definitions, span.name {
-  background: #222 url() !important;
-  color: #ddd !important;
+body, #main /* , .unread_count, .pagehead, #browser table th, .tree-browser th, .main, .news .alert .body, .profilecols ul.stats li strong, .tab-content textarea,
+ table.upgrades tr.current td, .definitions, span.name */ {
+  background: var(--general-background-color) url() !important;
+  color: var(--text-color) !important;
   margin-bottom: 0 !important;
  }
+
+.pagehead ul.tabs li a:hover,
+.pagehead ul.tabs li.contextswitch,
+#dashboard .repos,
+#dashboard .repos .top-bar,
+#dashboard .repos .bottom-bar,
+#footer,
+#commit .envelope,
+.wikistyle,
+#languages .popular,
+.fieldgroup .fields,
+.issue,
+#directory .repo,
+a.selected,
+table.upgrades td,
+.commit-preview .message,
+.commit-preview .message pre,
+.commit-preview p.error,
+article,
+.entry-content,
+.participation {
+
+}
 
 
  #header {
@@ -397,13 +459,13 @@ body, #main, .unread_count, .pagehead, #browser table th, .tree-browser th, .mai
   background-color: var(--button-background-color) !important;
 }
 
- .pagehead ul.tabs li a:hover, .pagehead ul.tabs li.contextswitch, #dashboard .repos, #dashboard .repos .top-bar, #dashboard .repos .bottom-bar,
- #footer, #commit .envelope, .wikistyle, #languages .popular, .fieldgroup .fields, .issue, #directory .repo, a.selected, table.upgrades td,
- .commit-preview .message, .commit-preview .message pre, .commit-preview p.error, article, .entry-content, .participation {
-  background: #333 url() !important;
-  color: #eee !important;
-  border: 0 !important;
- }
+ /* .pagehead ul.tabs li a:hover, .pagehead ul.tabs li.contextswitch, #dashboard .repos, #dashboard .repos .top-bar, #dashboard .repos .bottom-bar, */
+ /* #footer, #commit .envelope, .wikistyle, #languages .popular, .fieldgroup .fields, .issue, #directory .repo, a.selected, table.upgrades td, */
+ /* .commit-preview .message, .commit-preview .message pre, .commit-preview p.error, article, .entry-content, .participation { */
+ /*  background: #333 url() !important; */
+ /*  color: #eee !important; */
+ /*  border: 0 !important; */
+ /* } */
 
  .pagehead ul.actions a.feed, .notification-settings, .explore h2 .feed, #code_search_instructions h2, td.inst {
   background-color: #333 !important;
@@ -722,4 +784,13 @@ body .no-underline {
  */
 .code nt {
   color: var(--code-json-string-color) !important;
+}
+
+/**
+ * Security warnings, but could be other warnings too.
+ */
+.flash-warn {
+  background-color: var(--warning-background-color) !important;
+  border: var(--warning-border) !important;
+  color: var(--warning-color) !important;
 }
