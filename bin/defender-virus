@@ -1,4 +1,4 @@
-#! /usr/bin/env bash
+#!/usr/bin/env bash
 
 if [ "$1" == "pause" ]; then
   sudo ps aux | \
