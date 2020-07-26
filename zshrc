@@ -357,6 +357,7 @@ $HOME/dev/dotfiles-private/bin:\
 /opt/local/sbin:\
 $HOME/dev/adt-bundle-mac/sdk/platform-tools:\
 $HOME/.doom-emacs.d/bin:\
+/Library/TeX/texbin:\
 /usr/local/bin:\
 /usr/bin:\
 /bin:\

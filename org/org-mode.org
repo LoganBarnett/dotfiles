@@ -22,18 +22,37 @@ settings. Though
 I like the scale to be at 1.0. It was 1.5 from Doom Emacs as far as I can tell.
 The rest of the settings seemed fine by me, so they are a duplicate here.
 
+I also want the color to be nice.
+
 #+name: config/latex-format
 #+begin_src emacs-lisp :results none :tangle yes
 (setq org-format-latex-options
       '(:foreground default
         :background "#242730"
         :scale 1.0
-        :html-foreground "Black"
+        :html-foreground "gray"
         :html-background "Transparent"
         :html-scale 1.0
         :matchers ("begin" "$1" "$" "$$" "\\(" "\\[")
         )
       )
+#+end_src
+** packages
+
+According to [[http://bnbeckwith.com/blog/org-mode-tikz-previews-on-windows.html][this post]], TikZ and its family of packages must be rendered using
+=ImageMagick=.
+#+name: config/org-mode-latex-use-imagemagick
+#+begin_src emacs-lisp :results none :tangle yes
+(setq org-preview-latex-default-process 'imagemagick)
+#+end_src
+
+We want the equivalent of =\usepackage{circuitikz}=.
+\usepackage{tikz}
+#+name: config/org-mode-latex-add-tikz-packages
+#+begin_src emacs-lisp :results none :tangle yes
+(add-to-list 'org-latex-packages-alist '("" "tikz" t))
+(add-to-list 'org-latex-packages-alist '("" "siunitx" t))
+(add-to-list 'org-latex-packages-alist '("" "circuitikz" t))
 #+end_src
 
 * headings
@@ -375,7 +394,6 @@ Adapt image size via `iimage-scale-to-fit-width' when the window size changes."
 ;; get clipped, which is undesirable.
 ;; (add-hook 'org-mode-hook #'iimage-scale-on-window-configuration-change)
 
-(use-friendly-deterministic-headline-html-anchors)
 (config/hidden-content-indicator)
 ;; (config/google-calendar-sync)
 #+end_src
@@ -415,10 +433,13 @@ Do I actually need this though?
   <<config/org-mode-hack-initial-folding>>
   ;; Needed to set `org-startup-folded'.
   (org-set-startup-visibility)
-  (require 'org-mode-auto-id-headlines)
   <<config/org-dirty-config-fns>>
   <<config/org-dirty-config-run>>
   <<config/latex-setup-exec>>
   <<config/latex-format>>
+  <<config/org-mode-latex-use-imagemagick>>
+  <<config/org-mode-latex-add-tikz-packages>>
+  (require 'org-mode-auto-id-headlines)
+  (use-friendly-deterministic-headline-html-anchors)
   )
 #+end_src
