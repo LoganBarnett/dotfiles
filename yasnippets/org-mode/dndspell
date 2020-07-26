@@ -33,6 +33,7 @@
 "60 feet"
 "90 feet"
 "120 feet"
+"300 feet"
 "unknown"
 ))}
 #+components:   ${4: $$(yas-choose-value '(
