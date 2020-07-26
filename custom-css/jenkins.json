@@ -8,6 +8,7 @@
     "https://jenkins-pisa.americas.n?ea.pvt/*",
     "https://webmap.americas.n?ea.pvt/*",
     "https://jenkins-webmap.americas.n?ea.pvt/*",
+    "https://jenkins-webmap.mgmt.n?eacolo.pvt/*",
     "https://jenkins-cicd.americas.n?ea.pvt/*",
     "https://jenkins-se.mgmt.n?eacolo.pvt/*"
   ],
