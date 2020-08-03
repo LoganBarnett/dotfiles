@@ -80,6 +80,14 @@ interfering. So let's just rub some Lisp on it.
 (add-hook 'org-mode-hook #'+org/close-all-folds)
 #+end_src
 
+* links
+=org-mode= either from Doom or by default doesn't open files in new frames. This
+should fix that:
+
+#+name: config/open-link-in-new-window
+#+begin_src emacs-lisp :results none :tangle yes
+(add-to-list 'org-link-frame-setup '(file . find-file-other-window))
+#+end_src
 
 * old config
 This is moved from =config-org-mode.el=. I should break this up and add prose as
@@ -441,5 +449,6 @@ Do I actually need this though?
   <<config/org-mode-latex-add-tikz-packages>>
   (require 'org-mode-auto-id-headlines)
   (use-friendly-deterministic-headline-html-anchors)
+  <<config/open-link-in-new-window>>
   )
 #+end_src
