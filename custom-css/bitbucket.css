@@ -176,6 +176,14 @@ form.aui .checkbox>label, form.aui .radio>label {
 }
 
 /**
+ * Pull request buttons.
+ */
+.css-shc4i4 {
+  background: var(--button-background-color) !important;
+  color: var(--button-color) !important;
+}
+
+/**
  * Dialogs.
  */
 .aui-dialog {
@@ -305,6 +313,14 @@ h3, .aui-page-header-hero .aui-page-header-main p, .aui-page-header-marketing .a
 }
 
 /**
+ * Comment area before it is expanded. Once expanded it has a different set of
+ * styles that apply to it.
+ */
+.css-13hc3dd {
+  background-color: var(--input-background-color) !important;
+}
+
+/**
  * This is the table from rendered markdown in README's and the like.
  */
 .markup table > tbody > tr,
@@ -359,6 +375,11 @@ h3, .aui-page-header-hero .aui-page-header-main p, .aui-page-header-marketing .a
 }
 
 .removed.line .ediff-change, .removed.line .ediff-delete {
+  background-color: var(--diff-minor-remove-background-color) !important;
+  color: var(--diff-minor-remove-color) !important;
+}
+
+.diff-line.removed-line {
   background-color: var(--diff-major-remove-background-color) !important;
   color: var(--diff-major-remove-color) !important;
 }
@@ -368,6 +389,22 @@ h3, .aui-page-header-hero .aui-page-header-main p, .aui-page-header-marketing .a
   color: var(--diff-major-add-color) !important;
 }
 
+.diff-line.added-line {
+  background-color: var(--diff-minor-add-background-color) !important;
+  color: var(--diff-minor-add-color) !important;
+}
+
+.diff-line.added-line .ediff-add,
+.diff-line.added-line .ediff-change {
+  background-color: var(--diff-major-add-background-color) !important;
+  color: var(--diff-major-add-color) !important;
+}
+
+.diff-line.removed-line .ediff-add,
+.diff-line.removed-line .ediff-change {
+  background-color: var(--diff-major-remove-background-color) !important;
+  color: var(--diff-major-remove-color) !important;
+}
 
 .diff-view.text-view .added.line,
 .diff-view.text-view .added.segment-connector,
@@ -434,6 +471,13 @@ aui-badge, .aui-badge {
  */
 #content .aui-sidebar+.aui-page-header {
   background: var(--general-background-color) !important;
+}
+
+/**
+ * Header for top of file in a pull request.
+ */
+.change-header {
+  background-color: var(--head3-background-color) !important;
 }
 
 /**
@@ -539,4 +583,57 @@ aui-badge, .aui-badge {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+/**
+ * Our overrides for diff colors trickle into comment text color. Set it back.
+ */
+.diff-line-comments {
+  color: var(--text-color) !important;
+}
+
+/**
+ * Comments in diffs.
+ */
+.diff-line-comments .comments-thread {
+  background-color: var(--general-background-color) !important;
+  border-left: var(--thin-border) !important;
+  border-right: var(--thin-border) !important;
+  border-bottom: var(--thin-border) !important;
+}
+
+/**
+ *  First comment in a diff.
+ */
+.diff-line-comments .comments-thread:first-of-type {
+  border-top: var(--thin-border) !important;
+}
+
+/**
+ * New comments get highlighted...
+ */
+.comment.highlight:not(.editing) .comment-wrapper,
+.comment.is-unread:not(.editing) .comment-wrapper {
+  background-color: var(--highlight-dim-background-color) !important;
+  color: var(--highlight-dim-color) !important;
+}
+
+/**
+ * Avatars in comment timelines.
+ */
+.eFlZlt {
+  background-color: var(--panel-background-color) !important;
+}
+
+/**
+ * Comment timeline "lines" that drop to the next avatar.
+ */
+.pull-request-activities .pull-request-new-comment-editor::before {
+  background-color: var(--fancy-color) !important;
+}
+/**
+ * More comment timeline "lines".
+ */
+.activity-item::before {
+  background-color: var(--fancy-color) !important;
 }
