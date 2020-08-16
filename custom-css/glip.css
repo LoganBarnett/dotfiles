@@ -94,6 +94,7 @@ div.select {
  * The entire post.
  */
 .post .post-body {
+  border-top: var(--thin-border) !important;
   padding: 0px 0 0px 51px !important;
   margin: 0 5px !important;
 }
@@ -301,4 +302,59 @@ h1.stream-header {
 .leftrail .grouptab:last-of-type {
   margin-bottom: 0 !important;
   border-bottom: var(--thin-border);
+}
+
+/**
+ * Dialog boxes.
+ */
+.confirm {
+  background-color: var(--panel-background-color) !important;
+  border: var(--panel-border) !important;
+  box-shadow: none;
+}
+
+/**
+ * Dialog box titles.
+ */
+.confirm .confirmtitle {
+  background-color: var(--panel-title-background-color) !important;
+  color: var(--panel-title-color) !important;
+}
+
+/**
+ * Dialog box text (in the body).
+ */
+.confirm .confirmbody {
+  color: var(--text-color) !important;
+}
+
+/**
+ * Dialog inputs.
+ */
+.compose textarea,
+.post textarea,
+.compose-reply textarea {
+  background-color: var(--input-background-color) !important;
+  color: var(--input-color) !important;
+  border: var(--input-border) !important;
+}
+
+/**
+ * Dialog inputs.
+ */
+.compose input,
+.confirm input,
+.mimic_input {
+  background-color: var(--input-background-color) !important;
+  color: var(--input-color) !important;
+  border: var(--input-border) !important;
+}
+
+/**
+ * Auto complete entries.
+ */
+.ui-widget-content {
+  background: var(--panel-background-color) !important;
+  border: var(--panel-border) !important;
+  color: var(--text-color) !important;
 }

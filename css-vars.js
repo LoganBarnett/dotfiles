@@ -129,6 +129,11 @@ const vars = {
   '--highlight-dim-color': '#e3dedd',
   '--highlight-dim-background-color': '#3b314d',
   '--highlight-background-color': '#444155',
+  'highlight-color': '#e3dedd',
+  // This is the same as the code background color. Perhaps we should require
+  // code blocks use something a little brighter?
+  'line-number-background-color': '#100a14',
+  'line-number-color': '#686868',
   '--tab-inactive-color': '#2aa1ae',
   '--tab-inactive-background-color': '#244',
   '--tab-left-inactive-border-radius': '0 0 0.5em 0',
@@ -153,6 +158,7 @@ const vars = {
   '--info-color': '#90e030',
   '--input-color': '#2aa1ae',
   '--input-background-color': '#292e34',
+  'input-border': '1px solid #2aa1ae',
   '--input-label-color': '#2aa1ae',
   /**
    * Active items are usually the ones important under a context. They will

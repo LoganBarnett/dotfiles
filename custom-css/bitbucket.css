@@ -637,3 +637,67 @@ aui-badge, .aui-badge {
 .activity-item::before {
   background-color: var(--fancy-color) !important;
 }
+
+/**
+ * Search results page.
+ */
+.search {
+  background-color: var(--general-background-color) !important;
+}
+
+/**
+ * Search results headers.
+ */
+.search .search-results .code-search-result header {
+  background-color: var(--head3-background-color) !important;
+  color: var(--head3-color) !important;
+}
+
+/**
+ * Search result line numbers.
+ */
+.search .search-results .code-search-result .hit-context-lines li {
+  background-color: var(--line-number-background-color) !important;
+  border-right: var(--thin-border) !important;
+  color: var(--line-number-color) !important;
+}
+
+/**
+ * Area around the search input.
+ */
+.search .search-form {
+  background-color: var(--general-background-color) !important;
+}
+
+/**
+ * The number of search results.
+ */
+.search .search-results .result-summary strong {
+  background-color: var(--highlight-background-color) !important;
+  color: var(--highlight-color) !important;
+}
+
+/**
+ * Repository names. Sometimes these get used in buttons so just make them use
+ * inherit.
+ */
+.base-repository-selector .project-name,
+.base-repository-selector-trigger .project-name {
+  color: inherit !important;
+}
+
+/**
+ * Path separators. Obnoxious in buttons.
+ */
+.separator {
+  background-color: inherit !important;
+  border-bottom: none !important;
+}
+
+/**
+ * Author names - usually from commits.
+ */
+.commit-badge-oneline span.commit-author {
+  background-color: var(--highlight-background-color) !important;
+  color: var(--highlight-color) !important;
+}

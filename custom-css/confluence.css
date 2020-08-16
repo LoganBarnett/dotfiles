@@ -1,3 +1,14 @@
+
+/**
+ * This is how the font color is styled from within the editor iframe. I am not
+ * sure if this targets the iframe though.
+ */
+body {
+  color: var(--general-background-color) !important;
+}
+
+
+
 /* This covers just about everything I think. */
 #full-height-container {
   background-color: var(--general-background-color) !important;
@@ -280,4 +291,11 @@ form.aui .multi-select,
 form.aui .aui-select2-container {
   background-color: var(--input-background-color) !important;
   color: var(--input-color) !important;
+}
+
+/**
+ * Editor for a page.
+ */
+body.mceContentBody {
+  background-color: var(--general-background-color) !important;
 }
