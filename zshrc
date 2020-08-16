@@ -6,6 +6,8 @@
   unsetopt zle &&
   unsetopt prompt_cr &&
   unsetopt prompt_subst &&
+  # Note that zsh comments like this work whereas bash's do not.
+  #
   # unfunction precmd &&
   # unfunction preexec &&
   PS1='$ ' &&
