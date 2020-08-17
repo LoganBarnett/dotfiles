@@ -22,29 +22,29 @@
          (funcall ,fnc)))
   #+end_src
 
+  #+name: config/org-agenda-autosave :tangle yes
   #+begin_src emacs-lisp :results none
-    (defun config/org-agenda-autosave ()
-      (advice-add 'org-deadline       :after (unrest #'org-save-all-org-buffers))
-      (advice-add 'org-schedule       :after (unrest #'org-save-all-org-buffers))
-      (advice-add 'org-store-log-note :after (unrest #'org-save-all-org-buffers))
-      (advice-add 'org-todo           :after (unrest #'org-save-all-org-buffers))
-      )
+    (advice-add 'org-deadline       :after (unrest #'org-save-all-org-buffers))
+    (advice-add 'org-schedule       :after (unrest #'org-save-all-org-buffers))
+    (advice-add 'org-store-log-note :after (unrest #'org-save-all-org-buffers))
+    (advice-add 'org-todo           :after (unrest #'org-save-all-org-buffers))
   #+end_src
 
 * make day view default view
-  Taken from the documentation on =org-agenda-list=:
+Taken from the documentation on =org-agenda-list=:
 
-  #+begin_quote
-  With a numeric prefix argument in an interactive call, the agenda will
-  span ARG days.  Lisp programs should instead specify SPAN to change
-  the number of days.  SPAN defaults to ‘org-agenda-span’.
-  #+end_quote
+#+begin_quote
+With a numeric prefix argument in an interactive call, the agenda will span ARG
+days. Lisp programs should instead specify SPAN to change the number of days.
+SPAN defaults to ‘org-agenda-span’.
+#+end_quote
 
-  #+begin_src emacs-lisp :results none
-    (defun config/org-agenda-default-view ()
-      (setq-default org-agenda-span 1)
-      )
-  #+end_src
+#+name: config/org-agenda-default-view
+#+begin_src emacs-lisp :results none :tangle yes
+(defun config/org-agenda-default-view ()
+  (setq-default org-agenda-span 1)
+  )
+#+end_src
 
 * last day of month expression
   =org-agenda= repeating timestamps lack an expression that allows them to
