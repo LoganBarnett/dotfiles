@@ -415,6 +415,8 @@ reasons.
 #+begin_src emacs-lisp :results none :tangle yes
 (setq org-directory "~/notes")
 #+end_src
+* org-agenda
+This is worthy of its own file. See [[file:./org-agenda.org][org-agenda.org]].
 * org-babel
 ** text
 I need json and other text code blocks to be treated as content.
