@@ -11,6 +11,10 @@ start_dir=$PWD
 # TODO: add key pair
 # TODO: install istatmenu
 
+if [ $(uname) != 'Darwin' ]; then
+  apt update
+fi
+
 echo "creating ssh key if it doesn't exist"
 ./create-ssh-key.sh
 echo "done create ssh key"
@@ -28,9 +32,14 @@ git submodule update || true
 
 # link harder things
 mkdir -p ~/.config
-ln -F -s -n $PWD/awesome ~/.config/awesome
+ln -snf $PWD/awesome ~/.config/awesome
 
-ln -F -s -n $PWD/bin ~/bin
+ln -snf $PWD/bin ~/bin
+
+# Installing Haskell must become before the shell since some plugins require
+# Haskell and Stack are installed first.
+echo "Installing Haskell..."
+./install-haskell.sh
 
 ./install-shell.sh
 

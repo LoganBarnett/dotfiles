@@ -1,6 +1,8 @@
 #! /usr/bin/env bash
 
 # install zsh
+echo "installing zsh..."
+./install-package.sh zsh
 echo "installing oh-my-zsh"
 sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"
 zshPath=$(which zsh)

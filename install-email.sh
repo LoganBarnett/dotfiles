@@ -10,8 +10,8 @@ cp $PWD/certs/* /usr/local/etc/openssl/certs/
 ./link-dotfile.sh notmuch-config
 touch mailrc # in case the file doesn't exist. How to best keep this private?
 ./link-dotfile.sh mailrc
-brew-upstall isync
-brew-upstall mu
+./install-package.sh isync
+./install-package.sh mu
 
 echo "Creating notmuch index. This may take a while."
 notmuch new

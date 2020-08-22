@@ -19,7 +19,6 @@ if [ $(uname) = 'Darwin' ]; then
     # ispell so flyspell works on emacs
     # pandoc allows converting HTML to org syntax.
     BREWS="
-ag
 ack
 avr-gcc
 awscli
@@ -99,8 +98,54 @@ elif [ $(uname) = 'Linux' ]; then
     if [ $(which apt-get) != '' ]; then
         echo "installing packages via apt-get"
         # how can you not have curl? ugh
-        APTS="curl zsh emacs python3-dev python3-pip"
-        sudo apt-get install -y -qq $APTS
+        APTS="
+        ack
+        avr-gcc
+        awscli
+        cargo
+        coreutils
+        curl
+        dos2unix
+        elm
+        emacs
+        ffmpeg
+        gnu-sed
+        gnuplot
+        gnutls
+        go
+        graphviz
+        ispell
+        jenv
+        jq
+        markdown
+        maven
+        mtr
+        nmap
+        node
+        npm
+        ocaml
+        opam
+        pandoc
+        percol
+        pinentry-mac
+        plantuml
+        postgresql
+        python3
+        python3-dev
+        python3-pip
+        ripgrep
+        sqlite
+        terraform
+        thefuck
+        tmux
+        vim
+        w3m
+        wget
+        yarn
+        zsh
+        zsh-syntax-highlighting
+        "
+        sudo apt install -y -qq $APTS
     else
         # we must be in some redhat based distro
         echo "yum not supported yet!"
@@ -109,6 +154,9 @@ elif [ $(uname) = 'Linux' ]; then
     # thefuck is installed via pip on linux
     sudo -H pip install thefuck
 
+    # ripgrep is installed via cargo on Linux (despite the claims of Debian
+    # support in the docs - I think it only applies to 18.x and not higher).
+    cargo install ripgrep
 else
     echo "skipping brew install - not on a supported OS."
 fi
