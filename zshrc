@@ -108,7 +108,7 @@ zle -N vi-yank-arg
 bindkey -M vicmd _ vi-yank-arg
 
 # You may need to manually set your language environment
-# export LANG=en_US.UTF-8
+export LANG=en_US.UTF-8
 
 # Preferred editor for local and remote sessions
 # if [[ -n $SSH_CONNECTION ]]; then
