@@ -2,6 +2,11 @@ body {
   background-color: var(--general-background-color) !important;
 }
 
+a {
+  color: var(--link-color) !important;
+  text-decoration: underline !important;
+}
+
 /**
  * Here the html tag trick is employed to increase specificity since Jenkins
  * uses its own !important.
@@ -178,4 +183,44 @@ body input {
  */
 #pipeline-box .table-box .table-viewPort .stage-start .cell-box .stage-start-time {
   background-color: var(--general-background-color) !important;
+}
+
+/**
+ * Issue title preview in issue lists.
+ */
+.issue-list > li .splitview-issue-link .issue-link-summary {
+  color: var(--text-color) !important
+}
+
+/**
+ * Watch count badges and other badges.
+ */
+aui-badge,
+.aui-badge {
+  background-color: var(--callout-background-color) !important;
+  color: var(--callout-color) !important;
+}
+
+/**
+ * Text input placeholders.
+ */
+form.aui .text::placeholder,
+form.aui .password::placeholder,
+form.aui .textarea::placeholder {
+  color: var(--input-placeholder-color) !important;
+}
+
+/**
+ * Text inputs.
+ */
+form.aui .text,
+form.aui .password,
+form.aui .upfile,
+form.aui .textarea,
+form.aui .select,
+form.aui .multi-select,
+form.aui .aui-select2-container {
+  background-color: var(--input-background-color) !important;
+  border: var(--input-border) !important;
+  color: var(--input-text-color) !important;
 }

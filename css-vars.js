@@ -157,6 +157,7 @@ const vars = {
   '--info-background-color': '#060',
   '--info-color': '#90e030',
   '--input-color': '#2aa1ae',
+  '--input-placeholder-color': '#116162',
   '--input-background-color': '#292e34',
   'input-border': '1px solid #2aa1ae',
   '--input-label-color': '#2aa1ae',
