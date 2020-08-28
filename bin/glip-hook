@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+#
+# Pipes a line at a time to a Glip Webhook.
+
+if [[ "$1" == "" ]]; then
+  echo "usage: $0 <webhook uuid>" 2>&1
+  exit 1
+fi
+
+# TODO: Escape $line
+while IFS= read -r line
+do
+  curl -v \
+    -H 'Content-Type: application/json' \
+    --data @- \
+    https://hooks.glip.com/webhook/$1 <<EOF
+{
+  "activity":"Pipe",
+  "title":"Pipe from glip-hook",
+  "icon":"https://w7.pngwing.com/pngs/326/204/png-transparent-green-pipe-super-mario-bros-3-super-mario-bros-2-8-bit-angle-text-super-mario-bros-thumbnail.png",
+  "body":"$line"
+}
+EOF
+done
