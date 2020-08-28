@@ -423,14 +423,33 @@ I need json and other text code blocks to be treated as content.
 
 Lifted from https://emacs.stackexchange.com/questions/24247/org-mode-pipe-source-block-output-as-stdin-to-next-source-block
 
+Specifically https://emacs.stackexchange.com/a/51734/14851
+
 Do I actually need this though?
 
 #+begin_src emacs-lisp :results none :tangle yes
 (defun config/org-mode-org-babel-execute:passthrough (body params)
   body)
 (defalias 'org-babel-execute:json 'config/org-mode-org-babel-execute:passthrough)
+;; The post says to use this, but I found everything works without it.
+;; (add-to-list 'org-babel-load-languages '(passthrough . t))
 #+end_src
 
+Here's the test:
+#+NAME: json-test
+#+BEGIN_SRC json
+  {"greet": "hello, world"}
+#+END_SRC
+
+#+HEADER: :stdin json-test
+#+BEGIN_SRC sh
+  jq .greet
+#+END_SRC
+
+#+RESULTS:
+: hello, world
+
+It works!
 
 * stitch
 
