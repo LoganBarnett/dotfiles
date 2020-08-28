@@ -98,6 +98,13 @@ source $ZSH/oh-my-zsh.sh
 
 source $ZSH/plugins/osx/osx.plugin.zsh
 
+# oh-my-zsh configures tabbing to cycle through possible matches. This makes
+# tabbing non-idempotent and for me often means more correcting than benefiting
+# from the behavior. Disabling auto_menu and menu_complete disables the
+# behavior.
+setopt noautomenu
+setopt nomenucomplete
+
 # Yanking args is amazing. In command mode use _. I think using a number will
 # grab a specific one - like 4_ to grab the 4th.
 vi-yank-arg() {
