@@ -1,13 +1,21 @@
 {
   "includes": [
+    "https://askubuntu.com/*",
+    "http://askubuntu.com/*",
+    "https://*.askubuntu.com/*",
+    "http://*.askubuntu.com/*",
+    "http://*.serverfault.com/*",
+    "https://*.serverfault.com/*",
+    "http://serverfault.com/*",
+    "https://serverfault.com/*",
     "http://*.stackoverflow.com/*",
     "http://stackoverflow.com/*",
     "https://*.stackoverflow.com/*",
     "https://stackoverflow.com/*",
     "https://*.stackexchange.com/*",
     "http://*.stackexchange.com/*",
-    "https://askubuntu.com/*",
-    "http://askubuntu.com/*",
+    "https://*.superuser.com/*",
+    "http://*.superuser.com/*",
     "https://superuser.com/*",
     "http://superuser.com/*"
   ],
