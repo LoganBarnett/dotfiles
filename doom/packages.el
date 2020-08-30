@@ -33,6 +33,7 @@
 (package! flyspell)
 (package! flyspell-correct)
 (package! elm-mode)
+(package! glsl-mode)
 ;; We already have browse-at-remote, and I think browse-at-remote might be a
 ;; better library.
 ;;
