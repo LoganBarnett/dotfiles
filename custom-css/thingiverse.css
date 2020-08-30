@@ -1,0 +1,115 @@
+html, body {
+  background-color: var(--general-background-color) !important;
+  color: var(--text-color) !important;
+}
+
+.ThingPage__modelName--3CMsV {
+  background-color: var(--head2-background-color) !important;
+  color: var(--head2-color) !important;
+}
+
+.ThingPage__createdBy--1fVAy {
+  background-color: var(--head3-background-color) !important;
+  color: var(--head3-color) !important;
+}
+
+.button {
+  background-color: var(--button-background-color) !important;
+  color: var(--button-color) !important;
+}
+
+/**
+ * Use body trick because color uses !important in the original CSS.
+ */
+body .SideMenuItem__textWrapper--11bnt {
+  color: var(--link-color) !important;
+  text-decoration: underline !important;
+  opacity: 1 !important;
+}
+
+.ThingPage__gallery--SnBAG {
+  background-color: var(--panel-background-color) !important;
+  border: var(--panel-border) !important;
+}
+
+.SidebarMenu__sidebarMenu--3uBjd {
+  background-color: var(--panel-background-color) !important;
+  border: var(--panel-border) !important;
+}
+
+.MetricButton__tabButton--2rvo1 {
+  background-color: var(--tab-inactive-background-color) !important;
+  color: var(--tab-inactive-color) !important;
+}
+
+.MetricButton__selected--BGAr0 {
+  background-color: var(--tab-active-background-color) !important;
+  border: var(--tab-active-border) !important;
+  color: var(--tab-active-color) !important;
+}
+
+.MetricButton__metric--FqxBi {
+  color: var(--tab-inactive-color) !important;
+}
+
+.MetricButton__tabTitle--2Xau7 {
+  color: var(--tab-inactive-color) !important;
+}
+
+.MetricButton__selected--BGAr0 .MetricButton__metric--FqxBi {
+  color: var(--tab-active-color) !important;
+}
+
+.MetricButton__selected--BGAr0 .MetricButton__tabTitle--2Xau7 {
+  color: var(--tab-active-color) !important;
+}
+
+.ThingComment__postCommentHeader--YE-GX {
+  background-color: var(--head3-background-color) !important;
+  color: var(--head3-color) !important;
+}
+
+.ThingComment__commentTextArea--3Px7K {
+  background: var(--input-background-color) !important;
+  color: var(--input-color) !important;
+}
+
+.Button__blue--1HC2y {
+  background-color: var(--button-background-color) !important;
+  color: var(--button-color) !important;
+}
+
+.Button__button--2kecZ {
+  background-color: var(--button-background-color) !important;
+  color: var(--button-color) !important;
+}
+
+.ThingComment__thingComment--LDUzY {
+  background-color: var(--panel-background-color) !important;
+  border: var(--panel-border) !important;
+}
+
+.ThingComment__commentBody--2xT45 {
+  color: var(--text-color) !important;
+}
+
+.ThingComment__modelName--Vqvbz {
+  background-color: var(--head3-background-color) !important;
+  color: var(--head3-color) !important;
+}
+
+/**
+ * Use body trick because color uses !important in the original CSS.
+ */
+body .ThingComment__createdBy--3RvU6 {
+  color: var(--link-color) !important;
+  text-decoration: underline !important;
+}
+
+/**
+ * Sorry folks. It just gets in the way.
+ */
+.AdCard__leaderboard--2Yt9x {
+  background: var(--general-background-color) !important;
+  display: none !important;
+}

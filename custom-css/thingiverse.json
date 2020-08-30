@@ -1,0 +1,12 @@
+{
+  "includes": [
+    "https://thingiverse.com/*",
+    "https://*thingiverse.com/*"
+  ],
+  "excludes": [
+    ""
+  ],
+  "name": "thingiverse",
+  "enabled": true,
+  "key": "thingiverse"
+}
