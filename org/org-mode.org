@@ -6,6 +6,23 @@
 #+file_tags:
 #+tags:
 
+* exporting
+** confluence prefix
+
+Confluence puts a prefix upon every anchor which is the title of the document.
+That name can vary across =org-mode= buffers. Look it up using the custom
+keyword =AUTO_ID_PREFIX=.
+
+#+begin_src emacs-lisp :results none
+(defun config/auto-id-with-confluence-prefix (hierarchy-list)
+  (concat
+   (org-auto-id/get-org-keyword "AUTO_ID_PREFIX")
+   (org-auto-id/id-as-extra-kebab hierarchy-list)
+   )
+  )
+#+end_src
+
+
 * latex
 ** executables
 To get LaTeX working, we need to ensure that =latex= is on the =PATH=. My
@@ -468,8 +485,8 @@ It works!
   <<config/latex-format>>
   <<config/org-mode-latex-use-imagemagick>>
   <<config/org-mode-latex-add-tikz-packages>>
-  (require 'org-mode-auto-id-headlines)
-  (use-friendly-deterministic-headline-html-anchors)
+  (require 'org-auto-id)
+  (org-auto-id/on-save-auto-id)
   <<config/open-link-in-new-window>>
   )
 #+end_src
