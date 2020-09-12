@@ -1,0 +1,16 @@
+#+title:     Rust
+#+author:    Logan Barnett-Hoy
+#+email:     logustus@gmail.com
+#+date:      <2020-09-10 Thu>
+#+language:  en
+#+file_tags:
+#+tags:
+
+* stitch
+#+begin_src emacs-lisp :results none
+(use-package "rust-mode"
+  :init
+  (message "add rust to path manually...")
+  (add-to-list 'exec-path "/Users/logan/.cargo/bin")
+  )
+#+end_src

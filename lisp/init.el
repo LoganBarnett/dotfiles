@@ -309,6 +309,7 @@
   (init-org-file "css.org")
   (init-org-file "makefile.org")
   (init-org-file "puppet.org")
+  (init-org-file "rust.org")
   (init-org-file "shell.org")
   (init-org-file "yaml.org")
   ;; End languages.
