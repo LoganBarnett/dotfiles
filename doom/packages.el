@@ -26,13 +26,13 @@
 ;; I decided to try it out, since the author is right - I can do the same things
 ;; with cl and cc.
 ;; (package! evil-snipe :disable t)
+(package! elm-mode)
 (package! feature-mode)
 (package! find-lisp)
 (package! floobits)
 (package! flycheck)
 (package! flyspell)
 (package! flyspell-correct)
-(package! elm-mode)
 (package! glsl-mode)
 ;; We already have browse-at-remote, and I think browse-at-remote might be a
 ;; better library.
