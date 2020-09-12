@@ -3,7 +3,7 @@
 #+email:     logustus@gmail.com
 #+date:      <2019-09-03 Tue>
 #+language:  en
-#+file_tags: emacs config
+#+file_tags: emacs config doom
 #+tags:
 
 * UI
@@ -52,3 +52,15 @@
        ;; )
 
    #+end_src
+** displaying fringes
+
+Perhaps a Doom setting - right side fringes get set to 4 pixels via
+=fringe-mode=. Setting the =fringe-mode= value to something much larger allows
+the continuation fringes to be easily visible. Even with this extra column worth
+of space taken, my Emacs windows still fit well at 80 columns.
+
+The code below sets the right width and leaves the left width alone.
+
+#+begin_src emacs-lisp :results none
+(set-fringe-mode '(nil . 12))
+#+end_src
