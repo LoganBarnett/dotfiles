@@ -112,7 +112,7 @@ const vars = {
   '--general-background-color': '#292b2e',
   '--general-background': '#292b2e',
   '--code-background-color': '#100a14',
-  '--code-color': '#686868',
+  '--code-color': '#b0b0d0',
   '--link-color': '#2d9574',
   '--hover-link-color': '#4b9',
   '--visited-link-color': '#4f97d7',

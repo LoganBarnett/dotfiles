@@ -37,11 +37,11 @@ blockquote {
 }
 
 pre {
-  background-color: #333 !important;
+  background-color: var(--code-background-color) !important;
 }
 
 code {
-  background-color: #333 !important;
+  background-color: var(--code-background-color) !important;
 }
 
 .prettyprint {
@@ -102,4 +102,9 @@ textarea {
 .answer-help-background, .comment-help {
   color: var(--callout-color) !important;
   background-color: var(--callout-background-color) !important;
+}
+
+.s-prose code:not(.s-code-block) {
+  background-color: var(--code-background-color) !important;
+  color: var(--code-color) !important;
 }
