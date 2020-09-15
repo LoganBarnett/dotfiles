@@ -1,0 +1,12 @@
+{
+  "includes": [
+    "http://*.substack.com/*",
+    "https://*.substack.com/*"
+  ],
+  "excludes": [
+    ""
+  ],
+  "name": "substack",
+  "enabled": true,
+  "key": "substack"
+}
