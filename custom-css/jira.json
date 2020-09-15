@@ -2,6 +2,8 @@
   "includes": [
     "https://jira.*",
     "http://jira.*",
+    "http://*jira*",
+    "https://*jira*",
     "https://issues.jenkins-ci.org/*"
   ],
   "excludes": [
