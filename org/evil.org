@@ -31,3 +31,51 @@ it here. The motions =evil-snipe= uses need to be precise in my mind.
 #+begin_src emacs-lisp :results none :noweb yes
 <<evil-snipe-disable-smart-case>>
 #+end_src
+* evil-iedit-state
+The [[https://github.com/syl20bnr/evil-iedit-state][evil-iedit-state]] package is something I encountered first with Spacemacs. It
+brings up a [[https://github.com/abo-abo/hydra][hydra]] interface when pressing =*= or =#=. In vim these typically
+select all occurrences of the word that the cursor is on, and will do a forward
+or reverse search, depending on which of the two were pressed.
+
+=evil-iedit-state= takes this a bit further, and provides a =hydra= state that
+allows for interactive editing, which can include refactoring identifiers.
+
+#+begin_src emacs-lisp :results none
+
+(defhydra hydra-evil-iedit-state
+  (
+   ;; None of the keys in the string are actually different from
+   ;; evil-iedit-state. Just pass through all key bindings to evil-iedit-state.
+   :foreign-keys run
+   :hint none
+   )
+  ;; Yanked from spacemacs-visual-editing.
+  "
+ _n_ next                _r_ change range         _R_ reset       _e_ iedit
+ _N_ previous            _o_ open below
+ _d_ next definition     _O_ open above
+ _D_ previous definition _F_ restrict to function
+ _C-g_/_ESC_ quit
+"
+  ("n" (iedit-next-occurrence))
+  ("N" (iedit-prev-occurrence))
+  ("F" (iedit-restrict-function))
+  ("o" (evil-iedit-state/evil-open-below))
+  ("O" (evil-iedit-state/evil-open-above))
+
+  ("C-g" (evil-iedit-state/quit-iedit-mode) :exit t)
+  ("ESC" (evil-iedit-state/quit-iedit-mode) :exit t)
+  )
+
+(require 'evil-iedit-state)
+(defun config/begin-evil-iedit-state ()
+  (interactive) ;; Necessary to satisfy commandp.
+  (evil-iedit-state/iedit-mode)
+  (hydra-evil-iedit-state/body)
+  )
+(add-hook 'hydra-evil-iedit-state-exit-hook #'hydra-disable)
+
+(define-key evil-normal-state-map (kbd "*") #'config/begin-evil-iedit-state)
+(define-key evil-normal-state-map (kbd "#") #'config/begin-evil-iedit-state)
+
+#+end_src
