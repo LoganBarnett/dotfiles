@@ -467,6 +467,15 @@ Here's the test:
 : hello, world
 
 It works!
+** evaluation
+
+I want to see errors when a =noweb= reference fails to resolve.
+
+#+name: config/org-mode-babel-show-noweb-ref-error
+#+begin_src emacs-lisp :results none :tangle yes
+(setq org-babel-error-all-langs t)
+#+end_src
+
 
 * stitch
 
@@ -488,5 +497,6 @@ It works!
   (require 'org-auto-id)
   (org-auto-id/on-save-auto-id)
   <<config/open-link-in-new-window>>
+  <<config/org-mode-babel-show-noweb-ref-error>>
   )
 #+end_src
