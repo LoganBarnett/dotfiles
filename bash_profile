@@ -5,3 +5,5 @@ if [ -e /Users/logan/.nix-profile/etc/profile.d/nix.sh ]; then . /Users/logan/.n
 
 export PATH="$HOME/.cargo/bin:$PATH"
 export PATH="$PATH:/Library/TeX/texbin/"
+
+source ~/dev/dotfiles-private/bashrc-private
