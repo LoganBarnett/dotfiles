@@ -1,0 +1,33 @@
+#+title:     Debug
+#+author:    Logan Barnett-Hoy
+#+email:     logustus@gmail.com
+#+date:      <2020-09-29 Tue>
+#+language:  en
+#+file_tags:
+#+tags:
+
+* debugging
+** who called this
+
+Let's be real: Emacs is massive. Its packages are sprawling. Some packages are
+well authored to be very self-contained. Others not so much, either because that
+is the true nature of the package or because the author thought themselves to be
+helpful. Either way it can be a pain. Oftentimes I find that some setting or
+call I made is overridden by some other package. Finding that package requires
+some clever searching, but the sure-fire way to get it is through getting the
+stack trace upon call.
+
+This needs more work. I cannot keep it from tripping up on the fact that =fn= is
+a symbol. I don't know why that would harm anything here.
+#+begin_src emacs-lisp :results none
+(defun config/before-debug-caller (fn)
+  (message "[DEBUG] %s called:" fn)
+  (backtrace)
+  )
+
+(defmacro config/debug-caller (fn)
+  (message "Advising %s" fn)
+  (advice-add fn :before (lambda (&rest _) (config/before-debug-caller fn)))
+  (message "Advised")
+  )
+#+end_src
