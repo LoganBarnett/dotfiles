@@ -374,6 +374,14 @@ h3, .aui-page-header-hero .aui-page-header-main p, .aui-page-header-marketing .a
   color: var(--text-color) !important;
 }
 
+/**
+ * Line numbers during a diff.
+ */
+.diff-gutter .diff-line-number {
+  background-color: var(--line-number-background-color) !important;
+  color: var(--line-number-color) !important;
+}
+
 .removed.line .ediff-change, .removed.line .ediff-delete {
   background-color: var(--diff-minor-remove-background-color) !important;
   color: var(--diff-minor-remove-color) !important;
@@ -700,4 +708,11 @@ aui-badge, .aui-badge {
 .commit-badge-oneline span.commit-author {
   background-color: var(--highlight-background-color) !important;
   color: var(--highlight-color) !important;
+}
+
+/**
+ * Used for inner expressions (such as $() in bash).
+ */
+.hl-quote {
+  color: var(--code-color) !important;
 }

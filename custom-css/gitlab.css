@@ -228,3 +228,155 @@ body.ui-indigo .nav-sidebar li.active > a {
   background-color: var(--button-background-color) !important;
   color: var(--button-color) !important;
 }
+
+.light, .description-block {
+  color: var(--input-label-color) !important;
+}
+
+
+.select2-container-multi .select2-choices .select2-search-field input {
+  background-color: var(--input-background-color) !important;
+  border: var(--input-border) !important;
+  color: var(--input-color) !important;
+}
+
+/**
+ * Border for hacky input. Remove it.
+ */
+.select2-container-multi .select2-choices {
+  border: none !important;
+}
+
+/**
+ * Warning banners.
+ */
+.gl-alert-warning {
+  background-color: var(--warning-background-color) !important;
+  color: var(--warning-color) !important;
+}
+
+/**
+ * Active tabs.
+ */
+.nav-links:not(.quick-links) li:not(.md-header-toolbar).active a,
+.nav-links:not(.quick-links) li:not(.md-header-toolbar).active button,
+.nav-links:not(.quick-links) li:not(.md-header-toolbar) a.active {
+  background-color: var(--tab-active-background-color);
+  border: var(--tab-active-border) !important;
+  border-radius: var(--tab-active-border-radius) !important;
+  color: var(--tab-active-color) !important;
+}
+
+/**
+ * Inactive tabs.
+ */
+.nav-links:not(.quick-links) li:not(.md-header-toolbar) a,
+.nav-links:not(.quick-links) li:not(.md-header-toolbar) button {
+  background-color: var(--tab-inactive-background-color);
+  border: var(--tab-inactive-border) !important;
+  border-radius: var(--tab-inactive-border-radius) !important;
+  color: var(--tab-inactive-color) !important;
+}
+
+/**
+ * Background of tabs, or tab container.
+ *
+ * Border is not necessary due to individual tab borders.
+ */
+.gitlab-tabs {
+  background-color: var(--tab-inactive-background-color);
+  border: none !important;
+}
+/**
+ * Each tab has its border set, so borders here are redundant.
+ */
+.gitlab-tabs li {
+  border: none !important;
+}
+/**
+ * Content panel for a tab.
+ */
+.gitlab-tab-content {
+  border: var(--thin-border) !important;
+}
+
+/**
+ * Select boxes on forms.
+ */
+.form-control, .search form {
+  background-color: var(--input-background-color) !important;
+  border: var(--input-border) !important;
+  color: var(--input-color) !important;
+}
+
+/**
+ * Disabled buttons.
+ */
+.btn.disabled,
+.btn[disabled],
+fieldset[disabled] .btn,
+.dropdown-toggle[disabled],
+.dropdown-menu-toggle[disabled],
+.btn.disabled:hover,
+.btn[disabled]:hover,
+fieldset[disabled] .btn:hover,
+.dropdown-toggle[disabled]:hover,
+.dropdown-menu-toggle[disabled]:hover {
+  background-color: var(--button-disabled-background-color) !important;
+  border: var(--button-disabled-border) !important;
+  color: var(--button-disabled-color) !important;
+}
+
+.btn:hover, .btn:focus {
+  background-color: var(--button-hover-background-color) !important;
+  border: var(--button-hover-border) !important;
+  color: var(--button-hover-color) !important;
+}
+
+.btn {
+  background-color: var(--button-background-color) !important;
+  border: var(--button-border) !important;
+  color: var(--button-color) !important;
+}
+
+/**
+ * Smallish panels?
+ */
+.card {
+  background-color: var(--panel-background-color) !important;
+  border: var(--panel-border) !important;
+}
+
+.card-header {
+  background-color: var(--panel-title-background) !important;
+  border: none !important;
+  color: var(--panel-title-color) !important;
+}
+
+/**
+ * Breadcrumb links are links too, you know.
+ */
+.breadcrumbs-sub-title a {
+  color: var(--link-color) !important;
+}
+
+/**
+ * Drop down menus.
+ */
+.dropdown-toggle,
+.dropdown-menu-toggle,
+.confidential-merge-request-fork-group .dropdown-toggle,
+.confidential-merge-request-fork-group .dropdown-menu-toggle {
+  background-color: var(--input-background-color) !important;
+  border: var(--input-border) !important;
+  color: var(--input-color) !important;
+}
+
+/**
+ * Drop down menus' expanded area.
+ */
+.dropdown-menu {
+  background-color: var(--input-background-color) !important;
+  border: var(--input-border) !important;
+  color: var(--input-color) !important;
+}
