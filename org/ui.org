@@ -59,8 +59,10 @@ Perhaps a Doom setting - right side fringes get set to 4 pixels via
 the continuation fringes to be easily visible. Even with this extra column worth
 of space taken, my Emacs windows still fit well at 80 columns.
 
-The code below sets the right width and leaves the left width alone.
+The code below expands both the left and the right width. I found 12 is a
+healthy padding that includes the continuation arrows from the left or the
+right.
 
 #+begin_src emacs-lisp :results none
-(set-fringe-mode '(nil . 12))
+(set-fringe-mode '(12 . 12))
 #+end_src
