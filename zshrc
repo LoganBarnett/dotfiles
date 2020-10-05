@@ -199,6 +199,7 @@ grepp() {
 # JAVA_HOME="/Library/Java/JavaVirtualMachines/jdk1.8.0_102.jdk/Contents/Home"
 # JAVA_HOME="/Library/Java/Home"
 export JAVA_HOME=$(/usr/libexec/java_home)
+export GROOVY_HOME=/usr/local/opt/groovy/libexec
 
 # thefuck - `fuck` after a failed command and it will try to do the right thing
 eval $(thefuck --alias)
