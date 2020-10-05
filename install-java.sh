@@ -18,3 +18,5 @@ jenv add /Library/Java/JavaVirtualMachines/adoptopenjdk-11.jdk/Contents/Home
 # This needs the jenv init - setup stuff because we're in bash right now, and
 # we're trying to run this in zsh for zsh.
 exec $SHELL -l -c 'eval "$(jenv init -)" && jenv enable-plugin export'
+
+./install-package.sh groovy
