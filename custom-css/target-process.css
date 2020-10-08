@@ -558,3 +558,44 @@ body, button, input, select, textarea {
 .markdown.details {
   color: var(--text-color) !important;
 }
+
+/**
+ * Active tabs in tickets.
+ */
+.tabs__header__tab-item__tabs__7-31-2:hover,
+.tabs__header__tab-item--active__tabs__7-31-2 {
+  background-color: var(--tab-active-background-color) !important;
+  border: var(--tab-active-border) !important;
+  border-radius: var(--tab-active-border-radius) !important;
+  color: var(--tab-active-color) !important;
+}
+
+/**
+ * Inactive tabs in tickets.
+ */
+.tabs__header__tab-item__tabs__7-31-2 {
+  background-color: var(--tab-inactive-background-color) !important;
+  border: var(--tab-inactive-border) !important;
+  border-radius: var(--tab-inactive-border-radius) !important;
+  color: var(--tab-inactive-color) !important;
+}
+
+/**
+ * The "add tags" button is still a button, even if they leave it as a span.
+ */
+.ui-tags__editor__link.i-role-control_show {
+  background-color: var(--button-background-color) !important;
+  border: var(--button-border) !important;
+  border-radius: var(--button-border-radius) !important;
+  color: var(--button-color) !important;
+}
+
+/**
+ * The "tag cloud" button is still a button, even if they leave it as a div.
+ */
+.tags-cloud__trigger.i-role-action-cloud {
+  background-color: var(--button-background-color) !important;
+  border: var(--button-border) !important;
+  border-radius: var(--button-border-radius) !important;
+  color: var(--button-color) !important;
+}
