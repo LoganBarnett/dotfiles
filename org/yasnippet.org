@@ -18,6 +18,16 @@
                   (yas-activate-extra-mode 'fundamental-mode)))
       )
   #+end_src
+* file templates
+File templates are templates that expand for new or blank files. This is a
+feature introduced in Doom via the =file-templates= editor module.
+
+Setting the =+file-templates-dir= gives us the power to override the templates.
+However this isn't a great way to support a mix of both private and official
+packages. An undocumented way to support overrides is to place a =__= file in
+the appropriate snippet directory. For specifically named files, =__<filename>=
+works as well. The key for these files is assumed to be =__= and we should
+continue that when writing file templates.
 
 * apply
 

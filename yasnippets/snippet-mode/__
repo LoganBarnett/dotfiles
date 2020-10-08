@@ -1,0 +1,10 @@
+# -*- mode: snippet -*-
+# name: snippet-mode file template
+# key: __
+# condition: t
+# --
+# -*- mode: snippet; require-file-newline: nil -*-
+# name: $1
+# key: $2
+# condition: ${3:t}
+# --

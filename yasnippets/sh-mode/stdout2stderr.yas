@@ -1,0 +1,6 @@
+# -*- mode: snippet; require-final-newline: nil -*-
+# name: redirect stdout to stderr
+# key: stdout2stderr
+# condition: t
+# --
+1>&2

@@ -1,0 +1,12 @@
+# -*- mode: snippet -*-
+# name: org mode file template
+# key: __
+# condition: t
+# --
+#+title:     Rename me
+#+author:    Logan Barnett-Hoy
+#+email:     logustus@gmail.com
+#+date:      `(format-time-string "<%Y-%m-%d %a>" (org-current-time))`
+#+language:  en
+#+file_tags:
+#+tags:
