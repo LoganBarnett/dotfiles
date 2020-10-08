@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -e
+set -euo pipefail
 
 start_dir=$PWD
 
@@ -142,6 +142,9 @@ echo "Installing diagramming support..."
 
 echo "Installing email support..."
 ./install-email.sh
+
+echo "Installing gnu utils..."
+./gnu-install.sh
 
 echo "writing out private settings"
 ./install-private.sh
