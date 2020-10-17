@@ -25,41 +25,25 @@ awscli
 cask
 coreutils
 dos2unix
-elm
 ffmpeg
 gnuplot
 gnutls
 gnu-sed
 go
-graphviz
 grep
-ispell
 jenv
-jq
 markdown
 maven
-mtr
-nmap
-node
-npm
 ocaml
 opam
-pandoc
 percol
 pinentry-mac
-plantuml
 postgresql
-python3
 rbenv
-ripgrep
 sqlite
 terraform
 thefuck
 tmux
-vim
-w3m
-wget
-yarn
 zsh-syntax-highlighting
 "
 
@@ -104,7 +88,6 @@ elif [ $(uname) = 'Linux' ]; then
         awscli
         cargo
         coreutils
-        curl
         dos2unix
         elm
         emacs
@@ -114,34 +97,23 @@ elif [ $(uname) = 'Linux' ]; then
         gnutls
         go
         graphviz
-        ispell
         jenv
-        jq
         markdown
         maven
         mtr
         nmap
-        node
-        npm
         ocaml
         opam
-        pandoc
         percol
         pinentry-mac
-        plantuml
         postgresql
         python3
         python3-dev
         python3-pip
-        ripgrep
         sqlite
         terraform
         thefuck
         tmux
-        vim
-        w3m
-        wget
-        yarn
         zsh
         zsh-syntax-highlighting
         "

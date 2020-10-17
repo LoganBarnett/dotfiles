@@ -4,12 +4,18 @@ set -euo pipefail
 
 start_dir=$PWD
 
+function log() {
+  echo "[DOTFILES] " $@
+}
+
+
 # TODO: add various application settings not living under ~
 # TODO: add iStatsMenu
 # TODO: add Slack settings
-# TODO: add ssh key generation
-# TODO: add key pair
-# TODO: install istatmenu
+
+log "Installing nix..."
+./nix-install.sh
+log "Done installing nix."
 
 if [ $(uname) != 'Darwin' ]; then
   apt update
@@ -92,9 +98,6 @@ echo "installing GPG..."
 ./daw-install.sh
 
 ./install-latex.sh
-
-# nix must come after gpg since it uses gpg.
-./install-nix.sh
 
 ./mongodb-install.sh
 

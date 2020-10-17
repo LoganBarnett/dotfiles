@@ -1,5 +1,31 @@
 # -*- mode: sh -*-
 
+# As charming as the nix installer seems to be, it neglects to mention you must
+# add nix to your PATH. Perhaps that's obvious, but the path to use is not
+# obvious. Taken from
+# https://github.com/NixOS/nix/issues/1727#issuecomment-360355330
+# Also NIX_PATH is taken...
+NIX_PATH_ASDF="/nix/var/nix/profiles/default/bin"
+
+export PATH="$NIX_PATH_ASDF:\
+$HOME/.opam/system/bin:\
+/bin:/usr/local/bin:$HOME/bin:\
+$HOME/dev/dotfiles-private/bin:\
+/opt/local/bin:\
+/opt/local/sbin:\
+$HOME/dev/adt-bundle-mac/sdk/platform-tools:\
+$HOME/.doom-emacs.d/bin:\
+/Library/TeX/texbin:\
+/usr/local/bin:\
+/usr/bin:\
+/bin:\
+/usr/sbin:\
+/sbin:\
+/opt/X11/bin:\
+/usr/local/sbin:\
+$HOME/node_modules/.bin\
+"
+
 # prevent emacs tramp from barfing on startup
 [[ "$TERM" == "dumb" ]] &&
   echo "[ZSHRC] Setting as dumb terminal (likely for Tramp)..." &&
@@ -202,7 +228,8 @@ export JAVA_HOME=$(/usr/libexec/java_home)
 export GROOVY_HOME=/usr/local/opt/groovy/libexec
 
 # thefuck - `fuck` after a failed command and it will try to do the right thing
-eval $(thefuck --alias)
+# Temporarily disabled until we get homebrew to go away.
+# eval $(thefuck --alias)
 
 # When we're running ansi-term from emacs, we don't want the evil-mode bindings
 # and zsh's vim bindings stumbling over each other. See
@@ -362,24 +389,6 @@ function timer_prompt() {
 
 set_prompt
 
-export PATH="$HOME/.opam/system/bin:\
-/bin:/usr/local/bin:$HOME/bin:\
-$HOME/dev/dotfiles-private/bin:\
-/opt/local/bin:\
-/opt/local/sbin:\
-$HOME/dev/adt-bundle-mac/sdk/platform-tools:\
-$HOME/.doom-emacs.d/bin:\
-/Library/TeX/texbin:\
-/usr/local/bin:\
-/usr/bin:\
-/bin:\
-/usr/sbin:\
-/sbin:\
-/opt/X11/bin:\
-/usr/local/sbin:\
-$HOME/node_modules/.bin\
-"
-
 # Puppet installs using its own pattern.
 # See https://puppet.com/docs/pdk/1.x/pdk_troubleshooting.html#pdk-not-in-zshell-path-on-mac-os-x
 # This is supposedly needed for zsh, but also mangles the PATH such that rbenv
@@ -408,9 +417,6 @@ eval "$(jenv init -)"
 
 # rbenv for Ruby
 eval "$(rbenv init -)"
-
-# Bootstrap Nix.
-. ~/.nix-profile/etc/profile.d/nix.sh
 
 # nodenv requires a quick init
 eval "$(nodenv init -)"
