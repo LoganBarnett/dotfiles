@@ -485,6 +485,7 @@ I want to see errors when a =noweb= reference fails to resolve.
   <<config/org-mode-manage-initial-folding>>
   <<config/org-mode-set-paths>>
   :config
+  <<config/open-link-in-new-window>>
   <<config/org-mode-hack-initial-folding>>
   ;; Needed to set `org-startup-folded'.
   (org-set-startup-visibility)
@@ -496,7 +497,6 @@ I want to see errors when a =noweb= reference fails to resolve.
   <<config/org-mode-latex-add-tikz-packages>>
   (require 'org-auto-id)
   (org-auto-id/on-save-auto-id)
-  <<config/open-link-in-new-window>>
   <<config/org-mode-babel-show-noweb-ref-error>>
   )
 #+end_src
