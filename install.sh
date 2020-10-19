@@ -64,20 +64,11 @@ fi
 echo "Installing packages..."
 ./install-packages.sh
 
-echo "Installing HTML tools..."
-./html-tools-install.sh
-
 echo "Installing Haskell..."
 ./install-haskell.sh
 
 echo "Installing Rust..."
 ./install-rust.sh
-
-echo "Installing htop..."
-./install-htop.sh
-
-echo "Installing oq..."
-./oq-install.sh
 
 echo "Installing mysql (tools?)..."
 ./install-mysql.sh
@@ -86,14 +77,11 @@ echo "Installing mysql (tools?)..."
 echo "installing node modules"
 ./install-node-modules.sh
 
-echo "settting up ocaml's opam"
-./install-opam.sh
-
 echo "Installing python3..."
 ./python-install.sh
 
 echo "installing GPG..."
-./install-gpg.sh
+./gpg-install.sh
 
 ./daw-install.sh
 

@@ -8,22 +8,21 @@
 NIX_PATH_ASDF="/nix/var/nix/profiles/default/bin"
 
 export PATH="$NIX_PATH_ASDF:\
-$HOME/.opam/system/bin:\
-/bin:/usr/local/bin:$HOME/bin:\
-$HOME/dev/dotfiles-private/bin:\
-/opt/local/bin:\
+/sbin:\
+/usr/sbin:\
+/usr/local/sbin:\
 /opt/local/sbin:\
+/bin:\
+$HOME/.nix-profile/bin:\
+$HOME/bin:\
+$HOME/dev/dotfiles-private/bin:\
+/usr/local/bin:\
+/opt/local/bin:\
 $HOME/dev/adt-bundle-mac/sdk/platform-tools:\
 $HOME/.doom-emacs.d/bin:\
 /Library/TeX/texbin:\
-/usr/local/bin:\
 /usr/bin:\
-/bin:\
-/usr/sbin:\
-/sbin:\
 /opt/X11/bin:\
-/usr/local/sbin:\
-$HOME/node_modules/.bin\
 "
 
 # prevent emacs tramp from barfing on startup
@@ -397,23 +396,17 @@ set_prompt
 # interfere.
 eval $(/usr/libexec/path_helper -s)
 
-
 export NOTES_DIR=~/notes
 
 # Should take care of some prompt issues.
 export LC_ALL=en_US.UTF-8
 
-# add Go support
-export GOPATH=$HOME/golang
-export GOROOT=/usr/local/opt/go/libexec
-export PATH=$PATH:$GOPATH/bin
-export PATH=$PATH:$GOROOT/bin
 # This really should be included in the homebrew jenv caveats list:
 # https://github.com/gcuisinier/jenv/wiki/Trouble-Shooting
 export JENV_ROOT=/usr/local/opt/jenv
 
 export PATH="$JENV_ROOT:$PATH"
-eval "$(jenv init -)"
+# eval "$(jenv init -)"
 
 # rbenv for Ruby
 eval "$(rbenv init -)"
@@ -428,12 +421,7 @@ source $HOME/.cargo/env
 export NODE_BUILD_DEFINITIONS=$(brew --prefix node-build-update-defs)/share/node-build
 
 # Get ocaml's package manager on the PATH and other ocaml config.
-eval $(opam config env)
-
-export PATH="/usr/local/opt/gnupg@2.1/bin:$PATH"
-
-# GNU commands are generally way better.
-export PATH="/usr/local/opt/gnu-sed/libexec/gnubin:$PATH"
+# eval $(opam config env)
 
 # This allows commands to be excluded from history if they are prefixed with a
 # space.

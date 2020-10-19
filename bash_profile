@@ -2,7 +2,12 @@
 # add nix to your PATH. Perhaps that's obvious, but the path to use is not
 # obvious. Taken from
 # https://github.com/NixOS/nix/issues/1727#issuecomment-360355330
-export PATH="/nix/var/nix/profiles/default/bin:${PATH}"
+export PATH="\
+/nix/var/nix/profiles/default/bin:\
+$HOME/.nix-profile/bin:\
+${PATH}\
+"
+
 
 # oh java
 JAVA_HOME="/Library/Java/Home"

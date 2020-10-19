@@ -10,41 +10,13 @@ if [ $(uname) = 'Darwin' ]; then
             "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
     xcode-select --install || true
 
-    # Needed for avr-gcc
-    brew tap osx-cross/avr
-
     # Upgrade existing packages before installing (potentially) new ones.
     brew outdated | xargs brew reinstall
 
     # ispell so flyspell works on emacs
     # pandoc allows converting HTML to org syntax.
     BREWS="
-ack
-avr-gcc
-awscli
 cask
-coreutils
-dos2unix
-ffmpeg
-gnuplot
-gnutls
-gnu-sed
-go
-grep
-jenv
-markdown
-maven
-ocaml
-opam
-percol
-pinentry-mac
-postgresql
-rbenv
-sqlite
-terraform
-thefuck
-tmux
-zsh-syntax-highlighting
 "
 
     echo "updating homebrew"

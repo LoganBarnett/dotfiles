@@ -8,7 +8,7 @@ sudo ls # To ensure we're in a sudo context first.
 # Even with all of this, the installer will crash and burn and the slightest
 # presence of itself. Upgrading is a different command which we should run
 # immediately.
-yes | sh <(curl -L https://nixos.org/nix/install) || true
+yes | sh <(curl -L https://nixos.org/nix/install) --daemon || true
 
 # Their generated script checks first, but it better damn sure be there or this
 # endeavor is in error.

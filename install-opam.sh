@@ -1,7 +1,7 @@
 #! /usr/bin/env bash
 set -e
 
-# Contributing to Flow was the primary motivator here.
+# Contributing to Flow was the primary motivator here. For now it's disabled.
 
 # I'm guessing that -y will accept the shell integration question. Perhaps it
 # should be -n and we just check in the configured settings.

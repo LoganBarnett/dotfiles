@@ -7,6 +7,8 @@
 
 * introduction
 
+Expand [[mu4e]] to see the current configuration.
+
   There's a lot of benefits to using Emacs to read and write emails.
 
   1. I can use text and tagging to search for emails easily.
@@ -41,7 +43,6 @@
    searching. I haven't set this up yet. It needs =mu= itself installed.
 
    I do have =mu= installed.
-
 
 *** opening
 Doom doesn't bind =mu4e= that I have seen.
@@ -402,6 +403,16 @@ much of that is shadowed by =evil-mode=.
          (message "window prefix configured")
          )
      #+end_src
+*** look at the path for mu
+
+The default =mu= binary directory defaults to =/usr/local/bin/mu= which might
+not always be the case. For me it is setup via =nix=. Instead of hardcoding a
+=nix= path, let's just look at =PATH= for it.
+
+#+name: config/set-mu-path
+#+begin_src emacs-lisp :results none :tangle yes
+(setq mu4e-mu-binary (path/exec-find-on-exec-path "mu"))
+#+end_src
 
 *** apply mu4e
 
@@ -424,6 +435,7 @@ much of that is shadowed by =evil-mode=.
   (use-package "mu4e"
     :init
     <<mu4e-open>>
+    <<config/set-mu-path>>
     :config
     (message "initializing mu4e...")
     (require 'org-mime)
