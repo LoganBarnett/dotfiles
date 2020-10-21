@@ -411,7 +411,7 @@ not always be the case. For me it is setup via =nix=. Instead of hardcoding a
 
 #+name: config/set-mu-path
 #+begin_src emacs-lisp :results none :tangle yes
-(setq mu4e-mu-binary (path/exec-find-on-exec-path "mu"))
+(setq mu4e-mu-binary (executable-find "mu"))
 #+end_src
 
 *** apply mu4e
