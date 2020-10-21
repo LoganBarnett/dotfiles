@@ -133,7 +133,9 @@ command control it, as those still work.
     :init
     :config
     (set-tramp-logging)
-    (setq-default insert-directory-program "/usr/local/bin/gls")
+    ;; Kept as reference in case some non-gnu system is in use.
+    ;;
+    ;; (setq-default insert-directory-program "/usr/local/bin/gls")
     (setq-default dired-use-ls-dired t)
     (setq-default dired-listing-switches "-al")
     ;; This should fix issues with stalling when bringing up helm while tramp is

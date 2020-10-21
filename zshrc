@@ -10,10 +10,10 @@ NIX_PATH_ASDF="/nix/var/nix/profiles/default/bin"
 export PATH="$NIX_PATH_ASDF:\
 /sbin:\
 /usr/sbin:\
+$HOME/.nix-profile/bin:\
 /usr/local/sbin:\
 /opt/local/sbin:\
 /bin:\
-$HOME/.nix-profile/bin:\
 $HOME/bin:\
 $HOME/dev/dotfiles-private/bin:\
 /usr/local/bin:\
@@ -37,7 +37,8 @@ $HOME/.doom-emacs.d/bin:\
   # unfunction preexec &&
   PS1='$ ' &&
   # gls respects the --dired flag, which dired + tramp uses.
-  alias ls='gls' &&
+  # No longer needed due to nix.
+  # alias ls='gls' &&
   return
 
 setopt prompt_subst
