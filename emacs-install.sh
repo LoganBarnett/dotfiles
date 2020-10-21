@@ -24,16 +24,12 @@ echo "emacs tapped"
 
 brew install emacs-mac \
   --with-glib \
-  --with-spacemacs-icon \
   --with-modules \
-  --with-xml2 \
-  --with-imagemagick || \
+  --with-xml2 || \
   brew upgrade emacs-mac \
     --with-glib \
-    --with-spacemacs-icon \
     --with-modules \
-    --with-xml2 \
-    --with-imagemagick
+    --with-xml2
 echo "emacs installed"
 # brew link --overwrite emacs-plus
 brew link --overwrite emacs-mac
