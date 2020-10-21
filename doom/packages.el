@@ -49,7 +49,12 @@
 (package! lsp-mode)
 (package! lsp-ui)
 (package! markdown-mode)
-(package! mu4e)
+;; mu4e's lisp build doesn't appear in a place that straight.el finds, so the
+;; build directory for mu4e will appear as empty. To work around this we can
+;; point it straight to the nix mu4e site-lisp directory. See
+;; https://github.com/raxod502/straight.el/issues/491 for more context.
+(package! mu4e
+  :recipe (:local-repo "~/.nix-profile/share/emacs/site-lisp/mu4e"))
 (package! multi-line)
 (package! multi-term)
 (package! noflet)

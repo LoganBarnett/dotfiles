@@ -13,20 +13,6 @@ touch mailrc # in case the file doesn't exist. How to best keep this private?
 ./install-package.sh isync
 ./install-package.sh mu
 
-# mu expects a proper build step in regards to straight.el. However this doesn't
-# doesn't happen because nix sets up mu in a directory that's not expected. This
-# places mu4e in a place that straight can use. See
-# https://github.com/raxod502/straight.el/issues/491 as inspiration for this
-# workaround.
-#
-# Use -T to prevent the symlink from entering the directory like below:
-# ~/.emacs.d/.local/straight/build/mu4e/mu4e
-ln -Tsnf ~/.nix-profile/share/emacs/site-lisp/mu4e \
-    ~/.emacs.d/.local/straight/build/mu4e
-
-echo "Creating notmuch index. This may take a while."
-notmuch new
-
 echo "Setting up email authentication..."
 # ~/.email-creds.txt comes from install-private.sh Per instructions here:
 # http://www.macs.hw.ac.uk/~rs46/posts/2014-01-13-mu4e-email-client.html
