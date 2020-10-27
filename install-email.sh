@@ -10,8 +10,6 @@ cp $PWD/certs/* /usr/local/etc/openssl/certs/
 ./link-dotfile.sh notmuch-config
 touch mailrc # in case the file doesn't exist. How to best keep this private?
 ./link-dotfile.sh mailrc
-./install-package.sh isync
-./install-package.sh mu
 
 echo "Setting up email authentication..."
 # ~/.email-creds.txt comes from install-private.sh Per instructions here:

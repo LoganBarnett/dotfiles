@@ -21,8 +21,15 @@ sudo -i sh -c 'nix-channel --update && \
   launchctl load /Library/LaunchDaemons/org.nixos.nix-daemon.plist'
 
 mkdir -p ~/.config/nixpkgs
-ln -snf $PWD/config.nix ~/.config/nixpkgs/config.nix
+# Link the file for this machine. This allows for host specific configurations.
+machineName=$(scutil --get ComputerName | cut -d' ' -f1 | tr -d $'\n' || hostname)
+ln -snf $PWD/$machineName.nix ~/.config/nixpkgs/config.nix
+
+nix-env -iA nixpkgs.shellPackages
 
 # The guide recommends the below flag for catalina.
 # https://nixos.org/manual/nix/stable/#chap-quick-start
 # --darwin-use-unencrypted-nix-store-volume
+
+echo "Trusting system store..."
+./nix-trust-system-store.sh

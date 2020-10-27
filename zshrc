@@ -7,9 +7,10 @@
 # Also NIX_PATH is taken...
 NIX_PATH_ASDF="/nix/var/nix/profiles/default/bin"
 
-export PATH="$NIX_PATH_ASDF:\
+export PATH="\
 /sbin:\
 /usr/sbin:\
+$NIX_PATH_ASDF:\
 $HOME/.nix-profile/bin:\
 /usr/local/sbin:\
 /opt/local/sbin:\
@@ -388,14 +389,6 @@ function timer_prompt() {
 
 
 set_prompt
-
-# Puppet installs using its own pattern.
-# See https://puppet.com/docs/pdk/1.x/pdk_troubleshooting.html#pdk-not-in-zshell-path-on-mac-os-x
-# This is supposedly needed for zsh, but also mangles the PATH such that rbenv
-# no longer works. I assume it also means other shim-installing things won't
-# work. Let's run this before the _all_ of the shim installers so it doesn't
-# interfere.
-eval $(/usr/libexec/path_helper -s)
 
 export NOTES_DIR=~/notes
 

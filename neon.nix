@@ -4,12 +4,16 @@
     # a patch.
     # pinentryFlavor = "qt";
   };
+  # namei = singleBinary "namei" {
+  #   linux = pkgs.glibc.bin;
+  #   darwin = pkgs.darwin.system_cmds;
+  # };
   packageOverrides = pkgs: with pkgs; {
-    myPackages = pkgs.buildEnv {
+    shellPackages = pkgs.buildEnv {
       extraOutputsToInstall = [ "man" "doc" ];
 # "my-packages" isn't very helpful. We should make this profile "default" or
 # "shell".
-      name = "my-packages";
+      name = "shell-packages";
       paths = [
         # A grep-sed like alternative. Offers a scripting language for
         # transformations.
@@ -26,8 +30,9 @@
         # A specialized charting tool using a declarative language. Supports a
         # specific set of charts but I don't remember which. Used by plantuml.
         ditaa
-        # The ultimate editor.
-        emacs
+        # The ultimate editor. But how to make it conditional on OS?
+        # emacs
+        emacsMacport
         # This is a binary apparently. Universal editor settings. Kind of like a
         # pre-prettier. I don't know the nix pacakge though, if it exists.
         # editorconfig
@@ -65,9 +70,20 @@
         mtr
         # Email indexing, viewing, etc.
         mu
+        # Recursively walks up the file hiearchy to show permissions. Quite
+        # helpful! Currently not available as a nix package. Research on this
+        # has led to attempting unixtools and nettools. The unixtools package
+        # doesn't contain namei, and I could not confirm nettools due to an
+        # issue with openssl being out of date in that package.
+        # namei
         # A tool for mapping network ports.
         nmap
+        # The code injector bootstrap script is written in Node.js, so we need
+        # to run it from the command line.
         nodejs
+        # Used to do split tunneled VPN connections from the command line. You
+        # can also, you know, download it. Looking at you, AnyConnect.
+        openconnect
         # oq is like jq but for xml. It parses xml and yaml files and can
         # convert them to xml, yaml, or json (with jq as a backend). It uses the
         # same snytax as jq with the exception of the -i and -o arguments to
@@ -106,6 +122,7 @@
         tmux
         # The penultimate editor.
         vim
+        # Renders HTML formatted emails.
         w3m
         # A handy alternative to curl, best suited for downloading content.
         wget
@@ -113,7 +130,7 @@
         yarn
         zsh-syntax-highlighting
       ];
-      pathsToLink = [ "/Applications" "/share" "/bin" ];
+      pathsToLink = [ "/Applications" "/bin" "/etc" "/share" ];
     };
   };
 }
