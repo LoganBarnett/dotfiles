@@ -1,5 +1,6 @@
 ;; -*- no-byte-compile: t; -*-
 ;;; $DOOMDIR/packages.el
+;;; Code:
 
 ;; To install a package with Doom you must declare them here, run 'doom sync' on
 ;; the command line, then restart Emacs for the changes to take effect.
@@ -17,16 +18,24 @@
 
 ;; To install SOME-PACKAGE from MELPA, ELPA or emacsmirror:
 ;(package! some-package)
+
 (package! auto-compile)
 (package! dap-mode)
 (package! docker)
 (package! dockerfile-mode)
+(package! ejira :recipe
+  (:host github
+   :repo "nyyManni/ejira"
+   :files ("*.el")
+   )
+  ) ; Atlassian Jira integration.
+(package! elm-mode)
+(package! evil-iedit-state)
 ;; I could leave evil-snipe enabled to get highlighting from ; and ,.
 ;; See https://github.com/hlissner/doom-emacs/issues/1642
 ;; I decided to try it out, since the author is right - I can do the same things
 ;; with cl and cc.
 ;; (package! evil-snipe :disable t)
-(package! elm-mode)
 (package! feature-mode)
 (package! find-lisp)
 (package! floobits)

@@ -337,6 +337,8 @@
   ;; use-package to properly fix this.
   (init-org-file "org-agenda.org")
   (init-org-file "dnd.org")
+  (init-org-file "jira.org")
+  (config/init-org-file-private "jira-private.org")
   (message "[INIT] Init Done.")
   )
 
