@@ -476,6 +476,24 @@ I want to see errors when a =noweb= reference fails to resolve.
 (setq org-babel-error-all-langs t)
 #+end_src
 
+* priorities
+
+For the most part, A-C on priorities works great. However Jira tends to use
+around 5 priorities, and we must support these beforehand.
+
+#+name: config/org-mode-set-priorities
+#+begin_src emacs-lisp :results none :tangle yes
+(setq
+ org-priority-lowest ?E
+ org-priority-faces '(
+                     (?A . error)
+                     (?B . warning)
+                     (?C . success)
+                     (?D . success)
+                     (?E . success)
+                     )
+ )
+#+end_src
 
 * stitch
 
