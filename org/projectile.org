@@ -1,0 +1,35 @@
+#+title:     Projectile
+#+author:    Logan Barnett-Hoy
+#+email:     logustus@gmail.com
+#+date:      <2020-10-27 Tue>
+#+language:  en
+#+file_tags:
+#+tags:
+
+Projectile gives Emacs project management capabilities. This includes searching,
+selecting projects, and finding them.
+
+* projects directory
+
+#+name: config/projectile-projects-directory
+#+begin_src emacs-lisp :results none :tangle yes
+(setq-default projectile-project-search-path
+              '(
+                "~/dev"
+                )
+              )
+#+end_src
+
+* search for hidden files
+
+I thought maybe this was too aggressive but it doesn't seem to be. A restart
+seemed to solve my problem. Perhaps there was a delay?
+
+* stitch
+
+#+begin_src emacs-lisp :results none :noweb yes
+(use-package projectile
+  :init
+  <<config/projectile-projects-directory>>
+  )
+#+end_src

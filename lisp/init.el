@@ -247,11 +247,6 @@
   "Do initializtion."
   ;; (toggle-debug-on-error)
   ;; (setq-default projectile-indexing-method 'hybrid)
-  (setq-default projectile-project-search-path
-                '(
-                  "~/dev"
-                  )
-                )
   ;; TODO: Move to macos.org when it gets merged.
   (set-frame-parameter nil 'fullscreen 'fullscreen)
   (load-library "redshift-indent")
@@ -301,6 +296,7 @@
   ;; (init-org-file "deft.org")
   (init-org-file "whitespace.org")
   (init-org-file "habitica.org")
+  (init-org-file "projectile.org")
   ;;
   ;; Begin languages. These should be sorted alphabetically.
   ;;
