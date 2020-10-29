@@ -7,6 +7,7 @@ EASYFILES="
 Xdefaults
 bash_profile
 floorc.json
+gemrc
 ideavim
 ispell_english
 jsbeautifyrc
