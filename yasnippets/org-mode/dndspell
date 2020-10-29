@@ -3,7 +3,19 @@
 # key: dndspell
 # group: org
 # --
-#+school:       ${1: $$(yas-choose-value '(
+#+level: ${1: $$(yas-choose-value '(
+"cantrip"
+"1"
+"2"
+"3"
+"4"
+"5"
+"6"
+"7"
+"8"
+"9"
+))}
+#+school:       ${2: $$(yas-choose-value '(
 "unknown"
 "abjuration"
 "conjuration"
@@ -14,7 +26,7 @@
 "necromancy"
 "transmutation"
 ))}
-#+casting_time: ${2: $$(yas-choose-value '(
+#+casting_time: ${3: $$(yas-choose-value '(
 "1 action"
 "1 bonus action"
 "1 reaction"
@@ -23,7 +35,7 @@
 "1 hour"
 "unknown"
 ))}
-#+range:        ${3: $$(yas-choose-value '(
+#+range:        ${4: $$(yas-choose-value '(
 "self"
 "self (30 foot radius)"
 "self (15 foot cone)"
@@ -38,7 +50,7 @@
 "300 feet"
 "unknown"
 ))}
-#+components:   ${4: $$(yas-choose-value '(
+#+components:   ${5: $$(yas-choose-value '(
 "V"
 "VS"
 "VSM"
@@ -47,7 +59,7 @@
 "SM"
 "M"
 ))}
-#+duration:     ${5: $$(yas-choose-value '(
+#+duration:     ${6: $$(yas-choose-value '(
 "instantaneous"
 "1 round"
 "1 minute"
