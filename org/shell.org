@@ -14,6 +14,77 @@ tabs!
 #+name: config/shell-indentation
 #+begin_src emacs-lisp :tangle yes :results none
 (setq-default sh-basic-offset 2)
+(setq smie-indent-basic 2)
+(setq sh-smie-sh-grammar '(
+  (:smie-closer-alist
+  ("case" . "esac")
+  ("case" . "in")
+  ("if" . "fi")
+  ("if" . "then")
+  ("if" . "else")
+  ("if" . "elif")
+  ("while" . "done")
+  ("while" . "do")
+  ("until" . "done")
+  ("until" . "do")
+  ("for" . "done")
+  ("for" . "do")
+  ("for" . "in")
+  ("select" . "done")
+  ("select" . "do")
+  ("select" . "in")
+  ("repeat" . "done")
+  ("repeat" . "do"))
+ ("do" 0 1)
+ ("elif" 3 2)
+ ("else" 3 3)
+ ;; This keeps "then" from introducing extra indentation. Works even when then
+ ;; is on its own line.
+ ("then" 1 1)
+ ("while"
+  (71)
+  0)
+ ("until"
+  (72)
+  0)
+ ("for"
+  (73)
+  0)
+ ("select"
+  (74)
+  0)
+ ("repeat"
+  (75)
+  0)
+ ("if"
+  (76)
+  2)
+ ("&" 38 38)
+ (";" 38 38)
+ ("||" 49 49)
+ ("&&" 49 49)
+ ("|&" 60 60)
+ ("always" 77 78)
+ ("done" 1
+  (79))
+ ("fi" 3
+  (80))
+ ("esac" 0
+  (81))
+ (";;" 14 14)
+ (";&" 14 14)
+ (";;&" 14 14)
+ ("case-)" 26 25)
+ ("case-("
+  (82)
+  37)
+ ("|" 60 60)
+ ("in" 0 0)
+ ("case"
+  (83)
+  0)
+ )
+)
 #+end_src
 
 ** all together
