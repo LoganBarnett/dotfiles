@@ -7,11 +7,14 @@
 # Also NIX_PATH is taken...
 NIX_PATH_ASDF="/nix/var/nix/profiles/default/bin"
 
+# Nix will flip out if it sees itself in the PATH, but it needs to be there.
+# Chop up the string to defeat its detection. This allows us to do the install
+# without having to remove it during a reinstallation and then re-add it.
 export PATH="\
 /sbin:\
 /usr/sbin:\
 $NIX_PATH_ASDF:\
-$HOME/.nix-profile/bin:\
+$HOME/.nix""-profile/bin:\
 /usr/local/sbin:\
 /opt/local/sbin:\
 /bin:\
