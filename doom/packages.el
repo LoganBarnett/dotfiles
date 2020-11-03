@@ -23,12 +23,13 @@
 (package! dap-mode)
 (package! docker)
 (package! dockerfile-mode)
-(package! ejira :recipe
-  (:host github
-   :repo "nyyManni/ejira"
-   :files ("*.el")
-   )
-  ) ; Atlassian Jira integration.
+;; (package! ejira :recipe
+;;   (:host github
+;;    :repo "nyyManni/ejira"
+;;    :files ("*.el")
+;;    )
+;;   ) ; Atlassian Jira integration.
+(package! ejira :recipe (:local-repo "~/dev/ejira"))
 (package! elm-mode)
 (package! evil-iedit-state)
 ;; I could leave evil-snipe enabled to get highlighting from ; and ,.

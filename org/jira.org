@@ -15,8 +15,13 @@ This just redefines the update function with a different format string. See
 https://github.com/nyyManni/ejira/issues/20 - I should be able to easily fix
 this with a function and send a pull request.
 
-#+name: config/ejira-update-only-my-tickets
-#+begin_src emacs-lisp :results none
+#+name: config/ejira-update-only-my-tickets-fork
+#+begin_src emacs-lisp :results none :tangle yes
+(setq ejira-update-jql-unresolved-fn #'ejira-jql-my-unresolved-project-tickets)
+#+end_src
+
+#+name: config/ejira-update-only-my-tickets-override
+#+begin_src emacs-lisp :results none :tangle yes
 
 (defun ejira-update-project (id &optional shallow)
   "Update all issues in project ID.
@@ -64,9 +69,19 @@ comments. With SHALLOW, only update todo status and assignee."
                              (ejira--alist-get i 'fields 'assignee 'displayName))
                           (ejira--update-task (ejira--parse-item i))))
             (apply #'jiralib2-jql-search
-                   ;; (format "(project = '%s' and resolution = unresolved and assignee = currentUser()) or (project = '%s' and resolution = unresolved and reporter = currentUser())" id id)
-                   (format "project = '%s' and key in (%s) and resolution = done"
-                           id (s-join ", " keys))
+                   (let ((keys-s (s-join ", " keys)))
+                   (format
+                    "(project = '%s' and \
+key in (%s) and \
+resolution = done and \
+assignee = currentUser()) or \
+(project = '%s' and \
+resolution = done and \
+key in (%s) and \
+reporter = currentUser())" id keys-s id keys-s)
+                     )
+                   ;; (format "project = '%s' and key in (%s) and resolution = done"
+                   ;;         id (s-join ", " keys))
                    (ejira--get-fields-to-sync shallow)))))
 
   ;; TODO: Handle issue being deleted from server:
@@ -92,11 +107,13 @@ comments. With SHALLOW, only update todo status and assignee."
   (require 'ejira-agenda)
   ;; Ensure org-agenda can see the issues.
   (add-to-list 'org-agenda-files ejira-org-directory)
+  <<config/ejira-update-only-my-tickets-fork>>
   ;; Filter only jira issues. This might need some tuning.
   (org-add-agenda-custom-command
    '("J" "My JIRA issues"
      ((ejira-jql "resolution = unresolved and assignee = currentUser()"
                  ((org-agenda-overriding-header "Assigned to me"))))))
-  <<config/ejira-update-only-my-tickets>>
   )
 #+end_src
+Put this back in to override, but I have a fork now so unnecessary:
+  <<config/ejira-update-only-my-tickets-override>>
