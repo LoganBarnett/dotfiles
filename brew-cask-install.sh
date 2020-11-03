@@ -2,6 +2,9 @@
 
 set -e
 
+dir="$(dirname "${BASH_SOURCE[0]}")"
+source $dir/dotfiles-functions.sh
+
 # This fixes outdated tasks using the "undent" method. I've found Homebrew
 # doesn't do much to preserve backwards compatibility with older packages (or
 # more accurately: older Homebrew package definitions). I expect many
@@ -9,12 +12,12 @@ set -e
 # file. This particular workaround can be found (and adapted to work with this
 # sed) from here:
 # https://github.com/Homebrew/homebrew-cask/issues/49716#issuecomment-413515303
-echo "Fixing outdated Homebrew package definitions..."
+log "Fixing outdated Homebrew package definitions..."
 find "$(brew --prefix)/Caskroom/"*'/.metadata' -type f -name '*.rb' | \
     xargs grep 'EOS.undent' --files-with-matches | \
     xargs sed -i 's/EOS.undent/EOS/'
 
-echo "Outdated Homebrew package definitions should be fixed."
+log "Outdated Homebrew package definitions should be fixed."
 
 brew cask upgrade
 
@@ -27,8 +30,9 @@ brew cask upgrade
 # installed a version with the later license. In this case I should
 # reinstall mongodb in order to make my life easier. I am not aware of fixes
 # between the patch-versions here that I need.
+#
+# I'd like to move these to Nix but I don't think they exist yet.
 CASKS="
-adobe-connect
 alfred
 chromium
 diffmerge
@@ -36,13 +40,12 @@ electric-sheep
 font-source-code-pro
 gimp
 google-chrome
-haskell-platform
 slack
 virtualbox
 zoomus
 "
 
-echo "installing homebrew casks"
+log "Installing homebrew casks."
 brew cask install $CASKS
 
 # For my personal machines I can install packages but these are not appropriate
@@ -50,7 +53,6 @@ brew cask install $CASKS
 if [[ "$HOST" =~ "lbarnett" ]]; then
   MACHINE_CASKS="
 razer-synapse
-zoomus
 "
 else
 
@@ -58,14 +60,14 @@ else
   # corsair-icue - This hogs resources and causes audio to skip when other
   # processor intensive activities are going. Perhaps a later update will fix
   # this, but my limited research shows MacOs support to be relatively new.
+  #
+  # FreeCAD is massive. Not sure when I'll use it.
   MACHINE_CASKS="
 arduino
 discord
-freecad
 mixxx
 obs
 silverlight
-skype
 steam
 xbox360-controller-driver-unofficial
 "
@@ -73,4 +75,4 @@ fi
 
 brew cask install $MACHINE_CASKS
 
-echo "done installing casks"
+log "Done installing casks."

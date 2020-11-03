@@ -2,12 +2,8 @@
 
 set -euo pipefail
 
-start_dir=$PWD
-
-function log() {
-  echo "[DOTFILES] " $@
-}
-
+dir="$(dirname "${BASH_SOURCE[0]}")"
+source $dir/dotfiles-functions.sh
 
 # TODO: add various application settings not living under ~
 # TODO: add iStatsMenu
@@ -17,20 +13,23 @@ log "Installing nix..."
 ./nix-install.sh
 log "Done installing nix."
 
+log "Doing OS specific installation..."
 if [ $(uname) != 'Darwin' ]; then
   apt update
+else
+  $dir/darwin-install.sh
 fi
 
-echo "creating ssh key if it doesn't exist"
+log "Creating ssh key if it doesn't exist"
 ./create-ssh-key.sh
-echo "done create ssh key"
+log "Done create ssh key"
 
-echo "linking easy dotfiles"
+log "Linking easy dotfiles"
 ./link-dotfiles.sh
-echo "done linking easy dotfiles"
+log "Done linking easy dotfiles"
 
-echo "configuring git"
-./config-git.sh
+log "Configuring git"
+./git-config.sh
 
 # get submodules set up
 git submodule init || true
@@ -42,45 +41,41 @@ ln -snf $PWD/awesome ~/.config/awesome
 
 ln -snf $PWD/bin ~/bin
 
-# Installing Haskell must become before the shell since some plugins require
-# Haskell and Stack are installed first.
-echo "Installing Haskell..."
-./install-haskell.sh
-
+log "Installing shell settings."
 ./install-shell.sh
 
 if [ $(uname) = 'Darwin' ]; then
-    cd $start_dir
-    echo "installing homebrew..."
-    # Redirect stdin from /dev/null to put the script into a non-interactive
-    # mode.
-    /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)" < /dev/null
-    echo "installing casks"
-    ./install-casks.sh
+  cd $dir
+  log "Installing homebrew..."
+  # Redirect stdin from /dev/null to put the script into a non-interactive
+  # mode.
+  /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)" < /dev/null
+  log "Installing casks..."
+  $dir/brew-cask-install.sh
 else
-    echo "skipping cask installs - not osx"
+  log "Skipping cask installs - not osx."
 fi
 
-echo "Installing packages..."
+log "Installing packages..."
 ./install-packages.sh
 
-echo "Installing Haskell..."
+log "Installing Haskell..."
 ./install-haskell.sh
 
-echo "Installing Rust..."
+log "Installing Rust..."
 ./install-rust.sh
 
-echo "Installing mysql (tools?)..."
+log "Installing mysql (tools?)..."
 ./install-mysql.sh
 
 # node modules
-echo "installing node modules"
+log "installing node modules"
 ./install-node-modules.sh
 
-echo "Installing python3..."
+log "Installing python3..."
 ./python-install.sh
 
-echo "installing GPG..."
+log "installing GPG..."
 ./gpg-install.sh
 
 ./daw-install.sh
@@ -89,57 +84,41 @@ echo "installing GPG..."
 
 ./mongodb-install.sh
 
-echo "setting up spacemacs"
+log "Setting up Emacs."
 ./emacs-install.sh
 
 # TODO: add a way of reading in the paradox-github token or generating it if it
 # doesn't exist
 
-# echo "installing rvm"
-# We need to add the key from Michal Papis so we can verify RVM is the real
-# deal. This is found in the installation instructions. This command fails
-# though. I'm not sure why. "no route to host"
-# gpg --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3
-# \curl -sSL https://get.rvm.io | bash -s stable
-
-echo "sourcing rvm"
-if [ $(uname) = 'Darwin' ]; then
-    # source $HOME/.rvm/scripts/rvm
-    echo "skipping rvm sourcing until we can install it reliably"
-else
-    echo "skipping rvm source - not on OSX"
-    echo "you know, you really should add support for other envs for rvm..."
-fi
-
 ./install-rubygems.sh
 if [ $(uname) = 'Darwin' ]; then
-    # alfred workflows
-    cd $start_dir
-    ./install-workflows.sh
+  # alfred workflows
+  cd $start_dir
+  ./install-workflows.sh
 else
-    echo "skipping alfred install - not on osx"
+  log "skipping alfred install - not on osx"
 fi
 
-echo "Installing (some) Java support..."
+log "Installing (some) Java support..."
 ./install-java.sh
 
 if [[ "$USER" == "logan.barnett" ]]; then
-    echo "Installing puppet for work..."
-    ./puppet-install.sh
+  log "Installing puppet for work..."
+  ./puppet-install.sh
 fi
 
-echo "Installing diagramming support..."
+log "Installing diagramming support..."
 ./install-diagram.sh
 
-echo "Installing email support..."
+log "Installing email support..."
 ./install-email.sh
 
-echo "Installing gnu utils..."
+log "Installing gnu utils..."
 ./gnu-install.sh
 
-echo "writing out private settings"
+log "writing out private settings"
 ./install-private.sh
 
 ../dotfiles-private/private-install.sh
 
-echo "all installation is successful"
+log "all installation is successful"

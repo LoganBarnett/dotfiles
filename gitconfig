@@ -1,6 +1,6 @@
 [user]
-	name = Logan Barnett
-	email = logustus@gmail.com
+  name = Logan Barnett
+  email = logustus@gmail.com
 [color]
        status = auto
        branch = auto
@@ -11,28 +11,28 @@
         --result="$PWD/$MERGED" \
         "$PWD/$REMOTE" \
         "$PWD/$BASE" \
- 	"$PWD/$LOCAL" 
+    "$PWD/$LOCAL"
     keepBackup = false
     trustExitCode = false
 [merge]
   tool = diffmerge
-	ff-only = true
+  ff-only = true
 [core]
   attributesfile = ~/.gitattributes_global
-	excludesfile = ~/.gitignore_global
-	editor = /usr/bin/vim
-	#autocrlf = true
+  excludesfile = ~/.gitignore_global
+	editor = /Users/logan/.nix-profile/bin/vim
+  #autocrlf = true
 [difftool "sourcetree"]
-	cmd = opendiff \"$LOCAL\" \"$REMOTE\"
-	path = 
+  cmd = opendiff \"$LOCAL\" \"$REMOTE\"
+  path =
 [mergetool "sourcetree"]
-	cmd = /Applications/SourceTree.app/Contents/Resources/opendiff-w.sh \"$LOCAL\" \"$REMOTE\" -ancestor \"$BASE\" -merge \"$MERGED\"
-	trustExitCode = true
+  cmd = /Applications/SourceTree.app/Contents/Resources/opendiff-w.sh \"$LOCAL\" \"$REMOTE\" -ancestor \"$BASE\" -merge \"$MERGED\"
+  trustExitCode = true
 [push]
-	default = current
-	followTags = true
+  default = current
+  followTags = true
 [alias]
-	wdiff = diff --color-words
+  wdiff = diff --color-words
   fast-amend=commit --amend --no-edit
   unstage=reset HEAD --
   tip=log -1
@@ -40,9 +40,12 @@
   tidy=!git branch --merged | sed /^\\*/d | xargs git branch -d
   branchg=!git branch -avv | grep
 [diff]
-	algorithm = patience
+  # patience is an algorithm that is smarter and has greater context awareness
+  # when performing a diff. It takes a little longer, but diffs are pretty fast as
+  # it is.
+  algorithm = patience
 [pull]
-	ff-only = true
+  ff-only = true
   rebase = true
 [rebase]
   autoStash = true
