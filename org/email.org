@@ -152,10 +152,16 @@ http://pragmaticemacs.com/emacs/master-your-inbox-with-mu4e-and-org-mode/
   =mu4e= seems to run indexing on its own, so we can just use =mbsync -a= like
   =mail-sync= uses.
 
-#+begin_src emacs-lisp
-(defun config/mu4e-sync ()
-  (setq-default mu4e-get-mail-command "mbsync -a")
-)
+=INSIDE_EMACS= is an environment variable that [[https://github.com/gpg/pinentry/blob/779b8e6df7d2678d40bc61ba9e9ff35324a40d03/pinentry/pinentry-emacs.h#L31][pinentry looks for]]. This should
+allow me to enter my password from Emacs directly when checking my mail. See
+comment in [[https://github.com/djcb/mu/issues/829#issuecomment-524851533][mu#829]] for an example.
+
+#+name: config/email-get-mail-command
+#+begin_src emacs-lisp :tangle yes :results none
+(setq
+ mu4e-get-mail-command (format "INSIDE_EMACS=%s mbsync -a" emacs-version)
+ epa-pinentry-mode 'ask
+ )
 #+end_src
 
 *** sending mail
@@ -436,6 +442,7 @@ not always be the case. For me it is setup via =nix=. Instead of hardcoding a
     :init
     <<mu4e-open>>
     <<config/set-mu-path>>
+    <<config/email-get-mail-command>>
     :config
     (message "initializing mu4e...")
     (require 'org-mime)
@@ -443,7 +450,6 @@ not always be the case. For me it is setup via =nix=. Instead of hardcoding a
     ;; (config/mu4e-enable-images)
     (config/mu4e-set-maildir)
     (config/mu4e-set-archive-folder)
-    (config/mu4e-sync)
     (config/send-email)
     (config/mu4e-evilify-evil-window-prefix)
     (config/mu4e-indexing)

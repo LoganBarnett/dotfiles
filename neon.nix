@@ -1,6 +1,11 @@
 { pkgs, ... }:
 {
   nixpkgs.config.packageOverrides = pkgs: {
+    gnupg = pkgs.gnupg.overrideAttrs {
+      agent = {
+        pinentryFlavor = "emacs";
+      };
+    };
     # jdk = pkgs.jdk.override (args: { ignoreCollisions = true; });
     maven = pkgs.maven.overrideAttrs {
       jdk = pkgs.jdk;
