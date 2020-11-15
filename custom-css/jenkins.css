@@ -224,3 +224,11 @@ form.aui .aui-select2-container {
   border: var(--input-border) !important;
   color: var(--input-text-color) !important;
 }
+
+/**
+ * The replay window height is criminal (hardcoded to 250px). Make it much
+ * bigger. Uses inline style, so we need some really specific selectors.
+ */
+#workflow-editor-1[style] {
+  height: 1000px !important;
+}
