@@ -203,6 +203,8 @@
         # See also oh-my-zsh.
         zsh
         zsh-syntax-highlighting
+        # Used by Emacs' Tramp to handle compression over SSH.
+        zstd
       ];
       pathsToLink = [ "/Applications" "/bin" "/etc" "/share" ];
     };
