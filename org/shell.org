@@ -8,13 +8,27 @@
 
 * shell config
 ** indentation
+*** 2 spaces
 2 spaces is king, especially with 80 columns. Also use spaces instead of
 tabs!
 
-#+name: config/shell-indentation
+There are a _lot_ of settings! But =shell-mode= tries to guess indentation based
+on what's already part of the document. So be sure that's not what's happening
+before questioning the below.
+
+#+name: config/shell-indentation-2-spaces
 #+begin_src emacs-lisp :tangle yes :results none
+(setq sh-indentation 2)
 (setq-default sh-basic-offset 2)
 (setq smie-indent-basic 2)
+#+end_src
+*** fix then
+
+=then= gets indented strangely. It provides no value, and isn't consistent with
+other code block indentation in the mode.
+
+#+name: config/shell-indentation-fix-then
+#+begin_src emacs-lisp :tangle yes :results none
 (setq sh-smie-sh-grammar '(
   (:smie-closer-alist
   ("case" . "esac")
@@ -92,7 +106,8 @@ tabs!
 #+begin_src emacs-lisp :results none :noweb yes
 (use-package shell
   :init
+  <<config/shell-indentation-2-spaces>>
+  <<config/shell-indentation-fix-then>>
   :config
-  <<config/shell-indentation>>
   )
 #+end_src
