@@ -332,6 +332,7 @@
   ;; to track down. I might need to hook up some dependency hooks with
   ;; use-package to properly fix this.
   (init-org-file "org-agenda.org")
+  (init-org-file "browser.org")
   (init-org-file "dnd.org")
   (init-org-file "jira.org")
   (config/init-org-file-private "jira-private.org")

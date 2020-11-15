@@ -19,6 +19,9 @@
 ;; To install SOME-PACKAGE from MELPA, ELPA or emacsmirror:
 ;(package! some-package)
 
+;; Lets me use Emacs to edit text from a browser form. Needs the Ghost Edit
+;; Firefox plugin.
+(package! atomic-chrome)
 (package! auto-compile)
 (package! dap-mode)
 (package! docker)

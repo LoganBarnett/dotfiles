@@ -1,0 +1,23 @@
+#+title:     Rename me
+#+author:    Logan Barnett-Hoy
+#+email:     logustus@gmail.com
+#+date:      <2020-11-02 Mon>
+#+language:  en
+#+file_tags:
+#+tags:
+
+* editing text from a browser
+
+Using [[https://github.com/alpha22jp/atomic-chrome][atomic-chrome]] we can edit text in a browser form/input using Emacs. This
+way we get to keep our undo capabilities and our key bindings. Using Firefox we
+can install the [[https://addons.mozilla.org/en-US/firefox/addon/ghosttext/][GhostText]] extension to communicate between the browser and
+Emacs.
+
+#+begin_src emacs-lisp :results none
+(use-package atomic-chrome
+
+  )
+#+end_src
+
+Unfortunately it doesn't seem to work right now. There is an error coming from
+=char-or-string-p=.
