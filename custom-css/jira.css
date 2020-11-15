@@ -282,3 +282,35 @@ marquee {
 .action-body blockquote {
   color: var(--dim-text) !important;
 }
+
+/**
+ * Dashboard widgets.
+ */
+.gadget .dashboard-item-content {
+  background-color: var(--panel-background-color) !important;
+}
+
+/**
+ * Issue lists.
+ */
+#issuetable, .issue-table {
+  background-color: var(--panel-background-color) !important;
+}
+
+/**
+ * Issue lists, but inside!
+ */
+#issuetable > tbody > tr,
+.issue-table > tbody > tr,
+#issuetable > tfoot > tr,
+.issue-table > tfoot > tr {
+  background-color: var(--panel-background-color) !important;
+  color: var(--text-color) !important;
+}
+
+/**
+ * Page footer.
+ */
+#footer-logo {
+  background-color: var(--general-background-color) !important;
+}
