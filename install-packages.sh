@@ -8,8 +8,6 @@ if [ $(uname) = 'Darwin' ]; then
     which brew || \
         /usr/bin/ruby -e \
             "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
-    xcode-select --install || true
-
     # Upgrade existing packages before installing (potentially) new ones.
     brew outdated | xargs brew reinstall
 
