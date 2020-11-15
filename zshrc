@@ -54,16 +54,16 @@ setopt prompt_subst
 
 # TODO: add osx conditionally
 plugins=(
-    brew
-    command-not-found
-    git
-    node
-    noreallyjustfuckingstopalready
-    npm
-    osx
-    rsync
-    yarn
-    zsh-git-prompt
+  brew
+  command-not-found
+  git
+  node
+  noreallyjustfuckingstopalready
+  npm
+  osx
+  rsync
+  yarn
+  zsh-git-prompt
 )
 
 # Path to your oh-my-zsh installation.
@@ -182,6 +182,7 @@ unsetopt AUTO_CD
 # Vars
 export NOTES_DIR="$HOME/notes"
 
+# -G is BSD, but with Nix we use --color now.
 alias ls='ls -aG'
 alias grep='grep --color=auto'
 alias b='bundle exec'
@@ -196,6 +197,9 @@ alias grc="git rebase --continue"
 alias gro="git restore --ours"
 alias grt="git restore --theirs"
 alias glp="git log --pretty=format:'%Cred%h%Creset %<(60,trunc)%s %Cgreen%<(12,trunc)%cr %C(bold blue)%<(12,trunc)%an%Creset %C(yellow)%<(20,mtrunc)%d%Creset' --abbrev-commit"
+
+# ripgrep
+alias rg="rg --hidden --glob '!.git'" # Search hidden files.
 
 # yarn flow management because it happens a lot.
 alias yf="yarn flow"
@@ -214,13 +218,13 @@ alias yfr="yfs && yf"
 # Change 'regex' to '[r]egex' in grep to prevent grep from showing up in its own
 # results when doing a `ps ... | grep ...`
 grepp() {
-        first_char=$(echo $1 | cut -c -1);
-        left_bracket='[';
-        right_bracket=']';
-        first=$left_bracket$first_char$right_bracket;
-        rest=$(echo $1 | cut -c 2-);
-        args=$first$rest;
-        grep $args
+  first_char=$(echo $1 | cut -c -1);
+  left_bracket='[';
+  right_bracket=']';
+  first=$left_bracket$first_char$right_bracket;
+  rest=$(echo $1 | cut -c 2-);
+  args=$first$rest;
+  grep $args
 }
 
 # Upload image to Imgur and return its URL. Get API key at http://imgur.com/register/api_anon
