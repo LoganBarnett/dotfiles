@@ -99,7 +99,8 @@ interfering. So let's just rub some Lisp on it.
 
 * links
 =org-mode= either from Doom or by default doesn't open files in new frames. This
-should fix that:
+should fix that. However something keeps overriding it. [[stitch]] also uses
+=add-hook= to deal with this.
 
 #+name: config/open-link-in-new-window
 #+begin_src emacs-lisp :results none :tangle yes
@@ -568,6 +569,8 @@ around 5 priorities, and we must support these beforehand.
   :init
   <<config/org-mode-manage-initial-folding>>
   <<config/org-mode-set-paths>>
+  ;; This value keeps getting overridden, so use add-hook to ensure it.
+  (add-hook 'org-mode-hook (lambda () <<config/open-link-in-new-window>>))
   :config
   <<config/open-link-in-new-window>>
   <<config/org-mode-hack-initial-folding>>
