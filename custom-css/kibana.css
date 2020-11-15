@@ -1,0 +1,86 @@
+/**
+ * Items remaining:
+ * + Time picker.
+ * + Gutter-content boundary hover yellow thing.
+ * + Timeline waveform thing.
+ * + Any other page (this is just logs).
+ * + Button icons.
+ */
+
+/**
+ * Log entries.
+ */
+.efIOrs {
+  background-color: var(--general-background-color) !important;
+  color: var(--text-color) !important;
+}
+
+/**
+ * Log entries when hovered.
+ */
+.gDCwlS {
+  background-color: var(--general-background-color) !important;
+  color: var(--text-color) !important;
+}
+
+/**
+ * Time stamps.
+ */
+.dZIsGw {
+  background-color: var(--gutter-background-color) !important;
+  color: var(--gutter-color) !important;
+}
+
+/**
+ * Time stamps when hovered.
+ */
+.hNSDCw {
+  background-color: var(--gutter-background-color) !important;
+  color: var(--gutter-color) !important;
+}
+
+/**
+ * Main panel background, I think. Will cover loading too.
+ */
+.exBXIj {
+  background-color: var(--general-background-color) !important;
+}
+
+/**
+ * Search panel.
+ */
+.euiPanel {
+  background-color: var(--panel-background-color) !important;
+}
+
+/**
+ * Header.
+ */
+.euiHeader {
+  background-color: var(--head1-background-color);
+  color: var(--head1-color);
+}
+
+/**
+ * Search.
+ */
+.euiFieldSearch {
+  background-color: var(--input-background-color);
+  color: var(--input-color);
+}
+
+/**
+ * Buttons!
+ */
+.euiButtonEmpty {
+  background-color: var(--button-background-color) !important;
+  border: var(--button-border) !important;
+  color: var(--button-color) !important;
+}
+
+/**
+ * Buttons! And text?
+ */
+.euiButtonEmpty--text {
+  color: var(--button-color) !important;
+}

@@ -1,0 +1,12 @@
+{
+  "includes": [
+    "http://kibana*/*",
+    "https://kibana*/*"
+  ],
+  "excludes": [
+    ""
+  ],
+  "name": "kibana",
+  "enabled": true,
+  "key": "kibana"
+}
