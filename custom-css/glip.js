@@ -43,3 +43,17 @@ waitForRail()
 //   console.log('loaded')
 //   waitForRail()
 // })
+
+// Doesn't work yet. Keys do not appear but all events appear to be fired.
+/*
+document.querySelectorAll('.chat-textarea').forEach(n => {
+  console.log('added event listener')
+  n.addEventListener('keyup', e => {
+  if(e.key == ' ') {
+    console.info('sending key ')
+    const cancelled = e.target.dispatchEvent(new KeyboardEvent('keyup', {key: 'a', cancelable : false}))
+    console.info('canceled?', cancelled)
+  }
+}
+)})
+*/
