@@ -476,6 +476,72 @@ I want to see errors when a =noweb= reference fails to resolve.
 (setq org-babel-error-all-langs t)
 #+end_src
 
+** exporting
+*** svgs and html documents
+Some export destinations (such as HTML for Confluence documents) don't work well
+with SVG documents being linked. This is in part due to a single upload being
+done, rather than an upload per document generated from the export. SVGs support
+inlining, and that is what we will do here to work around the issue.
+
+This doesn't work because =:post= needs an =org-babel= block and not a function.
+Bleh.
+#+begin_src emacs-lisp :results none
+(defun config/ox-html-inline-svgs (text)
+  (with-temp-buffer
+    (erase-buffer)
+    (cl-assert text nil "config/ox-html-inline-svgs received nil instead of text ")
+    (insert text)
+    (beginning-of-buffer)
+    (if (re-search-forward org-any-link-re nil t)
+  (progn (let ((fname (match-string 2)))
+        (replace-match
+        (format "#+INCLUDE: \"%s\" export html" fname))
+        ))
+      (error "config/ox-html-inline-svgs: Was not able to find link in output"))
+    (buffer-string)
+    )
+  )
+#+end_src
+
+To use this, add =:post config/ox-html-inline-svgs :exports code :results raw
+drawer=.
+
+#+begin_src emacs-lisp :results none
+(require 'ox-html)
+(require 'nxml-mode)
+
+(defcustom org+-html-embed-svg nil
+  "Embed SVG images.
+You can set this variable in Org files with
+#+HTML_EMBED_SVG: t
+or
+#+OPTIONS: html-embed-svg:t"
+  :type 'boolean
+  :group 'org-export-html)
+
+(cl-pushnew
+ '(:html-embed-svg "HTML_EMBED_SVG" "html-embed-svg" org+-html-embed-svg)
+ (org-export-backend-options (org-export-get-backend 'html)))
+
+(defun org+-html-svg-image-embed (fun source attributes info)
+  "Make embedding of SVG images possible in org HTML export.
+SVG images are embedded if :html-embed-svg is non-nil in the plist INFO.
+Otherwise FUN called with SOURCE, ATTRIBUTES, and INFO as arguments.
+SOURCE is the file name of the SVG file.
+This is an around advice for `org-html--svg-image' as FUN."
+  (if (member (plist-get info :html-embed-svg) '("yes" "t" t))
+      (with-temp-buffer
+    (insert-file-contents source)
+    (with-syntax-table nxml-mode-syntax-table
+      (while (and (search-forward "<svg") ;; barfs if a "<svg" is not found in code
+              (nth 8 (syntax-ppss)))))
+    (delete-region (point-min) (match-beginning 0))
+    (buffer-string))
+    (funcall fun source attributes info)))
+
+(advice-add 'org-html--svg-image :around #'org+-html-svg-image-embed)
+#+end_src
+
 * priorities
 
 For the most part, A-C on priorities works great. However Jira tends to use
