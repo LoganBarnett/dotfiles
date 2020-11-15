@@ -89,3 +89,13 @@ inline for a given JS file.
   ;; (load-library "flycheck-flow")
   ;; (flycheck-add-next-checker 'javascript-flow 'javascript-flow-coverage)
 #+END_SRC
+** narrowing
+
+By default the various =narrow= functions will produce a warning if used,
+because it can be confusing when it happens. This can be alleviated with setting
+=narrow-to-region='s =disabled= property(?) to =nil=.
+
+#+name: config/narrow-to-region-disable-warning
+#+begin_src emacs-lisp :results none
+(put 'narrow-to-region 'disabled nil)
+#+end_src
