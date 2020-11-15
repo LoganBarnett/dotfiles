@@ -126,6 +126,8 @@
         # jenv
         # JSON parsing, querying, and updating.
         jq
+        # Give us man pages for GNU stuff.
+        manpages
         # Java builds. Pom.xml files as far as the eyes can see.
         maven
         # A union of ping and traceroute - ping all hosts along a route.
