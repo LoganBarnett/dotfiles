@@ -137,8 +137,11 @@ const vars = {
   'highlight-color': '#e3dedd',
   // This is the same as the code background color. Perhaps we should require
   // code blocks use something a little brighter?
+  // TODO: Rename instances of this to gutter-*.
   'line-number-background-color': '#100a14',
   'line-number-color': '#686868',
+  'gutter-background-color': '#100a14',
+  'gutter-color': '#686868',
   '--meta-background-color': '#541',
   '--meta-color': '#b1951d',
   '--separator-background-color': '#125',
