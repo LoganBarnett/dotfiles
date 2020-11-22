@@ -55,6 +55,7 @@
 (package! groovy-mode)
 (package! habitica)
 (package! highlight-parentheses)
+(package! jiralib2 :recipe (:local-repo "~/dev/jiralib2"))
 (package! lsp-java)
 ;; (package! latex-mode)
 (package! lua-mode)
