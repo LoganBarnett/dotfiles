@@ -76,6 +76,13 @@
 (package! org-mime)
 (package! org-mode) ; Pretty sure some of these are built in.
 (package! org-superstar :disable t)
+;; ox-jira uses the trunk branch now, per
+;; https://github.com/stig/ox-jira.el/issues/50, however straight.el hasn't
+;; gotten detection of the default branch going yet (understandibly there's some
+;; work involved, tracked at
+;; https://github.com/raxod502/straight.el/issues/279). This should be all
+;; that's needed to fix it.
+(package! ox-jira :recipe (:branch "trunk"))
 (package! ox-gfm)
 (package! pinentry)
 (package! piper :recipe (:local-repo "~/dev/emacs-piper"))
