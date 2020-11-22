@@ -79,3 +79,14 @@ allows for interactive editing, which can include refactoring identifiers.
 (define-key evil-normal-state-map (kbd "#") #'config/begin-evil-iedit-state)
 
 #+end_src
+* search and replace
+** global search and replace
+
+I found it quite handy to have things like =:%s= and =:s= replace globally by
+default, with the option to deactivate it by adding the =g= flag at the end of
+the expression. This got switched off during an upgrade, so now I set it
+manually.
+
+#+begin_src emacs-lisp :results none
+(setq evil-ex-substitute-global t)
+#+end_src
