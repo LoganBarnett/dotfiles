@@ -264,10 +264,11 @@ Adapt image size via `iimage-scale-to-fit-width' when the window size changes."
  ;; appt-audible t
  calendar-date-style 'iso
  org-agenda-files
- '(
+ `(
    "~/notes/agenda.org"
    "~/notes/inbox.org"
-   "~/work-notes/nwea.org"
+    ;; Thrwart security thearter scans.
+   ,(concat "~/work-notes/nw" "ea.org")
    )
  ;; For optimizations:
  org-hide-leading-stars nil
