@@ -183,7 +183,7 @@ unsetopt AUTO_CD
 export NOTES_DIR="$HOME/notes"
 
 # -G is BSD, but with Nix we use --color now.
-alias ls='ls -aG'
+alias ls='ls -aG --color=auto'
 alias grep='grep --color=auto'
 alias b='bundle exec'
 # run node in ES6 mode
