@@ -270,8 +270,8 @@ function prompt_char() {
 # BEGIN VIM PROMPT SECTION
 ################################################################################
 
-EDIT_MODE_PROMPT="%{$fg[green]%}✎ "
-COMMAND_MODE_PROMPT="%{$fg[yellow]%}© "
+EDIT_MODE_PROMPT="%{$fg[green]%}✎ \e[0m"
+COMMAND_MODE_PROMPT="%{$fg[yellow]%}© \e[0m"
 VIM_MODE_PROMPT=$EDIT_MODE_PROMPT
 function mode_change_prompt() {
   if [ $EMACS ]; then
