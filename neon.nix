@@ -132,6 +132,8 @@
         manpages
         # Java builds. Pom.xml files as far as the eyes can see.
         maven
+        # A program to allow communicating over serial. Perhaps I can script it?
+        minicom
         # A union of ping and traceroute - ping all hosts along a route.
         mtr
         # Email indexing, viewing, etc.
