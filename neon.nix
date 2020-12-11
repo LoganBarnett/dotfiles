@@ -111,6 +111,8 @@
         html-tidy
         # A more visual version of top.
         htop
+        # For previewing LaTeX in Emacs.
+        imagemagick
         # A spell checker.
         ispell
         # Email gathering and sending. Works with mu.
@@ -126,6 +128,8 @@
         # jenv
         # JSON parsing, querying, and updating.
         jq
+        # For rendering a number of diagrams and documents.
+        #latex
         # Give us man pages for GNU stuff.
         manpages
         # Java builds. Pom.xml files as far as the eyes can see.
