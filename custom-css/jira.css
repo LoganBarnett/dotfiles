@@ -314,3 +314,41 @@ marquee {
 #footer-logo {
   background-color: var(--general-background-color) !important;
 }
+
+/**
+ * Form inputs.
+ */
+form.aui .text::placeholder,
+form.aui .password::placeholder,
+form.aui .textarea::placeholder {
+  color: var(--input-color) !important;
+}
+
+/**
+ * Form inputs, but more.
+ */
+form.aui .text,
+form.aui .password,
+form.aui .upfile,
+form.aui .textarea,
+form.aui .select,
+form.aui .multi-select,
+form.aui .aui-select2-container {
+  background-color: var(--input-background-color) !important;
+  border: var(--input-border) !important;
+  color: var(--input-color) !important;
+}
+
+/**
+ * Footer for dialogs.
+ */
+.jira-dialog .buttons-container {
+  background-color: var(--general-background-color) !important;
+}
+
+/**
+ * Header for dialogs.
+ */
+.jira-dialog .jira-dialog-heading {
+  background-color: var(--general-background-color) !important;
+}
