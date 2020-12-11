@@ -61,8 +61,6 @@
         # Perhaps I should file one?
         # arduino
         # avr-gcc
-        # The manager for Rust and its tooling.
-        cargo
         # This is a suite of GNU utilities.
         coreutils
         # curl does http requests. Comes with MacOS but no reason to use a dated
@@ -191,6 +189,8 @@
         # rbenv
         # Really fast grep alternative.
         ripgrep
+        # A version management tool for Rust.
+        rustup
         # A lightweight SQL database which requires no server. This also
         # installs CLI tools in which to access SQLite databases.
         sqlite
