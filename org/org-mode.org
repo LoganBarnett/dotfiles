@@ -562,6 +562,14 @@ This is an around advice for `org-html--svg-image' as FUN."
 
 (advice-add 'org-html--svg-image :around #'org+-html-svg-image-embed)
 #+end_src
+* org-todo
+** log timestamps when done
+When marking a =TODO= as =DONE= we can automatically insert a timestamp.
+
+#+name: config/org-todo-log-done
+#+begin_src emacs-lisp :results none
+(setq org-log-done 'time)
+#+end_src
 
 * priorities
 
@@ -589,6 +597,7 @@ around 5 priorities, and we must support these beforehand.
   :init
   <<config/org-mode-manage-initial-folding>>
   <<config/org-mode-set-paths>>
+  <<config/org-todo-log-done>>
   ;; This value keeps getting overridden, so use add-hook to ensure it.
   (add-hook 'org-mode-hook (lambda () <<config/open-link-in-new-window>>))
   <<config/org-babel-passthrough>>
