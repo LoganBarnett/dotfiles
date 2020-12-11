@@ -204,6 +204,9 @@
         w3m
         # A handy alternative to curl, best suited for downloading content.
         wget
+        # Folks suggest installing an application from the AppStore. I'd prefer
+        # to have an unattended install of the Wireguard client.
+        wireguard-tools
         # A tool for installing node packages. Better than npm in most ways.
         yarn
         # See also oh-my-zsh.
