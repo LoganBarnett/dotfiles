@@ -363,22 +363,43 @@ h1.stream-header {
  * Alison has had her avatar privileges removed for mimicking Tim's avatar. It's
  * tough, but rules are rules.
  */
+/*
 [data-balloon="Alison McCrea"] img {
   display: none;
 }
-
-[data-balloon="Alison McCrea"] .headshot-36 {
-  background-image: url('https://store.playstation.com/store/api/chihiro/00_09_000/container/CZ/en/999/EP2402-CUSA05624_00-AV00000000000134/1576760052000/image?w=240&h=240&bg_color=000000&opacity=100&_version=00_09_000');
-  background-size: contain;
-}
+*/
 
 /**
  * Some folks use gifs for their avatars. It doesn't work with my auto hiding,
  * and I don't really need the auto hiding to get fixed in this location.
  * Instead just pick suitable avatars and use those.
+ *
+ * The data-balloon attribute is the name, but changing the nickname (people do
+ * a lot) thwarts the selector. So use person_id instead and document the person
+ * in a comment.
  */
-[data-balloon="Aeryn Skye"] .headshot-36 {
+
+/**
+ * Aeryn S.
+ */
+[person_id="538858291203"] .headshot-36 {
   background-image: url('https://corgiknight.files.wordpress.com/2018/07/sei_8722052.jpg');
   background-position: 50% 25%;
   background-size: cover;
+}
+
+/**
+ * Alison M.
+ */
+[person_id="26446921731"] .headshot-36 {
+  background-image: url('https://store.playstation.com/store/api/chihiro/00_09_000/container/CZ/en/999/EP2402-CUSA05624_00-AV00000000000134/1576760052000/image?w=240&h=240&bg_color=000000&opacity=100&_version=00_09_000');
+  background-size: contain;
+}
+
+/**
+ * Kal A.
+ */
+[person_id="476815278083"] .headshot-36 {
+  background-image: url('https://cdn.cavemancircus.com//wp-content/uploads/2020/08/mind_blowing_facts_about_space.jpg');
+  background-size: contain;
 }
