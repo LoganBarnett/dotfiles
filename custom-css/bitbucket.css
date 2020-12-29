@@ -330,6 +330,13 @@ h3, .aui-page-header-hero .aui-page-header-main p, .aui-page-header-marketing .a
 }
 
 /**
+ * Comments specifically for an entire file.
+ */
+.file-comment .file-content.no-diff .comments-thread {
+  background-color: var(--general-background-color) !important;
+}
+
+/**
  * This is the table from rendered markdown in README's and the like.
  */
 .markup table > tbody > tr,
