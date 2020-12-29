@@ -8,3 +8,15 @@ source $dir/dotfiles-functions.sh
 
 log "Installing XCode..."
 xcode-select --install || true
+
+# Without this, things like curl wouldn't work for our trusted certificates
+# (primarily for private networks).
+log "Adding system trusts to nix tools..."
+sudo sh -c \
+  'security find-certificate -a \
+  -p /Library/Keychains/System.keychain > \
+  /nix/var/nix/profiles/default/etc/ssl/certs/ca-bundle.crt'
+sudo sh -c \
+  'security find-certificate -a \
+  -p /System/Library/Keychains/SystemRootCertificates.keychain >> \
+  /nix/var/nix/profiles/default/etc/ssl/certs/ca-bundle.crt'
