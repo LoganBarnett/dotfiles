@@ -83,12 +83,28 @@
       (add-hook 'dnd/turn-functions #'config/dnd-trigger-personalized-music)
       )
   #+end_src
+* utilities
+** equipment weight
+#+name: org-dnd-equipment-weight
+#+begin_src emacs-lisp :results none :tangle yes
+(defun dnd/total-equipment-weight (weights qtys)
+  "Calculate the total weights using WEIGHTS * QTYS."
+  (reduce
+  '+ (-map
+      (lambda (xs)
+        (* (car xs) (cdr xs)))
+      (-zip weights qtys)
+      )
+  :initial-value 0)
+  )
+#+end_src
 
 * using
   #+begin_src emacs-lisp :results none :noweb yes
     (with-eval-after-load 'org
       (message "Loading D&D settings...")
       <<org-dnd-key-bindings>>
+      <<org-dnd-equipment-weight>>
       (require 'request)
       (config/dnd-load)
       (config/dnd-hook-personalized-music)
