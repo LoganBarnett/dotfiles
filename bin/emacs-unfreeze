@@ -1,2 +1,8 @@
 #!/usr/bin/env bash
-pkill -SIGUSR2 -i emacs ; emacsclient -e '(setq debug-on-quit nil)'
+echo "This might need to be run multiple times..."
+pkill -SIGUSR2 -i emacs #; emacsclient -e '(setq debug-on-quit nil)'
+
+if [[ "$1" == "-d" ]] ; then
+  echo "Setting debug-on-quit to t..."
+  emacsclient -e '(setq debug-on-quit t)'
+fi
