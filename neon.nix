@@ -140,6 +140,8 @@
         mtr
         # Email indexing, viewing, etc.
         mu
+        # Connect to MongoDB for poking around the document store.
+        mongodb
         # This lets me search for parts of nix to help debug collisions.
         nix-index
         # Recursively walks up the file hiearchy to show permissions. Quite
