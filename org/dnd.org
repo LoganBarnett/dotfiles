@@ -7,21 +7,16 @@
 #+tags:
 
 * load from disk
-  I don't quite have =dnd.org= published to =elpa= just yet. So I need to load
-  it from my filesystem.
+I don't quite have =dnd.org= published to =elpa= just yet. So I need to load it
+from my filesystem.
 
-  #+begin_src emacs-lisp :results none
-    (defun config/dnd-load ()
-      (org-babel-load-file
-       (
-        expand-file-name
-        "~/dev/org-dnd/dnd.org"
-        ;; (file-name-directory dirname)
-        )
-       ;; t
-       )
-      )
-  #+end_src
+#+name: config/dnd-load
+#+begin_src emacs-lisp :results none :tangle yes
+(org-babel-load-file
+  (expand-file-name "~/dev/org-dnd/dnd.org")
+  )
+#+end_src
+
 * key bindings
   #+name: org-dnd-key-bindings
   #+begin_src emacs-lisp :results none
@@ -106,7 +101,7 @@
       <<org-dnd-key-bindings>>
       <<org-dnd-equipment-weight>>
       (require 'request)
-      (config/dnd-load)
+      <<config/dnd-load>>
       (config/dnd-hook-personalized-music)
       )
   #+end_src
