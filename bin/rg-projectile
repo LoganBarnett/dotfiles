@@ -1,6 +1,7 @@
-#! /usr/bin/env bash
+#!/usr/bin/env bash
 
 set -euo pipefail
 
 newargs="$(echo "$@" | sed 's/\-\-ignore .* //')"
 rg $newargs
+# rg --hidden --glob '!.git' $newargs
