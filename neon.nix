@@ -79,6 +79,8 @@
         fd
         # Convert media (sound, video).
         ffmpeg
+        # Rasterized image manipulation.
+        gimp
         # git manages my code. Comes with MacOS but no reason to use a dated
         # version.
         git
