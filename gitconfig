@@ -5,6 +5,8 @@
        status = auto
        branch = auto
        diff = auto
+[init]
+  defaultBranch = main
 [mergetool "diffmerge"]
     cmd = /Applications/DiffMerge.app/Contents/MacOS/DiffMerge \
         --nosplash \
