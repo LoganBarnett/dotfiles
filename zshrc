@@ -199,7 +199,7 @@ alias grt="git restore --theirs"
 alias glp="git log --pretty=format:'%Cred%h%Creset %<(60,trunc)%s %Cgreen%<(12,trunc)%cr %C(bold blue)%<(12,trunc)%an%Creset %C(yellow)%<(20,mtrunc)%d%Creset' --abbrev-commit"
 
 # ripgrep
-alias rg="rg --hidden --glob '!.git'" # Search hidden files.
+alias rgh="rg --hidden --glob '!.git'" # Search hidden files.
 
 # yarn flow management because it happens a lot.
 alias yf="yarn flow"
