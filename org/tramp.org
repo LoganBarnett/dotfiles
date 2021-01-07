@@ -130,7 +130,6 @@ command control it, as those still work.
   (use-package "tramp"
     :init
     :config
-    (set-tramp-logging)
     ;; Kept as reference in case some non-gnu system is in use.
     ;;
     ;; (setq-default insert-directory-program "/usr/local/bin/gls")
