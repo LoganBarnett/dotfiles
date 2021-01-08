@@ -562,6 +562,18 @@ This is an around advice for `org-html--svg-image' as FUN."
 
 (advice-add 'org-html--svg-image :around #'org+-html-svg-image-embed)
 #+end_src
+* org-clock
+** org-clock-display
+
+By default =org-clock-display= only shows entries for the current year, which
+makes displaying clock usage a little weird when looking across the seam of a
+year. We want to display it up until now.
+
+#+name: config/org-clock-display-until-now
+#+begin_src emacs-lisp :results none :tangle yes
+(setq org-clock-display-default-range 'untilnow)
+#+end_src
+
 * org-todo
 ** log timestamps when done
 When marking a =TODO= as =DONE= we can automatically insert a timestamp.
@@ -598,6 +610,7 @@ around 5 priorities, and we must support these beforehand.
   <<config/org-mode-manage-initial-folding>>
   <<config/org-mode-set-paths>>
   <<config/org-todo-log-done>>
+  <<config/org-clock-display-until-now>>
   ;; This value keeps getting overridden, so use add-hook to ensure it.
   (add-hook 'org-mode-hook (lambda () <<config/open-link-in-new-window>>))
   <<config/org-babel-passthrough>>
