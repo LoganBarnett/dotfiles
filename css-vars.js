@@ -81,9 +81,15 @@ function hexToRgba(hex) {
 
 const buttonColor = '#2aa1ae'
 
+// TODO: Lift the variable translation. Just put them in a :root that applies to
+// everything. We'll loose things like hexToRgba but it doesn't see much use.
 const vars = {
+  '--badge-border': '1px solid #5d4d7a',
+  '--badge-background-color': '#100a14',
+  '--badge-border': '#dc752f',
   // Emacs calls this "war" and it's typically used for callouts on headings
-  // such as [1/3] and [50%] that are shown from TODO check lists.
+  // such as [1/3] and [50%] that are shown from TODO check lists. Probably
+  // because "var" is taken and "w" comes after "v".
   '--badge-color': '#dc752f',
   '--border': '#5d4d7a',
   '--border-color': '#5d4d7a',
@@ -119,9 +125,12 @@ const vars = {
   '--code-background-color': '#100a14',
   '--code-color': '#b0b0d0',
   '--link-color': '#2d9574',
-  '--hover-link-color': '#4b9',
-  '--visited-link-color': '#4f97d7',
-  '--visited-link-background-color': '#44505c',
+  '--link-hover-color': '#4b9',
+  '--link-visited-color': '#4f97d7',
+  '--link-visited-background-color': '#44505c',
+  '--hover-link-color': '#4b9', // Duplicate.
+  '--visited-link-color': '#4f97d7', // Duplicate.
+  '--visited-link-background-color': '#44505c', // Duplicate.
   '--heading-background-color': '#292b2e',
   '--head1-color': '#4f97d7',
   '--head1-background-color': '#293239',
