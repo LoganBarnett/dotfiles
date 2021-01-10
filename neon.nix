@@ -46,6 +46,21 @@
   #   darwin = pkgs.darwin.system_cmds;
   # };
   packageOverrides = pkgs: with pkgs; {
+    # The pkgs part here is important, even though pkgs is in the lexical scope.
+    # At the moment this is broken due to "perl532" being missing. Strangely
+    # omitting the overlays declaration here makes the issue go away. The
+    # problem manifests even if overlays is empty.
+    # pkgs.overlays = [
+      # Could be inline like this:
+      #
+      # (self: super: {
+      #     freecad = super.callPackage ~/dev/nixpkgs/pkgs/applications/graphics/freecad/default.nix {};
+      # })
+      # import ./nix/overlays.nix
+    # ];
+
+# This records as a flat dependency just called 'shell-packages'. I need to find
+# a way to unpack this.
     shellPackages = pkgs.buildEnv {
       extraOutputsToInstall = [ "man" "doc" ];
 # "my-packages" isn't very helpful. We should make this profile "default" or
@@ -117,8 +132,6 @@
         ispell
         # Email gathering and sending. Works with mu.
         isync
-        # A transcoding system.
-        ffmpeg
         # I think I have some extra memory. Java should take care of that.
         # For now this seems broken - I suspect it is a collision with maven.
         # See https://github.com/NixOS/nixpkgs/issues/56549 - my local version
@@ -141,7 +154,8 @@
         # Email indexing, viewing, etc.
         mu
         # Connect to MongoDB for poking around the document store.
-        mongodb
+        # Currently broken due to gperftools.
+        # mongodb
         # This lets me search for parts of nix to help debug collisions.
         nix-index
         # Recursively walks up the file hiearchy to show permissions. Quite
@@ -163,12 +177,16 @@
         # same snytax as jq with the exception of the -i and -o arguments to
         # indicate which format is to be used. It just uses jq internally for
         # all translations.
-        oq
+        #
+        # Broken at the moment. Need to file bug.
+        # oq
         # Translate human documents from one format to another.
         pandoc
         # Doesn't exist. It's a pip.
         # percol
 
+        # Because sometimes you need something better than grep.
+        perl
         # Haskell docs say this is necessary for Haskell. See
         # https://docs.haskellstack.org/en/v0.1.10.1/nix_integration.html#using-a-custom-shell-nix-file
         # See Haskell entry for why I'm not bothering.
@@ -220,6 +238,15 @@
         zstd
       ];
       pathsToLink = [ "/Applications" "/bin" "/etc" "/share" ];
+      # Get man pages synced.
+      postBuild = ''
+        if [ -x $out/bin/install-info -a -w $out/share/info ]; then
+          shopt -s nullglob
+          for i in $out/share/info/*.info $out/share/info/*.info.gz; do
+              $out/bin/install-info $i $out/share/info/dir
+          done
+        fi
+      '';
     };
   };
 }
