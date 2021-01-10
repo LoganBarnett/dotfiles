@@ -232,3 +232,51 @@ form.aui .aui-select2-container {
 #workflow-editor-1[style] {
   height: 1000px !important;
 }
+
+
+/**
+ * Needs to be specific to fight the not() selector on the material theme.
+ */
+html body .ace_text-input {
+  font: 12px/normal Roboto Mono,monospace !important;
+  font-family: 12px/normal Roboto Mono,monospace !important;
+}
+
+.ace-tomorrow {
+  background-color: var(--panel-background-color) !important;
+  color: var(--text-color) !important;
+}
+
+.ace-tomorrow .ace_gutter-active-line {
+  background-color: var(--highlight-background-color) !important;
+  color: var(--highlight-color) !important;
+}
+
+.ace-tomorrow .ace_gutter {
+  background-color: var(--gutter-background-color) !important;
+  color: var(--gutter-color) !important;
+}
+
+.ace-tomorrow .ace_marker-layer .ace_active-line {
+  background-color: var(--highlight-background-color) !important;
+  color: var(--highlight-color) !important;
+}
+
+/**
+ * Fuck this rule.
+ */
+html body :not(div.ace_editor) {
+  font: inherit !important;
+}
+
+.ace_layer.ace_text-layer,
+html body .ace_layer.ace_text-layer div.ace-line[class],
+.ace_layer.ace_text-layer span {
+  font: 12px/normal Roboto Mono,monospace !important;
+  font-family: Roboto Mono,monospace !important;
+}
+
+.bottom-sticker-inner {
+  background: var(--panel-background-color) !important;
+  box-shadow: none !important;
+}
