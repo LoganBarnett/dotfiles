@@ -22,7 +22,7 @@
          (funcall ,fnc)))
   #+end_src
 
-  #+name: config/org-agenda-autosave :tangle yes
+  #+name: config/org-agenda-autosave
   #+begin_src emacs-lisp :results none
     (advice-add 'org-deadline       :after (unrest #'org-save-all-org-buffers))
     (advice-add 'org-schedule       :after (unrest #'org-save-all-org-buffers))
@@ -105,12 +105,12 @@ SPAN defaults to ‘org-agenda-span’.
   kind of =cron= job process my agenda files is the way to go.
 
   See more here, possibly: https://www.reddit.com/r/emacs/comments/86xh8c/what_is_your_calendar_setup/
-* hydra
+* interface
+** hydra
 =org-agenda= has a whole mess of keys that I can never remember. Hydra should
 save the day here!
 
-
-#+begin_src emacs-lisp :results none :tangle yes
+#+begin_src emacs-lisp :results none
 (defhydra hydra-evil-org-agenda
   (:pre (hydra-stack-init)
    ;; foreign-keys set to run will pass through key bindings. This means
@@ -177,6 +177,7 @@ _C-g_ back one menu
    )
   )
 
+(message "[CONFIG] Registering Hydra for org-agenda...")
 (add-hook 'org-agenda-mode-hook (lambda ()
                                   (message "entering org-agenda-mode")
     (if (hydra-stack-empty-p)
@@ -185,6 +186,48 @@ _C-g_ back one menu
       )
     )
   )
+#+end_src
+** transient
+
+#+begin_src emacs-lisp :results none
+(defclass argh--variable (transient-variable)
+  ((scope       :initarg :scope)))
+
+(define-infix-command argh-set-query ()
+  "Set the `query' variable in the source buffer."
+  :class 'argh--variable
+  :key "-q"
+  :argument "--query="
+  :variable 'query)
+
+(define-transient-command argh-transient ()
+  "Show transient for current buffer."
+  ["Query"
+   (argh-set-query)])
+
+(cl-defmethod transient-infix-set ((obj argh--variable) value)
+  "Set a variable."
+  (let ((variable (oref obj variable)))
+    (oset obj value value)
+    (set (make-local-variable (oref obj variable)) value)
+    (unless (or value transient--prefix)
+      (message "Unset %s" variable))))
+
+;; (transient-setup 'argh
+;;                  nil
+;;                  nil
+;;                  "Argh - set a variable"
+;;                  'argh-transient
+;;                  )
+
+;; (transient-setup 'org-dnd
+;;                  nil
+;;                  nil
+;;   ;;               "Org D&D"
+;;                  (transient-define-prefix 'initiative
+
+;;                    )
+;;                  )
 #+end_src
 
 * all together
