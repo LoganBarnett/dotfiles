@@ -10,6 +10,13 @@
     maven = pkgs.maven.overrideAttrs {
       jdk = pkgs.jdk;
     };
+    # ruby = pkgs.ruby.overrideAttrs {
+    #   gems = with pkgs; [
+    #     aws-sdk         # To use eyaml encryption at work.
+    #     hiera-eyaml     # To use eyaml encryption at work.
+    #     hiera-eyaml-kms # To use eyaml encryption at work.
+    #   ];
+    # };
     zsh = pkgs.zsh.overrideAttrs {
       enable = true;
       ohMyZsh = {
@@ -24,6 +31,7 @@
       };
     };
   };
+
 
   # What you want.
   # users.users.${config.settings.username}.shell = pkgs.zsh;
@@ -224,6 +232,30 @@
         # rbenv
         # Really fast grep alternative.
         ripgrep
+        # Like Python, but not.
+        (ruby.withPackages (ps: with ps; [
+          # This technique only works for packages like nokogiri below, which
+          # tend to have native extensions and are otherwise supported
+          # explicitly by the ruby nix package. This is not where you put
+          # arbitrary packages. Instead use bundlerApp. See
+          # https://github.com/NixOS/nixpkgs/blob/master/doc/languages-frameworks/ruby.section.md#packaging-applications
+          # Even then this documentation is lacking on how to integrate it into
+          # nix-env.
+          #
+          # nokogiri # Works, but not what I want.
+          # typhoeus # Works, but not what I want.
+          # aws-sdk  # Doesn't work, but might be transitive.
+          #
+          # These do not work because GEM_PATH and GEM_HOME don't function, I
+          # think. Best to just install global Ruby applications-via-gem with
+          # gem install <pkg>. Ensure GEM_HOME points to the
+          # ~/.gem/ruby/2.6.0 directory. GEM_PATH should be $GEM_HOME/bin. It's
+          # possible the default values work here, and during my debugging I
+          # crushed them.
+          #
+          # hiera-eyaml     # Alas, this is not supported. Install manually.
+          # hiera-eyaml-kms # Alas, this is not supported. Install manually.
+        ]))
         # A version management tool for Rust.
         rustup
         # A lightweight SQL database which requires no server. This also
