@@ -277,6 +277,13 @@ td.confluenceTd {
 }
 
 /**
+ * Dashboard header.
+ */
+#dashboard-content > .aui-page-header {
+  background: var(--head1-background-color) !important;
+}
+
+/**
  * Things inside the dashboard...?
  */
 #dashboard > .vertical.tabs, #dashboard > .dashboard-content {
@@ -306,6 +313,24 @@ marquee {
  */
 .gadget .dashboard-item-content {
   background-color: var(--panel-background-color) !important;
+}
+
+/**
+ * Issue table header on hover.
+ */
+#issuetable > thead .sortable:hover,
+.issue-table > thead .sortable:hover {
+  background-color: var(--highlight-dim-background-color) !important;
+  color: var(--highlight-dim-color) !important;
+}
+
+/**
+ * Issue table header on hover.
+ */
+#issuetable > thead .active,
+.issue-table > thead .active {
+  background-color: var(--highlight-dim-background-color) !important;
+  color: var(--highlight-dim-color) !important;
 }
 
 /**
@@ -459,4 +484,24 @@ a:visited {
  */
 .issue-search-header {
   background-color: var(--general-background-color) !important;
+}
+
+/**
+ * Tags in forms.
+ */
+.jira-multi-select > .representation .value-item {
+  background-color: var(--button-background-color) !important;
+  color: var(--button-color) !important;
+}
+
+/**
+ * Tags in forms when focused.
+ */
+.jira-multi-select:hover textarea:not(:focus) ~ .representation button {
+  background-color: var(--button-focus-background-color) !important;
+  color: var(--button-focus-color) !important;
+}
+
+.jira-dialog .buttons-container .hint-container {
+
 }
