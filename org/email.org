@@ -306,7 +306,7 @@ much of that is shadowed by =evil-mode=.
            ;; with >
            (while (and (> (point) top)
                        (backward-paragraph))
-             (unless (looking-at ">")
+             (unless (or (looking-at ">") (looking-at "-"))
                (mu4e-fill-paragraph))))
          )
      #+end_src
@@ -323,12 +323,17 @@ much of that is shadowed by =evil-mode=.
        remaps =M-q= (the standard =fill-paragraph= binding) to
        =mu4e-fill-paragraph=. We want to bring that back as well.
 
+From some experimentation I found maybe =mu4e-compose-format-flowed= isn't
+always what I want. More research is required. It would be nice to preserve
+formatting I do myself (such as lists), and =mu4e-compose-format-flowed= as
+=nil= is the way to accomplish that.
+
        #+begin_src emacs-lisp :results none
 
          (defun config/mu4e-prevent-hard-line-wrap-on-export ()
            "Sets `use-hard-newlines' to t for the mu4e buffer."
            (message "opting to use hardlines")
-           (setq-default mu4e-compose-format-flowed t)
+           (setq-default mu4e-compose-format-flowed nil)
            (add-hook
             'message-send-hook
             'config/mu4e-unfill-body
