@@ -5,7 +5,7 @@
 #+language: en
 #+tags:     emacs config org-agenda
 
-* save buffers on changing todos
+* COMMENT save buffers on changing todos
 
   Changes in =org-agenda= write to the buffers that own the original TODO items
   but they do not save the buffer (which means a crash or other problem could
@@ -106,7 +106,7 @@ SPAN defaults to ‘org-agenda-span’.
 
   See more here, possibly: https://www.reddit.com/r/emacs/comments/86xh8c/what_is_your_calendar_setup/
 * interface
-** hydra
+** COMMENT hydra
 =org-agenda= has a whole mess of keys that I can never remember. Hydra should
 save the day here!
 
@@ -187,7 +187,7 @@ _C-g_ back one menu
     )
   )
 #+end_src
-** transient
+** COMMENT transient
 
 #+begin_src emacs-lisp :results none
 (defclass argh--variable (transient-variable)
