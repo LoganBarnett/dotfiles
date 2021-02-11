@@ -7,7 +7,7 @@
 
 * use package
 
-  #+begin_src emacs-lisp
+  #+begin_src emacs-lisp :results none
     (use-package "company"
       :defer t
       :init
@@ -20,8 +20,8 @@
 
       (global-company-mode 1)
       ;; fast auto-complete
-      (setq-default company-idle-delay 0.2)
-      (setq-default company-minimum-prefix-length 1)
+      (setq-default company-idle-delay 1)
+      (setq-default company-minimum-prefix-length 2)
       (global-set-key (quote [(ctrl return)]) 'company-complete)
       (setq-default company-auto-complete t)
       ;; (define-key company-active-map [tab] 'company-select-next)
