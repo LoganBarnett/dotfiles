@@ -70,6 +70,9 @@
         # A grep-sed like alternative. Offers a scripting language for
         # transformations.
         ack
+        # For running AWS commands. Generally this is just a backend for
+        # saml2aws under my usage.
+        awscli
         # Compile natively to tiny devices.
         # Actually I'm not sure what to use. Arduino has no Darwin/macOS version
         # and avr-gcc no longer exists. I can't even find a ticket on it.
