@@ -28,14 +28,32 @@ packages. An undocumented way to support overrides is to place a =__= file in
 the appropriate snippet directory. For specifically named files, =__<filename>=
 works as well. The key for these files is assumed to be =__= and we should
 continue that when writing file templates.
+* allow require-file-newline
+
+=require-file-newline= set to =nil= makes it such that I must add the newline to
+the end of the file, instead of Emacs inserting it automatically. I use this in
+my snippet template because I don't always want to insert a newline upon snippet
+expansion.
+
+We need to set this in advance so when =yasnippet= is loaded, it will also load
+the snippets using this variable non-interactively. If it requires interaction
+during startup, it appears that =yasnippet= simply skips the snippet in
+question.
+
+#+begin_src emacs-lisp :results none
+(add-to-list 'safe-local-variable-values
+              '(require-file-newline . nil)
+              )
+#+end_src
 
 * apply
 
-  #+begin_src emacs-lisp :results none
+  #+begin_src emacs-lisp :results none :noweb t
     (require 'use-package)
 
     (use-package "yasnippet"
       :init
+      <<config/yasnippet-require-file-newline-mark-safe>>
       (setq-default yas-snippet-dirs '("~/dev/dotfiles/yasnippets"))
       (config/yasnippet-fundamental-mode)
       :config
