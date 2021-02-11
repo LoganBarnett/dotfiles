@@ -258,6 +258,8 @@
         ]))
         # A version management tool for Rust.
         rustup
+        # Assume an account on AWS via SAML.
+        saml2aws
         # A lightweight SQL database which requires no server. This also
         # installs CLI tools in which to access SQLite databases.
         sqlite
