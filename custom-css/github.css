@@ -794,3 +794,11 @@ body .no-underline {
   border: var(--warning-border) !important;
   color: var(--warning-color) !important;
 }
+
+/**
+ * Used in search results and other places where a repository is shown next to a
+ * user name.
+ */
+mark {
+  color: var(--link-color) !important;
+}
