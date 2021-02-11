@@ -1,6 +1,0 @@
-# -*- mode: snippet; require-file-newline: t -*-
-# name: Assign the script's absolute directory to `dir'.
-# key: shdir
-# condition: t
-# --
-dir="\$(dirname "\${BASH_SOURCE[0]}")"
