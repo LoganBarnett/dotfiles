@@ -1,0 +1,236 @@
+#+title:     Transportation Circle
+#+author:    Logan Barnett-Hoy
+#+email:     logustus@gmail.com
+#+date:      <2021-01-13 Wed>
+#+language:  en
+#+file_tags:
+#+tags:
+
+This is a literate program. The program is woven into the documentation below
+using =org-babel=.
+
+* transportation circle
+
+Transportation Circle is the brand name I just made up for this functionality.
+It provides an interactive minor mode in a buffer and displays interaction
+options through a transient map.
+
+** justification
+
+I wanted to use transient.el. I love magit, I love its interface. It has loads
+of documentation but it's hard to take that documentation and turn it into real,
+working code. It also uses objects, which especially confuse me in the world of
+Emacs and Lisp. Working on this would give me a better grasp of how to control a
+buffer in Emacs specifically for the purposes of some kind of interactive
+interface, rather than a text file. I have other twisted plots in mind, once I
+have some familiarity here.
+
+I have tried hydra. While hydra is within the realm of this functionality, it's
+designed to be relatively basic. There's value in that, but it doesn't allow the
+customization I want.
+** the program
+
+Transportation Circle declares a series of functions for displaying itself,
+initializing its key maps, and so forth. This is brought in below.
+
+#+name: tc/main
+#+begin_src emacs-lisp :results none :noweb yes
+<<tc/buffer-display-fn>>
+#+end_src
+
+** emacs terminology in regards to ui
+
+As a quick refresher:
++ Frame :: A "window" in terms of most GUIs. The frame is a UI whose direct
+  parent is the OS itself. It will likely have a close, maximize, and minimize
+  buttons.
++ Window :: This is a section within a frame. Generally, windows are associated
+  with a buffer.
+
+** display the window
+
+#+name: tc/buffer-display-body
+#+begin_src emacs-lisp :results none :noweb yes :tangle no
+(let* ((buffer (get-buffer-create "*transportation circle*"))
+      ;; (top-pos (- (window-height) (* 10 10)))
+      (top-pos (+ (window-height) 558)) ;; Number found manually. How to
+                                        ;; calcuate?
+      (nada (message "top pos %s" top-pos))
+      (frame (display-buffer buffer `((display-buffer-in-child-frame) . (
+                           (child-frame-parameters . (
+                            (height . 10) ;; Number of lines.
+                            ;; (width . ,(window-width))
+                            ;; Unsure why we have to add one more column, but it
+                            ;; fits nicely.
+                            (width . ,(+ (window-width) 1))
+                            ;; (inhibit-same-window . t)
+                            ;; (inhibit-switch-frame . t)
+                            (top . ,top-pos)
+                            (menu-bar-lines . 0) ;; Does this do anything?
+                            (keep-ratio . t) ;; Follow resizes of parent.
+                            (no-other-frame . t) ;; Prevent cycling via next/previous.
+                            (minibuffer . nil) ;; doesn't seem to work
+                            ;; (parent-window . ,(selected-window))
+                            (parent-frame . ,(selected-frame))
+                            ;; (no-accept-focus . t)
+                            ;; (preserve-size . (t . t))
+                            ;; (popup-frame-parameters . (no-accept-focus . t))
+                            ;; (window-height . 100)
+                            ))
+                           ;; (inhibit-same-window . t)
+                           ;; (inhibit-switch-frame . t)
+                           ;; (no-accept-focus . t)
+                           ;; (popup-frame-parameters . (
+                           ;;  (no-accept-focus . t)
+                           ;;  (window-height . 10)
+                           ;;  ))
+                           ;; (window-height . 10)
+                           ))))
+      )
+  ;; display-buffer-in-child-frame is basically a pop-up. But maybe we want
+  ;; that, if we can control some parameters of it.
+  ;; Oh, I'm not supposed to call these directly.
+  ;; (display-buffer-in-child-frame buffer '(
+  ;;                                    inhibit-same-window
+  ;;                                    inhibit-switch-frame
+;; Transportation Circle for D&D
+
+  ;;                                    ))
+ ;; display-buffer-in-child-frame looks like a better candidate - read up on it.
+  ;; (display-buffer-at-bottom buffer '(
+  ;;                                    inhibit-same-window
+  ;;                                    inhibit-switch-frame
+  ;;                                    ))
+
+  ;; For twisted plots later: display-buffer-at-bottom would be good for a
+  ;; global mode-line.
+  ;; (display-buffer buffer '((display-buffer-below-selected)
+
+  ;; (display-buffer buffer `((display-buffer-below-selected) . (
+  ;;   (window-height . fit-window-to-buffer)
+  ;;   ;; (side . bottom)
+  ;;   ;; (inhibit-same-window . t)
+  ;;   )))
+  (tc/buffer-populate buffer)
+  (other-window 1)
+)
+#+end_src
+
+#+name: tc/buffer-display-fn
+#+begin_src emacs-lisp :results none :noweb yes
+<<tc/buffer-populate-fn>>
+(defun tc/buffer-display ()
+  (interactive)
+  <<tc/buffer-display-body>>
+  )
+#+end_src
+
+** buffer contents
+
+#+name: tc/buffer-populate-fn
+#+begin_src emacs-lisp :results none :noweb yes
+<<tc/buffer-entries-populate-fn>>
+
+(defvar tc/actions '(
+                     ((key . "i") (display . "initiative"))
+                     ((key . "c") (display . "generate character"))
+                     ((key . "o") (display . "generate location"))
+                     ((key . "t") (display . "generate item"))
+                     ))
+
+(defun tc/buffer-populate (buffer)
+  (save-window-excursion
+    (switch-to-buffer buffer)
+    (erase-buffer)
+    (font-lock-mode)
+    <<tc/buffer-heading-populate>>
+    (tc/buffer-entries-populate tc/actions)
+    )
+  )
+#+end_src
+
+*** buffer heading
+
+#+name: tc/buffer-heading-populate
+#+begin_src emacs-lisp :results none :noweb yes
+(insert "Transportation Circle for ")
+(insert "D&D")
+(insert "\n\n")
+#+end_src
+
+*** buffer entries
+
+#+name: tc/buffer-entries-populate-fn
+#+begin_src emacs-lisp :results none :noweb yes
+(defun tc/buffer-entries-populate (actions)
+  "Insert ACTIONS into the selected buffer."
+  (message "%s" actions)
+  (insert
+   (-reduce #'concat
+            (-map
+             (lambda (action)
+               (concat
+                "  " ;; Indent.
+                (propertize (cdr (assoc "key" action))
+                            'font-lock-face
+                            '(:foreground "purple")
+                            )
+                (propertize (concat " " (cdr (assoc "display" action)))
+                            'font-lock-face
+                            '(:foreground "#4488DD")
+                            )
+                "\n"
+                )
+               )
+             actions
+             )
+            )
+   )
+  )
+#+end_src
+
+** key bindings
+*** summon
+=SPC m D D=
+
+#+begin_src emacs-lisp :results none :noweb yes
+<<tc/buffer-display-fn>>
+
+(on-doom
+  (map!
+    :localleader
+    :desc "dnd"
+    (:prefix "D"
+      :map org-mode-map
+      :ne "D" #'tc/buffer-display
+      )
+    )
+ )
+#+end_src
+
+*** interaction
+
+**** interaction overview
+=set-transient-map= gives us the capability to bind a key map that sits on top
+of the current key map (whatever it may be) temporarily. The documentation on
+[[https://www.gnu.org/software/emacs/manual/html_node/elisp/Controlling-Active-Maps.html][Controlling Active Maps]] details this.
+
+I feel for non-standard _application_ functionality, it's very good to have a
+small cheat sheet of sorts displayed near the operational area. This can not
+only show what options are available but what flags we have set.
+
+The transient map takes place over =org-mode=. The =*transportation circle*=
+buffer is just the cheat sheet. If we land on this buffer somehow, we should
+return to the buffer selected.
+
+**** unreachable buffer
+
+This is still a work in progress.
+
+The =*transportation circle*= buffer should be more or less unreachable, but if
+we reach it we should return to the parent buffer.
+
+On the off chance that someone arrives at the buffer, it should be read only.
+**** transient map
+
+For the
