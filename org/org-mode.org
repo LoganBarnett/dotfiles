@@ -434,6 +434,13 @@ reasons.
 #+begin_src emacs-lisp :results none :tangle yes
 (setq org-directory "~/notes")
 #+end_src
+** TODO fix illegal characters
+If the heading contains characters such as =<= or =>= it will build HTML that
+won't parse correctly, because open-tags aren't legal HTML inside of attribute
+values, I think.
+
+We should drop or convert these characters.
+
 * org-agenda
 This is worthy of its own file. See [[file:./org-agenda.org][org-agenda.org]].
 * org-babel
