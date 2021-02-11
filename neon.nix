@@ -261,6 +261,7 @@
         # A lightweight SQL database which requires no server. This also
         # installs CLI tools in which to access SQLite databases.
         sqlite
+        terraform
         # Highly controllable terminal emulation and session management.
         tmux
         # The penultimate editor.
