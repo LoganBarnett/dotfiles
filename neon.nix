@@ -185,6 +185,12 @@
         #
         # Broken at the moment. Need to file bug.
         # oq
+
+        # Experimental attempt at getting sshfs working. This is not adequate to
+        # get a functional sshfs. But this successfully builds so I wouldn't be
+        # far away from creating a darwin build for sshfs on nixpkg.
+        # Can be manually installed from https://osxfuse.github.io/
+        osxfuse
         # Translate human documents from one format to another.
         pandoc
         # Doesn't exist. It's a pip.
