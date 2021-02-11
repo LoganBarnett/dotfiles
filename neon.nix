@@ -156,6 +156,8 @@
         mtr
         # Email indexing, viewing, etc.
         mu
+        # Like nmap, a tool for testing network ports. The executable is "nc".
+        netcat
         # Connect to MongoDB for poking around the document store.
         # Currently broken due to gperftools.
         # mongodb
