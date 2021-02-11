@@ -1,0 +1,5 @@
+# -*- mode: snippet; require-file-newline: nil -*-
+# name: directory of current script
+# key: dir
+# --
+dir="$(dirname "$\{BASH_SOURCE[0]\}")"
