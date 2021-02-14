@@ -6,6 +6,8 @@ set -ex
 # out=$(echo "$1" | sed 's/heic$/png/')
 # ffmpeg -i "$1" -c:v png -frames:v 1 -pix_fmt rgb48 "${1%heic}png"
 
-magick convert "$1" "${1%heic}png"
+# Sometimes this is called "magick" on some systems as a catch-all command, but
+# in nix the one we want is "convert" - this name seems collision-prone.
+convert "$1" "${1%heic}png"
 
 echo "Converted heic file to '${1%heic}png'."
