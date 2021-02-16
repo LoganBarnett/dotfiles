@@ -49,6 +49,24 @@ As a quick refresher:
 
 ** display the window
 
+=display-buffer= has a lot of powerful options, but selecting the right one is
+tricky. [[https://github.com/muffinmad/emacs-mini-frame][emacs-mini-frame]] has some potential, but I didn't opt for it on this
+pass.
+
+This approach with =display-buffer= explicitly indicates the options to use.
+However the preferred method is to set a =cons= cell of a regular expression to
+match a buffer name and options for =display-buffer=. This value is appended to
+=display-buffer-alist=.
+
+There are a number of documents relevant to this topic.
++ [[https://www.gnu.org/software/emacs/manual/html_node/elisp/Position-Parameters.html#Position-Parameters][Position-parameters]]
++ [[https://www.gnu.org/software/emacs/manual/html_node/elisp/Frame-Interaction-Parameters.html#Frame-Interaction-Parameters][Frame-Interaction-Parameters]]
++ [[https://www.gnu.org/software/emacs/manual/html_node/elisp/Buffer-Display-Action-Functions.html][Buffer-Display-Action-Functions]]
++ [[https://www.gnu.org/software/emacs/manual/html_node/elisp/Child-Frames.html#Child-Frames][Child-Frames]]
++ [[https://www.reddit.com/r/emacs/comments/aw40il/cant_make_displaybufferpopupframe_work_with/][A reddit page with a number of options used as an example]]
++ [[https://www.gnu.org/software/emacs/manual/html_node/elisp/Displaying-Buffers.html][Main buffer displaying document]]
++ [[https://www.gnu.org/software/emacs/manual/html_node/emacs/Window-Choice.html#Window-Choice][Window-Choice]]
+
 #+name: tc/buffer-display-body
 #+begin_src emacs-lisp :results none :noweb yes :tangle no
 (let* ((buffer (get-buffer-create "*transportation circle*"))
@@ -233,4 +251,48 @@ we reach it we should return to the parent buffer.
 On the off chance that someone arrives at the buffer, it should be read only.
 **** transient map
 
-For the
+After we show the buffer, we need to immediately flip back to the original
+buffer. Once there we add a transient map to the buffer, so we can temporarily
+add bindings for =transportation-circle=.
+
+[[https://www.gnu.org/software/emacs/manual/html_node/elisp/Controlling-Active-Maps.html][Controlling-Active-Maps]] documents =set-transient-map= briefly.
+
+#+name: tc/transient-map-fn
+#+begin_src emacs-lisp
+(defun tc/transient-map (circle)
+  "Set up a transient map described by CIRCLE.
+
+CIRCLE is a list of destinations. See tc/actions.
+"
+  (set-transient-map
+    (keymap
+    (-map
+      (lambda (d)
+        ((keycode (cdr (assoc "key" d))) . (tc/keymap-action d))
+        )
+      circle
+      )
+    )
+    nil
+    (lambda ()
+      ;; TODO: Close the window.
+      )
+    )
+  )
+#+end_src
+
+**** destination actions
+
+When setting up the keymap in [[transient map]], we partially apply the destination
+to the action.
+
+#+name: tc/keymap-action-fn
+#+begin_src emacs-lisp
+(defun tc/keymap-action (destination)
+  "Partially apply DESTINATION to action in DESTINATION."
+  (-partial (cdr "action" destination) destination)
+  )
+#+end_src
+
+* COMMENT settings
+#  LocalWords:  keymap
