@@ -40,6 +40,7 @@ the snippets using this variable non-interactively. If it requires interaction
 during startup, it appears that =yasnippet= simply skips the snippet in
 question.
 
+#+name: config/yasnippet-require-file-newline-mark-safe
 #+begin_src emacs-lisp :results none
 (add-to-list 'safe-local-variable-values
               '(require-file-newline . nil)
@@ -48,7 +49,7 @@ question.
 
 * apply
 
-  #+begin_src emacs-lisp :results none :noweb t
+  #+begin_src emacs-lisp :results none :noweb yes
     (require 'use-package)
 
     (use-package "yasnippet"
