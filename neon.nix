@@ -185,6 +185,9 @@
         # Used to do split tunneled VPN connections from the command line. You
         # can also, you know, download it. Looking at you, AnyConnect.
         openconnect
+        # CAD software with a programming language behind it. Declarative
+        # models!
+        openscad
         # oq is like jq but for xml. It parses xml and yaml files and can
         # convert them to xml, yaml, or json (with jq as a backend). It uses the
         # same snytax as jq with the exception of the -i and -o arguments to
