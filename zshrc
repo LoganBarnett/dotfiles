@@ -27,7 +27,7 @@ $HOME/.doom-emacs.d/bin:\
 /Library/TeX/texbin:\
 /usr/bin:\
 /opt/X11/bin:\
-"
+$HOME/.gem/ruby/2.6.0/bin"
 
 # prevent emacs tramp from barfing on startup
 [[ "$TERM" == "dumb" ]] &&
