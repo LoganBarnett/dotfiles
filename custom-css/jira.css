@@ -505,3 +505,10 @@ a:visited {
 .jira-dialog .buttons-container .hint-container {
 
 }
+
+/**
+ * Table labels. Seen when moving a ticket.
+ */
+table.aui>tbody>tr,table.aui>tfoot>tr {
+  color: var(--text-color) !important;
+}
