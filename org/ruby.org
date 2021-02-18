@@ -1,0 +1,40 @@
+#+title:     Ruby
+#+author:    Logan Barnett-Hoy
+#+email:     logustus@gmail.com
+#+date:      <2021-02-17 Wed>
+#+language:  en
+#+file_tags:
+#+tags:
+
+* ruby
+
+The module provided in Doom isn't as flexible as I'd have liked. Instead of
+trying to hack it until it works, this file will serve as my configuration. At
+some point I could put together a pull request, but I need it working for me
+first.
+
+** prettier
+
+Instead of the standard =rubocop=, I prefer to let the machine do the hard work
+of formatting. To that effect there is [[https://github.com/prettier/plugin-ruby][prettier for ruby]], which I am happy to
+employ.
+
+*** disable rubocop
+
+Before we install =prettier=, we have to disable =rubocop= first. =rubocop= is
+quite built into =ruby-mode=, but it does have a flag we can use to disable it.
+
+#+name: config/ruby-rubocop-disable
+#+begin_src emacs-lisp :results none
+(setq-default ruby-flymake-use-rubocop-if-available nil)
+#+end_src
+
+** stitch
+
+#+begin_src emacs-lisp :results none :noweb yes
+(use-package 'ruby-mode
+  :init
+  <<config/ruby-rubocopy-disable>>
+  :config
+ )
+#+end_src
