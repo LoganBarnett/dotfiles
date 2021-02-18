@@ -83,3 +83,10 @@ a:visited {
 .single-measure .outer-flex-container .options-container {
   background-image: none !important;
 }
+
+/**
+ * Labels.
+ */
+.single-measure .outer-flex-container .options-container {
+  color: var(--input-label-color) !important;
+}
