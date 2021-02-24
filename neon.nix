@@ -187,7 +187,15 @@
         openconnect
         # CAD software with a programming language behind it. Declarative
         # models!
-        openscad
+        # openscad
+        # I get build errors with 2021-01.
+        # TODO: Report the build errors.
+        (import (builtins.fetchGit {
+          # Descriptive name to make the store path easier to identify
+          name = "nixpkgs-pre-pr-111997";
+          url = https://github.com/nixos/nixpkgs/;
+          rev = "385fc8362b8abe5aa03f50c60b9a779ce721db19";
+        }) {}).openscad
         # oq is like jq but for xml. It parses xml and yaml files and can
         # convert them to xml, yaml, or json (with jq as a backend). It uses the
         # same snytax as jq with the exception of the -i and -o arguments to
