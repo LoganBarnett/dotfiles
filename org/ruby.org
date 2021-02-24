@@ -32,7 +32,7 @@ quite built into =ruby-mode=, but it does have a flag we can use to disable it.
 ** stitch
 
 #+begin_src emacs-lisp :results none :noweb yes
-(use-package 'ruby-mode
+(use-package "ruby-mode"
   :init
   <<config/ruby-rubocopy-disable>>
   :config
