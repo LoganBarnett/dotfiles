@@ -54,6 +54,13 @@ a {
 }
 
 /**
+ * More links. Needs to override !important.
+ */
+html .Link--primary, html .link-gray-dark {
+  color: var(--link-color) !important;
+}
+
+/**
  * I'm not sure what a muted link represents. It already uses !important though,
  * so we have to use a more specific selector.
  */
