@@ -36,7 +36,6 @@ CASKS="
 alfred
 chromium
 diffmerge
-electric-sheep
 font-source-code-pro
 gimp
 google-chrome
@@ -60,8 +59,6 @@ else
   # corsair-icue - This hogs resources and causes audio to skip when other
   # processor intensive activities are going. Perhaps a later update will fix
   # this, but my limited research shows MacOs support to be relatively new.
-  #
-  # FreeCAD is massive. Not sure when I'll use it.
   MACHINE_CASKS="
 arduino
 discord
