@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+
+################################################################################
+# Looks for a jira-like branch name prefix (proj-1234-foo or PROJ-1234-foo) and
+# adds the ticket identifier to commits if not already present.
+################################################################################
+
+set -eo pipefail
+
+original=$1
+branch=$(git rev-parse --abbrev-ref HEAD)
+regex="^([a-z0-9]+)-([0-9]+)-[a-z0-9-]+$"
+
+if [[ $branch == "HEAD" ]]; then
+  # We run into HEAD as a branch when we are in a detached HEAD state, which
+  # can come from situations such as an interactive rebase. In these cases we
+  # have nothing to do and should end successfully.
+  exit 0
+elif [[ $branch =~ $regex ]]; then
+  # In bash 4.x we can use ${var^^} to uppercase, but stock macOS ships with
+  # 3.2.
+  upper_ticket_id=\
+"$(tr '[:lower:]' '[:upper:]' <<< "${BASH_REMATCH[1]}")-${BASH_REMATCH[2]}"
+  if ! grep -q "$upper_ticket_id" "$1"; then
+    printf "\n\n$upper_ticket_id" >> "$1"
+  fi
+else
+  # If the format doesn't match, then procede as normal.
+  exit 0
+fi
