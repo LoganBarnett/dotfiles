@@ -34,6 +34,19 @@
                   )
   )
 #+end_src
+* gitignore template
+
+The built-in file template for =.gitignore= files is flat out wrong.
+=.gitignore= should never have OS, editor, or any other non-project specific
+files listed in it. This is the responsibility of the global git ignore, which
+by default is =~/.config/git/ignore=. We could unset the template, but I'd
+rather use another template. This template will espouse the above policy to
+hopefully head off having to explain this over and over.
+
+#+name: config/gitignore-file-template-disable
+#+begin_src emacs-lisp :results none :tangle no
+(set-file-template! 'gitignore-mode :trigger "gitignore" :mode 'gitignore-mode)
+#+end_src
 
 * syncing git-gutter and magit
   =git-gutter= shows "fringe" indicators for adds, edits, and removals of lines
@@ -82,12 +95,13 @@ the home page value but that's not as useful as linking to the file itself.
 #+end_src
 
 * all together
-  #+begin_src emacs-lisp :results none
+  #+begin_src emacs-lisp :results none :noweb yes
     (require 'use-package)
 
     (use-package "magit"
       :init
       (config/git-blame-output)
+      <<config/gitignore-file-template-disable>>
       :config
       (config/connect-git-gutter-and-magit)
       )
