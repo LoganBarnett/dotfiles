@@ -40,7 +40,8 @@ or reverse search, depending on which of the two were pressed.
 =evil-iedit-state= takes this a bit further, and provides a =hydra= state that
 allows for interactive editing, which can include refactoring identifiers.
 
-#+begin_src emacs-lisp :results none
+# Disabled for now.
+#+begin_src emacs-lisp :results none :tangle no
 
 (defhydra hydra-evil-iedit-state
   (
