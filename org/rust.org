@@ -6,11 +6,24 @@
 #+file_tags:
 #+tags:
 
-* stitch
+* indentation
+
+As a huge proponent to 80 columns, I find Rust's 4 space indent to be an awful
+choice. Their code formatting uses it, and the community uses it. So trying to
+change it seems like a lost cause. That's okay though, because we have
+=redshift=.
+
+#+name: config/rust-redshift
 #+begin_src emacs-lisp :results none
+(add-hook 'rustic-mode-hook #'redshift-indent-mode)
+#+end_src
+
+* stitch
+#+begin_src emacs-lisp :results none :noweb yes
 (use-package "rust-mode"
   :init
   (message "add rust to path manually...")
   (add-to-list 'exec-path "/Users/logan/.cargo/bin")
+  <<config/rust-redshift>>
   )
 #+end_src
