@@ -434,6 +434,8 @@ reasons.
 #+begin_src emacs-lisp :results none :tangle yes
 (setq org-directory "~/notes")
 #+end_src
+* org-auto-id
+I don't have a better place for a TODO list.
 ** TODO fix illegal characters
 If the heading contains characters such as =<= or =>= it will build HTML that
 won't parse correctly, because open-tags aren't legal HTML inside of attribute
