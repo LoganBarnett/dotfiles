@@ -54,7 +54,6 @@ setopt prompt_subst
 
 # TODO: add osx conditionally
 plugins=(
-  brew
   command-not-found
   git
   node
@@ -116,12 +115,6 @@ ZSH_THEME="robbyrussell"
 # User configuration
 
 # export MANPATH="/usr/local/man:$MANPATH"
-
-# island of misfit paths
-# $HOME/.rvm/gems/ruby-2.2.1/bin:
-# $HOME/.rvm/gems/ruby-2.2.1@global/bin:
-# $HOME/.rvm/rubies/ruby-2.2.1/bin:
-# $HOME/.rvm/bin:
 
 # ZSH_THEME=flazz
 source $ZSH/oh-my-zsh.sh
@@ -411,7 +404,7 @@ export PATH="$JENV_ROOT:$PATH"
 # eval "$(jenv init -)"
 
 # rbenv for Ruby
-eval "$(rbenv init -)"
+#eval "$(rbenv init -)"
 
 # nodenv requires a quick init
 eval "$(nodenv init -)"
@@ -420,7 +413,7 @@ eval "$(nodenv init -)"
 source $HOME/.cargo/env
 
 # nodenv's build-update-defs plugin needs an environment variable set.
-export NODE_BUILD_DEFINITIONS=$(brew --prefix node-build-update-defs)/share/node-build
+# export NODE_BUILD_DEFINITIONS=$(brew --prefix node-build-update-defs)/share/node-build
 
 # Get ocaml's package manager on the PATH and other ocaml config.
 # eval $(opam config env)
