@@ -3,6 +3,29 @@ html, body {
   color: var(--text-color) !important;
 }
 
+/**
+ * Main content for the page. Could be a description but also other things.
+ */
+.ThingPage__mainColumn--25bWI {
+  background-color: var(--background-color) !important;
+  color: var(--text-color) !important;
+}
+
+/**
+ * Description text.
+ */
+.ThingPage__description--14TtH p {
+  color: var(--text-color) !important;
+}
+
+/**
+ * Header in descriptions.
+ */
+.ThingPage__blockTitle--3ZdLu {
+  background-color: var(--head1-background-color) !important;
+  color: var(--head1-color) !important;
+}
+
 .ThingPage__modelName--3CMsV {
   background-color: var(--head2-background-color) !important;
   color: var(--head2-color) !important;
