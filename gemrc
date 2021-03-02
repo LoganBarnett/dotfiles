@@ -1,7 +1,8 @@
 ---
 :backtrace: false
 :bulk_threshold: 1000
-gem: --no-document
+gem: --no-document --env-shebang
+install: --user-install
 :sources:
 - https://rubygems.org/
 :update_sources: true
