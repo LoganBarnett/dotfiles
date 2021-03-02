@@ -8,8 +8,6 @@
 .\#*
 # Node.js based files
 yarn-error.log
-# Ruby's Bundler cruft
-.bundle/
 # tmux logs
 tmux-client-*.log
 # eclim java server stuff
