@@ -38,15 +38,26 @@ cleaning up whitespace.
   even after using a much faster version of =linum-mode=. =whitespace-mode=
   highlights text that flows over the limit, which has proven faster for [[https://emacs.stackexchange.com/a/31145/14851][others]].
 
-  #+begin_src emacs-lisp
-    (use-package "whitespace"
-      ;; :ensure t
-      :init
-      (setq-default
-       whitespace-line-column 80
-       whitespace-style '(face lines-tail)
-       )
-      (add-hook 'prog-mode-hook 'whitespace-mode)
-      :config
-      )
+  #+begin_src emacs-lisp :results none
+(use-package "whitespace"
+  ;; :ensure t
+  :init
+  (setq-default
+   whitespace-line-column 80
+   whitespace-style '(
+     face
+     ;; `indentation' doesn't seem to work here.
+     ;;
+     ;; indentation
+     lines-tail
+     newline
+     newline-mark
+     tab-mark
+     tabs
+     trailing
+     )
+   )
+   (add-hook 'prog-mode-hook 'whitespace-mode)
+   :config
+   )
   #+end_src
