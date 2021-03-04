@@ -136,6 +136,15 @@ vi-yank-arg() {
 }
 zle -N vi-yank-arg
 bindkey -M vicmd _ vi-yank-arg
+# This is the default binding, but I must specify anyways.
+# Opens $EDITOR for editing the command - for complex commands.
+# This requires being in insert mode.
+bindkey -v "^X^E" edit-command-line
+bindkey -v "^XE" edit-command-line
+# Use ESC v to open $EDITOR for editing a complex command.
+# This is a default, somewhere I guess, but not for me. I would rather keep
+# visual mode.
+# bindkey -M vicmd v edit-command-line
 
 # You may need to manually set your language environment
 export LANG=en_US.UTF-8
