@@ -7,6 +7,15 @@
 
 ;;; Code:
 
+;; Show messages while we start up.
+(view-echo-area-messages)
+(toggle-debug-on-quit)
+;; Alternatively, this will show the entire messages buffer during startup.
+;;
+;; (with-current-buffer (messages-buffer)
+;;   (goto-char (point-max))
+;;   (switch-to-buffer (current-buffer)))
+
 (defmacro on-doom (&rest body)
   "Execute BODY if this Emacs is running Doom Emacs."
   (if (boundp 'doom-version)
@@ -340,6 +349,8 @@
   (config/init-org-file-private "jira-private.org")
   (message "[INIT] Init Done.")
   )
+
+(toggle-debug-on-quit)
 
 (provide 'my/init)
 
