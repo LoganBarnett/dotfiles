@@ -8,7 +8,9 @@
 set -eo pipefail
 
 original=$1
-branch=$(git rev-parse --abbrev-ref HEAD)
+# Assume "HEAD" if the command fails. This can happen when we are making the
+# initial commit.
+branch=$(git rev-parse --abbrev-ref HEAD 2> /dev/null || echo "HEAD")
 regex="^([a-z0-9]+)-([0-9]+)-[a-z0-9-]+$"
 
 if [[ $branch == "HEAD" ]]; then
