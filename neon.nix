@@ -1,4 +1,11 @@
 { pkgs, ... }:
+
+# let vpnc = pkgs.fetchgit {
+#   url = "git://git.infradead.org/users/dwmw2/vpnc-scripts.git";
+#   rev = "c0122e891f7e033f35f047dad963702199d5cb9e";
+#   sha256 = "11b1ls012mb704jphqxjmqrfbbhkdjb64j2q4k8wb5jmja8jnd14";
+# };
+# in
 {
   nixpkgs.config.packageOverrides = pkgs: {
     gnupg = pkgs.gnupg.overrideAttrs {
@@ -92,6 +99,9 @@
         # curl does http requests. Comes with MacOS but no reason to use a dated
         # version.
         curl
+        # Allow split DNS lookups while on the VPN, so I can still reach the
+        # intranet.
+        dnsmasq
         # A specialized charting tool using a declarative language. Supports a
         # specific set of charts but I don't remember which. Used by plantuml.
         ditaa
@@ -277,6 +287,13 @@
         terraform
         # Highly controllable terminal emulation and session management.
         tmux
+        # Openconnect pulls this in, but declaring it here makes it easy for us
+        # to use the vpnc-script that comes with it.
+        #
+        # Oh, but we can't build it directly on macOS. wtf :(
+        # And its binary isn't available from the help I've discovered.
+        #
+        # vpnc
         # The penultimate editor.
         vim
         # Renders HTML formatted emails.
