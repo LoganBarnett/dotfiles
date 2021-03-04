@@ -4,10 +4,27 @@
 # such as "Failed to connect to <ip>:443: Can't assign requested address"
 # https://www.ibvpn.com/billing/knowledgebase/145/OpenVPN-error-write-UDPv4-Canandsharp039t-assign-requested-address-codeequals49.html
 
-sudo ifconfig en0 down
-sudo ifconfig utun0 down
-sudo ifconfig utun1 down
-sudo ifconfig utun2 down
-sudo ifconfig utun3 down
-sudo route flush
-sudo ifconfig en0 up
+set -euo pipefail
+
+function warn {
+  echo "[VPN-FIX] " "$@" 1>&2
+}
+
+interfaces=$(ifconfig | grep -E '[0-9]: ' | sed -E 's/^(.+?): .*$/\1/')
+warn "Found interfaces to bring down:
+${interfaces}
+"
+warn "Bringing all interfaces down..."
+for i in $interfaces ; do
+  sudo ifconfig $i down
+done
+warn "Bringing all interfaces down... Done."
+warn "Flushing routes..."
+# -n keeps this from taking minutes.
+sudo route -n flush
+warn "Flushing routes... Done."
+warn "Bringing main interface back up..."
+for i in $interfaces ; do
+  sudo ifconfig $i up
+done
+warn "Bringing main interface back up... Done."
