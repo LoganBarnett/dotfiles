@@ -1,3 +1,5 @@
+# -*- mode: sh -*-
+
 # As charming as the nix installer seems to be, it neglects to mention you must
 # add nix to your PATH. Perhaps that's obvious, but the path to use is not
 # obvious. Taken from
@@ -8,10 +10,9 @@
 # without having to remove it during a reinstallation and then re-add it.
 export PATH="\
 /nix/var/nix/profiles/default/bin:\
-"$HOME/.nix""-profile/bin:\
+$HOME/.nix""-profile/bin:\
 ${PATH}\
 "
-
 
 # oh java
 JAVA_HOME="/Library/Java/Home"
