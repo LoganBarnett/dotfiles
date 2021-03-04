@@ -130,7 +130,7 @@ Property names are always lowercase in the returned structure."
 
 (defun org-auto-id/get-org-keyword (keyword)
   "Get the value of a KEYWORD from the `org-mode' buffer.
-KEYWORD is lowercase regardless of the document's value.
+KEYWORD is uppercase regardless of the document's value.
 Given this in the document:
 #+FOO: bar
 This code:
