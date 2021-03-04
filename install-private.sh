@@ -26,4 +26,6 @@ ln -F -n -s $PRIV_DIR/mailrc ~/.mailrc
 # Floobits is great!
 ln -F -n -s $PRIV_DIR/floorc.json ~/.floorc.json
 
+cd $PRIV_DIR
+./install.sh
 echo "[CONFIG] Installing private settings... Done!"
