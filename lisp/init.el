@@ -347,6 +347,10 @@
   (init-org-file "dnd.org")
   (init-org-file "jira.org")
   (config/init-org-file-private "jira-private.org")
+ (config/init-org-file-private (concat
+                                 ;; No one will ever figure this out!
+                                 (s-join "" (reverse '("a" "e" "w" "n")))
+                                 "-private.org"))
   (message "[INIT] Init Done.")
   )
 
