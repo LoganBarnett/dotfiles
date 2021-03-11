@@ -1,0 +1,21 @@
+##
+# Do not mistake this file as a declaration that this repository is somehow a
+# Ruby repository, and resist the urge to do a bundle install here, or whatever
+# suits the Ruby community these days.
+#
+# This file exists is a registry of all gems that are needed for the persistent
+# shell environment managed through Nix. The going approach is to use this file
+# in conjunction with the Nix "bundix" package which stitches this Gemfile (and
+# its respective Gemfile.lock) to Nix by generating gemset.nix.
+##
+
+source 'https://rubygems.org'
+
+# gem 'aws-sdk'
+
+# This depends upon hammer_cli (and others), and we really need it for just this
+# piece of functionality, so only refer to hammer_cli_foreman_ssh.
+gem 'hammer_cli_foreman_ssh'
+
+# gem 'hiera-eyaml'
+# gem 'hiera-eyaml-kms'

@@ -6,24 +6,24 @@
 #   sha256 = "11b1ls012mb704jphqxjmqrfbbhkdjb64j2q4k8wb5jmja8jnd14";
 # };
 # in
+let
+
+  in
 {
+
   nixpkgs.config.packageOverrides = pkgs: {
     gnupg = pkgs.gnupg.overrideAttrs {
       agent = {
         pinentryFlavor = "emacs";
       };
     };
+
     # jdk = pkgs.jdk.override (args: { ignoreCollisions = true; });
     maven = pkgs.maven.overrideAttrs {
       jdk = pkgs.jdk;
     };
-    # ruby = pkgs.ruby.overrideAttrs {
-    #   gems = with pkgs; [
-    #     aws-sdk         # To use eyaml encryption at work.
-    #     hiera-eyaml     # To use eyaml encryption at work.
-    #     hiera-eyaml-kms # To use eyaml encryption at work.
-    #   ];
-    # };
+
+
     zsh = pkgs.zsh.overrideAttrs {
       enable = true;
       ohMyZsh = {
@@ -60,7 +60,10 @@
   #   linux = pkgs.glibc.bin;
   #   darwin = pkgs.darwin.system_cmds;
   # };
-  packageOverrides = pkgs: with pkgs; {
+  packageOverrides = pkgs: with pkgs;
+    let
+ in
+    {
     # The pkgs part here is important, even though pkgs is in the lexical scope.
     # At the moment this is broken due to "perl532" being missing. Strangely
     # omitting the overlays declaration here makes the issue go away. The
@@ -88,6 +91,8 @@
         # For running AWS commands. Generally this is just a backend for
         # saml2aws under my usage.
         awscli
+        bundix
+        # gem-apps
         # Compile natively to tiny devices.
         # Actually I'm not sure what to use. Arduino has no Darwin/macOS version
         # and avr-gcc no longer exists. I can't even find a ticket on it.
@@ -254,29 +259,9 @@
         # Really fast grep alternative.
         ripgrep
         # Like Python, but not.
-        (ruby.withPackages (ps: with ps; [
-          # This technique only works for packages like nokogiri below, which
-          # tend to have native extensions and are otherwise supported
-          # explicitly by the ruby nix package. This is not where you put
-          # arbitrary packages. Instead use bundlerApp. See
-          # https://github.com/NixOS/nixpkgs/blob/master/doc/languages-frameworks/ruby.section.md#packaging-applications
-          # Even then this documentation is lacking on how to integrate it into
-          # nix-env.
-          #
-          # nokogiri # Works, but not what I want.
-          # typhoeus # Works, but not what I want.
-          # aws-sdk  # Doesn't work, but might be transitive.
-          #
-          # These do not work because GEM_PATH and GEM_HOME don't function, I
-          # think. Best to just install global Ruby applications-via-gem with
-          # gem install <pkg>. Ensure GEM_HOME points to the
-          # ~/.gem/ruby/2.6.0 directory. GEM_PATH should be $GEM_HOME/bin. It's
-          # possible the default values work here, and during my debugging I
-          # crushed them.
-          #
-          # hiera-eyaml     # Alas, this is not supported. Install manually.
-          # hiera-eyaml-kms # Alas, this is not supported. Install manually.
-        ]))
+        # DO NOT RUN RUBY IN NIX. NIX IS NOT READY FOR RUBY.
+        # ruby
+
         # A version management tool for Rust.
         rustup
         # Assume an account on AWS via SAML.
