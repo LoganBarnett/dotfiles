@@ -15,41 +15,43 @@ html body {
   background-color: var(--general-background-color) !important;
 }
 
-h1 {
+h1,
+.issue-body-content .module>.mod-header>h1 {
   color: var(--head1-color) !important;
   background-color: var(--head1-background-color) !important;
 }
 
-h2 {
+h2,
+.issue-body-content .module>.mod-header>h2 {
   color: var(--head2-color) !important;
   background-color: var(--head2-background-color) !important;
 }
 
-h3 {
+h3,
+.issue-body-content .module>.mod-header>h3 {
   color: var(--head3-color) !important;
   background-color: var(--head3-background-color) !important;
 }
 
-h4 {
+h4,
+.issue-body-content .module>.mod-header>h4 {
   color: var(--head4-color) !important;
   background-color: var(--head4-background-color) !important;
 }
 
-h5 {
+h5,
+.issue-body-content .module>.mod-header>h5 {
   color: var(--head5-color) !important;
   background-color: var(--head5-background-color) !important;
 }
 
-.issue-header .issue-header-content>.command-bar {
-  background-color: var(--general-background-color) !important;
+h6,
+.issue-body-content .module>.mod-header>h6 {
+  color: var(--head6-color) !important;
+  background-color: var(--head6-background-color) !important;
 }
 
-.issue-body-content .module>.mod-header>h1,
-.issue-body-content .module>.mod-header>h2,
-.issue-body-content .module>.mod-header>h3,
-.issue-body-content .module>.mod-header>h4,
-.issue-body-content .module>.mod-header>h5,
-.issue-body-content .module>.mod-header>h6 {
+.issue-header .issue-header-content>.command-bar {
   background-color: var(--general-background-color) !important;
 }
 
