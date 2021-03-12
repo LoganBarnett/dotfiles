@@ -6,23 +6,6 @@
 #+file_tags:
 #+tags:
 
-* exporting
-** confluence prefix
-
-Confluence puts a prefix upon every anchor which is the title of the document.
-That name can vary across =org-mode= buffers. Look it up using the custom
-keyword =AUTO_ID_PREFIX=.
-
-#+begin_src emacs-lisp :results none
-(defun config/auto-id-with-confluence-prefix (hierarchy-list)
-  (concat
-   (org-auto-id/get-org-keyword "AUTO_ID_PREFIX")
-   (org-auto-id/id-as-extra-kebab hierarchy-list)
-   )
-  )
-#+end_src
-
-
 * latex
 ** executables
 To get LaTeX working, we need to ensure that =latex= is on the =PATH=. My
@@ -571,6 +554,22 @@ This is an around advice for `org-html--svg-image' as FUN."
 
 (advice-add 'org-html--svg-image :around #'org+-html-svg-image-embed)
 #+end_src
+*** confluence prefix
+
+Confluence puts a prefix upon every anchor which is the title of the document.
+That name can vary across =org-mode= buffers. Look it up using the custom
+keyword =AUTO_ID_PREFIX=.
+
+#+begin_src emacs-lisp :results none
+(defun config/auto-id-with-confluence-prefix (hierarchy-list)
+  (concat
+   (org-auto-id/get-org-keyword "AUTO_ID_PREFIX")
+   (org-auto-id/id-as-extra-kebab hierarchy-list)
+   )
+  )
+#+end_src
+
+
 * org-clock
 ** org-clock-display
 
