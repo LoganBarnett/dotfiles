@@ -380,3 +380,10 @@ fieldset[disabled] .btn:hover,
   border: var(--input-border) !important;
   color: var(--input-color) !important;
 }
+
+/**
+ * Issue links.
+ */
+ul.content-list li a {
+  color: var(--link-color) !important;
+}
