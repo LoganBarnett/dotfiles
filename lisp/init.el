@@ -313,6 +313,7 @@
   (init-org-file "groovy.org")
   (init-org-file "purescript.org")
   (init-org-file "css.org")
+  (init-org-file "lisp.org")
   (init-org-file "makefile.org")
   (init-org-file "puppet.org")
   (init-org-file "ruby.org")

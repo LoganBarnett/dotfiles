@@ -1,0 +1,48 @@
+#+title:     Lisp
+#+author:    Logan Barnett-Hoy
+#+email:     logustus@gmail.com
+#+date:      <2021-03-11 Thu>
+#+language:  en
+#+file_tags:
+#+tags:
+
+* string truncation in package.el
+
+I'm going to leave this as reference, since it turned out to be a wild goose
+chase.
+
+Lines in =package.el= for Doom look like this:
+
+#+begin_example emacs-lisp :results none
+(package! evil-nerd-commenter :pin "b8ac35fe01...")
+#+end_example
+
+It may be using the actual ellipsis character, which may or may not render as 3
+columns.
+
+=+emacs-lisp-truncate-pin= exists to truncate git SHA hashes as part of
+fontification. I did witness an example of it truncating the wrong thing, but
+attempts to reproduce this have failed.
+
+This is a relatively harmless change. If I yank the link it belongs to and paste
+it elsewhere, it will initially appear to have preserved the ellipsis. However
+this is because the fontification survived the yank. It will be written to disk
+with the appropriate, full value. When the buffer is reloaded (assuming it is
+not a =package.el= or perhaps a Lisp file), it should show the non-fontified
+version: meaning it has no ellipsis.
+
+If I need to disable it for whatever reason, change the =example= block below
+into a =src= block.
+
+#+begin_example emacs-lisp
+(defun config/truncate-string-stop (orig-fn &rest args)
+  "Intentionally block truncation."
+  )
+(advice-add '+emacs-lisp-truncate-pin :around #'config/truncate-string-stop)
+(advice-remove '+emacs-lisp-truncate-pin)
+#+end_example
+
+Don't actually remove this just yet.
+#+begin_src emacs-lisp :results none
+;(advice-remove '+emacs-lisp-truncate-pin #'config/truncate-string-stop)
+#+end_src
