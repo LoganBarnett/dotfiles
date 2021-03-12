@@ -5,6 +5,25 @@
 #+language: en
 #+tags:     evil-mode emacs config
 
+* commenting
+
+=g c= is the default comment operator. Spacemacs had =g y= for command + yank,
+but Doom did not persist that. I think that's because Doom uses =evilnc= rather
+than =evil-commentary=. Instead, Doom reserves =g y= for yank-unindented, which
+does have its uses.
+
+=evilnc-yank-and-comment-operator= covers this functionality.
+
+Let's bind it to =g C=. Using =g C= as a modifier to =g c $= doesn't work out of
+the box anyways, and we can always just use =g c $=.
+
+#+begin_src emacs-lisp :results none
+(map!
+  :n "g C" #'evilnc-yank-and-comment-operator
+  )
+#+end_src
+
+
 * evil-mode
   #+begin_src emacs-lisp
     ;; (message "nothing to do in evil-mode config")
