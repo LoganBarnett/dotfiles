@@ -280,3 +280,11 @@ html body .ace_layer.ace_text-layer div.ace-line[class],
   background: var(--panel-background-color) !important;
   box-shadow: none !important;
 }
+
+/**
+ * Labels, mostly for checkboxes and radio buttons?
+ */
+form.aui .checkbox > label,
+form.aui .radio > label {
+  color: var(--label-color) !important;
+}
