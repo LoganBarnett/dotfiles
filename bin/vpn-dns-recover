@@ -1,0 +1,45 @@
+#!/usr/bin/env bash
+
+##
+# When connecting to the VPN, dnsmasq is started to achieve a split-DNS
+# resolution. In some cases dnsmasq comes down but we don't reassign the DNS
+# properly. This sets it back.
+#
+# I suspect this is not the complete answer to fixing a lodged DNS setting,
+# since this just seems to lodge the DNS in a new way. Connecting to new
+# networks will result in a successful DHCP query, and sets the interface's IP
+# address correctly, but the DNS setting from DHCP does not work. It is likely
+# that this fix should instead "unset" whatever has been set before by VPN.
+##
+
+function log {
+  echo "[VPN-DNS-RECOVER] " $@ 1>&2
+}
+
+dns=$(sudo nmap --script broadcast-dhcp-discover \
+  | grep 'Domain Name Server' \
+  | sed -E 's/.+Domain Name Server: (.+)$/\1/' \
+  | head -n 1 \
+  )
+if [[ "$dns" == "" ]]; then
+  log "No DHCP discovery found... Failing."
+  exit 1
+else
+  log "Got DHCP response for DNS at $dns, forcing that."
+fi
+
+states=$(
+  scutil <<< list \
+    | awk '{ print $4 }' \
+    | egrep '^State:.+/DNS$' \
+)
+IFS=$'\n'
+for state in $states ; do
+  echo $state
+  printf "d.init
+d.add ServerAddresses * ${dns}
+set ${state}
+quit
+" | tee /dev/tty | sudo scutil
+done
+sudo networksetup -setdnsservers Wi-Fi $dns
