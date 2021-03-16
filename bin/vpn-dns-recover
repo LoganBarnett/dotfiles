@@ -34,10 +34,20 @@ states=$(
     | egrep '^State:.+/DNS$' \
 )
 IFS=$'\n'
+# What we used to do:
+# d.add ServerAddresses * ${dns}
+#
+# I need to test that remove works with four scenarios:
+# 1: When connecting to vpn.
+# 2: When disconnecting from vpn.
+# 3: When connecting to proton.
+# 4: When connecting to something other than proton.
+#
+# So far it seems to work while connected to proton already.
 for state in $states ; do
   echo $state
   printf "d.init
-d.add ServerAddresses * ${dns}
+d.remove ServerAddresses
 set ${state}
 quit
 " | tee /dev/tty | sudo scutil
