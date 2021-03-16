@@ -14,12 +14,33 @@ does have its uses.
 
 =evilnc-yank-and-comment-operator= covers this functionality.
 
-Let's bind it to =g C=. Using =g C= as a modifier to =g c $= doesn't work out of
-the box anyways, and we can always just use =g c $=.
+Let's bind it to =g c=. I have tried things like =g C= and even =g Y= (although
+it's taken already) but it's really weird since =evil-mode= is expecting me to
+use =c= or =C= again in the case of =g C=, and I think it messes up the
+operator. Instead, I don't think there's a time when I comment and I don't want
+it to enter the kill ring.
+
+The author of =evilnc= was very kind and quick to add
+=evilnc-yank-and-comment-operator= for me. However it seemed to be buggy when I
+tried it in =rust-mode=. The implementation below suits my needs better,
+although it has a problem with doubling up on indentation, at least when
+pasting. I'm not sure what to do about that. Perhaps I have to use the copy-line
+equivalent function when that motion is provided. This bug only effects the
+first line.
 
 #+begin_src emacs-lisp :results none
+
+(evil-define-operator custom/evilnc-yank-and-comment-operator (begin end type register)
+  "(Un)comment and yank the text from BEGIN to END."
+  :move-point nil
+  :repeat nil
+  (interactive "<r><x><y>")
+  (evil-yank-line begin end type register)
+  (evilnc-comment-or-uncomment-region begin end)
+  )
+
 (map!
-  :n "g C" #'evilnc-yank-and-comment-operator
+  :n "g c" #'custom/evilnc-yank-and-comment-operator
   )
 #+end_src
 
