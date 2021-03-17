@@ -180,6 +180,8 @@ let
         # Email indexing, viewing, etc.
         mu
         # Like nmap, a tool for testing network ports. The executable is "nc".
+        # This installs the GNU version, although the OpenBSD version allows
+        # connecting to Unix sockets. For Unix sockets just use socat.
         netcat
         # Connect to MongoDB for poking around the document store.
         # Currently broken due to gperftools.
@@ -266,9 +268,14 @@ let
         rustup
         # Assume an account on AWS via SAML.
         saml2aws
+        # A self-proclaimed better netcat.
+        socat
         # A lightweight SQL database which requires no server. This also
         # installs CLI tools in which to access SQLite databases.
         sqlite
+        # Similar to netcat - has its uses as a very bare-bones network
+        # communication tool.
+        telnet
         terraform
         # Highly controllable terminal emulation and session management.
         tmux
