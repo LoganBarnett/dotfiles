@@ -40,7 +40,7 @@ first line.
   )
 
 (map!
-  :n "g c" #'custom/evilnc-yank-and-comment-operator
+  :nv "g c" #'custom/evilnc-yank-and-comment-operator
   )
 #+end_src
 
