@@ -37,7 +37,6 @@ git submodule update || true
 
 # link harder things
 mkdir -p ~/.config
-ln -snf $PWD/awesome ~/.config/awesome
 
 ln -snf $PWD/bin ~/bin
 
