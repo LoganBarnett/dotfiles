@@ -1,1 +1,12 @@
-These are my dotfiles. KTHXBAI
+#+title:     Dotfiles
+#+author:    Logan Barnett-Hoy
+#+email:     logustus@gmail.com
+#+date:      <2021-03-20 Sat>
+#+language:  en
+#+file_tags:
+#+tags:
+
+This is my system configuration. It's a continual work in progress. It also
+relies upon less public configuration in another repository. My end goal is to
+transform this into a fully [[https://www.alexeyshmalko.com/2020/literate-config/][literate configuration]]. At least as much as is
+reasonable. At some point I need to [[https://en.wikipedia.org/wiki/Bootstrapping#Software_development][bootstrap]] the configuration, of course.
