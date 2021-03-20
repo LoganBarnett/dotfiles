@@ -8,7 +8,7 @@
 ;;; Code:
 
 ;; Show messages while we start up.
-(view-echo-area-messages)
+;;(view-echo-area-messages)
 (toggle-debug-on-quit)
 ;; Alternatively, this will show the entire messages buffer during startup.
 ;;
