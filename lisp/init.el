@@ -217,8 +217,6 @@
   (load-library "config-so-long-mode")
   (config-so-long-mode)
 
-  (message "add rust to path manually...")
-  (add-to-list 'exec-path "/Users/logan/.cargo/bin")
   ;; TODO: move this into a general shell config file
   ;; Setting the shell to bash makes it work with things like exec-path. zsh
   ;; does not seem to work with this.
