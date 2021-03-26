@@ -1,0 +1,47 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# This detects the DHCP settings, if available. Gets the DNS IPs from that,
+# which are possible separated by ", ". Then forces the system to use those IPs
+# as the DNS servers. The problem with this approach is that it forces DNS
+# settings even over new connections. So if I go to a coffee shop and setup
+# there, it'll still be trying to use DNS from the last place, and will fail.
+#
+
+logScript=""
+function log {
+  if [[ "${logScript}" == "" ]]; then
+    logScript=$(sed -E 's/(.)/\U\1/g' <<EOF | sed -E 's@^.+/([^/]+)$@\1@'
+$0
+EOF
+    )
+  fi
+  echo "[$logScript]" $@ 1>&2
+}
+
+dnsIps=$(sudo nmap --script broadcast-dhcp-discover \
+  | grep 'Domain Name Server' \
+  | sed -E 's/.+Domain Name Server: (.+)$/\1/' \
+  | head -n 1 \
+  )
+if [[ "$dnsIps" == "" ]]; then
+  log "No DHCP discovery found... Failing."
+  exit 1
+else
+  log "Got DHCP response for DNS at $dnsIps, forcing that."
+fi
+
+hardwarePorts=$(networksetup -listallhardwareports \
+  | grep 'Hardware Port:' \
+  | sed -E 's/Hardware Port: (.+)$/\1/'
+  )
+IFS=$'\n'
+for port in $hardwarePorts; do
+  IFS=', '
+  for dns in $dnsIps; do
+    log "Setting DNS server on $port to $dns."
+    sudo networksetup -setdnsservers "$port" $dns || true
+    # log "Or Empty..."
+    # sudo networksetup -setdnsservers "$port" "Empty" || true
+  done
+done

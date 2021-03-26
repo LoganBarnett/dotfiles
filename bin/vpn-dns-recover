@@ -16,18 +16,6 @@ function log {
   echo "[VPN-DNS-RECOVER] " $@ 1>&2
 }
 
-dns=$(sudo nmap --script broadcast-dhcp-discover \
-  | grep 'Domain Name Server' \
-  | sed -E 's/.+Domain Name Server: (.+)$/\1/' \
-  | head -n 1 \
-  )
-if [[ "$dns" == "" ]]; then
-  log "No DHCP discovery found... Failing."
-  exit 1
-else
-  log "Got DHCP response for DNS at $dns, forcing that."
-fi
-
 states=$(
   scutil <<< list \
     | awk '{ print $4 }' \
@@ -35,7 +23,7 @@ states=$(
 )
 IFS=$'\n'
 # What we used to do:
-# d.add ServerAddresses * ${dns}
+# d.add ServerAddresses * ${dnsIps}
 #
 # I need to test that remove works with four scenarios:
 # 1: When connecting to vpn.
@@ -52,4 +40,4 @@ set ${state}
 quit
 " | tee /dev/tty | sudo scutil
 done
-sudo networksetup -setdnsservers Wi-Fi $dns
+sudo networksetup -setdnsservers Wi-Fi "Empty"
