@@ -21,6 +21,10 @@ states=$(
     | awk '{ print $4 }' \
     | egrep '^State:.+/DNS$' \
 )
+hardwarePorts=$(networksetup -listallhardwareports \
+  | grep 'Hardware Port:' \
+  | sed -E 's/Hardware Port: (.+)$/\1/'
+  )
 IFS=$'\n'
 # What we used to do:
 # d.add ServerAddresses * ${dnsIps}
@@ -40,4 +44,6 @@ set ${state}
 quit
 " | tee /dev/tty | sudo scutil
 done
-sudo networksetup -setdnsservers Wi-Fi "Empty"
+for port in $hardwarePorts; do
+  sudo networksetup -setdnsservers "$port" "Empty" || true
+done
