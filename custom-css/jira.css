@@ -514,3 +514,19 @@ a:visited {
 table.aui>tbody>tr,table.aui>tfoot>tr {
   color: var(--df-text-color) !important;
 }
+
+/**
+ * Form labels.
+ */
+form.aui .checkbox > label,
+form.aui .radio > label {
+  color: var(--label-color) !important;
+}
+
+/**
+ * Warning panel.
+ */
+.aui-message-warning {
+  background-color: var(--warning-background-color) !important;
+  color: var(--warning-color) !important;
+}
