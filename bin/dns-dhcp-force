@@ -36,3 +36,8 @@ for port in $hardwarePorts; do
     # sudo networksetup -setdnsservers "$port" "Empty" || true
   done
 done
+
+slog "Resetting DNS daemon..."
+# dnsflush
+sudo killall -HUP mDNSResponder
+slog "Done!"

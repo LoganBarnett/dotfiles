@@ -22,7 +22,8 @@ states=$(
 )
 hardwarePorts=$(networksetup -listallhardwareports \
   | grep 'Hardware Port:' \
-  | sed -E 's/Hardware Port: (.+)$/\1/'
+  | sed -E 's/Hardware Port: (.+)$/\1/' \
+  | grep -v -E 'Thunderbolt [0-9]+'
   )
 IFS=$'\n'
 # What we used to do:
@@ -35,14 +36,45 @@ IFS=$'\n'
 # 4: When connecting to something other than proton.
 #
 # So far it seems to work while connected to proton already.
-for state in $states ; do
-  echo $state
-  printf "d.init
-d.remove ServerAddresses
-set ${state}
-quit
-" | tee /dev/tty | sudo scutil
-done
+# for state in $states ; do
+#   slog $state
+#   printf "d.init
+# d.show
+# d.remove ServerAddresses
+# d.add ServerAddresses *
+# d.add SearchDomains *
+# set ${state}
+# d.show
+# quit
+# " | tee /dev/tty | sudo scutil
+# done
 for port in $hardwarePorts; do
-  sudo networksetup -setdnsservers "$port" "Empty" || true
+  slog "Configuring $port to use DHCP."
+  # This tells macOS to use DHCP for this port. Without this, the -setdnsservers
+  # and -setsearchdomains will persist across networks, and the system will
+  # not query and use DHCP to get information - this breaks our presence on
+  # other networks or even disconnecting from VPN.
+  sudo networksetup -setdhcp "$port"
+  slog "Setting $port DNS to Empty..."
+  sudo networksetup -setdnsservers "$port" Empty
+  slog "Setting $port search domains to Empty..."
+  sudo networksetup -setsearchdomains "$port" Empty
+  sudo networksetup -setwebproxystate "$port" Off
+  sudo networksetup -setsecurewebproxystate "$port" Off
+  sudo networksetup -setv6automatic "$port"
+  sudo networksetup -setproxybypassdomains "$port" Empty
 done
+slog "Resetting DNS daemon..."
+# dnsflush
+sudo dscacheutil -flushcache
+sudo killall -HUP mDNSResponder
+
+slog "Unfortunately absolutely none of this works without a restart."
+slog "Bringing the network service down. This will interrupt connections."
+for port in $hardwarePorts; do
+  slog "Stopping $port..."
+  sudo networksetup -setnetworkserviceenabled "$port" Off
+  slog "Restarting $port..."
+  sudo networksetup -setnetworkserviceenabled "$port" On
+done
+slog "Done!"
