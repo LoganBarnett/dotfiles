@@ -809,3 +809,18 @@ body .no-underline {
 mark {
   color: var(--link-color) !important;
 }
+
+
+/**
+ * Used as a top bar where navigation is for the repository.
+ */
+.color-bg-secondary {
+  background-color: var(--panel-background-color) !important;
+}
+
+/**
+ * Links, but dim? To hell with that.
+ */
+.Link--muted {
+  color: var(--link-color) !important;
+}
