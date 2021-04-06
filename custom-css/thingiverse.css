@@ -136,3 +136,18 @@ body .ThingComment__createdBy--3RvU6 {
   background: var(--general-background-color) !important;
   display: none !important;
 }
+
+/**
+ * Extented parts of the description.
+ */
+.ThingPage__preHistory--312bi p {
+  color: var(--df-text-color) !important;
+}
+
+/**
+ * Panels that wrap around the main content.
+ */
+.WidgetContainer__widget--2Zkwj {
+  background: var(--general-background-color) !important;
+  color: var(--df-text-color) !important;
+}
