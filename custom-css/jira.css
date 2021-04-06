@@ -1,5 +1,5 @@
 html body {
-  color: var(--text-color) !important;
+  color: var(--df-text-color) !important;
   background-color: var(--general-background-color) !important;
 }
 
@@ -102,7 +102,7 @@ a.aui-button {
 
 .aui-header {
   background: var(--panel-background-color) !important;
-  color: var(--text-color) !important;
+  color: var(--df-text-color) !important;
 }
 
 .aui-header .aui-dropdown2-trigger {
@@ -223,7 +223,7 @@ a.aui-button.aui-button-light,
 
 .ghx-issue {
   background-color: var(--general-background-color) !important;
-  color: var(--text-color) !important;
+  color: var(--df-text-color) !important;
 }
 
 .ghx-column-headers .ghx-column,
@@ -253,7 +253,7 @@ a.aui-button.aui-button-light,
 }
 
 .ghx-detail-issue {
-  color: var(--text-color) !important;
+  color: var(--df-text-color) !important;
 }
 
 /**
@@ -350,7 +350,7 @@ marquee {
 #issuetable > tfoot > tr,
 .issue-table > tfoot > tr {
   background-color: var(--panel-background-color) !important;
-  color: var(--text-color) !important;
+  color: var(--df-text-color) !important;
 }
 
 /**
@@ -512,5 +512,5 @@ a:visited {
  * Table labels. Seen when moving a ticket.
  */
 table.aui>tbody>tr,table.aui>tfoot>tr {
-  color: var(--text-color) !important;
+  color: var(--df-text-color) !important;
 }

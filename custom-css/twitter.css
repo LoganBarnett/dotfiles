@@ -1,6 +1,6 @@
 body {
   background-color: #121212 !important;
-  color: var(--text-color) !important;
+  color: var(--df-text-color) !important;
 }
 
 /* who to follow section */
@@ -48,7 +48,7 @@ button {
 }
 
 input, textarea, div[contenteditable], .t1-select {
-  color: var(--text-color) !important;
+  color: var(--df-text-color) !important;
   background-color: var(--general-background-color) !important;
 }
 
@@ -62,17 +62,17 @@ input, textarea, div[contenteditable], .t1-select {
 }
 
 .ProfileHeaderCard-bio {
-  color: var(--text-color) !important;
+  color: var(--df-text-color) !important;
 }
 
 .fullname {
-  color: var(--text-color) !important;
+  color: var(--df-text-color) !important;
 }
 
 .QuoteTweet .tweet-content, .QuoteTweet-text a, .QuoteTweet-text a:hover, .QuoteTweet-text a:focus, .QuoteTweet-text a:active, .QuoteTweet-text .pretty-link b, .QuoteTweet-text .pretty-link s, .QuoteTweet-text .pretty-link:hover b, .QuoteTweet-text .pretty-link:hover s, .QuoteTweet-text .pretty-link:focus b, .QuoteTweet-text .pretty-link:focus s, .QuoteTweet-text .pretty-link:active b, .QuoteTweet-text .pretty-link:active s {
-  color: var(--text-color) !important;
+  color: var(--df-text-color) !important;
 }
 
 .QuoteTweet-fullname {
-  color: var(--text-color) !important;
+  color: var(--df-text-color) !important;
 }

@@ -1,5 +1,5 @@
 body {
-  color: var(--text-color) !important;
+  color: var(--df-text-color) !important;
   background-color: var(--general-background-color) !important;
 }
 
@@ -95,7 +95,7 @@ table.table tr th,
 }
 
 .tree-holder .tree-commit .tree-commit-link {
-  color: var(--text-color) !important;
+  color: var(--df-text-color) !important;
 }
 
 .tree-holder .tree-commit .tree-commit-link:hover {
@@ -121,12 +121,12 @@ table.table tr th,
 .info-well {
   background: var(--panel-background-color) !important;
   border: 1px solid var(--thin-border-color) !important;
-  color: var(--text-color) !important;
+  color: var(--df-text-color) !important;
   margin-bottom: 0.5rem !important;
 }
 
 .commit a, .generic-commit-status a {
-  color: var(--text-color) !important;
+  color: var(--df-text-color) !important;
 }
 
 .commit-content .committer .commit-author-link {
@@ -160,11 +160,11 @@ table.table tr th,
 }
 
 .md {
-  color: var(--text-color) !important;
+  color: var(--df-text-color) !important;
 }
 
 .md p {
-  color: var(--text-color) !important;
+  color: var(--df-text-color) !important;
 }
 
 .file-holder .file-content.md {
@@ -194,7 +194,7 @@ pre {
 .context-header > a,
 .context-header > button {
   background-color: var(--general-backgorund-color) !important;
-  color: var(--text-color) !important;
+  color: var(--df-text-color) !important;
 }
 
 body.ui-indigo .nav-sidebar li.active > a {

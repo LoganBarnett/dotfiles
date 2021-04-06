@@ -3,7 +3,7 @@
 }
 
 body {
-  color: var(--text-color) !important;
+  color: var(--df-text-color) !important;
   background-color: var(--general-background-color) !important;
 }
 

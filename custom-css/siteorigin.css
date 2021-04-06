@@ -4,7 +4,7 @@
 
 body {
   background-color: var(--general-background-color) !important;
-  color: var(--text-color) !important;
+  color: var(--df-text-color) !important;
 }
 
 h1 {
@@ -41,7 +41,7 @@ h6 {
  * Table text color.
  */
 .is-style-outline {
-  color: var(--text-color) !important;
+  color: var(--df-text-color) !important;
 }
 
 /**

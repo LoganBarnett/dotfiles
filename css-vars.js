@@ -81,6 +81,8 @@ function hexToRgba(hex) {
 
 const buttonColor = '#2aa1ae'
 
+// TODO: Use "df" prefix for "dark force", because we're forcing it dark. ;)
+//
 // TODO: Lift the variable translation. Just put them in a :root that applies to
 // everything. We'll loose things like hexToRgba but it doesn't see much use.
 const vars = {
@@ -119,7 +121,8 @@ const vars = {
   '--func-color': '#bc6ec5',
   '--keyword-color': '#4f97d7',
   '--text': '#b2b2b2',
-  '--text-color': '#b2b2b2',
+  '--df-text-color': '#b2b2b2',
+  '--df-text-color': '#b2b2b2',
   '--dim-text': '#686868',
   '--background': '#292b2e',
   '--general-background-color': '#292b2e',

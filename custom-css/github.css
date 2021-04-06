@@ -137,14 +137,14 @@ body .muted-link {
 
 /* Outdated expand button on pull requests. Code has changed since comment. */
 .discussion-item-body .outdated-comment-label {
-  color: var(--text-color) !important;
+  color: var(--df-text-color) !important;
 }
 
 /**
  * Timeline comments (could be issues but also pull requests and other things).
  */
 .timeline-comment {
-  color: var(--text-color) !important;
+  color: var(--df-text-color) !important;
 }
 
 /* comments on issues */
@@ -184,7 +184,7 @@ body ul#user-links {
 
 /* pull request commit text */
 .commit-desc pre {
-  color: var(--text-color) !important;
+  color: var(--df-text-color) !important;
 }
 
 /* commit branch links */
@@ -333,7 +333,7 @@ div.discussion-timeline-actions {
 
 /* ordinary code bits */
 .blob-code-inner {
-  color: var(--text-color) !important;
+  color: var(--df-text-color) !important;
   /**
    * Can you believe some people still use tabs? Github or the browser has this
    * at 12 spaces!
@@ -362,7 +362,7 @@ div.discussion-timeline-actions {
 
 /* stuff inside string interpolations - used as a reset? */
 .pl-s1 {
-  color: var(--text-color) !important;
+  color: var(--df-text-color) !important;
 }
 
 /* string interpolations */
@@ -385,7 +385,7 @@ ul.top-nav li :hover
 body, #main /* , .unread_count, .pagehead, #browser table th, .tree-browser th, .main, .news .alert .body, .profilecols ul.stats li strong, .tab-content textarea,
  table.upgrades tr.current td, .definitions, span.name */ {
   background: var(--general-background-color) url() !important;
-  color: var(--text-color) !important;
+  color: var(--df-text-color) !important;
   margin-bottom: 0 !important;
  }
 
@@ -446,12 +446,12 @@ article,
 /* Subscription/watch status (seen on right side). */
 .thread-subscription-status {
   background-color: var(--general-background-color) !important;
-  color: var(--text-color) !important;
+  color: var(--df-text-color) !important;
 }
 
 /* Subscription/watch status TEXT (seen on right side). */
 .reason.text-small.text-gray {
-  color: var(--text-color) !important;
+  color: var(--df-text-color) !important;
 }
 
 /* Buttons! */
@@ -686,7 +686,7 @@ div.data.syntax table pre {
 /* comments I think */
 .form-control, .form-select {
   background-color: var(--general-background-color) !important;
-  color: var(--text-color) !important;
+  color: var(--df-text-color) !important;
 }
 
 div.file div.input textarea {
@@ -768,7 +768,7 @@ body .no-underline {
 }
 
 .review-comment {
-  color: var(--text-color) !important;
+  color: var(--df-text-color) !important;
 }
 
 .diffbar {

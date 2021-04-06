@@ -9,7 +9,7 @@ textarea {
 
 body {
   background-color: var(--general-background-color) !important;
-  color: var(--text-color) !important;
+  color: var(--df-text-color) !important;
 }
 
 .commentarea {
@@ -94,5 +94,5 @@ input:not([type="submit"]), textarea, .roundfield textarea, .roundfield input[ty
  */
 ._3GnarIQX9tD_qsgXkfSDz1, ._34q3PgLsx9zIU5BiSOjFoM {
   background-color: var(--code-background-color) !important;
-  color: var(--text-color) !important;
+  color: var(--df-text-color) !important;
 }

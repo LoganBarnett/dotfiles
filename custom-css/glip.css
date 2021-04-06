@@ -61,11 +61,11 @@ div.content {
 }
 
 .team_name, .person_name, .model_name {
-  color: var(--text-color) !important;
+  color: var(--df-text-color) !important;
 }
 
 .team_members, .person_info, .model_description, .created_by {
-  color: var(--text-color) !important;
+  color: var(--df-text-color) !important;
 }
 
 div.select {
@@ -87,7 +87,7 @@ div.select {
 }
 
 .post .post_text {
-  color: var(--text-color) !important;
+  color: var(--df-text-color) !important;
 }
 
 /**
@@ -246,7 +246,7 @@ img[src*="gif" i]:after {
  * Side panel with description text.
  */
 #description {
-  color: var(--text-color) !important;
+  color: var(--df-text-color) !important;
 }
 
 /**
@@ -325,7 +325,7 @@ h1.stream-header {
  * Dialog box text (in the body).
  */
 .confirm .confirmbody {
-  color: var(--text-color) !important;
+  color: var(--df-text-color) !important;
 }
 
 /**
@@ -356,7 +356,7 @@ h1.stream-header {
 .ui-widget-content {
   background: var(--panel-background-color) !important;
   border: var(--panel-border) !important;
-  color: var(--text-color) !important;
+  color: var(--df-text-color) !important;
 }
 
 /**

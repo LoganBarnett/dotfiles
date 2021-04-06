@@ -12,7 +12,7 @@ a {
  * uses its own !important.
  */
 html body, html form, html p, html table, html td, html th {
-  color: var(--text-color) !important;
+  color: var(--df-text-color) !important;
 }
 
 select {
@@ -131,7 +131,7 @@ body, table, form, td, th, p {
 
 #header #search-box {
   background-color: var(--general-background-color) !important;
-  color: var(--text-color) !important;
+  color: var(--df-text-color) !important;
 }
 
 #header {
@@ -165,7 +165,7 @@ input::-webkit-input-placeholder {
 
 body input {
   background-color: var(--general-background-color) !important;
-  color: var(--text-color) !important;
+  color: var(--df-text-color) !important;
   border: var(--thin-border) !important;
 }
 
@@ -189,7 +189,7 @@ body input {
  * Issue title preview in issue lists.
  */
 .issue-list > li .splitview-issue-link .issue-link-summary {
-  color: var(--text-color) !important
+  color: var(--df-text-color) !important
 }
 
 /**
@@ -244,7 +244,7 @@ html body .ace_text-input {
 
 .ace-tomorrow {
   background-color: var(--panel-background-color) !important;
-  color: var(--text-color) !important;
+  color: var(--df-text-color) !important;
 }
 
 .ace-tomorrow .ace_gutter-active-line {

@@ -1,10 +1,10 @@
 body {
   background-color: var(--general-background-color);
-  color: var(--text-color) !important;
+  color: var(--df-text-color) !important;
 }
 
 .post p, .post h1, .post h2, .post h3, .post h4, .post h5, .post h6 {
-  color: var(--text-color) !important;
+  color: var(--df-text-color) !important;
 }
 
 .post p a,

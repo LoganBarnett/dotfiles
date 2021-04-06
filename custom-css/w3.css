@@ -1,10 +1,10 @@
 body {
   background-color: var(--general-background-color) !important;
-  color: var(--text-color) !important;
+  color: var(--df-text-color) !important;
 }
 
 p, td {
-  color: var(--text-color) !important;
+  color: var(--df-text-color) !important;
 }
 
 h1 {
@@ -13,7 +13,7 @@ h1 {
 }
 
 h2, h3, h4, h5 {
-  color: var(--text-color) !important;
+  color: var(--df-text-color) !important;
 }
 
 a, a:visited {

@@ -16,7 +16,7 @@ h4 {
 body textarea {
   background: var(--general-background) !important;
   border: var(--thin-border) !important;
-  color: var(--text-color) !important;
+  color: var(--df-text-color) !important;
 }
 
 input {
@@ -25,7 +25,7 @@ input {
 }
 
 pre code, code {
-  color: var(--text-color) !important;
+  color: var(--df-text-color) !important;
   background-color: var(--code-background-color) !important;
 }
 /**
@@ -62,7 +62,7 @@ body .sidebar {
 body .standard-page .item-with-icon {
   background: var(--general-background) !important;
   border: var(--thin-border) !important;
-  color: var(--text-color) !important;
+  color: var(--df-text-color) !important;
 }
 
 /**
@@ -94,7 +94,7 @@ body .standard-page .item-with-icon {
 }
 
 .task-title {
-  color: var(--text-color) !important;
+  color: var(--df-text-color) !important;
 }
 
 .task-notes {
@@ -102,7 +102,7 @@ body .standard-page .item-with-icon {
 }
 
 .form-control {
-  color: var(--text-color) !important;
+  color: var(--df-text-color) !important;
   background: var(--general-background) !important;
 }
 
@@ -174,21 +174,21 @@ body .standard-page .item-with-icon {
 
 .party-chat li.highlight, .tavern-chat li.highlight {
   background-color: var(--general-background-color) !important;
-  color: var(--text-color) !important;
+  color: var(--df-text-color) !important;
 }
 
 .hero-stats .mana {
   background-color: var(--general-background-color) !important;
-  color: var(--text-color) !important;
+  color: var(--df-text-color) !important;
 }
 
 .hero-stats .health {
   background-color: var(--general-background-color) !important;
-  color: var(--text-color) !important;
+  color: var(--df-text-color) !important;
 }
 .hero-stats .experience {
   background-color: var(--general-background-color) !important;
-  color: var(--text-color) !important;
+  color: var(--df-text-color) !important;
 }
 
 .hero-stats .mana .bar {

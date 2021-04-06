@@ -104,7 +104,7 @@ div.i-role-card.ui-draggable-handle[style] {
 /* filter status text in the filter button - displays as text in the button. */
 .boardsettings-filter__status--off, .boardsettings-filter__status--on {
   background-color: var(--general-background-color) !important;
-  color: var(--text-color) !important;
+  color: var(--df-text-color) !important;
 }
 
 .context-filter__body, .context-filter__revert-control {
@@ -221,7 +221,7 @@ body, button, input, select, textarea {
 
 /* "click to edit" - will be hidden until hover because Reasons. */
 .tau-elems-cell_unit-empty-text {
-  color: var(--text-color) !important;
+  color: var(--df-text-color) !important;
 }
 
 /**
@@ -304,14 +304,14 @@ body, button, input, select, textarea {
  * Name part of the name/value pairs.
  */
 .ui-additionalinfo__label {
-  color: var(--text-color) !important;
+  color: var(--df-text-color) !important;
 }
 
 /**
  * Name part of _custom_ name/value pairs.
  */
 .ui-customfield__label {
-  color: var(--text-color) !important;
+  color: var(--df-text-color) !important;
 }
 
 .ui-collapsible .ui-collapsible-header {
@@ -434,7 +434,7 @@ body, button, input, select, textarea {
 }
 
 .search-results {
-  color: var(--text-color) !important;
+  color: var(--df-text-color) !important;
 }
 
 .tau-entity-id {
@@ -451,15 +451,15 @@ body, button, input, select, textarea {
 }
 
 .search-item-info__line__label {
-  color: var(--text-color) !important;
+  color: var(--df-text-color) !important;
 }
 
 .search-item__comment__date {
-  color: var(--text-color) !important;
+  color: var(--df-text-color) !important;
 }
 
 .help-note__text {
-  color: var(--text-color) !important;
+  color: var(--df-text-color) !important;
 }
 
 .tau-paging a {
@@ -556,7 +556,7 @@ body, button, input, select, textarea {
  * Remainder of chat area tasks.
  */
 .markdown.details {
-  color: var(--text-color) !important;
+  color: var(--df-text-color) !important;
 }
 
 /**

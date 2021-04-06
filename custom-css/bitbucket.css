@@ -7,7 +7,7 @@
 */
 
 body {
-  color: var(--text-color) !important;
+  color: var(--df-text-color) !important;
 }
 
 body, body.aui-page-fixed, body.aui-page-hybrid {
@@ -44,7 +44,7 @@ h1,
 .aui-page-header-hero .aui-page-header-main h2,
 .aui-page-header-marketing .aui-page-header-main h1,
 .aui-page-header-marketing .aui-page-header-main h2 {
-  color: var(--text-color) !important;
+  color: var(--df-text-color) !important;
 }
 
 a {
@@ -216,7 +216,7 @@ form.aui legend, form.aui label {
 form.aui .text, form.aui .password, form.aui .upfile, form.aui .textarea,
 form.aui .select, form.aui .multi-select, form.aui .aui-select2-container {
   background: var(--input-background-color) !important;
-  color: var(--text-color) !important;
+  color: var(--df-text-color) !important;
 }
 
 /**
@@ -249,7 +249,7 @@ aui-inline-dialog .aui-inline-dialog-contents, .aui-inline-dialog .aui-inline-di
 }
 
 .commits-table .message .message-subject {
-  color: var(--text-color) !important;
+  color: var(--df-text-color) !important;
 }
 .commits-table .message .message-subject .commit-link  {
   color: var(--link-color) !important;
@@ -266,10 +266,10 @@ aui-inline-dialog .aui-inline-dialog-contents, .aui-inline-dialog .aui-inline-di
 }
 
 .jstree.file-tree > ul a {
-  color: var(--text-color) !important;
+  color: var(--df-text-color) !important;
 }
 h3, .aui-page-header-hero .aui-page-header-main p, .aui-page-header-marketing .aui-page-header-main p {
-  color: var(--text-color) !important;
+  color: var(--df-text-color) !important;
 }
 
 .file-toolbar {
@@ -297,7 +297,7 @@ h3, .aui-page-header-hero .aui-page-header-main p, .aui-page-header-marketing .a
 
 .aui-button, a.aui-button, .aui-button:visited {
   background-color: #497 !important;
-  color: var(--text-color) !important;
+  color: var(--df-text-color) !important;
 }
 
 .markup-preview {
@@ -311,7 +311,7 @@ h3, .aui-page-header-hero .aui-page-header-main p, .aui-page-header-marketing .a
 /* The editable area for adding comments. */
 .markup-editor textarea {
   background-color: var(--general-background-color) !important;
-  color: var(--text-color) !important;
+  color: var(--df-text-color) !important;
 }
 
 /**
@@ -387,7 +387,7 @@ h3, .aui-page-header-hero .aui-page-header-main p, .aui-page-header-marketing .a
 
 /* Markdown code block text */
 .code-block pre code {
-  color: var(--text-color) !important;
+  color: var(--df-text-color) !important;
 }
 
 /**
@@ -457,7 +457,7 @@ td:not(.empty-line):not(.conflict-marker):not(.blame-gutter):not(.active-diff-li
 
 .comment-container .panel {
   background-color: #121212 !important;
-  color: var(--text-color) !important;
+  color: var(--df-text-color) !important;
 }
 
 .comment.unread > .content {
@@ -465,7 +465,7 @@ td:not(.empty-line):not(.conflict-marker):not(.blame-gutter):not(.active-diff-li
 }
 
 .markup-content {
-  color: var(--text-color) !important;
+  color: var(--df-text-color) !important;
 }
 .markup .user-mention {
   background-color: #809 !important;
@@ -473,7 +473,7 @@ td:not(.empty-line):not(.conflict-marker):not(.blame-gutter):not(.active-diff-li
 
 table.aui>tbody>tr, table.aui>tfoot>tr {
   background-color: var(--general-background-color) !important;
-  color: var(--text-color) !important;
+  color: var(--df-text-color) !important;
 }
 
 .aui-page-panel {
@@ -622,7 +622,7 @@ aui-badge, .aui-badge {
  * Our overrides for diff colors trickle into comment text color. Set it back.
  */
 .diff-line-comments {
-  color: var(--text-color) !important;
+  color: var(--df-text-color) !important;
 }
 
 /**

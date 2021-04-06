@@ -1,5 +1,5 @@
 body {
-  color: var(--text-color) !important;
+  color: var(--df-text-color) !important;
 }
 
 tr {
@@ -18,7 +18,7 @@ tr.odd, table.billPayAddPayments tr.oddStart, table.billPayAddPayments tr.odd {
 .ui-widget-header .ui-state-default {
   background-image: none !important;
   background-color: #424 !important;
-  color: var(--text-color) !important;
+  color: var(--df-text-color) !important;
 }
 
 /**

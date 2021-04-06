@@ -44,7 +44,7 @@ body.theme-documentation #footer .footer-body {
 
 
 #footer .footer-body {
-  color: var(--text-color) !important;
+  color: var(--df-text-color) !important;
 }
 
 #content .code {
@@ -68,12 +68,12 @@ body .syntaxhighlighter.sh-default .line.alt1 {
  */
 body .syntaxhighlighter.sh-default .plain,
 body .syntaxhighlighter.sh-default .plain a {
-  color: var(--text-color) !important;
+  color: var(--df-text-color) !important;
 }
 
 code {
   border: var(--thin-border) !important;
-  color: var(--text-color) !important;
+  color: var(--df-text-color) !important;
   background-color: var(--code-background-color) !important;
   font-style: normal !important;
 }
@@ -132,7 +132,7 @@ h4,
 }
 
 body, p, table, tr, td, .bodytext, .stepfield, .wiki-content p, .panelContent, span {
-  color: var(--text-color) !important;
+  color: var(--df-text-color) !important;
 }
 
 .wiki-content a, .wiki-content a:link, .wiki-content a:visited, .wiki-content a:focus, .wiki-content a:hover, .wiki-content a:active {
@@ -213,17 +213,17 @@ a.aui-button,
 /* footer */
 #footer {
   background-color: var(--general-background-color) !important;
-  color: var(--text-color) !important;
+  color: var(--df-text-color) !important;
 }
 
 #footer-logo {
   background-color: var(--general-background-color) !important;
-  color: var(--text-color) !important;
+  color: var(--df-text-color) !important;
 }
 
 #footer .footer-body {
   background-color: var(--general-background-color) !important;
-  color: var(--text-color) !important;
+  color: var(--df-text-color) !important;
 }
 
 /* THE sidebar? Or just one of them? */
@@ -258,7 +258,7 @@ a.aui-button,
 }
 
 .panel .panelHeader {
-  color: var(--text-color) !important;
+  color: var(--df-text-color) !important;
 }
 
 .panelHeader {

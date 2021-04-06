@@ -4,7 +4,7 @@ html {
 
 body {
   background-color: var(--general-background-color) !important;
-  color: var(--text-color) !important;
+  color: var(--df-text-color) !important;
 }
 
 h1 {
@@ -32,7 +32,7 @@ h6 {
 }
 
 dt {
-  color: var(--text-color) !important;
+  color: var(--df-text-color) !important;
 }
 
 div.node {
@@ -51,5 +51,5 @@ a[href]:visited {
 div.example, pre.example {
   background-color: var(--code-background-color) !important;
   border: var(--thin-border) !important;
-  color: var(--text-color) !important;
+  color: var(--df-text-color) !important;
 }

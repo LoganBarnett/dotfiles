@@ -3,7 +3,7 @@ body {
    * Majority of the black on white seen in Outlook is set at the body level.
    */
   background-color: var(--general-background-color) !important;
-  color: var(--text-color) !important;
+  color: var(--df-text-color) !important;
 }
 
 a {
@@ -42,7 +42,7 @@ table {
  * Normalish colored stuff?
  */
 .ms-font-m {
-  color: var(--text-color) !important;
+  color: var(--df-text-color) !important;
 }
 
 /**
@@ -60,7 +60,7 @@ table {
 .ms-font-color-neutralPrimary-focus:focus,
 .ms-font-color-neutralPrimary-before:before, .ms-fcl-np-h:hover,
 .ms-fcl-np-f:focus, .ms-fcl-np-b:before {
-  color: var(--text-color) !important;
+  color: var(--df-text-color) !important;
 }
 
 /**
@@ -84,7 +84,7 @@ table {
 .ms-bg-color-themeLighterAlt-before:before, .ms-bgc-tlra-h:hover,
 .ms-bgc-tlra-f:focus, .ms-bgc-tlra-b:before {
   background-color: var(--general-background-color) !important;
-  color: var(--text-color) !important;
+  color: var(--df-text-color) !important;
 }
 
 /**
@@ -169,7 +169,7 @@ button.o365button {
 .ms-bg-color-neutralLighter-focus:focus,
 .ms-bg-color-neutralLighter-before:before, .ms-bgc-nlr-h:hover,
 .ms-bgc-nlr-f:focus, .ms-bgc-nlr-b:before {
-  color: var(--text-color) !important;
+  color: var(--df-text-color) !important;
   background-color: var(--general-background-color) !important;
 }
 
@@ -180,7 +180,7 @@ button.o365button {
 .ms-bg-color-themeLight, .ms-bgc-tl, .ms-bg-color-themeLight-hover:hover,
 .ms-bg-color-themeLight-focus:focus, .ms-bg-color-themeLight-before::before,
 .ms-bgc-tl-h:hover, .ms-bgc-tl-f:focus, .ms-bgc-tl-b::before {
-  color: var(--text-color) !important;
+  color: var(--df-text-color) !important;
   background-color: var(--general-background-color) !important;
 }
 
@@ -192,7 +192,7 @@ button.o365button {
 .ms-font-color-neutralDark-hover:hover, .ms-font-color-neutralDark-focus:focus,
 .ms-font-color-neutralDark-before:before, .ms-fcl-nd-h:hover,
 .ms-fcl-nd-f:focus, .ms-fcl-nd-b:before {
-  color: var(--text-color) !important;
+  color: var(--df-text-color) !important;
 }
 
 /**
@@ -209,14 +209,14 @@ button.o365button {
  */
 table[style] {
   background-color: var(--general-background-color) !important;
-  color: var(--text-color) !important;
+  color: var(--df-text-color) !important;
 }
 
 /**
  * Table cells with inline styling should be fixed.
  */
 td[style] {
-  color: var(--text-color) !important;
+  color: var(--df-text-color) !important;
 }
 
 /**
@@ -224,14 +224,14 @@ td[style] {
  * precedence with specificity.
  */
 font {
-  color: var(--text-color) !important;
+  color: var(--df-text-color) !important;
 }
 
 /**
  * Some text comments have a custom color applied to them.
  */
 div.x_zd-comment[style], p[style] {
-  color: var(--text-color) !important;
+  color: var(--df-text-color) !important;
 }
 
 /**
@@ -436,14 +436,14 @@ html[dir] ._3Ad19uWCrJfZmaKfs-hR2p {
  * Message view empty panel announcement text.
  */
 ._12x3EFWPe3LGNm6mV745C2 {
-  color: var(--text-color) !important;
+  color: var(--df-text-color) !important;
 }
 
 /**
  * Other mail panel text.
  */
 .root-40 {
-  color: var(--text-color) !important;
+  color: var(--df-text-color) !important;
 }
 
 /**
@@ -467,7 +467,7 @@ html[dir] ._5CGGutaz4d1vhT3GzbRJq {
 ._2w33pJvkmet3fVYAp0m4xf,
 ._3J_S6fOI4B5tFT8R6qMqT7,
 ._3zJzxRam-s-FYVZNqcZ0BW {
-  color: var(--text-color) !important;
+  color: var(--df-text-color) !important;
 }
 
 /**
@@ -489,7 +489,7 @@ html[dir] ._5CGGutaz4d1vhT3GzbRJq {
  * Mail header body preview.
  */
 ._23MaDl_3Fxg1oLteZqM5nN, ._2u3hHNiXhuwDjHbsX6STzW, .ggucHldzYouSPjkewTdAT {
-  color: var(--text-color) !important;
+  color: var(--df-text-color) !important;
 }
 
 /**
@@ -651,14 +651,14 @@ html ._3ZeDxoI_1Pg9tQFD8AZ2z3._3fSP4ilIbk0dZZ-I9MElKw {
  * Message view body text.
  */
 .ebEAqI6ObWNy7SHYOElkN, .B1IVVpQay0rPzznhParFr {
-  color: var(--text-color) !important;
+  color: var(--df-text-color) !important;
 }
 
 /**
  * Message view body text (perhaps this was getting outdated?).
  */
 ._3U2q6dcdZCrTrR_42Nxby {
-  color: var(--text-color) !important;
+  color: var(--df-text-color) !important;
 }
 
 /**
@@ -666,7 +666,7 @@ html ._3ZeDxoI_1Pg9tQFD8AZ2z3._3fSP4ilIbk0dZZ-I9MElKw {
  */
 html[dir] .B1IVVpQay0rPzznhParFr {
   background: var(--general-background-color) !important;
-  color: var(--text-color) !important;
+  color: var(--df-text-color) !important;
 }
 
 /**
@@ -715,5 +715,5 @@ html[dir] .O0VoCp2Pdm6eUS4HjTWpF {
  * Day numbers for the month in the mini calendar.
  */
 .dayCell-84 {
-  color: var(--text-color) !important;
+  color: var(--df-text-color) !important;
 }

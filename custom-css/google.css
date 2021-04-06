@@ -6,7 +6,7 @@
 
 /* calendar form fields */
 label.gp-text, label.gp-checkbox, label.gp-radio, label.gp-radio-group {
-  color: var(--text-color) !important;
+  color: var(--df-text-color) !important;
 }
 
 /* Search bar */
@@ -50,7 +50,7 @@ body {
 
 /* groups post text */
 .IVILX2C-tb-P,.IVILX2C-nb-P,.F0XO1GC-nb-P {
-  color: var(--text-color) !important;
+  color: var(--df-text-color) !important;
 }
 
 /* Background */

@@ -29,7 +29,7 @@ a.a-color-base, a:active.a-color-base, a:link.a-color-base, a:visited.a-color-ba
  */
 .a-box {
   background-color: var(--general-background-color) !important;
-  color: var(--text-color) !important;
+  color: var(--df-text-color) !important;
 }
 
 /**

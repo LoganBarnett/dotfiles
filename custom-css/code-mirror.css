@@ -4,7 +4,7 @@
 
 .CodeMirror {
   background: var(--code-background-color) !important;
-  color: var(--text-color) !important;
+  color: var(--df-text-color) !important;
   border: var(--thin-border) !important;
   border: 1px solid var(--border-color) !important;
 }
@@ -21,7 +21,7 @@
 
 .text-view .line, .text-view .line .CodeMirror-gutter-elt > * {
   background-color: var(--code-background-color) !important;
-  color: var(--text-color) !important;
+  color: var(--df-text-color) !important;
 }
 /**
  * Gutter for highlighted lines.
@@ -38,7 +38,7 @@
 
 .CodeMirror-gutters > .blame {
   background-color: var(--code-background-color) !important;
-  color: var(--text-color) !important;
+  color: var(--df-text-color) !important;
 }
 
 /**
