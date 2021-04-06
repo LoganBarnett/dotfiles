@@ -8,16 +8,7 @@ set -euo pipefail
 # there, it'll still be trying to use DNS from the last place, and will fail.
 #
 
-logScript=""
-function log {
-  if [[ "${logScript}" == "" ]]; then
-    logScript=$(sed -E 's/(.)/\U\1/g' <<EOF | sed -E 's@^.+/([^/]+)$@\1@'
-$0
-EOF
-    )
-  fi
-  echo "[$logScript]" $@ 1>&2
-}
+source ~/.bash-logging
 
 dnsIps=$(sudo nmap --script broadcast-dhcp-discover \
   | grep 'Domain Name Server' \
@@ -25,10 +16,10 @@ dnsIps=$(sudo nmap --script broadcast-dhcp-discover \
   | head -n 1 \
   )
 if [[ "$dnsIps" == "" ]]; then
-  log "No DHCP discovery found... Failing."
+  slog "No DHCP discovery found... Failing."
   exit 1
 else
-  log "Got DHCP response for DNS at $dnsIps, forcing that."
+  slog "Got DHCP response for DNS at $dnsIps, forcing that."
 fi
 
 hardwarePorts=$(networksetup -listallhardwareports \
@@ -39,9 +30,9 @@ IFS=$'\n'
 for port in $hardwarePorts; do
   IFS=', '
   for dns in $dnsIps; do
-    log "Setting DNS server on $port to $dns."
+    slog "Setting DNS server on $port to $dns."
     sudo networksetup -setdnsservers "$port" $dns || true
-    # log "Or Empty..."
+    # slog "Or Empty..."
     # sudo networksetup -setdnsservers "$port" "Empty" || true
   done
 done

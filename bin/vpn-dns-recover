@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+source ~/.bash-logging
+
+set -e
 ##
 # When connecting to the VPN, dnsmasq is started to achieve a split-DNS
 # resolution. In some cases dnsmasq comes down but we don't reassign the DNS
@@ -11,10 +14,6 @@
 # address correctly, but the DNS setting from DHCP does not work. It is likely
 # that this fix should instead "unset" whatever has been set before by VPN.
 ##
-
-function log {
-  echo "[VPN-DNS-RECOVER] " $@ 1>&2
-}
 
 states=$(
   scutil <<< list \
