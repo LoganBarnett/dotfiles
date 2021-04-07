@@ -105,6 +105,8 @@
 (package! ruby-mode)
 (package! rjsx-mode)
 (package! rust-mode)
+(package! scad-mode) ;; For opening OpenSCAD .scad files.
+(package! scad-preview-mode :recipe (:repo "git@github.com:zk-phi/scad-preview.git"))
 (package! so-long)
 ;; I fail to see how this is ever helpful with vim bindings.
 ;; Though this attempt to disable it will not work according to
