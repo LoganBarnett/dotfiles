@@ -38,6 +38,31 @@ initializing its key maps, and so forth. This is brought in below.
 <<tc/buffer-display-fn>>
 #+end_src
 
+** testing
+
+Run this block to test.
+
+#+name: tc/test
+#+begin_src emacs-lisp :results none :noweb yes :tangle no
+
+(defun tc/hi ()
+  (message "hi - teleportation circle works!")
+  )
+
+(defvar tc/actions '())
+
+(setq tc/actions '(
+                   ((action . tc/hi) (key . "i") (display . "initiative"))
+                   ((action . tc/hi) (key . "c") (display . "generate character"))
+                   ((action . tc/hi) (key . "o") (display . "generate location"))
+                   ((action . tc/hi) (key . "t") (display . "generate item"))
+                   ))
+
+<<tc/buffer-display-fn>>
+(tc/buffer-display)
+;; (tc/buffer-populate tc/actions (current-buffer))
+#+end_src
+
 ** emacs terminology in regards to ui
 
 As a quick refresher:
@@ -68,8 +93,11 @@ There are a number of documents relevant to this topic.
 + [[https://www.gnu.org/software/emacs/manual/html_node/emacs/Window-Choice.html#Window-Choice][Window-Choice]]
 
 #+name: tc/buffer-display-body
-#+begin_src emacs-lisp :results none :noweb yes :tangle no
-(let* ((buffer (get-buffer-create "*transportation circle*"))
+#+begin_src emacs-lisp :results none :tangle no :noweb yes
+<<tc/transient-map-fn>>
+(let* (
+       (original-buffer (current-buffer))
+       (buffer (get-buffer-create "*transportation circle*"))
       ;; (top-pos (- (window-height) (* 10 10)))
       (top-pos (+ (window-height) 558)) ;; Number found manually. How to
                                         ;; calcuate?
@@ -104,14 +132,21 @@ There are a number of documents relevant to this topic.
                            ;;  ))
                            ;; (window-height . 10)
                            ))))
+
       )
+        (tc/buffer-populate tc/actions buffer)
+        (message "Buffer populated")
+        (switch-to-buffer original-buffer)
+        (message "Current buffer is now %s" (current-buffer))
+        (tc/transient-map tc/actions)
+        (message "Configured transient map for %s" (current-buffer))
+
   ;; display-buffer-in-child-frame is basically a pop-up. But maybe we want
   ;; that, if we can control some parameters of it.
   ;; Oh, I'm not supposed to call these directly.
   ;; (display-buffer-in-child-frame buffer '(
   ;;                                    inhibit-same-window
   ;;                                    inhibit-switch-frame
-;; Transportation Circle for D&D
 
   ;;                                    ))
  ;; display-buffer-in-child-frame looks like a better candidate - read up on it.
@@ -129,8 +164,9 @@ There are a number of documents relevant to this topic.
   ;;   ;; (side . bottom)
   ;;   ;; (inhibit-same-window . t)
   ;;   )))
-  (tc/buffer-populate buffer)
-  (other-window 1)
+  ;; (tc/buffer-populate tc/actions buffer)
+
+  ;; (other-window 1)
 )
 #+end_src
 
@@ -146,22 +182,18 @@ There are a number of documents relevant to this topic.
 ** buffer contents
 
 #+name: tc/buffer-populate-fn
-#+begin_src emacs-lisp :results none :noweb yes
+#+begin_src emacs-lisp :results none :noweb yes :tangle no
 <<tc/buffer-entries-populate-fn>>
 
-(defvar tc/actions '(
-                     ((key . "i") (display . "initiative"))
-                     ((key . "c") (display . "generate character"))
-                     ((key . "o") (display . "generate location"))
-                     ((key . "t") (display . "generate item"))
-                     ))
-
-(defun tc/buffer-populate (buffer)
+(defun tc/buffer-populate (actions buffer)
   (save-window-excursion
+    (message "Switch to new buffer...")
     (switch-to-buffer buffer)
     (erase-buffer)
     (font-lock-mode)
-    <<tc/buffer-heading-populate>>
+    (insert "Transportation Circle for ")
+    (insert "D&D")
+    (insert "\n\n")
     (tc/buffer-entries-populate tc/actions)
     )
   )
@@ -170,7 +202,7 @@ There are a number of documents relevant to this topic.
 *** buffer heading
 
 #+name: tc/buffer-heading-populate
-#+begin_src emacs-lisp :results none :noweb yes
+#+begin_src emacs-lisp :results none
 (insert "Transportation Circle for ")
 (insert "D&D")
 (insert "\n\n")
@@ -179,7 +211,7 @@ There are a number of documents relevant to this topic.
 *** buffer entries
 
 #+name: tc/buffer-entries-populate-fn
-#+begin_src emacs-lisp :results none :noweb yes
+#+begin_src emacs-lisp
 (defun tc/buffer-entries-populate (actions)
   "Insert ACTIONS into the selected buffer."
   (message "%s" actions)
@@ -189,11 +221,11 @@ There are a number of documents relevant to this topic.
              (lambda (action)
                (concat
                 "  " ;; Indent.
-                (propertize (cdr (assoc "key" action))
+                (propertize (cdr (assoc 'key action))
                             'font-lock-face
                             '(:foreground "purple")
                             )
-                (propertize (concat " " (cdr (assoc "display" action)))
+                (propertize (concat " " (cdr (assoc 'display action)))
                             'font-lock-face
                             '(:foreground "#4488DD")
                             )
@@ -211,9 +243,7 @@ There are a number of documents relevant to this topic.
 *** summon
 =SPC m D D=
 
-#+begin_src emacs-lisp :results none :noweb yes
-<<tc/buffer-display-fn>>
-
+#+begin_src emacs-lisp :results none
 (on-doom
   (map!
     :localleader
@@ -258,26 +288,32 @@ add bindings for =transportation-circle=.
 [[https://www.gnu.org/software/emacs/manual/html_node/elisp/Controlling-Active-Maps.html][Controlling-Active-Maps]] documents =set-transient-map= briefly.
 
 #+name: tc/transient-map-fn
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no :noweb yes
+<<tc/keymap-action-fn>>
 (defun tc/transient-map (circle)
   "Set up a transient map described by CIRCLE.
 
 CIRCLE is a list of destinations. See tc/actions.
 "
   (set-transient-map
-    (keymap
-    (-map
-      (lambda (d)
-        ((keycode (cdr (assoc "key" d))) . (tc/keymap-action d))
-        )
-      circle
-      )
-    )
-    nil
-    (lambda ()
-      ;; TODO: Close the window.
-      )
-    )
+   ;; (intern (concat (symbol-name major-mode) "-map"))
+   (let ((map (make-sparse-keymap)))
+     (-each
+         circle
+       (lambda (d)
+         (define-key map (kbd (cdr (assoc 'key d))) (tc/keymap-action d))
+         ;; `(,(kbd (cdr (assoc 'key d))) . ,(tc/keymap-action d))
+         )
+       )
+     (message "map %s" map)
+     map
+     )
+   t ;; nil
+   (lambda ()
+     ;; TODO: Close the window.
+     (message "Transportation Circle transient map killed.")
+     )
+   )
   )
 #+end_src
 
@@ -290,7 +326,7 @@ to the action.
 #+begin_src emacs-lisp
 (defun tc/keymap-action (destination)
   "Partially apply DESTINATION to action in DESTINATION."
-  (-partial (cdr "action" destination) destination)
+  (-partial (cdr (assoc 'action destination)) destination)
   )
 #+end_src
 
