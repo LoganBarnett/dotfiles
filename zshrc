@@ -264,25 +264,31 @@ function path_color_prompt() {
   echo "%{$fg[cyan]%}"
 }
 
-function prompt_char() {
-  echo "☃ "
-}
-
 ################################################################################
 # BEGIN VIM PROMPT SECTION
 ################################################################################
 
-EDIT_MODE_PROMPT="%{$fg[green]%}✎ \e[0m"
-COMMAND_MODE_PROMPT="%{$fg[yellow]%}© \e[0m"
+# Are you here because zsh is mangling your history selections? Use ctrl+l to do
+# a reset. It'll reset the resest of your buffer but at least it'll fix the
+# mangling.
+#
+# Character codes like \e[0m can be used to reset the color, but this can throw
+# off zsh's character width calculations. This particularly arises when
+# scrolling backwards through history and some of the history contains
+# multi-line commands. By simply replacing \e[0m with %{$reset_color%} this is
+# fixed.
+INSERT_MODE_PROMPT="%{$fg[green]%}$ %{$reset_color%}"
+NORMAL_MODE_PROMPT="%{$fg[yellow]%}@ %{$reset_color%}"
+VIM_MODE_PROMPT=$EDIT_MODE_PROMPT
 VIM_MODE_PROMPT=$EDIT_MODE_PROMPT
 function mode_change_prompt() {
   if [ $EMACS ]; then
     VIM_MODE_PROMPT="$"
   else
     case $KEYMAP in
-      vicmd) VIM_MODE_PROMPT=$COMMAND_MODE_PROMPT;; # command mode
-      viins|main) VIM_MODE_PROMPT=$EDIT_MODE_PROMPT;; # insert mode
-      *) VIM_MODE_PROMPT=$EDIT_MODE_PROMPT;; # insert mode
+      vicmd) VIM_MODE_PROMPT=$NORMAL_MODE_PROMPT;; # command mode
+      viins|main) VIM_MODE_PROMPT=$INSERT_MODE_PROMPT;; # insert mode
+      *) VIM_MODE_PROMPT=$INSERT_MODE_PROMPT;; # insert mode
     esac
   fi
   set_prompt
@@ -341,7 +347,7 @@ function set_prompt() {
   # This was using PROMPT before. Why?
 #   PS1='$(path_color_prompt)$(pwd_prompt)$(git_super_status) $(host_prompt) $(exit_status_prompt) $(timestamp_prompt) $(timer_prompt)
 # $(vim_mode_prompt)'
-  PS1='$(vim_mode_prompt)'
+  PS1="$(vim_mode_prompt)"
 }
 
 # Print an empty line before the prompt. The prompt is still jiggly with long
