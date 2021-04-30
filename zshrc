@@ -7,6 +7,10 @@
 # Also NIX_PATH is taken...
 NIX_PATH_ASDF="/nix/var/nix/profiles/default/bin"
 
+# Per the home-manager instructions.
+export NIX_PATH="$HOME/.nix-defexpr/channels${NIX_PATH:+:}$NIX_PATH:\
+nixpkgs-overlays=$HOME/.config/nixpkgs/overlays/"
+
 # Nix will flip out if it sees itself in the PATH, but it needs to be there.
 # Chop up the string to defeat its detection. This allows us to do the install
 # without having to remove it during a reinstallation and then re-add it.
@@ -27,7 +31,8 @@ $HOME/.doom-emacs.d/bin:\
 /Library/TeX/texbin:\
 /usr/bin:\
 /opt/X11/bin:\
-$HOME/.gem/ruby/2.6.0/bin"
+$HOME/.gem/ruby/2.6.0/bin:\
+$HOME/Library/Python/3.8/bin"
 
 # prevent emacs tramp from barfing on startup
 [[ "$TERM" == "dumb" ]] &&
@@ -44,6 +49,9 @@ $HOME/.gem/ruby/2.6.0/bin"
   # No longer needed due to nix.
   # alias ls='gls' &&
   return
+
+# Source home-manager.
+. $HOME/.nix-profile/etc/profile.d/hm-session-vars.sh
 
 setopt prompt_subst
 
