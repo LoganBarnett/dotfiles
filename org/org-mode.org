@@ -6,6 +6,95 @@
 #+file_tags:
 #+tags:
 
+* images
+=org-mode= in Emacs can display images inline. This is a wonderful feature that
+doesn't get used enough, and there are tweaks needed to get it in a properly
+usable state.
+
+** COMMENT image width
+
+I moved this over but I don't think it actually gets used. I think I just wound
+up using the attribute =org-width= inline on the images. This bears more
+investigation and then documentation.
+
+By default images are set to use their max width in an org document. This works
+great if your images are really small and you have a huge monitor. However it's
+nearly useless for those of us stuck on smaller monitors, or if we want to use
+vertical splits. I found that 564 (or 594?) seems to be the sweet spot in terms
+of pixels on a window designed to display just a little over 80 columns with all
+the gutter stuff.
+
+#+begin_src emacs-lisp :results none
+;; I don't get why this doesn't seem to be logging, but it seems to be working.
+(defun iimage-scale-to-fit-width ()
+  "Scale over-sized images in the buffer to the width of the current window.
+\(imagemagick must be enabled\)"
+  (interactive)
+  (let ((max-width (window-width (selected-window) t)))
+    ;; (message "max-width %s" max-width)
+    (org-element-map
+        (org-element-parse-buffer 'object)
+        'link
+      (lambda (el)
+        (let ((path (org-element-property :path el)))
+          ;; (message "path %s" path)
+          (when (string-match (image-file-name-regexp) path)
+          ;; (when (image-p el)
+          ;; ;; (message "el %s" el)
+          ;; (when (equal "file" image)
+            ;; (message "true")
+            ;; (message "modifying el %s" el)
+            ;; (message "width %s" (org-element-property :width el))
+            (org-element-put-property el :type 'imagemagick)
+            (org-element-put-property el :max-width max-width)
+            (org-element-put-property el :width max-width)
+            )
+          )
+        )
+    ;; (let ((display (get-text-property (point-min) 'display)))
+    ;;   (if (and (plist-member display 'max-width) (/= (plist-get display 'max-width) display))
+          ;; (alter-text-property (org-element-property :begin el)
+          ;;                      (org-element-property :end el)
+          ;;                      'display
+          ;;                      (lambda (prop)
+          ;;                        (message "prop %s" prop)
+          ;;                        (when (image-p prop)
+          ;;                          (plist-put (cdr prop) :type 'imagemagick)
+          ;;                          (plist-put (cdr prop) :max-width max-width)
+          ;;                          ;; (plist-put (cdr prop) :width max-width)
+          ;;                          ;; (plist-put (cdr prop) :scale t)
+          ;;                          prop)
+          ;;                      )
+          ;; )))
+      )
+    )
+    ;; )
+  )
+#+end_src
+
+
+#+begin_src emacs-lisp :results none
+(defun iimage-scale-on-window-configuration-change ()
+  "Hook function for major mode that display inline images:
+Adapt image size via `iimage-scale-to-fit-width' when the window size changes."
+  (add-hook 'window-configuration-change-hook #'iimage-scale-to-fit-width t t))
+#+end_src
+** download linked image
+
+When I export HTML to =org-mode= I find I want the images to be downloaded too.
+The first step is to have the capability to download an image from a link (in
+=org-mode=) and then replace that link with a local file link, with size
+settings or anything else I desire.
+
+I will start with an =org-capture= template.
+
+#+begin_src emacs-lisp :results none
+'("i" "org-mode image link" entry
+  "[[%(link)][%(link-name)]]"
+  )
+#+end_src
+
+
 * latex
 ** executables
 To get LaTeX working, we need to ensure that =latex= is on the =PATH=. My
@@ -151,56 +240,6 @@ A common form of hidden content is collapsed headings."
   (eq (car-safe obj) 'image))
 
 
-;; I don't get why this doesn't seem to be logging, but it seems to be working.
-(defun iimage-scale-to-fit-width ()
-  "Scale over-sized images in the buffer to the width of the current window.
-\(imagemagick must be enabled\)"
-  (interactive)
-  (let ((max-width (window-width (selected-window) t)))
-    ;; (message "max-width %s" max-width)
-    (org-element-map
-        (org-element-parse-buffer 'object)
-        'link
-      (lambda (el)
-        (let ((path (org-element-property :path el)))
-          ;; (message "path %s" path)
-          (when (string-match (image-file-name-regexp) path)
-          ;; (when (image-p el)
-          ;; ;; (message "el %s" el)
-          ;; (when (equal "file" image)
-            ;; (message "true")
-            ;; (message "modifying el %s" el)
-            ;; (message "width %s" (org-element-property :width el))
-            (org-element-put-property el :type 'imagemagick)
-            (org-element-put-property el :max-width max-width)
-            (org-element-put-property el :width max-width)
-            )
-          )
-        )
-    ;; (let ((display (get-text-property (point-min) 'display)))
-    ;;   (if (and (plist-member display 'max-width) (/= (plist-get display 'max-width) display))
-          ;; (alter-text-property (org-element-property :begin el)
-          ;;                      (org-element-property :end el)
-          ;;                      'display
-          ;;                      (lambda (prop)
-          ;;                        (message "prop %s" prop)
-          ;;                        (when (image-p prop)
-          ;;                          (plist-put (cdr prop) :type 'imagemagick)
-          ;;                          (plist-put (cdr prop) :max-width max-width)
-          ;;                          ;; (plist-put (cdr prop) :width max-width)
-          ;;                          ;; (plist-put (cdr prop) :scale t)
-          ;;                          prop)
-          ;;                      )
-          ;; )))
-      )
-    )
-    ;; )
-  )
-
-(defun iimage-scale-on-window-configuration-change ()
-  "Hook function for major mode that display inline images:
-Adapt image size via `iimage-scale-to-fit-width' when the window size changes."
-  (add-hook 'window-configuration-change-hook #'iimage-scale-to-fit-width t t))
 
 (defvar-local journal-file "/journal/.+\\.org")
 (defun config/org-journal-file-p (path)
