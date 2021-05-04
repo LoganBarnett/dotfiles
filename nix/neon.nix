@@ -1,40 +1,15 @@
 { config, pkgs, ... }:
 let
-  PyQt5 = pkgs.callPackage ./PyQt5.nix;
+  # PyQt5 = pkgs.callPackage ./PyQt5.nix;
   # PyQt5 = (import ./PyQt5.nix);
 
   # python39 = pkgs.callPackage ./PyQt5.nix;
   # openconnect-sso-src = builtins.fetchTarball "https://github.com/vlaci/openconnect-sso/archive/master.tar.gz";
   nixpkgs.overlays = [
-    # TODO: Move these to overlay files.
-    (self: super: {
-      gnupg = pkgs.gnupg.overrideAttrs {
-        agent = {
-          pinentryFlavor = "emacs";
-        };
-      };
-    })
-    (self: super: {
-      zsh = pkgs.zsh.overrideAttrs {
-        enable = true;
-        ohMyZsh = {
-          enable = true;
-          customPkgs = with pkgs; [
-            noreallyjustfuckingstopalready
-            zsh-git-prompt
-          ];
-          plugins = [
-            "nix"
-          ];
-        };
-      };
-    })
-    (self: super: {
-      # jdk = pkgs.jdk.override (args: { ignoreCollisions = true; });
-      maven = pkgs.maven.overrideAttrs {
-        jdk = pkgs.jdk;
-      };
-    })
+    (import ./overlays/gnupg.nix)
+    (import ./overlays/maven.nix)
+    (import ./overlays/percol.nix)
+    (import ./overlays/zsh.nix)
     # (import "${openconnect-sso-src}/overlay.nix")
     # (import ./overlays/openconnect-sso.nix)
     # (import ./openconnect-sso.nix)
@@ -184,19 +159,21 @@ in
     # Used to do split tunneled VPN connections from the command line. You can
     # also, you know, download it. Looking at you, AnyConnect.
     pkgs.openconnect
-    # pkgs.openconnect-sso
-    (pkgs.callPackage
-      "${builtins.fetchTarball https://github.com/vlaci/openconnect-sso/archive/master.tar.gz}/nix/openconnect-sso.nix"
-      {
-        lib = pkgs.lib;
-        openconnect = pkgs.openconnect;
-        python3 = pkgs.python39;
-        python3Packages = pkgs.python39Packages;
-        poetry2nix = pkgs.poetry2nix;
-        substituteAll = pkgs.substituteAll;
-        wrapQtAppsHook = pkgs.libsForQt5.wrapQtAppsHook;
-      }
-    )
+    # openconnect-sso wraps openconnect to provide SSO functionality.
+    #
+    # (pkgs.callPackage
+    #   "${builtins.fetchTarball https://github.com/vlaci/openconnect-sso/archive/master.tar.gz}/nix/openconnect-sso.nix"
+    #   {
+    #     lib = pkgs.lib;
+    #     openconnect = pkgs.openconnect;
+    #     python3 = pkgs.python39;
+    #     python3Packages = pkgs.python39Packages;
+    #     poetry2nix = pkgs.poetry2nix;
+    #     substituteAll = pkgs.substituteAll;
+    #     wrapQtAppsHook = pkgs.libsForQt5.wrapQtAppsHook;
+    #   }
+    # )
+    #
     # (((pkgs.callPackage ./openconnect-sso.nix { pkgs = pkgs; }) {}) {
     #                                               lib = pkgs.lib;
     #                                               openconnect = pkgs.openconnect;
@@ -206,6 +183,7 @@ in
     #                                               substituteAll = pkgs.substituteAll;
     #                                               wrapQtAppsHook = pkgs.wrapQtAppsHook;
     #                                             })
+    #
     # CAD software with a programming language behind it. Declarative models!
     # openscad
     # I get build errors with 2021-01.
@@ -234,8 +212,8 @@ in
     pkgs.pandoc
     # Manage passwords using gpg.
     pkgs.pass
-    # Doesn't exist. It's a pip.
-    # percol
+    # Use Unix pipes and direct them to a human program.
+    pkgs.percol
 
     # Because sometimes you need something better than grep.
     pkgs.perl
