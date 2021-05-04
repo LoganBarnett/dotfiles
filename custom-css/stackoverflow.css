@@ -108,3 +108,12 @@ textarea {
   background-color: var(--code-background-color) !important;
   color: var(--code-color) !important;
 }
+
+/**
+ * The cookie annoying acceptance dialog. The gul of calling this a consent
+ * banner is, at best, laughable. It's not consent if my only choice is to
+ * accept it.
+ */
+.js-consent-banner {
+  display: none !important;
+}
