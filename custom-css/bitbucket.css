@@ -741,3 +741,10 @@ aui-badge, .aui-badge {
 .hl-quote {
   color: var(--code-color) !important;
 }
+
+/**
+ * Any editor? Seen on comment editor.
+ */
+.editor {
+  transition: none !important;
+}
