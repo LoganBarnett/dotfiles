@@ -37,13 +37,13 @@ Inbox ~/mail/gmail/Inbox
 
 
 Channel gmail
-Master :gmail-remote:
-Slave :gmail-local:
+Far :gmail-remote:
+Near :gmail-local:
 # Exclude everything under the internal [Gmail] folder, except the interesting
 # folders
 # Patterns * ![Gmail]* "[Gmail]/Spam" "[Gmail]/Sent Mail" "[Gmail]/Starred" "[Gmail]/All Mail"
 # Patterns ![Gmail]* "[Gmail]/Spam" "[Gmail]/Inbox" "[Gmail]/Sent Mail" "[Gmail]/Drafts"
-Patterns * ![Gmail]* "[Gmail]/Inbox" "[Gmail]/Spam" "[Gmail]/Sent Mail" "[Gmail]/Drafts"
+Patterns * ![Gmail]* "[Gmail]/Inbox" "[Gmail]/Spam" "[Gmail]/Sent Mail" "[Gmail]/Drafts" "[Gmail]/.Trash"
 # Or include everything
 #Patterns *
 # Automatically create missing mailboxes, both locally and on the server
@@ -58,8 +58,8 @@ Sync PullNew PullFlags Push
 # Splitting the archive section out (all mail) seems to dramatically improve
 # performance.
 Channel gmail-archive
-Master :gmail-remote:"[Gmail]/All Mail"
-Slave :gmail-local:gmail-archives
+Far :gmail-remote:"[Gmail]/All Mail"
+Near :gmail-local:gmail-archives
 Patterns "[Gmail]/All Mail"
 Create Both
 Remove Both
