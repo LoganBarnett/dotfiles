@@ -736,6 +736,15 @@ aui-badge, .aui-badge {
 }
 
 /**
+ * Operators and other misc. syntax (dots, equals, etc).
+ */
+.hl-variable-2,
+.hl-operator,
+.hl-tag.hl-bracket {
+  color: var(--code-color) !important;
+}
+
+/**
  * Used for inner expressions (such as $() in bash).
  */
 .hl-quote {
@@ -746,5 +755,54 @@ aui-badge, .aui-badge {
  * Any editor? Seen on comment editor.
  */
 .editor {
+  border: 2px solid var(--border-color) !important;
   transition: none !important;
+}
+
+/**
+ * The side panel.
+ */
+#dashboard-container .side-panel {
+  background-color: var(--general-background-color) !important;
+  border-left: 0.1rem solid var(--border-color) !important;
+}
+
+
+/**
+ * Repository links in the side panel.
+ */
+.dashboard-repositories-list a .repository-details .repository-name {
+  color: var(--link-color) !important;
+}
+
+/**
+ * Project links in the side panel.
+ */
+.dashboard-repositories-list a .repository-details .project-name {
+  color: var(--link-color) !important;
+}
+
+/**
+ * The repository search text field.
+ */
+.dashboard-repositories-section .search-field > * {
+  background-color: var(--input-background-color) !important;
+  color: var(--input-color) !important;
+  border-color: var(--input-border-color) !important;
+}
+
+/**
+ * Pull request listings in the dashboard.
+ */
+.dashboard-pull-request-row.focused,
+.dashboard-pull-request-row:hover {
+  background-color: var(--highlight-dim-background-color) !important;
+  color: var(--highlight-color) !important;
+}
+
+/**
+ * Avatar backgrounds - let transparency work!
+ */
+.css-epsmqz {
+  background-color: transparent !important;
 }
