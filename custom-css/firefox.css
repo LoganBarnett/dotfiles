@@ -1,0 +1,13 @@
+/**
+ * This file is for the Firefox UI itself. Normally this is referred to as
+ * "userChrome.css", but we'll never find that easily. This file won't be
+ * accompanied by the typical .json and .js files, which are usually found in
+ * this directory due to how the Injector extension works.
+ *
+ * The file is indicated in the Firefox settings, which at time of writing is
+ * manually done. Perhaps this can be moved to a Nix configuration at some
+ * point.
+ */
+notification[value="Protocol Registration: mailto"] {
+  display: none !important;
+}

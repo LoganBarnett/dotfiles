@@ -118,4 +118,7 @@ log "Installing gnu utils..."
 log "writing out private settings"
 ./install-private.sh
 
+log "Installing Firefox settings..."
+./firefore-install.sh
+
 log "all installation is successful"
