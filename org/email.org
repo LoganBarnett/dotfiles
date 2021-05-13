@@ -69,10 +69,9 @@ I need my line numbers.
 *** archiving
 Archiving in =mu4e='s vernacular is "refile". We can set the folder to go
 to the "all mail" folder and then it will work like it should for =gmail=.
-#+begin_src emacs-lisp
-(defun config/mu4e-set-archive-folder ()
-  (setq-default mu4e-refile-folder "/gmail/[Gmail]/.All Mail")
-  )
+#+name: config/mu4e-gmail-refile-to-archives
+#+begin_src emacs-lisp :results none :tangle no
+(setq-default mu4e-refile-folder "/gmail/[Gmail]/.All Mail")
 #+end_src
 
 *** contacts
@@ -147,6 +146,13 @@ http://pragmaticemacs.com/emacs/master-your-inbox-with-mu4e-and-org-mode/
 
      I should also look at other interesting settings there too.
 *** TODO encryption and GPG key
+*** deleting mail
+
+#+name: config/mu4e-gmail-messages-delete
+#+begin_src emacs-lisp :results none :tangle no
+(setq mu4e-trash-folder "/gmail/gmail-trash")
+#+end_src
+
 *** getting mail
   =~/bin/mail-sync= gets email and then runs =mu= to perform indexing. This is
   =mu4e= seems to run indexing on its own, so we can just use =mbsync -a= like
@@ -190,26 +196,39 @@ comment in [[https://github.com/djcb/mu/issues/829#issuecomment-524851533][mu#82
   )
 #+end_src
 *** bookmarks
-     Bookmarks are the initial =b= shortcuts that quickly let me jump to certain
-     views. It doesn't come with one that just shows your inbox. I'm not a fan
-     of looking at "today's" email unless I can make sure I handle everything in
-     a single day.
 
-     #+begin_src emacs-lisp
-       (defun config/mu4e-add-bookmarks ()
-         "Add mu4e bookmarks."
-         (add-to-list 'mu4e-bookmarks
-           (make-mu4e-bookmark
-             :name  "inbox"
-             :query "maildir:/gmail/Inbox"
-             :key ?i))
-       )
-     #+end_src
+Bookmarks are the initial =b= shortcuts that quickly let me jump to certain
+views. It doesn't come with one that just shows your inbox. I'm not a fan of
+looking at "today's" email unless I can make sure I handle everything in a
+single day.
 
-     Bookmarks can contain lisp expressions as well as parameters in the queries
-     themselves.
+#+name: config/mu4e-add-bookmarks
+#+begin_src emacs-lisp :tangle no
+;; Left in case this block is manually run. Remove the old inbox(es) first.
+(setq mu4e-bookmarks
+      (-remove (lambda (x)
+                 (string-equal (plist-get x :name) "inbox")
+                 )
+               mu4e-bookmarks))
 
-     [[https://www.djcbsoftware.nl/code/mu/mu4e/Bookmarks.html][mu4e bookmarks docs]]
+(add-to-list 'mu4e-bookmarks
+             (make-mu4e-bookmark
+              :name  "inbox"
+              :query "maildir:/gmail/Inbox"
+              :key ?i))
+#+end_src
+
+#+RESULTS: config/mu4e-add-bookmarks
+| :name | inbox                | :query | maildir:/gmail/Inbox             | :key         | 105 |      |     |
+| :name | Unread messages      | :query | flag:unread AND NOT flag:trashed | :key         | 117 |      |     |
+| :name | Today's messages     | :query | date:today..now                  | :key         | 116 |      |     |
+| :name | Last 7 days          | :query | date:7d..now                     | :hide-unread |   t | :key | 119 |
+| :name | Messages with images | :query | mime:image/*                     | :key         | 112 |      |     |
+
+Bookmarks can contain lisp expressions as well as parameters in the queries
+themselves.
+
+[[https://www.djcbsoftware.nl/code/mu/mu4e/Bookmarks.html][mu4e bookmarks docs]]
 
 *** reading: indexing
      This should make reading emails faster. It may, but I've noticed it also
@@ -433,28 +452,29 @@ not always be the case. For me it is setup via =nix=. Instead of hardcoding a
     "Archive the current or marked mails.
   This moves them into the All Mail folder."
     (interactive)
-    (gnus-summary-move-article nil "nnimap+imap.gmail.com:[Gmail]/All Mail"))
+    (gnus-summary-move-article nil "nnimap+imap.gmail.com:gmail-archives"))
 
   (defun gmail-report-spam ()
     "Report the current or marked mails as spam.
   This moves them into the Spam folder."
     (interactive)
-    (gnus-summary-move-article nil "nnimap+imap.gmail.com:[Gmail]/Spam"))
+    (gnus-summary-move-article nil "nnimap+imap.gmail.com:gmail-spam"))
 
   (require 'use-package)
   (message "initializing mu4e with use-package...")
   (use-package "mu4e"
     :init
     <<mu4e-open>>
+    <<config/mu4e-add-bookmarks>>
+    <<config/mu4e-gmail-messages-delete>>
     <<config/set-mu-path>>
+    <<config/mu4e-gmail-refile-to-archives>>
     <<config/email-get-mail-command>>
     :config
     (message "initializing mu4e...")
     (require 'org-mime)
-    (config/mu4e-add-bookmarks)
     ;; (config/mu4e-enable-images)
     (config/mu4e-set-maildir)
-    (config/mu4e-set-archive-folder)
     (config/send-email)
     (config/mu4e-evilify-evil-window-prefix)
     (config/mu4e-indexing)
@@ -490,6 +510,7 @@ not always be the case. For me it is setup via =nix=. Instead of hardcoding a
     nntp-authinfo-file "~/.authinfo.gpg"
     ;; Gmail system labels have the prefix [Gmail], which matches the default
     ;; value of gnus-ignored-newsgroups. That's why we redefine it.
+    ;; gnus-ignored-newsgroups "^to\\.\\|^[0-9. 	]+\\( \\|$\\)\\|^[\"][\"#'()]"
     gnus-ignored-newsgroups "^to\\.\\|^[0-9. ]+\\( \\|$\\)\\|^[\"]\"[#'()]"
     ;; The agent seems to confuse nnimap, therefore we'll disable it.
     gnus-agent nil

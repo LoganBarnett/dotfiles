@@ -30,3 +30,6 @@ rm ~/.gmail-authinfo.txt
 # Leaving this in for a little while longer.
 rm ~/.email-creds.txt
 echo "Done setting up email support."
+
+# Potentially:
+mu init --maildir=~/mail --my-address=logustus@gmail.com

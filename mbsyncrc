@@ -6,6 +6,9 @@ IMAPAccount gmail
 # Address to connect to
 Host imap.gmail.com
 User logustus@gmail.com
+# With normal syncs, 50 will work fine. Use 25 on a full sync from scratch or it
+# can show the following error: IMAP error: unexpected BYE response: [OVERQUOTA]
+# Account exceeded command or bandwidth limits.
 PipelineDepth 50
 # Pass %PASS%
 # To store the password in an encrypted file use PassCmd instead of Pass
@@ -34,18 +37,23 @@ SubFolders Legacy
 # The trailing "/" is important
 Path ~/mail/gmail/
 Inbox ~/mail/gmail/Inbox
+TrashNewOnly yes
+# Trash ~/mail/trash
+Trash "~/mail/gmail/[Gmail]/.Trash"
 
-
-Channel gmail
-Far :gmail-remote:
+Channel gmail-inbox
+Far :gmail-remote: #"[Gmail]/Inbox"
 Near :gmail-local:
 # Exclude everything under the internal [Gmail] folder, except the interesting
 # folders
 # Patterns * ![Gmail]* "[Gmail]/Spam" "[Gmail]/Sent Mail" "[Gmail]/Starred" "[Gmail]/All Mail"
-# Patterns ![Gmail]* "[Gmail]/Spam" "[Gmail]/Inbox" "[Gmail]/Sent Mail" "[Gmail]/Drafts"
-Patterns * ![Gmail]* "[Gmail]/Inbox" "[Gmail]/Spam" "[Gmail]/Sent Mail" "[Gmail]/Drafts" "[Gmail]/.Trash"
+# Patterns ![Gmail]* "[Gmail]/Spam" "[Gmail]/Inbox" "[Gmail]/Drafts"
+# Patterns ![Gmail]* "[Gmail]/Inbox"
+# Patterns * ![Gmail]* "[Gmail]/Inbox" "[Gmail]/Spam" "[Gmail]/Sent Mail" "[Gmail]/Drafts" "[Gmail]/.Trash"
 # Or include everything
-#Patterns *
+Patterns * ![Gmail]/.Trash
+# Patterns * ![Gmail]*
+# Patterns INBOX
 # Automatically create missing mailboxes, both locally and on the server
 Create Both
 # Propagate removals on either side.
@@ -53,16 +61,53 @@ Remove Both
 # Save the synchronization state files in the relevant directory
 SyncState *
 Expunge Both
-Sync PullNew PullFlags Push
+Sync PullReNew PullNew PullFlags Push
 
 # Splitting the archive section out (all mail) seems to dramatically improve
 # performance.
-Channel gmail-archive
-Far :gmail-remote:"[Gmail]/All Mail"
-Near :gmail-local:gmail-archives
-Patterns "[Gmail]/All Mail"
+# Channel gmail-archive
+# # Far :gmail-remote:"[Gmail]/All Mail"
+# Far :gmail-remote:"[Gmail]/All Mail"
+# Near :gmail-local:gmail-archive
+# Patterns ![Gmail]* "[Gmail]/All Mail"
+# Create Both
+# Remove Both
+# SyncState *
+# Expunge Both
+# Sync PullReNew PullNew PullFlags Push
+
+# Channel gmail-sent
+# Far :gmail-remote:"[Gmail]/Sent Mail"
+# Near :gmail-local:gmail-sent
+# # Patterns "[Gmail]/Sent Mail"
+# Create Both
+# Remove Both
+# SyncState *
+# Expunge Both
+# Sync PullReNew PullNew PullFlags Push
+
+# Channel gmail-drafts
+# Far :gmail-remote:"[Gmail]/Drafts"
+# Near :gmail-local:gmail-drafts
+# Create Both
+# Remove Both
+# SyncState *
+# Expunge Both
+# Sync PullReNew PullNew PullFlags Push
+
+
+Channel gmail-trash
+Far :gmail-remote:"[Gmail]/Trash"
+Near :gmail-local:gmail-trash
+# Patterns "[Gmail]/.Trash"
 Create Both
 Remove Both
 SyncState *
 Expunge Both
-Sync PullNew PullFlags Push
+Sync All
+
+Group gmail
+# Channel gmail-archive
+# Channel gmail-sent
+Channel gmail-trash
+Channel gmail-inbox
