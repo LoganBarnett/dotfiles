@@ -298,6 +298,7 @@
   (init-org-file "javascript.org")
   (init-org-file "groovy.org")
   (init-org-file "purescript.org")
+  (init-org-file "scad.org")
   (init-org-file "css.org")
   (init-org-file "lisp.org")
   (init-org-file "makefile.org")

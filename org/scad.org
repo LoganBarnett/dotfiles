@@ -1,0 +1,55 @@
+#+title:     SCAD
+#+author:    Logan Barnett-Hoy
+#+email:     logustus@gmail.com
+#+date:      <2021-05-09 Sun>
+#+language:  en
+#+file_tags:
+#+tags:
+
+* preview
+
+** key maps
+
+The movement key bindings here are relative to the camera, not the model. When
+the camera moves to the left (-x), the model(s) will appear to move right.
+
+#+name:config/scad-preview-keymap
+#+begin_src emacs-lisp :results none :tangle no
+(map!
+ :map scad-preview--image-mode-map
+ :n "h" 'scad-preview-trnsx-
+ :n "j" 'scad-preview-trnsz-
+ :n "k" 'scad-preview-trnsz+
+ :n "l" 'scad-preview-trnsx+
+ )
+#+end_src
+
+* scad-mode
+
+** key bindings
+
+We need a binding to bring up the preview easily.
+
+#+name: config/scad-keymap
+#+begin_src emacs-lisp :results none :tangle no
+;; Normalizing the keymaps seems to make the below actually stick. See
+;; https://github.com/hlissner/doom-emacs/commit/1f5dae917677fc32ef75645c2d5225293c79d893
+;; for inspiration.
+(add-hook 'scad-mode-hook #'evil-normalize-keymaps)
+(map!
+ :map scad-mode-map
+ :localleader
+  :desc "Preview SCAD file" "p" #'scad-preview-mode
+  )
+#+end_src
+
+
+* stitch
+
+#+begin_src emacs-lisp :results none :noweb yes
+(use-package "scad"
+  :init
+  <<config/scad-preview-keymap>>
+  <<config/scad-keymap>>
+  )
+#+end_src
