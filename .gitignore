@@ -32,3 +32,8 @@ fonts/
 
 # Ignore scratch area. Currently used for font installation.
 scratch/
+
+# I need to fix these at some point, but for now just ignore them.
+result/
+venv/
+result
