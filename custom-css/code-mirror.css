@@ -5,8 +5,10 @@
 .CodeMirror {
   background: var(--code-background-color) !important;
   color: var(--df-text-color) !important;
-  border: var(--thin-border) !important;
-  border: 1px solid var(--border-color) !important;
+  /* These borders are causing a resize issue on more recent versions.*/
+  /* Instead set the border inside the app's specific CSS. */
+  /* border: var(--thin-border) !important; */
+  /* border: 1px solid var(--border-color) !important; */
 }
 
 .CodeMirror-gutters {
