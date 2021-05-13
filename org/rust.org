@@ -17,6 +17,19 @@ change it seems like a lost cause. That's okay though, because we have
 #+begin_src emacs-lisp :results none :tangle yes
 (add-hook 'rustic-mode-hook #'redshift-indent-mode)
 #+end_src
+* smart-parens
+
+I haven't found the cause yet, but it appears that =rustic= is pulling in and
+using =smart-parens=. Disable it. Always.
+
+#+name: config/smartparens-disable
+#+begin_src emacs-lisp :results none :tangle no
+(defun config/smartparens-disable ()
+  (smartparens-global-mode 0)
+  )
+(add-hook 'rustic-mode-hook #'smartparens-disable)
+#+end_src
+
 
 * stitch
 #+begin_src emacs-lisp :results none :noweb yes
@@ -24,6 +37,7 @@ change it seems like a lost cause. That's okay though, because we have
   :init
   (message "add rust to path manually...")
   (add-to-list 'exec-path "/Users/logan/.cargo/bin")
+  <<config/smartparens-disable>>
   <<config/rust-redshift>>
   )
 #+end_src
