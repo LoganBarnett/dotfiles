@@ -23,6 +23,16 @@ change it seems like a lost cause. That's okay though, because we have
 (setq rustic-racer-cmd (expand-file-name "~/.nix-profile/bin/racer"))
 (setq racer-cmd (expand-file-name "~/.nix-profile/bin/racer"))
 #+end_src
+* multi-line
+
+I like trailing commas, and Rust supports them everywhere! See the default
+strategy in [[file:./prog-mode.org]].
+
+#+name: config/rust-multi-line-commas
+#+begin_src emacs-lisp :results none :tangle no
+(multi-line-defhook rust-mode multi-line-add-trailing-comma-strategy t)
+#+end_src
+
 
 * smart-parens
 
@@ -47,5 +57,9 @@ using =smart-parens=. Disable it. Always.
   (add-to-list 'exec-path (expand-file-name "~/.nix-profile/bin"))
   <<config/smartparens-disable>>
   <<config/rust-redshift>>
+  :config
+  ;; Needed to take advantage of config/rust-multi-line-commas.
+  (require 'multi-line)
+  <<config/rust-multi-line-commas>>
   )
 #+end_src

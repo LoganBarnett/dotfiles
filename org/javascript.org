@@ -348,6 +348,15 @@ Then we need to tie it together with projectile itself, and not specifically a
 JavaScript mode. We need it to run if we are in a project with =dired=, not just
 a JavaScript file. We may want to condense this into a single
 [[file:./projectile.org]], but not today.
+** multi-line
+
+Modern JavaScript allows for tailing commas everywhere. See the default strategy
+in [[file:./prog-mode.org]].
+
+#+name: config/javascript-multi-line-commas
+#+begin_src emacs-lisp :results none :tangle no
+(multi-line-defhook js2 multi-line-add-trailing-comma-strategy t)
+#+end_src
 
 ** big config
 Finally, tie it all together on demand.
@@ -372,8 +381,6 @@ Finally, tie it all together on demand.
   ;; js2-mode or something similar.
   (defun config/configure-javascript-mode (hook)
     "HOOK should be a quoted variable."
-    (require 'grep)
-    (require 'flycheck)
     ;; (require 'flycheck-flow)
     ;; (require 'rainbow-identifiers)
     (message "Configuring Javascript")
@@ -432,6 +439,10 @@ Finally, tie it all together on demand.
 
     :config
     (config/configure-javascript-mode 'js2-mode-hook)
+    (require 'grep)
+    (require 'flycheck)
+    (require 'multi-line)
+    <<config/javascript-multi-line-commas>>
   )
 
   (use-package "rjsx-mode"
@@ -444,6 +455,10 @@ Finally, tie it all together on demand.
 
     :config
     (config/configure-javascript-mode 'rjsx-mode-hook)
+    (require 'grep)
+    (require 'flycheck)
+    (require 'multi-line)
+    <<config/javascript-multi-line-commas>>
     ;; Turn off auto closing of tags (it's usually wrong anyways).
     (define-key rjsx-mode-map "<" nil)
     (define-key rjsx-mode-map (kbd "C-d") nil)
