@@ -58,18 +58,29 @@ first line.
    a way to do this that seems to work consistently enough.
 * evil-snipe
 The =evil-snipe= package promises better/smarter searching for =f=, =F=, =t=, and
-=T=. I am giving it a shot, though I am holding out judgment so far.
+=T=.
 ** case sensitivity
 Doom uses the smart case by default. While I enjoy this with =/= I do not enjoy
 it here. The motions =evil-snipe= uses need to be precise in my mind.
 
-#+name: evil-snipe-disable-smart-case
-#+begin_src emacs-lisp :results none
+#+name: config/evil-snipe-smart-case-disable
+#+begin_src emacs-lisp :results none :tangle no
 (setq-default evil-snipe-smart-case nil)
 #+end_src
+** overriding normal seek keys
+
+=evil-snipe= will override =f/F/t/T= when sniping. I find this confusing and
+counter to my vanilla vim bindings. Disable it. We can use =;= and =,= for that.
+
+#+name: config/evil-snipe-disable-override
+#+begin_src emacs-lisp :results none :tangle no
+(setq-default evil-snipe-override-evil nil)
+#+end_src
+
 ** apply
 #+begin_src emacs-lisp :results none :noweb yes
-<<evil-snipe-disable-smart-case>>
+<<config/evil-snipe-smart-case-disable>>
+<<config/evil-snipe-override-disable>>
 #+end_src
 * evil-iedit-state
 The [[https://github.com/syl20bnr/evil-iedit-state][evil-iedit-state]] package is something I encountered first with Spacemacs. It
