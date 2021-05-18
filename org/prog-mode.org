@@ -45,6 +45,10 @@ https://github.com/expez/evil-smartparens
     (sp-pair "{" nil :actions :rem)
     (sp-pair "=" nil :actions :rem)
     (sp-pair "\"" nil :actions :rem)
+    ;; The documentation regarding strict mode makes me think it's the real
+    ;; culprit. Disable it everywhere. I'm not sure why the call above seems to
+    ;; have no effect.
+    (smartparens-global-strict-mode -1)
   )
   (on-spacemacs
    ;; Spacemacs has no means of disabling smartparens as well. So we just yank out
