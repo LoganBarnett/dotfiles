@@ -304,6 +304,9 @@ in
     # DO NOT RUN RUBY IN NIX. NIX IS NOT READY FOR RUBY.
     # ruby
 
+    # Racer is an auto-complete tool for Rust.
+    pkgs.rustracer
+
     # A version management tool for Rust.
     pkgs.rustup
     # Assume an account on AWS via SAML.

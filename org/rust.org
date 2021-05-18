@@ -17,6 +17,13 @@ change it seems like a lost cause. That's okay though, because we have
 #+begin_src emacs-lisp :results none :tangle yes
 (add-hook 'rustic-mode-hook #'redshift-indent-mode)
 #+end_src
+* racer
+
+#+begin_src emacs-lisp :results none
+(setq rustic-racer-cmd (expand-file-name "~/.nix-profile/bin/racer"))
+(setq racer-cmd (expand-file-name "~/.nix-profile/bin/racer"))
+#+end_src
+
 * smart-parens
 
 I haven't found the cause yet, but it appears that =rustic= is pulling in and
@@ -36,7 +43,8 @@ using =smart-parens=. Disable it. Always.
 (use-package "rust-mode"
   :init
   (message "add rust to path manually...")
-  (add-to-list 'exec-path "/Users/logan/.cargo/bin")
+  (add-to-list 'exec-path (expand-file-name "~/.cargo/bin"))
+  (add-to-list 'exec-path (expand-file-name "~/.nix-profile/bin"))
   <<config/smartparens-disable>>
   <<config/rust-redshift>>
   )
