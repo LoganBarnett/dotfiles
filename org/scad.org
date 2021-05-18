@@ -47,7 +47,7 @@ We need a binding to bring up the preview easily.
 * stitch
 
 #+begin_src emacs-lisp :results none :noweb yes
-(use-package "scad"
+(use-package "scad-mode"
   :init
   <<config/scad-preview-keymap>>
   <<config/scad-keymap>>
