@@ -13,6 +13,21 @@ trying to hack it until it works, this file will serve as my configuration. At
 some point I could put together a pull request, but I need it working for me
 first.
 
+** multi-line
+
+#+name: config/ruby-multi-line-strategy
+#+begin_src emacs-lisp :results none :tangle no
+(setq-default multi-line-ruby-strategy multi-line-current-strategy)
+#+end_src
+
+#+name: config/ruby-multi-line-strategy-hook
+#+begin_src emacs-lisp :results none :tangle no :noweb yes
+(defun config/multi-line-ruby-strategy ()
+  <<config/ruby-multi-line-strategy>>
+  )
+(add-hook 'ruby-mode-hook #'config/multi-line-ruby-strategy)
+#+end_src
+
 ** prettier
 
 Instead of the standard =rubocop=, I prefer to let the machine do the hard work
@@ -35,6 +50,7 @@ quite built into =ruby-mode=, but it does have a flag we can use to disable it.
 (use-package "ruby-mode"
   :init
   <<config/ruby-rubocopy-disable>>
+  <<config/ruby-multi-line-strategy-hook>>
   :config
  )
 #+end_src

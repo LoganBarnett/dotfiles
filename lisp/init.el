@@ -114,6 +114,7 @@
   ;; always add new line rather than flowing
   (require 'multi-line)
   (defvar multi-line-always-newline)
+  (defvar multi-line-current-strategy)
   (setq-default multi-line-current-strategy
                 (multi-line-strategy
                  :respace (multi-line-default-respacers
