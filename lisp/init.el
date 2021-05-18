@@ -335,6 +335,7 @@
   (init-org-file "transportation-circle.org")
   (init-org-file "dnd.org")
   (init-org-file "jira.org")
+  (init-org-file "theme.org")
   (config/init-org-file-private "jira-private.org")
   (config/init-org-file-private (concat
                                  ;; No one will ever figure this out!
