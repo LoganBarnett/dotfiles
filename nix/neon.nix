@@ -226,6 +226,7 @@ in
     # A charting tool with a declarative language. Uses graphviz dot, ditaa,
     # and others.
     pkgs.plantuml
+    pkgs.podman
     # Query an HTML DOM from the command line.
     pkgs.pup
     # (python2.withPackages (ps: [
