@@ -1,0 +1,74 @@
+#+title:     Rename me
+#+author:    Logan Barnett-Hoy
+#+email:     logustus@gmail.com
+#+date:      <2021-05-10 Mon>
+#+language:  en
+#+file_tags:
+#+tags:
+
+.gitattributes
+#+begin_example
+*.gpg filter=gpg diff=gpg
+#+end_example
+
+.gitconfig
+#+begin_example conf
+[diff "gpg"]
+  textconv = gpg --no-tty --decrypt
+#+end_example
+
+magit-process-password-prompt-regexps (default)
+#+begin_example emacs-lisp
+(
+"^\\(Enter \\)?[Pp]assphrase\\( for \\(RSA \\)?key '.*'\\)?: ?$"
+"^\\(Enter \\)?[Pp]assword\\( for '?\\(https?://\\)?\\(?99:[^']*\\)'?\\)?: ?$"
+"Please enter the passphrase for the ssh key"
+"Please enter the passphrase to unlock the OpenPGP secret key"
+"^.*'s password: ?$"
+"^Token: $"
+"^Yubikey for .*: ?$"
+"^Enter PIN for .*: ?$"
+)
+#+end_example
+
+Output shown when using =toggle-debug-on-quit=.
+#+begin_example
+SETTITLE [71055]@neon.local
+SETDESC Please enter the passphrase to unlock the OpenPGP secret key:%0A"Logan Barnett (gpg key) <logustus@gmail.com>"%0A2048-bit RSA key, ID 11AAAD55B0F4DA4C,%0Acreated 2016-10-31 (main key ID 41E46FB1ACEA3EF0).%0A
+SETPROMPT Passphrase:
+SETOK _OK
+SETCANCEL _Cancel
+GETPIN
+#+end_example
+
+Stack trace shown from =toggle-debug-on-quit= after typing password.
+#+begin_example
+Debugger entered--Lisp error: (quit)
+  call-process("/Users/logan/.nix-profile/bin/git" nil (t nil) nil "--no-pager" "-c" "core.preloadindex=true" "-c" "log.showSignature=false" "-c" "color.ui=false" "-c" "color.diff=false" "diff" "--ita-visible-in-index" "--no-ext-diff" "--no-prefix" "--")
+  apply(call-process "/Users/logan/.nix-profile/bin/git" nil (t nil) nil ("--no-pager" "-c" "core.preloadindex=true" "-c" "log.showSignature=false" "-c" "color.ui=false" "-c" "color.diff=false" "diff" "--ita-visible-in-index" "--no-ext-diff" "--no-prefix" "--"))
+  process-file("/Users/logan/.nix-profile/bin/git" nil (t nil) nil "--no-pager" "-c" "core.preloadindex=true" "-c" "log.showSignature=false" "-c" "color.ui=false" "-c" "color.diff=false" "diff" "--ita-visible-in-index" "--no-ext-diff" "--no-prefix" "--")
+  apply(process-file "/Users/logan/.nix-profile/bin/git" nil (t nil) nil ("--no-pager" "-c" "core.preloadindex=true" "-c" "log.showSignature=false" "-c" "color.ui=false" "-c" "color.diff=false" "diff" "--ita-visible-in-index" "--no-ext-diff" "--no-prefix" "--"))
+  magit-process-file("/Users/logan/.nix-profile/bin/git" nil (t nil) nil "--no-pager" "-c" "core.preloadindex=true" "-c" "log.showSignature=false" "-c" "color.ui=false" "-c" "color.diff=false" "diff" "--ita-visible-in-index" "--no-ext-diff" "--no-prefix" "--")
+  apply(magit-process-file "/Users/logan/.nix-profile/bin/git" nil (t nil) nil ("--no-pager" "-c" "core.preloadindex=true" "-c" "log.showSignature=false" "-c" "color.ui=false" "-c" "color.diff=false" "diff" "--ita-visible-in-index" "--no-ext-diff" "--no-prefix" "--"))
+  magit-git-insert(("diff" "--ita-visible-in-index" "--no-ext-diff" "--no-prefix" "--"))
+  magit-git-wash(magit-diff-wash-diffs "diff" ("--ita-visible-in-index" "--no-ext-diff" "--no-prefix" "--"))
+  magit--insert-diff("diff" ("--no-ext-diff") "--no-prefix" "--" nil)
+  magit-insert-unstaged-changes()
+  apply(magit-insert-unstaged-changes nil)
+  magit-run-section-hook(magit-status-sections-hook)
+  magit-status-refresh-buffer()
+  apply(magit-status-refresh-buffer nil)
+  magit-refresh-buffer()
+  magit-setup-buffer-internal(magit-status-mode nil ((magit-buffer-diff-args ("--no-ext-diff")) (magit-buffer-diff-files nil) (magit-buffer-log-args ("-n256" "--decorate")) (magit-buffer-log-files nil)))
+  magit-status-setup-buffer("/Users/logan/notes/")
+  magit-status(nil ((34 . 21) (("/Users/logan/notes/" magit-git-dir "BISECT_LOG") . "/Users/logan/notes/.git/BISECT_LOG") (("/Users/logan/notes/" magit-git-dir "REVERT_HEAD") . "/Users/logan/notes/.git/REVERT_HEAD") (("/Users/logan/notes/" magit-git-dir "CHERRY_PICK_HEAD") . "/Users/logan/notes/.git/CHERRY_PICK_HEAD") (("/Users/logan/notes/" magit-git-dir "rebase-apply/applying") . "/Users/logan/notes/.git/rebase-apply/applying") (("/Users/logan/notes/" magit-git-dir "rebase-apply/onto") . "/Users/logan/notes/.git/rebase-apply/onto") (("/Users/logan/notes/" magit-git-dir "rebase-merge") . "/Users/logan/notes/.git/rebase-merge") (("/Users/logan/notes/" magit-git-dir "MERGE_HEAD") . "/Users/logan/notes/.git/MERGE_HEAD") (("/Users/logan/notes/" "rev-parse" "--git-dir") . ".git") (("/Users/logan/notes/" "describe" "--contains" "HEAD")) (("/Users/logan/notes/" "describe" "--long" "--tags")) (("/Users/logan/notes/" "rev-parse" "--verify" #("origin/master" 0 13 (face magit-branch-remote font-lock-face magit-branch-remote))) . "20343a15f5ab83668d6e12b7ebfc7309a767084d") ((magit-get-push-branch "master" nil) . #("origin/master" 0 13 (face magit-branch-remote font-lock-face magit-branch-remote))) (("/Users/logan/notes/" "show" "--no-patch" "--format=%s" #("origin/master^{commit}" 0 13 (font-lock-face magit-branch-remote face magit-branch-remote)) "--") . "use gpg decryption on my gpg files") ((magit-get-upstream-branch "master") . #("origin/master" 0 13 (face magit-branch-remote font-lock-face magit-branch-remote))) (("/Users/logan/notes/" "rev-parse" "--verify" "--abbrev-ref" "master@{upstream}") . "origin/master") (("/Users/logan/notes/" "show" "--no-patch" "--format=%h %s" "HEAD^{commit}" "--") . "20343a1 use gpg decryption on my gpg files") (("/Users/logan/notes/" "symbolic-ref" "--short" "HEAD") . "master") (("/Users/logan/notes/" . config) . #<hash-table equal 52/65 0x1ffbe92d15dd>) (("/Users/logan/notes/" "rev-parse" "--verify" "HEAD") . "20343a15f5ab83668d6e12b7ebfc7309a767084d") (("/Users/logan/notes/" . magit-toplevel) . "/Users/logan/notes/") (("/Users/logan/notes/" "rev-parse" "--show-toplevel") . "/Users/logan/notes")))
+  funcall-interactively(magit-status nil ((34 . 21) (("/Users/logan/notes/" magit-git-dir "BISECT_LOG") . "/Users/logan/notes/.git/BISECT_LOG") (("/Users/logan/notes/" magit-git-dir "REVERT_HEAD") . "/Users/logan/notes/.git/REVERT_HEAD") (("/Users/logan/notes/" magit-git-dir "CHERRY_PICK_HEAD") . "/Users/logan/notes/.git/CHERRY_PICK_HEAD") (("/Users/logan/notes/" magit-git-dir "rebase-apply/applying") . "/Users/logan/notes/.git/rebase-apply/applying") (("/Users/logan/notes/" magit-git-dir "rebase-apply/onto") . "/Users/logan/notes/.git/rebase-apply/onto") (("/Users/logan/notes/" magit-git-dir "rebase-merge") . "/Users/logan/notes/.git/rebase-merge") (("/Users/logan/notes/" magit-git-dir "MERGE_HEAD") . "/Users/logan/notes/.git/MERGE_HEAD") (("/Users/logan/notes/" "rev-parse" "--git-dir") . ".git") (("/Users/logan/notes/" "describe" "--contains" "HEAD")) (("/Users/logan/notes/" "describe" "--long" "--tags")) (("/Users/logan/notes/" "rev-parse" "--verify" #("origin/master" 0 13 (face magit-branch-remote font-lock-face magit-branch-remote))) . "20343a15f5ab83668d6e12b7ebfc7309a767084d") ((magit-get-push-branch "master" nil) . #("origin/master" 0 13 (face magit-branch-remote font-lock-face magit-branch-remote))) (("/Users/logan/notes/" "show" "--no-patch" "--format=%s" #("origin/master^{commit}" 0 13 (font-lock-face magit-branch-remote face magit-branch-remote)) "--") . "use gpg decryption on my gpg files") ((magit-get-upstream-branch "master") . #("origin/master" 0 13 (face magit-branch-remote font-lock-face magit-branch-remote))) (("/Users/logan/notes/" "rev-parse" "--verify" "--abbrev-ref" "master@{upstream}") . "origin/master") (("/Users/logan/notes/" "show" "--no-patch" "--format=%h %s" "HEAD^{commit}" "--") . "20343a1 use gpg decryption on my gpg files") (("/Users/logan/notes/" "symbolic-ref" "--short" "HEAD") . "master") (("/Users/logan/notes/" . config) . #<hash-table equal 52/65 0x1ffbe92d15dd>) (("/Users/logan/notes/" "rev-parse" "--verify" "HEAD") . "20343a15f5ab83668d6e12b7ebfc7309a767084d") (("/Users/logan/notes/" . magit-toplevel) . "/Users/logan/notes/") (("/Users/logan/notes/" "rev-parse" "--show-toplevel") . "/Users/logan/notes")))
+  call-interactively(magit-status nil nil)
+  command-execute(magit-status)
+#+end_example
+
+Afterwards I cannot open =magit= anymore. I get this in my logs:
+
+#+begin_example
+apply: call-process invoked recursively
+#+end_example
