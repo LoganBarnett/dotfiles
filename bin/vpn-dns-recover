@@ -3,6 +3,7 @@
 source ~/.bash-logging
 
 set -e
+
 ##
 # When connecting to the VPN, dnsmasq is started to achieve a split-DNS
 # resolution. In some cases dnsmasq comes down but we don't reassign the DNS
@@ -48,22 +49,31 @@ IFS=$'\n'
 # quit
 # " | tee /dev/tty | sudo scutil
 # done
-for port in $hardwarePorts; do
-  slog "Configuring $port to use DHCP."
-  # This tells macOS to use DHCP for this port. Without this, the -setdnsservers
-  # and -setsearchdomains will persist across networks, and the system will
-  # not query and use DHCP to get information - this breaks our presence on
-  # other networks or even disconnecting from VPN.
-  sudo networksetup -setdhcp "$port"
-  slog "Setting $port DNS to Empty..."
-  sudo networksetup -setdnsservers "$port" Empty
-  slog "Setting $port search domains to Empty..."
-  sudo networksetup -setsearchdomains "$port" Empty
-  sudo networksetup -setwebproxystate "$port" Off
-  sudo networksetup -setsecurewebproxystate "$port" Off
-  sudo networksetup -setv6automatic "$port"
-  sudo networksetup -setproxybypassdomains "$port" Empty
-done
+function dnsReset() {
+  for port in $hardwarePorts; do
+    slog "Configuring $port to use DHCP."
+    # This tells macOS to use DHCP for this port. Without this, the
+    # -setdnsservers and -setsearchdomains will persist across networks, and the
+    # system will not query and use DHCP to get information - this breaks our
+    # presence on other networks or even disconnecting from VPN.
+    sudo networksetup -setdhcp "$port"
+    slog "Setting $port DNS to Empty..."
+    sudo networksetup -setdnsservers "$port" Empty
+    slog "Setting $port search domains to Empty..."
+    sudo networksetup -setsearchdomains "$port" Empty
+    sudo networksetup -setwebproxystate "$port" Off
+    sudo networksetup -setsecurewebproxystate "$port" Off
+    sudo networksetup -setv6automatic "$port"
+    sudo networksetup -setproxybypassdomains "$port" Empty
+  done
+}
+
+# For reasons beyond me, this must be called twice - once before the reset of
+# the network and once after. This appears to only apply when running vpn-nwea
+# by itself. When running via nwea-clock-in this doesn't seem to be needed,
+# indicating a timing issue perhaps. Though I don't know what I shoud latch on
+# to in order to fix the timing.
+dnsReset
 slog "Resetting DNS daemon..."
 # dnsflush
 sudo dscacheutil -flushcache
@@ -77,4 +87,9 @@ for port in $hardwarePorts; do
   slog "Restarting $port..."
   sudo networksetup -setnetworkserviceenabled "$port" On
 done
+dnsReset
+slog "Resetting DNS daemon..."
+# dnsflush
+sudo dscacheutil -flushcache
+sudo killall -HUP mDNSResponder
 slog "Done!"
