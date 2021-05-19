@@ -53,6 +53,9 @@ $HOME/Library/Python/3.8/bin"
 # Source home-manager.
 . $HOME/.nix-profile/etc/profile.d/hm-session-vars.sh
 
+if [[ $(hostname) == "MacBook-Pro*" ]]; then
+  echo "[ZSHRC] hostname is borked, consider using hostname-set to fix."
+fi
 setopt prompt_subst
 
 # Which plugins would you like to load? (plugins can be found in ~/.oh-my-zsh/plugins/*)
