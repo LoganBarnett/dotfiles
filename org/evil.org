@@ -72,15 +72,26 @@ it here. The motions =evil-snipe= uses need to be precise in my mind.
 =evil-snipe= will override =f/F/t/T= when sniping. I find this confusing and
 counter to my vanilla vim bindings. Disable it. We can use =;= and =,= for that.
 
-#+name: config/evil-snipe-disable-override
+#+name: config/evil-snipe-override-disable
 #+begin_src emacs-lisp :results none :tangle no
-(setq-default evil-snipe-override-evil nil)
+(setq-default
+              evil-snipe-override-evil-repeat-keys nil
+              evil-snipe-repeat-keys nil
+              )
 #+end_src
 
 ** apply
+
+We're getting desperate.
+
 #+begin_src emacs-lisp :results none :noweb yes
-<<config/evil-snipe-smart-case-disable>>
-<<config/evil-snipe-override-disable>>
+(use-package "evil-snipe"
+  :init
+  <<config/evil-snipe-smart-case-disable>>
+  <<config/evil-snipe-override-disable>>
+  :config
+  <<config/evil-snipe-smart-case-disable>>
+  )
 #+end_src
 * evil-iedit-state
 The [[https://github.com/syl20bnr/evil-iedit-state][evil-iedit-state]] package is something I encountered first with Spacemacs. It
