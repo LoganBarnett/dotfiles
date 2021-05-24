@@ -1,16 +1,12 @@
 {
   "includes": [
-    "http://jenkins-pisa.americas.n?ea.pvt/*",
-    "http://webmap.americas.n?ea.pvt/*",
-    "http://jenkins-webmap.americas.n?ea.pvt/*",
-    "http://jenkins-cicd.americas.n?ea.pvt/",
-    "http://jenkins-cicd.mgmt.n?eacolo..pvt/",
-    "https://jenkins-pisa.americas.n?ea.pvt/*",
-    "https://webmap.americas.n?ea.pvt/*",
-    "https://jenkins-webmap.americas.n?ea.pvt/*",
-    "https://jenkins-webmap.mgmt.n?eacolo.pvt/*",
-    "https://jenkins-cicd.americas.n?ea.pvt/*",
-    "https://jenkins-se.mgmt.n?eacolo.pvt/*"
+    "https://jenkins-pisa.*.pvt/*",
+    "https://web?ap.*.pvt/*",
+    "https://jenkins-web?ap.*.pvt/*",
+    "https://jenkins-web?ap.*.pvt/*",
+    "https://jenkins-cicd.*.pvt/*",
+    "https://jenkins-se.mgmt.*.pvt/*",
+    "https://jenkins-*.mgmt.*.pvt/*"
   ],
   "excludes": [
     ""

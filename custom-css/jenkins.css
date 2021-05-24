@@ -288,3 +288,20 @@ form.aui .checkbox > label,
 form.aui .radio > label {
   color: var(--label-color) !important;
 }
+
+/**
+ * The breadcrumb navigation.
+ */
+.breadcrumbs__wrapper {
+  background-color: var(--navigation-background-color) !important;
+  color: var(--navigation-color) !important;
+}
+
+/**
+ * Headers and footers for panels.
+ */
+#side-panel .pane-header,
+#side-panel .pane-footer {
+  background-color: var(--panel-title-background-color) !important;
+  color: var(--panel-title-color) !important;
+}

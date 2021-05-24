@@ -158,6 +158,8 @@ const vars = {
   // TODO: Rename instances of this to gutter-*.
   'line-number-background-color': '#100a14',
   'line-number-color': '#686868',
+  'navigation-color': '#7590db',
+  'navigation-background-color': '#292b2e',
   'gutter-background-color': '#100a14',
   'gutter-color': '#686868',
   '--meta-background-color': '#541',
