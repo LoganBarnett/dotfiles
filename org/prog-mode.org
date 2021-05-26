@@ -243,14 +243,19 @@ bisecting since I'm sure this will come up again later.
 
 * all together
 
-  #+begin_src emacs-lisp :results none :noweb yes
-    <<prog-mode-disable-visual-line-mode>>
-    (config/rainbow-delimiters)
-    <<config/prog-mode-disable-smart-parens>>
-    <<config/prog-mode-manage-final-newline>>
-    <<config/prog-multi-line-default-strategy>>
-    (add-hook 'prog-mode-hook #'config/auto-fill-comments)
-    (add-hook 'prog-mode-hook #'display-line-numbers-mode)
-    (add-hook 'prog-mode-hook #'config/disable-line-wrapping)
-    <<config/prog-mode-fix-c-indentation>>
-  #+end_src
+#+begin_src emacs-lisp :results none :noweb yes
+<<config/prog-mode-fix-c-indentation>>
+(use-package prog-mode
+  :init
+  <<prog-mode-disable-visual-line-mode>>
+  (config/rainbow-delimiters)
+  <<config/prog-mode-disable-smart-parens>>
+  <<config/prog-mode-manage-final-newline>>
+  (add-hook 'prog-mode-hook #'config/auto-fill-comments)
+  (add-hook 'prog-mode-hook #'display-line-numbers-mode)
+  (add-hook 'prog-mode-hook #'config/disable-line-wrapping)
+  :config
+  (require 'multi-line)
+  <<config/prog-multi-line-default-strategy>>
+  )
+#+end_src
