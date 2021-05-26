@@ -14,7 +14,7 @@ change it seems like a lost cause. That's okay though, because we have
 =redshift=.
 
 #+name: config/rust-redshift
-#+begin_src emacs-lisp :results none :tangle yes
+#+begin_src emacs-lisp :results none :tangle no
 (add-hook 'rustic-mode-hook #'redshift-indent-mode)
 #+end_src
 * racer
@@ -41,12 +41,11 @@ using =smart-parens=. Disable it. Always.
 
 #+name: config/smartparens-disable
 #+begin_src emacs-lisp :results none :tangle no
-(defun config/smartparens-disable ()
+(defun config/rust-smartparens-disable ()
   (smartparens-global-mode 0)
   )
-(add-hook 'rustic-mode-hook #'smartparens-disable)
+(add-hook 'rustic-mode-hook #'config/rust-smartparens-disable)
 #+end_src
-
 
 * stitch
 #+begin_src emacs-lisp :results none :noweb yes
