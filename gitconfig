@@ -68,3 +68,5 @@
 [filter "yarn-update-check"]
   clean = sed -E 's/(lastUpdateCheck )[0-9]+/\\1/g'
   smudge = sed -E \"s/(lastUpdateCheck )[0-9]+/\\1$(cat ~/.yarn-update-check)/g\"
+[diff "gpg"]
+  textconv = gpg --no-tty --decrypt
