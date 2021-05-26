@@ -620,6 +620,15 @@ year. We want to display it up until now.
 #+begin_src emacs-lisp :results none :tangle yes
 (setq org-clock-display-default-range 'untilnow)
 #+end_src
+** clock out on killing a buffer
+
+This can also happen when exiting/quitting Emacs.
+
+Right now there is a =kill-buffer-hook= which includes
+=org-check-running-clock=. This prompts to clock out, which trips me up when I'm
+quitting Emacs. For now I've decided it's better than nothing, and will keep it.
+I don't know how to keep it from confusing me when I need to exit Emacs
+iteratively.
 
 * org-todo
 ** log timestamps when done
