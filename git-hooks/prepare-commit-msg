@@ -7,11 +7,19 @@
 
 set -eo pipefail
 
+# When uppercase branch names were supported, it turned out the branch name also
+# included the ticket number (case match included). This caused the ticket
+# detection to see the ticket number and not write it in there. To get uppercase
+# branch names to work with this system, we must filter out the comments.
+function filterComments() {
+  sed -E 's/^(.+?)#(.+)$/\1/' "$1"
+}
+
 original=$1
 # Assume "HEAD" if the command fails. This can happen when we are making the
 # initial commit.
 branch=$(git rev-parse --abbrev-ref HEAD 2> /dev/null || echo "HEAD")
-regex="^([a-z0-9]+)-([0-9]+)-[a-z0-9-]+$"
+regex="^([[:alnum:]]+)-([0-9]+)-[[:alnum:]-]+$"
 
 if [[ $branch == "HEAD" ]]; then
   # We run into HEAD as a branch when we are in a detached HEAD state, which
@@ -23,7 +31,7 @@ elif [[ $branch =~ $regex ]]; then
   # 3.2.
   upper_ticket_id=\
 "$(tr '[:lower:]' '[:upper:]' <<< "${BASH_REMATCH[1]}")-${BASH_REMATCH[2]}"
-  if ! grep -q "$upper_ticket_id" "$1"; then
+  if ! filterComments "$1" | grep -q "$upper_ticket_id"; then
     printf "\n\n$upper_ticket_id" >> "$1"
   fi
 else
