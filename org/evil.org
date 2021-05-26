@@ -75,9 +75,25 @@ counter to my vanilla vim bindings. Disable it. We can use =;= and =,= for that.
 #+name: config/evil-snipe-override-disable
 #+begin_src emacs-lisp :results none :tangle no
 (setq-default
-              evil-snipe-override-evil-repeat-keys nil
-              evil-snipe-repeat-keys nil
-              )
+ evil-snipe-override-evil-repeat-keys t
+ evil-snipe-repeat-keys nil
+ )
+
+;; I couldn't get map! to do what I wanted here. Left for reference.
+;; `evil-global-set-key' seems to do the trick though.
+;;
+;; (map!
+;;  :mnv :desc "evil-snipe search repeat" ";" #'evil-snipe-repeat
+;;  :mnv :desc "evil-snipe search repeat reverse" "," #'evil-snipe-repeat-reverse
+;;  )
+;;
+;; TODO: I should probably file a pull request or something here. Without this,
+;; ; and , are completely broken. This is because when not in the transient map,
+;; ; and , do the normal evil repeat search, which doesn't work since evil-snipe
+;; tracks what has been searched. "No previous search" is displayed, or
+;; something like that.
+(evil-global-set-key 'motion (kbd ";") #'evil-snipe-repeat)
+(evil-global-set-key 'motion (kbd ",") #'evil-snipe-repeat-reverse)
 #+end_src
 
 ** apply
