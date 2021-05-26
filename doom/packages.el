@@ -52,6 +52,7 @@
 ;; better library.
 ;;
 ;; (package! git-link)
+(package! gnuplot)
 (package! graphviz-dot-mode)
 (package! groovy-mode)
 (package! habitica)
