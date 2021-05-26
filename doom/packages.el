@@ -24,6 +24,11 @@
 (package! atomic-chrome)
 (package! auto-compile)
 (package! dap-mode)
+;; I like dash, but it's listed here because ejira or one of its dependencies
+;; depends upon it, but has not declared that in its own package list.
+;; dash-functional is marked as obsolete. I have tried updating ejira but it
+;; seems like I'm current. Perhaps a pull request is in order.
+(package! dash-functional)
 (package! docker)
 (package! dockerfile-mode)
 ;; (package! ejira :recipe
