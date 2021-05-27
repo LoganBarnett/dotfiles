@@ -90,3 +90,12 @@ a:visited {
 .single-measure .outer-flex-container .options-container {
   color: var(--input-label-color) !important;
 }
+
+/**
+ * A difficult to catch indeterminate progress spinner.
+ *
+ * Make it dark instead of the white flash.
+ */
+.loading-overlay .loading-background {
+  background: #000 !important;
+}
