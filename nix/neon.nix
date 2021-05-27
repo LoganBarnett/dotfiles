@@ -10,6 +10,8 @@ let
     (import ./overlays/maven.nix)
     (import ./overlays/percol.nix)
     (import ./overlays/zsh.nix)
+    # (import (builtins.fetchTarball
+    #   "https://github.com/oxalica/rust-overlay/archive/master.tar.gz"))
     # (import "${openconnect-sso-src}/overlay.nix")
     # (import ./overlays/openconnect-sso.nix)
     # (import ./openconnect-sso.nix)
