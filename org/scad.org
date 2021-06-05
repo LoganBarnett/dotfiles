@@ -68,5 +68,6 @@ for reference.
   <<config/scad-keymap>>
   <<config/prog-mode-fix-c-indentation>>
   <<config/scad-indentation-fix>>
+  (add-hook 'scad-mode-hook #'config/prog-mode-c-style-set)
   )
 #+end_src
