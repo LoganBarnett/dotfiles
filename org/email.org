@@ -154,18 +154,20 @@ http://pragmaticemacs.com/emacs/master-your-inbox-with-mu4e-and-org-mode/
 #+end_src
 
 *** getting mail
-  =~/bin/mail-sync= gets email and then runs =mu= to perform indexing. This is
-  =mu4e= seems to run indexing on its own, so we can just use =mbsync -a= like
-  =mail-sync= uses.
+=~/bin/mail-sync= gets email and then runs =mu= to perform indexing. This is
+=mu4e= seems to run indexing on its own, so we can just use =mbsync -a= like
+=mail-sync= uses. =-F= tells it to do a full sync, which includes deletions. If
+it we do not sync deletions then it starts to fall out of sync and then
+eventually will fail.
 
 =INSIDE_EMACS= is an environment variable that [[https://github.com/gpg/pinentry/blob/779b8e6df7d2678d40bc61ba9e9ff35324a40d03/pinentry/pinentry-emacs.h#L31][pinentry looks for]]. This should
 allow me to enter my password from Emacs directly when checking my mail. See
 comment in [[https://github.com/djcb/mu/issues/829#issuecomment-524851533][mu#829]] for an example.
 
 #+name: config/email-get-mail-command
-#+begin_src emacs-lisp :tangle yes :results none
+#+begin_src emacs-lisp :tangle no :results none
 (setq
- mu4e-get-mail-command (format "INSIDE_EMACS=%s mbsync -a" emacs-version)
+ mu4e-get-mail-command (format "INSIDE_EMACS=%s mbsync -a -F" emacs-version)
  epa-pinentry-mode 'ask
  )
 #+end_src
