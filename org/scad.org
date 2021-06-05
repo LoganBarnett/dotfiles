@@ -43,6 +43,21 @@ We need a binding to bring up the preview easily.
   )
 #+end_src
 
+** indentation
+*** disable hanging indentation
+
+See [[file:./prog-mode.org::*indent align fix]] for a description of alignment in
+Emacs in a general sense.
+
+Aligned indentation has made its way into =scad-mode=. From poking around
+=scad-mode=, it looks like it uses C settings. See [[./prog-mode.org::*indentation]]
+for reference.
+
+#+name: config/scad-indentation-fix
+#+begin_src emacs-lisp :results none :tangle no
+(setq-default scad-indent-style "1tbs-no-align")
+#+end_src
+
 
 * stitch
 
@@ -51,5 +66,7 @@ We need a binding to bring up the preview easily.
   :init
   <<config/scad-preview-keymap>>
   <<config/scad-keymap>>
+  <<config/prog-mode-fix-c-indentation>>
+  <<config/scad-indentation-fix>>
   )
 #+end_src

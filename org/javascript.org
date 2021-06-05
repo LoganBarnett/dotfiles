@@ -31,6 +31,39 @@ indentation fixed. Who uses 4 nowadays?
 #+begin_src emacs-lisp :results none :tangle yes
 (setq js-indent-level 2)
 #+end_src
+
+*** alignment
+
+See [[file:./prog-mode.org::*indent align fix]] for a description of alignment in
+Emacs in a general sense.
+
+A typical aligned indentation looks like this:
+#+begin_example js :results none
+function reallyReallyLongName(
+                              foo,
+                              bar,
+                              baz,
+                             ) {
+                               expr1()
+                             }
+#+end_example
+
+But I want it to look like this:
+#+begin_example js :results none
+function reallyReallyLongName(
+  foo,
+  bar,
+  baz,
+) {
+  expr1()
+}
+#+end_example
+
+#+name: config/javascript-identation-align-fix
+#+begin_src emacs-lisp :results none :tangle no
+(setq-default js-indent-align-list-continuation nil)
+#+end_src
+
 *** chaining
 Let's take a moment to observe this code:
 
@@ -393,6 +426,7 @@ Finally, tie it all together on demand.
     (add-to-list 'grep-find-ignored-directories "node_modules")
     <<config/javascript-indentation-chaining>>
     <<config/javascript-indentation-spacing>>
+    <<config/javascript-identation-align-fix>>
     <<config/javascript-unignore-flow-typed>>
     (setq-default js2-strict-missing-semi-warning nil)
     (setq-default js2-strict-trailing-comma-warning nil)

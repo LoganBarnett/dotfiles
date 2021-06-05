@@ -46,3 +46,44 @@ Don't actually remove this just yet.
 #+begin_src emacs-lisp :results none
 ;(advice-remove '+emacs-lisp-truncate-pin #'config/truncate-string-stop)
 #+end_src
+* indentation
+
+See [[file:./prog-mode.org::*indent align fix]] for a description of alignment in
+Emacs in a general sense.
+
+The before and after looks the same with =lisp-backquote-indentation= set to
+=nil=. Perhaps this construct is wrong.
+
+#+begin_example emacs-lisp
+(setq-default
+ big-list
+ '(
+   foo
+   bar
+   baz
+   ))
+#+end_example
+
+#+begin_example emacs-lisp
+(setq-default
+ big-list
+ '(
+   foo
+   bar
+   baz
+   ))
+#+end_example
+
+#+name: config/lisp-indentation-align-fix
+#+begin_src emacs-lisp :results none :tangle no
+(setq-default lisp-backquote-indentation nil)
+#+end_src
+
+* stitch
+
+#+begin_src emacs-lisp :results none :noweb yes
+(use-package "lisp-mode"
+  :init
+  <<config/lisp-indentation-align-fix>>
+  )
+#+end_src

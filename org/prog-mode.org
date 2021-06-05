@@ -159,85 +159,113 @@ delimiters.
     (setq-default mode-require-final-newline t)
    #+end_src
 * indentation
+** indent align fix
+
+Emacs does an indentation called "alignment" or just "align", which is a funky
+indentation that only Emacs seems to do, probably inherited from typical Lisp
+indentation rules.
+
 Most indentation in Emacs comes from =c-set-offset=. Emacs has a culture of
-hanging indents off of the last glyph and I find it eats into my 80 columns very
+aligned indents off of the last glyph and I find it eats into my 80 columns very
 quickly with little benefit. While my original motivator was to fix this for
 [[file:./javascript.org]], it applies to any C-like language.
 
 Or maybe JS doesn't use this at all. Ugh. I've kept all identifiers for
 bisecting since I'm sure this will come up again later.
 
+Use the interactive function =cc-set-offset= to find the current syntactic
+element we're on (there might need to be resolution) and it will show the
+current setting and allow an override. I've found this to be an excellent means
+of debugging indentation issues.
+
+Bear in mind that indentation isn't always consistent depending on where you
+start from. Sometimes you need to highlight the entire expression, function
+call, declaration, etc in order to achieve the complete indentation desired.
+This is because the =cc-mode= indentation (or =cc-indent=?) trusts in your prior
+indentation to be correct. I think this is typically the better thing to do.
+
 #+name: config/prog-mode-fix-c-indentation
-#+begin_src emacs-lisp :results none :tangle yes
-(c-set-offset 'substatement-open 0)
-;; (c-set-offset 'func-decl-cont 0)
-;; (c-set-offset 'brace-list-intro 0)
-;; (c-set-offset 'statement-cont 0)
-;; (c-set-offset 'statement-cont 0)
-;; (c-set-offset 'brace-list-open 0)
-;; (c-set-offset 'string 0)
-;; (c-set-offset 'c 0)
-;; (c-set-offset 'defun-open 0)
-;; (c-set-offset 'defun-close 0)
-;; (c-set-offset 'defun-block-intro 0)
-;; (c-set-offset 'class-open 0)
-;; (c-set-offset 'class-close 0)
-;; (c-set-offset 'inline-open 0)
-;; (c-set-offset 'inline-close 0)
-;; (c-set-offset 'func-decl-cont 0)
-;; (c-set-offset 'inher-cont 0)
-;; (c-set-offset 'block-open 0)
-;; (c-set-offset 'block-close 0)
-;; (c-set-offset 'brace-list-open 0)
-;; (c-set-offset 'brace-list-close 0)
-;; (c-set-offset 'brace-list-intro 0)
-;; (c-set-offset 'brace-list-entry 0)
-;; (c-set-offset 'brace-entry-open 0)
-;; (c-set-offset 'statement 0)
-;; (c-set-offset 'statement-cont 0)
-;; (c-set-offset 'statement-block-intro 0)
-;; (c-set-offset 'statement-case-intro 0)
-;; (c-set-offset 'statement-case-open 0)
-;; (c-set-offset 'substatement 0)
-;; (c-set-offset 'substatement-open 0)
-;; (c-set-offset 'substatement-label 0)
-;; (c-set-offset 'case-label 0)
-;; (c-set-offset 'access-label 0)
-;; (c-set-offset 'label 0)
-;; (c-set-offset 'do-while-closure 0)
-;; (c-set-offset 'else-clause 0)
-;; (c-set-offset 'catch-clause 0)
-;; (c-set-offset 'comment-intro 0)
-;; (c-set-offset 'arglist-intro 0)
-;; (c-set-offset 'arglist-cont 0)
-;; (c-set-offset 'arglist-cont-nonempty 0)
-;; (c-set-offset 'arglist-close 0)
-;; (c-set-offset 'stream-op 0)
-;; (c-set-offset 'inclass 0)
-;; (c-set-offset 'cpp-macro 0)
-;; (c-set-offset 'cpp-macro-cont 0)
-;; (c-set-offset 'friend 0)
-;; (c-set-offset 'objc-method-intro 0)
-;; (c-set-offset 'objc-method-args-cont 0)
-;; (c-set-offset 'objc-method-call-cont 0)
-;; (c-set-offset 'extern-lang-open 0)
-;; (c-set-offset 'extern-lang-close 0)
-;; (c-set-offset 'inextern-lang 0)
-;; (c-set-offset 'knr-argdecl-intro 0)
-;; (c-set-offset 'knr-argdecl 0)
-;; (c-set-offset 'topmost-intro 0)
-;; (c-set-offset 'topmost-intro-cont 0)
-;; (c-set-offset 'annoation-top-cont 0)
-;; (c-set-offset 'annoation-var-cont 0)
-;; (c-set-offset 'member-init-intro 0)
-;; (c-set-offset 'member-init-cont 0)
-;; (c-set-offset 'inner-intro 0)
-;; (c-set-offset 'namespace-open 0)
-;; (c-set-offset 'namespace-close 0)
-;; (c-set-offset 'innamespace 0)
-;; (c-set-offset 'module-open 0)
-;; (c-set-offset 'module-close 0)
-;; (c-set-offset 'inmodule 0)
+#+begin_src emacs-lisp :results none :tangle no
+(c-add-style
+ "1tbs-no-align"
+ '(
+   (c-set-offset 'substatement-open 0)
+   (c-set-offset 'func-decl-cont 0)
+   ;; (c-set-offset 'brace-list-intro 0)
+   ;; (c-set-offset 'statement-cont 0)
+   (c-set-offset 'statement-cont 0)
+   (c-set-offset 'brace-list-open 0)
+   ;; (c-set-offset 'string 0)
+   ;; (c-set-offset 'c 0)
+   ;; (c-set-offset 'defun-open 0)
+   ;; (c-set-offset 'defun-close 0)
+   ;; (c-set-offset 'defun-block-intro 0)
+   ;; (c-set-offset 'class-open 0)
+   ;; (c-set-offset 'class-close 0)
+   ;; (c-set-offset 'inline-open 0)
+   ;; (c-set-offset 'inline-close 0)
+   (c-set-offset 'func-decl-cont 0)
+   (c-set-offset 'inher-cont 0)
+   ;; (c-set-offset 'block-open 0)
+   ;; (c-set-offset 'block-close 0)
+   ;; (c-set-offset 'brace-list-open 0)
+   ;; (c-set-offset 'brace-list-close 0)
+   ;; (c-set-offset 'brace-list-intro 0)
+   ;; (c-set-offset 'brace-list-entry 0)
+   ;; (c-set-offset 'brace-entry-open 0)
+   ;; (c-set-offset 'statement 0)
+   (c-set-offset 'statement-cont 0)
+   ;; (c-set-offset 'statement-block-intro 0)
+   ;; (c-set-offset 'statement-case-intro 0)
+   ;; (c-set-offset 'statement-case-open 0)
+   ;; (c-set-offset 'substatement 0)
+   ;; (c-set-offset 'substatement-open 0)
+   ;; (c-set-offset 'substatement-label 0)
+   ;; (c-set-offset 'case-label 0)
+   ;; (c-set-offset 'access-label 0)
+   ;; (c-set-offset 'label 0)
+   ;; (c-set-offset 'do-while-closure 0)
+   ;; (c-set-offset 'else-clause 0)
+   ;; (c-set-offset 'catch-clause 0)
+   ;; (c-set-offset 'comment-intro 0)
+
+   ;; These arg lists tend to be the biggest source of alignment
+   ;; issues. This sets the expressions or "arg lists" to indent
+   ;; idempotently, and not aligned to the parent end-of-line
+   ;; but the parent indentation.
+   (c-set-offset 'arglist-intro 0)
+   (c-set-offset 'arglist-cont 0)
+   (c-set-offset 'arglist-cont-nonempty '+)
+   (c-set-offset 'arglist-close '-)
+   ;; (c-set-offset 'stream-op 0)
+   ;; (c-set-offset 'inclass 0)
+   ;; (c-set-offset 'cpp-macro 0)
+   (c-set-offset 'cpp-macro-cont 0)
+   ;; (c-set-offset 'friend 0)
+   ;; (c-set-offset 'objc-method-intro 0)
+   (c-set-offset 'objc-method-args-cont 0)
+   (c-set-offset 'objc-method-call-cont 0)
+   ;; (c-set-offset 'extern-lang-open 0)
+   ;; (c-set-offset 'extern-lang-close 0)
+   ;; (c-set-offset 'inextern-lang 0)
+   ;; (c-set-offset 'knr-argdecl-intro 0)
+   ;; (c-set-offset 'knr-argdecl 0)
+   ;; (c-set-offset 'topmost-intro 0)
+   (c-set-offset 'topmost-intro-cont 0)
+   (c-set-offset 'annoation-top-cont 0)
+   (c-set-offset 'annoation-var-cont 0)
+   ;; (c-set-offset 'member-init-intro 0)
+   (c-set-offset 'member-init-cont 0)
+   ;; (c-set-offset 'inner-intro 0)
+   ;; (c-set-offset 'namespace-open 0)
+   ;; (c-set-offset 'namespace-close 0)
+   ;; (c-set-offset 'innamespace 0)
+   ;; (c-set-offset 'module-open 0)
+   ;; (c-set-offset 'module-close 0)
+   ;; (c-set-offset 'inmodule 0)
+   ))
+(setq-default c-indentation-style "1tbs-no-align")
+(add-to-list 'c-default-style '(other . "1tbs-no-align"))
 #+end_src
 
 
