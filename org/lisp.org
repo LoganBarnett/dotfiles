@@ -6,6 +6,21 @@
 #+file_tags:
 #+tags:
 
+* file local variables
+
+Things like =.dir-locals.el= and =org= files can have certain variables set from
+the file itself. While some of these are safe, some of these are unsafe. Doom
+has decided in this [[https://github.com/hlissner/doom-emacs/commit/5e7864838a7f65204b8ad3fe96febc603675e24a][commit]] that the prompting should be disabled by default.
+While I agree that we should prompt less, I also think that it's far too easy to
+miss a message in the minibuffer, and then we're wondering why =noweb= isn't
+working inside of our literate =org= file anymore. Set it back to prompting. =t=
+means to accept all "safe" variables and prompt if unsafe variables are present.
+
+#+name: config/lisp-file-local-variables-prompt-if-unsafe
+#+begin_src emacs-lisp :results none :tangle no
+(setq-default enable-local-variables t)
+#+end_src
+
 * string truncation in package.el
 
 I'm going to leave this as reference, since it turned out to be a wild goose
@@ -84,6 +99,7 @@ The before and after looks the same with =lisp-backquote-indentation= set to
 #+begin_src emacs-lisp :results none :noweb yes
 (use-package "lisp-mode"
   :init
+  <<config/lisp-file-local-variables-prompt-if-unsafe>>
   <<config/lisp-indentation-align-fix>>
   )
 #+end_src
