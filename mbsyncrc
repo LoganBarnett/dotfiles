@@ -9,7 +9,7 @@ User logustus@gmail.com
 # With normal syncs, 50 will work fine. Use 25 on a full sync from scratch or it
 # can show the following error: IMAP error: unexpected BYE response: [OVERQUOTA]
 # Account exceeded command or bandwidth limits.
-PipelineDepth 50
+PipelineDepth 20
 # Pass %PASS%
 # To store the password in an encrypted file use PassCmd instead of Pass
 PassCmd "gpg -q --for-your-eyes-only --no-tty -d ~/.gmail-imap-authinfo.gpg"
@@ -37,9 +37,11 @@ SubFolders Legacy
 # The trailing "/" is important
 Path ~/mail/gmail/
 Inbox ~/mail/gmail/Inbox
-TrashNewOnly yes
+# This breaks the trashing ability.
+#
+# TrashNewOnly yes
 # Trash ~/mail/trash
-Trash "~/mail/gmail/[Gmail]/.Trash"
+# Trash "~/mail/gmail/[Gmail]/.Trash"
 
 Channel gmail-inbox
 Far :gmail-remote: #"[Gmail]/Inbox"
@@ -62,6 +64,7 @@ Remove Both
 SyncState *
 Expunge Both
 Sync PullReNew PullNew PullFlags Push
+CopyArrivalDate yes
 
 # Splitting the archive section out (all mail) seems to dramatically improve
 # performance.
@@ -105,6 +108,7 @@ Remove Both
 SyncState *
 Expunge Both
 Sync All
+CopyArrivalDate yes
 
 Group gmail
 # Channel gmail-archive
