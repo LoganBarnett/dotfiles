@@ -93,6 +93,9 @@
 ;; that's needed to fix it.
 (package! ox-jira :recipe (:branch "trunk"))
 (package! ox-gfm)
+;; Use the pass utility (https://www.passwordstore.org/).
+(package! password-store)
+;; Use pinentry to prompt for passwords via the gpg-agent.
 (package! pinentry)
 (package! piper :recipe (:local-repo "~/dev/emacs-piper"))
 (package! plantuml-mode)
