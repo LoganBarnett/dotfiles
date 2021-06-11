@@ -39,6 +39,7 @@
 ;;   ) ; Atlassian Jira integration.
 (package! ejira :recipe (:local-repo "~/dev/ejira"))
 (package! elm-mode)
+(package! enh-ruby-mode)
 (package! evil-iedit-state)
 (package! evil-nerd-commenter :pin "b8ac35fe019df5602c31912f65303a3d8ad0066c")
 ;; I could leave evil-snipe enabled to get highlighting from ; and ,.
