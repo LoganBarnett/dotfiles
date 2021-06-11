@@ -9,6 +9,17 @@
 Projectile gives Emacs project management capabilities. This includes searching,
 selecting projects, and finding them.
 
+* kill all buffers
+
+Something has set =projectile-kill-buffers-filter= to =kill-only-files= which
+means I typically have a bunch of =magit= buffers hanging around, or potentially
+other things. I want those killed too, since I killed the project.
+
+#+name: config/projectile-buffers-kill-all
+#+begin_src emacs-lisp :results none :tangle no
+(setq-default projectile-kill-buffers-filter 'kill-all)
+#+end_src
+
 * projects directory
 
 #+name: config/projectile-projects-directory
@@ -31,5 +42,6 @@ seemed to solve my problem. Perhaps there was a delay?
 (use-package projectile
   :init
   <<config/projectile-projects-directory>>
+  <<config/projectile-buffers-kill-all>>
   )
 #+end_src
