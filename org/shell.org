@@ -32,76 +32,117 @@ other code block indentation in the mode.
 ;; "Continuation" here refers to continued items. This is the notorious
 ;; Emacs/Lisp form of indentation.
 (setq-default sh-indent-after-continuation nil)
-(setq sh-smie-sh-grammar '(
-  (:smie-closer-alist
-  ("case" . "esac")
-  ("case" . "in")
-  ("if" . "fi")
-  ("if" . "then")
-  ("if" . "else")
-  ("if" . "elif")
-  ("while" . "done")
-  ("while" . "do")
-  ("until" . "done")
-  ("until" . "do")
-  ("for" . "done")
-  ("for" . "do")
-  ("for" . "in")
-  ("select" . "done")
-  ("select" . "do")
-  ("select" . "in")
-  ("repeat" . "done")
-  ("repeat" . "do"))
- ("do" 0 1)
- ("elif" 3 2)
- ("else" 3 3)
- ;; This keeps "then" from introducing extra indentation. Works even when then
- ;; is on its own line.
- ("then" 1 1)
- ("while"
-  (71)
-  0)
- ("until"
-  (72)
-  0)
- ("for"
-  (73)
-  0)
- ("select"
-  (74)
-  0)
- ("repeat"
-  (75)
-  0)
- ("if"
-  (76)
-  2)
- ("&" 38 38)
- (";" 38 38)
- ("||" 49 49)
- ("&&" 49 49)
- ("|&" 60 60)
- ("always" 77 78)
- ("done" 1
-  (79))
- ("fi" 3
-  (80))
- ("esac" 0
-  (81))
- (";;" 14 14)
- (";&" 14 14)
- (";;&" 14 14)
- ("case-)" 26 25)
- ("case-("
-  (82)
-  37)
- ("|" 60 60)
- ("in" 0 0)
- ("case"
-  (83)
-  0)
- )
-)
+;; SMIE is a complex topic and its grammar rules are ill documented. More
+;; confusing is that looking at variables such as sh-smie-sh-grammar are
+;; deceptively not representative of a good value. Instead smie generates this
+;; value using functions/macros whose emissions are not obvious, documented, nor
+;; are there examples (supported or otherwise) using these raw values. One must
+;; use the "DSL". For reference, the original function call is included but I
+;; may tweak it at a later date, since this is indeed the only way I know to do
+;; it.
+;;
+;; (setq sh-smie-sh-grammar '(
+;;   (:smie-closer-alist
+;;   ("case" . "esac")
+;;   ("case" . "in")
+;;   ("if" . "fi")
+;;   ("if" . "then")
+;;   ("if" . "else")
+;;   ("if" . "elif")
+;;   ("while" . "done")
+;;   ("while" . "do")
+;;   ("until" . "done")
+;;   ("until" . "do")
+;;   ("for" . "done")
+;;   ("for" . "do")
+;;   ("for" . "in")
+;;   ("select" . "done")
+;;   ("select" . "do")
+;;   ("select" . "in")
+;;   ("repeat" . "done")
+;;   ("repeat" . "do"))
+;;  ("do" 0 1)
+;;  ("elif" 3 2)
+;;  ;; Unsure why this needed to be changed. else was getting indented out, and
+;;  ;; everything that followed it.
+;;  ("else" 3 3)
+;;  ;; This keeps "then" from introducing extra indentation. Works even when then
+;;  ;; is on its own line.
+;;  ("then" 1 1)
+;;  ("while"
+;;   (71)
+;;   0)
+;;  ("until"
+;;   (72)
+;;   0)
+;;  ("for"
+;;   (73)
+;;   0)
+;;  ("select"
+;;   (74)
+;;   0)
+;;  ("repeat"
+;;   (75)
+;;   0)
+;;  ("if"
+;;   (76)
+;;   2)
+;;  ("&" 38 38)
+;;  (";" 38 38)
+;;  ("||" 49 49)
+;;  ("&&" 49 49)
+;;  ("|&" 60 60)
+;;  ("always" 77 78)
+;;  ("done" 1
+;;   (79))
+;;  ("fi" 2
+;;   (80))
+;;  ("esac" 0
+;;   (81))
+;;  (";;" 14 14)
+;;  (";&" 14 14)
+;;  (";;&" 14 14)
+;;  ("case-)" 26 25)
+;;  ("case-("
+;;   (82)
+;;   37)
+;;  ("|" 60 60)
+;;  ("in" 0 0)
+;;  ("case"
+;;   (83)
+;;   0)
+;;  )
+;; )
+
+;; Taken from progmodes.el.
+(setq sh-smie-sh-grammar
+  (smie-prec2->grammar
+   (smie-bnf->prec2
+    '((exp)                    ;A constant, or a $var, or a sequence of them...
+      (cmd ("case" exp "in" branches "esac")
+           ("if" cmd "then" cmd "fi")
+           ("if" cmd "then" cmd "else" cmd "fi")
+           ("if" cmd "then" cmd "elif" cmd "then" cmd "fi")
+           ("if" cmd "then" cmd "elif" cmd "then" cmd "else" cmd "fi")
+           ("if" cmd "then" cmd "elif" cmd "then" cmd
+                                "elif" cmd "then" cmd "else" cmd "fi")
+           ("while" cmd "do" cmd "done")
+           ("until" cmd "do" cmd "done")
+           ("for" exp "in" cmd "do" cmd "done")
+           ("for" exp "do" cmd "done")
+           ("select" exp "in" cmd "do" cmd "done")   ;bash&zsh&ksh88.
+           ("repeat" exp "do" cmd "done")            ;zsh.
+           (exp "always" exp)                        ;zsh.
+           (cmd "|" cmd) (cmd "|&" cmd)
+           (cmd "&&" cmd) (cmd "||" cmd)
+           (cmd ";" cmd) (cmd "&" cmd))
+      (rpattern (rpattern "|" rpattern))
+      (pattern (rpattern) ("case-(" rpattern))
+      (branches (branches ";;" branches)
+                (branches ";&" branches) (branches ";;&" branches) ;bash.
+                (pattern "case-)" cmd)))
+    '((assoc ";;" ";&" ";;&"))
+    '((assoc ";" "&") (assoc "&&" "||") (assoc "|" "|&")))))
 #+end_src
 
 ** all together
