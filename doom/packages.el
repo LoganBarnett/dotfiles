@@ -76,7 +76,14 @@
 ;; point it straight to the nix mu4e site-lisp directory. See
 ;; https://github.com/raxod502/straight.el/issues/491 for more context.
 (package! mu4e
-  :recipe (:local-repo "~/.nix-profile/share/emacs/site-lisp/mu4e"))
+  :recipe (
+           :local-repo "~/.nix-profile/share/emacs/site-lisp/mu4e"
+           ;; pre-build must be disabled when using the nix derivation - in part
+           ;; because it is alreadt built, but also because the directory is
+           ;; read-only because that's how nix likes to do things.
+           :pre-build ()
+           )
+  )
 (package! multi-line)
 (package! multi-term)
 (package! noflet)
