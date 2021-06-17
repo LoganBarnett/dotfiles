@@ -3,8 +3,7 @@
     "https://*.messenger.com/*",
     "https://messenger.com/*",
     "https://facebook.com/*",
-    "https://*.facebook.com/*",
-    "https://www.messenger.com/t/david.koontz.921"
+    "https://*.facebook.com/*"
   ],
   "excludes": [
     ""
