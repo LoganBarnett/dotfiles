@@ -115,6 +115,7 @@ other code block indentation in the mode.
 ;; )
 
 ;; Taken from progmodes.el.
+(load-library "smie")
 (setq sh-smie-sh-grammar
   (smie-prec2->grammar
    (smie-bnf->prec2
