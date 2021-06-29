@@ -160,6 +160,8 @@ const vars = {
   'line-number-color': '#686868',
   'navigation-color': '#7590db',
   'navigation-background-color': '#292b2e',
+  'navigation-inactive-color': '#384576',
+  'navigation-inactive-background-color': '#292b2e',
   'gutter-background-color': '#100a14',
   'gutter-color': '#686868',
   '--meta-background-color': '#541',
@@ -225,6 +227,8 @@ const vars = {
   '--closed-ticket-color': '#ce537a',
   '--fancy-color': '#97d',
   '--fancy-background-color': '#536',
+  '--calendar-entry-background': '#411',
+  '--calendar-entry-color': '#dc2',
   '--calendar-leave-entry-background': '#29422d',
   '--calendar-leave-entry-color': '#67b11d',
   '--panel-border': '0.1em solid #5d4d7a',
@@ -233,6 +237,7 @@ const vars = {
   '--panel-title-background-color': '#5d4d7a',
   '--panel-title-padding': '1em',
   'panel-background-color': '#0a0814', // Uses "bg4" from color list.
+  // What is a time slice?
   '--time-slice': '#2d9574',
   '--time-slice-background': '#29422d',
   '--time-slice-inactive-background': '#100a14',

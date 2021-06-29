@@ -1,6 +1,7 @@
 {
   "includes": [
-    "https://*.glip.com/*"
+    "https://*.glip.com/*",
+    "https://app.ringcentral.com/*"
   ],
   "excludes": [],
   "name": "glip",

@@ -210,10 +210,6 @@ body .grouptab.smooth-fade {
   background-color: var(--general-background-color) !important;
 }
 
-img[src*="gif" i] {
-  visibility: hidden;
-}
-
 .photo:hover img[src*="gif" i] {
   visibility: visible;
 }
@@ -402,4 +398,201 @@ h1.stream-header {
 [person_id="476815278083"] .headshot-36 {
   background-image: url('https://cdn.cavemancircus.com//wp-content/uploads/2020/08/mind_blowing_facts_about_space.jpg');
   background-size: contain;
+}
+
+/**
+ * Poop emoji list. That gal/guy.
+ */
+
+.asshat {
+  visibility: hidden;
+}
+
+.asshat:hover {
+  visibility: visible;
+}
+
+/*******************************************************************************
+ * Ring Central - No longer "glip".
+ ******************************************************************************/
+
+
+/**
+ * Conversation lists. Has too much padding.
+ */
+.eyRpHu.eyRpHu {
+  height: unset !important;
+  padding: 0 !important;
+}
+
+/**
+ * Conversation list categories. Has too much padding.
+ */
+.MuiListItem-gutters {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+/**
+ * Conversation list categories. Has too much padding.
+ */
+.MuiListItem-root {
+  padding-bottom: 0 !important;
+  padding-top: 0 !important;
+}
+
+/**
+ * Conversation list categories. Has too much padding.
+ */
+.dYrgY.dYrgY {
+  padding: 0 !important;
+  height: unset !important;
+}
+
+/**
+ * Room list categories. Has too much padding.
+ */
+.MuiMenuItem-root {
+  padding-bottom: 0 !important;
+  padding-top: 0 !important;
+}
+
+/**
+ * Room list categories. Has too much padding.
+ */
+.MuiMenuItem-root {
+  padding-bottom: 0 !important;
+  padding-top: 0 !important;
+}
+
+/**
+ * Room list categories. Has too much padding.
+ */
+.bkRvbQ.bkRvbQ {
+  padding: 0 !important;
+  height: unset !important;
+}
+
+/**
+ * Status icons in the room/conversation lists. They use too much horizontal
+ * space.
+ */
+.gurvwO {
+  margin-right: 0 !important;
+}
+
+/**
+ * App list? Icons they couldn't find space for?
+ */
+.eGqwRA .left-paper {
+  padding: 0 !important;
+  width: 1.5rem !important;
+}
+
+/**
+ * Apps/icons.
+ */
+.jQtslW.jQtslW {
+  height: unset !important;
+}
+
+/**
+ * Apps/icons.
+ */
+.fViYWJ {
+  min-height: unset !important;
+}
+
+/**
+ * Apps/icons.
+ */
+.cmAryn {
+  width: unset !important;
+}
+
+/**
+ * Apps/icons.
+ */
+.lkiIWD {
+  width: unset !important;
+}
+
+/**
+ * Conversation/room list "special" buttons.
+ */
+.gWUdRu.gWUdRu.RcListButtonItem-root {
+  height: unset !important;
+  padding: 0 !important;
+}
+
+/**
+ * Conversation/room list unread toggle.
+ */
+.iwLUNA.iwLUNA {
+  height: unset !important;
+}
+
+/**
+ * GIFs bring my machine to its knees. Hide until moused-over.
+ */
+img[src*="gif" i] {
+  visibility: hidden;
+}
+
+/**
+ * Show gifs when moused over.
+ */
+.icBLgt.icBLgt:hover img[src*="gif" i] {
+  visibility: visible;
+}
+
+/**
+ * Show gifs when moused over.
+ */
+.sc-jodshL.gGlJpx:hover img[src*="gif" i] {
+  visibility: visible;
+}
+
+/**
+ * Show gifs when moused over.
+ */
+.sc-jodshL.fvWusZ:hover img[src*="gif" i] {
+  visibility: visible;
+}
+
+/**
+ * Show gifs when moused over.
+ */
+.sc-jodshL:hover img[src*="gif" i] {
+  visibility: visible;
+}
+
+/**
+ * Show gifs when moused over.
+ */
+img[src*="gif" i]:hover {
+  visibility: visible;
+}
+
+/**
+ * Fix snippet view taking up a very small width.
+ */
+.collapsedSnippet {
+  max-width: unset !important;
+}
+
+/**
+ * Stop hiding the image information.
+ */
+.OiCEd.OiCEd {
+  overflow: unset !important;
+}
+
+/**
+ * Do not animate the image information. Keep it below the image.
+ */
+.OiCEd:hover .sc-evcpll,
+.OiCEd.OiCEd.focus-visible,
+.OiCEd[data-focus-visible-added] .sc-evcpll {
+  transform: translate(0px, 36px) !important;
 }

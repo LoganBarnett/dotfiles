@@ -37,6 +37,17 @@ const hookUpRail = () => {
 console.log('Running glip button fix.')
 waitForRail()
 
+const asshats = [
+  '937746120707',
+]
+
+const waitForChatEntry = () => {
+  console.log('Waiting for chat entry...')
+  const observerConf = { attributes: true, childList: true, subtree: true }
+  const bodyObserver = new MutationObserver((_, observer) => {
+    document.querySelectorAll('.post')
+  })
+}
 // Might be better depending on your injection mechanism.
 //
 // window.addEventListener('load', () => {
