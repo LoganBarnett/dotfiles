@@ -28,7 +28,7 @@ before questioning the below.
 other code block indentation in the mode.
 
 #+name: config/shell-indentation-fix-then
-#+begin_src emacs-lisp :tangle yes :results none
+#+begin_src emacs-lisp :tangle no :results none
 ;; "Continuation" here refers to continued items. This is the notorious
 ;; Emacs/Lisp form of indentation.
 (setq-default sh-indent-after-continuation nil)
