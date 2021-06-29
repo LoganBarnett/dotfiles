@@ -145,10 +145,58 @@ body, p, table, tr, td, .bodytext, .stepfield, .wiki-content p, .panelContent, s
   text-decoration: underline !important;
 }
 
-/* calendar entries */
+/**
+ * Calendar entries for vacation leave.
+ */
 div.fc-event.leaves {
   background: var(--calendar-leave-entry-background) !important;
   color: var(--calendar-leave-entry-color) !important;
+}
+
+/**
+ * Calendar entries for everything else.
+ */
+div.fc-event {
+  background: var(--calendar-entry-background) !important;
+  color: var(--calendar-entry-color) !important;
+}
+
+/**
+ * Calendar entry text. Fight the inline styles and !important.
+ */
+div.fc-event.fc-event-time, dv.fc-event.fc-event-title {
+  color: var(--calendar-entry-color) !important;
+}
+
+/**
+ * Calendar non-current month day numbers.
+ */
+.fc-grid .fc-other-month .fc-day-number {
+  opacity: 1 !important;
+  color: var(--dim-text) !important;
+}
+
+/**
+ * Calendar current month day numbers.
+ */
+div.plugin-calendar .fc .fc-view-month .fc-day-number {
+  color: var(--text) !important;
+}
+
+/**
+ * Side bar nav - inactive.
+ */
+.acs-tree-item,
+.acs-side-bar a,
+.acs-side-bar td a,
+#acs-nav-list-main .acs-nav-item-label,
+#acs-nav-list-quick .acs-nav-item-label,
+.acs-nav-list .acs-nav-item-label,
+.acs-nav-sections p,
+.acs-tree-item .node-title,
+.acs-side-bar-flyout h2 {
+  background-color: var(--navigation-inactive-background-color) !important;
+  color: var(--navigation-inactive-color) !important;
 }
 
 /* buttons! */
