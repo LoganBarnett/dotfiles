@@ -13,6 +13,22 @@
 (setq-default doom-acario-dark-brighter-comments nil)
 #+end_src
 
+* after-load-theme-hook
+
+This gives us a hook to run after loading themes. Originally inspired by
+[[file:./macos.org::*stop using emoji for "⤵"][stop using emoji for "⤵"]] because some other library we can't hook onto (=term=
+or =mac-win=) would crush the value. This means this file must be loaded before
+=macos.org=.
+
+#+begin_src emacs-lisp :results none
+(defvar after-load-theme-hook nil
+  "Hook run after a color theme is loaded using `load-theme'.")
+(defadvice load-theme (after run-after-load-theme-hook activate)
+  "Run `after-load-theme-hook'."
+  (run-hooks 'after-load-theme-hook))
+#+end_src
+
+
 * COMMENT original theme
 #+begin_src emacs-lisp :results none
 ;;; doom-acario-dark-theme.el --- Acario dark theme -*- no-byte-compile: t; -*-

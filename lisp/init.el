@@ -266,6 +266,9 @@
   (init-org-file "messages.org")
   (init-org-file "flycheck.org")
   (init-org-file "company.org")
+  ;; Themes must be loaded before macos, so we can add a hook and fix emoji
+  ;; display.
+  (init-org-file "theme.org")
   (init-org-file "macos.org")
   (init-org-file "prog-mode.org")
   (init-org-file "json.org")
@@ -318,7 +321,6 @@
   (init-org-file "transportation-circle.org")
   (init-org-file "dnd.org")
   (init-org-file "jira.org")
-  (init-org-file "theme.org")
   (config/init-org-file-private "jira-private.org")
   (config/init-org-file-private (concat
                                  ;; No one will ever figure this out!

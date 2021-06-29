@@ -61,3 +61,27 @@ most notable difference I see here.
     (config/configure-mac-for-internal-keyboard)
     )
 #+END_SRC
+* stop using emoji for "⤵"
+
+Emoji can really mess up font rendering in Emacs. When done tastefully it looks
+good, but I'd rather it not appear in standard text blocks. It looks goofy, and
+it conflicts with line sizes since the fonts don't quite match up.
+
+Exclude ⤵ as a rendered emoji. Eventually I should just remove the ⤵ character
+dynamically, but this gets us going for now.
+
+This requires [[file:./theme.org][theme.org]] is loaded first. =term= or =mac-win= crushes this value,
+and we cannot hook onto it with something like =use-package=. I don't know why I
+cannot hook onto those.
+
+#+name: config/emoji-fix-curved-down-arrow
+#+begin_src emacs-lisp :results none :tangle no
+(set-fontset-font t '(#x2935 . #x2935) "source code pro")
+#+end_src
+
+#+begin_src emacs-lisp :results none :noweb yes
+(defun config/emoji-fix-curved-down-arrow ()
+  <<config/emoji-fix-curved-down-arrow>>
+  )
+(add-hook 'after-load-theme-hook #'config/emoji-fix-curved-down-arrow)
+#+end_src
