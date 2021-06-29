@@ -53,3 +53,10 @@ div.example, pre.example {
   border: var(--thin-border) !important;
   color: var(--df-text-color) !important;
 }
+
+/**
+ * Main body area for org-mode.org.
+ */
+body #content {
+  background-color: var(--general-background-color) !important;
+}
