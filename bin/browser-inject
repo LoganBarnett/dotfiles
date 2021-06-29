@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+
+################################################################################
+# Seeds must be in the following form:
+#
+# {
+#   "formSelector": "<CSS selector of the form element>",
+#   "inputSelector": "<CSS selector of the PIN input element>",
+#   "seed": "<secret seed from QR code>"
+# }
+#
+# If using pass to store this secret, use pass insert -m to create a multi-line
+# secret that can hold a readable version of this payload.
+#
+# Populate bypassSecrets with the names of your secrets in pass.
+################################################################################
+
+dirOriginal="$( cd -- "$(dirname "$PWD")" >/dev/null 2>&1 ; pwd -P )"
+bypassSecrets=(
+'ss-topt-bypass'
+)
+totpBypassDir=~/dev/totp-bypass
+cd $dir
+# TODO: Truly support multiple seeds by enhancing the JS to support it - as it
+# stands this will not work with more than one seed. The secret should contain
+# all of the data needed - perhaps a JSON form.
+secretsJson='['
+for i in ${#bypassSecrets[@]}; do
+  secretName=${#bypassSecrets[$i]}
+  secretsJson+=$(pass show $secretName)
+  # JSON does not support trailing commas, so omit the comma on the last entry.
+  if ((! ${#bypassSecrets[@]} == ( $i - 1 ))); then
+    secretsJson+=','
+  fi
+done
+secretsJson+=']'
+TOTP_SECRETS="$secretsJson" yarn webpack
+cp dist/totp-bypass.bundle.js $dirOriginal/custom-css/totp.js
+cd -
+
+node bootstrap-code-injector.js

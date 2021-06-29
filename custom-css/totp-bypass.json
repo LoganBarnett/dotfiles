@@ -1,0 +1,11 @@
+{
+  "includes": [
+    "https://prc?-pam?000*.pvt/*"
+  ],
+  "excludes": [
+    ""
+  ],
+  "name": "topt-bypass",
+  "enabled": true,
+  "key": "topt-bypass"
+}
