@@ -155,6 +155,9 @@ in
     # namei
     # A tool for mapping network ports.
     pkgs.nmap
+    # Elastic, load balanced, self hosted, containerized server pools. This is
+    # the command line interface.
+    pkgs.nomad
     # The code injector bootstrap script is written in Node.js, so we need to
     # run it from the command line.
     pkgs.nodejs
