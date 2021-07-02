@@ -210,6 +210,7 @@ alias grc="git rebase --continue"
 alias gro="git restore --ours"
 alias grt="git restore --theirs"
 alias glp="git log --pretty=format:'%Cred%h%Creset %<(60,trunc)%s %Cgreen%<(12,trunc)%cr %C(bold blue)%<(12,trunc)%an%Creset %C(yellow)%<(20,mtrunc)%d%Creset' --abbrev-commit"
+alias gbu="git branch --set-upstream-to=origin/$(git branch --show-current) $(git branch --show-current)"
 
 # ripgrep
 alias rgh="rg --hidden --glob '!.git'" # Search hidden files.
