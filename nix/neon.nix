@@ -63,12 +63,14 @@ in
     # curl does http requests. Comes with MacOS but no reason to use a dated
     # version.
     pkgs.curl
-    # Allow split DNS lookups while on the VPN, so I can still reach the
-    # intranet.
-    pkgs.dnsmasq
+    # Gives us diff --color support via GNU diff.
+    pkgs.diffutils
     # A specialized charting tool using a declarative language. Supports a
     # specific set of charts but I don't remember which. Used by plantuml.
     pkgs.ditaa
+    # Allow split DNS lookups while on the VPN, so I can still reach the
+    # intranet.
+    pkgs.dnsmasq
     # The ultimate editor. But how to make it conditional on OS?
     # emacs
     pkgs.emacsMacport
