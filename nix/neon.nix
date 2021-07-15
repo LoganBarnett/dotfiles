@@ -81,6 +81,9 @@ in
     pkgs.fd
     # Convert media (sound, video).
     pkgs.ffmpeg
+    # The BSD awk I have found lacking. Not really a surprise. Replace it with
+    # GNU.
+    pkgs.gawk
     # Rasterized image manipulation.
     pkgs.gimp
     # git manages my code. Comes with MacOS but no reason to use a dated
