@@ -59,6 +59,25 @@ h6,
   background-color: var(--code-background-color) !important;
 }
 
+/**
+ * Code blocks.
+ */
+pre[class*="language-"]::selection,
+pre[class*="language-"] ::selection,
+code[class*="language-"]::selection,
+code[class*="language-"] ::selection
+{
+  background-color: var(--code-background-color) !important;
+}
+
+/**
+ * Code blocks.
+ */
+code[class*="language-"],
+pre[class*="language-"] {
+  color: var(--code-color) !important;
+}
+
 .editable-field:hover {
   background-color: var(--general-background-color) !important;
 }
