@@ -420,7 +420,10 @@ h1.stream-header {
 /**
  * Conversation lists. Has too much padding.
  */
-.eyRpHu.eyRpHu {
+.eyRpHu.eyRpHu,
+.hYcvqI.hYcvqI,
+.kCqDMC.kCqDMC /* I think this is the highlighted rows. */
+{
   height: unset !important;
   padding: 0 !important;
 }
@@ -477,14 +480,17 @@ h1.stream-header {
  * Status icons in the room/conversation lists. They use too much horizontal
  * space.
  */
-.gurvwO {
+.gurvwO,
+.llhtKh
+{
   margin-right: 0 !important;
 }
 
 /**
  * App list? Icons they couldn't find space for?
  */
-.eGqwRA .left-paper {
+.eGqwRA .left-paper,
+.iMTqhz .left-paper {
   padding: 0 !important;
   width: 1.5rem !important;
 }
@@ -533,6 +539,17 @@ h1.stream-header {
 }
 
 /**
+ * Fix snippet view taking up a very small width.
+ */
+.collapsedSnippet,
+.iyuALy.expandedSnippet,
+.gNPHki.expandedSnippet,
+.expandedSnippet
+{
+  max-width: unset !important;
+}
+
+/**
  * GIFs bring my machine to its knees. Hide until moused-over.
  */
 img[src*="gif" i] {
@@ -563,7 +580,9 @@ img[src*="gif" i] {
 /**
  * Show gifs when moused over.
  */
-.sc-jodshL:hover img[src*="gif" i] {
+.sc-jodshL:hover img[src*="gif" i],
+.hrOtbQ:hover img[src*="gif" i]
+{
   visibility: visible;
 }
 
@@ -575,16 +594,11 @@ img[src*="gif" i]:hover {
 }
 
 /**
- * Fix snippet view taking up a very small width.
- */
-.collapsedSnippet {
-  max-width: unset !important;
-}
-
-/**
  * Stop hiding the image information.
  */
-.OiCEd.OiCEd {
+.OiCEd.OiCEd,
+.lbToyi.lbToyi
+{
   overflow: unset !important;
 }
 
@@ -593,6 +607,40 @@ img[src*="gif" i]:hover {
  */
 .OiCEd:hover .sc-evcpll,
 .OiCEd.OiCEd.focus-visible,
-.OiCEd[data-focus-visible-added] .sc-evcpll {
+.OiCEd[data-focus-visible-added] .sc-evcpll,
+.fTGjSi:hover .sc-fpPxDQ,
+.fTGjSi.fTGjSi.focus-visible,
+.fTGjSi[data-focus-visible-added] .sc-fpPxDQ
+{
   transform: translate(0px, 36px) !important;
+}
+
+/**
+ * Prevent the image UI from creeping upwards.
+ */
+.fevVqO {
+  transition: none !important;
+}
+
+/**
+ * Prevent the image UI from being hidden by default.
+ */
+.fTGjSi.fTGjSi {
+  overflow: unset !important;
+}
+
+/**
+ * Always show the message UI. Mouse-over based UI is for chumps.
+ */
+.hrOtbQ:not(.is-hover) .sc-cbeQSR {
+  opacity: unset !important;
+}
+
+/**
+ * The message UI overlaps timestamps. Prevent that.
+ */
+.cZlXjR.cZlXjR,
+.cZlXjR.cZlXjR:hover,
+.jmEYfc.jmEYfc {
+  position: unset !important;
 }
