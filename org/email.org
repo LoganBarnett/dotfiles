@@ -256,7 +256,13 @@ single day.
 ;; Left in case this block is manually run. Remove the old inbox(es) first.
 (setq mu4e-bookmarks
       (-remove (lambda (x)
-                 (string-equal (plist-get x :name) "inbox")
+                 (or
+                  (string-equal (plist-get x :name) "inbox")
+                  ;; "Today's messages" is the default, and not useful to me
+                  ;; since it includes spam and already-archived messages.
+                  (string-equal (plist-get x :name) "Today's messages")
+                  (string-equal (plist-get x :name) "Today's inbox messages")
+                 )
                  )
                mu4e-bookmarks))
 
@@ -265,14 +271,19 @@ single day.
               :name  "inbox"
               :query "maildir:/gmail/Inbox"
               :key ?i))
+(add-to-list 'mu4e-bookmarks
+             (make-mu4e-bookmark
+              :name  "Today's inbox messages"
+              :query "maildir:/gmail/Inbox AND date:today..now"
+              :key ?t))
 #+end_src
 
 #+RESULTS: config/mu4e-add-bookmarks
-| :name | inbox                | :query | maildir:/gmail/Inbox             | :key         | 105 |      |     |
-| :name | Unread messages      | :query | flag:unread AND NOT flag:trashed | :key         | 117 |      |     |
-| :name | Today's messages     | :query | date:today..now                  | :key         | 116 |      |     |
-| :name | Last 7 days          | :query | date:7d..now                     | :hide-unread |   t | :key | 119 |
-| :name | Messages with images | :query | mime:image/*                     | :key         | 112 |      |     |
+| :name | Today's inbox messages | :query | maildir:/gmail/Inbox AND date:today..now | :key         | 116 |      |     |
+| :name | inbox                  | :query | maildir:/gmail/Inbox                     | :key         | 105 |      |     |
+| :name | Unread messages        | :query | flag:unread AND NOT flag:trashed         | :key         | 117 |      |     |
+| :name | Last 7 days            | :query | date:7d..now                             | :hide-unread |   t | :key | 119 |
+| :name | Messages with images   | :query | mime:image/*                             | :key         | 112 |      |     |
 
 Bookmarks can contain lisp expressions as well as parameters in the queries
 themselves.
