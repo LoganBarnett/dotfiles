@@ -74,6 +74,53 @@ to the "all mail" folder and then it will work like it should for =gmail=.
 (setq-default mu4e-refile-folder "/gmail/[Gmail]/.All Mail")
 #+end_src
 
+*** capturing
+
+Capturing an email allows us to save the email for later in a to-do form so we
+can process it when time and priority permits. Then the message can be archived
+immediately so we needn't worry about it anymore, and the mailbox needn't become
+yet-another-to-do-list.
+
+=mu4e= can be configured to capture the query used to find the email if used
+from =mu4e-headers-mode= (the view with the list of emails). We want to turn
+that off, so we can capture anything from its header:
+
+#+name: config/email-mu4e-link-to-message
+#+begin_src emacs-lisp :results none
+(setq org-mu4e-link-query-in-headers-mode nil)
+#+end_src
+
+It appears to be set to =nil= already by default. However we need to stop
+relying upon defaults so when the default changes, we are not broken.
+
+I lifted these settings from [[http://pragmaticemacs.com/emacs/master-your-inbox-with-mu4e-and-org-mode/][master-your-inbox-with-mu4e-and-org-mode]].
+
+#+name: config/email-mu4e-capture-template-add
+#+begin_src emacs-lisp :tangle no
+(add-to-list
+ 'org-capture-templates
+ '("e"
+    "email"
+    entry
+    (file "~/notes/inbox.org")
+    ;; (file+headline "~/notes/inbox.org" "Tasks")
+    "* TODO [#A] %?
+SCHEDULED: %(org-insert-time-stamp (org-read-date nil t \"+0d\"))
+%a
+"
+    )
+ )
+#+end_src
+
+#+RESULTS: config/email-mu4e-capture-template-add
+| e | email | entry | (file ~/notes/inbox.org) | * TODO [#A] %? |
+
+This could be used for any arbitrary file capture, but I'd like to keep one
+specifically reserved for emails. They could vary, and while emails can be
+represented as files, I feel they are more specialized - there is strong
+incentive to map more of the email out with a more sophisticated capture
+template.
+
 *** contacts
 **** org-contacts
 Contacts get synced somewhere by default, but I'm not sure where. That said
@@ -467,6 +514,8 @@ not always be the case. For me it is setup via =nix=. Instead of hardcoding a
   (use-package "mu4e"
     :init
     <<mu4e-open>>
+    <<config/email-mu4e-capture-template-add>>
+    <<config/email-mu4e-link-to-message>>
     <<config/mu4e-add-bookmarks>>
     <<config/mu4e-gmail-messages-delete>>
     <<config/set-mu-path>>
