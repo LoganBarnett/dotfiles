@@ -416,6 +416,18 @@ formatting I do myself (such as lists), and =mu4e-compose-format-flowed= as
             )
            )
        #+end_src
+
+From my findings on a forum regarding [[https://mu-discuss.narkive.com/tQ3DpgrD/auto-fill-mode-not-working][auto-fill-mode-not-working]], the answer
+seems to be to disable =comment-auto-fill-only-comments= in =mu4e:compose-mode=.
+
+#+name: config/mu4e-auto-fill-comments-disable
+#+begin_src emacs-lisp :results none :tangle no
+(defun config/comment-auto-fill-disable ()
+  (setq-local comment-auto-fill-only-comments nil)
+  )
+(add-hook 'mu4e-compose-mode-hook #'config/comment-auto-fill-disable)
+#+end_src
+
 ***** unfill woes
 
        Sometimes the paragraph doesn't wrap properly. I've included an example
@@ -516,6 +528,7 @@ not always be the case. For me it is setup via =nix=. Instead of hardcoding a
     <<mu4e-open>>
     <<config/email-mu4e-capture-template-add>>
     <<config/email-mu4e-link-to-message>>
+    <<config/mu4e-auto-fill-comments-disable>>
     <<config/mu4e-add-bookmarks>>
     <<config/mu4e-gmail-messages-delete>>
     <<config/set-mu-path>>
