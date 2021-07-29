@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ pkgs, ... }:
 let
   # PyQt5 = pkgs.callPackage ./PyQt5.nix;
   # PyQt5 = (import ./PyQt5.nix);
@@ -20,7 +20,22 @@ let
 in
 {
 
-
+  # TODO: Disable this... some time? Would be nice to know exactly what is
+  # depending on it. Reading here
+  # https://discourse.nixos.org/t/how-to-override-openssl-q-a/9964/3 indicates
+  # that a simple upgrade is not possible, and that the dependers must change
+  # how they consume OpenSSL.
+  #
+  # This must not be placed within the let block or it just doesn't work. Why
+  # this behavior exists is unknown to me.
+  nixpkgs.config = {
+    # Somehow this can get lost, and I'm not convinced this is home-managers'
+    # nor nix's doing. That said, this setting seems to have no effect.
+    networking.hostname = "neon.proton";
+    permittedInsecurePackages = [
+      "openssl-1.0.2u"
+    ];
+  };
 
   # Let Home Manager install and manage itself.
   programs.home-manager.enable = true;
