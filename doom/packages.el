@@ -53,6 +53,8 @@
 (package! flycheck)
 (package! flyspell)
 (package! flyspell-correct)
+;; Include code blocks with language support in org->markdown exports.
+(package! ox-gfm)
 (package! glsl-mode)
 ;; We already have browse-at-remote, and I think browse-at-remote might be a
 ;; better library.
