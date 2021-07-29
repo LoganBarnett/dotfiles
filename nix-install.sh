@@ -32,7 +32,6 @@ sudo launchctl load /Library/LaunchDaemons/org.nixos.nix-daemon.plist
 mkdir -p ~/.config/nixpkgs
 # Link the file for this machine. This allows for host specific configurations.
 machineName=$(scutil --get ComputerName | cut -d' ' -f1 | tr -d $'\n' || hostname)
-# ln -snf $PWD/$machineName.nix ~/.config/nixpkgs/config.nix
 ln -snf $PWD/nix/$machineName.nix ~/.config/nixpkgs/home.nix
 
 slog "Loading nix-daemon so we don't need to close our shell..."
