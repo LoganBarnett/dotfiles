@@ -84,6 +84,9 @@ in
     # The BSD awk I have found lacking. Not really a surprise. Replace it with
     # GNU.
     pkgs.gawk
+    # Consume Github from the command line. Can make testing pull requests very
+    # easy without needing to do a bunch of git remote management.
+    pkgs.gh
     # Rasterized image manipulation.
     pkgs.gimp
     # git manages my code. Comes with MacOS but no reason to use a dated
@@ -133,6 +136,8 @@ in
     pkgs.jq
     # For rendering a number of diagrams and documents.
     #latex
+    # Make it easy to try out Nix packages under review.
+    pkgs.nixpkgs-review
     # Give us man pages for GNU stuff.
     pkgs.manpages
     # Java builds. Pom.xml files as far as the eyes can see.
