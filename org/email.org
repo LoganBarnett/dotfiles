@@ -211,12 +211,19 @@ eventually will fail.
 allow me to enter my password from Emacs directly when checking my mail. See
 comment in [[https://github.com/djcb/mu/issues/829#issuecomment-524851533][mu#829]] for an example.
 
+Setting this to ='ask= seems to work for both opening =gpg= encrypted files and
+using email.
+
 #+name: config/email-get-mail-command
 #+begin_src emacs-lisp :tangle no :results none
 (setq
  mu4e-get-mail-command (format "INSIDE_EMACS=%s mbsync -a -F" emacs-version)
+ ;; `epa-pinentry-mode' is deprecated, but not mirrored by `epg-pinentry-mode',
+ ;; so set them both.
  epa-pinentry-mode 'ask
+ epg-pinentry-mode 'ask
  )
+(pinentry-start)
 #+end_src
 
 *** sending mail
