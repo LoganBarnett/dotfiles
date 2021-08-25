@@ -7,6 +7,49 @@
 #+tags:
 
 * debugging
+** what faces are under my cursor
+
+=what-cursor-position= is supposed to describe this, but one must call it with
+the "prefix" to get anything useful out of it. I'm of the opinion that the
+prefix is sort of like a context menu - it's incredibly difficult to discover.
+So instead we'll just make an interactive function that invokes
+=what-cursor-position= with the prefix.
+
+I should make a macro out of this for any prefix function.
+
+It should be noted that =what-face= is another function with a similar purpose
+which still requires face selection, making it not useful for discovering what
+is causing a particular area to receive a particular combination of faces.
+
+#+begin_src emacs-lisp :results none
+(defun what-cursor-position-prefix ()
+  "Call `what-face' with the prefix for optional POS.
+
+Discoverable as an interactive function."
+  (interactive)
+  (setq current-prefix-arg '(4)) ; 4 = C-u...?
+  (call-interactively 'what-cursor-position)
+  )
+#+end_src
+
+Typically this is bound to =g a=. I don't know when I'd want to use the old form
+so let's replace it.
+
+#+begin_src emacs-lisp :results none
+;; Unbind the old one first.
+(map!
+ :map evil-normal-state-map
+ "g a"
+ nil
+ )
+(map!
+ :map evil-normal-state-map
+ :desc "Describe cursor properties"
+ "g a"
+ #'what-cursor-position-prefix
+ )
+#+end_src
+
 ** who called this
 
 Let's be real: Emacs is massive. Its packages are sprawling. Some packages are
