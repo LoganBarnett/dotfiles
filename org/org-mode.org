@@ -630,6 +630,38 @@ quitting Emacs. For now I've decided it's better than nothing, and will keep it.
 I don't know how to keep it from confusing me when I need to exit Emacs
 iteratively.
 
+* org-html
+This handles the HTML exporting functionality in =org-mode=.
+** Manual spaces before tags
+
+Headlines/Headings will display their tags by default. There's a hunk of text
+=org-html= inserts between the heading and the tags of =&#xa0;&#xa0;&#xa0;=,
+which can foul up some styling. Spacing should never be used to control styling,
+even if it is an easy fix. CSS could manage this just fine, and not foul up
+screen readers by inserting unnecessary pauses.
+
+To remove this infix, we have to redefine the function itself. Perhaps this
+would make a good contribution to =org-html=. At some point I should investigate
+whether or not we can employ semantic HTML for the tags.
+
+#+begin_src emacs-lisp :results none
+(defun org-html-format-headline-default-function
+    (todo _todo-type priority text tags info)
+  "Default format function for a headline.
+See `org-html-format-headline-function' for details."
+  (let ((todo (org-html--todo todo info))
+	(priority (org-html--priority priority info))
+	(tags (org-html--tags tags info)))
+    (concat todo (and todo " ")
+	    priority (and priority " ")
+	    text
+      ;; Old line
+	    ;; (and tags "&#xa0;&#xa0;&#xa0;") tags)))
+	    tags)))
+
+#+end_src
+
+
 * org-todo
 ** log timestamps when done
 When marking a =TODO= as =DONE= we can automatically insert a timestamp.
