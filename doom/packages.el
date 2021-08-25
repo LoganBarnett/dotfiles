@@ -96,6 +96,9 @@
 (package! org-mime)
 (package! org-mode) ; Pretty sure some of these are built in.
 (package! org-superstar :disable t)
+;; Provides an org-mode export for a D&D LaTeX template.
+;; https://github.com/evanbergeron/DND-5e-LaTeX-Template
+(package! ox-dnd :recipe (:repo "git@github.com:xeals/emacs-org-dnd.git"))
 ;; ox-jira uses the trunk branch now, per
 ;; https://github.com/stig/ox-jira.el/issues/50, however straight.el hasn't
 ;; gotten detection of the default branch going yet (understandibly there's some
