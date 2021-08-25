@@ -6,6 +6,7 @@ let
   # python39 = pkgs.callPackage ./PyQt5.nix;
   # openconnect-sso-src = builtins.fetchTarball "https://github.com/vlaci/openconnect-sso/archive/master.tar.gz";
   nixpkgs.overlays = [
+    # (import ./overlays/crystal.nix)
     (import ./overlays/gnupg.nix)
     (import ./overlays/maven.nix)
     (import ./overlays/percol.nix)
@@ -78,6 +79,12 @@ in
     # curl does http requests. Comes with MacOS but no reason to use a dated
     # version.
     pkgs.curl
+    # (import (builtins.fetchGit {
+    #   # Descriptive name to make the store path easier to identify
+    #   name = "crystal-1-0-fetch-git";
+    #   url = https://github.com/nixos/nixpkgs/;
+    #   rev = "3b6c3bee9174dfe56fd0e586449457467abe7116";
+    # }) {}).crystal
     # Gives us diff --color support via GNU diff.
     pkgs.diffutils
     # A specialized charting tool using a declarative language. Supports a
@@ -151,6 +158,9 @@ in
     pkgs.jq
     # For rendering a number of diagrams and documents.
     #latex
+    # "Office" tools.
+    # Doesn't build on macOS yet.
+    # pkgs.libreoffice
     # Make it easy to try out Nix packages under review.
     pkgs.nixpkgs-review
     # Give us man pages for GNU stuff.
@@ -186,6 +196,9 @@ in
     # The code injector bootstrap script is written in Node.js, so we need to
     # run it from the command line.
     pkgs.nodejs
+    # OBS does sweet screen recording and video composition.
+    # Sadly, this does not work on Darwin, yet.
+    # pkgs.obs-studio
     # Used to do split tunneled VPN connections from the command line. You can
     # also, you know, download it. Looking at you, AnyConnect.
     pkgs.openconnect
@@ -335,6 +348,9 @@ in
     # DO NOT RUN RUBY IN NIX. NIX IS NOT READY FOR RUBY.
     # ruby
 
+    # Rust is a memory safe, type safe, performant language.
+    # rust-src is needed for rustracer to be fully functional.
+    # (pkgs.rustChannels.stable.rust.override { extensions = ["rust-src"]; })
     # Racer is an auto-complete tool for Rust.
     pkgs.rustracer
 
@@ -342,6 +358,19 @@ in
     pkgs.rustup
     # Assume an account on AWS via SAML.
     pkgs.saml2aws
+    # Needed to do Crystal development, or really when I want to contribute to
+    # oq.
+    #
+    # Broken for the moment, just like oq on nix.
+    #
+    # TODO: Report the build errors.
+    # (import (builtins.fetchGit {
+    #   # Descriptive name to make the store path easier to identify
+    #   name = "nixpkgs-pre-pr-115471";
+    #   url = https://github.com/nixos/nixpkgs/;
+    #   rev = "29b0d4d0b600f8f5dd0b86e3362a33d4181938f9";
+    # }) {}).shards
+    # pkgs.shards
     # A self-proclaimed better netcat.
     pkgs.socat
     # A lightweight SQL database which requires no server. This also installs
