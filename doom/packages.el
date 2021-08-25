@@ -89,6 +89,8 @@
 (package! multi-line)
 (package! multi-term)
 (package! noflet)
+;; Org-babel support for OpenSCAD.
+(package! ob-scad :recipe (:repo "git@github.com:wose/ob-scad.git"))
 ;; (package! org-contacts) ; Part of contrib, so this won't work.
 (package! org-indent :disable t)
 (package! org-mime)
