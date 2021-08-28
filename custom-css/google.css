@@ -35,7 +35,7 @@ div.sbqs_c {
 }
 
 body {
-  color: var(--general-text-color) !important;
+  color: var(--text-color) !important;
 }
 
 /* groups op name */
@@ -715,4 +715,24 @@ td[style="border-right: 1px solid #161616;width:50%;"], td[style="border-right:1
  */
 .BRXD3B-G-a {
   color: var(--link-text-color) !important;
+}
+
+/**
+ * Google Drive album list action buttons (divs, thanks Google).
+ */
+.a-D-B .a-Ba-Ed .a-r-d.h-R-d-db,
+.mXlnof .a-s-Ba-Ak .a-r-d.h-R-d-db {
+  color: var(--button-color) !important;
+}
+
+.a-c-d.h-R-d-db {
+  color: var(--button-color) !important;
+}
+
+.aabwZd .WYuW0e .M3pype[data-column-field="6"] {
+  color: var(--text-color) !important;
+}
+
+.aabwZd .WYuW0e {
+  color: var(--text-color) !important;
 }
