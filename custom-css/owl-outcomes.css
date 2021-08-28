@@ -99,3 +99,12 @@ a:visited {
 .loading-overlay .loading-background {
   background: #000 !important;
 }
+
+/**
+ * Slash blurbs, disclaimers, etc.
+ *
+ * Was a dark blue color.
+ */
+.main-layout > div:not(.ios-page):first-child {
+  color: var(--text-color) !important;
+}
