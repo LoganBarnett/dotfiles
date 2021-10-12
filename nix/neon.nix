@@ -10,6 +10,7 @@ let
     (import ./overlays/gnupg.nix)
     (import ./overlays/maven.nix)
     (import ./overlays/percol.nix)
+    (import ./overlays/speedtest-cli.nix)
     (import ./overlays/zsh.nix)
     # (import (builtins.fetchTarball
     #   "https://github.com/oxalica/rust-overlay/archive/master.tar.gz"))
@@ -371,6 +372,8 @@ in
     #   rev = "29b0d4d0b600f8f5dd0b86e3362a33d4181938f9";
     # }) {}).shards
     # pkgs.shards
+    # Run speed tests from the command line.
+    pkgs.speedtest-cli
     # A self-proclaimed better netcat.
     pkgs.socat
     # A lightweight SQL database which requires no server. This also installs
