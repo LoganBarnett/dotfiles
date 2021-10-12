@@ -10,6 +10,9 @@ set -euo pipefail
 
 source ~/.bash-logging
 
+slog 'This is broken, do not use it!'
+exit 1
+
 dnsIps=$(sudo nmap --script broadcast-dhcp-discover \
   | grep 'Domain Name Server' \
   | sed -E 's/.+Domain Name Server: (.+)$/\1/' \
