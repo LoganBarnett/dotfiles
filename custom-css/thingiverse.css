@@ -151,3 +151,28 @@ body .ThingComment__createdBy--3RvU6 {
   background: var(--general-background-color) !important;
   color: var(--df-text-color) !important;
 }
+
+.AdCard__card--2Kzyq,
+.AdCard__leaderboard--2Yt9x {
+  background: var(--panel-background-color) !important;
+}
+
+.ShareThingBlock__shareWindowContainer--1OaE6 {
+  background: var(--panel-background-color) !important;
+}
+
+.ShareThingBlock__headerTextWrapper--1yZDO span {
+  color: var(--text-color) !important;
+}
+
+.ThingCardBody__cardBodyWrapper--ba5pu img::before {
+  background-image: none !important;
+}
+
+.ThingCard__thingCard--1IcHY {
+  background-color: var(--panel-background-color) !important;
+}
+
+.ThingCardBody__cardBodyWrapper--ba5pu {
+  background-color: var(--panel-background-color) !important;
+}
