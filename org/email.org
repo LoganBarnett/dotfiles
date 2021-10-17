@@ -120,6 +120,17 @@ specifically reserved for emails. They could vary, and while emails can be
 represented as files, I feel they are more specialized - there is strong
 incentive to map more of the email out with a more sophisticated capture
 template.
+*** completion
+
+For completion (particularly for mail directories), =mu4e= defaults to using
+=ido=, but I find this is not great for having more than one email account.
+Instead, we fall back on the default, which should be =ivy= in my configuration.
+
+#+name: config/mu4e-mail-directory-completion
+#+begin_src emacs-lisp :results none
+(setq mu4e-completing-read-function 'completing-read)
+#+end_src
+
 
 *** contacts
 **** org-contacts
@@ -549,6 +560,7 @@ not always be the case. For me it is setup via =nix=. Instead of hardcoding a
     <<config/mu4e-auto-fill-comments-disable>>
     <<config/mu4e-add-bookmarks>>
     <<config/mu4e-gmail-messages-delete>>
+    <<config/mu4e-mail-directory-completion>>
     <<config/set-mu-path>>
     <<config/mu4e-gmail-refile-to-archives>>
     <<config/email-get-mail-command>>
