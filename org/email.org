@@ -71,7 +71,7 @@ Archiving in =mu4e='s vernacular is "refile". We can set the folder to go
 to the "all mail" folder and then it will work like it should for =gmail=.
 #+name: config/mu4e-gmail-refile-to-archives
 #+begin_src emacs-lisp :results none :tangle no
-(setq-default mu4e-refile-folder "/gmail/[Gmail]/.All Mail")
+(setq-default mu4e-refile-folder "/personal-gmail/[Gmail]/.All Mail")
 #+end_src
 
 *** capturing
@@ -197,7 +197,7 @@ http://pragmaticemacs.com/emacs/master-your-inbox-with-mu4e-and-org-mode/
 
 #+name: config/mu4e-gmail-messages-delete
 #+begin_src emacs-lisp :results none :tangle no
-(setq mu4e-trash-folder "/gmail/gmail-trash")
+(setq mu4e-trash-folder "/personal-gmail/personal-gmail-trash")
 #+end_src
 
 *** getting mail
@@ -276,21 +276,21 @@ single day.
 (add-to-list 'mu4e-bookmarks
              (make-mu4e-bookmark
               :name  "inbox"
-              :query "maildir:/gmail/Inbox"
+              :query "maildir:/personal-gmail/Inbox"
               :key ?i))
 (add-to-list 'mu4e-bookmarks
              (make-mu4e-bookmark
               :name  "Today's inbox messages"
-              :query "maildir:/gmail/Inbox AND date:today..now"
+              :query "maildir:/personal-gmail/Inbox AND date:today..now"
               :key ?t))
 #+end_src
 
 #+RESULTS: config/mu4e-add-bookmarks
-| :name | Today's inbox messages | :query | maildir:/gmail/Inbox AND date:today..now | :key         | 116 |      |     |
-| :name | inbox                  | :query | maildir:/gmail/Inbox                     | :key         | 105 |      |     |
-| :name | Unread messages        | :query | flag:unread AND NOT flag:trashed         | :key         | 117 |      |     |
-| :name | Last 7 days            | :query | date:7d..now                             | :hide-unread |   t | :key | 119 |
-| :name | Messages with images   | :query | mime:image/*                             | :key         | 112 |      |     |
+| :name | Today's inbox messages | :query | maildir:/personal-gmail/Inbox AND date:today..now | :key         | 116 |      |     |
+| :name | inbox                  | :query | maildir:/personal-gmail/Inbox                     | :key         | 105 |      |     |
+| :name | Unread messages        | :query | flag:unread AND NOT flag:trashed                  | :key         | 117 |      |     |
+| :name | Last 7 days            | :query | date:7d..now                                      | :hide-unread |   t | :key | 119 |
+| :name | Messages with images   | :query | mime:image/*                                      | :key         | 112 |      |     |
 
 Bookmarks can contain lisp expressions as well as parameters in the queries
 themselves.
@@ -531,13 +531,13 @@ not always be the case. For me it is setup via =nix=. Instead of hardcoding a
     "Archive the current or marked mails.
   This moves them into the All Mail folder."
     (interactive)
-    (gnus-summary-move-article nil "nnimap+imap.gmail.com:gmail-archives"))
+    (gnus-summary-move-article nil "nnimap+imap.gmail.com:personal-gmail-archives"))
 
   (defun gmail-report-spam ()
     "Report the current or marked mails as spam.
   This moves them into the Spam folder."
     (interactive)
-    (gnus-summary-move-article nil "nnimap+imap.gmail.com:gmail-spam"))
+    (gnus-summary-move-article nil "nnimap+imap.gmail.com:personal-gmail-spam"))
 
   (require 'use-package)
   (message "initializing mu4e with use-package...")
@@ -579,7 +579,7 @@ not always be the case. For me it is setup via =nix=. Instead of hardcoding a
     ;; epg-user-id "???" ; Was "gpg_key_id" in docs: https://www.djcbsoftware.nl/code/mu/mu4e/Reading-messages.html
     mml2015-sign-with-sender t
     gnus-select-method
-    '(nnimap "gmail"
+    '(nnimap "personal-gmail"
               (nnimap-address "imap.gmail.com")
               (nnimap-server-port 993)
               (nnimap-stream ssl)
