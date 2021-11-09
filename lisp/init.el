@@ -282,6 +282,7 @@
   ;;
   ;; Begin languages. These should be sorted alphabetically.
   ;;
+  (init-org-file "docker.org")
   (init-org-file "javascript.org")
   (init-org-file "groovy.org")
   (init-org-file "purescript.org")
