@@ -8,13 +8,43 @@
 # why.
 ##
 
+if [[ "$1" == "" ]]; then
+  echo "Usage: $0 <hostname>" 1>&2
+  exit 1
+fi
+
+source ~/.bash-logging
+
+
+# Old sources had "discoveryd" - since Apple changes this around, just make it a
+# variable. I could make it work on versions prior to Yosemite, but that would
+# be work I don't need to do yet.
+dnsService="mDNSResponder"
+##
+# Rename requests are to blame. The plist modification and service restart below
+# disable this functionality and make it take effect immediately.
+#
+# I found this answer to be helpful, but it needed some repairs:
+# https://apple.stackexchange.com/a/161487
+##
+slog "Disabling rename requests..."
+sudo /usr/libexec/PlistBuddy \
+  -c "Add :ProgramArguments: string --no-namechange" \
+  /System/Library/LaunchDaemons/com.apple.$dnsService.plist
+# Unfortunately This no longer works.
+# sudo launchctl unload \
+#   -w /System/Library/LaunchDaemons/com.apple.$dnsService.plist
+# sudo launchctl load \
+#   -w /System/Library/LaunchDaemons/com.apple.$dnsService.plist
+sudo killall -HUP $dnsService
+
 # This doesn't set anything permanently.
 # sudo hostname $1
 sudo scutil --set ComputerName $1
 # I had set this too, but I think ComputerName is the real, persistent name. I
 # think hostname (or HostName) is the name given by the network. I thought these
 # were always one in the same, but macOS might have a different concept.
-# sudo scutil --set HostName $1
+sudo scutil --set HostName $1
 # This one was also suggested, among the others above, here:
 # https://mrmacintosh.com/10-15-4-supplemental-update-resets-computername-hostname-to-default/
-# sudo scutil --set LocalHostName $1
+sudo scutil --set LocalHostName $1
