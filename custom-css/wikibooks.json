@@ -1,0 +1,11 @@
+{
+  "includes": [
+    "https://*.wikibooks.org/*"
+  ],
+  "excludes": [
+    ""
+  ],
+  "name": "wikibooks",
+  "enabled": true,
+  "key": "wikibooks"
+}

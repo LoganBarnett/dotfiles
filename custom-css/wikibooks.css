@@ -1,0 +1,115 @@
+/**
+ * Wikibooks might use wiki tech, but it uses a lot of extra stuff for styling,
+ * so unfortunately we don't see a lot of reuse.
+ *
+ * There is some reuse though.
+ **/
+body {
+  background-color: var(--general-background-color) !important;
+  color: var(--df-text-color) !important;
+}
+
+.mw-body, .parsoid-body {
+  background-color: var(--general-background-color) !important;
+  color: var(--df-text-color) !important;
+}
+
+.vector-menu-portal .vector-menu-content li a, a {
+  color: var(--link-color) !important;
+}
+
+a:visited {
+  color: var(--link-hover-color) !important;
+}
+
+a:hover {
+  color: var(--link-hover-color) !important;
+}
+
+.vector-menu-portal h1, h1 {
+  color: var(--head1-color) !important;
+  background-color: var(--head1-background-color) !important;
+}
+
+.vector-menu-portal h2, h2 {
+  color: var(--head2-color) !important;
+  background-color: var(--head2-background-color) !important;
+}
+
+.vector-menu-portal h3, h3 {
+  color: var(--head3-color) !important;
+  background-color: var(--head3-background-color) !important;
+}
+
+.vector-menu-portal h4, h4 {
+  color: var(--head4-color) !important;
+  background-color: var(--head4-background-color) !important;
+}
+
+.vector-menu-portal h5, h5 {
+  color: var(--head5-color) !important;
+  background-color: var(--head5-background-color) !important;
+}
+
+.vector-menu-portal h6, h6 {
+  color: var(--head6-color) !important;
+  background-color: var(--head6-background-color) !important;
+}
+
+pre, code, .mw-code {
+  background-color: var(--code-background-color) !important;
+  border: 1px solid var(--border-color) !important;
+  color: var(--code-color) !important;
+}
+
+.toc, .mw-warning, .toccolours {
+  border: var(--panel-border) !important;
+  background-color: var(--panel-background-color) !important;
+}
+
+.tocnumber {
+  color: var(--df-text-color) !important;
+}
+
+/**
+ * Thumbnails with captions.
+ */
+div.thumbinner {
+  background-color: var(--info-background-color) !important;
+  border: 1px solid var(--info-color) !important;
+  color: var(--info-color) !important;
+}
+
+/**
+ * Notifications.
+ */
+#localNotice div {
+  background-color: var(--warning-background-color) !important;
+  border: 1px solid var(--warning-color) !important;
+  color: var(--warning-color) !important;
+}
+
+/**
+ * Heading area.
+ */
+#mw-page-base {
+  background-color: var(--general-background-color) !important;
+  background-image: none !important;
+  color: var(--df-text-color) !important;
+}
+
+/**
+ * Category links.
+ */
+.catlinks {
+  background-color: var(--info-background-color) !important;
+  border: 1px solid var(--info-color) !important;
+  color: var(--info-color) !important;
+}
+
+/**
+ * Footer text.
+ */
+.mw-footer li {
+  color: var(--df-text-color) !important;
+}
