@@ -44,6 +44,7 @@ Expand [[mu4e]] to see the current configuration.
 
    I do have =mu= installed.
 
+*** capture template
 *** opening
 Doom doesn't bind =mu4e= that I have seen.
 
@@ -81,6 +82,7 @@ can process it when time and priority permits. Then the message can be archived
 immediately so we needn't worry about it anymore, and the mailbox needn't become
 yet-another-to-do-list.
 
+**** capture single email instead of query
 =mu4e= can be configured to capture the query used to find the email if used
 from =mu4e-headers-mode= (the view with the list of emails). We want to turn
 that off, so we can capture anything from its header:
@@ -95,8 +97,11 @@ relying upon defaults so when the default changes, we are not broken.
 
 I lifted these settings from [[http://pragmaticemacs.com/emacs/master-your-inbox-with-mu4e-and-org-mode/][master-your-inbox-with-mu4e-and-org-mode]].
 
+**** capture email link
 #+name: config/email-mu4e-capture-template-add
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp :tangle no :noweb yes
+<<config/email-mu4e-remove-capture-template>>
+(config/email-mu4e-remove-capture-template "e")
 (add-to-list
  'org-capture-templates
  '("e"
@@ -120,6 +125,61 @@ specifically reserved for emails. They could vary, and while emails can be
 represented as files, I feel they are more specialized - there is strong
 incentive to map more of the email out with a more sophisticated capture
 template.
+
+**** capture entire email
+The stock template is a good base to start with, but I want some additional
+features:
+1. The timestamp of the email itself.
+2. The email of the sender.
+3. Do not schedule the heading.
+
+I can make this as a different email template: An email record, which I can use
+=E= instead of =e= to record.
+
+#+begin_src emacs-lisp :results none :noweb yes :tangle no
+<<config/email-mu4e-remove-capture-template>>
+(config/email-mu4e-remove-capture-template "E")
+(add-to-list
+ 'org-capture-templates
+ `(
+   "E"
+   "Email record"
+   entry
+   (file+headline "~/notes/inbox.org" "Emails to Refile")
+   ,(mapconcat
+     'identity
+     '(
+       "* TODO [#A] Refile %:subject%?"
+       "SCHEDULED: %(org-insert-time-stamp (org-read-date nil t \"+0d\"))"
+       "** %:subject"
+       "%:date-timestamp-inactive"
+       "%a"
+       )
+     "\n"
+     )
+   )
+ )
+#+end_src
+
+**** remove captures for iteration
+
+=org-capture-templates= is not an =alist= so adding new templates means we just
+have more templates. Re-running a declaration, especially while debugging, gives
+us extra templates and we don't have a strong sense of what one is the right
+one. So before we add a template we should attempt to remove its old one. This
+functionality gives us that by removing the template by its shortcut.
+
+#+name: config/email-mu4e-remove-capture-template
+#+begin_src emacs-lisp :results none :tangle no
+(defun config/email-mu4e-remove-capture-template (shortcut)
+    (setq org-capture-templates (-remove (lambda (x)
+               (string-equal (car x) shortcut)
+               )
+             org-capture-templates))
+  )
+#+end_src
+
+
 *** completion
 
 For completion (particularly for mail directories), =mu4e= defaults to using
