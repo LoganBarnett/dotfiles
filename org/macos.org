@@ -79,9 +79,18 @@ cannot hook onto those.
 (set-fontset-font t '(#x2935 . #x2935) "source code pro")
 #+end_src
 
+Other hooks are required because any font change resets this value.
+
 #+begin_src emacs-lisp :results none :noweb yes
 (defun config/emoji-fix-curved-down-arrow ()
   <<config/emoji-fix-curved-down-arrow>>
   )
 (add-hook 'after-load-theme-hook #'config/emoji-fix-curved-down-arrow)
+(add-hook 'doom-big-font-mode-hook #'config/emoji-fix-curved-down-arrow)
+(add-hook 'after-setting-font-hook #'config/emoji-fix-curved-down-arrow)
 #+end_src
+
+Even after using =doom-big-font-mode= (=SPC t b=), it uses some "ultra bold
+italics" version of my default font, which I find obnoxious. This may be a Doom
+bug. I haven't updated for a while due to cautionary tales, and I haven't had a
+chance to look to see if this is a known issue.
