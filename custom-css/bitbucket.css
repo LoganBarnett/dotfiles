@@ -806,3 +806,158 @@ aui-badge, .aui-badge {
 .css-epsmqz {
   background-color: transparent !important;
 }
+
+/**
+ * Pull request descriptions.
+ */
+.bIOGgQ {
+  color: var(--df-text-color) !important;
+}
+
+/**
+ * Pull request descriptions, before loading is finished.
+ */
+.dNWslI {
+  color: var(--df-text-color) !important;
+}
+
+/**
+ * Pull request description area, hover or focus.
+ */
+.css-9ca1fb:focus,
+.css-9ca1fb:hover {
+  background: var(--highlight-background-color) !important;
+  color: var(--highlight-color) !important;
+}
+
+/**
+ * Added lines in a diff (background).
+ */
+.bitkit-diff-wrapper-diff .line-wrapper.type-add {
+  background-color: var(--diff-minor-add-background-color) !important;
+}
+
+/**
+ * Added lines in a diff (foreground).
+ *
+ * Custom selector, becuase no rule sets the foreground color.
+ */
+.bitkit-diff-wrapper-diff .line-wrapper.type-add .code-component {
+  color: var(--diff-minor-add-color) !important;
+}
+
+/**
+ * Removed lines in a diff (background).
+ */
+.bitkit-diff-wrapper-diff .line-wrapper.type-del {
+  background-color: var(--diff-minor-remove-background-color) !important;
+}
+
+/**
+ * Removed lines in a diff (foreground).
+ *
+ * Custom selector, becuase no rule sets the foreground color.
+ */
+.bitkit-diff-wrapper-diff .line-wrapper.type-del .code-component {
+  color: var(--diff-minor-remove-color) !important;
+}
+
+/**
+ * Contextual lines in a diff (background).
+ */
+.bitkit-diff-wrapper-diff .line-wrapper.type-normal {
+  background-color: var(--diff-context-background-color) !important;
+}
+
+/**
+ * Contextual lines in a diff (foreground).
+ *
+ * Custom selector, becuase no rule sets the foreground color.
+ */
+.bitkit-diff-wrapper-diff .line-wrapper.type-normal .code-component {
+  color: var(--df-text-color) !important;
+}
+
+/**
+ * Added characters in a diff.
+ */
+.bitkit-diff-wrapper-diff .code-component ins {
+  background-color: var(--diff-major-add-background-color) !important;
+  color: var(--diff-major-add-color) !important;
+}
+
+/**
+ * Removed characters in a diff.
+ *
+ * Selector is guessed.
+ */
+.bitkit-diff-wrapper-diff .code-component del {
+  background-color: var(--diff-major-remove-background-color) !important;
+  color: var(--diff-major-remove-color) !important;
+}
+
+/**
+ * Diff line numbers.
+ */
+.bitkit-diff-wrapper-diff .line-numbers {
+  background-color: var(--general-background-color) !important;
+}
+
+/**
+ * Comment placeholders.
+ */
+input.aWtAz {
+  background-color: var(--input-background-color) !important;
+  border: var(--input-border) !important;
+  color: var(--input-color) !important;
+}
+
+/**
+ * Comment placeholders when hovered.
+ */
+input.aWtAz:hover {
+  border-color: var(--input-active-border-color) !important;
+}
+
+/**
+ * File header in pull requests.
+ */
+.css-1mh9pyv {
+  background: var(--panel-title-background) !important;
+  border: var(--panel-border) !important;
+}
+
+/**
+ * Various buttons on the file header. I've seen:
+ * 1. File header expand/collapse button in pull requests.
+ * 2. Copy text button.
+ * 3. Comment on file button.
+ * 4. Misc button.
+ *
+ * This uses some weird custom-element stuff, I think. Styles are set inline, so
+ * we have to be able to override that.
+ */
+.css-pxzk9z {
+  --icon-primary-color: var(--button-color) !important;
+  --icon-secondary-color: var(--button-background-color) !important;
+}
+
+/**
+ * Various buttons on the file header. I've seen:
+ * 1. File header expand/collapse button in pull requests.
+ * 2. Copy text button.
+ * 3. Comment on file button.
+ * 4. Misc button.
+ *
+ * This controls hover behavior.
+ */
+.css-fbv3aj,
+.css-fbv3aj:hover,
+.css-fbv3aj:active,
+.css-fbv3aj:focus,
+.css-fbv3aj:visited,
+.css-fbv3aj:disabled,
+.css-fbv3aj[disabled] {
+  --icon-primary-color: var(--button-hover-color) !important;
+  --icon-secondary-color: var(--button-hover-background-color) !important;
+}

@@ -195,6 +195,8 @@ const vars = {
   '--input-placeholder-color': '#116162',
   '--input-background-color': '#292e34',
   'input-border': '1px solid #2aa1ae',
+  'input-border-color': '#2aa1ae',
+  'input-active-border-color': '#116162',
   '--input-label-color': '#2aa1ae',
   /**
    * Active items are usually the ones important under a context. They will
@@ -215,6 +217,7 @@ const vars = {
   // '--diff-add-color': '#293235',
   // '--diff-add-background-color': '#86dc2f',
   // '--diff-minor-add-background-color': '#67b11d',
+  '--diff-context-background-color': '#0a0814',
   '--diff-major-add-color': '#86dc2f',
   '--diff-major-add-background-color': '#184818',
   '--diff-minor-add-color': '#67b11d',
