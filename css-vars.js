@@ -160,6 +160,8 @@ const vars = {
   'line-number-color': '#686868',
   'navigation-color': '#7590db',
   'navigation-background-color': '#292b2e',
+  'navigation-active-color': '#7590db',
+  'navigation-active-background-color': '#343c3f',
   'navigation-inactive-color': '#384576',
   'navigation-inactive-background-color': '#292b2e',
   'gutter-background-color': '#100a14',
@@ -197,6 +199,7 @@ const vars = {
   'input-border': '1px solid #2aa1ae',
   'input-border-color': '#2aa1ae',
   'input-active-border-color': '#116162',
+  'input-hover-border-color': '#116162',
   '--input-label-color': '#2aa1ae',
   /**
    * Active items are usually the ones important under a context. They will
@@ -234,7 +237,7 @@ const vars = {
   '--calendar-entry-color': '#dc2',
   '--calendar-leave-entry-background': '#29422d',
   '--calendar-leave-entry-color': '#67b11d',
-  '--panel-border': '0.1em solid #5d4d7a',
+  '--panel-border': '1px solid #5d4d7a',
   '--panel-title-color': '#b2b2b2',
   '--panel-title-background': '#5d4d7a',
   '--panel-title-background-color': '#5d4d7a',

@@ -296,8 +296,8 @@ h3, .aui-page-header-hero .aui-page-header-main p, .aui-page-header-marketing .a
 }
 
 .aui-button, a.aui-button, .aui-button:visited {
-  background-color: #497 !important;
-  color: var(--df-text-color) !important;
+  background-color: var(--button-background-color) !important;
+  color: var(--button-color) !important;
 }
 
 .markup-preview {
@@ -831,14 +831,14 @@ aui-badge, .aui-badge {
 }
 
 /**
- * Added lines in a diff (background).
+ * Added lines in a diff (background) for a pull request.
  */
 .bitkit-diff-wrapper-diff .line-wrapper.type-add {
   background-color: var(--diff-minor-add-background-color) !important;
 }
 
 /**
- * Added lines in a diff (foreground).
+ * Added lines in a diff (foreground) for a pull request.
  *
  * Custom selector, becuase no rule sets the foreground color.
  */
@@ -847,14 +847,14 @@ aui-badge, .aui-badge {
 }
 
 /**
- * Removed lines in a diff (background).
+ * Removed lines in a diff (background) for a pull request.
  */
 .bitkit-diff-wrapper-diff .line-wrapper.type-del {
   background-color: var(--diff-minor-remove-background-color) !important;
 }
 
 /**
- * Removed lines in a diff (foreground).
+ * Removed lines in a diff (foreground) for a pull request.
  *
  * Custom selector, becuase no rule sets the foreground color.
  */
@@ -863,14 +863,14 @@ aui-badge, .aui-badge {
 }
 
 /**
- * Contextual lines in a diff (background).
+ * Contextual lines in a diff (background) for a pull request.
  */
 .bitkit-diff-wrapper-diff .line-wrapper.type-normal {
   background-color: var(--diff-context-background-color) !important;
 }
 
 /**
- * Contextual lines in a diff (foreground).
+ * Contextual lines in a diff (foreground) for a pull request.
  *
  * Custom selector, becuase no rule sets the foreground color.
  */
@@ -879,7 +879,7 @@ aui-badge, .aui-badge {
 }
 
 /**
- * Added characters in a diff.
+ * Added characters in a diff for a pull request.
  */
 .bitkit-diff-wrapper-diff .code-component ins {
   background-color: var(--diff-major-add-background-color) !important;
@@ -887,7 +887,7 @@ aui-badge, .aui-badge {
 }
 
 /**
- * Removed characters in a diff.
+ * Removed characters in a diff for a pull request.
  *
  * Selector is guessed.
  */
@@ -897,14 +897,14 @@ aui-badge, .aui-badge {
 }
 
 /**
- * Diff line numbers.
+ * Diff line numbers for a pull request.
  */
 .bitkit-diff-wrapper-diff .line-numbers {
   background-color: var(--general-background-color) !important;
 }
 
 /**
- * Comment placeholders.
+ * Comment placeholders for a pull request.
  */
 input.aWtAz {
   background-color: var(--input-background-color) !important;
@@ -913,7 +913,7 @@ input.aWtAz {
 }
 
 /**
- * Comment placeholders when hovered.
+ * Comment placeholders when hovered for a pull request.
  */
 input.aWtAz:hover {
   border-color: var(--input-active-border-color) !important;
@@ -960,4 +960,266 @@ input.aWtAz:hover {
 .css-fbv3aj[disabled] {
   --icon-primary-color: var(--button-hover-color) !important;
   --icon-secondary-color: var(--button-hover-background-color) !important;
+}
+
+/**
+ * Context in diffs for a commmit.
+ */
+.refract-content-container .line-numbers,
+.refract-content-container .source {
+  color: var(--def-text-color) !important;
+}
+
+/**
+ * Added words in diffs for a commmit.
+ */
+.refract-container.word-diff:not(.disable-word-diff) .addition pre.source ins {
+  background-color: var(--diff-major-add-background-color) !important;
+  color: var(--diff-major-add-color) !important;
+}
+
+/**
+ * Added lines in diffs for a commmit.
+ */
+.refract-container .addition pre.source {
+  background-color: var(--diff-minor-add-background-color) !important;
+  color: var(--diff-minor-add-color) !important;
+}
+
+/**
+ * Added words in diffs for a commmit.
+ *
+ * Selector guessed based on usage.
+ */
+.refract-container.word-diff:not(.disable-word-diff) .addition pre.source del {
+  background-color: var(--diff-major-remove-background-color) !important;
+  color: var(--diff-major-remove-color) !important;
+}
+
+/**
+ * Added lines in diffs for a commmit.
+ */
+.refract-container .deletion pre.source {
+  background-color: var(--diff-minor-remove-background-color) !important;
+  color: var(--diff-minor-remove-color) !important;
+}
+
+/**
+ * Line numbers in diffs for a commmit (foreground).
+ */
+.refract-container .line-numbers::after,
+.refract-container .line-numbers::before {
+  color: var(--line-number-color) !important;
+}
+
+/**
+ * Line numbers in diffs for a commmit (background).
+ */
+.refract-container .gutter {
+  background-color: var(--line-number-background-color) !important;
+}
+
+/**
+ * Button panel for files in commits.
+ */
+.bb-udiff .heading {
+  background-color: var(--panel-background-color) !important;
+  border: var(--panel-border) !important;
+}
+
+/**
+ * Comment placeholder in commits.
+ */
+input.eXcfTo {
+  background-color: var(--input-background-color) !important;
+  border: var(--input-border) !important;
+  color: var(--input-color) !important;
+  placeholder: var(--input-placeholder-color) !important;
+}
+
+/**
+ * Comment placeholder in commits - hovering.
+ */
+input.eXcfTo:hover {
+  border-color: var(--input-hover-border-color) !important;
+}
+
+/**
+ * Second left side panel (?).
+ */
+.css-1hpn4bw::after {
+  background-color: var(--panel-background-color) !important;
+}
+
+/**
+ * Second left side panel (?).
+ */
+.css-1hpn4bw::before {
+  background-color: var(--panel-background-color) !important;
+}
+
+/**
+ * Second left side panel.
+ */
+.css-4rxc6l {
+  background-color: var(--panel-background-color) !important;
+  color: var(--df-text-color) !important;
+}
+
+/**
+ * Second side panel links.
+ */
+.css-1olrtn {
+  background-color: var(--navigation-background-color) !important;
+  color: var(--navigation-color) !important;
+}
+
+/**
+ * Side panel navigation (pull request), active, background.
+ */
+.css-t3yiul.css-t3yiul {
+  background-color: var(--navigation-active-background-color) !important;
+  color: var(--navigation-active-color) !important;
+}
+
+/**
+ * Side panel navigation (pull request), active, foreground.
+ */
+.css-1h2b0g4 {
+  color: var(--navigation-active-color) !important;
+}
+
+
+/**
+ * Background color for second side panel links.
+ */
+.css-1t5na7c.css-1t5na7c {
+  background-color: var(--link-background-color) !important;
+}
+
+/**
+ * Right side panel.
+ */
+.css-arjcam {
+  background-color: var(--panel-background-color) !important;
+}
+
+/**
+ * Right side panel inner panel headers.
+ */
+.css-1o91c15 {
+  background-color: var(--panel-background-color) !important;
+  border: var(--panel-border) !important;
+  border-color: var(--panel-border-color) !important;
+  border-bottom-color: var(--panel-border-color) !important;
+}
+
+/**
+ * Feedback button.
+ */
+.css-18u3ks8 {
+  background-color: var(--button-background-color) !important;
+  color: var(--button-color) !important;
+}
+
+/**
+ * Select sort type for pull requests (foreground).
+ */
+.css-lrg2au-singleValue {
+  color: var(--input-color) !important;
+}
+
+/**
+ * Select sort type for pull requests (surrounding).
+ */
+.css-4avucx-control {
+  background-color: var(--input-background-color) !important;
+  border-color: var(--input-border-color) !important;
+}
+
+/**
+ * Edit button in pull requests.
+ *
+ * Selector made more specific to override !important in original styling.
+ */
+body a.css-32z3k3 {
+  background-color: var(--button-background-color) !important;
+  color: var(--button-color) !important;
+}
+
+/**
+ * Various buttons in the pull request description.
+ *
+ * Selector made more specific to override !important in original styling.
+ */
+body .css-18u3ks8 {
+  background-color: var(--button-background-color) !important;
+  color: var(--button-color) !important;
+}
+
+/**
+ * Hovering for various buttons in the pull request description.
+ *
+ * Selector made more specific to override !important in original styling.
+ */
+body .css-1qpjcoh {
+  background-color: var(--button-hover-background-color) !important;
+  color: var(--button-hover-color) !important;
+}
+
+/**
+ * Comment on diff on pull request.
+ */
+.bitkit-diff-inline-content-container {
+  background-color: var(--general-background-color) !important;
+}
+
+/**
+ * Comment on adding diff on pull request - border.
+ *
+ * Just unset it. It was going to be the diff color anyways.
+ */
+.bitkit-diff-wrapper-diff .inline-content.type-add {
+  background-color: unset !important;;
+}
+
+/**
+ * Comment on removing diff on pull request - border.
+ *
+ * Just unset it. It was going to be the diff color anyways.
+ *
+ * Selector guessed based on prior usage. Not tested.
+ */
+.bitkit-diff-wrapper-diff .inline-content.type-del {
+  background-color: unset !important;;
+}
+
+/**
+ * Comment buttons on a pull request.
+ */
+.css-eaycls {
+  background-color: var(--button-hover-background-color) !important;
+  color: var(--button-hover-color) !important;
+}
+
+/**
+ * Inner panels on right side panel.
+ */
+.css-gjnwqt {
+  background-color: var(--general-background-color) !important;
+}
+
+/**
+ * Show additional context button/bar on pull request diffs.
+ */
+.bitkit-diff-wrapper-diff .chunk-heading-wrapper {
+  background-color: var(--button-background-color) !important;
+  color: var(--button-color) !important;
+}
+
+/**
+ * Floating header for pull requests.
+ */
+.css-e3ot2y {
+  background-color: var(--panel-background-color) !important;
 }
