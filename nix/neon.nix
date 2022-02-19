@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ pkgs, lib, ... }:
 let
   # PyQt5 = pkgs.callPackage ./PyQt5.nix;
   # PyQt5 = (import ./PyQt5.nix);
@@ -19,6 +19,7 @@ let
     # (import ./openconnect-sso.nix)
     # (import "${builtins.fetchTarball https://github.com/vlaci/openconnect-sso/archive/master.tar.gz}/overlay.nix")
   ];
+
 in
 {
 
@@ -31,6 +32,10 @@ in
   # This must not be placed within the let block or it just doesn't work. Why
   # this behavior exists is unknown to me.
   nixpkgs.config = {
+    # Some packages are not "free". We need to specifically bless those.
+    allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) [
+      "unrar"
+    ];
     # Somehow this can get lost, and I'm not convinced this is home-managers'
     # nor nix's doing. That said, this setting seems to have no effect.
     networking.hostname = "neon.proton";
@@ -386,6 +391,9 @@ in
     pkgs.terraform
     # Highly controllable terminal emulation and session management.
     pkgs.tmux
+    # Some folks still use rar for an archive format. This lets us decompress
+    # those archives.
+    pkgs.unrar
     # Openconnect pulls this in, but declaring it here makes it easy for us
     # to use the vpnc-script that comes with it.
     #
