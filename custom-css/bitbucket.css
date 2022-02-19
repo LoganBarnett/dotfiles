@@ -1223,3 +1223,33 @@ body .css-1qpjcoh {
 .css-e3ot2y {
   background-color: var(--panel-background-color) !important;
 }
+
+/**
+ * Comments in diffs of commits.
+ */
+.comment-thread-container .comments-list {
+  background-color: var(--general-background-color) !important;
+  border: var(--panel-border) !important;
+}
+
+/**
+ * Text from comments and descriptions sometimes gets this.
+ */
+.jcFuQv {
+  color: var(--df-text-color) !important;
+}
+
+/**
+ * Inline code in comments.
+ */
+.bIOGgQ .code {
+  background-color: var(--code-background-color) !important;
+  color: var(--code-color) !important;
+}
+
+/**
+ * Text from comments and descriptions sometimes gets this.
+ */
+.gwSAsj {
+  color: var(--df-text-color) !important;
+}
