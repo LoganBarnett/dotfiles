@@ -174,6 +174,8 @@ in
     pkgs.manpages
     # Java builds. Pom.xml files as far as the eyes can see.
     pkgs.maven
+    # Can show media info for files using a codec. Similar to ffmpeg's ffprobe.
+    pkgs.mediainfo
     # A program to allow communicating over serial. Perhaps I can script it?
     pkgs.minicom
     # A union of ping and traceroute - ping all hosts along a route.
