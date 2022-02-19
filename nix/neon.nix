@@ -107,8 +107,9 @@ in
     # editorconfig
     # Searches for files. Used by projectile in Emacs.
     pkgs.fd
-    # Convert media (sound, video).
-    pkgs.ffmpeg
+    # Convert media (sound, video). The "-full" suffix brings in all of the
+    # codecs one could desire.
+    pkgs.ffmpeg-full
     # The BSD awk I have found lacking. Not really a surprise. Replace it with
     # GNU.
     pkgs.gawk
