@@ -47,6 +47,9 @@ in
 
   # Let Home Manager install and manage itself.
   programs.home-manager.enable = true;
+  # This is the magic that makes fonts get installed to ~/Library/Fonts on
+  # macOS, and I imagine other dirs for other systems.
+  fonts.fontconfig.enable = true;
 
   # Home Manager needs a bit of information about you and the
   # paths it should manage.
@@ -63,7 +66,8 @@ in
   # symlinks. This means the applications linked here will never work. However,
   # this is what the runner (https://github.com/LoganBarnett/runner) tool aims
   # to solve.
-
+  # Much like how fonts can manage the ~/Library/Fonts, perhaps there is another
+  # home-manager feature for applications?
   home.file."Applications/home-manager".source = let
   apps = pkgs.buildEnv {
     name = "home-manager-applications";
@@ -71,14 +75,6 @@ in
     pathsToLink = "/Applications";
   };
   in lib.mkIf pkgs.stdenv.targetPlatform.isDarwin "${apps}/Applications";
-
-  home.file."Library/Fonts".source = let
-  apps = pkgs.buildEnv {
-    name = "home-manager-library-fonts";
-    paths = config.home.packages;
-    pathsToLink = "/Library/Fonts";
-  };
-  in lib.mkIf pkgs.stdenv.targetPlatform.isDarwin "${apps}/Library/Fonts";
 
   home.packages = [
     # These are a suggestion from https://stackoverflow.com/a/51161923 to get
@@ -128,19 +124,19 @@ in
     # intranet.
     pkgs.dnsmasq
     # The ultimate editor. But how to make it conditional on OS?
-    # emacs
     # pkgs.emacsMacport
     # aarch64 (arm) is lacking on the mainline build of emacs/emacsMacPort. This
     # branch builds. See https://github.com/NixOS/nixpkgs/pull/138424 for
     # progress on it getting merged.
-    (import (pkgs.fetchFromGitHub {
-      # Descriptive name to make the store path easier to identify
-      name = "emacs-macport-m1";
-      owner = "mikroskeem";
-      repo = "nixpkgs";
-      rev = "84e8bdba798312ace0e854f885cb76a5ddad1101";
-      sha256 = "iij2TsujINT/hgIHn3epchE09hWGkPk8UdtwFBjdAsU=";
-    }) {}).emacsMacport
+    #(import (pkgs.fetchFromGitHub {
+    #  # Descriptive name to make the store path easier to identify
+    #  name = "emacs-macport-m1";
+    #  owner = "mikroskeem";
+    #  repo = "nixpkgs";
+    #  rev = "84e8bdba798312ace0e854f885cb76a5ddad1101";
+    #  sha256 = "iij2TsujINT/hgIHn3epchE09hWGkPk8UdtwFBjdAsU=";
+    #}) {}).emacsMacport
+    pkgs.emacs
     # This is a binary apparently. Universal editor settings. Kind of like a
     # pre-prettier. I don't know the nix pacakge though, if it exists.
     #pkgs.editorconfig
@@ -187,6 +183,8 @@ in
     pkgs.html-tidy
     # A more visual version of top.
     pkgs.htop
+    # IBM font that looks good outside of source code contexts.
+    pkgs.ibm-plex
     # For previewing LaTeX in Emacs.
     pkgs.imagemagick
     # Brings in telnet. Similar to netcat - has its uses as a very bare-bones
@@ -322,7 +320,11 @@ in
     # A charting tool with a declarative language. Uses graphviz dot, ditaa,
     # and others.
     pkgs.plantuml
-    pkgs.podman
+    # podman is an alternative to docker - supposed to be more or less fully
+    # compatible.
+    # I could install this, but on macOS it's actually podman-remote. This is
+    # not useful to me.
+    # pkgs.podman
     # Query an HTML DOM from the command line.
     pkgs.pup
     # (python2.withPackages (ps: [
@@ -430,7 +432,7 @@ in
     pkgs.socat
     # A good mono-spaced font that is largely sans-serif, but uses serifs to
     # disambuguate.
-    pkgs.source-code-pro-mac
+    pkgs.source-code-pro
     # A lightweight SQL database which requires no server. This also installs
     # CLI tools in which to access SQLite databases.
     pkgs.sqlite
