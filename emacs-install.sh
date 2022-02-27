@@ -31,8 +31,10 @@ elif [[ "$distro" == 'doom' ]]; then
   git clone --depth 1 https://github.com/hlissner/doom-emacs ~/.doom-emacs.d || true
   ln -snf ~/.doom-emacs.d ~/.emacs.d
   ~/.doom-emacs.d/bin/doom install
-  ln -sfn $PWD/emacs.d/early-init.el ~/.doom-emacs.d/early-init.el
-  ln -sfn $PWD/emacs.d/init.el ~/.doom-emacs.d/init.el
+  # I shouldn't need these init files to be stored locally, since they can be
+  # modified upstream and break a reinstall.
+  #ln -sfn $PWD/emacs.d/early-init.el ~/.doom-emacs.d/early-init.el
+  #ln -sfn $PWD/emacs.d/init.el ~/.doom-emacs.d/init.el
   ln -sfn $PWD/doom/init.el ~/.doom.d/init.el
   ln -sfn $PWD/doom/config.el ~/.doom.d/config.el
   ln -sfn $PWD/doom/packages.el ~/.doom.d/packages.el

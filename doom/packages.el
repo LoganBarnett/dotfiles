@@ -31,13 +31,13 @@
 (package! dash-functional)
 (package! docker)
 (package! dockerfile-mode)
-;; (package! ejira :recipe
-;;   (:host github
-;;    :repo "nyyManni/ejira"
-;;    :files ("*.el")
-;;    )
-;;   ) ; Atlassian Jira integration.
-(package! ejira :recipe (:local-repo "~/dev/ejira"))
+(package! ejira :recipe
+  (:host github
+   :repo "nyyManni/ejira"
+   :files ("*.el")
+   )
+  ) ; Atlassian Jira integration.
+;; (package! ejira :recipe (:local-repo "~/dev/ejira"))
 (package! elm-mode)
 (package! enh-ruby-mode)
 (package! evil-iedit-state)
@@ -94,7 +94,7 @@
 ;; (package! org-contacts) ; Part of contrib, so this won't work.
 (package! org-indent :disable t)
 (package! org-mime)
-(package! org-mode) ; Pretty sure some of these are built in.
+;; (package! org-mode) ; Pretty sure some of these are built in.
 (package! org-superstar :disable t)
 ;; Provides an org-mode export for a D&D LaTeX template.
 ;; https://github.com/evanbergeron/DND-5e-LaTeX-Template
@@ -111,7 +111,13 @@
 (package! password-store)
 ;; Use pinentry to prompt for passwords via the gpg-agent.
 (package! pinentry)
-(package! piper :recipe (:local-repo "~/dev/emacs-piper"))
+;; (package! piper :recipe (:local-repo "~/dev/emacs-piper"))
+(package! piper :recipe
+  (:host gitlab
+   :repo "howardabrams/emacs-piper"
+   :files ("*.el")
+   )
+  ) ; Atlassian Jira integration.
 (package! plantuml-mode)
 ;; While perhaps a core package, this vexes me greatly. There are several ways
 ;; in which persp-mode offends my senses. One is that killing a buffer leaves it
