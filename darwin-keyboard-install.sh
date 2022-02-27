@@ -22,6 +22,14 @@ hidutil property --set '{
   }]
 }'
 
+# We need a launch agent that sets this again at boot time.
+# TODO: Write this out with nix.
+sudo mkdir -p ~/Library/LaunchAgents
+sudo ln -snf \
+  $PWD/mac/launch-agents/com.lwds.CapslockToControl.plist \
+  ~/Library/LaunchAgents/com.lwds.CapslockToControl.plist 
+sudo chown -R $USER ~/Library/LaunchAgents
+
 # TODO: Document this keyboard keycode usage somewhere on disk.
 # TODO: Make this work for external keyboards too. This appears to be global or
 # whatever the "main" keyboard is.
