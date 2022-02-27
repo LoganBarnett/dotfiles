@@ -9,14 +9,12 @@
 # focus on upgrading packages.
 ####
 
-function log() {
-  echo "[NIX-RECOVER] " $@
-}
+source bash-logging
 
-log "The first step is to make nix think we are worthy of install (no existing
+slog "The first step is to make nix think we are worthy of install (no existing
 nix). We will remove everything! This script requires sudoer."
 
-log "Hold onto your butts - no turning back now..."
+slog "Hold onto your butts - no turning back now..."
 
 sudo rm -rf \
   /etc/nix \
@@ -28,13 +26,13 @@ sudo rm -rf \
   $HOME/.nix-defexpr \
   $HOME/.nix-channels
 
-log "Purged all nix files."
+slog "Purged all nix files."
 
-log "Restoring pre-nix system wide shell configs..."
+slog "Restoring pre-nix system wide shell configs..."
 sudo mv /etc/bashrc{.backup-before-nix,}
 sudo mv /etc/zshrc{.backup-before-nix,}
 
-log "At this point we should be free to run the install logic - delegating to
+slog "At this point we should be free to run the install logic - delegating to
 nix-install.sh"
 
 ./nix-install.sh
