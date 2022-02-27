@@ -1,4 +1,4 @@
-{ pkgs, lib, ... }:
+{ config, pkgs, lib, fetchFromGitHub, ... }:
 let
   # PyQt5 = pkgs.callPackage ./PyQt5.nix;
   # PyQt5 = (import ./PyQt5.nix);
@@ -11,6 +11,7 @@ let
     (import ./overlays/maven.nix)
     #(import ./overlays/percol.nix)
     (import ./overlays/speedtest-cli.nix)
+    (import ./overlays/source-code-pro-mac.nix)
     (import ./overlays/zsh.nix)
     # (import (builtins.fetchTarball
     #   "https://github.com/oxalica/rust-overlay/archive/master.tar.gz"))
@@ -51,6 +52,33 @@ in
   # paths it should manage.
   home.username = "logan";
   home.homeDirectory = "/Users/logan";
+
+  # In order to actually use some of this on my system (a Mac), I need to
+  # wire up some of the nix-managed directories to the real thing. One example
+  # is mapping ~/.nix-profile/Library/Fonts to ~/Library/Fonts, so macOS will
+  # detect the added fonts. We want the same for ~/Applications, and perhaps
+  # more.
+  #
+  # NOTE: Both Spotlight and Alfred made the unforuntate choice not to follow
+  # symlinks. This means the applications linked here will never work. However,
+  # this is what the runner (https://github.com/LoganBarnett/runner) tool aims
+  # to solve.
+
+  home.file."Applications/home-manager".source = let
+  apps = pkgs.buildEnv {
+    name = "home-manager-applications";
+    paths = config.home.packages;
+    pathsToLink = "/Applications";
+  };
+  in lib.mkIf pkgs.stdenv.targetPlatform.isDarwin "${apps}/Applications";
+
+  home.file."Library/Fonts".source = let
+  apps = pkgs.buildEnv {
+    name = "home-manager-library-fonts";
+    paths = config.home.packages;
+    pathsToLink = "/Library/Fonts";
+  };
+  in lib.mkIf pkgs.stdenv.targetPlatform.isDarwin "${apps}/Library/Fonts";
 
   home.packages = [
     # These are a suggestion from https://stackoverflow.com/a/51161923 to get
@@ -101,10 +129,21 @@ in
     pkgs.dnsmasq
     # The ultimate editor. But how to make it conditional on OS?
     # emacs
-    #pkgs.emacsMacport
+    # pkgs.emacsMacport
+    # aarch64 (arm) is lacking on the mainline build of emacs/emacsMacPort. This
+    # branch builds. See https://github.com/NixOS/nixpkgs/pull/138424 for
+    # progress on it getting merged.
+    (import (pkgs.fetchFromGitHub {
+      # Descriptive name to make the store path easier to identify
+      name = "emacs-macport-m1";
+      owner = "mikroskeem";
+      repo = "nixpkgs";
+      rev = "84e8bdba798312ace0e854f885cb76a5ddad1101";
+      sha256 = "iij2TsujINT/hgIHn3epchE09hWGkPk8UdtwFBjdAsU=";
+    }) {}).emacsMacport
     # This is a binary apparently. Universal editor settings. Kind of like a
     # pre-prettier. I don't know the nix pacakge though, if it exists.
-    # editorconfig
+    #pkgs.editorconfig
     # Searches for files. Used by projectile in Emacs.
     pkgs.fd
     # Convert media (sound, video). The "-full" suffix brings in all of the
@@ -389,6 +428,9 @@ in
     pkgs.speedtest-cli
     # A self-proclaimed better netcat.
     pkgs.socat
+    # A good mono-spaced font that is largely sans-serif, but uses serifs to
+    # disambuguate.
+    pkgs.source-code-pro-mac
     # A lightweight SQL database which requires no server. This also installs
     # CLI tools in which to access SQLite databases.
     pkgs.sqlite
