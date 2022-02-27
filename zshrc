@@ -32,7 +32,8 @@ $HOME/.doom-emacs.d/bin:\
 /usr/bin:\
 /opt/X11/bin:\
 $HOME/.gem/ruby/2.6.0/bin:\
-$HOME/Library/Python/3.8/bin"
+$HOME/Library/Python/3.8/bin:\
+/opt/homebrew/bin"
 
 # prevent emacs tramp from barfing on startup
 [[ "$TERM" == "dumb" ]] &&

@@ -2,8 +2,12 @@
 
 set -e
 
-dir="$(dirname "${BASH_SOURCE[0]}")"
-source $dir/dotfiles-functions.sh
+source bash-logging
+
+# We're on ARM now. Sometimes we need to use stuff that's not ARM though, and we
+# need Rosetta for that.
+slog "Installing Rosetta for legacy casks..."
+sudo softwareupdate --install-rosetta --agree-to-license
 
 # This fixes outdated tasks using the "undent" method. I've found Homebrew
 # doesn't do much to preserve backwards compatibility with older packages (or
@@ -12,14 +16,15 @@ source $dir/dotfiles-functions.sh
 # file. This particular workaround can be found (and adapted to work with this
 # sed) from here:
 # https://github.com/Homebrew/homebrew-cask/issues/49716#issuecomment-413515303
-log "Fixing outdated Homebrew package definitions..."
+slog "Fixing outdated Homebrew package definitions..."
+# TODO: Make smart enough to check that the dir exists first.
 find "$(brew --prefix)/Caskroom/"*'/.metadata' -type f -name '*.rb' | \
     xargs grep 'EOS.undent' --files-with-matches | \
-    xargs sed -i 's/EOS.undent/EOS/'
+    xargs sed -i 's/EOS.undent/EOS/' || true
 
-log "Outdated Homebrew package definitions should be fixed."
+slog "Outdated Homebrew package definitions should be fixed."
 
-brew cask upgrade
+brew upgrade --cask
 
 # TODO: Find a better way to reinstall istat-menus (cannot be stopped once
 # running, short of an "uninstall").
@@ -35,24 +40,23 @@ brew cask upgrade
 CASKS="
 alfred
 chromium
-diffmerge
-font-source-code-pro
 gimp
 google-chrome
 slack
-virtualbox
-zoomus
 "
+# Missing?
+#font-source-code-pro
+#zoomus
 
-log "Installing homebrew casks."
-brew cask install $CASKS
+slog "Installing homebrew casks."
+brew install --cask $CASKS
 
 # For my personal machines I can install packages but these are not appropriate
 # for work machines.
 if [[ "$HOST" =~ "lbarnett" ]]; then
   MACHINE_CASKS="
-razer-synapse
 "
+#razer-synapse
 else
 
   # The following are forbidden:
@@ -61,15 +65,18 @@ else
   # this, but my limited research shows MacOs support to be relatively new.
   MACHINE_CASKS="
 arduino
+battlescribe
 discord
 mixxx
 obs
-silverlight
+openscad
 steam
-xbox360-controller-driver-unofficial
 "
 fi
 
-brew cask install $MACHINE_CASKS
+# Missing?
+# xbox360-controller-driver-unofficial
 
-log "Done installing casks."
+brew install --cask $MACHINE_CASKS
+
+slog "Done installing casks."

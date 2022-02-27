@@ -17,7 +17,7 @@ ${PATH}\
 # oh java
 JAVA_HOME="/Library/Java/Home"
 
-export PATH="$HOME/.cargo/bin:$PATH"
 export PATH="$PATH:/Library/TeX/texbin/"
 
 source ~/dev/dotfiles-private/bashrc-private
+. "$HOME/.cargo/env"

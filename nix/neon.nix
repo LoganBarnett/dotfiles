@@ -9,7 +9,7 @@ let
     # (import ./overlays/crystal.nix)
     (import ./overlays/gnupg.nix)
     (import ./overlays/maven.nix)
-    (import ./overlays/percol.nix)
+    #(import ./overlays/percol.nix)
     (import ./overlays/speedtest-cli.nix)
     (import ./overlays/zsh.nix)
     # (import (builtins.fetchTarball
@@ -68,7 +68,7 @@ in
     # under my usage.
     pkgs.awscli
     # 3D modeling, but without the indentured servitude.
-    pkgs.blender
+    #pkgs.blender
     # Convert Ruby gems to valid nix derivations or Ruby dependencies within
     # Nix. Or that's the idea. While this builds, I haven't accomplished what it
     # says on the tin just yet.
@@ -101,7 +101,7 @@ in
     pkgs.dnsmasq
     # The ultimate editor. But how to make it conditional on OS?
     # emacs
-    pkgs.emacsMacport
+    #pkgs.emacsMacport
     # This is a binary apparently. Universal editor settings. Kind of like a
     # pre-prettier. I don't know the nix pacakge though, if it exists.
     # editorconfig
@@ -117,7 +117,7 @@ in
     # easy without needing to do a bunch of git remote management.
     pkgs.gh
     # Rasterized image manipulation.
-    pkgs.gimp
+    #pkgs.gimp
     # git manages my code. Comes with MacOS but no reason to use a dated
     # version.
     pkgs.git
@@ -150,6 +150,9 @@ in
     pkgs.htop
     # For previewing LaTeX in Emacs.
     pkgs.imagemagick
+    # Brings in telnet. Similar to netcat - has its uses as a very bare-bones
+    # network communication tool.
+    pkgs.inetutils
     # A spell checker.
     pkgs.ispell
     # Email gathering and sending. Works with mu.
@@ -163,15 +166,13 @@ in
     # jenv
     # JSON parsing, querying, and updating.
     pkgs.jq
-    # For rendering a number of diagrams and documents.
-    #latex
     # "Office" tools.
     # Doesn't build on macOS yet.
     # pkgs.libreoffice
     # Make it easy to try out Nix packages under review.
     pkgs.nixpkgs-review
     # Give us man pages for GNU stuff.
-    pkgs.manpages
+    pkgs.man-pages
     # Java builds. Pom.xml files as far as the eyes can see.
     pkgs.maven
     # Can show media info for files using a codec. Similar to ffmpeg's ffprobe.
@@ -196,7 +197,10 @@ in
     # attempting unixtools and nettools. The unixtools package doesn't contain
     # namei, and I could not confirm nettools due to an issue with openssl being
     # out of date in that package.
-    # namei
+    #
+    # Currently broken on aarch64. No tickets found on it. Looks like xnu is
+    # trying to use x86_64 and breaking.
+    #pkgs.nettools
     # A tool for mapping network ports.
     pkgs.nmap
     # Elastic, load balanced, self hosted, containerized server pools. This is
@@ -210,7 +214,7 @@ in
     # pkgs.obs-studio
     # Used to do split tunneled VPN connections from the command line. You can
     # also, you know, download it. Looking at you, AnyConnect.
-    pkgs.openconnect
+    #pkgs.openconnect
     # openconnect-sso wraps openconnect to provide SSO functionality.
     #
     # (pkgs.callPackage
@@ -240,12 +244,13 @@ in
     # openscad
     # I get build errors with 2021-01.
     # TODO: Report the build errors.
-    (import (builtins.fetchGit {
-      # Descriptive name to make the store path easier to identify
-      name = "nixpkgs-pre-pr-111997";
-      url = https://github.com/nixos/nixpkgs/;
-      rev = "385fc8362b8abe5aa03f50c60b9a779ce721db19";
-    }) {}).openscad
+    #(import (builtins.fetchGit {
+    #  # Descriptive name to make the store path easier to identify
+    #  name = "nixpkgs-pre-pr-111997";
+    #  url = https://github.com/nixos/nixpkgs/;
+    #  rev = "385fc8362b8abe5aa03f50c60b9a779ce721db19";
+    #}) {lib = lib;}).openscad
+    #pkgs.openscad
     # oq is like jq but for xml. It parses xml and yaml files and can convert
     # them to xml, yaml, or json (with jq as a backend). It uses the same snytax
     # as jq with the exception of the -i and -o arguments to indicate which
@@ -265,7 +270,7 @@ in
     # Manage passwords using gpg.
     pkgs.pass
     # Use Unix pipes and direct them to a human program.
-    pkgs.percol
+    #pkgs.percol
 
     # Because sometimes you need something better than grep.
     pkgs.perl
@@ -291,7 +296,7 @@ in
     (pkgs.python39.withPackages (ps: [
       ps.pip
       ps.lxml
-      ps.pyqt5
+      #ps.pyqt5
       # (ps.buildPythonPackage rec {
       #   pname = "openconnect-sso";
       #   version = "0.7.3";
@@ -361,7 +366,7 @@ in
     # rust-src is needed for rustracer to be fully functional.
     # (pkgs.rustChannels.stable.rust.override { extensions = ["rust-src"]; })
     # Racer is an auto-complete tool for Rust.
-    pkgs.rustracer
+    #pkgs.rustracer
 
     # A version management tool for Rust.
     pkgs.rustup
@@ -387,11 +392,15 @@ in
     # A lightweight SQL database which requires no server. This also installs
     # CLI tools in which to access SQLite databases.
     pkgs.sqlite
-    # Similar to netcat - has its uses as a very bare-bones network
-    # communication tool.
-    pkgs.telnet
     # Declarative server orchestration.
     pkgs.terraform
+    # LaTeX is for rendering a number of diagrams and documents.
+    # scheme-full is way too big. Use scheme-basic and pull in other modules
+    # selectively. See
+    # https://nixos.org/manual/nixpkgs/stable/#sec-language-texlive for
+    # additional information on LaTeX installation.
+    # TODO: Include circuitikz, remove install-latex.sh.
+    pkgs.texlive.combined.scheme-basic
     # Highly controllable terminal emulation and session management.
     pkgs.tmux
     # Some folks still use rar for an archive format. This lets us decompress
@@ -433,3 +442,4 @@ in
   home.stateVersion = "21.05";
 
 }
+

@@ -2,6 +2,8 @@
 
 set -euo pipefail
 
+source bash-logging
+
 dir="$(dirname "${BASH_SOURCE[0]}")"
 source $dir/dotfiles-functions.sh
 
@@ -9,26 +11,28 @@ source $dir/dotfiles-functions.sh
 # TODO: add iStatsMenu
 # TODO: add Slack settings
 
-log "Installing nix..."
-./nix-install.sh
-log "Done installing nix."
+# Link dotfiles before installing nix and home-manager, so home-manager can
+# find the right files during setup.
+slog "Linking easy dotfiles"
+./link-dotfiles.sh
+slog "Done linking easy dotfiles"
 
-log "Doing OS specific installation..."
+slog "Installing nix..."
+./nix-install.sh
+slog "Done installing nix."
+
+slog "Doing OS specific installation..."
 if [ $(uname) != 'Darwin' ]; then
   apt update
 else
   $dir/darwin-install.sh
 fi
 
-log "Creating ssh key if it doesn't exist"
+slog "Creating ssh key if it doesn't exist"
 ./create-ssh-key.sh
-log "Done create ssh key"
+slog "Done create ssh key"
 
-log "Linking easy dotfiles"
-./link-dotfiles.sh
-log "Done linking easy dotfiles"
-
-log "Configuring git"
+slog "Configuring git"
 ./git-config.sh
 
 # get submodules set up
@@ -40,85 +44,62 @@ mkdir -p ~/.config
 
 ln -snf $PWD/bin ~/bin
 
-log "Installing shell settings."
+slog "Installing shell settings."
 ./install-shell.sh
 
-if [ $(uname) = 'Darwin' ]; then
-  cd $dir
-  log "Installing homebrew..."
-  # Redirect stdin from /dev/null to put the script into a non-interactive
-  # mode.
-  /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)" < /dev/null
-  log "Installing casks..."
-  $dir/brew-cask-install.sh
-else
-  log "Skipping cask installs - not osx."
-fi
+slog "Installing Homebrew (for casks and troublesome nix packages)."
+./brew-install.sh
 
-log "Installing packages..."
+slog "Installing packages..."
 ./install-packages.sh
 
-log "Installing Haskell..."
-./install-haskell.sh
-
-log "Installing Rust..."
+slog "Installing Rust..."
 ./install-rust.sh
 
-log "Installing mysql (tools?)..."
-./install-mysql.sh
+slog "installing node modules"
+# TODO: Move necessary node modules into nix so we needn't worry about what node
+# version we're using in that moment.
+#./install-node-modules.sh
 
-# node modules
-log "installing node modules"
-./install-node-modules.sh
+slog "installing GPG..."
+#./gpg-install.sh
 
-log "Installing python3..."
-./python-install.sh
+#./daw-install.sh
 
-log "installing GPG..."
-./gpg-install.sh
+#./install-latex.sh
 
-./daw-install.sh
+# TODO: Does the nix package let me _run_ mongodb?
+#./mongodb-install.sh
 
-./install-latex.sh
+# TODO: Maybe change some of these from "install" to "configure".
+slog "Setting up Emacs..."
+#./emacs-install.sh
 
-./mongodb-install.sh
-
-log "Setting up Emacs."
-./emacs-install.sh
-
-# TODO: add a way of reading in the paradox-github token or generating it if it
-# doesn't exist
-
-./install-rubygems.sh
 if [ $(uname) = 'Darwin' ]; then
   # alfred workflows
-  cd $start_dir
+  #cd $start_dir
   ./install-workflows.sh
 else
-  log "skipping alfred install - not on osx"
+  slog "skipping alfred install - not on osx"
 fi
 
-log "Installing (some) Java support..."
-./install-java.sh
+# TODO: See if enough of this is installed in nix.
+#slog "Installing (some) Java support..."
+#./install-java.sh
 
 if [[ "$USER" == "logan.barnett" ]]; then
-  log "Installing puppet for work..."
-  ./puppet-install.sh
+  slog "Installing puppet for work..."
+  # TODO: See if nix can do this.
+  #./puppet-install.sh
 fi
 
-log "Installing diagramming support..."
-./install-diagram.sh
-
-log "Installing email support..."
-./install-email.sh
-
-log "Installing gnu utils..."
-./gnu-install.sh
-
-log "writing out private settings"
+slog "Writing out private settings..."
 ./install-private.sh
 
-log "Installing Firefox settings..."
-./firefore-install.sh
+slog "Installing email support..."
+./install-email.sh
 
-log "all installation is successful"
+slog "Installing Firefox settings..."
+./firefox-install.sh
+
+slog 'Done! All installation is successful!'

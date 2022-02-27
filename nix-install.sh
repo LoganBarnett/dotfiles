@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
-set -euo pipefail
+# The nix daemon doesn't work with -u.
+set -eo pipefail
 
-source ~/.bash-logging.sh
+source bash-logging
 
 sudo printf "\n" # To ensure we're in a sudo context first.
 # Pipe yes because there's no way to do an officially unattended install. Though
@@ -31,25 +32,23 @@ sudo launchctl load /Library/LaunchDaemons/org.nixos.nix-daemon.plist
 
 mkdir -p ~/.config/nixpkgs
 # Link the file for this machine. This allows for host specific configurations.
-machineName=$(scutil --get ComputerName | cut -d' ' -f1 | tr -d $'\n' || hostname)
+machineName=$(scutil --get ComputerName | tr -d $'\n' || hostname)
+slog "Found machine name of '$machineName'."
+# This machine has not been named yet.
+if [[ "$machineName" =~ 'Mac' ]] ; then
+  slog "Give this machine a proper name:"
+  read machineName
+  # There's a bunch of different ways to name the machine across platforms. I
+  # have a script to make it portable.
+  bin/hostname-set "$machineName"
+fi
 ln -snf $PWD/nix/$machineName.nix ~/.config/nixpkgs/home.nix
 
 slog "Loading nix-daemon so we don't need to close our shell..."
 . '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh'
 slog "nix-daemon loaded."
 
-slog "Installing nix packages for this host..."
-# nix-env -iA nixpkgs.shellPackages
-nix-channel --add https://github.com/nix-community/home-manager/archive/master.tar.gz home-manager
-nix-channel --update
-nix-shell '<home-manager>' -A install
-# home-manager appears to crush this, so set it afterwards.
-ln -snf $PWD/nix/overlays ~/.config/nixpkgs/overlays
-
-. $HOME/.nix-profile/etc/profile.d/hm-session-vars.sh
-
-# "switch" implies "build".
-home-manager switch
+./nix-home-manager-install.sh
 
 # The guide recommends the below flag for catalina.
 # https://nixos.org/manual/nix/stable/#chap-quick-start

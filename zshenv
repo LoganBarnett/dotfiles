@@ -14,3 +14,4 @@ export PATH="$PATH:/Library/TeX/texbin/"
 # program has been a stable workhorse for as long as I can remember, it is not
 # immune to bugs.
 export GIT_SSH_COMMAND="ssh -4"
+. "$HOME/.cargo/env"

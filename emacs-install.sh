@@ -2,9 +2,11 @@
 
 set -e
 
-echo "[DOTFILES] Setting up Emacs distro - Emacs installed via nix-pkg..."
+source bash-logging
+
+slog "Setting up Emacs distro - Emacs installed via nix-pkg..."
 distro='doom'
-echo "[DOTFILES] Installing Emacs distro $distro..."
+slog "Installing Emacs distro $distro..."
 # distro='spacemacs'
 # distro='vanilla'
 
@@ -15,14 +17,14 @@ if [[ "$distro" == 'spacemacs' ]]; then
   #
   git clone https://github.com/syl20bnr/spacemacs ~/.spacemacs.d || true
   ln -snf ~/.spacemacs.d ~/.emacs.d
-  echo "[DOTFILES] linking elisp dir"
+  slog "linking elisp dir"
   rm ~/.spacemacs.d/private/local/dotfiles || true
   ln -s -n -f $PWD/lisp ~/.spacemacs.d/private/local/dotfiles
   rm -rf ~/.spacemacs.d/private/snippets
   ln -s -n -f $PWD/yasnippets ~/.spacemacs.d/private/snippets
   # ln -s -n -f $PWD/emacs-config.org ~/.emacs.d/emacs-config.org
-  echo "This directory managed by dotfiles" > ~/.spacemacs.d/private/local/dotfiles/README.org
-  echo "[DOTFILES] Setting up additional layers"
+  slog "This directory managed by dotfiles" > ~/.spacemacs.d/private/local/dotfiles/README.org
+  slog "Setting up additional layers"
   mkdir -p ~/.spacemacs.d/private/layers
   cd ~/.spacemacs.d/private/layers
 elif [[ "$distro" == 'doom' ]]; then
@@ -46,4 +48,4 @@ fi
 # OR:
 # emacs --batch --load=~/.spacemacs
 
-echo "[DOTFILES] Emacs installation complete!"
+slog "Emacs installation complete!"

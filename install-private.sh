@@ -1,9 +1,12 @@
-#! /usr/bin/env bash
+#!/usr/bin/env bash
 
-echo "[CONFIG] Installing private settings..."
+set -euo pipefail
+
+source bash-logging
+slog "Installing private settings..."
 
 if [[ -d ../dotfiles-private/.git ]]; then
-  echo "The dotfiles-private repository is already cloned. Skipping clone."
+  slog "The dotfiles-private repository is already cloned. Skipping clone."
 else
   git clone \
       git@bitbucket.org:LoganBarnett/dotfiles-private.git \
@@ -18,14 +21,15 @@ fi
 
 # See mbsyncrc for usage of this file.
 PRIV_DIR=$PWD/../dotfiles-private
-ln -F -n -s $PRIV_DIR/email-creds.priv.txt ~/.email-creds.txt
+ln -fns $PRIV_DIR/email-creds.priv.txt ~/.email-creds.txt
 
 # The .mailrc lets me have email aliases. I don't want to share emails with the
 # public though.
-ln -F -n -s $PRIV_DIR/mailrc ~/.mailrc
+ln -fns $PRIV_DIR/mailrc ~/.mailrc
 # Floobits is great!
-ln -F -n -s $PRIV_DIR/floorc.json ~/.floorc.json
+ln -fns $PRIV_DIR/floorc.json ~/.floorc.json
 
 cd $PRIV_DIR
+slog "Installing private settings from private repo..."
 ./install.sh
-echo "[CONFIG] Installing private settings... Done!"
+slog "Installing private settings... Done!"

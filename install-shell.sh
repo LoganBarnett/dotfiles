@@ -2,8 +2,8 @@
 
 dir="$(dirname "${BASH_SOURCE[0]}")"
 
-source $dir/dotfiles-functions.sh
-log "Installing oh-my-zsh."
+source $dir/bash-logging
+slog "Installing oh-my-zsh."
 # Much of this file might not be necessary anymore, much of zsh (and oh-my-zsh)
 # can be controlled via nix.
 #
@@ -11,9 +11,10 @@ log "Installing oh-my-zsh."
 zshPath=$(which zsh)
 if [ $SHELL != "$zshPath" ]; then
   if ! grep "$zshPath" /etc/shells ; then
-    log "Need sudoer for adding $zshPath to /etc/shells..."
+    slog "Need sudoer for adding $zshPath to /etc/shells..."
     echo "$zshPath" | sudo tee -a /etc/shells > /dev/null
   fi
+  # Unfortunately this prompts for a password. Alas.
   chsh -s $zshPath
 fi
 

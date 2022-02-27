@@ -13,4 +13,7 @@ rustup-init -y
 source $HOME/.cargo/env
 
 # Needed for LSP support.
-rustup component add rls --toolchain stable-x86_64-apple-darwin
+# TODO: Make some installation functions to capture things such as the
+# architecture.
+[[ $(uname -p) == 'arm' ]] && arch='aarch64' || arch='x86_64'
+rustup component add rls --toolchain stable-$arch-apple-darwin
