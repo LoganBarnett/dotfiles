@@ -7,15 +7,6 @@
        diff = auto
 [init]
   defaultBranch = main
-[mergetool "diffmerge"]
-    cmd = /Applications/DiffMerge.app/Contents/MacOS/DiffMerge \
-        --nosplash \
-        --result="$PWD/$MERGED" \
-        "$PWD/$REMOTE" \
-        "$PWD/$BASE" \
-    "$PWD/$LOCAL"
-    keepBackup = false
-    trustExitCode = false
 [merge]
   tool = diffmerge
   ff-only = true
@@ -27,12 +18,6 @@
   # Requires git 2.19, defaults to ~/.config/git/hooks
   hooksPath = ~/dev/dotfiles/git-hooks
   #autocrlf = true
-[difftool "sourcetree"]
-  cmd = opendiff \"$LOCAL\" \"$REMOTE\"
-  path =
-[mergetool "sourcetree"]
-  cmd = /Applications/SourceTree.app/Contents/Resources/opendiff-w.sh \"$LOCAL\" \"$REMOTE\" -ancestor \"$BASE\" -merge \"$MERGED\"
-  trustExitCode = true
 [push]
   default = current
   followTags = true
