@@ -11,8 +11,7 @@ let
     (import ./overlays/maven.nix)
     #(import ./overlays/percol.nix)
     (import ./overlays/speedtest-cli.nix)
-    (import ./overlays/source-code-pro-mac.nix)
-    (import ./overlays/zsh.nix)
+    (import ./overlays/tmux.nix)
     # (import (builtins.fetchTarball
     #   "https://github.com/oxalica/rust-overlay/archive/master.tar.gz"))
     # (import "${openconnect-sso-src}/overlay.nix")
@@ -47,6 +46,7 @@ in
 
   # Let Home Manager install and manage itself.
   programs.home-manager.enable = true;
+  programs.tmux = import ./tmux.nix;
   # This is the magic that makes fonts get installed to ~/Library/Fonts on
   # macOS, and I imagine other dirs for other systems.
   fonts.fontconfig.enable = true;

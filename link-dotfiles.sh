@@ -1,4 +1,4 @@
-#! /usr/bin/env bash
+#!/usr/bin/env bash
 
 set -e
 
@@ -16,8 +16,6 @@ jsbeautifyrc
 npmrc
 pentadactylrc
 profile
-spacemacs
-tmux.conf
 urxvt
 vimrc
 yarnrc
