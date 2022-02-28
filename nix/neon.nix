@@ -1,4 +1,4 @@
-{ config, pkgs, lib, fetchFromGitHub, ... }:
+{ environment, config, pkgs, lib, fetchFromGitHub, ... }:
 let
   # PyQt5 = pkgs.callPackage ./PyQt5.nix;
   # PyQt5 = (import ./PyQt5.nix);
@@ -75,6 +75,46 @@ in
     pathsToLink = "/Applications";
   };
   in lib.mkIf pkgs.stdenv.targetPlatform.isDarwin "${apps}/Applications";
+
+  # This gets oh-my-zsh where we can find it.
+  home.file.".oh-my-zsh".source = config.lib.file.mkOutOfStoreSymlink "${pkgs.oh-my-zsh.outPath}/share/oh-my-zsh";
+
+  # zsh is managed differently by home-manager and therefore not something we
+  # can easily make into an overlay. We could break this out into a function and
+  # pull it in elsewhere though.
+  programs.zsh = {
+    enable = true;
+    enableAutosuggestions = true;
+    enableSyntaxHighlighting = true;
+    oh-my-zsh = {
+      enable = true;
+      # TODO: These packages and plugins aren't out of reach necessarily but
+      # they require some additional work. See
+      # https://github.com/nix-community/home-manager/blob/master/modules/programs/zsh.nix
+      # for this module so I know what structures the home-manager-zsh setup
+      # expects.
+      #customPkgs = [
+      #  #pkgs.noreallyjustfuckingstopalready
+      #  pkgs.zsh-git-prompt
+      #];
+      plugins = [
+        #"nix"
+      ];
+    };
+    loginExtra = ''
+      source ~/.zshenv-customized
+    '';
+    initExtra = ''
+      source ${pkgs.zsh-git-prompt}/share/zsh-git-prompt/zshrc.sh
+      source ~/.zshrc-customized
+    '';
+  };
+  # Lifted from https://github.com/Yumasi/nixos-home/blob/master/zsh.nix
+  # There aren't a lot of examples or documentation for nix, home-manager, etc
+  # out there so this is a great example to see how we can source an entire
+  # directory. I haven't tested it yet.
+  #  home.file.".config/zsh/scripts".source = ./files/scripts;
+  #  home.file.".config/zsh/scripts".recursive = true;
 
   home.packages = [
     # These are a suggestion from https://stackoverflow.com/a/51161923 to get

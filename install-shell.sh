@@ -3,7 +3,6 @@
 dir="$(dirname "${BASH_SOURCE[0]}")"
 
 source $dir/bash-logging
-slog "Installing oh-my-zsh."
 # Much of this file might not be necessary anymore, much of zsh (and oh-my-zsh)
 # can be controlled via nix.
 #

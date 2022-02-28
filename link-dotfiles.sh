@@ -21,9 +21,9 @@ tmux.conf
 urxvt
 vimrc
 yarnrc
-zlogin
-zshenv
-zshrc
+zlogin-customized
+zshenv-customized
+zshrc-customized
 "
 
 # link easy things

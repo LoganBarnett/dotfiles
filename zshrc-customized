@@ -50,9 +50,17 @@ $HOME/Library/Python/3.8/bin:\
   # No longer needed due to nix.
   # alias ls='gls' &&
   return
-
+  #
+# Nix
+if [ -e '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh' ]; then
+  . '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh'
+fi
+# End Nix
 # Source home-manager.
 . $HOME/.nix-profile/etc/profile.d/hm-session-vars.sh
+
+# Useful support for interacting with Terminal.app or other terminal programs
+[ -r "/etc/zshrc_$TERM_PROGRAM" ] && . "/etc/zshrc_$TERM_PROGRAM"
 
 if [[ $(hostname) == "MacBook-Pro*" ]]; then
   echo "[ZSHRC] hostname is borked, consider using hostname-set to fix."
@@ -65,17 +73,17 @@ setopt prompt_subst
 # Add wisely, as too many plugins slow down shell startup.
 
 # TODO: add osx conditionally
-plugins=(
-  command-not-found
-  git
-  node
-  noreallyjustfuckingstopalready
-  npm
-  osx
-  rsync
-  yarn
-  zsh-git-prompt
-)
+#plugins=(
+#  command-not-found
+#  git
+#  node
+#  npm
+#  macos
+#  rsync
+#  yarn
+#)
+  #noreallyjustfuckingstopalready
+  #zsh-git-prompt
 
 # Path to your oh-my-zsh installation.
 export ZSH=$HOME/.oh-my-zsh
@@ -130,8 +138,6 @@ DISABLE_AUTO_UPDATE="true"
 
 # ZSH_THEME=flazz
 source $ZSH/oh-my-zsh.sh
-
-source $ZSH/plugins/osx/osx.plugin.zsh
 
 # oh-my-zsh configures tabbing to cycle through possible matches. This makes
 # tabbing non-idempotent and for me often means more correcting than benefiting
@@ -266,7 +272,7 @@ else
   bindkey -v
   # Bundles that break emacs/term.el
   # Syntax highlighting bundle.
-  plugins=$plugins"zsh-users/zsh-syntax-highlighting"
+  #plugins=$plugins"zsh-users/zsh-syntax-highlighting"
 fi
 
 function pwd_prompt() {
