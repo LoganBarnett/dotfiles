@@ -47,6 +47,7 @@ in
   # Let Home Manager install and manage itself.
   programs.home-manager.enable = true;
   programs.tmux = import ./tmux.nix;
+  programs.zsh = import ./zsh.nix { pkgs = pkgs; };
   # This is the magic that makes fonts get installed to ~/Library/Fonts on
   # macOS, and I imagine other dirs for other systems.
   fonts.fontconfig.enable = true;
@@ -79,36 +80,6 @@ in
   # This gets oh-my-zsh where we can find it.
   home.file.".oh-my-zsh".source = config.lib.file.mkOutOfStoreSymlink "${pkgs.oh-my-zsh.outPath}/share/oh-my-zsh";
 
-  # zsh is managed differently by home-manager and therefore not something we
-  # can easily make into an overlay. We could break this out into a function and
-  # pull it in elsewhere though.
-  programs.zsh = {
-    enable = true;
-    enableAutosuggestions = true;
-    enableSyntaxHighlighting = true;
-    oh-my-zsh = {
-      enable = true;
-      # TODO: These packages and plugins aren't out of reach necessarily but
-      # they require some additional work. See
-      # https://github.com/nix-community/home-manager/blob/master/modules/programs/zsh.nix
-      # for this module so I know what structures the home-manager-zsh setup
-      # expects.
-      #customPkgs = [
-      #  #pkgs.noreallyjustfuckingstopalready
-      #  pkgs.zsh-git-prompt
-      #];
-      plugins = [
-        #"nix"
-      ];
-    };
-    loginExtra = ''
-      source ~/.zshenv-customized
-    '';
-    initExtra = ''
-      source ${pkgs.zsh-git-prompt}/share/zsh-git-prompt/zshrc.sh
-      source ~/.zshrc-customized
-    '';
-  };
   # Lifted from https://github.com/Yumasi/nixos-home/blob/master/zsh.nix
   # There aren't a lot of examples or documentation for nix, home-manager, etc
   # out there so this is a great example to see how we can source an entire
