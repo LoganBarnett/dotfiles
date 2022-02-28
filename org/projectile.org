@@ -20,13 +20,22 @@ other things. I want those killed too, since I killed the project.
 (setq-default projectile-kill-buffers-filter 'kill-all)
 #+end_src
 
-* projects directory
+* projects directories
+
+You can use =SPC p D= to refresh this.
+
+These are some projects that don't fall under =projectile-project-search-path=
+but we'd love to have in our search path all the same. The number indicates the
+depth, where 0 means the directory is the project, and 1 means the first level
+of directories under that directory.
 
 #+name: config/projectile-projects-directory
 #+begin_src emacs-lisp :results none :tangle yes
 (setq-default projectile-project-search-path
               '(
-                "~/dev"
+                ("~/dev" . 1)
+                ("~/notes" . 0)
+                ("~/work-notes" . 0)
                 )
               )
 #+end_src
