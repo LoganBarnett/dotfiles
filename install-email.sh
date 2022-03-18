@@ -7,7 +7,6 @@ echo "Copying certificates for openssl..."
 cp $PWD/certs/* /usr/local/etc/openssl/certs/
 
 ./link-dotfile.sh mbsyncrc
-./link-dotfile.sh notmuch-config
 touch mailrc # in case the file doesn't exist. How to best keep this private?
 ./link-dotfile.sh mailrc
 
