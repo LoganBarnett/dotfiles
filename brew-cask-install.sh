@@ -40,8 +40,10 @@ brew upgrade --cask
 CASKS="
 alfred
 chromium
+firefox
 gimp
 google-chrome
+istat-menus
 slack
 "
 # Missing?
