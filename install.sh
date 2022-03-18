@@ -93,6 +93,9 @@ if [[ "$USER" == "logan.barnett" ]]; then
   #./puppet-install.sh
 fi
 
+slog "Installing GNUPG settings..."
+./gpg-install.sh
+
 slog "Writing out private settings..."
 ./install-private.sh
 
