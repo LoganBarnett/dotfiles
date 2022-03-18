@@ -424,6 +424,9 @@ in
     pkgs.rustup
     # Assume an account on AWS via SAML.
     pkgs.saml2aws
+    # Write certificates out - these aren't present on macOS in a freely
+    # available way.
+    pkgs.cacert
     # Needed to do Crystal development, or really when I want to contribute to
     # oq.
     #
