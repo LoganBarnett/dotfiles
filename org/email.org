@@ -395,16 +395,28 @@ themselves.
      #+end_src
 
 *** reading: format
-     #+begin_src emacs-lisp
-       (defun config/mu4e-reading-format ()
-         (setq-default
-          ;; mu4e-html2text-command "iconv -c -t utf-8 | pandoc -f html -t org"
-          mu4e-html2text-command "w3m -dump -T text/html -o display_link_number=true"
-          ;; mu4e-html2text-command "pandoc -f html -t org"
-          mu4e-html-renderer 'w3m
-          )
-         )
-     #+end_src
+
+This is the new way to display things with w3m. I have read tickets saying this
+is documented officially but I couldn't find it.
+
+#+name: config/mu4e-html2text-renderer
+#+begin_src emacs-lisp :noweb yes :results none
+(setq-default
+  mu4e-html2text-command "w3m -dump -T text/html -o display_link_number=true"
+  mm-text-html-renderer 'gnus-w3m
+  )
+#+end_src
+
+These are older settings which are documented officially in some form or another.
+
+#+begin_example emacs-lisp
+(setq-default
+  mu4e-html2text-command "iconv -c -t utf-8 | pandoc -f html -t org"
+  mu4e-html2text-command "pandoc -f html -t org"
+  mu4e-html2text-command 'mu4e-shr2text
+  mm-text-html-renderer "w3m -dump -T text/html -o display_link_number=true"
+  )
+#+end_example
 
 *** urls
 =mu4e= uses numbered URLs, which are generally aggregated at the bottom of
@@ -624,6 +636,7 @@ not always be the case. For me it is setup via =nix=. Instead of hardcoding a
     <<config/set-mu-path>>
     <<config/mu4e-gmail-refile-to-archives>>
     <<config/email-get-mail-command>>
+    <<config/mu4e-html2text-renderer>>
     :config
     (message "initializing mu4e...")
     (require 'org-mime)
@@ -685,7 +698,6 @@ not always be the case. For me it is setup via =nix=. Instead of hardcoding a
     ;; Attempt to encrypt all the mails we'll be sending.
     (add-hook 'message-setup-hook 'mml-secure-message-encrypt)
 
-    (config/mu4e-reading-format)
     (config/mu4e-prevent-hard-line-wrap-on-export)
     (config/mu4e-org-contacts)
     <<mu4e-goto-url>>
