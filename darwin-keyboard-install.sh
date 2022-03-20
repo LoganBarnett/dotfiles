@@ -27,7 +27,7 @@ hidutil property --set '{
 sudo mkdir -p ~/Library/LaunchAgents
 sudo ln -snf \
   $PWD/mac/launch-agents/com.lwds.CapslockToControl.plist \
-  ~/Library/LaunchAgents/com.lwds.CapslockToControl.plist 
+  ~/Library/LaunchAgents/com.lwds.CapslockToControl.plist
 sudo chown -R $USER ~/Library/LaunchAgents
 
 # TODO: Document this keyboard keycode usage somewhere on disk.
