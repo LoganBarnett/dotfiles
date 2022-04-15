@@ -19,6 +19,9 @@
 ;; To install SOME-PACKAGE from MELPA, ELPA or emacsmirror:
 ;(package! some-package)
 
+;; For AppleScript files - automation for GUI applications in macOS.
+;; Currently not supported by Doom's package manager.
+;; (package! applescript-mode)
 ;; Lets me use Emacs to edit text from a browser form. Needs the Ghost Edit
 ;; Firefox plugin.
 (package! atomic-chrome)

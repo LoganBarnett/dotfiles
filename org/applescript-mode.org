@@ -1,0 +1,25 @@
+#+title:     Applescript Mode
+#+author:    Logan Barnett-Hoy
+#+email:     logustus@gmail.com
+#+date:      <2022-03-17 Thu>
+#+language:  en
+#+file_tags:
+#+tags:
+
+* derive from prog-mode
+
+I haven't gotten this working yet. The original [[~/.doom-emacs.d/.local/straight/repos/applescript-mode/applescript-mode.el][applescript-mode.el]] file has a
+=applescript-mode= function that will need to converted to =body= below, but I'm
+not sure how much of it is necessary to convert. From looking at [[https://www.gnu.org/software/emacs/manual/html_node/elisp/Derived-Modes.html][Derived-Modes]],
+I'm left with the impression that at least some things are handled implicitly.
+One example is the =<mode-name>-map= variable. I need to read up on this more.
+
+#+begin_src emacs-lisp :results none
+(define-derived-mode
+  applescript-mode
+  prog-mode "Applescript"
+  "Major mode for Applescript."
+  (body)
+  )
+
+#+end_src
