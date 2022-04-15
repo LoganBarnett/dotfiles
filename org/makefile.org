@@ -15,8 +15,18 @@ Being a product of the paleolithic era, Makefiles require tabs for at least the
 first indentations (spaces can used for breaks between commands when using =\=,
 but not between the target and the command).
 
-#+begin_src emacs-lisp
-(add-hook 'makefile-mode-hook
-  '(lambda () (setq-local indent-tabs-mode 1))
-)
+#+begin_src emacs-lisp :tangle yes :results none
+(defun config/use-tabs-instead-of-spaces ()
+  (setq-local indent-tabs-mode t)
+  )
+
+(defun config/use-tabs-makefiles-only (props)
+  (if (derived-mode-p 'makefile-mode)
+      (config/use-tabs-instead-of-spaces)
+      nil
+    )
+  )
+(add-hook 'makefile-mode-hook #'config/use-tabs-instead-of-spaces)
+(add-hook 'makefile-bsdmake-mode-hook #'config/use-tabs-instead-of-spaces)
+(add-hook 'editorconfig-after-apply-functions #'config/use-tabs-makefiles-only)
 #+end_src
