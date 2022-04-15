@@ -1253,3 +1253,17 @@ body .css-1qpjcoh {
 .gwSAsj {
   color: var(--df-text-color) !important;
 }
+
+/**
+ * Description of pull requests.
+ */
+.cEAYlJ {
+  color: var(--df-text-color) !important;
+}
+
+/**
+ * Color gets applied from a class that seems to keep shifting.
+ */
+.ak-renderer-document {
+  color: var(--df-text-color) !important;
+}
