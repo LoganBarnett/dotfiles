@@ -60,7 +60,7 @@ delimiters. This means the motions still mostly work though.
 https://github.com/expez/evil-smartparens
 
 #+name: config/prog-mode-disable-smart-parens
-#+begin_src emacs-lisp :results none :tangle yes
+#+begin_src emacs-lisp :results none
   (on-doom
     ;; This is the recommended way to disable it per
     ;; https://github.com/hlissner/doom-emacs/issues/1094
@@ -98,6 +98,13 @@ https://github.com/expez/evil-smartparens
    )
 #+end_src
 
+#+name: config/prog-mode-disable-smart-parens-fn
+#+begin_src emacs-lisp :results none :tangle yes :noweb yes
+(defun config/prog-mode-disable-smart-parens ()
+  <<config/prog-mode-disable-smart-parens>>
+  )
+#+end_src
+
 ** rainbow-delimiters
 =rainbow-delimiters= are incredibly helpful for visually determining nesting of
 delimiters.
@@ -124,6 +131,18 @@ delimiters.
       (auto-fill-mode 1)
       )
   #+end_src
+* line numbers
+
+Generally line numbers are automatically set, butt his appears to be on a
+per-mode basis with almost all modes opting in. =applescript-mode= is a notable
+exception. I don't know why we wouldn't just default it for all =prog-mode=
+settings. If line numbers would be inappropriate, then the mode seems
+inappropriate to derive from =prog-mode=.
+
+#+name: config/prog-mode-line-numbers-enable
+#+begin_src emacs-lisp :results none :tangle yes
+(add-hook 'prog-mode-hook (lambda() (message "displaying line numbers") (display-line-numbers-mode 1)))
+#+end_src
 
 * line wrapping
   Disable line wrapping for any =prog-mode= based buffer. =truncate-lines= set
@@ -297,10 +316,13 @@ For some major modes we just need to tie this to the mode hook.
   <<prog-mode-disable-visual-line-mode>>
   (config/rainbow-delimiters)
   <<config/prog-mode-disable-smart-parens>>
+  <<config/prog-mode-line-numbers-enable>>
   <<config/prog-mode-manage-final-newline>>
   (add-hook 'prog-mode-hook #'config/auto-fill-comments)
-  (add-hook 'prog-mode-hook #'display-line-numbers-mode)
   (add-hook 'prog-mode-hook #'config/disable-line-wrapping)
+  ;; I have found repeating this in a hook fixes the <> completion in JavaScript
+  ;; modes.
+  (add-hook 'prog-mode-hook #'config/prog-mode-disable-smart-parens)
   :config
   (require 'multi-line)
   <<config/prog-multi-line-default-strategy>>
