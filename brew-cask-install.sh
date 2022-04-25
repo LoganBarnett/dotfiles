@@ -69,6 +69,7 @@ else
 arduino
 battlescribe
 discord
+doxie
 mixxx
 obs
 openscad
