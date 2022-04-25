@@ -457,8 +457,19 @@ in
     # selectively. See
     # https://nixos.org/manual/nixpkgs/stable/#sec-language-texlive for
     # additional information on LaTeX installation.
-    # TODO: Include circuitikz, remove install-latex.sh.
-    pkgs.texlive.combined.scheme-basic
+    # pkgs.texlive.combined.scheme-basic
+    (pkgs.texlive.combine {
+      inherit (pkgs.texlive)
+        algorithms
+        capt-of
+        # Circuit diagram support.
+        circuitikz
+        scheme-small
+        # SI units (metric?).
+        siunitx
+        wrapfig
+      ;
+    })
     # Highly controllable terminal emulation and session management.
     pkgs.tmux
     # Some folks still use rar for an archive format. This lets us decompress
@@ -498,6 +509,4 @@ in
   # the Home Manager release notes for a list of state version
   # changes in each release.
   home.stateVersion = "21.05";
-
 }
-

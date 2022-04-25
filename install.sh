@@ -66,8 +66,6 @@ slog "installing GPG..."
 
 #./daw-install.sh
 
-#./install-latex.sh
-
 # TODO: Does the nix package let me _run_ mongodb?
 #./mongodb-install.sh
 
