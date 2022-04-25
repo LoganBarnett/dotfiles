@@ -2,7 +2,8 @@
 
 set -euo pipefail
 
+echo 'This program only works on $PWD.'
 # find . -name '*.flac' -exec sh -c 'file="{}" ffmpeg -i "$file" -acodec alac -vcodec copy "${file%.flac}.m4a"' \;
-find . -name '*.flac' -exec sh -c 'export file="{}"; 
+find . -name '*.flac' -exec sh -c 'export file="{}";
 ffmpeg -i "$file" -acodec alac -vcodec copy "${file%.flac}.m4a"' \;
 # echo "copy from $file to ${file%.flac}.m4a"' \;
