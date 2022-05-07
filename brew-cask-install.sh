@@ -74,6 +74,8 @@ mixxx
 obs
 openscad
 steam
+vlc
+zoom
 "
 fi
 
