@@ -203,6 +203,7 @@
 
 
   (load-library "org-babel-tangle-block")
+  (load-library "org-babel-execute-block")
   ;; TODO: move this into a general shell config file
   ;; Setting the shell to bash makes it work with things like exec-path. zsh
   ;; does not seem to work with this.
