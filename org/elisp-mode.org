@@ -1,0 +1,29 @@
+#+title:     Elisp Mode
+#+author:    Logan Barnett-Hoy
+#+email:     logustus@gmail.com
+#+date:      <2022-05-07 Sat>
+#+language:  en
+#+file_tags:
+#+tags:
+
+* tab width
+
+Somehow this got bumped to 8. Set it back to a sane value.
+
+#+begin_src emacs-lisp :tangle no :results none
+(defun config/elisp-tab-width-set ()
+  (setq tab-width 2)
+  )
+#+end_src
+
+* stitch
+
+Beware: The package is =elisp-mode.el= and the mode is =emacs-lisp-mode=.
+#+begin_src emacs-lisp :results none :noweb yes
+(use-package "elisp-mode"
+  :init
+  <<config/elisp-tab-width-set>>
+  (add-hook 'emacs-lisp-mode-hook #'config/elisp-tab-width-set)
+  :config
+  )
+#+end_src

@@ -254,6 +254,7 @@
   (init-org-file "debug.org")
   ;; (init-org-file "hydra.org")
   (init-org-file "org-mode.org")
+  (init-org-file "elisp-mode.org")
   (init-org-file "org-contacts.org")
   (init-org-file "keybindings.org")
   (init-org-file "modeline.org")
