@@ -692,16 +692,8 @@ around 5 priorities, and we must support these beforehand.
 * typing
 ** disable smart parens
 
-At some point org-mode started completing =[= with =]= and this cannot stand. If
-this starts to grow, just throw in what we have in [[file:./prog-mode.org][prog-mode.org]]
-
-#+name: config/org-mode-smart-parens-disable
-#+begin_src emacs-lisp :results none :tangle no
-(defun config/org-mode-smart-parens-disable ()
-  (sp-pair "[" nil :actions :rem)
-  (sp-pair "'" nil :actions :rem)
-  )
-#+end_src
+At some point org-mode started completing =[= with =]= and this cannot stand.
+This started to grow quickly, so I just used what we have in [[file:./prog-mode.org][prog-mode.org]].
 
 * stitch
 
@@ -717,7 +709,8 @@ this starts to grow, just throw in what we have in [[file:./prog-mode.org][prog-
   <<config/org-babel-passthrough>>
   <<config/org-mode-hack-initial-folding>>
   <<config/org-mode-smart-parens-disable>>
-  (add-hook 'org-mode-hook #'config/org-mode-smart-parens-disable)
+  (config/prog-mode-disable-smart-parens)
+  (add-hook 'org-mode-hook #'config/prog-mode-disable-smart-parens)
   :config
   <<config/open-link-in-new-window>>
   ;; Needed to set `org-startup-folded'.
