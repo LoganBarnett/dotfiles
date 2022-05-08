@@ -1,4 +1,4 @@
-;;; org-babel-tangle-block. --- el Tangle org-babel blocks -*- lexical-binding: t; -*-
+;;; org-babel-tangle-block.el --- Tangle org-babel blocks -*- lexical-binding: t; -*-
 ;;
 ;; Copyright (C) 2021 Logan Barnett-Hoy
 ;;
@@ -7,8 +7,8 @@
 ;; Created: November 06, 2021
 ;; Modified: November 06, 2021
 ;; Version: 0.0.1
-;; Keywords: Symbol’s value as variable is void: finder-known-keywords
-;; Homepage: https://github.com/logan/org-babel-tangle
+;; Keywords: org org-babel
+;; Homepage: https://github.com/loganbarnett/dotfiles
 ;; Package-Requires: ((emacs "24.3"))
 ;;
 ;; This file is not part of GNU Emacs.
