@@ -97,6 +97,8 @@
 ;; (package! org-contacts) ; Part of contrib, so this won't work.
 (package! org-indent :disable t)
 (package! org-mime)
+;; Turn an org tree into a live, editable presentation!
+(package! org-tree-slide)
 ;; (package! org-mode) ; Pretty sure some of these are built in.
 (package! org-superstar :disable t)
 ;; Provides an org-mode export for a D&D LaTeX template.
