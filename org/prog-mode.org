@@ -59,42 +59,52 @@ delimiters. This means the motions still mostly work though.
 
 https://github.com/expez/evil-smartparens
 
+#+name: config/disable-smartparens-pairs
+#+begin_src emacs-lisp :results none :tangle yes
+(defun config/disable-smartparens-pairs ()
+  (message "Disabling smart parens pairs...")
+  ;; The recommended way to cease incessent completion of of smartparens is to
+  ;; set its global mode to -1.  However the recommended way isn't enough. So
+  ;; let's really disable it.  Without this, it will also leak into the
+  ;; minibuffer.
+  (sp-pair "(" nil :actions :rem)
+  (sp-pair "[" nil :actions :rem)
+  (sp-pair "'" nil :actions :rem)
+  (sp-pair "`" nil :actions :rem)
+  (sp-pair "<" nil :actions :rem)
+  (sp-pair "{" nil :actions :rem)
+  (sp-pair "=" nil :actions :rem)
+  (sp-pair "\"" nil :actions :rem)
+  )
+;; Just run it for good measure, though it won't do anything :\
+(config/disable-smartparens-pairs)
+#+end_src
+
+
 #+name: config/prog-mode-disable-smart-parens
-#+begin_src emacs-lisp :results none
+#+begin_src emacs-lisp :results none :noweb yes
+<<config/disable-smartparens-pairs>>
   (on-doom
     ;; This is the recommended way to disable it per
     ;; https://github.com/hlissner/doom-emacs/issues/1094
-    (after! smartparens (smartparens-global-mode -1))
-    ;; However the recommended way isn't enough. So let's really disable it.
-    ;; Without this, it will also leak into the minibuffer.
-    (sp-pair "(" nil :actions :rem)
-    (sp-pair "[" nil :actions :rem)
-    (sp-pair "'" nil :actions :rem)
-    (sp-pair "`" nil :actions :rem)
-    (sp-pair "<" nil :actions :rem)
-    (sp-pair "{" nil :actions :rem)
-    (sp-pair "=" nil :actions :rem)
-    (sp-pair "\"" nil :actions :rem)
-    ;; The documentation regarding strict mode makes me think it's the real
-    ;; culprit. Disable it everywhere. I'm not sure why the call above seems to
-    ;; have no effect.
-    (smartparens-global-strict-mode -1)
+    (after! smartparens
+      (smartparens-global-mode -1)
+      ;; The documentation regarding strict mode makes me think it's the real
+      ;; culprit. Disable it everywhere. I'm not sure why the call above seems to
+      ;; have no effect.
+      (smartparens-global-strict-mode -1)
+      (setq sp-show-pair-from-inside t)
+      ;; THis is what we actually want out of smartparens mode: Show us matching
+      ;; parens.
+      (show-smartparens-global-mode 1)
+      )
+    ;; And then just brute force disable it, which seems to sometimes work.
+    (config/disable-smartparens-pairs)
   )
   (on-spacemacs
    ;; Spacemacs has no means of disabling smartparens as well. So we just yank out
    ;; every possible pairing.
-   (eval-after-load 'smartparens
-     '(progn
-        (sp-pair "(" nil :actions :rem)
-        (sp-pair "[" nil :actions :rem)
-        (sp-pair "'" nil :actions :rem)
-        (sp-pair "`" nil :actions :rem)
-        (sp-pair "<" nil :actions :rem)
-        (sp-pair "{" nil :actions :rem)
-        (sp-pair "=" nil :actions :rem)
-        (sp-pair "\"" nil :actions :rem)
-        )
-     )
+   (eval-after-load 'smartparens #'config/disable-smartparens-pairs)
    )
 #+end_src
 
@@ -310,6 +320,8 @@ For some major modes we just need to tie this to the mode hook.
 * all together
 
 #+begin_src emacs-lisp :results none :noweb yes
+<<config/prog-mode-disable-smart-parens-fn>>
+
 (use-package prog-mode
   :init
   <<config/prog-mode-fix-c-indentation>>
@@ -320,6 +332,7 @@ For some major modes we just need to tie this to the mode hook.
   <<config/prog-mode-manage-final-newline>>
   (add-hook 'prog-mode-hook #'config/auto-fill-comments)
   (add-hook 'prog-mode-hook #'config/disable-line-wrapping)
+  (add-hook 'prog-mode-hook #'config/disable-smartparens-pairs)
   ;; I have found repeating this in a hook fixes the <> completion in JavaScript
   ;; modes.
   (add-hook 'prog-mode-hook #'config/prog-mode-disable-smart-parens)
