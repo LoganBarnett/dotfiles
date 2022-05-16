@@ -108,6 +108,9 @@ in
     # Nix. Or that's the idea. While this builds, I haven't accomplished what it
     # says on the tin just yet.
     pkgs.bundix
+    # Write certificates out - these aren't present on macOS in a freely
+    # available way.
+    pkgs.cacert
     # gem-apps
     # Compile natively to tiny devices.
     # Actually I'm not sure what to use. Arduino has no Darwin/macOS version
@@ -251,12 +254,12 @@ in
     #pkgs.nettools
     # A tool for mapping network ports.
     pkgs.nmap
-    # Elastic, load balanced, self hosted, containerized server pools. This is
-    # the command line interface.
-    pkgs.nomad
     # The code injector bootstrap script is written in Node.js, so we need to
     # run it from the command line.
     pkgs.nodejs
+    # Elastic, load balanced, self hosted, containerized server pools. This is
+    # the command line interface.
+    pkgs.nomad
     # OBS does sweet screen recording and video composition.
     # Sadly, this does not work on Darwin, yet.
     # pkgs.obs-studio
@@ -424,9 +427,6 @@ in
     pkgs.rustup
     # Assume an account on AWS via SAML.
     pkgs.saml2aws
-    # Write certificates out - these aren't present on macOS in a freely
-    # available way.
-    pkgs.cacert
     # Needed to do Crystal development, or really when I want to contribute to
     # oq.
     #
