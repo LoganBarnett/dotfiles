@@ -10,6 +10,7 @@
 
 Somehow this got bumped to 8. Set it back to a sane value.
 
+#+name: config/elisp-tab-width-set
 #+begin_src emacs-lisp :tangle no :results none
 (defun config/elisp-tab-width-set ()
   (setq tab-width 2)
@@ -19,6 +20,7 @@ Somehow this got bumped to 8. Set it back to a sane value.
 * stitch
 
 Beware: The package is =elisp-mode.el= and the mode is =emacs-lisp-mode=.
+
 #+begin_src emacs-lisp :results none :noweb yes
 (use-package "elisp-mode"
   :init
