@@ -149,6 +149,12 @@
 ;; (package! smartparens :disable t)
 ;; (package! sql-mode)
 (package! terraform-mode)
+(package! tree-sitter)
+(package! tree-sitter-langs)
+;; TypeScript - the highest mindshare typed JavaScript.
+(package! typescript-mode)
+;; Allow editing TypeScript with JSX.
+;; (package! typescript-tsx-mode)
 (package! web-beautify)
 
 ;; To install a package directly from a particular repo, you'll need to specify

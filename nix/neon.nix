@@ -257,6 +257,10 @@ in
     # The code injector bootstrap script is written in Node.js, so we need to
     # run it from the command line.
     pkgs.nodejs
+    # Language Server (Protocol) - a generic means of consuming languages in an
+    # editor agnostic manner.
+    # Lifted from https://code-notes.jhuizy.com/add-custom-npm-to-home-manager/
+    pkgs.nodePackages.typescript-language-server
     # Elastic, load balanced, self hosted, containerized server pools. This is
     # the command line interface.
     pkgs.nomad
@@ -452,6 +456,8 @@ in
     pkgs.sqlite
     # Declarative server orchestration.
     pkgs.terraform
+    # Binary for incremental parsing of various languages for Emacs.
+    pkgs.tree-sitter
     # LaTeX is for rendering a number of diagrams and documents.
     # scheme-full is way too big. Use scheme-basic and pull in other modules
     # selectively. See
