@@ -332,6 +332,8 @@
                                  ;; No one will ever figure this out!
                                  (s-join "" (reverse '("a" "e" "w" "n")))
                                  "-private.org"))
+  ;; Load up any ssh-agents or gpg-agents.
+  (keychain-refresh-environment)
   (message "[INIT] Init Done.")
   )
 

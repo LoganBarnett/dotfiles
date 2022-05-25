@@ -68,6 +68,7 @@
 (package! groovy-mode)
 (package! habitica)
 (package! highlight-parentheses)
+(package! keychain-environment)
 (package! jiralib2 :recipe (:local-repo "~/dev/jiralib2"))
 (package! lsp-java)
 ;; (package! latex-mode)
@@ -75,6 +76,8 @@
 (package! js2-mode)
 (package! lsp-mode)
 (package! lsp-ui)
+;; Desperately attempt to fix the SSH passphrase prompting issue.
+(package! magit :pin "a4a78d341a7006ccdec708b424048ba3b22ee801")
 (package! markdown-mode)
 ;; mu4e's lisp build doesn't appear in a place that straight.el finds, so the
 ;; build directory for mu4e will appear as empty. To work around this we can

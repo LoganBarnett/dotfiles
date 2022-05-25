@@ -435,13 +435,14 @@ export LC_ALL=en_US.UTF-8
 export JENV_ROOT=/usr/local/opt/jenv
 
 export PATH="$JENV_ROOT:$PATH"
-# eval "$(jenv init -)"
 
-# rbenv for Ruby
-#eval "$(rbenv init -)"
-
-# nodenv requires a quick init
-eval "$(nodenv init -)"
+# Start keychain, which ensures only one ssh-agent. This may prompt us for a
+# password though. The results print out the standard environment variables much
+# like ssh-agent and gpg-agent do, so we must eval them to take effect. Weird
+# things happen if that is omitted, since it will use the system defaults (which
+# are wrong or separate).
+echo "Password entry required for keychain to start ssh-agent and gpg-agent."
+eval "$(keychain -Q --agents gpg,ssh --eval)"
 
 # cargo also requires an init
 source $HOME/.cargo/env

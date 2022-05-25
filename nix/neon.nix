@@ -217,6 +217,8 @@ in
     # jenv
     # JSON parsing, querying, and updating.
     pkgs.jq
+    # Manage pesky ssh-agent and gpg-agent sessions universally.
+    pkgs.keychain
     # "Office" tools.
     # Doesn't build on macOS yet.
     # pkgs.libreoffice
