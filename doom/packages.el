@@ -96,7 +96,7 @@
 (package! multi-term)
 (package! noflet)
 ;; Org-babel support for OpenSCAD.
-(package! ob-scad :recipe (:repo "git@github.com:wose/ob-scad.git"))
+(package! ob-scad :recipe (:repo "https://github.com/wose/ob-scad.git"))
 ;; (package! org-contacts) ; Part of contrib, so this won't work.
 (package! org-indent :disable t)
 (package! org-mime)
@@ -106,7 +106,7 @@
 (package! org-superstar :disable t)
 ;; Provides an org-mode export for a D&D LaTeX template.
 ;; https://github.com/evanbergeron/DND-5e-LaTeX-Template
-(package! ox-dnd :recipe (:repo "git@github.com:xeals/emacs-org-dnd.git"))
+(package! ox-dnd :recipe (:repo "https://github.com/xeals/emacs-org-dnd.git"))
 ;; ox-jira uses the trunk branch now, per
 ;; https://github.com/stig/ox-jira.el/issues/50, however straight.el hasn't
 ;; gotten detection of the default branch going yet (understandibly there's some
@@ -144,7 +144,7 @@
 (package! rjsx-mode)
 (package! rust-mode)
 (package! scad-mode) ;; For opening OpenSCAD .scad files.
-(package! scad-preview-mode :recipe (:repo "git@github.com:zk-phi/scad-preview.git"))
+(package! scad-preview-mode :recipe (:repo "https://github.com/zk-phi/scad-preview.git"))
 (package! so-long)
 ;; I fail to see how this is ever helpful with vim bindings.
 ;; Though this attempt to disable it will not work according to
