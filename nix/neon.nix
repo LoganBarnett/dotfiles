@@ -458,6 +458,10 @@ in
     pkgs.sqlite
     # Declarative server orchestration.
     pkgs.terraform
+    # Gives us GNU's makeinfo, which I use to build org-mode successfully. This
+    # is because the make target eventually invokes `info', which expects a gnu
+    # makeinfo. The BSD makeinfo has "mismatch" errors.
+    pkgs.texinfo
     # Binary for incremental parsing of various languages for Emacs.
     pkgs.tree-sitter
     # LaTeX is for rendering a number of diagrams and documents.
