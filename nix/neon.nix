@@ -101,7 +101,7 @@ in
     pkgs.ack
     # For running AWS commands. Generally this is just a backend for saml2aws
     # under my usage.
-    pkgs.awscli
+    # pkgs.awscli
     # 3D modeling, but without the indentured servitude.
     #pkgs.blender
     # Convert Ruby gems to valid nix derivations or Ruby dependencies within
@@ -239,7 +239,8 @@ in
     # Like nmap, a tool for testing network ports. The executable is "nc".
     # This installs the GNU version, although the OpenBSD version allows
     # connecting to Unix sockets. For Unix sockets just use socat.
-    pkgs.netcat
+    # Disabled until https://github.com/NixOS/nixpkgs/issues/181187 is resolved.
+    #pkgs.netcat
     # Connect to MongoDB for poking around the document store.
     # Currently broken due to gperftools.
     # mongodb
