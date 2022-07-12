@@ -492,6 +492,10 @@ in
     # vpnc
     # The penultimate editor.
     pkgs.vim
+    # The open source version of VSCode is VSCodium (a play on Chromium, I
+    # suppose). Doesn't install on aarch64 yet. I want this package so I can
+    # work with those who have not come to Holy Emacs yet.
+    # pkgs.vscodium
     # Renders HTML formatted emails.
     pkgs.w3m
     # Sign Firefox extensions authored by me.

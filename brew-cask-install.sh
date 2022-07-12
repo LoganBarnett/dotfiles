@@ -75,6 +75,7 @@ obs
 openscad
 steam
 vlc
+vscodium
 zoom
 "
 fi
