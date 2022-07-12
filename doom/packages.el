@@ -103,6 +103,9 @@
 ;; Turn an org tree into a live, editable presentation!
 (package! org-tree-slide)
 ;; (package! org-mode) ; Pretty sure some of these are built in.
+;; Pinned due to https://github.com/doomemacs/doomemacs/issues/6478 (and
+;; upstream, https://github.com/emacs-evil/evil/issues/1630 ).
+(package! org-mode :pin "971eb6885ec996c923e955730df3bafbdc244e54")
 (package! org-superstar :disable t)
 ;; Provides an org-mode export for a D&D LaTeX template.
 ;; https://github.com/evanbergeron/DND-5e-LaTeX-Template
