@@ -310,7 +310,7 @@ in
     #                                             })
     #
     # CAD software with a programming language behind it. Declarative models!
-    # openscad
+    # pkgs.openscad
     # I get build errors with 2021-01.
     # TODO: Report the build errors.
     #(import (builtins.fetchGit {
