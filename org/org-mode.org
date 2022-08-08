@@ -285,12 +285,12 @@ A common form of hidden content is collapsed headings."
  diary-file "~/notes/diary.org"
  ;; appt-audible t
  calendar-date-style 'iso
+ ;; `org-agenda-files' is also modified in org-agenda-private.org in my private
+ ;; repo.
  org-agenda-files
  `(
    "~/notes/agenda.org"
    "~/notes/inbox.org"
-    ;; Thrwart security thearter scans.
-   ,(concat "~/work-notes/nw" "ea.org")
    )
  ;; For optimizations:
  org-hide-leading-stars nil

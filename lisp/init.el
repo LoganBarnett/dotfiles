@@ -328,10 +328,7 @@
   (init-org-file "dnd.org")
   (init-org-file "jira.org")
   (config/init-org-file-private "jira-private.org")
-  (config/init-org-file-private (concat
-                                 ;; No one will ever figure this out!
-                                 (s-join "" (reverse '("a" "e" "w" "n")))
-                                 "-private.org"))
+  (config/init-org-file-private "org-agenda-private.org")
   ;; Load up any ssh-agents or gpg-agents.
   (keychain-refresh-environment)
   (message "[INIT] Init Done.")
