@@ -453,6 +453,11 @@ source $HOME/.cargo/env
 # Get ocaml's package manager on the PATH and other ocaml config.
 # eval $(opam config env)
 
+# Use direnv with nix to achieve an automatic shell.nix adoption upon entering a
+# directory using a shell.nix setup.
+# See more at https://nixos.wiki/wiki/Development_environment_with_nix-shell
+eval "$(direnv hook zsh)"
+
 # This allows commands to be excluded from history if they are prefixed with a
 # space.
 export HISTCONTROL=ignorespace

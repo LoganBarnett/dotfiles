@@ -87,6 +87,10 @@ in
   #  home.file.".config/zsh/scripts".source = ./files/scripts;
   #  home.file.".config/zsh/scripts".recursive = true;
 
+  # lorri automatically watches direnv and shell.nix and installs as needed.
+  # It only works on Linux though.
+  # services.lorri.enable = true;
+
   home.packages = [
     # These are a suggestion from https://stackoverflow.com/a/51161923 to get
     # clang behaving properly for some trouble I was having with lxml (a Python
@@ -131,6 +135,13 @@ in
     # }) {}).crystal
     # Gives us diff --color support via GNU diff.
     pkgs.diffutils
+    # Just loads and unloads environment variables based on directory. Really
+    # useful with nix to declare local dependencies for a project, and see them
+    # auto loaded when entering the directory. See the local shell configuration
+    # for how direnv is hooked up.
+    #
+    # See more at https://nixos.wiki/wiki/Development_environment_with_nix-shell
+    pkgs.direnv
     # A specialized charting tool using a declarative language. Supports a
     # specific set of charts but I don't remember which. Used by plantuml.
     pkgs.ditaa
