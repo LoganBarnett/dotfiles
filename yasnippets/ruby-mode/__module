@@ -1,0 +1,20 @@
+# -*- mode: snippet; require-file-newline: nil -*-
+# name: ruby-module
+# key: __module
+# condition: t
+# comment: This snippet overrides the "__module" snippet, which Doom uses for
+# Ruby newly created files that live under ./lib in a given project. I have
+# found these snippets to be distracting. I was able to find this code from
+# `doom-snippets-dir' which in turn was found under `yas-snippets-dir'. The code
+# below is a copy with some parts removed - namely the `progn' return and the
+# actual template below. The code is still desired because it identifies the
+# `./lib' match, which puts this ahead of the original __module snippet.
+# --
+`(progn
+     (setq-local pkgs (split-string (string-remove-prefix (concat (doom-project-root) "lib/") (file-name-sans-extension buffer-file-name)) "/" t))
+     (setq-local pkgs-p (eq (length pkgs) 1))
+     (setq-local pkg-module (replace-regexp-in-string " " "::" (capitalize (if pkgs-p (car pkgs) (string-join (butlast pkgs) " "))) nil t))
+     ;; Make this evaluate to nothing so we don't actually put anything in
+     ;; the file.
+     nil
+)`

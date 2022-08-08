@@ -1,0 +1,6 @@
+# -*- mode: snippet; require-file-newline: nil -*-
+# name: ruby-mode
+# key: __
+# condition: t
+# --
+bye
