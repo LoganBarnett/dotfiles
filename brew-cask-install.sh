@@ -73,6 +73,7 @@ doxie
 mixxx
 obs
 openscad
+ringcentral-meetings
 steam
 ultimaker-cura
 vlc
