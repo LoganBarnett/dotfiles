@@ -46,6 +46,13 @@ question.
               '(require-file-newline . nil)
               )
 #+end_src
+* snippet dirs
+
+#+name: config/yasnippet-snippet-dirs
+#+begin_src emacs-lisp :results none
+(setq-default +snippets-dir "~/dev/dotfiles/yasnippets")
+#+end_src
+
 
 * apply
 
@@ -55,7 +62,7 @@ question.
     (use-package "yasnippet"
       :init
       <<config/yasnippet-require-file-newline-mark-safe>>
-      (setq-default yas-snippet-dirs '("~/dev/dotfiles/yasnippets"))
+      <<config/yasnippet-snippet-dirs>>
       (config/yasnippet-fundamental-mode)
       :config
       (yas-recompile-all)
