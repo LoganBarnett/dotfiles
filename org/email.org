@@ -291,8 +291,9 @@ using email.
  mu4e-get-mail-command (format "INSIDE_EMACS=%s mbsync -a -F" emacs-version)
  ;; `epa-pinentry-mode' is deprecated, but not mirrored by `epg-pinentry-mode',
  ;; so set them both.
- epa-pinentry-mode 'ask
- epg-pinentry-mode 'ask
+ ;; 'loopbpack allows Emacs to use the minibuffer for the password entiy.
+ epa-pinentry-mode 'loopback
+ epg-pinentry-mode 'loopback
  )
 (pinentry-start)
 #+end_src
@@ -332,28 +333,28 @@ single day.
 #+name: config/mu4e-add-bookmarks
 #+begin_src emacs-lisp :tangle no
 ;; Left in case this block is manually run. Remove the old inbox(es) first.
-(setq mu4e-bookmarks
-      (-remove (lambda (x)
-                 (or
-                  (string-equal (plist-get x :name) "inbox")
-                  ;; "Today's messages" is the default, and not useful to me
-                  ;; since it includes spam and already-archived messages.
-                  (string-equal (plist-get x :name) "Today's messages")
-                  (string-equal (plist-get x :name) "Today's inbox messages")
-                 )
-                 )
-               mu4e-bookmarks))
+;; Left for reference. No longer needed now that we have mu4e-bookmark-define,
+;; which replaces colliding bookmarks.
+;; (setq mu4e-bookmarks
+;;       (-remove (lambda (x)
+;;                  (or
+;;                   (string-equal (plist-get x :name) "inbox")
+;;                   ;; "Today's messages" is the default, and not useful to me
+;;                   ;; since it includes spam and already-archived messages.
+;;                   (string-equal (plist-get x :name) "Today's messages")
+;;                   (string-equal (plist-get x :name) "Today's inbox messages")
+;;                  )
+;;                  )
+;;                mu4e-bookmarks))
 
-(add-to-list 'mu4e-bookmarks
-             (make-mu4e-bookmark
-              :name  "inbox"
-              :query "maildir:/personal-gmail/Inbox"
-              :key ?i))
-(add-to-list 'mu4e-bookmarks
-             (make-mu4e-bookmark
-              :name  "Today's inbox messages"
-              :query "maildir:/personal-gmail/Inbox AND date:today..now"
-              :key ?t))
+(mu4e-bookmark-define
+  "maildir:/personal-gmail/Inbox"
+  "inbox"
+  ?i)
+(mu4e-bookmark-define
+  "maildir:/personal-gmail/Inbox AND date:today..now"
+  "Today's inbox messages"
+  ?t)
 #+end_src
 
 #+RESULTS: config/mu4e-add-bookmarks
@@ -605,6 +606,61 @@ not always be the case. For me it is setup via =nix=. Instead of hardcoding a
 #+begin_src emacs-lisp :results none :tangle yes
 (setq mu4e-mu-binary (executable-find "mu"))
 #+end_src
+*** troubleshooting
+
+**** mu4e version mismatch with mu binary
+
+Run his block to clear an errant install of =mu4e=. I don't know what's causing
+this yet, or if this was a one-time thing. Runs of =doom upgrade= might have
+laid this file down again, but I haven't checked.
+
+#+begin_src shell :results output :tangle no :var emacsVersion=(print emacs-version)
+rm -rfv ~/.doom-emacs.d/.local/straight/$emacsVersion/mu4e
+#+end_src
+
+---- trim or store below
+
+Sometimes during an upgrade, you'll see a version mismatch between =mu= and
+=mu4e=. I don't think =mu4e= directly queries the binary but instead looks on
+disk. If the index is of an old version, it assumes the server is of an old
+version and quits with a somewhat misleading error message.
+
+Running =mu server= directly reveals the real error: The index is out of date
+and needs to be reinitialized. This can be done using the same =mu init ...=
+invocation found in [[file:../install-email.sh]].
+
+Oh and you also need to force the version. I'm not sure what's up with that.
+Help on =mu4e-mu-version= is a "variable without a source file". Weird! I should
+probably file a bug.
+
+We'll apply the workaround here.
+
+#+name: config/fix-mu4e-version-mismatch
+#+begin_src emacs-lisp :results none :tangle yes
+;; (setq mu4e-mu-version "1.8.5")
+  ;; (defalias 'mu4e~start 'mu4e--start)
+  ;; (defalias 'mu4e~stop 'mu4e--stop)
+  ;; (defalias 'mu4e~check-requirements 'mu4e--check-requirements)
+  ;; (defalias 'mu4e~proc-sentinel 'mu4e--server-sentinel)
+  ;; (defalias 'mu4e~proc-start 'mu4e--server-start)
+  ;; (defalias 'mu4e~proc-eat-sexp-from-buf 'mu4e--server-eat-sexp-from-buf)
+  ;; (defalias 'mu4e~pong-handler 'mu4e--pong-handler)
+  ;; (defalias 'mu4e~main-view 'mu4e--main-view)
+  ;; (defalias 'mu4e~main-view-real 'mu4e--main-view-real)
+  ;; (defalias 'mu4e~main-view-real-1 'mu4e--main-view-real-1)
+  ;; (defalias 'mu4e~main-menu 'mu4e--main-menu)
+  ;; (defalias 'mu4e~main-action-str 'mu4e--main-action-str)
+  ;; (defalias 'mu4e~main-redraw-buffer 'mu4e--main-redraw-buffer)
+  ;; (defalias 'mu4e~proc-move 'mu4e--server-move)
+  ;; (defalias 'mu4e~mark-check-target 'mu4e--mark-check-target)
+  ;; (defalias 'mu4e~maildirs-with-query 'mu4e--maildirs-with-query)
+  ;; (defalias 'mu4e~longest-of-maildirs-and-bookmarks 'mu4e--longest-of-maildirs-and-bookmarks)
+  ;; (defalias 'mu4e~update-timer 'mu4e--update-timer)
+#+end_src
+
+This doesn't do the trick. The actual local code is in disagreement here. It's
+not just the version string out of whack. =mu --version= shows the correct
+version. =mu4e= does not.
 
 *** apply mu4e
 
@@ -634,6 +690,7 @@ not always be the case. For me it is setup via =nix=. Instead of hardcoding a
     <<config/mu4e-gmail-messages-delete>>
     <<config/mu4e-mail-directory-completion>>
     <<config/set-mu-path>>
+    <<config/force-mu4e-mu-version>>
     <<config/mu4e-gmail-refile-to-archives>>
     <<config/email-get-mail-command>>
     <<config/mu4e-html2text-renderer>>

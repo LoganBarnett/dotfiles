@@ -85,6 +85,7 @@
 ;; https://github.com/raxod502/straight.el/issues/491 for more context.
 (package! mu4e
   :recipe (
+           :type built-in
            :local-repo "~/.nix-profile/share/emacs/site-lisp/mu4e"
            ;; pre-build must be disabled when using the nix derivation - in part
            ;; because it is alreadt built, but also because the directory is
