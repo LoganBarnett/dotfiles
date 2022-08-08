@@ -74,6 +74,7 @@ mixxx
 obs
 openscad
 steam
+ultimaker-cura
 vlc
 vscodium
 zoom
