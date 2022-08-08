@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+# Since Alfred won't follow symlinks.
+open ~/.nix-profile/Applications/Emacs.app
