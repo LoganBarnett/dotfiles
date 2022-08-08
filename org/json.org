@@ -30,10 +30,6 @@
   #+begin_src emacs-lisp :results none
     (defun config/json-indentation ()
       (interactive)
-      (require 'json-reformat)
-      (setq-default json-reformat:indent-width 2)
-      ;; (setq-local js2-basic-offset 2)
-      ;;
       ;; `js2-basic-offset' is an alias of `js-indent-level'. Setting
       ;; `js2-basic-offset' will cause errors with trying to make localized
       ;; variables an alias.
