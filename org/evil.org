@@ -171,6 +171,16 @@ allows for interactive editing, which can include refactoring identifiers.
 (define-key evil-normal-state-map (kbd "#") #'config/begin-evil-iedit-state)
 
 #+end_src
+
+* searching
+
+Search was broken for a bit, but now it's not...?
+
+#+begin_src emacs-lisp :results none :tangle yes
+;; (setq-default evil-search-module 'evil-search)
+;;(setq-default org-fold-core-style 'text-properties)
+#+end_src
+
 * search and replace
 ** global search and replace
 
