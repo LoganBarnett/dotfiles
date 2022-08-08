@@ -1,4 +1,4 @@
-#+title:     Rename me
+#+title:     Magit GPG Lock Issue
 #+author:    Logan Barnett-Hoy
 #+email:     logustus@gmail.com
 #+date:      <2021-05-10 Mon>
