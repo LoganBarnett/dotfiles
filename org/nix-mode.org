@@ -1,0 +1,13 @@
+#+title:     Nix Mode
+#+author:    Logan Barnett-Hoy
+#+email:     logustus@gmail.com
+#+date:      <2022-05-15 Sun>
+#+language:  en
+#+file_tags:
+#+tags:
+
+* stitch
+
+#+begin_src emacs-lisp :results none
+(message "nix-mode.org does nothing right now."
+#+end_src
