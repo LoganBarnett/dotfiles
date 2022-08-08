@@ -27,7 +27,7 @@
   unstage=reset HEAD --
   tip=log -1
   # Removes branches that have been merged already.
-  tidy=!git branch --merged | sed /^\\*/d | xargs git branch -d
+  tidy=!(git branch --merged | sed /^\\*/d | xargs git branch -d ); git remote prune origin
   # Removes remote branches that have been merged already. Guards against
   # some special branches that should probably be removed manually.
   tidy-remote=!git remote prune origin; git branch -r --merged | grep -v -E '^.*?/('"$(git branch --show-current)"'$|master$|develop$|main$|release)' | sed -E 's@origin/@@' | xargs -I{} git push origin :{}
