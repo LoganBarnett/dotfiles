@@ -327,6 +327,7 @@
   (init-org-file "transportation-circle.org")
   (init-org-file "dnd.org")
   (init-org-file "jira.org")
+  (config/init-org-file-private "email-private.org")
   (config/init-org-file-private "jira-private.org")
   (config/init-org-file-private "org-agenda-private.org")
   ;; Load up any ssh-agents or gpg-agents.

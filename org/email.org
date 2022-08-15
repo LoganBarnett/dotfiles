@@ -268,7 +268,13 @@ http://pragmaticemacs.com/emacs/master-your-inbox-with-mu4e-and-org-mode/
 
 #+name: config/mu4e-gmail-messages-delete
 #+begin_src emacs-lisp :results none :tangle no
-(setq mu4e-trash-folder "/personal-gmail/personal-gmail-trash")
+(defun config/mu4e-trash (*args)
+  (concat
+    maildir-account-dir
+    maildir-account-trash-subdir
+    )
+  )
+(setq mu4e-trash-folder #'config/mu4e-trash)
 #+end_src
 
 *** getting mail
@@ -330,42 +336,33 @@ views. It doesn't come with one that just shows your inbox. I'm not a fan of
 looking at "today's" email unless I can make sure I handle everything in a
 single day.
 
-#+name: config/mu4e-add-bookmarks
-#+begin_src emacs-lisp :tangle no
-;; Left in case this block is manually run. Remove the old inbox(es) first.
-;; Left for reference. No longer needed now that we have mu4e-bookmark-define,
-;; which replaces colliding bookmarks.
-;; (setq mu4e-bookmarks
-;;       (-remove (lambda (x)
-;;                  (or
-;;                   (string-equal (plist-get x :name) "inbox")
-;;                   ;; "Today's messages" is the default, and not useful to me
-;;                   ;; since it includes spam and already-archived messages.
-;;                   (string-equal (plist-get x :name) "Today's messages")
-;;                   (string-equal (plist-get x :name) "Today's inbox messages")
-;;                  )
-;;                  )
-;;                mu4e-bookmarks))
+Bookmarks can contain lisp expressions as well as parameters in the queries
+themselves. <-- in what way? I can use functions to build the queries. Is that
+what was meant?
 
+Bookmarks are now set via a =mu4e-context= and thus exist in my private
+configuration.
+
+#+name: config/mu4e-add-bookmarks
+#+begin_src emacs-lisp :tangle no :results none
 (mu4e-bookmark-define
-  "maildir:/personal-gmail/Inbox"
+  (lambda ()
+    (concat "maildir:" maildir-account-dir maildir-account-inbox-subdir)
+    )
   "inbox"
   ?i)
 (mu4e-bookmark-define
-  "maildir:/personal-gmail/Inbox AND date:today..now"
+  (lambda ()
+    (concat
+     "maildir:"
+     maildir-account-dir
+     maildir-account-inbox-subdir
+     " AND date:today..now"
+     )
+    )
   "Today's inbox messages"
   ?t)
 #+end_src
-
-#+RESULTS: config/mu4e-add-bookmarks
-| :name | Today's inbox messages | :query | maildir:/personal-gmail/Inbox AND date:today..now | :key         | 116 |      |     |
-| :name | inbox                  | :query | maildir:/personal-gmail/Inbox                     | :key         | 105 |      |     |
-| :name | Unread messages        | :query | flag:unread AND NOT flag:trashed                  | :key         | 117 |      |     |
-| :name | Last 7 days            | :query | date:7d..now                                      | :hide-unread |   t | :key | 119 |
-| :name | Messages with images   | :query | mime:image/*                                      | :key         | 112 |      |     |
-
-Bookmarks can contain lisp expressions as well as parameters in the queries
-themselves.
 
 [[https://www.djcbsoftware.nl/code/mu/mu4e/Bookmarks.html][mu4e bookmarks docs]]
 
