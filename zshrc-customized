@@ -15,6 +15,8 @@ nixpkgs-overlays=$HOME/.config/nixpkgs/overlays/"
 # Chop up the string to defeat its detection. This allows us to do the install
 # without having to remove it during a reinstallation and then re-add it.
 export PATH="\
+$HOME/dev/dotfiles-private/bin:\
+$HOME/bin:\
 /sbin:\
 /usr/sbin:\
 $NIX_PATH_ASDF:\
@@ -22,8 +24,6 @@ $HOME/.nix""-profile/bin:\
 /usr/local/sbin:\
 /opt/local/sbin:\
 /bin:\
-$HOME/bin:\
-$HOME/dev/dotfiles-private/bin:\
 /usr/local/bin:\
 /opt/local/bin:\
 $HOME/dev/adt-bundle-mac/sdk/platform-tools:\
