@@ -26,6 +26,9 @@
 ;; Firefox plugin.
 (package! atomic-chrome)
 (package! auto-compile)
+;; Allow converting between various cases (PascalCase, camelCase, snake_case,
+;; kebob-case, etc).
+(package! caseformat)
 (package! dap-mode)
 ;; I like dash, but it's listed here because ejira or one of its dependencies
 ;; depends upon it, but has not declared that in its own package list.
