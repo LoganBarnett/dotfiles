@@ -8,6 +8,20 @@
 
 * preview
 
+** executable
+
+My executable isn't found in =$PATH= due to how Homebrew exposes OpenSCAD. While
+the Nix OpenSCAD package doesn't suffer this, the Nix package doesn't function
+currently on =aarch64=.
+
+The path must be expanded before being set.
+
+#+name: config/openscad-command
+#+begin_src emacs-lisp :results none :tangle yes
+(setq-default scad-command (file-truename "~/bin/openscad"))
+#+end_src
+
+
 ** key maps
 
 The movement key bindings here are relative to the camera, not the model. When
@@ -81,6 +95,7 @@ We can add =org-babel= support using [[https://github.com/wose/ob-scad][ob-scad]
   <<config/prog-mode-fix-c-indentation>>
   <<config/scad-indentation-fix>>
   <<config/org-babel-ob-scad-add>>
+  <<config/openscad-command>>
   (add-hook 'scad-mode-hook #'config/prog-mode-c-style-set)
   )
 #+end_src
