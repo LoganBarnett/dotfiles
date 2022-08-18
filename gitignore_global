@@ -8,6 +8,8 @@
 .\#*
 # Node.js based files
 yarn-error.log
+# TypeScript Language Server logs.
+.log
 # tmux logs
 tmux-client-*.log
 # eclim java server stuff
