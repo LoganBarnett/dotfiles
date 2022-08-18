@@ -593,6 +593,62 @@ seems to be to disable =comment-auto-fill-only-comments= in =mu4e:compose-mode=.
          (message "window prefix configured")
          )
      #+end_src
+*** key bindings
+
+There's a lot of good and evilified key bindings in =mu4e=, but I want one more:
+Marking messages as spam. I could just move them using that normal operation,
+but it's two steps. Plus I have to think about it now that I'm managing multiple
+email accounts with =mu=. This should be smart enough to use the current
+mailbox/context.
+
+#+name: config/mu4e-mark-for-spam
+#+begin_src emacs-lisp :results none :tangle yes
+(defun config/mu4e-spam (*args)
+  (concat
+    maildir-account-dir
+    maildir-account-spam-subdir
+    )
+  )
+(setq-default mu4e-spam-folder #'config/mu4e-spam)
+
+(defun mu4e-get-spam-folder (&optional msg)
+  "Get the spam folder, optionallly based on MSG.
+See `mu4e-trash-folder'."
+  (concat
+    maildir-account-dir
+    maildir-account-spam-subdir
+    )
+  )
+
+(add-to-list 'mu4e-marks '(spam
+                           :char
+                           ("p" . "s")
+                           :prompt "spam"
+                           :dyn-target
+                           (lambda (target msg)
+                             (mu4e-get-spam-folder msg)
+                             )
+                           :action
+                           (lambda (docid msg target)
+                             (mu4e--server-move docid
+                                                (mu4e--mark-check-target target)
+                                                "-N"
+                                                )
+                             )
+                             )
+                           )
+(mu4e~headers-defun-mark-for spam)
+(define-key mu4e-headers-mode-map (kbd "p") 'mu4e-headers-mark-for-spam)
+(on-doom
+ (map!
+  :map
+  mu4e-headers-mode-map
+  :n "p"
+  #'mu4e-headers-mark-for-spam
+  )
+ )
+#+end_src
+
 *** look at the path for mu
 
 The default =mu= binary directory defaults to =/usr/local/bin/mu= which might
@@ -680,6 +736,7 @@ version. =mu4e= does not.
   (use-package "mu4e"
     :init
     <<mu4e-open>>
+    <<config/mu4e-mark-for-spam>>
     <<config/email-mu4e-capture-template-add>>
     <<config/email-mu4e-link-to-message>>
     <<config/mu4e-auto-fill-comments-disable>>
