@@ -1,6 +1,21 @@
 @namespace url(http://www.w3.org/1999/xhtml);
 
 /**
+ * Stop nagging me to install the Messenger app. I do not want it.
+ */
+
+.f5ap8yob {
+  display: none !important;
+}
+
+/**
+ * A single message.
+ */
+.lg77cbj3 {
+  background-color: var(--general-background-color) !important;
+}
+
+/**
  * Chat and chat details area.
  */
 .nred35xi {
