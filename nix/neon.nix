@@ -494,6 +494,10 @@ in
         wrapfig
       ;
     })
+    # Swear at the command line to make it guess what you really meant to type,
+    # or just do the needful after a silly command that tells you what you
+    # _should_ have done.
+    pkgs.thefuck
     # Highly controllable terminal emulation and session management.
     pkgs.tmux
     # Some folks still use rar for an archive format. This lets us decompress
