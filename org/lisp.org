@@ -6,6 +6,23 @@
 #+file_tags:
 #+tags:
 
+* advice
+
+Sometimes we need to completely unadvise a function, regardless of what advice
+it already has.
+
+#+name: config/advice-unadvice
+#+begin_src emacs-lisp :results none :tangle yes
+(defun advice-unadvice (sym)
+  "Remove all advices from symbol SYM."
+  (interactive "aFunction symbol: ")
+  (message "Removing advice from %s" sym)
+  (advice-mapc (lambda (advice _props)
+                 (message "Removed %s from %s" advice sym)
+                 (advice-remove sym advice))
+               sym))
+#+end_src
+
 * file local variables
 
 Things like =.dir-locals.el= and =org= files can have certain variables set from
@@ -97,6 +114,7 @@ The before and after looks the same with =lisp-backquote-indentation= set to
 * stitch
 
 #+begin_src emacs-lisp :results none :noweb yes
+<<config/advice-unadvice>>
 (use-package "lisp-mode"
   :init
   <<config/lisp-file-local-variables-prompt-if-unsafe>>
