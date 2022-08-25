@@ -78,6 +78,22 @@ Don't actually remove this just yet.
 #+begin_src emacs-lisp :results none
 ;(advice-remove '+emacs-lisp-truncate-pin #'config/truncate-string-stop)
 #+end_src
+* string manipulation
+** fill a string
+
+#+name: config/fill-string
+#+begin_src emacs-lisp :results none :tangle yes
+(defun fill-string (s)
+  "Fill string S (hard line wrap)."
+  (with-temp-buffer
+    (markdown-mode)
+    (insert s)
+    (fill-region (point-min) (point-max))
+    (buffer-substring (point-min) (point-max))
+    )
+  )
+#+end_src
+
 * indentation
 
 See [[file:./prog-mode.org::*indent align fix]] for a description of alignment in
@@ -115,6 +131,7 @@ The before and after looks the same with =lisp-backquote-indentation= set to
 
 #+begin_src emacs-lisp :results none :noweb yes
 <<config/advice-unadvice>>
+<<config/fill-string>>
 (use-package "lisp-mode"
   :init
   <<config/lisp-file-local-variables-prompt-if-unsafe>>
