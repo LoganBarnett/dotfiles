@@ -30,7 +30,11 @@ if [[ "$distro" == 'spacemacs' ]]; then
 elif [[ "$distro" == 'doom' ]]; then
   git clone --depth 1 https://github.com/hlissner/doom-emacs ~/.doom-emacs.d || true
   ln -snf ~/.doom-emacs.d ~/.emacs.d
-  ~/.doom-emacs.d/bin/doom install
+  # Use --no-hooks to prevent git hooks from being installed in my home
+  # directory. This is not the intention of these hooks and this arg is provided
+  # as a release valve for the issue here:
+  # https://github.com/doomemacs/doomemacs/issues/5878
+  ~/.doom-emacs.d/bin/doom install --no-hooks
   # I shouldn't need these init files to be stored locally, since they can be
   # modified upstream and break a reinstall.
   #ln -sfn $PWD/emacs.d/early-init.el ~/.doom-emacs.d/early-init.el
