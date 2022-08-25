@@ -457,6 +457,15 @@ reasons.
 (setq org-directory "~/notes")
 #+end_src
 * org-auto-id
+
+#+name: config/org-auto-id
+#+begin_src emacs-lisp :results none :tangle yes
+(load-library "org-auto-id")
+(require 'org-auto-id)
+(org-auto-id/on-save-auto-id)
+#+end_src
+
+
 I don't have a better place for a TODO list.
 ** TODO fix illegal characters
 If the heading contains characters such as =<= or =>= it will build HTML that
@@ -721,8 +730,7 @@ This started to grow quickly, so I just used what we have in [[file:./prog-mode.
   <<config/latex-format>>
   <<config/org-mode-latex-use-imagemagick>>
   <<config/org-mode-latex-add-tikz-packages>>
-  (require 'org-auto-id)
-  (org-auto-id/on-save-auto-id)
+  <<config/org-auto-id>>
   <<config/org-mode-babel-show-noweb-ref-error>>
   <<config/org-mode-set-priorities>>
   )
