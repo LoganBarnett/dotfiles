@@ -215,7 +215,6 @@
   (load-library "renumber-list")
   (load-library "money")
 
-
   (setq-default grep-find-ignored-directories '(
                                                "tmp"
                                                ".tmp"

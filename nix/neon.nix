@@ -359,7 +359,7 @@ in
     # pkgs.podman
     # Query an HTML DOM from the command line.
     pkgs.pup
-    # (python2.withPackages (ps: [
+    # (pkgs.python2.withPackages (ps: [
     # Disabled until allowBroken is addressed.
     # See https://github.com/mooz/percol/issues/110
     #
