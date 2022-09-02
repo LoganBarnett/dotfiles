@@ -28,7 +28,8 @@ pasting. I'm not sure what to do about that. Perhaps I have to use the copy-line
 equivalent function when that motion is provided. This bug only effects the
 first line.
 
-#+begin_src emacs-lisp :results none
+#+name: config/evil-comment-yanks
+#+begin_src emacs-lisp :results none :tangle yes
 
 (evil-define-operator custom/evilnc-yank-and-comment-operator (begin end type register)
   "(Un)comment and yank the text from BEGIN to END."
@@ -46,7 +47,8 @@ first line.
 
 
 * evil-mode
-  #+begin_src emacs-lisp
+  #+name: config/evil-Y-yanks-to-eol
+  #+begin_src emacs-lisp :tangle yes
     ;; (message "nothing to do in evil-mode config")
     (setq-default evil-want-Y-yank-to-eol t)
   #+end_src
@@ -64,7 +66,7 @@ Doom uses the smart case by default. While I enjoy this with =/= I do not enjoy
 it here. The motions =evil-snipe= uses need to be precise in my mind.
 
 #+name: config/evil-snipe-smart-case-disable
-#+begin_src emacs-lisp :results none :tangle no
+#+begin_src emacs-lisp :results none :tangle yes
 (setq-default evil-snipe-smart-case nil)
 #+end_src
 ** overriding normal seek keys
@@ -73,7 +75,7 @@ it here. The motions =evil-snipe= uses need to be precise in my mind.
 counter to my vanilla vim bindings. Disable it. We can use =;= and =,= for that.
 
 #+name: config/evil-snipe-override-disable
-#+begin_src emacs-lisp :results none :tangle no
+#+begin_src emacs-lisp :results none :tangle yes
 (setq-default
  evil-snipe-override-evil-repeat-keys t
  evil-snipe-repeat-keys nil
@@ -103,7 +105,7 @@ before two words. This is recorded in [[https://github.com/hlissner/evil-snipe/i
 setting =evil-snipe-skip-leading-whitespace= to =nil=.
 
 #+name: config/evil-snipe-fix-whitespace-seek
-#+begin_src emacs-lisp :results none :tangle no
+#+begin_src emacs-lisp :results none :tangle yes
 (setq-default evil-snipe-skip-leading-whitespace nil)
 #+end_src
 
@@ -189,6 +191,23 @@ default, with the option to deactivate it by adding the =g= flag at the end of
 the expression. This got switched off during an upgrade, so now I set it
 manually.
 
-#+begin_src emacs-lisp :results none
+#+name: config/evil-global-substitute
+#+begin_src emacs-lisp :results none :tangle yes
 (setq evil-ex-substitute-global t)
+#+end_src
+
+* stitch
+
+It may not be apparent but =use-package= works as you'd want it to even if the
+library is already loaded.
+
+#+begin_src emacs-lisp :results none :noweb yes
+(use-package "evil"
+  :init
+  <<config/evil-global-substitute>>
+  <<config/evil-Y-yanks-to-eol>>
+  :config
+  <<config/evil-comment-yanks>>
+  )
+
 #+end_src
