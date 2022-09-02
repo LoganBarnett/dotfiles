@@ -19,6 +19,8 @@
   hooksPath = ~/dev/dotfiles/git-hooks
   #autocrlf = true
 [push]
+  # Prevent obnoxious guards that prevent pushing to a newly created branch to
+  # its corresponding remote branch.
   default = current
   followTags = true
 [alias]
