@@ -445,6 +445,10 @@ in
     pkgs.rustup
     # Assume an account on AWS via SAML.
     pkgs.saml2aws
+    # Screenkey displays what's being typed on the screen. Too bad it doesn't
+    # work on aarch64. For macOs, keycastr https://github.com/keycastr/keycastr
+    # works great, but is installed via homebrew's cask.
+    # pkgs.screenkey
     # Needed to do Crystal development, or really when I want to contribute to
     # oq.
     #

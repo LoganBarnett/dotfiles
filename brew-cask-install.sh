@@ -70,6 +70,7 @@ arduino
 battlescribe
 discord
 doxie
+keycastr
 mixxx
 obs
 openscad
