@@ -127,3 +127,12 @@ div.imageInformation {
 .dp-customer-reviews-wrapper {
   background-color: var(--general-background-color) !important;
 }
+
+/**
+ * ... sub? Navigation.
+ */
+#nav-subnav {
+  background: var(--navigation-background-color) !important;
+  border-top: 1px solid var(--border-thin) !important;
+  border-bottom: 1px solid var(--border-thin) !important;
+}
