@@ -6,6 +6,29 @@
 #+file_tags:
 #+tags:
 
+* exporting
+** GitHub Flavored Markdown
+
+In its inert form, =org-mode= shares a lot of similarities with Markdown.
+However some things don't come over the export very well.
+
+A notable problem I've encountered is paragraphs being unfilled. While this is
+valid in Markdown, it leaves a bunch of manual edits for me to make to fix it if
+I want to hand this the export to another human in good conscious. I could make
+this configurable and submit a pull request, but let's just get it working
+first.
+
+#+name: config/markdown-export-fill-paragraph
+#+begin_src emacs-lisp :results none :tangle yes
+(defadvice org-gfm-paragraph (around fill-gfm-paragraph activate)
+  ;; ad-do-it is the magic advice "result" of the original function, if we
+  ;; choose to evaluate the value, the function is executed (original params
+  ;; included).
+  (setq ad-return-value (fill-string ad-do-it))
+  )
+
+#+end_src
+
 * images
 =org-mode= in Emacs can display images inline. This is a wonderful feature that
 doesn't get used enough, and there are tweaks needed to get it in a properly
@@ -718,6 +741,7 @@ This started to grow quickly, so I just used what we have in [[file:./prog-mode.
   <<config/org-babel-passthrough>>
   <<config/org-mode-hack-initial-folding>>
   <<config/org-mode-smart-parens-disable>>
+  <<config/markdown-export-fill-paragraph>>
   (config/prog-mode-disable-smart-parens)
   (add-hook 'org-mode-hook #'config/prog-mode-disable-smart-parens)
   :config

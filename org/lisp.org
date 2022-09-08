@@ -11,6 +11,9 @@
 Sometimes we need to completely unadvise a function, regardless of what advice
 it already has.
 
+Note: I have not seen this always work in all circumstances. Further
+investigation is needed. ~advice-mapc~ was not iterating over all of the advice.
+
 #+name: config/advice-unadvice
 #+begin_src emacs-lisp :results none :tangle yes
 (defun advice-unadvice (sym)
