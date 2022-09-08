@@ -4,4 +4,7 @@
 
 # grep used to suppress warning of symlink existing
 WARNING="File exists"
-ln -s -n $PWD/$1 ~/.$1 2>&1 | grep -v "$WARNING" || true
+for private in "$@" ; do
+  ln -s -n -f $(realpath $private) ~/.$(basename $private) 2>&1 \
+    | grep -v "$WARNING" || true
+done
