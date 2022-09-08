@@ -336,35 +336,103 @@ views. It doesn't come with one that just shows your inbox. I'm not a fan of
 looking at "today's" email unless I can make sure I handle everything in a
 single day.
 
-Bookmarks can contain lisp expressions as well as parameters in the queries
-themselves. <-- in what way? I can use functions to build the queries. Is that
-what was meant?
+**** declare bookmarks
 
-Bookmarks are now set via a =mu4e-context= and thus exist in my private
-configuration.
+We could use =mu4e-bookmark-define= but it doesn't allow setting =:hide-unread=
+and friends. The function's primary value is that it overwrites old instances in
+place, so we have to do it ourselves. Bookmarks are just associative lists
+though, so it's easy enough for us to construct them ourselves.
+
+=:hide-unread= is not respected when =:query= is used. See [[mu4e: show unread
+count]] for how that is overridden/fixed.
 
 #+name: config/mu4e-add-bookmarks
 #+begin_src emacs-lisp :tangle no :results none
-(mu4e-bookmark-define
-  (lambda ()
-    (concat "maildir:" maildir-account-dir maildir-account-inbox-subdir)
-    )
-  "inbox"
-  ?i)
-(mu4e-bookmark-define
-  (lambda ()
-    (concat
-     "maildir:"
-     maildir-account-dir
-     maildir-account-inbox-subdir
-     " AND date:today..now"
-     )
-    )
-  "Today's inbox messages"
-  ?t)
+(setq mu4e-bookmarks
+      (-remove (lambda (x)
+                 (or
+                  (string-equal (plist-get x :name) "inbox")
+                  ;; "Today's messages" is the default, and not useful to me
+                  ;; since it includes spam and already-archived messages.
+                  (string-equal (plist-get x :name) "Today's messages")
+                  (string-equal (plist-get x :name) "Today's inbox messages")
+                  )
+                 )
+               mu4e-bookmarks))
+
+(add-to-list 'mu4e-bookmarks
+             '(
+               :name "inbox"
+               :query (lambda ()
+                         (concat "maildir:"
+                                 maildir-account-dir
+                                 maildir-account-inbox-subdir)
+                         )
+               :key ?i
+               :hide-unread nil
+               )
+             )
+
+(add-to-list 'mu4e-bookmarks
+             '(
+               :name "Today's inbox messages"
+               :query (lambda ()
+                         (concat
+                          "maildir:"
+                          maildir-account-dir
+                          maildir-account-inbox-subdir
+                          " AND date:today..now"
+                          )
+                         )
+
+               :key ?t
+               :hide-unread nil
+               )
+             )
 #+end_src
 
 [[https://www.djcbsoftware.nl/code/mu/mu4e/Bookmarks.html][mu4e bookmarks docs]]
+
+**** mu4e: show unread count
+
+=mu4e= assumes that if you use =query= that =:hide-unread= should be forced. I'm
+not in agreement here, so just disable it.
+
+#+begin_src emacs-lisp :results none :tangle yes
+(defun mu4e--start (&optional func)
+  "Start mu4e.
+If `mu4e-contexts' have been defined, but we don't have a context
+yet, switch to the matching one, or none matches, the first. If
+mu4e is already running, invoke FUNC (if non-nil).
+
+Otherwise, check requirements, then start mu4e. When successful,
+invoke
+ FUNC (if non-nil) afterwards."
+  (unless (mu4e-context-current)
+    (mu4e--context-autoswitch nil mu4e-context-policy))
+  (setq mu4e-pong-func (lambda (info) (mu4e--pong-handler info func)))
+  (mu4e--server-ping
+   (mapcar ;; send it a list of queries we'd like to see read/unread info for
+    (lambda (bm)
+      (funcall (or mu4e-query-rewrite-function #'identity)
+               (plist-get bm :query)))
+    ;; exclude bookmarks that are not strings, and with certain flags
+    (seq-filter (lambda (bm)
+                  ;; Logan's modification below. Doesn't work though, so
+                  ;; commented out for now. I get "expected <string> but got
+                  ;; <list> from the server...? Producing a query would be the
+                  ;; next logical step.
+                  ;; (and t
+                  (and (stringp (plist-get bm :query))
+                       (not (or (plist-get bm :hide)
+				(plist-get bm :hide-unread)))))
+                (append (mu4e-bookmarks)
+                        (mu4e--maildirs-with-query)))))
+  ;; maybe request the list of contacts, automatically refreshed after
+  ;; reindexing
+  (unless mu4e--contacts-set (mu4e--request-contacts-maybe)))
+#+end_src
+
 
 *** reading: indexing
      This should make reading emails faster. It may, but I've noticed it also
