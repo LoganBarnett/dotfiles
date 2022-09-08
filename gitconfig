@@ -1,6 +1,5 @@
-[user]
-  name = Logan Barnett
-  email = logustus@gmail.com
+[include]
+  path = ~/.gitconfig-private
 [color]
        status = auto
        branch = auto

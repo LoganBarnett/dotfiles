@@ -11,3 +11,4 @@ set -e
 
 
 ./link-dotfile.sh gitconfig
+./link-dotfile.sh ../dotfiles-private/gitconfig-*
