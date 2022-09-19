@@ -103,4 +103,7 @@ slog "Installing email support..."
 slog "Installing Firefox settings..."
 ./firefox-install.sh
 
+slog "Blocking trackers..."
+./block-trackers.sh
+
 slog 'Done! All installation is successful!'
