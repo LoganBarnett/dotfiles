@@ -252,6 +252,10 @@
   (message "[INIT] mu4e load DONE")
   (init-org-file "debug.org")
   ;; (init-org-file "hydra.org")
+  ;; prog-mode must come before org-mode due to
+  ;; `'config/prog-mode-disable-smart-parens' needing to also be called in
+  ;; org-mode.
+  (init-org-file "prog-mode.org")
   (init-org-file "org-mode.org")
   (init-org-file "elisp-mode.org")
   (init-org-file "org-contacts.org")
@@ -273,7 +277,6 @@
   ;; display.
   (init-org-file "theme.org")
   (init-org-file "macos.org")
-  (init-org-file "prog-mode.org")
   (init-org-file "json.org")
   (init-org-file "conf-mode.org")
   (init-org-file "private.org")

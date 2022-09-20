@@ -101,7 +101,7 @@
 (package! noflet)
 ;; Org-babel support for OpenSCAD.
 (package! ob-scad :recipe (:repo "https://github.com/wose/ob-scad.git"))
-;; (package! org-contacts) ; Part of contrib, so this won't work.
+(package! org-contacts)
 (package! org-indent :disable t)
 (package! org-mime)
 ;; Turn an org tree into a live, editable presentation!

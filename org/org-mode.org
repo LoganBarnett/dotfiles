@@ -20,6 +20,7 @@ first.
 
 #+name: config/markdown-export-fill-paragraph
 #+begin_src emacs-lisp :results none :tangle yes
+(require 'ox-gfm)
 (defadvice org-gfm-paragraph (around fill-gfm-paragraph activate)
   ;; ad-do-it is the magic advice "result" of the original function, if we
   ;; choose to evaluate the value, the function is executed (original params
