@@ -31,6 +31,7 @@ or =mac-win=) would crush the value. This means this file must be loaded before
 
 * COMMENT original theme
 #+begin_src emacs-lisp :results none
+(message "original theme -- This should never run!")
 ;;; doom-acario-dark-theme.el --- Acario dark theme -*- no-byte-compile: t; -*-
 (require 'doom-themes)
 

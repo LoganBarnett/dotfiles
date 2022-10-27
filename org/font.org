@@ -37,8 +37,13 @@ current line number. Removing that boldness should remove the slight shift. This
 is important to me because I use monospaced fonts and I want to rely on that
 being a truth in my code as well as documents.
 
-#+begin_src emacs-lisp :results none :tangle yes
-(set-face-attribute 'line-number-current-line nil
-                    :bold nil
-                    )
+#+begin_src emacs-lisp :results none
+(message "correcting font issue...")
+;; (set-face-attribute 'line-number-current-line nil
+;;                     :bold nil
+;;                     )
+;; LOLWUT just having this empty seems to fix the issue...?
+(custom-set-faces!
+;;   `(line-number-current-line ((t (:bold nil))))
+  )
 #+end_src
