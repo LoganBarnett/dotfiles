@@ -1037,6 +1037,10 @@ input.eXcfTo {
   placeholder: var(--input-placeholder-color) !important;
 }
 
+input.eXcfTo::placeholder {
+  color: var(--input-placeholder-color) !important;
+}
+
 /**
  * Comment placeholder in commits - hovering.
  */
