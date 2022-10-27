@@ -2,10 +2,11 @@
 
 /**
  * Stop nagging me to install the Messenger app. I do not want it.
+ * Ugh this became the the chats list.
  */
 
 .f5ap8yob {
-  display: none !important;
+  /* display: none !important; */
 }
 
 /**
