@@ -29,6 +29,7 @@ first.
   )
 
 #+end_src
+** org-reveal
 
 * images
 =org-mode= in Emacs can display images inline. This is a wonderful feature that
@@ -742,10 +743,13 @@ This started to grow quickly, so I just used what we have in [[file:./prog-mode.
   <<config/org-babel-passthrough>>
   <<config/org-mode-hack-initial-folding>>
   <<config/org-mode-smart-parens-disable>>
-  <<config/markdown-export-fill-paragraph>>
   (config/prog-mode-disable-smart-parens)
   (add-hook 'org-mode-hook #'config/prog-mode-disable-smart-parens)
   :config
+  ;; Provide org-reveal's interactive functions.
+  (require 'ox-reveal)
+  <<config/markdown-export-fill-paragraph>>
+  ;; <<config/flyspell-duplicate-org-mode-heading-fix>>
   <<config/open-link-in-new-window>>
   ;; Needed to set `org-startup-folded'.
   (org-set-startup-visibility)
