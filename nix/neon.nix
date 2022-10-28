@@ -241,8 +241,7 @@ in
     # Like nmap, a tool for testing network ports. The executable is "nc".
     # This installs the GNU version, although the OpenBSD version allows
     # connecting to Unix sockets. For Unix sockets just use socat.
-    # Disabled until https://github.com/NixOS/nixpkgs/issues/181187 is resolved.
-    #pkgs.netcat
+    pkgs.netcat
     # Connect to MongoDB for poking around the document store.
     # Currently broken due to gperftools.
     # mongodb
