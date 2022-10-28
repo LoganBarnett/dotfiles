@@ -22,15 +22,6 @@ let
 
 in
 {
-
-  # TODO: Disable this... some time? Would be nice to know exactly what is
-  # depending on it. Reading here
-  # https://discourse.nixos.org/t/how-to-override-openssl-q-a/9964/3 indicates
-  # that a simple upgrade is not possible, and that the dependers must change
-  # how they consume OpenSSL.
-  #
-  # This must not be placed within the let block or it just doesn't work. Why
-  # this behavior exists is unknown to me.
   nixpkgs.config = {
     # Some packages are not "free". We need to specifically bless those.
     allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) [
@@ -531,7 +522,9 @@ in
     pkgs.wireguard-tools
     # A tool for installing node packages. Better than npm in most ways.
     pkgs.yarn
+    # A better interactive shell than bash, I think.
     pkgs.zsh
+    # Highlight zsh syntax.
     pkgs.zsh-syntax-highlighting
     # Used by Emacs' Tramp to handle compression over SSH.
     pkgs.zstd
