@@ -176,11 +176,21 @@ allows for interactive editing, which can include refactoring identifiers.
 
 * searching
 
-Search was broken for a bit, but now it's not...?
+A recent =org-mode= update has broken searching for =evil-mode=. Basically:
+Searching in =evil-mode= won't unfold anything in the buffer, so =evil-mode=
+thinks there's only what's visible as possible search candidates. The total
+search results reported remains correct, however.
+https://github.com/doomemacs/doomemacs/issues/6478#issuecomment-1219582005
 
+Others reports this works, and I have witnessed this working. However I haven't
+seen if it works after a fresh restart.
+
+#+name: config/evil-fix-org-fold-search-doom-6578
 #+begin_src emacs-lisp :results none :tangle yes
+(after! evil
+  (evil-select-search-module 'evil-search-module 'isearch))
 ;; (setq-default evil-search-module 'evil-search)
-;;(setq-default org-fold-core-style 'text-properties)
+;; (setq-default org-fold-core-style 'text-properties)
 #+end_src
 
 * search and replace
