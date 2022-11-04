@@ -185,12 +185,18 @@ https://github.com/doomemacs/doomemacs/issues/6478#issuecomment-1219582005
 Others reports this works, and I have witnessed this working. However I haven't
 seen if it works after a fresh restart.
 
+I have a lot of permutations here, but I think it's in large part because it
+wasn't included in the [[stitch]] section.
+
 #+name: config/evil-fix-org-fold-search-doom-6578
 #+begin_src emacs-lisp :results none :tangle yes
 (after! evil
-  (evil-select-search-module 'evil-search-module 'isearch))
-;; (setq-default evil-search-module 'evil-search)
-;; (setq-default org-fold-core-style 'text-properties)
+  (evil-select-search-module 'evil-search-module 'isearch)
+  )
+(after! org
+  (evil-select-search-module 'evil-search-module 'isearch)
+  )
+(evil-select-search-module 'evil-search-module 'isearch)
 #+end_src
 
 * search and replace
@@ -212,6 +218,7 @@ It may not be apparent but =use-package= works as you'd want it to even if the
 library is already loaded.
 
 #+begin_src emacs-lisp :results none :noweb yes
+<<config/evil-fix-org-fold-search-doom-6578>>
 (use-package "evil"
   :init
   <<config/evil-global-substitute>>
