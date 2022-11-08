@@ -633,14 +633,13 @@ seems to be to disable =comment-auto-fill-only-comments= in =mu4e:compose-mode=.
       of =user-mail-address= and =mu4e-user-mail-address-list=. One of them is
       host dependent (which can change on local network switching, I think).
 
-      #+begin_src emacs-lisp :results none
-        (defun config/mu4e-composing ()
-          (setq-default
-            mu4e-compose-dont-reply-to-self t
-            mu4e-user-mail-address-list '("logustus@gmail.com")
-            )
-          )
-      #+end_src
+#+name: config/mu4e-composing
+#+begin_src emacs-lisp :results none
+(setq-default
+ mu4e-compose-dont-reply-to-self t
+ )
+#+end_src
+
 *** evilication
 
      #+begin_src emacs-lisp :results none
@@ -815,6 +814,7 @@ version. =mu4e= does not.
     <<config/force-mu4e-mu-version>>
     <<config/email-get-mail-command>>
     <<config/mu4e-html2text-renderer>>
+    <<config/mu4e-composing>>
     :config
     (message "initializing mu4e...")
     (require 'org-mime)
