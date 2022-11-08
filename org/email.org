@@ -44,6 +44,18 @@ Expand [[mu4e]] to see the current configuration.
 
    I do have =mu= installed.
 
+*** variables
+
+I will be using =maildir-account-dir= quite a bit. To ensure this is used
+globally, we use =defvar= up front to declare it.
+
+#+name: config/maildir-account-dir-create
+#+begin_src emacs-lisp :results none :tangle yes
+(defcustom maildir-account-dir "unset"
+  "The base mail directory in mu for an account."
+  )
+#+end_src
+
 *** capture template
 *** opening
 Doom doesn't bind =mu4e= that I have seen.
@@ -70,10 +82,13 @@ I need my line numbers.
 *** archiving
 Archiving in =mu4e='s vernacular is "refile". We can set the folder to go
 to the "all mail" folder and then it will work like it should for =gmail=.
+
+That said, this fixed directory doesn't work. We need to set this in contexts
+(see private dotfiles for this configuration).
 #+name: config/mu4e-gmail-refile-to-archives
-#+begin_src emacs-lisp :results none :tangle no
-(setq-default mu4e-refile-folder "/personal-gmail/[Gmail]/.All Mail")
-#+end_src
+#+begin_example emacs-lisp
+;; (setq-default mu4e-refile-folder "/personal-gmail/[Gmail]/.All Mail")
+#+end_example
 
 *** capturing
 
@@ -804,6 +819,7 @@ version. =mu4e= does not.
   (use-package "mu4e"
     :init
     <<mu4e-open>>
+    <<config/maildir-account-dir-create>>
     <<config/mu4e-mark-for-spam>>
     <<config/email-mu4e-capture-template-add>>
     <<config/email-mu4e-link-to-message>>
