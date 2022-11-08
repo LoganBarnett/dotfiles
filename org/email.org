@@ -326,13 +326,9 @@ using email.
     ;; TODO: Many settings are inherited from ../lisp/config-email.el - move them
     ;; here.
     (setq-default
-      user-mail-address "logustus@gmail.com"
-      user-full-name "Logan Barnett-Hoy"
       message-send-mail-function 'smtpmail-send-it
       starttls-use-gnutls t
       smtpmail-starttls-credentials '(("smtp.gmail.com" 587 nil nil))
-      smtpmail-auth-credentials
-        '(("smtp.gmail.com" 587 "logustus@gmail.com" nil))
       smtpmail-default-smtp-server "smtp.gmail.com"
       smtpmail-smtp-server "smtp.gmail.com"
       smtpmail-smtp-service 587
@@ -853,7 +849,6 @@ version. =mu4e= does not.
     (require 'epg-config)
     (require 'mml-sec)
     (setq-default
-    user-mail-address "logustus@gmail.com"
     mml-2015-signers key-id
     mml2015-use 'epg
     ;; epg-user-id "???" ; Was "gpg_key_id" in docs: https://www.djcbsoftware.nl/code/mu/mu4e/Reading-messages.html
@@ -864,7 +859,6 @@ version. =mu4e= does not.
               (nnimap-server-port 993)
               (nnimap-stream ssl)
               )
-    ;; u 41E46FB1ACEA3EF0 Logan Barnett (gpg key) <logustus@gmail.com>
     smtpmail-smtp-server "smtp.gmail.com"
     smtpmail-smtp-service 587
     message-send-mail-function 'smtpmail-send-it
