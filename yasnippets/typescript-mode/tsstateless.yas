@@ -9,6 +9,8 @@ export type Props = {
   children: ReactNode,
 }
 
+export type Component = FC<Props>
+
 export default (): FC<Props> => {
   const component = (props: Props): ReactElement => {
     return <>
