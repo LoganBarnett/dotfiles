@@ -190,13 +190,30 @@ wasn't included in the [[stitch]] section.
 
 #+name: config/evil-fix-org-fold-search-doom-6578
 #+begin_src emacs-lisp :results none :tangle yes
+
+;; Unfortunately, this uses a function instead of a variable, which has a global
+;; context. We can't selectively use different search modules for different
+;; modes.
+;; (defun config/unfix-org-fold-search ()
+;;   (if (eq major-mode 'org-mode)
+;;     ;; We're leaving org-mode, so put evil-search back.
+;;     (evil-select-search-module 'evil-search-module 'evil-search)
+;;     nil
+;;     )
+;;   )
+(defun config/fix-org-fold-search ()
+  (evil-select-search-module 'evil-search-module 'isearch)
+  )
+
 (after! evil
   (evil-select-search-module 'evil-search-module 'isearch)
   )
-(after! org
-  (evil-select-search-module 'evil-search-module 'isearch)
-  )
-(evil-select-search-module 'evil-search-module 'isearch)
+;; (add-hook 'change-major-mode-hook #'config/unfix-org-fold-search)
+(add-hook 'org-mode-hook #'config/fix-org-fold-search)
+;; (after! org
+;;   (evil-select-search-module 'evil-search-module 'isearch)
+;;   )
+;; (evil-select-search-module 'evil-search-module 'isearch)
 #+end_src
 
 * search and replace
