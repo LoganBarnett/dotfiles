@@ -798,18 +798,6 @@ version. =mu4e= does not.
 
 #+begin_src emacs-lisp :results none :noweb yes
 
-  (defun gmail-archive ()
-    "Archive the current or marked mails.
-  This moves them into the All Mail folder."
-    (interactive)
-    (gnus-summary-move-article nil "nnimap+imap.gmail.com:personal-gmail-archives"))
-
-  (defun gmail-report-spam ()
-    "Report the current or marked mails as spam.
-  This moves them into the Spam folder."
-    (interactive)
-    (gnus-summary-move-article nil "nnimap+imap.gmail.com:personal-gmail-spam"))
-
   (require 'use-package)
   (message "initializing mu4e with use-package...")
   (use-package "mu4e"
@@ -825,7 +813,6 @@ version. =mu4e= does not.
     <<config/mu4e-mail-directory-completion>>
     <<config/set-mu-path>>
     <<config/force-mu4e-mu-version>>
-    <<config/mu4e-gmail-refile-to-archives>>
     <<config/email-get-mail-command>>
     <<config/mu4e-html2text-renderer>>
     :config
@@ -839,21 +826,14 @@ version. =mu4e= does not.
     (config/mu4e-viewing)
 
     (load-library "my-utils")
-    ;; No idea why setq-local is needed here, and elsewhere defvar-local works.
-    ;; This would be a great question for the emacs user group.
-
-    (setq-local key-id
-                (my-utils/get-string-from-file  "~/dev/dotfiles-private/key-id.txt")
-                )
-    (message "loaded key id %s" key-id)
     (require 'epg-config)
     (require 'mml-sec)
     (setq-default
-    mml-2015-signers key-id
     mml2015-use 'epg
     ;; epg-user-id "???" ; Was "gpg_key_id" in docs: https://www.djcbsoftware.nl/code/mu/mu4e/Reading-messages.html
     mml2015-sign-with-sender t
     gnus-select-method
+    ;; TODO: Should this be context driven?
     '(nnimap "personal-gmail"
               (nnimap-address "imap.gmail.com")
               (nnimap-server-port 993)
@@ -862,8 +842,6 @@ version. =mu4e= does not.
     smtpmail-smtp-server "smtp.gmail.com"
     smtpmail-smtp-service 587
     message-send-mail-function 'smtpmail-send-it
-    ;; nntp-authinfo-file "~/.nntp-authinfo.gpg"
-    nntp-authinfo-file "~/.authinfo.gpg"
     ;; Gmail system labels have the prefix [Gmail], which matches the default
     ;; value of gnus-ignored-newsgroups. That's why we redefine it.
     ;; gnus-ignored-newsgroups "^to\\.\\|^[0-9. 	]+\\( \\|$\\)\\|^[\"][\"#'()]"
