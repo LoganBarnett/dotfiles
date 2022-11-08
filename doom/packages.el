@@ -107,8 +107,11 @@
 ;; Turn an org tree into a live, editable presentation!
 (package! org-tree-slide)
 ;; (package! org-mode) ; Pretty sure some of these are built in.
-;; Pinned due to https://github.com/doomemacs/doomemacs/issues/6478 (and
-;; upstream, https://github.com/emacs-evil/evil/issues/1630 ).
+;; Pinned due to evil-mode searching not working due to breaking changes made in
+;; org-mode. See
+;; https://github.com/doomemacs/doomemacs/issues/6478#issuecomment-1160699339
+;; (and upstream, https://github.com/emacs-evil/evil/issues/1630 ). However this
+;; and other fixes in the the ticket don't seem to work for me.
 (package! org-mode :pin "971eb6885ec996c923e955730df3bafbdc244e54")
 (package! org-superstar :disable t)
 ;; Provides an org-mode export for a D&D LaTeX template.
