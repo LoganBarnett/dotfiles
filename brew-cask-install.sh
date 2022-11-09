@@ -39,7 +39,6 @@ brew upgrade --cask
 # I'd like to move these to Nix but I don't think they exist yet.
 CASKS="
 alfred
-chromium
 firefox
 gimp
 istat-menus
@@ -51,6 +50,9 @@ slack
 
 slog "Installing homebrew casks."
 brew install --cask $CASKS
+
+slog "Chromium needs to not be quarantined..."
+brew install --cask chromium --no-quarantine
 
 # For my personal machines I can install packages but these are not appropriate
 # for work machines.
