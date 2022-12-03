@@ -7,12 +7,28 @@
 #+tags:
 
 * config
+** systemd support
 
-  #+begin_src emacs-lisp :results none
-    (require 'use-package)
-    (use-package "conf-mode"
-      :defer t
-      :config
-      (add-hook 'conf-mode-hook 'display-line-numbers-mode)
-    )
-  #+end_src
+#+name: config/systemd-files
+#+begin_src emacs-lisp :results none :tangle yes
+(add-to-list 'auto-mode-alist '("\\.service\\'" . conf-mode))
+#+end_src
+
+** display line numbers
+
+#+name: config/conf-mode-line-numbers
+#+begin_src emacs-lisp :results none :tangle yes
+(add-hook 'conf-mode-hook 'display-line-numbers-mode)
+#+end_src
+
+** stitch
+#+begin_src emacs-lisp :results none :noweb yes
+  (require 'use-package)
+  (use-package "conf-mode"
+    :defer t
+    :init
+    <<config/systemd-files>>
+    :config
+    <<config/conf-mode-line-numbers>>
+  )
+#+end_src
