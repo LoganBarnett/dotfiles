@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+
+# Sources:
+# https://superuser.com/a/640557
+# https://superuser.com/a/640340
+
+if [[ "$1" == "--help" ]]; then
+  echo "usage: $0 [tty-file]
+
+Resets a borked terminal (typically from catting a binary file). Optionally pass
+a tty path to reset a completely broken tty.
+"
+  exit 0
+fi
+
+# This typically renders as "^O"
+printf "\033c"
+
+# If that doesn't work, one can also try this from here:
+# https://superuser.com/a/1225270
+stty sane
+
+# If a terminal is completely unusable, it can be reset remotely. See $1 for the
+# tty passed in.
+
+if [[ "$1" != "" ]]; then
+  printf "\033c" > $1
+fi
