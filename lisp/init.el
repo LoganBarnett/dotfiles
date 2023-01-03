@@ -332,6 +332,7 @@
   (config/init-org-file-private "email-private.org")
   (config/init-org-file-private "jira-private.org")
   (config/init-org-file-private "org-agenda-private.org")
+  (config/init-org-file-private "projectile-private.org")
   ;; Load up any ssh-agents or gpg-agents.
   (keychain-refresh-environment)
   (message "[INIT] Init Done.")
