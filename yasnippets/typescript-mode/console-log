@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: console.log an expression in JS with text matching the expression.
+# key: clog
+# --
+console.log('$1', $1)
