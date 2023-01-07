@@ -94,3 +94,15 @@ Even after using =doom-big-font-mode= (=SPC t b=), it uses some "ultra bold
 italics" version of my default font, which I find obnoxious. This may be a Doom
 bug. I haven't updated for a while due to cautionary tales, and I haven't had a
 chance to look to see if this is a known issue.
+* hide menu bar items
+
+I never use these, and it clutters up the menu bar which can contain rich
+information from things like iStatMenus.
+
+I got the snippet from this [[https://www.reddit.com/r/emacs/comments/7d6n89/on_osx_how_to_i_remove_items_from_the_top_bar/][reddit post]], and it's also covered in the
+[[https://www.gnu.org/software/emacs/manual/html_node/efaq/Deleting-menus-and-menu-options.html][official documentation]] but it's not clear _why_ editing the =global-map= does
+this.
+
+#+begin_src emacs-lisp :results none
+(define-key global-map [menu-bar options] nil)
+#+end_src
