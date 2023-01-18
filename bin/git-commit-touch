@@ -1,4 +1,4 @@
-#! /usr/bin/env bash
+#!/usr/bin/env bash
 
 # Due to some continuous integration processes, one may need to make an
 # immaterial change to the HEAD commit in order to kick off the continuous
