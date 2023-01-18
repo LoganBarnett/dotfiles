@@ -1,0 +1,79 @@
+#!/usr/bin/env bash
+
+# It's very easy to lose track of changes across the many repositories I own.
+# This allows us build a report of any unstaged or unpushed commits.
+#
+# In The future it would be great to include unpushed commits and unmerged
+# branches.
+
+
+set -euo pipefail
+
+function usage {
+  echo "
+usage: $0 [dir]
+"
+}
+
+if [[ "$1" == "" ]]; then
+  echo "Error: Incorrect usage." 1>&2
+  usage
+  exit 1
+fi
+
+if [[ "$1" == "--help" || "$1" == "-h" ]]; then
+  echo "Lists git repositories that contain unstaged changes."
+  usage
+  exit 0
+fi
+
+##
+# git status --porcelain=v1 outputs the status in a script-parsable format. The
+# general format is:
+#
+#  M foo/bar.sh
+# ?? bar/baz.sh
+#
+# Where "??" means untracked and " M" means modified. The entire table can be
+# found in the git-status man page. The status indicator is two columns to
+# indicate status during merges.
+#
+# For our purposes, various merge statuses don't matter.
+##
+
+# THe code below finds $1 as well, so we needn't prepopulate it here.
+dirsToScan=()
+filesInDir=$(find "$1" -maxdepth 1 -type d)
+
+for file in $filesInDir; do
+  if ( ! test -d "$file/.git" ); then
+    dirsToScan+=("$file")
+  fi
+done
+
+echo "Scanning:" 1>&2
+for dir in "${dirsToScan[@]}" ; do
+  echo "$dir" 1>&2
+done
+echo "..." 1>&2
+
+reposUnstaged=()
+for dir in "${dirsToScan[@]}" ; do
+  repos=$(find "$dir" -maxdepth 1 -type d)
+  for repo in $repos; do
+    # The find utility includes $dir, so skip it.
+    if [[ "$repo" != "$dir" ]] ; then
+      if ( test -d "$repo/.git" ) ; then
+        cd "$repo"
+        if (( $(git status --porcelain=v1 | wc -l) == 0 )); then
+          reposUnstaged+=("$repo")
+        fi
+      fi
+    fi
+  done
+done
+
+echo "Found ${#reposUnstaged[@]} unstaged repos:"
+for repo in ${reposUnstaged[@]} ; do
+  echo "$repo"
+done
