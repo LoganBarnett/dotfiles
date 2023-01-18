@@ -516,6 +516,9 @@ in
     pkgs.nodePackages.web-ext
     # A handy alternative to curl, best suited for downloading content.
     pkgs.wget
+    # The wireguard-go package must be installed separatedly, even tough
+    # wg-quick (from wireguard-tools) depends upon wireguard-go.
+    pkgs.wireguard-go
     # Folks suggest installing an application from the AppStore. I'd prefer
     # to have an unattended install of the Wireguard client.
     pkgs.wireguard-tools
