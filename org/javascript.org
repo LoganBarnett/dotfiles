@@ -390,6 +390,21 @@ in [[file:./prog-mode.org]].
 #+begin_src emacs-lisp :results none :tangle no
 (multi-line-defhook js2 multi-line-add-trailing-comma-strategy t)
 #+end_src
+** prettier
+
+For some projects I just want Prettier.js to format my code upon saving. This is
+typically because standing up a pre-commit hook wouldn't be something my
+organization used. For example, one place I've worked likes to place the editor
+itself in charge of a lot of these kinds of linting and formatting things. So me
+adding a pre-commit hook would be an uphill battle. Instead I can take advantage
+of =.dir-locals.el= to start =pretty-js-mode=. To do that, we must bless the
+minor mode in =safe-local-variable-values=.
+
+#+name: config/javascript-allow-prettier-on-save
+#+begin_src emacs-lisp :results none :tangle yes
+(add-to-list 'safe-local-variable-values '(prettier-js-mode . nil))
+#+end_src
+
 
 ** big config
 Finally, tie it all together on demand.
@@ -477,6 +492,7 @@ Finally, tie it all together on demand.
     (require 'flycheck)
     (require 'multi-line)
     <<config/javascript-multi-line-commas>>
+    <<config/javascript-allow-prettier-on-save>>
   )
 
   (use-package "rjsx-mode"
@@ -497,6 +513,7 @@ Finally, tie it all together on demand.
     (define-key rjsx-mode-map "<" nil)
     (define-key rjsx-mode-map (kbd "C-d") nil)
     (define-key rjsx-mode-map ">" nil)
+    <<config/javascript-allow-prettier-on-save>>
   )
 
 ;; Utterly shameless lift from
@@ -510,6 +527,7 @@ Finally, tie it all together on demand.
   (setq typescript-indent-level 2)
   (add-hook 'typescript-mode #'subword-mode)
   (add-to-list 'auto-mode-alist '("\\.tsx?\\'" . typescript-tsx-mode))
+  <<config/javascript-allow-prettier-on-save>>
   )
 
 (use-package tree-sitter
