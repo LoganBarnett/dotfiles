@@ -1,0 +1,84 @@
+#!/usr/bin/env bash
+
+##
+# direnv-init-nix
+#
+# Writes the magic .envrc file to make direnv and nix-shell work automatically.
+# A `direnv allow` invocation will still be required, which is left to the user.
+##
+
+echo "Emitting .envrc..."
+cat <<-EOF > .envrc
+if type lorri &>/dev/null; then
+echo "direnv: using lorri"
+eval "\$(lorri direnv)"
+else
+# fall back to using direnv's builtin nix support
+# to prevent bootstrapping problems.
+use nix
+fi
+EOF
+
+echo 'Done! Emitting shell.nix...'
+echo 'TODO: Implement some feature selection to speed this up.
+For now it is just Postgres support.'
+
+cat <<-EOF > shell.nix
+let
+  pkgs = import <nixpkgs> {};
+  overlay = (self: super: rec {
+  });
+  pgconf = builtins.toFile "pgconf/pg.conf" ''
+    # Sucker! An empty config file is all we need!
+  '';
+  # pgconf = pkgs.writeTextFile {
+  #   name = "postgresql-config";
+  #   destination = "pgconf/pg.conf";
+  #   executable = false;
+  #   text = ''
+  #     # Sucker! An empty config file is all we need!
+  #   '';
+  # };
+  # pgconf = pkgs.stdenv.mkDerivation {
+  #   name = "pgconf";
+  #   src = pkgs.writeTextFile {
+  #     name = "postgresql-config";
+  #     destination = "pg.conf";
+  #     executable = false;
+  #     text = ''
+  #       # Sucker! An empty config file is all we need!
+  #     '';
+  #   };
+  # };
+in
+with pkgs;
+stdenv.mkDerivation {
+  name = "node-project";
+  buildInputs = [
+    nodejs-16_x
+    # pgconf
+    postgresql
+    redis
+  ];
+  shellHook = ''
+      export PATH="\$PWD/node_modules/.bin/:\$PATH"
+      export PGDATA="\$TMP/pg.conf"
+      alias scripts='jq ".scripts" package.json'
+
+      function postgres-start {
+        echo 'If this fails, you may need to kill postgres processes and run again.'
+        pg_ctl -D .tmp/\$USER -l logfile -o "--unix_socket_directories='\$PWD'" start
+      }
+      function postgres-create {
+        initdb .tmp/\$USER
+        createdb \$USER
+      }
+  '';
+  # Keep the postgresql config here. We can move it out if nix ever becomes
+  # standardized here. This keeps us from inflicting a lot of extra files just
+  # to support an out-of-box nix setup.
+}
+EOF
+
+echo 'Done with shell.nix.
+Now direnv should load or prompt to load the settings.'

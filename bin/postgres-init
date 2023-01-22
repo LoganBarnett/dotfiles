@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+
+##
+# postgres-init
+#
+# Initializes Postgres, which I find myself doing a lot.
+#
+# At the very least these scripts can be used as reference. I've tried putting
+# them in a shell.nix, but they aren't getting wired up and I don't know why.
+##
+
+set -euo pipefail
+
+echo "Killing postgres first, if we own it..."
+killall postgres
+echo "Killed. Now we can start over."
+echo "PGDATA is $PGDATA - check that this is correct."
+echo "Some errors skipped. TODO: Put in better error handling."
+mkdir -p $TMP/postgres
+initdb || true
+pg_ctl -l $TMP/postgres.log start
+createdb || true
+# Gets us around 'FATAL:  role "postgres" does not exist'.
+createuser -s postgres || true
+
+echo "Done!"
