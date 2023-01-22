@@ -8,7 +8,14 @@ clipped on a 13" screen. Switching off =menu-bar-mode= doesn't remove all menu
 bar items, but it disables enough that this isn't a problem.
 
 #+BEGIN_SRC emacs-lisp
+(message "Disabling menu bar...")
+(defun config/disable-menu-bar ()
   (menu-bar-mode -1)
+  )
+;; Cannot use a mode hook to disable, since even running with -1 hits the mode
+;; hook. We may have to advice/replace it to keep it from coming up (probably
+;; from some package trying to be too helpful).
+(config/disable-menu-bar)
 #+END_SRC
 
 *** mode-line
