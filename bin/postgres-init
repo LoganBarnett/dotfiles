@@ -12,7 +12,7 @@
 set -euo pipefail
 
 echo "Killing postgres first, if we own it..."
-killall postgres
+killall postgres || true
 echo "Killed. Now we can start over."
 echo "PGDATA is $PGDATA - check that this is correct."
 echo "Some errors skipped. TODO: Put in better error handling."
