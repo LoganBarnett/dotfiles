@@ -421,6 +421,8 @@ in
     # rbenv
     # Really fast grep alternative.
     pkgs.ripgrep
+    # Copy files recursively. Replaces BSD version on macOS.
+    pkgs.rsync
     # Like Python, but not.
     # DO NOT RUN RUBY IN NIX. NIX IS NOT READY FOR RUBY.
     # ruby
