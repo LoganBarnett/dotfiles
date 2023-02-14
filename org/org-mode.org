@@ -728,6 +728,103 @@ around 5 priorities, and we must support these beforehand.
 
 At some point org-mode started completing =[= with =]= and this cannot stand.
 This started to grow quickly, so I just used what we have in [[file:./prog-mode.org][prog-mode.org]].
+* spelling
+** duplicate words
+
+Flyspell marks words as duplicates if the last word of a headline in =org-mode=
+is the same as the first word in the following paragraph. We should not follow
+these. My suggestion for this is to ignore a blank line boundary.
+
+To fix this, we just need to override =flyspell-check-region-doublons= with our
+own.
+
+My changes here don't actually seem to work. See more below on my hunt for this
+issue.
+
+#+name: config/flyspell-duplicate-org-mode-heading-fix
+#+begin_example emacs-lisp :results none :tangle no
+(advice-remove
+ #'flyspell-check-region-doublons
+ #'config/flyspell-check-region-doublons
+ )
+(defun config/flyspell-check-region-doublons (beg end)
+  "Check for adjacent duplicated words (doublons) in the given region."
+  (save-excursion
+    (message "in advised override")
+    (goto-char beg)
+    (flyspell-word)     ; Make sure current word is checked
+    (backward-word 1)
+    (while (and (< (point) end)
+                ;; Original code looks for any amount of line breaks, but we
+                ;; just want one.
+                (re-search-forward "\\<\\(\\w+\\)\\>[ \t\f]?\\1\\>"
+                                   end 'move))
+      (flyspell-word)
+      (backward-word 1))
+    (flyspell-word))
+  )
+
+(advice-add
+ #'flyspell-check-region-doublons
+ :override
+ #'config/flyspell-check-region-doublons
+ )
+#+end_example
+
+Under =flyspell-word= there is a place where it jumps backwards to find a
+duplicate word using =skip-chars-backward=. It skips over any =\n= and that's
+just not working for me. I could create an alternative to =skip-chars-backward=
+to make it skip paragraphs - it does what =skip-chars-backward= does but doesn't
+count extra =\n= entries. This would probably fix the issue. Since hard wraps
+should also check for duplicates, we do want that in there once at least.
+
+#+begin_src org :results none
+, *** remember the foos
+# vv this word will be marked as a duplicate.
+foos are a gentle identifier, hailing back to the days of...
+#+end_src
+
+Of note, I can reproduce this error in =markdown-mode= as well.
+
+#+begin_src markdown :results none
+# remember the foos
+
+foos are a gentle identifier, hailing back to the days of...
+^^^^ this word will be marked as a duplicate.
+#+end_src
+
+
+This is the region of offending code, I think:
+
+#+begin_example emacs-lisp :results none
+  ((and (or (not (eq ispell-parser 'tex))
+		     (and (> start (point-min))
+			  (not (memq (char-after (1- start)) '(?\} ?\\)))))
+		 flyspell-mark-duplications-flag
+		 (not (catch 'exception
+			(let ((dict (or ispell-local-dictionary
+					ispell-dictionary)))
+			  (dolist (except flyspell-mark-duplications-exceptions)
+			    (and (or (null (car except))
+				     (and (stringp dict)
+					  (string-match (car except) dict)))
+				 (member (downcase word) (cdr except))
+				 (throw 'exception t))))))
+		 (save-excursion
+		   (goto-char start)
+		   (let* ((bound
+			   (- start
+			      (- end start)
+			      (- (save-excursion
+                                   (skip-chars-backward " \t\n\f")))))
+			  (p (when (>= bound (point-min))
+			       (flyspell-word-search-backward
+                                word bound flyspell-case-fold-duplications))))
+		     (and p (/= p start)))))
+	    ;; yes, this is a doublon
+	    (flyspell-highlight-incorrect-region start end 'doublon)
+	    nil)
+#+end_example
 
 * stitch
 
