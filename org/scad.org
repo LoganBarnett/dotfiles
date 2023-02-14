@@ -30,11 +30,11 @@ the camera moves to the left (-x), the model(s) will appear to move right.
 #+name:config/scad-preview-keymap
 #+begin_src emacs-lisp :results none :tangle no
 (map!
- :map scad-preview--image-mode-map
- :n "h" 'scad-preview-trnsx-
- :n "j" 'scad-preview-trnsz-
- :n "k" 'scad-preview-trnsz+
- :n "l" 'scad-preview-trnsx+
+ :map scad-preview-mode-map
+ :n "h" 'scad-preview-translate-x-
+ :n "j" 'scad-preview-translate-z-
+ :n "k" 'scad-preview-translate-z+
+ :n "l" 'scad-preview-translate-x+
  )
 #+end_src
 
