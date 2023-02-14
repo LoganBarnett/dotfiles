@@ -19,7 +19,7 @@ let
     # (import ./openconnect-sso.nix)
     # (import "${builtins.fetchTarball https://github.com/vlaci/openconnect-sso/archive/master.tar.gz}/overlay.nix")
   ];
-
+  pair-ls = (pkgs.callPackage ./pair-ls.nix { });
 in
 {
   nixpkgs.config = {
@@ -324,6 +324,8 @@ in
     # from creating a darwin build for sshfs on nixpkg.  Can be manually
     # installed from https://osxfuse.github.io/
     pkgs.osxfuse
+    # For pairing. But probably not ready.
+    pair-ls
     # Translate human documents from one format to another.
     pkgs.pandoc
     # Manage passwords using gpg.
