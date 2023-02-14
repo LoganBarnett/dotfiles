@@ -342,6 +342,9 @@ in
     # A charting tool with a declarative language. Uses graphviz dot, ditaa,
     # and others.
     pkgs.plantuml
+    # A build tool chain for microcontrollers and other embedded platforms.
+    # Works for Ardunio.
+    # pkgs.platformio
     # podman is an alternative to docker - supposed to be more or less fully
     # compatible.
     # I could install this, but on macOS it's actually podman-remote. This is
