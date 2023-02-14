@@ -25,6 +25,7 @@ in
   nixpkgs.config = {
     # Some packages are not "free". We need to specifically bless those.
     allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) [
+      "ngrok"
       "unrar"
     ];
     # Somehow this can get lost, and I'm not convinced this is home-managers'
@@ -224,6 +225,8 @@ in
     # "Office" tools.
     # Doesn't build on macOS yet.
     # pkgs.libreoffice
+    # Online service that works as proxy for quick, local sockets.
+    pkgs.ngrok
     # Make it easy to try out Nix packages under review.
     pkgs.nixpkgs-review
     # Give us man pages for GNU stuff.
