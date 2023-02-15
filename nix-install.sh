@@ -4,7 +4,13 @@ set -eo pipefail
 
 source bash-logging
 
+slog "Prompting for sudo..."
 sudo printf "\n" # To ensure we're in a sudo context first.
+# Remove backups, or the installer will freak out.
+sudo rm -rf \
+  /etc/zshrc.backup-before-nix \
+  /etc/bashrc.backup-before-nix \
+  /etc/bash.bashrc.backup-before-nix
 # Pipe yes because there's no way to do an officially unattended install. Though
 # piping anything to it removes the tty and then it works unattended...
 #

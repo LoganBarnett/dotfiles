@@ -19,7 +19,6 @@ slog "Installing nix packages for this host..."
 nix-channel --add https://github.com/nix-community/home-manager/archive/master.tar.gz home-manager
 # Somehow the main nixpkgs channel gets stomped. This makes sure it's still in.
 nix-channel --add https://github.com/NixOS/nixpkgs/archive/master.tar.gz nixpkgs
-sudo nix-channel --list
 nix-channel --update
 nix-shell '<home-manager>' -A install
 # home-manager appears to crush this, so set it afterwards.
