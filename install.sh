@@ -7,6 +7,11 @@ source bash-logging
 dir="$(dirname "${BASH_SOURCE[0]}")"
 source $dir/dotfiles-functions.sh
 
+if [[ "$USER" == "root" ]]; then
+  slog "Error: Do not run this script as root/sudo. Exiting."
+  exit 1
+fi
+
 # TODO: add various application settings not living under ~
 # TODO: add iStatsMenu
 # TODO: add Slack settings
