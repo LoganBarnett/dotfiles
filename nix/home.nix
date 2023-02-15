@@ -89,7 +89,7 @@ in
     ++ (import ./general.nix){pkgs = pkgs;}
     ++ (if builtins.getEnv "USER" == "logan"
          then (import ./personal.nix){pkgs = pkgs;}
-         else (import ../../../dotfiles-private/work-new-e-ah.nix){pkgs = pkgs;}
+         else (import ../../dotfiles-private/work-new-e-ah.nix){pkgs = pkgs;}
        )
   ;
   # This value determines the Home Manager release that your
