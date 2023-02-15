@@ -8,15 +8,12 @@ Xdefaults
 bash-logging
 bash_profile
 bashrc
-floorc.json
 gemrc
-ideavim
 ispell_english
 jsbeautifyrc
 npmrc
 pentadactylrc
 profile
-urxvt
 vimrc
 yarnrc
 zlogin-customized
