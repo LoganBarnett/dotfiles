@@ -42,7 +42,7 @@ if [[ "$machineName" =~ 'Mac' ]] ; then
   # have a script to make it portable.
   bin/hostname-set "$machineName"
 fi
-ln -snf $PWD/nix/$machineName.nix ~/.config/nixpkgs/home.nix
+ln -snf $PWD/nix/home.nix ~/.config/nixpkgs/home.nix
 
 slog "Loading nix-daemon so we don't need to close our shell..."
 . '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh'
