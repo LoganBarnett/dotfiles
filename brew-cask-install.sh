@@ -4,12 +4,14 @@ set -e
 
 source bash-logging
 
+slog "Add homebrew to the path (on fresh installs this is missing)."
+export PATH="$PATH:/opt/homebrew/bin"
 # We're on ARM now. Sometimes we need to use stuff that's not ARM though, and we
 # need Rosetta for that.
 slog "Installing Rosetta for legacy casks..."
 sudo softwareupdate --install-rosetta --agree-to-license
 
-# This fixes outdated tasks using the "undent" method. I've found Homebrew
+# This fixes outdated casks using the "undent" method. I've found Homebrew
 # doesn't do much to preserve backwards compatibility with older packages (or
 # more accurately: older Homebrew package definitions). I expect many
 # workarounds such as this will pile up in this file and the install-packages.sh
@@ -39,24 +41,18 @@ brew upgrade --cask
 # I'd like to move these to Nix but I don't think they exist yet.
 CASKS="
 alfred
-firefox
-gimp
 istat-menus
-slack
 "
 # Missing?
 #font-source-code-pro
 #zoomus
-
-slog "Installing homebrew casks."
-brew install --cask $CASKS
 
 slog "Chromium needs to not be quarantined..."
 brew install --cask chromium --no-quarantine
 
 # For my personal machines I can install packages but these are not appropriate
 # for work machines.
-if [[ "$HOST" =~ "lbarnett" ]]; then
+if [[ "$USER" =~ "logan.barnett" ]]; then
   MACHINE_CASKS="
 "
 #razer-synapse
@@ -71,11 +67,14 @@ arduino
 battlescribe
 discord
 doxie
+firefox
+gimp
 keycastr
 mixxx
 obs
 openscad
 ringcentral-meetings
+slack
 steam
 ultimaker-cura
 vlc
@@ -87,6 +86,7 @@ fi
 # Missing?
 # xbox360-controller-driver-unofficial
 
-brew install --cask $MACHINE_CASKS
+slog "Installing homebrew casks."
+brew install --cask $CASKS $MACHINE_CASKS
 
 slog "Done installing casks."
