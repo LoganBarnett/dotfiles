@@ -15,7 +15,6 @@ sudo printf "\n" # To ensure we're in a sudo context first.
 # Use unencrypted nix store volume as of macOS Catalina.
 yes | sh <(curl -L https://nixos.org/nix/install) \
   --daemon \
-  --darwin-use-unencrypted-nix-store-volume \
   || true
 
 # Their generated script checks first, but it better damn sure be there or this
