@@ -107,6 +107,9 @@
   pkgs.maven
   # A union of ping and traceroute - ping all hosts along a route.
   pkgs.mtr
+  # Email indexing, viewing, etc. Needed in general because it is required by
+  # the Emacs config.
+  pkgs.mu
   # This lets me search for parts of nix to help debug collisions.
   pkgs.nix-index
   # The code injector bootstrap script is written in Node.js, so we need to

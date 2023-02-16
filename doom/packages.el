@@ -163,6 +163,14 @@
 ;; (package! smartparens :disable t)
 ;; (package! sql-mode)
 (package! terraform-mode)
+;; Pin transient to an older version. Doom doesn't yet support Emacs 29, nor do
+;; I have it installed yet. But magit is expecting these variables to be
+;; present. See https://emacs.stackexchange.com/a/75836 for more details.
+;; Both this and with-editor must be pinned.
+(package! transient
+      :pin "c2bdf7e12c530eb85476d3aef317eb2941ab9440"
+      :recipe (:host github :repo "magit/transient"))
+
 (package! tree-sitter)
 (package! tree-sitter-langs)
 ;; TypeScript - the highest mindshare typed JavaScript.
@@ -170,6 +178,14 @@
 ;; Allow editing TypeScript with JSX.
 ;; (package! typescript-tsx-mode)
 (package! web-beautify)
+;; Pin with-editor to an older version. Doom doesn't yet support Emacs 29, nor
+;; do I have it installed yet. But magit is expecting these variables to be
+;; present. See https://emacs.stackexchange.com/a/75836 for more details. Both
+;; this and transient must be pinned.
+(package! with-editor
+          :pin "bbc60f68ac190f02da8a100b6fb67cf1c27c53ab"
+          :recipe (:host github :repo "magit/with-editor"))
+
 
 ;; To install a package directly from a particular repo, you'll need to specify
 ;; a `:recipe'. You'll find documentation on what `:recipe' accepts here:

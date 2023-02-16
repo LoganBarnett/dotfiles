@@ -45,8 +45,6 @@
   pkgs.mediainfo
   # A program to allow communicating over serial. Perhaps I can script it?
   pkgs.minicom
-  # Email indexing, viewing, etc.
-  pkgs.mu
   # Like nmap, a tool for testing network ports. The executable is "nc".
   # This installs the GNU version, although the OpenBSD version allows
   # connecting to Unix sockets. For Unix sockets just use socat.

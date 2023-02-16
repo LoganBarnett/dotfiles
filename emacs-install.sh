@@ -34,7 +34,8 @@ elif [[ "$distro" == 'doom' ]]; then
   # directory. This is not the intention of these hooks and this arg is provided
   # as a release valve for the issue here:
   # https://github.com/doomemacs/doomemacs/issues/5878
-  ~/.doom-emacs.d/bin/doom install --no-hooks
+  # Use --env to keep it from prompting if we want an env file (I think we do).
+  ~/.doom-emacs.d/bin/doom install --no-hooks --env
   # I shouldn't need these init files to be stored locally, since they can be
   # modified upstream and break a reinstall.
   #ln -sfn $PWD/emacs.d/early-init.el ~/.doom-emacs.d/early-init.el
