@@ -12,8 +12,11 @@ from my filesystem.
 
 #+name: config/dnd-load
 #+begin_src emacs-lisp :results none :tangle yes
-(org-babel-load-file
-  (expand-file-name "~/dev/org-dnd/dnd.org")
+;; Only load this if running on a personal machine.
+(if (eq (user-login-name) "logan")
+  (org-babel-load-file
+    (expand-file-name "~/dev/org-dnd/dnd.org")
+    )
   )
 #+end_src
 
