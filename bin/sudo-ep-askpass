@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+
+##
+# sudo-ep-askpass
+#
+# A SUDO_ASKPASS program to work with sudo-ep in order to grant sudo-like access
+# via extended priviledge (EP) accounts.
+#
+# This blocks until a password has been submitted via the tty.
+#
+# Since this script prompts every time, and doesn't have a notion of sudo
+# tickets, the script relies upon sudo to only prompt if the sudo ticket has
+# expired.
+##
+
+dscl /Local/Default -authonly "$USER"
+
+secret-server-secret-get "$EP_SECRET_SERVER_ID"

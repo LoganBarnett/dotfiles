@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+
+################################################################################
+# sudo-ep
+#
+# Provides sudo via extended priviledge (EP) accounts.
+#
+# EP accounts are accounts on a host which are administrators/sudoers.
+# The passwords for these accounts might rapidly rotate, making them infeasible
+# to use for typical workflows requiring root access. Meanwhile, users needing
+# such priviledges have an incredibly cumbersome mechanism to elevate their
+# priviledges in order to perform basic local (and semi-frequent) administrative
+# tasks.
+#
+# sudo-ep aims to be a sudo compatible program which can be aliased over sudo
+# for real sudo purposes.
+#
+################################################################################
+
+SUDO_ASKPASS="$(which sudo-ep-askpass)" /usr/bin/sudo -A $*
