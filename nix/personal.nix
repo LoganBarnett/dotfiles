@@ -17,9 +17,6 @@
   # Perhaps I should file one?
   # arduino
   # avr-gcc
-  # Convert media (sound, video). The "-full" suffix brings in all of the
-  # codecs one could desire.
-  pkgs.ffmpeg-full
   # Rasterized image manipulation.
   #pkgs.gimp
   # Haskell docs say this is necessary for Haskell. See
