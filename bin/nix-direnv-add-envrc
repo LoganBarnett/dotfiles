@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+echo 'use nix' > .envrc
+direnv allow

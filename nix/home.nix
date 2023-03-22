@@ -37,6 +37,8 @@ in
 
   # Let Home Manager install and manage itself.
   programs.home-manager.enable = true;
+  programs.direnv.enable = true;
+  programs.direnv.nix-direnv.enable = true;
   programs.tmux = import ./tmux.nix;
   programs.zsh = import ./zsh.nix { pkgs = pkgs; };
   # This is the magic that makes fonts get installed to ~/Library/Fonts on
