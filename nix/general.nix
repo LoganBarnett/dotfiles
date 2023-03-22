@@ -135,7 +135,10 @@
   # Translate human documents from one format to another.
   pkgs.pandoc
   # Manage passwords using gpg.
-  pkgs.pass
+  (pkgs.pass.withExtensions (px: [
+    # Manage TOTP passwords via pass.
+    px.pass-otp
+  ]))
   # Use Unix pipes and direct them to a human program.
   #pkgs.percol
   # An interface for reading passwords.
