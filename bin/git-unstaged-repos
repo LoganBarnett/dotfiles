@@ -15,7 +15,9 @@ usage: $0 [dir]
 "
 }
 
-rootScanDir="${1:''}"
+# Bash pattern to keep -u but defensively check for an unset variable.
+unsetRootScanDir=''
+rootScanDir="${1:-$unsetRootScanDir}"
 
 if [[ "$rootScanDir" == "" ]]; then
   echo "Error: Incorrect usage." 1>&2
