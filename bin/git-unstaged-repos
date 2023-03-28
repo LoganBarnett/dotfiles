@@ -65,7 +65,7 @@ for dir in "${dirsToScan[@]}" ; do
     if [[ "$repo" != "$dir" ]] ; then
       if ( test -d "$repo/.git" ) ; then
         cd "$repo"
-        if (( $(git status --porcelain=v1 | wc -l) == 0 )); then
+        if (( $(git status --porcelain=v1 | wc -l) != 0 )); then
           reposUnstaged+=("$repo")
         fi
       fi
