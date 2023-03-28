@@ -51,7 +51,7 @@ for file in $filesInDir; do
   fi
 done
 
-echo "Scanning:" 1>&2
+echo "Scanning dirs:" 1>&2
 for dir in "${dirsToScan[@]}" ; do
   echo "$dir" 1>&2
 done
@@ -73,7 +73,7 @@ for dir in "${dirsToScan[@]}" ; do
   done
 done
 
-echo "Found ${#reposUnstaged[@]} unstaged repos:"
+echo "Found ${#reposUnstaged[@]} unstaged repos:" 1>&2
 for repo in ${reposUnstaged[@]} ; do
   echo "$repo"
 done
