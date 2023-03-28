@@ -41,10 +41,13 @@ Tramp use bash regardless of what the remote machine is set to use.
 
 * debugging
 
-Tramp can be debugged with a verbose number. I know you can set it as high as 10.
+Tramp can be debugged with a verbose number. I know you can set it as high as
+11, but is for maintainers only. 3 is the default which includes some connection
+information.
 
-#+begin_src emacs-lisp
-(setq tramp-verbose 10)
+#+name: config/tramp-log-verbosity
+#+begin_src emacs-lisp :tangle yes :results none
+(setq tramp-verbose 3)
 #+end_src
 
 * ls and dired
@@ -125,10 +128,11 @@ command control it, as those still work.
   #+end_src
 * all together
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :results none :noweb yes
   (require 'use-package)
   (use-package "tramp"
     :init
+    <<config/tramp-log-verbosity>>
     :config
     ;; Kept as reference in case some non-gnu system is in use.
     ;;
