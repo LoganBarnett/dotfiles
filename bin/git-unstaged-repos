@@ -15,13 +15,15 @@ usage: $0 [dir]
 "
 }
 
-if [[ "$1" == "" ]]; then
+rootScanDir="${1:''}"
+
+if [[ "$rootScanDir" == "" ]]; then
   echo "Error: Incorrect usage." 1>&2
   usage
   exit 1
 fi
 
-if [[ "$1" == "--help" || "$1" == "-h" ]]; then
+if [[ "$rootScanDir" == "--help" || "$rootScanDir" == "-h" ]]; then
   echo "Lists git repositories that contain unstaged changes."
   usage
   exit 0
@@ -43,7 +45,7 @@ fi
 
 # THe code below finds $1 as well, so we needn't prepopulate it here.
 dirsToScan=()
-filesInDir=$(find "$1" -maxdepth 1 -type d)
+filesInDir=$(find "$rootScanDir" -maxdepth 1 -type d)
 
 for file in $filesInDir; do
   if ( ! test -d "$file/.git" ); then
