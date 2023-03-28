@@ -12,59 +12,6 @@ a glance, but poor at showing global information about the system or Emacs
 itself. However no alternative exists. Yet!
 
 * segments
-** vcs
-The =vcs= segment that comes stock in =doom-modeline= uses icky icons I want to
-avoid that seem to clutter up the editor with little purpose. What do they mean?
-To me at least the meaning is not obvious. I copied the segment and removed the
-icon parts. There may be more optimizations to do but this is a start since it
-does the job.
-
-#+name: doom-modeline-segment-vcs-min
-#+begin_src emacs-lisp :results none :tangle yes
-
-(doom-modeline-def-segment vcs-min
-  (let ((active (doom-modeline--active)))
-    (when-let ((text config/doom-modeline--vcs-text))
-      (concat
-       (doom-modeline-spc)
-       (propertize
-        (concat
-         (doom-modeline-vspc))
-        'mouse-face 'mode-line-highlight
-        'help-echo (get-text-property 1 'help-echo vc-mode)
-        'local-map (get-text-property 1 'local-map vc-mode))
-       (if active
-           text
-         (propertize text 'face 'mode-line-inactive))
-       (doom-modeline-spc))))
-  )
-(defvar-local config/doom-modeline--vcs-text nil)
-(defun config/doom-modeline-update-vcs-text (&rest _)
-  "Update text of vcs state in mode-line."
-  (setq config/doom-modeline--vcs-text
-        (when (and vc-mode buffer-file-name)
-          (let* ((backend (vc-backend buffer-file-name))
-                 (state (vc-state buffer-file-name backend))
-                 (str (if vc-display-status
-                          (substring vc-mode (+ (if (eq backend 'Hg) 2 3) 2))
-                        "")))
-            (propertize (if (> (length str) doom-modeline-vcs-max-length)
-                            (concat
-                             (substring str 0 (- doom-modeline-vcs-max-length 3))
-                             "...")
-                          str)
-                        'mouse-face 'mode-line-highlight
-                        'face (cond ((eq state 'needs-update)
-                                     'doom-modeline-warning)
-                                    ((memq state '(removed conflict unregistered))
-                                     'doom-modeline-urgent)
-                                    (t 'doom-modeline-info)))))))
-(add-hook 'find-file-hook #'config/doom-modeline-update-vcs-text)
-(add-hook 'after-save-hook #'config/doom-modeline-update-vcs-text)
-(advice-add #'vc-refresh-state :after #'config/doom-modeline-update-vcs-text)
-
-#+end_src
-
 * omit cruft
 It would seem that whether or not we're in Doom or Spacemacs, some modeline
 cruft gets added and I have to take it out.
@@ -102,8 +49,7 @@ cruft gets added and I have to take it out.
     lsp
     buffer-position
     selection-info
-    ;; vcs
-    vcs-min
+    vcs
     checker
     )
   )
@@ -133,7 +79,6 @@ cruft gets added and I have to take it out.
   (on-doom
    (after! doom-modeline
     (line-number-mode 1)
-    <<doom-modeline-segment-vcs-min>>
     <<omit-modeline-cruft>>
     ))
 #+end_src
