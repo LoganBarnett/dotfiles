@@ -1,19 +1,26 @@
-# emacs directory specific configuration
 # -*- gitignore -*-
+# Ignore Emacs directory specific configuration.
 .dir-locals.el
-# osx finder metadata
-.DS_Store
-# vim swap files
-.*.swp
-# emacs swap files
+
+# Ignore Emacs swap files.
 .\#*
-# Node.js based files
+
+# Ignore macOS finder metadata.
+.DS_Store
+
+# Ignore vim swap files.
+.*.swp
+
+# Ignore Node.js based files.
 yarn-error.log
-# TypeScript Language Server logs.
+
+# Ignore TypeScript Language Server logs.
 .log
-# tmux logs
+
+# Ignore tmux logs.
 tmux-client-*.log
-# eclim java server stuff
+
+# Ignore eclim java server stuff.
 .classpath
 .factorypath
 .project
