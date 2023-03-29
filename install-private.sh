@@ -14,15 +14,6 @@ else
 
 fi
 
-# Use this file to populate private settings files (not to be checked into the
-# public dotfiles repo). This file itself should have _nothing_ sensitive in it.
-
-# TODO: Check for the files needed and report what needs to be populated.
-
-# See mbsyncrc for usage of this file.
-PRIV_DIR=$PWD/../dotfiles-private
-ln -fns $PRIV_DIR/email-creds.priv.txt ~/.email-creds.txt
-
 # The .mailrc lets me have email aliases. I don't want to share emails with the
 # public though.
 ln -fns $PRIV_DIR/mailrc ~/.mailrc

@@ -1,12 +1,16 @@
-vim/bundle/
-emacs.d/el-get
-emacs.d/auto-save-list
-emacs.d/elpa
-emacs.d/recentf
+# Before adding things like .DS_Store, ignores for your editors, etc, consider
+# instead to use a global git ignore. This keeps the ignores here clean, and
+# specific to this project - not your text editor, OS, or other tooling.
+#
+# Attempts to ignore files specific to your configuration will be rejected.
+#
+# Please justify all ignore entries with comments.
+
+# Ignore various code injector (CSS/JS) generated emissions.
 .tmp-css
 .tmp-css-write
+code-injector-rules.json
 node_modules/
-org/private.org
 org/*.el
 
 # Cookies from curl usages.
@@ -15,11 +19,6 @@ wand-cookies.txt
 # Hide all private files.
 *.priv.txt
 *.private.js
-private/
-
-# Ignore our private key ID.
-# You need to copy and modify lisp/key-id.template.txt.
-lisp/key-id.txt
 
 # Beause of the symlink, yas will compile these snippets and they wind up in
 # this repository.
