@@ -1,4 +1,5 @@
 # emacs directory specific configuration
+# -*- gitignore -*-
 .dir-locals.el
 # osx finder metadata
 .DS_Store
