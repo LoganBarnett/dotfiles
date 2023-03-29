@@ -25,3 +25,11 @@ tmux-client-*.log
 .factorypath
 .project
 .settings/
+
+# direnv emitted settings directory.
+.direnv/
+
+# Ignore direnv/shell.nix files. Add explicitly. I have to place these into
+# projects too much, but don't want to force the issue.
+shell.nix
+.envrc
