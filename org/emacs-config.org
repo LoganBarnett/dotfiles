@@ -7,7 +7,7 @@ long. The stock Emacs menu options are enough to force the menu bar items to be
 clipped on a 13" screen. Switching off =menu-bar-mode= doesn't remove all menu
 bar items, but it disables enough that this isn't a problem.
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :results none
 (message "Disabling menu bar...")
 (defun config/disable-menu-bar ()
   (menu-bar-mode -1)
