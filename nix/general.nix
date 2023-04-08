@@ -137,6 +137,12 @@
   # Manage passwords using gpg.
   (pkgs.pass.withExtensions (px: [
     # Manage TOTP passwords via pass.
+    # Use with zbar to decode QR codes from images or webcams.
+    # Example of using zbar to tie in auth with pass-otp:
+    # zbarimg -q --raw qrcode.png | pass otp insert totp-secret
+    # If the registration UI asks for a "verification code", just generate a
+    # totp and use that.
+    # See readme for other cool uses: https://github.com/tadfisher/pass-otp
     px.pass-otp
   ]))
   # Use Unix pipes and direct them to a human program.
@@ -326,6 +332,13 @@
   pkgs.wireguard-tools
   # A tool for installing node packages. Better than npm in most ways.
   pkgs.yarn
+  # Decode QR codes from images or an onboard camera (such as a webcam).
+  # Example of using zbar to tie in auth with pass-otp:
+  # zbarimg -q --raw qrcode.png | pass otp insert totp-secret
+  # Potentially more docs in the pass + otp section of this file.
+  # If the registration UI asks for a "verification code", just generate a
+  # totp and use that.
+  pkgs.zbar
   # A better interactive shell than bash, I think.
   pkgs.zsh
   # Highlight zsh syntax.
