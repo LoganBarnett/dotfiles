@@ -429,9 +429,8 @@ export LC_ALL=en_US.UTF-8
 
 # This really should be included in the homebrew jenv caveats list:
 # https://github.com/gcuisinier/jenv/wiki/Trouble-Shooting
-export JENV_ROOT=/usr/local/opt/jenv
-
-export PATH="$JENV_ROOT:$PATH"
+# export JENV_ROOT=/usr/local/opt/jenv
+#export PATH="$JENV_ROOT:$PATH"
 
 # Start keychain, which ensures only one ssh-agent. This may prompt us for a
 # password though. The results print out the standard environment variables much

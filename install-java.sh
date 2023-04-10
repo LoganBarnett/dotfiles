@@ -2,13 +2,15 @@
 
 set -e
 
-brew tap AdoptOpenJDK/openjdk
+# TODO: Do this via nix or even nix-shell.
 
-brew cask install adoptopenjdk8
-brew cask install adoptopenjdk11
+# brew tap AdoptOpenJDK/openjdk
 
-jenv add /Library/Java/JavaVirtualMachines/adoptopenjdk-8.jdk/Contents/Home
-jenv add /Library/Java/JavaVirtualMachines/adoptopenjdk-11.jdk/Contents/Home
+# brew cask install adoptopenjdk8
+# brew cask install adoptopenjdk11
+
+# jenv add /Library/Java/JavaVirtualMachines/adoptopenjdk-8.jdk/Contents/Home
+# jenv add /Library/Java/JavaVirtualMachines/adoptopenjdk-11.jdk/Contents/Home
 
 # https://github.com/gcuisinier/jenv/issues/212
 # Heads up that you'll need to restart the terminal session after doing this.
@@ -17,6 +19,6 @@ jenv add /Library/Java/JavaVirtualMachines/adoptopenjdk-11.jdk/Contents/Home
 
 # This needs the jenv init - setup stuff because we're in bash right now, and
 # we're trying to run this in zsh for zsh.
-exec $SHELL -l -c 'eval "$(jenv init -)" && jenv enable-plugin export'
+# exec $SHELL -l -c 'eval "$(jenv init -)" && jenv enable-plugin export'
 
-./install-package.sh groovy
+# ./install-package.sh groovy
