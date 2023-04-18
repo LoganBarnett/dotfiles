@@ -316,6 +316,15 @@ For some major modes we just need to tie this to the mode hook.
   )
 #+end_src
 
+** highlight indentation
+
+This highlights indentation, which can be helpful for large sets of indentation.
+
+#+name: config/indentation-highlight
+#+begin_src emacs-lisp :results none :tangle yes
+(setq-default highlight-indent-guides-method 'character)
+(add-hook 'prog-mode-hook #'highlight-indent-guides-mode)
+#+end_src
 
 * all together
 
@@ -330,6 +339,7 @@ For some major modes we just need to tie this to the mode hook.
   <<config/prog-mode-disable-smart-parens>>
   <<config/prog-mode-line-numbers-enable>>
   <<config/prog-mode-manage-final-newline>>
+  <<config/indentation-highlight>>
   (add-hook 'prog-mode-hook #'config/auto-fill-comments)
   (add-hook 'prog-mode-hook #'config/disable-line-wrapping)
   (add-hook 'prog-mode-hook #'config/disable-smartparens-pairs)

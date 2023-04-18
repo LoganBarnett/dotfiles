@@ -71,6 +71,8 @@
 (package! groovy-mode)
 (package! habitica)
 (package! highlight-parentheses)
+;; Draw fancy lines along indentation.
+(package! highlight-indent-guides)
 (package! keychain-environment)
 (package! jiralib2 :recipe (:local-repo "~/dev/jiralib2"))
 (package! lsp-java)
