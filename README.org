@@ -10,3 +10,90 @@ This is my system configuration. It's a continual work in progress. It also
 relies upon less public configuration in another repository. My end goal is to
 transform this into a fully [[https://www.alexeyshmalko.com/2020/literate-config/][literate configuration]]. At least as much as is
 reasonable. At some point I need to [[https://en.wikipedia.org/wiki/Bootstrapping#Software_development][bootstrap]] the configuration, of course.
+
+* Privacy
+
+Some configuration here is private and cannot reasonably shared with the
+community at large. These exist as separate repositories whose permissions are
+locked down to my personal access only. Some paths in here will refer to private
+repositories or files. _All_ of them will have a =private= identifier somewhere in
+the name. It is recommended that you stub these out, but if you're in a rush you
+can just comment/remove these references to get you going.
+
+* If Installing From an Existing Configuration
+
+You will want to backup your =~/.zshrc= and perhaps other shell configuration
+files.
+
+* Installation
+
+Run =./install.sh=.
+
+Other installers are named =install-<thing>.sh= or =<thing>-install.sh=, with
+the latter being preferred but refactoring is not done yet.
+
+* Nix
+
+This repository uses [[https://nixos.org][Nix]] (but not the OS) extensively. Some parts are in its
+infancy though. Nix is used in conjunction with [[https://github.com/nix-community/home-manager][home-manager]] to manage a global
+installation.
+
+Nix installation can be run by itself via =./nix-install.sh=.
+
+** Updating Nix packages
+
+This is done via:
+
+#+begin_src shell :exports code
+nix-channel --update
+#+end_src
+
+** Home Manager
+
+Home Manager manages the global configuration of the system for the primary
+user.
+
+To build (or test to see if it can even build), use:
+
+#+begin_example shell
+home-manager build
+#+end_example
+
+To use the new configuration, use
+
+#+begin_example shell
+home-manager switch
+#+end_example
+
+=switch= implies =build=.
+
+=home.nix= is the starting point for =home-manager=, and is required to be named
+that via =home-manager=. To keep a clean setup across multiple machines, there
+is a =general.nix= for all configurations, =personal.nix= for my personal
+machine, and a work setup for my workstation kept in a private repository.
+
+Generally we want to avoid global tool installs for various things (like what
+version of Node.js you're running), and instead push those to specific
+repositories.
+
+** With Direnv and shell.nix Files
+
+This installation includes =direnv=, which can automatically load a =shell.nix=
+file when entering its directory if the path has been blessed via =direnv
+allow=. The =shell.nix= file declares a series of packages which will be
+available in the shell, and possibly even additional setup (like adding shell
+aliases or running some initial setup like database schemas). This is like tools
+like =pyenv=, =rbenv=, and =nodenv= or the =*vm= equivalents (=rvm=, =nvm=,
+etc), but it works for any software that Nix can handle, not just that one
+ecosystem.
+
+Use =nix-direnv-add-envrc= to lay down the necessary =direnv= files and also
+=allow= the setup immediately.
+** Global Packages from VMs
+
+Some languages that require runtimes (Ruby, Python, Node.js) all have packages
+that can be installed globally and communities tend to author tools which
+leverage this. Installing these kinds of packages by hand is not really the Nix
+way and generally you will run into permissions errors trying to do this with
+this configuration. Instead you want to install these packages via your =.nix=
+files.
