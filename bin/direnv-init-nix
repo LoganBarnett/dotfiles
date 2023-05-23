@@ -7,19 +7,19 @@
 # A `direnv allow` invocation will still be required, which is left to the user.
 ##
 
-echo "Emitting .envrc..."
-cat <<-EOF > .envrc
-if type lorri &>/dev/null; then
-echo "direnv: using lorri"
-eval "\$(lorri direnv)"
-else
-# fall back to using direnv's builtin nix support
-# to prevent bootstrapping problems.
-use nix
-fi
-EOF
+# echo "Emitting .envrc..."
+# cat <<-EOF > .envrc
+# if type lorri &>/dev/null; then
+# echo "direnv: using lorri"
+# eval "\$(lorri direnv)"
+# else
+# # fall back to using direnv's builtin nix support
+# # to prevent bootstrapping problems.
+# use nix
+# fi
+# EOF
 
-echo 'Done! Emitting shell.nix...'
+echo 'Emitting shell.nix...'
 echo 'TODO: Implement some feature selection to speed this up.
 For now it is just Postgres support.'
 
