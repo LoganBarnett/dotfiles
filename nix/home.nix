@@ -6,6 +6,7 @@ let
   # python39 = pkgs.callPackage ./PyQt5.nix;
   # openconnect-sso-src = builtins.fetchTarball "https://github.com/vlaci/openconnect-sso/archive/master.tar.gz";
   nixpkgs.overlays = [
+    (import ./overlays/cacert.nix)
     # (import ./overlays/crystal.nix)
     (import ./overlays/gnupg.nix)
     (import ./overlays/maven.nix)
@@ -21,19 +22,21 @@ let
   ];
 in
 {
-  nixpkgs.config = {
-    # Some packages are not "free". We need to specifically bless those.
-    allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) [
-      "ngrok"
-      "unrar"
-    ];
-    # Somehow this can get lost, and I'm not convinced this is home-managers'
-    # nor nix's doing. That said, this setting seems to have no effect.
-    networking.hostname = "neon.proton";
-    permittedInsecurePackages = [
-      "openssl-1.0.2u"
-    ];
-  };
+  nixpkgs.config = (import ./general-config.nix) {
+      lib = lib;
+      pkgs = pkgs;
+    }
+    // (if builtins.getEnv "USER" == "logan"
+         then (import ./personal-config.nix) {
+           lib = lib;
+           pkgs = pkgs;
+         }
+         else (import ../../dotfiles-private/work-new-e-ah-config.nix) {
+           lib = lib;
+           pkgs = pkgs;
+         }
+       )
+      ;
 
   # Let Home Manager install and manage itself.
   programs.home-manager.enable = true;
@@ -41,6 +44,7 @@ in
   programs.direnv.nix-direnv.enable = true;
   programs.tmux = import ./tmux.nix;
   programs.zsh = import ./zsh.nix { pkgs = pkgs; };
+
   # This is the magic that makes fonts get installed to ~/Library/Fonts on
   # macOS, and I imagine other dirs for other systems.
   fonts.fontconfig.enable = true;
@@ -88,10 +92,12 @@ in
   # services.lorri.enable = true;
 
   home.packages = []
-    ++ (import ./general.nix){pkgs = pkgs;}
+    ++ (import ./general-packages.nix){pkgs = pkgs;}
     ++ (if builtins.getEnv "USER" == "logan"
-         then (import ./personal.nix){pkgs = pkgs;}
-         else (import ../../dotfiles-private/work-new-e-ah.nix){pkgs = pkgs;}
+         then (import ./personal-packages.nix){pkgs = pkgs;}
+         else (import ../../dotfiles-private/work-new-e-ah-packages.nix) {
+           pkgs = pkgs;
+         }
        )
   ;
   # This value determines the Home Manager release that your

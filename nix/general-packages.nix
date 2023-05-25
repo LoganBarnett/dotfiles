@@ -238,7 +238,7 @@
   #pkgs.rustracer
 
   # A Language Server (LSP) implementation for Rust
-  pkgs.rust-analyzer
+  # pkgs.rust-analyzer
   # A version management tool for Rust.
   pkgs.rustup
   # Assume an account on AWS via SAML.
