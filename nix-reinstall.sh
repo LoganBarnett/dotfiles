@@ -24,7 +24,8 @@ sudo rm -rf \
   /var/root/.nix-channels \
   $HOME/.nix-profile \
   $HOME/.nix-defexpr \
-  $HOME/.nix-channels
+  $HOME/.nix-channels \
+  $HOME/.config/home-manager
 
 slog "Purged all nix files."
 
