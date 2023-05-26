@@ -23,7 +23,7 @@ slog "Linking easy dotfiles"
 slog "Done linking easy dotfiles"
 
 slog "Installing nix..."
-./nix-install.sh
+./nix-reinstall.sh
 slog "Done installing nix."
 
 slog "Doing OS specific installation..."
