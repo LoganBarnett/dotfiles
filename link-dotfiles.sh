@@ -5,12 +5,9 @@ set -e
 PWD=$(pwd)
 EASYFILES="
 Xdefaults
-bash-logging
 bash_profile
 bashrc
 gemrc
-ispell_english
-jsbeautifyrc
 npmrc
 pentadactylrc
 profile

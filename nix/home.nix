@@ -68,6 +68,12 @@ in
   home.username = builtins.getEnv "USER";
   home.homeDirectory = builtins.getEnv "HOME";
 
+  home.activation = {
+    ispell-config = ''
+      ln -snf $(realpath ispell_english) ~/.ispell_english
+    '';
+  };
+
   # In order to actually use some of this on my system (a Mac), I need to
   # wire up some of the nix-managed directories to the real thing. One example
   # is mapping ~/.nix-profile/Library/Fonts to ~/Library/Fonts, so macOS will
@@ -88,8 +94,21 @@ in
   };
   in lib.mkIf pkgs.stdenv.targetPlatform.isDarwin "${apps}/Applications";
 
+  # My little colorized/bracketed logger.
+  home.file.".bash-logging".source = ../bash-logging;
+
   # This gets oh-my-zsh where we can find it.
   home.file.".oh-my-zsh".source = config.lib.file.mkOutOfStoreSymlink "${pkgs.oh-my-zsh.outPath}/share/oh-my-zsh";
+
+  # For Emacs to prettify JavaScript files, this config must be laid down (or it
+  # will not use great defaults).
+  home.file.".jsbeautifyrc".source = ../jsbeautifyrc;
+
+  # This puts the file in the store and links it, but we don't want that because
+  # we write to this file quite a bit to update entries. A true symlink to the
+  # source is desired. Instead this is handled via home-manager's activation
+  # block.
+  # home.file.".ispell_english".source = config.lib.file.mkOutOfStoreSymlink ../ispell_english;
 
   # Lifted from https://github.com/Yumasi/nixos-home/blob/master/zsh.nix
   # There aren't a lot of examples or documentation for nix, home-manager, etc
