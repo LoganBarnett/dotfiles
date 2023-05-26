@@ -40,7 +40,7 @@ mkdir -p ~/.config/nixpkgs
 machineName=$(scutil --get ComputerName | tr -d $'\n' || hostname)
 slog "Found machine name of '$machineName'."
 # This machine has not been named yet.
-if [[ "$machineName" =~ 'Mac' ]] ; then
+if [[ "$machineName" =~ "'s Mac" ]] ; then
   slog "Give this machine a proper name:"
   read machineName
   # There's a bunch of different ways to name the machine across platforms. I
