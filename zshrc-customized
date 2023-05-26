@@ -85,15 +85,6 @@ setopt prompt_subst
   #noreallyjustfuckingstopalready
   #zsh-git-prompt
 
-# Path to your oh-my-zsh installation.
-export ZSH=$HOME/.oh-my-zsh
-
-# Set name of the theme to load.
-# Look in ~/.oh-my-zsh/themes/
-# Optionally, if you set this to "random", it'll load a random theme each
-# time that oh-my-zsh is loaded.
-ZSH_THEME="robbyrussell"
-
 # Uncomment the following line to use case-sensitive completion.
 # CASE_SENSITIVE="true"
 
@@ -202,35 +193,7 @@ unsetopt AUTO_CD
 # Vars
 export NOTES_DIR="$HOME/notes"
 
-# -G is BSD, but with Nix we use --color now.
-alias ls='ls -aG --color=auto'
-alias grep='grep --color=auto'
-alias b='bundle exec'
-alias curl-json='curl -v -H "Accept: application/json"'
-
-# git
-alias gs="git status"
-alias gfp="git push --force-with-lease"
-alias grc="git rebase --continue"
-alias gro="git restore --ours"
-alias grt="git restore --theirs"
-alias glp="git log --pretty=format:'%Cred%h%Creset %<(60,trunc)%s %Cgreen%<(12,trunc)%cr %C(bold blue)%<(12,trunc)%an%Creset %C(yellow)%<(20,mtrunc)%d%Creset' --abbrev-commit"
-alias gbu="git branch --set-upstream-to=origin/$(git branch --show-current) $(git branch --show-current)"
-
-# ripgrep
-alias rgh="rg --hidden --glob '!.git'" # Search hidden files.
-
-# yarn flow management because it happens a lot.
-alias yf="yarn flow"
-alias yfs="yarn flow stop"
-alias yfr="yfs && yf"
-
 # completions
-
-# omz placation
-# export PATH="$HOME/.rvm/bin:$PATH" # Add RVM to PATH for scripting
-# [[ -s "$HOME/.rvm/scripts/rvm" ]] && . "$HOME/.rvm/scripts/rvm" 
-
 
 # functions
 
@@ -249,11 +212,8 @@ grepp() {
 # Upload image to Imgur and return its URL. Get API key at http://imgur.com/register/api_anon
 # imgur() { curl -F "image=@$1" -F "key=ANONYMOUS_IMGUR_API_KEY" https://api.imgur.com/2/upload | egrep -o "<original>.+?</original>" | egrep -o "http://imgur\.com/[^<]+" | sed "s/imgur.com/i.imgur.com/" | tee >(pbcopy); }
 
-# oh java
-# JAVA_HOME="/Library/Java/JavaVirtualMachines/jdk1.8.0_102.jdk/Contents/Home"
-# JAVA_HOME="/Library/Java/Home"
-export JAVA_HOME=$(/usr/libexec/java_home)
-export GROOVY_HOME=/usr/local/opt/groovy/libexec
+# TODO: Make note of this handy command: /usr/libexec/java_home
+# But we can't use it anymore because Nix manages all of this now.
 
 # thefuck - `fuck` after a failed command and it will try to do the right thing.
 eval $(thefuck --alias)
@@ -427,32 +387,11 @@ export NOTES_DIR=~/notes
 # Should take care of some prompt issues.
 export LC_ALL=en_US.UTF-8
 
-# This really should be included in the homebrew jenv caveats list:
-# https://github.com/gcuisinier/jenv/wiki/Trouble-Shooting
-# export JENV_ROOT=/usr/local/opt/jenv
-#export PATH="$JENV_ROOT:$PATH"
-
-# Start keychain, which ensures only one ssh-agent. This may prompt us for a
-# password though. The results print out the standard environment variables much
-# like ssh-agent and gpg-agent do, so we must eval them to take effect. Weird
-# things happen if that is omitted, since it will use the system defaults (which
-# are wrong or separate).
-echo "Password entry required for keychain to start ssh-agent and gpg-agent."
-eval "$(keychain -Q --agents gpg,ssh --eval)"
-
 # cargo also requires an init
 source $HOME/.cargo/env
 
 # nodenv's build-update-defs plugin needs an environment variable set.
 # export NODE_BUILD_DEFINITIONS=$(brew --prefix node-build-update-defs)/share/node-build
-
-# Get ocaml's package manager on the PATH and other ocaml config.
-# eval $(opam config env)
-
-# Use direnv with nix to achieve an automatic shell.nix adoption upon entering a
-# directory using a shell.nix setup.
-# See more at https://nixos.wiki/wiki/Development_environment_with_nix-shell
-eval "$(direnv hook zsh)"
 
 # This allows commands to be excluded from history if they are prefixed with a
 # space.
