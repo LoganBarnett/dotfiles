@@ -48,8 +48,9 @@ if [[ "$machineName" =~ "'s Mac" ]] ; then
   bin/hostname-set "$machineName"
 fi
 mkdir -p ~/.config/home-manager
-ln -snf $PWD/nix/home.nix ~/.config/nixpkgs/home.nix
-# The home.nix appears to need to go here now.
+# The home.nix appears to need to go here now. Older versions use the other
+# symlink, but keeping it causes a warning. Kept for posterity.
+# ln -snf $PWD/nix/home.nix ~/.config/nixpkgs/home.nix
 ln -snf $PWD/nix/home.nix ~/.config/home-manager/home.nix
 
 slog "Loading nix-daemon so we don't need to close our shell..."

@@ -22,6 +22,7 @@ nix-channel --add https://github.com/NixOS/nixpkgs/archive/master.tar.gz nixpkgs
 nix-channel --update
 nix-shell '<home-manager>' -A install
 # home-manager appears to crush this, so set it afterwards.
+mkdir -p ~/.config/home-manager
 ln -snf $PWD/nix/overlays ~/.config/nixpkgs/overlays
 
 . $HOME/.nix-profile/etc/profile.d/hm-session-vars.sh
