@@ -55,28 +55,14 @@ slog "Installing shell settings."
 slog "Installing Homebrew (for casks and troublesome nix packages)."
 ./brew-install.sh
 
-slog "Installing packages..."
-./install-packages.sh
-
-slog "Installing Rust..."
-./install-rust.sh
-
-slog "installing node modules"
-# TODO: Move necessary node modules into nix so we needn't worry about what node
-# version we're using in that moment.
-#./install-node-modules.sh
-
 slog "installing GPG..."
-#./gpg-install.sh
+./gpg-install.sh
 
 #./daw-install.sh
 
-# TODO: Does the nix package let me _run_ mongodb?
-#./mongodb-install.sh
-
 # TODO: Maybe change some of these from "install" to "configure".
 slog "Setting up Emacs..."
-#./emacs-install.sh
+./emacs-install.sh
 
 if [ $(uname) = 'Darwin' ]; then
   # alfred workflows
@@ -84,16 +70,6 @@ if [ $(uname) = 'Darwin' ]; then
   ./install-workflows.sh
 else
   slog "skipping alfred install - not on osx"
-fi
-
-# TODO: See if enough of this is installed in nix.
-#slog "Installing (some) Java support..."
-#./install-java.sh
-
-if [[ "$USER" == "logan.barnett" ]]; then
-  slog "Installing puppet for work..."
-  # TODO: See if nix can do this.
-  #./puppet-install.sh
 fi
 
 slog "Installing GNUPG settings..."
