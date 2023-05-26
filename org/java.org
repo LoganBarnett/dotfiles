@@ -23,23 +23,49 @@ tools/ecosystems.
 #+end_src
 
 ** organizing imports
-   By default organizing imports is done automatically. This creates a large
-   churn in the diffs for commits. Disabling it is the sensible thing to do.
 
-   #+begin_src emacs-lisp
-     (defun config/disable-organize-imports-on-save()
-       (setq-default lsp-java-save-action-organize-imports nil)
+By default organizing imports is done automatically. This creates a large churn
+in the diffs for commits. Disabling it is the sensible thing to do.
+
+#+name: config/java-organize-imports-on-save-disable
+#+begin_src emacs-lisp
+(setq-default lsp-java-save-action-organize-imports nil)
+#+end_src
+** fix lsp-java
+
+There seems to be a problem with lsp-java that Doom is using. For now work
+around it with:
+
+#+name: config/lsp-java-fix-missing-vars
+#+begin_src emacs-lisp :results none
+(defvar lsp-java-errors-incomplete-classpath-severity nil
+  "Some variable no longer declared upfront in lsp-java."
+  )
+(defvar lsp-java-dependency-package-representation nil
+  "Some variable no longer declared upfront in lsp-java."
+  )
+(defvar lsp-java-configuration-check-project-settings-exclusions nil
+  "Some variable no longer declared upfront in lsp-java."
+  )
+(defvar lsp-java-configuration-update-build-configuration nil
+  "Some variable no longer declared upfront in lsp-java."
+  )
+(defun lsp-defcustom (&rest rest)
+     (message "Someone called missing lsp-defcustom! This is an error but we're ignoring it.")
      )
-   #+end_src
+#+end_src
+
+
 * hooking it up
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :noweb yes
   (require 'use-package)
 
-  (use-package "lsp-java"
-    :config
-    (config/disable-organize-imports-on-save)
-  )
+  ;; (use-package "lsp-java"
+  ;;   :init
+    ;; <<config/lsp-java-fix-missing-vars>>
+    <<config/java-organize-imports-on-save-disable>>
+  ;; )
     ;; (add-hook 'java-mode-hook (lambda ()
     ;;   (require 'lsp-java)
     ;;   (add-hook 'java-mode-hook #'lsp-java-enable)
