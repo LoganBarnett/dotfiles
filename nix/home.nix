@@ -42,6 +42,17 @@ in
   programs.home-manager.enable = true;
   programs.direnv.enable = true;
   programs.direnv.nix-direnv.enable = true;
+  # Start keychain, which ensures only one ssh-agent and one gpg-agent. This may
+  # prompt us for a password though. The results print out the standard
+  # environment variables much like ssh-agent and gpg-agent do, so we must eval
+  # them to take effect.  Weird things happen if that is omitted, since it will
+  # use the system defaults (which are wrong or separate).
+  programs.keychain = {
+    enable = true;
+    agents = [ "gpg" "ssh" ];
+    extraFlags = [ "--quiet" ];
+    enableZshIntegration = true;
+  };
   programs.tmux = import ./tmux.nix;
   programs.zsh = import ./zsh.nix { pkgs = pkgs; };
 
