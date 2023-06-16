@@ -1,0 +1,21 @@
+# -*- mode: snippet; require-file-newline: nil -*-
+# name: JavaScript Stateless React Component
+# key: jsstateless
+# condition: t
+# --
+import React from 'react'
+
+export default () => {
+  const component = (props) => {
+    return <>
+      {props.children}
+    </>
+  }
+  component.displayName = '${1:`
+  (caseformat-convert
+    ;; A prefixed "-" means to upcase the following letter.
+    (concat "-" (file-name-nondirectory
+                  (file-name-sans-extension (buffer-file-name))
+                 )))`}'
+  return component
+}
