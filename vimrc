@@ -1,3 +1,31 @@
+" Setting both number and relativenumber activates a hybrid mode, where only
+" the current line is shown as absolute.
+:set number relativenumber
+" Show the cursor position in the powerline.
+:set ruler
+" Tab key inserts spaces.
+:set expandtab
+" Tab chararacters use this many columns.
+:set tabstop=2
+" Unsure how this differs.
+:set softtabstop=2
+" Sets tab key's indentation to this many space characters.
+:set shiftwidth=2
+" Allows using Unicode characters in various places, such as listchars below.
+:set encoding=utf-8
+:scriptencoding utf-8
+" Make tab characters visible.
+:set list listchars+=tab:▶┈,eol:$
+" Make Y consistent with D and C.
+nnoremap Y y$
+" Make sure syntax highlighting and filetype are on, but not sure if we're
+" using it right now.
+syntax on
+filetype on
+" Associate Jenkinsfiles with Groovy.
+au BufNewFile,BufRead Jenkinsfile setf groovy
+au BufNewFile,BufRead Jenkinsfile.* setf groovy
+
 set textwidth=80
 set colorcolumn=+1
 
@@ -75,7 +103,6 @@ endif
 " Global settings (regardless of plugins)
 filetype plugin indent on
 
-syntax on
 set hlsearch
 
 " Custom Leader bindings
@@ -86,19 +113,14 @@ let maplocalleader="\\"
 set backspace=indent,eol,start
 
 " numbers
-set number
 set numberwidth=4
 
 set nobackup
 set history=50      " keep 50 lines of command line history
-set ruler           " show the cursor position all the time
 set showcmd         " display incomplete commands
 set incsearch       " do incremental searching
 
-set tabstop=2
 set softtabstop=2
-set shiftwidth=2
-set expandtab
 set smartindent
 
 set statusline=%F%m%r%h%w\ 
