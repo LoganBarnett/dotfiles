@@ -287,12 +287,16 @@
   (pkgs.texlive.combine {
     inherit (pkgs.texlive)
       algorithms
+      # Business cards.
+      bizcard
       capt-of
       # Circuit diagram support.
       circuitikz
       scheme-small
       # SI units (metric?).
       siunitx
+      # Tables.
+      tabularx
       wrapfig
     ;
   })
