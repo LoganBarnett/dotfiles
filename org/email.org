@@ -293,6 +293,7 @@ http://pragmaticemacs.com/emacs/master-your-inbox-with-mu4e-and-org-mode/
 #+end_src
 
 *** getting mail
+
 =~/bin/mail-sync= gets email and then runs =mu= to perform indexing. This is
 =mu4e= seems to run indexing on its own, so we can just use =mbsync -a= like
 =mail-sync= uses. =-F= tells it to do a full sync, which includes deletions. If
@@ -535,7 +536,7 @@ much of that is shadowed by =evil-mode=.
 
 ***** unfill
        I like to edit my emails using =auto-fill-mode= and =fill-paragraph=.
-       However we need to "unfill" just before ending. Fortunately a [[https://emacs.stackexchange.com/a/45380/14851][Stack
+       However we need to "unfill" just before sending. Fortunately a [[https://emacs.stackexchange.com/a/45380/14851][Stack
        Overflow answer]] already does this for us. Below is the code for that,
        mostly verbatim. I changed the call from =fill-paragraph= to
        =mu4e-fill-paragraph= since =fill-paragraph= does the opposite of what we
@@ -549,12 +550,26 @@ much of that is shadowed by =evil-mode=.
            (setq top (point))
            (mu4e-compose-goto-bottom)
            ;; now go backward by paragraph and unfill them unless the paragraph starts
-           ;; with >
+           ;; with > or -.
            (while (and (> (point) top)
                        (backward-paragraph))
              (unless (or (looking-at ">") (looking-at "-"))
                (mu4e-fill-paragraph))))
          )
+
+(defun config/mu4e-unfill-body-conditionally ()
+  (if config/mu4e-unfill-message
+      (config/mu4e-unfill-body)
+      nil
+    )
+  )
+
+(defcustom config/mu4e-unfill-message t
+  "t if automatically unfilling email messages before sending, nil to skip."
+  :local t
+  :type 'boolean
+  )
+
      #+end_src
 
 ***** fill when writing
@@ -582,7 +597,7 @@ formatting I do myself (such as lists), and =mu4e-compose-format-flowed= as
            (setq-default mu4e-compose-format-flowed nil)
            (add-hook
             'message-send-hook
-            'config/mu4e-unfill-body
+            'config/mu4e-unfill-body-conditionally
             )
            (add-hook
             'mu4e-compose-mode-hook
