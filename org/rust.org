@@ -13,9 +13,19 @@ choice. Their code formatting uses it, and the community uses it. So trying to
 change it seems like a lost cause. That's okay though, because we have
 =redshift=.
 
+Ever since installing =highlight-indent-guides-mode=, =redshift-indent-mode= no
+longer works alongside it.
+
 #+name: config/rust-redshift
 #+begin_src emacs-lisp :results none :tangle no
-(add-hook 'rustic-mode-hook #'redshift-indent-mode)
+
+;; (defun config/rust-redshift-fix-indentation ()
+;;   (setq-local redshift-cosmological-constant 0.5)
+;;   (redshift-indent-mode)
+;;   (redshift-indent -2)
+;;   )
+;; (add-hook 'rustic-mode-hook #'config/rust-redshift-fix-indentation)
+(message "Skipping redshift-indent-mode for rust until we can figure out how to make it play nice with highlight-indent-guides-mode.")
 #+end_src
 * racer
 
