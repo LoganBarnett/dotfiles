@@ -50,6 +50,8 @@
   #  sha256 = "iij2TsujINT/hgIHn3epchE09hWGkPk8UdtwFBjdAsU=";
   #}) {}).emacsMacport
   pkgs.emacs
+  # Detect character encoding of files.
+  pkgs.enca
   # This is a binary apparently. Universal editor settings. Kind of like a
   # pre-prettier. I don't know the nix pacakge though, if it exists.
   #pkgs.editorconfig
