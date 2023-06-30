@@ -4,7 +4,9 @@
 {pkgs}: {
   enable = true;
   enableAutosuggestions = true;
-  enableSyntaxHighlighting = true;
+  syntaxHighlighting = {
+    enable = true;
+  };
   oh-my-zsh = {
     enable = true;
     # TODO: These packages and plugins aren't out of reach necessarily but
