@@ -99,6 +99,8 @@
   # jdk
   # Managed Java on a per-project basis. Doesn't exist in nix?
   # jenv
+  # Manage Jira from the command line, like a scholar.
+  pkgs.jira-cli-go
   # JSON parsing, querying, and updating.
   pkgs.jq
   # Manage pesky ssh-agent and gpg-agent sessions universally.
