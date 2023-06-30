@@ -19,7 +19,11 @@ original=$1
 # Assume "HEAD" if the command fails. This can happen when we are making the
 # initial commit.
 branch=$(git rev-parse --abbrev-ref HEAD 2> /dev/null || echo "HEAD")
-regex="^([[:alnum:]]+)-([0-9]+)-[[:alnum:]-]+$"
+# In other places, _ can be last (as shown in this very regex), but for some
+# reason the end matcher must have _ before - or it simply fails to match things
+# properly. I have seen positive matches but don't fully understand the
+# circumstances.
+regex="^([[:alnum:]]+)[-_]([0-9]+)[-_][[:alnum:]_-]+$"
 
 if [[ $branch == "HEAD" ]]; then
   # We run into HEAD as a branch when we are in a detached HEAD state, which
@@ -34,6 +38,7 @@ elif [[ $branch =~ $regex ]]; then
   if ! filterComments "$1" | grep -q "$upper_ticket_id"; then
     printf "\n\n$upper_ticket_id" >> "$1"
   fi
+  exit 0
 else
   # If the format doesn't match, then procede as normal.
   exit 0
