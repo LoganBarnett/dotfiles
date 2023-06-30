@@ -188,6 +188,7 @@
           :pin "bbc60f68ac190f02da8a100b6fb67cf1c27c53ab"
           :recipe (:host github :repo "magit/with-editor"))
 
+(package! vimrc-mode)
 
 ;; To install a package directly from a particular repo, you'll need to specify
 ;; a `:recipe'. You'll find documentation on what `:recipe' accepts here:
