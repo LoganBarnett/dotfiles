@@ -126,9 +126,6 @@
   # editor agnostic manner.
   # Lifted from https://code-notes.jhuizy.com/add-custom-npm-to-home-manager/
   pkgs.nodePackages.typescript-language-server
-  # Elastic, load balanced, self hosted, containerized server pools. This is
-  # the command line interface.
-  pkgs.nomad
   # oq is like jq but for xml. It parses xml and yaml files and can convert
   # them to xml, yaml, or json (with jq as a backend). It uses the same snytax
   # as jq with the exception of the -i and -o arguments to indicate which
