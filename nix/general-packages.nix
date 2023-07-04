@@ -329,6 +329,8 @@
   pkgs.nodePackages.web-ext
   # A handy alternative to curl, best suited for downloading content.
   pkgs.wget
+  # Run Windows programs (sometimes even I need this).
+  pkgs.wine
   # The wireguard-go package must be installed separatedly, even tough
   # wg-quick (from wireguard-tools) depends upon wireguard-go.
   pkgs.wireguard-go
