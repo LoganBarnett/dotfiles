@@ -49,6 +49,24 @@ information.
 #+begin_src emacs-lisp :tangle yes :results none
 (setq tramp-verbose 3)
 #+end_src
+* troubleshooting
+** huge recentf error
+
+https://discourse.doomemacs.org/t/recentf-cleanup-logs-a-lot-of-error-messages/3273/6
+
+#+begin_src emacs-lisp :results none
+(after! tramp (advice-add 'doom--recentf-file-truename-fn :override
+                          (defun my-recent-truename (file &rest _args)
+                            (if (or (not (file-remote-p file)) (equal "sudo" (file-remote-p file 'method)))
+                                (abbreviate-file-name (file-truename (tramp-file-local-name file)))
+                              file))))
+#+end_src
+
+** max-specpdl-size
+
+This is because it's trying to ssh to a host and there are no ssh keys to use.
+Other ssh errors might also produce this issue. Make sure the ssh key is loaded
+via =keychain= (which =ssh-add= should also handle).
 
 * ls and dired
 Need to override this function because =cmd= is defined with =ls= first instead
