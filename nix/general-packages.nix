@@ -244,7 +244,9 @@
   # A Language Server (LSP) implementation for Rust
   # pkgs.rust-analyzer
   # A version management tool for Rust.
-  pkgs.rustup
+  # Disabled because I don't think this is needed, or at least not needed
+  # globally.
+  # pkgs.rustup
   # Assume an account on AWS via SAML.
   pkgs.saml2aws
   # Screenkey displays what's being typed on the screen. Too bad it doesn't
