@@ -301,8 +301,6 @@
       scheme-small
       # SI units (metric?).
       siunitx
-      # Tables.
-      tabularx
       wrapfig
     ;
   })
