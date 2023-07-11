@@ -38,6 +38,75 @@ the camera moves to the left (-x), the model(s) will appear to move right.
  )
 #+end_src
 
+** theme / color scheme
+
+Light mode is the worst.
+
+Schemes available can be found by going to OpenSCAD preferences/settings in the
+"3D View" tab.
+
+This needs to have double quotes because it is passed as-is to the shell, and
+needs to be interpreted as a single argument.
+
+Unfortunately, changing this requires a restart. I don't know why. I should file
+a bug or pull request.
+
+The bug seems to be in OpenSCAD itself with regards to "Tomorrow Night". Here's
+an example command that fails, sans Emacs:
+
+#+begin_example sh
+openscad \
+  -o /var/folders/g3/hj4b184s12sgynhxdddyy6rh0000gn/T/scad-preview-EtFlOx.scad.png \
+  --preview \
+  --projection=perspective \
+  --imgsize=1000,1000 \
+  --view=axes,scales \
+  --camera=0,0,0,50,0,20,500 \
+  --colorscheme='Tomorrow Night' \
+  /var/folders/g3/hj4b184s12sgynhxdddyy6rh0000gn/T/scad-preview-EtFlOx.scad
+#+end_example
+
+Even with the quotes, this fails by printing the help message. If a bogus color
+scheme is provided, OpenSCAD will print all of its schemes available and exit.
+"Tomorrow Night" is listed.
+
+"Starnight" works fine for my purposes.
+
+#+begin_example sh
+openscad \
+  -o /var/folders/g3/hj4b184s12sgynhxdddyy6rh0000gn/T/scad-preview-EtFlOx.scad.png \
+  --preview \
+  --projection=perspective \
+  --imgsize=1000,1000 \
+  --view=axes,scales \
+  --camera=0,0,0,50,0,20,500 \
+  --colorscheme=Starnight \
+  /var/folders/g3/hj4b184s12sgynhxdddyy6rh0000gn/T/scad-preview-EtFlOx.scad
+#+end_example
+
+I had edited the argument to have quotes around it in =scad-mode.el:345=
+
+Original:
+#+begin_example emacs-lisp
+(format "--colorscheme=%s" scad-preview-colorscheme)
+#+end_example
+
+Modified:
+#+begin_example emacs-lisp
+(format "--colorscheme='%s'" scad-preview-colorscheme)
+#+end_example
+
+And that broke stuff. Probably because shell invocations are automatically
+escaped or don't need escaping.
+
+I don't recall if Tomorrow Night was attempted without quotes. But Starnight
+works and flipping the variable doesn't stick without a restart. Alas.
+
+#+name: config/scad-preview-color-scheme
+#+begin_src emacs-lisp :results none
+(setq-default scad-preview-colorscheme "Starnight")
+#+end_src
+
 * scad-mode
 
 ** key bindings
@@ -96,6 +165,7 @@ We can add =org-babel= support using [[https://github.com/wose/ob-scad][ob-scad]
   <<config/scad-indentation-fix>>
   <<config/org-babel-ob-scad-add>>
   <<config/openscad-command>>
+  <<config/scad-preview-color-scheme>>
   (add-hook 'scad-mode-hook #'config/prog-mode-c-style-set)
   )
 #+end_src
