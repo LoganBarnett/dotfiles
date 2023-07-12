@@ -7,7 +7,6 @@
 [init]
   defaultBranch = main
 [merge]
-  tool = diffmerge
   ff-only = true
 [core]
   attributesfile = ~/dev/dotfiles/gitattributes_global
