@@ -6,6 +6,13 @@
 #+file_tags:
 #+tags:
 
+* rust-mode vs rustic-mode
+
+=rust-mode= doesn't seem to be keeping up well with evolving deprecations in the
+Rust toolchain (such as deprecating =racer= and =rls=). For this reason I have
+chosen =rustic-mode=. I thought I used it before, but didn't record reasons for
+switching. This might be sitting in the git history for this file.
+
 * indentation
 
 As a huge proponent to 80 columns, I find Rust's 4 space indent to be an awful
@@ -29,10 +36,8 @@ longer works alongside it.
 #+end_src
 * racer
 
-#+begin_src emacs-lisp :results none
-(setq rustic-racer-cmd (expand-file-name "~/.nix-profile/bin/racer"))
-(setq racer-cmd (expand-file-name "~/.nix-profile/bin/racer"))
-#+end_src
+=racer= is deprecated, as is =rls=. Prefer =rust-analyzer= now.
+
 * multi-line
 
 I like trailing commas, and Rust supports them everywhere! See the default
@@ -40,7 +45,7 @@ strategy in [[file:./prog-mode.org]].
 
 #+name: config/rust-multi-line-commas
 #+begin_src emacs-lisp :results none :tangle no
-(multi-line-defhook rust-mode multi-line-add-trailing-comma-strategy t)
+(multi-line-defhook rustic-mode multi-line-add-trailing-comma-strategy t)
 #+end_src
 
 
@@ -58,11 +63,12 @@ using =smart-parens=. Disable it. Always.
 #+end_src
 
 * stitch
+
 #+begin_src emacs-lisp :results none :noweb yes
-(use-package "rust-mode"
+(use-package "rustic-mode"
   :init
   (message "add rust to path manually...")
-  (add-to-list 'exec-path (expand-file-name "~/.cargo/bin"))
+  (add-to-list 'exec-path (expand-file-name "~/.nix-profile/bin"))
   (add-to-list 'exec-path (expand-file-name "~/.nix-profile/bin"))
   <<config/smartparens-disable>>
   <<config/rust-redshift>>

@@ -156,7 +156,7 @@
 (package! request-deferred)
 (package! ruby-mode)
 (package! rjsx-mode)
-(package! rust-mode)
+(package! rustic)
 (package! scad-mode) ;; For opening OpenSCAD .scad files.
 (package! so-long)
 ;; I fail to see how this is ever helpful with vim bindings.

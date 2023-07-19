@@ -57,6 +57,24 @@
   #pkgs.editorconfig
   # Searches for files. Used by projectile in Emacs.
   pkgs.fd
+  # fenix comes from an overlay in this configuration.
+  #
+  # fenix is a rustup replacement I am using to give us some tools as well as
+  # the Rust documentation. Rust documentation is something I want installed on
+  # the system so a potential patch version update doesn't mean I have to
+  # re-download the documentation even when offline.
+  #
+  # Right now the documentation isn't something I can get to, even though it
+  # seems to isntall. I have https://github.com/nix-community/fenix/issues/113
+  # open to try to address it.
+  (pkgs.fenix.complete.withComponents [
+    "cargo"
+    "clippy"
+    "rust-docs"
+    "rust-std"
+    "rustfmt"
+    "rust-src"
+  ])
   # Convert media (sound, video). The "-full" suffix brings in all of the
   # codecs one could desire.
   pkgs.ffmpeg-full

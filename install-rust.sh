@@ -10,8 +10,6 @@ set -e
 # with --no-modify-path.
 rustup-init -y
 
-source $HOME/.cargo/env
-
 # Needed for LSP support.
 # TODO: Make some installation functions to capture things such as the
 # architecture.
