@@ -80,7 +80,8 @@
 (package! highlight-parentheses)
 (package! keychain-environment)
 (package! jiralib2 :recipe (:local-repo "~/dev/jiralib2"))
-(package! lsp-java)
+;; This is still causing issues with missing functions and the like.
+;; (package! lsp-java)
 ;; (package! latex-mode)
 (package! lua-mode)
 (package! js2-mode)

@@ -38,21 +38,21 @@ around it with:
 
 #+name: config/lsp-java-fix-missing-vars
 #+begin_src emacs-lisp :results none
-(defvar lsp-java-errors-incomplete-classpath-severity nil
-  "Some variable no longer declared upfront in lsp-java."
-  )
-(defvar lsp-java-dependency-package-representation nil
-  "Some variable no longer declared upfront in lsp-java."
-  )
-(defvar lsp-java-configuration-check-project-settings-exclusions nil
-  "Some variable no longer declared upfront in lsp-java."
-  )
-(defvar lsp-java-configuration-update-build-configuration nil
-  "Some variable no longer declared upfront in lsp-java."
-  )
-(defun lsp-defcustom (&rest rest)
-     (message "Someone called missing lsp-defcustom! This is an error but we're ignoring it.")
-     )
+;; (defvar lsp-java-errors-incomplete-classpath-severity nil
+;;   "Some variable no longer declared upfront in lsp-java."
+;;   )
+;; (defvar lsp-java-dependency-package-representation nil
+;;   "Some variable no longer declared upfront in lsp-java."
+;;   )
+;; (defvar lsp-java-configuration-check-project-settings-exclusions nil
+;;   "Some variable no longer declared upfront in lsp-java."
+;;   )
+;; (defvar lsp-java-configuration-update-build-configuration nil
+;;   "Some variable no longer declared upfront in lsp-java."
+;;   )
+;; (defun lsp-defcustom (&rest rest)
+;;      (message "Someone called missing lsp-defcustom! This is an error but we're ignoring it.")
+;;      )
 #+end_src
 
 
