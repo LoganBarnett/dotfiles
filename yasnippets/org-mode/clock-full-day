@@ -1,0 +1,17 @@
+# -*- mode: snippet; require-file-newline: nil -*-
+# name: clock-full-day
+# key: clock-full-day
+# condition: t
+# group: org
+# --
+:LOGBOOK:
+:CLOCK: ${1:$$(let
+  (
+  (timestamp (org-time-stamp-string-sans-brackets))
+  )
+  (message "got timestamp %s" timestamp)
+  (format "[%s 09:00]--[%s 17:00] => 8:00" timestamp timestamp)
+)}
+:END:
+
+$0
