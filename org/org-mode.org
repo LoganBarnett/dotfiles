@@ -725,6 +725,7 @@ around 5 priorities, and we must support these beforehand.
 #+end_src
 * timestamps
 
+** prompting for timestamps programmatically
 =org-time-stamp= is very handy in that it has a rich user interface for
 selecting/guessing a date and time to use. However this date and time is
 inserted directly into the buffer. This creates difficulties with composition,
@@ -733,8 +734,9 @@ this [[https://emacs.stackexchange.com/a/69012][Stack Overflow post]], we can ju
 there, and grab the result.
 
 #+begin_src emacs-lisp :results none :tangle yes
-(defun org-time-stamp-string (inactive)
+(defun org-time-stamp-string (time inactive)
   (with-temp-buffer
+    (insert (or time ""))
     (org-mode)
     (org-time-stamp nil inactive)
     (buffer-substring (point-min) (point-max))
@@ -749,23 +751,22 @@ date parsing mechanisms.
 Here's the regular expression we need:
 
 #+begin_src emacs-lisp
-(defvar timestamp-sans-bracket-regexp
+(defvar inactive-timestamp-sans-bracket-regexp
   "\\[\\([^]]+\\)\\]"
   )
 #+end_src
 
 #+RESULTS:
-: timestamp-sans-bracket-regexp
+: inactive-timestamp-sans-bracket-regexp
 
 
 #+begin_src emacs-lisp :results none :tangle yes
-(defun org-time-stamp-string-sans-brackets ()
+(defun org-time-stamp-string-sans-brackets (&optional default)
   (interactive)
   (let* (
-         (time (org-time-stamp-string t))
-         (match (string-match timestamp-sans-bracket-regexp time))
+         (time (org-time-stamp-string default t))
+         (match (string-match inactive-timestamp-sans-bracket-regexp time))
          )
-    (message "time %s match %s" time match)
     (match-string 1 time)
     )
   )
@@ -776,7 +777,7 @@ Here's a test. Don't forget you can use =(re-builder)= to interactively test.
 #+begin_src emacs-lisp
 (let* (
       (timestamp  "[2023-07-14 Fri]")
-       (match (string-match timestamp-sans-bracket-regexp timestamp))
+       (match (string-match inactive-timestamp-sans-bracket-regexp timestamp))
     )
   (string= (match-string 1 timestamp) "2023-07-14 Fri")
   )
@@ -793,6 +794,68 @@ A test to leave commented so it doesn't break loading Emacs:
 
 ,#+RESULTS:
 : 2023-08-18 Fri
+
+And test with an arbitrary date.
+
+,#+begin_src emacs-lisp
+(org-time-stamp-string-sans-brackets "[2023-08-17 Thu]")
+,#+end_src
+
+#+RESULTS:
+: 2023-08-18 Fri
+
+** clock a full day
+
+It's really handy to clock a full day of work retroactively without having to
+munge all of the timestamps. I do this a lot for vacation/sick days.
+
+I've tried using this with =yasnippet=, but I run into problems with the
+prompting mechanism interfering with the snippet mechanism in the first place.
+It doesn't really need to be a snippet. We can just insert the text from an
+interactive function.
+
+Later, we can even make it smart enough to look at the heading and default to
+that time.
+
+#+begin_src emacs-lisp :results none :tangle yes
+(defun clock-full-day ()
+  (interactive)
+  (let*
+      (
+       (parent-heading (-last-item (org-get-outline-path t)))
+       (default-time (if (string-match inactive-timestamp-sans-bracket-regexp
+                                  parent-heading
+                                  )
+                    parent-heading
+                  (format-time-string "[%Y-%M-%d %a]")
+                  )
+         )
+       )
+    (insert
+     (format
+      ":LOGBOOK:
+:CLOCK: %s
+:END:
+"
+      (let (
+            (timestamp (org-time-stamp-string-sans-brackets default-time))
+            )
+        (format "[%s 09:00]--[%s 17:00] => 8:00" timestamp timestamp)
+        )
+      )
+     )
+    )
+  )
+#+end_src
+
+Test that =org-get-outline-path= does what we expect.
+
+#+begin_src emacs-lisp
+(message "%s" (-last-item (org-get-outline-path t)))
+#+end_src
+
+#+RESULTS:
+: clock a full day
 
 
 * typing
