@@ -134,13 +134,25 @@ delimiters.
   comments this is a must to me. Fortunately =auto-fill-mode= comes with
   =comment-auto-fill-only-comments=.
 
-  #+begin_src emacs-lisp
+  #+begin_src emacs-lisp :tangle yes
     (defun config/auto-fill-comments ()
       "Turn on `auto-fill-mode' and disable it for everything but comments."
       (setq-local comment-auto-fill-only-comments t)
       (auto-fill-mode 1)
       )
   #+end_src
+
+There's a weird default where block comments get terminated upon inserting a
+newline (or via =auto-fill-mode=). This is not the intention, it's terrible, and
+it leads to syntax errors. In setting =comment-multi-line= to fix this, we also
+lose the nice prefix, but having to type something like =SPC *= is preferable to
+repairing both the current and previous lines.
+
+#+name: config/fix-multi-line-comment-continuations
+#+begin_src emacs-lisp :results none :tangle yes
+(setq-local comment-multi-line t)
+#+end_src
+
 * line numbers
 
 Generally line numbers are automatically set, butt his appears to be on a
@@ -340,6 +352,7 @@ This highlights indentation, which can be helpful for large sets of indentation.
   <<config/prog-mode-line-numbers-enable>>
   <<config/prog-mode-manage-final-newline>>
   <<config/indentation-highlight>>
+  <<config/fix-multi-line-comment-continuations>>
   (add-hook 'prog-mode-hook #'config/auto-fill-comments)
   (add-hook 'prog-mode-hook #'config/disable-line-wrapping)
   (add-hook 'prog-mode-hook #'config/disable-smartparens-pairs)
