@@ -165,6 +165,9 @@
 (package! rjsx-mode)
 (package! rustic)
 (package! scad-mode) ;; For opening OpenSCAD .scad files.
+;; Prevent long lines from dragging Emacs to a halt. This basically
+;; automatically disables the current major mode. It can be reverted with C-c
+;; C-c (stated in the message line when it happens).
 (package! so-long)
 ;; I fail to see how this is ever helpful with vim bindings.
 ;; Though this attempt to disable it will not work according to
