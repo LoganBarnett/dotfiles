@@ -169,6 +169,9 @@
 ;; automatically disables the current major mode. It can be reverted with C-c
 ;; C-c (stated in the message line when it happens).
 (package! so-long)
+;; Convert between various cases (camelCase, kebab-case, PascalCase, snake_case,
+;; etc).
+(package! string-inflection)
 ;; I fail to see how this is ever helpful with vim bindings.
 ;; Though this attempt to disable it will not work according to
 ;; https://github.com/hlissner/doom-emacs/issues/1094
