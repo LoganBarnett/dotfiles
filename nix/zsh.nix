@@ -35,6 +35,7 @@
     ls="ls -aG --color=auto";
     grep="grep --color=auto";
     b="bundle exec";
+    rlb="RUBYLIB=lib bundle exec";
     curl-json="curl -v -H 'Accept: application/json'";
 
     # git
