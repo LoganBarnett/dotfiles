@@ -15,9 +15,8 @@ self: super: {
         owner = "nix-community";
         repo = "fenix";
         # Commit from 2023-07-18.
-        # Unsure why hash doesn't need updating from example.
         rev = "cb4ed6a92123dd8e3befdf0fbed27c9ebb8e7176";
-        hash = "sha256-AsOim1A8KKtMWIxG+lXh5Q4P2bhOZjoUhFWJ1EuZNNk=";
+        hash = "sha256-jK8m0FKjlI99iOOdor87yOjDHt8QsL/J/eMeCOzHJMM=";
       })
       { }
     );
