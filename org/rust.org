@@ -65,7 +65,7 @@ using =smart-parens=. Disable it. Always.
 * stitch
 
 #+begin_src emacs-lisp :results none :noweb yes
-(use-package "rustic-mode"
+(use-package "rustic"
   :init
   (message "add rust to path manually...")
   (add-to-list 'exec-path (expand-file-name "~/.nix-profile/bin"))

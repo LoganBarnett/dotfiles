@@ -343,7 +343,7 @@ This highlights indentation, which can be helpful for large sets of indentation.
 #+begin_src emacs-lisp :results none :noweb yes
 <<config/prog-mode-disable-smart-parens-fn>>
 
-(use-package prog-mode
+(use-package "prog-mode"
   :init
   <<config/prog-mode-fix-c-indentation>>
   <<prog-mode-disable-visual-line-mode>>

@@ -113,11 +113,11 @@ settings or anything else I desire.
 
 I will start with an =org-capture= template.
 
-#+begin_src emacs-lisp :results none
+#+begin_example emacs-lisp :results none
 '("i" "org-mode image link" entry
   "[[%(link)][%(link-name)]]"
   )
-#+end_src
+#+end_example
 
 
 * latex
@@ -571,7 +571,7 @@ inlining, and that is what we will do here to work around the issue.
 
 This doesn't work because =:post= needs an =org-babel= block and not a function.
 Bleh.
-#+begin_src emacs-lisp :results none
+#+begin_src emacs-lisp :results none :tangle yes
 (defun config/ox-html-inline-svgs (text)
   (with-temp-buffer
     (erase-buffer)
@@ -592,7 +592,7 @@ Bleh.
 To use this, add =:post config/ox-html-inline-svgs :exports code :results raw
 drawer=.
 
-#+begin_src emacs-lisp :results none
+#+begin_src emacs-lisp :results none :tangle yes
 (require 'ox-html)
 (require 'nxml-mode)
 
@@ -633,7 +633,7 @@ Confluence puts a prefix upon every anchor which is the title of the document.
 That name can vary across =org-mode= buffers. Look it up using the custom
 keyword =AUTO_ID_PREFIX=.
 
-#+begin_src emacs-lisp :results none
+#+begin_src emacs-lisp :results none :tangle yes
 (defun config/auto-id-with-confluence-prefix (hierarchy-list)
   (concat
    (org-auto-id/get-org-keyword "AUTO_ID_PREFIX")
@@ -678,7 +678,7 @@ To remove this infix, we have to redefine the function itself. Perhaps this
 would make a good contribution to =org-html=. At some point I should investigate
 whether or not we can employ semantic HTML for the tags.
 
-#+begin_src emacs-lisp :results none
+#+begin_src emacs-lisp :results none :tangle yes
 (defun org-html-format-headline-default-function
     (todo _todo-type priority text tags info)
   "Default format function for a headline.
@@ -701,7 +701,7 @@ See `org-html-format-headline-function' for details."
 When marking a =TODO= as =DONE= we can automatically insert a timestamp.
 
 #+name: config/org-todo-log-done
-#+begin_src emacs-lisp :results none
+#+begin_src emacs-lisp :results none :tangle yes
 (setq org-log-done 'time)
 #+end_src
 
@@ -733,6 +733,7 @@ such as using in the context of snippets. Using the simple recommendation in
 this [[https://emacs.stackexchange.com/a/69012][Stack Overflow post]], we can just create a temporary buffer, have it insert
 there, and grab the result.
 
+#+name: config/org-time-stamp-string
 #+begin_src emacs-lisp :results none :tangle yes
 (defun org-time-stamp-string (time inactive)
   (with-temp-buffer
@@ -750,17 +751,18 @@ date parsing mechanisms.
 
 Here's the regular expression we need:
 
-#+begin_src emacs-lisp
+#+name: config/inactive-timestamp-sans-bracket-regexp
+#+begin_src emacs-lisp :reesults none :tangle yes
 (defvar inactive-timestamp-sans-bracket-regexp
   "\\[\\([^]]+\\)\\]"
   )
 #+end_src
 
-#+RESULTS:
-: inactive-timestamp-sans-bracket-regexp
+#+name: config/org-time-stamp-string-sans-brackets
+#+begin_src emacs-lisp :results none :tangle yes :noweb yes
 
+<<config/inactive-timestamp-sans-bracket-regexp>>
 
-#+begin_src emacs-lisp :results none :tangle yes
 (defun org-time-stamp-string-sans-brackets (&optional default)
   (interactive)
   (let* (
@@ -774,7 +776,7 @@ Here's the regular expression we need:
 
 Here's a test. Don't forget you can use =(re-builder)= to interactively test.
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 (let* (
       (timestamp  "[2023-07-14 Fri]")
        (match (string-match inactive-timestamp-sans-bracket-regexp timestamp))
@@ -788,7 +790,7 @@ Here's a test. Don't forget you can use =(re-builder)= to interactively test.
 
 A test to leave commented so it doesn't break loading Emacs:
 
-,#+begin_src emacs-lisp
+,#+begin_src emacs-lisp :tangle no
 (org-time-stamp-string-sans-brackets)
 ,#+end_src
 
@@ -797,7 +799,7 @@ A test to leave commented so it doesn't break loading Emacs:
 
 And test with an arbitrary date.
 
-,#+begin_src emacs-lisp
+,#+begin_src emacs-lisp :tangle no
 (org-time-stamp-string-sans-brackets "[2023-08-17 Thu]")
 ,#+end_src
 
@@ -817,7 +819,11 @@ interactive function.
 Later, we can even make it smart enough to look at the heading and default to
 that time.
 
-#+begin_src emacs-lisp :results none :tangle yes
+#+name: config/clock-full-day
+#+begin_src emacs-lisp :results none :tangle yes :noweb yes
+
+<<config/inactive-timestamp-sans-bracket-regexp>>
+
 (defun clock-full-day ()
   (interactive)
   (let*
@@ -850,7 +856,7 @@ that time.
 
 Test that =org-get-outline-path= does what we expect.
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 (message "%s" (-last-item (org-get-outline-path t)))
 #+end_src
 
@@ -974,6 +980,7 @@ This is the region of offending code, I think:
   (add-hook 'org-mode-hook (lambda () <<config/open-link-in-new-window>>))
   <<config/org-babel-passthrough>>
   <<config/org-mode-hack-initial-folding>>
+  <<config/clock-full-day>>
   <<config/org-mode-smart-parens-disable>>
   (config/prog-mode-disable-smart-parens)
   (add-hook 'org-mode-hook #'config/prog-mode-disable-smart-parens)

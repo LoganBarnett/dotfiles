@@ -11,17 +11,23 @@
 Set the default file template for HTML.
 
 #+name: config/html-set-file-templates
-#+begin_src emacs-lisp :results none :tangle yes
+#+begin_src emacs-lisp :results none :tangle no
 (on-doom
  (set-file-template! 'web-mode :trigger "new-html")
  (set-file-template! 'mhtml-mode :trigger "new-html")
  )
 #+end_src
+*** TODO move HTML file templates to yasnippet
+
+I probably have the same file twice here because I want to use it twice. I think
+yasnippets can refer to each other, or I can use symlinks. Either way, using
+this with =use-package= is a poor idea I think, and it's causing startup issues.
+
 * tidy
 
 The built-in =tidy= for MacOS dates back to 2006!
 
-#+begin_src shell
+#+begin_src shell :tangle no
 tidy --version
 #+end_src
 
@@ -43,9 +49,12 @@ Since Emacs seems to find it correctly I don't think there's anything to change.
 
 * stitch
 
+Using =use-package= here actually runs =mhtml-mode= and that causes startup
+issues. Just disable it for now.
+
 #+begin_src emacs-lisp :results none :noweb yes
-(use-package "mhtml-mode"
-  :init
-  <<config/html-set-file-templates>>
-  )
+;; (use-package "mhtml-mode"
+  ;; :init
+  ;; <<config/html-set-file-templates>>
+  ;; )
 #+end_src
