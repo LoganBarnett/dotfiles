@@ -19,7 +19,7 @@ this configurable and submit a pull request, but let's just get it working
 first.
 
 #+name: config/markdown-export-fill-paragraph
-#+begin_src emacs-lisp :results none :tangle yes
+#+begin_src emacs-lisp :results none :tangle no
 (require 'ox-gfm)
 (defadvice org-gfm-paragraph (around fill-gfm-paragraph activate)
   ;; ad-do-it is the magic advice "result" of the original function, if we
@@ -127,7 +127,7 @@ attempts to address this have failed using normal =bash= and =zsh= shell
 settings. Though
 
 #+name: config/latex-setup-exec
-#+begin_src emacs-lisp :results none :tangle yes
+#+begin_src emacs-lisp :results none :tangle no
 (add-to-list 'exec-path "/Library/TeX/texbin/")
 (setenv "PATH" (concat ":/Library/TeX/texbin/" (getenv "PATH")))
 #+end_src
@@ -139,7 +139,7 @@ The rest of the settings seemed fine by me, so they are a duplicate here.
 I also want the color to be nice.
 
 #+name: config/latex-format
-#+begin_src emacs-lisp :results none :tangle yes
+#+begin_src emacs-lisp :results none :tangle no
 (setq org-format-latex-options
       '(:foreground default
         :background "#242730"
@@ -156,14 +156,14 @@ I also want the color to be nice.
 According to [[http://bnbeckwith.com/blog/org-mode-tikz-previews-on-windows.html][this post]], TikZ and its family of packages must be rendered using
 =ImageMagick=.
 #+name: config/org-mode-latex-use-imagemagick
-#+begin_src emacs-lisp :results none :tangle yes
+#+begin_src emacs-lisp :results none :tangle no
 (setq org-preview-latex-default-process 'imagemagick)
 #+end_src
 
 We want the equivalent of =\usepackage{circuitikz}=.
 \usepackage{tikz}
 #+name: config/org-mode-latex-add-tikz-packages
-#+begin_src emacs-lisp :results none :tangle yes
+#+begin_src emacs-lisp :results none :tangle no
 (add-to-list 'org-latex-packages-alist '("" "tikz" t))
 (add-to-list 'org-latex-packages-alist '("" "siunitx" t))
 (add-to-list 'org-latex-packages-alist '("" "circuitikz" t))
@@ -174,7 +174,7 @@ We want the equivalent of =\usepackage{circuitikz}=.
 Starting up with everything folded is generally preferable.
 
 #+name: config/org-mode-manage-initial-folding
-#+begin_src emacs-lisp :results none :tangle yes
+#+begin_src emacs-lisp :results none :tangle no
 (setq org-startup-folded 'overview) ;; Equivalent to 'fold?
 ;; Because setting the variable isn't enough?
 ;; (org-set-startup-visibility)
@@ -190,7 +190,7 @@ But none of this works as advertised per the documentation. I'm not sure what is
 interfering. So let's just rub some Lisp on it.
 
 #+name: config/org-mode-hack-initial-folding
-#+begin_src emacs-lisp :results none :tangle yes
+#+begin_src emacs-lisp :results none :tangle no
 (add-hook 'org-mode-hook #'+org/close-all-folds)
 #+end_src
 
@@ -478,13 +478,13 @@ The =org-directory= needs to be set before =org-mode= is loaded, because
 reasons.
 
 #+name: config/org-mode-set-paths
-#+begin_src emacs-lisp :results none :tangle yes
+#+begin_src emacs-lisp :results none :tangle no
 (setq org-directory "~/notes")
 #+end_src
 * org-auto-id
 
 #+name: config/org-auto-id
-#+begin_src emacs-lisp :results none :tangle yes
+#+begin_src emacs-lisp :results none :tangle no
 (load-library "org-auto-id")
 (require 'org-auto-id)
 (org-auto-id/on-save-auto-id)
@@ -788,20 +788,18 @@ Here's a test. Don't forget you can use =(re-builder)= to interactively test.
 #+RESULTS:
 : t
 
-A test to leave commented so it doesn't break loading Emacs:
-
-,#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp :tangle no
 (org-time-stamp-string-sans-brackets)
-,#+end_src
+#+end_src
 
-,#+RESULTS:
+#+RESULTS:
 : 2023-08-18 Fri
 
 And test with an arbitrary date.
 
-,#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp :tangle no
 (org-time-stamp-string-sans-brackets "[2023-08-17 Thu]")
-,#+end_src
+#+end_src
 
 #+RESULTS:
 : 2023-08-18 Fri
@@ -969,7 +967,7 @@ This is the region of offending code, I think:
 
 * stitch
 
-#+begin_src emacs-lisp :results none :noweb yes
+#+begin_src emacs-lisp :results none :noweb yes :tangle yes
 (use-package "org"
   :init
   <<config/org-mode-manage-initial-folding>>
@@ -980,7 +978,6 @@ This is the region of offending code, I think:
   (add-hook 'org-mode-hook (lambda () <<config/open-link-in-new-window>>))
   <<config/org-babel-passthrough>>
   <<config/org-mode-hack-initial-folding>>
-  <<config/clock-full-day>>
   <<config/org-mode-smart-parens-disable>>
   (config/prog-mode-disable-smart-parens)
   (add-hook 'org-mode-hook #'config/prog-mode-disable-smart-parens)

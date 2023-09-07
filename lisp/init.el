@@ -16,6 +16,55 @@
 ;;   (goto-char (point-max))
 ;;   (switch-to-buffer (current-buffer)))
 
+;; Additional documentation about disabling smartparens and its parts can be
+;; found in prog-mode.org. Functionality must be here to avoid
+;; boostrapping/ordering issues on startup. TLDR; I don't like smartparens - it
+;; really doesn't jive with a vim workflow. So just disable it. Unfortunately
+;; it's baked into so many parts of the Emacs ecosystem that it actually must be
+;; broken in order to disable. The below does both recommended approaches and
+;; approaches that are found to actually work.
+(defun config/disable-smartparens-pairs ()
+  (message "Disabling smart parens pairs...")
+  ;; The recommended way to cease incessent completion of of smartparens is to
+  ;; set its global mode to -1.  However the recommended way isn't enough. So
+  ;; let's really disable it.  Without this, it will also leak into the
+  ;; minibuffer.
+  (sp-pair "(" nil :actions :rem)
+  (sp-pair "[" nil :actions :rem)
+  (sp-pair "'" nil :actions :rem)
+  (sp-pair "`" nil :actions :rem)
+  (sp-pair "<" nil :actions :rem)
+  (sp-pair "{" nil :actions :rem)
+  (sp-pair "=" nil :actions :rem)
+  (sp-pair "\"" nil :actions :rem)
+  )
+
+
+(defun config/prog-mode-disable-smart-parens ()
+  (on-doom
+   ;; This is the recommended way to disable it per
+   ;; https://github.com/hlissner/doom-emacs/issues/1094
+   (after! smartparens
+     (smartparens-global-mode -1)
+     ;; The documentation regarding strict mode makes me think it's the real
+     ;; culprit. Disable it everywhere. I'm not sure why the call above seems to
+     ;; have no effect.
+     (smartparens-global-strict-mode -1)
+     (setq sp-show-pair-from-inside t)
+     ;; This is what we actually want out of smartparens mode: Show us matching
+     ;; parens.
+     (show-smartparens-global-mode 1)
+     )
+   ;; And then just brute force disable it, which seems to sometimes work.
+   (config/disable-smartparens-pairs)
+   )
+  (on-spacemacs
+   ;; Spacemacs has no means of disabling smartparens as well. So we just yank out
+   ;; every possible pairing.
+   (eval-after-load 'smartparens #'config/disable-smartparens-pairs)
+   )
+  )
+
 (defmacro on-doom (&rest body)
   "Execute BODY if this Emacs is running Doom Emacs."
   (if (boundp 'doom-version)

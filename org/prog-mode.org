@@ -59,61 +59,9 @@ delimiters. This means the motions still mostly work though.
 
 https://github.com/expez/evil-smartparens
 
-#+name: config/disable-smartparens-pairs
-#+begin_src emacs-lisp :results none :tangle yes
-(defun config/disable-smartparens-pairs ()
-  (message "Disabling smart parens pairs...")
-  ;; The recommended way to cease incessent completion of of smartparens is to
-  ;; set its global mode to -1.  However the recommended way isn't enough. So
-  ;; let's really disable it.  Without this, it will also leak into the
-  ;; minibuffer.
-  (sp-pair "(" nil :actions :rem)
-  (sp-pair "[" nil :actions :rem)
-  (sp-pair "'" nil :actions :rem)
-  (sp-pair "`" nil :actions :rem)
-  (sp-pair "<" nil :actions :rem)
-  (sp-pair "{" nil :actions :rem)
-  (sp-pair "=" nil :actions :rem)
-  (sp-pair "\"" nil :actions :rem)
-  )
-;; Just run it for good measure, though it won't do anything :\
-(config/disable-smartparens-pairs)
-#+end_src
+This functionality was moved to [[file:../lisp/init.el]] because of
+bootstrapping/ordering issues between =prog-mode= and =org-mode=.
 
-
-#+name: config/prog-mode-disable-smart-parens
-#+begin_src emacs-lisp :results none :noweb yes
-<<config/disable-smartparens-pairs>>
-  (on-doom
-    ;; This is the recommended way to disable it per
-    ;; https://github.com/hlissner/doom-emacs/issues/1094
-    (after! smartparens
-      (smartparens-global-mode -1)
-      ;; The documentation regarding strict mode makes me think it's the real
-      ;; culprit. Disable it everywhere. I'm not sure why the call above seems to
-      ;; have no effect.
-      (smartparens-global-strict-mode -1)
-      (setq sp-show-pair-from-inside t)
-      ;; THis is what we actually want out of smartparens mode: Show us matching
-      ;; parens.
-      (show-smartparens-global-mode 1)
-      )
-    ;; And then just brute force disable it, which seems to sometimes work.
-    (config/disable-smartparens-pairs)
-  )
-  (on-spacemacs
-   ;; Spacemacs has no means of disabling smartparens as well. So we just yank out
-   ;; every possible pairing.
-   (eval-after-load 'smartparens #'config/disable-smartparens-pairs)
-   )
-#+end_src
-
-#+name: config/prog-mode-disable-smart-parens-fn
-#+begin_src emacs-lisp :results none :tangle yes :noweb yes
-(defun config/prog-mode-disable-smart-parens ()
-  <<config/prog-mode-disable-smart-parens>>
-  )
-#+end_src
 
 ** rainbow-delimiters
 =rainbow-delimiters= are incredibly helpful for visually determining nesting of
@@ -134,13 +82,17 @@ delimiters.
   comments this is a must to me. Fortunately =auto-fill-mode= comes with
   =comment-auto-fill-only-comments=.
 
-  #+begin_src emacs-lisp :tangle yes
-    (defun config/auto-fill-comments ()
-      "Turn on `auto-fill-mode' and disable it for everything but comments."
-      (setq-local comment-auto-fill-only-comments t)
-      (auto-fill-mode 1)
-      )
-  #+end_src
+For reasons I do not yet understand, org-babel doesn't tangle even with =:tangle
+yes=. It must be included in the main code below. If anything, =:tangle yes=
+appears to _exclude_ the code block.
+#+name: config/auto-fill-comments
+#+begin_src emacs-lisp :results none :tangle yes
+(defun config/auto-fill-comments ()
+  "Turn on `auto-fill-mode' and disable it for everything but comments."
+  (setq-local comment-auto-fill-only-comments t)
+  (auto-fill-mode 1)
+  )
+#+end_src
 
 There's a weird default where block comments get terminated upon inserting a
 newline (or via =auto-fill-mode=). This is not the intention, it's terrible, and
@@ -340,15 +292,12 @@ This highlights indentation, which can be helpful for large sets of indentation.
 
 * all together
 
-#+begin_src emacs-lisp :results none :noweb yes
-<<config/prog-mode-disable-smart-parens-fn>>
-
+#+begin_src emacs-lisp :results none :noweb yes :tangle yes
 (use-package "prog-mode"
   :init
   <<config/prog-mode-fix-c-indentation>>
   <<prog-mode-disable-visual-line-mode>>
   (config/rainbow-delimiters)
-  <<config/prog-mode-disable-smart-parens>>
   <<config/prog-mode-line-numbers-enable>>
   <<config/prog-mode-manage-final-newline>>
   <<config/indentation-highlight>>
