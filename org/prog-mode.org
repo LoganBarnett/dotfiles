@@ -67,7 +67,7 @@ bootstrapping/ordering issues between =prog-mode= and =org-mode=.
 =rainbow-delimiters= are incredibly helpful for visually determining nesting of
 delimiters.
 
-#+begin_src emacs-lisp :results none
+#+begin_src emacs-lisp :results none :tangle yes
 (defun config/rainbow-delimiters ()
   "Add colorful indicators of delimiter nesting."
   (add-hook 'prog-mode-hook (lambda ()
@@ -89,6 +89,7 @@ appears to _exclude_ the code block.
 #+begin_src emacs-lisp :results none :tangle yes
 (defun config/auto-fill-comments ()
   "Turn on `auto-fill-mode' and disable it for everything but comments."
+  (interactive)
   (setq-local comment-auto-fill-only-comments t)
   (auto-fill-mode 1)
   )
