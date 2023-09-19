@@ -71,8 +71,9 @@ in
   home.homeDirectory = builtins.getEnv "HOME";
 
   home.activation = {
+    # Is there a better way to handle the directory? Relative dir does not work.
     ispell-config = ''
-      ln -snf $(realpath ispell_english) ~/.ispell_english
+      ln -snf $(realpath ~/dev/dotfiles/ispell_english) ~/.ispell_english
     '';
   };
 
