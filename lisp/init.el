@@ -276,7 +276,6 @@
 (defun my/init ()
   "Do initializtion."
   ;; (toggle-debug-on-error)
-  ;; (setq-default projectile-indexing-method 'hybrid)
   ;; TODO: Move to macos.org when it gets merged.
   (set-frame-parameter nil 'fullscreen 'fullscreen)
   (load-library "redshift-indent")

@@ -5,6 +5,36 @@
 #+language: en
 #+tags:     config tramp ssh remote
 
+* troubleshooting
+** wrong type argument
+
+Sometimes you will get a pile of errors like this when trying to open a remote
+project:
+
+#+begin_example
+Wrong type argument: "Wrong type argument", "tramp-file-name /Users/muh-user/dev/dotfiles/org/projectile.org"
+#+end_example
+
+Run this to fix:
+
+#+begin_src emacs-lisp :tangle no
+(recentf-cleanup)
+#+end_src
+
+This might be better to not destroy everything:
+
+#+begin_src emacs-lisp :tangle no
+(tramp-recentf-cleanup)
+#+end_src
+
+or
+
+#+begin_src emacs-lisp :tangle no :results none
+(tramp-recentf-cleanup-all)
+#+end_src
+
+These aren't marked as interactive functions. Perhaps a pull request is in order!
+
 * shell settings
 
 Tramp logs in via =ssh= as one of its modes. When it does so, it interacts with
