@@ -17,6 +17,13 @@
   pkgs.curl
   # (import (builtins.fetchGit {
   #   # Descriptive name to make the store path easier to identify
+  #   name = "curl-8-1-0-fix-ssl";
+  #   url = ~/dev/nixpkgs;
+  #   ref = "master";
+  #   rev = "8fcd9a317391dffeb4475f2f8810fd2b7c217ba4";
+  # }) {}).curl
+  # (import (builtins.fetchGit {
+  #   # Descriptive name to make the store path easier to identify
   #   name = "crystal-1-0-fetch-git";
   #   url = https://github.com/nixos/nixpkgs/;
   #   rev = "3b6c3bee9174dfe56fd0e586449457467abe7116";
@@ -165,7 +172,7 @@
     px.pass-otp
   ]))
   # Use Unix pipes and direct them to a human program.
-  #pkgs.percol
+  # pkgs.percol
   # An interface for reading passwords.
   pkgs.pinentry
   # A charting tool with a declarative language. Uses graphviz dot, ditaa,

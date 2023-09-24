@@ -126,4 +126,23 @@
   # not useful to me.
   # pkgs.podman
   # (pkgs.python2.withPackages (ps: [
+  # Run Windows programs (sometimes even I need this).
+
+  # (pkgs.callPackage
+  #   "${builtins.fetchTarball https://github.com/nixos/nixpkgs/archive/master.tar.gz}/nix/openconnect-sso.nix"
+  #   {
+  #     lib = pkgs.lib;
+  #     # openconnect = pkgs.openconnect;
+  #     # python3 = pkgs.python39;
+  #     # python3Packages = pkgs.python39Packages;
+  #     # poetry2nix = pkgs.poetry2nix;
+  #     # substituteAll = pkgs.substituteAll;
+  #     # wrapQtAppsHook = pkgs.libsForQt5.wrapQtAppsHook;
+  #   }
+  # )
+  # pkgs.pkgsx86_64Darwin.wine-wow64
+  # pkgs.wine-wow64
+  # pkgs.wow64Experimental
+  # This was my last attempt, but I don't think it entirely worked.
+  # pkgs.pkgsx86_64Darwin.wine64
 ]

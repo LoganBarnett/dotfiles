@@ -13,6 +13,7 @@ let
     (import ./overlays/percol.nix)
     (import ./overlays/speedtest-cli.nix)
     (import ./overlays/tmux.nix)
+    (import ./overlays/wine.nix)
     # Give us rust-docs.
     (import ./overlays/rust.nix)
     # (import (builtins.fetchTarball
