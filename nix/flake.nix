@@ -8,7 +8,10 @@
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     home-manager = {
       url = "github:nix-community/home-manager";
-      inputs.nixpkgs.follows = "nixpkgs";
+      # I've had mixed advice to use this or not use this.
+      # This is said to tie into issues with pkgs and nixpkgs mixings due to
+      # Home-manager and the nixpkgs.config.
+      # inputs.nixpkgs.follows = "nixpkgs";
     };
   };
 
@@ -35,13 +38,23 @@
           # (import ./openconnect-sso.nix)
           # (import "${builtins.fetchTarball https://github.com/vlaci/openconnect-sso/archive/master.tar.gz}/overlay.nix")
         ];
+        # Some packages are not "free". We need to specifically bless those.
+        # I had trouble using a real function because the depended functions are
+        # hard/impossible to reach from this place. It cannot exist later
+        # because setting nixpkgs.config is ignored if pkgs is set. I found some
+        # of those functions declared here:
+        # https://github.com/NixOS/nixpkgs/blob/d84cc41f8babd418c295fcbfbd41a1fd4e2adaec/lib/strings.nix#L699
+        # This ticket https://github.com/nix-community/home-manager/issues/2954
+        # talks about the issue directly, but never comes to a workable
+        # resolution for the allowUnfreePredicate value, which  needs "lib" to
+        # work. I'm not familiar enough with nix's structure to really move
+        # forward here. What we have now is the equivalent of what's commented
+        # below:
         # config.allowUnfree = true;
-        # config.allowUnfreePredicate = pkg: builtins.elem (flake-utils.lib.defaultSystems.${system}.getName pkg) [
-        #   "hello-unfree" # For testing unfree-ness.
-        #   "ngrok"
-        #   "unrar"
-        # ];
         config.allowUnfreePredicate = (pkg: true);
+        # This has been needed to individually bless some older packages, such
+        # as packages depending upon an older OpenSSL.
+        config.permittedInsecurePackages = [];
         # nixpkgs.legacyPackages.${system};
 
       };
