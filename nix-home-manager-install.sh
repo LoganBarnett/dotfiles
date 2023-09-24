@@ -24,6 +24,8 @@ nix-shell '<home-manager>' -A install
 # home-manager appears to crush this, so set it afterwards.
 mkdir -p ~/.config/home-manager
 ln -snf $PWD/nix/overlays ~/.config/nixpkgs/overlays
+mkdir -p ~/config/nix
+ln -snf $PWD/nix/nix.conf ~/.config/nix/nix.conf
 
 . $HOME/.nix-profile/etc/profile.d/hm-session-vars.sh
 
