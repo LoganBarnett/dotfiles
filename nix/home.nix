@@ -10,7 +10,7 @@ let
     # (import ./overlays/crystal.nix)
     (import ./overlays/gnupg.nix)
     (import ./overlays/maven.nix)
-    #(import ./overlays/percol.nix)
+    (import ./overlays/percol.nix)
     (import ./overlays/speedtest-cli.nix)
     (import ./overlays/tmux.nix)
     # Give us rust-docs.
