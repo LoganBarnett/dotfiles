@@ -837,6 +837,8 @@ https://emacs.stackexchange.com/questions/69719/fingerprint-has-changed-message-
     <<config/mu4e-composing>>
     :config
     (message "initializing mu4e...")
+    ;; mu4e resets the value configured here, so just set it back again.
+    <<config/email-get-mail-command>>
     (pinentry-start)
     (require 'org-mime)
     ;; (config/mu4e-enable-images)
