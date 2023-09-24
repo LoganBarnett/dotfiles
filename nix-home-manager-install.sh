@@ -23,6 +23,10 @@ nix-channel --update
 nix-shell '<home-manager>' -A install
 # home-manager appears to crush this, so set it afterwards.
 mkdir -p ~/.config/home-manager
+# The home.nix appears to need to go here now. Older versions use the other
+# symlink, but keeping it causes a warning. Kept for posterity.
+# ln -snf $PWD/nix/home.nix ~/.config/nixpkgs/home.nix
+ln -snf $PWD/nix/home.nix ~/.config/home-manager/home.nix
 ln -snf $PWD/nix/flake.nix ~/.config/home-manager/flake.nix
 ln -snf $PWD/nix/overlays ~/.config/nixpkgs/overlays
 mkdir -p ~/config/nix
