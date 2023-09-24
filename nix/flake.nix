@@ -3,6 +3,7 @@
   description = "Home Manager configuration of logan";
 
   inputs = {
+    flake-utils.url = "github:numtide/flake-utils";
     # Specify the source of Home Manager and Nixpkgs.
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     home-manager = {
@@ -11,19 +12,62 @@
     };
   };
 
-  outputs = { nixpkgs, home-manager, ... }:
+  outputs = { flake-utils, nixpkgs, home-manager, ... }:
     let
       system = "aarch64-darwin";
-      pkgs = nixpkgs.legacyPackages.${system};
+      pkgs = import nixpkgs {
+        inherit system;
+        overlays = [
+          (import ./overlays/cacert.nix)
+          # (import ./overlays/crystal.nix)
+          (import ./overlays/gnupg.nix)
+          (import ./overlays/maven.nix)
+          (import ./overlays/percol.nix)
+          (import ./overlays/speedtest-cli.nix)
+          # (import ./overlays/tmux.nix)
+          (import ./overlays/wine.nix)
+          # Give us rust-docs.
+          (import ./overlays/rust.nix)
+          # (import (builtins.fetchTarball
+          #   "https://github.com/oxalica/rust-overlay/archive/master.tar.gz"))
+          # (import "${openconnect-sso-src}/overlay.nix")
+          # (import ./overlays/openconnect-sso.nix)
+          # (import ./openconnect-sso.nix)
+          # (import "${builtins.fetchTarball https://github.com/vlaci/openconnect-sso/archive/master.tar.gz}/overlay.nix")
+        ];
+        # config.allowUnfree = true;
+        # config.allowUnfreePredicate = pkg: builtins.elem (flake-utils.lib.defaultSystems.${system}.getName pkg) [
+        #   "hello-unfree" # For testing unfree-ness.
+        #   "ngrok"
+        #   "unrar"
+        # ];
+        config.allowUnfreePredicate = (pkg: true);
+        # nixpkgs.legacyPackages.${system};
+
+      };
     in {
       homeConfigurations."logan" = home-manager.lib.homeManagerConfiguration {
         inherit pkgs;
-        modules = [ ./home.nix ];
+        # configuration = ./home.nix;
+        modules = [
+          ./home.nix
+          {
+            home = {
+              username = "logan" ;
+              homeDirectory = "/Users/logan" ;
+              packages = []
+                ++ (import ./general-packages.nix) {pkgs = pkgs;}
+                ++ (import ./personal-packages.nix) { pkgs = pkgs; }
+              ;
+            };
+          }
+        ];
+        # homeDirectory = /Users/logan ;
       };
-      homeConfigurations."logan.barnett" = home-manager.lib.homeManagerConfiguration {
-        inherit pkgs;
-        modules = [ ./home.nix ];
-      };
+      # homeConfigurations."logan.barnett" = home-manager.lib.homeManagerConfiguration {
+      #   inherit pkgs;
+      #   modules = [ ./home.nix ];
+      # };
     };
 }
 # The docs recommends this, using nix-darwin as an assumption (I don't think

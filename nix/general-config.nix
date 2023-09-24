@@ -2,6 +2,7 @@
 {
   # Some packages are not "free". We need to specifically bless those.
   allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) [
+    "hello-unfree" # For testing unfree-ness.
     "ngrok"
     "unrar"
   ];

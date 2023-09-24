@@ -107,6 +107,8 @@
   # A specialized charting tool using a declarative language. Supports a
   # large set of charts. Used by plantuml.
   pkgs.graphviz
+  # Test unfree functionality in nix.
+  pkgs.hello-unfree
   # An HTML validation tool.
   pkgs.html-tidy
   # A more visual version of top.

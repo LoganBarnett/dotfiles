@@ -5,5 +5,5 @@
   baseIndex = 1;
   # Fix escape delay.
   escapeTime = 0;
-  extraConfig = builtins.readFile ../tmux.conf;
+  extraConfig = builtins.readFile ./tmux.conf;
 }
