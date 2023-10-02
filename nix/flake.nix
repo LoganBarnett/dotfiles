@@ -33,10 +33,10 @@
           (import ./overlays/rust.nix)
           # (import (builtins.fetchTarball
           #   "https://github.com/oxalica/rust-overlay/archive/master.tar.gz"))
-          # (import "${openconnect-sso-src}/overlay.nix")
           # (import ./overlays/openconnect-sso.nix)
-          # (import ./openconnect-sso.nix)
+          # Kept as an example of using someone else's overlay remotely.
           # (import "${builtins.fetchTarball https://github.com/vlaci/openconnect-sso/archive/master.tar.gz}/overlay.nix")
+          (import ./overlays/vpnc.nix)
         ];
         # Some packages are not "free". We need to specifically bless those.
         # I had trouble using a real function because the depended functions are

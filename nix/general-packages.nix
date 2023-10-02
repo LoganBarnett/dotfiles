@@ -153,6 +153,9 @@
   # editor agnostic manner.
   # Lifted from https://code-notes.jhuizy.com/add-custom-npm-to-home-manager/
   pkgs.nodePackages.typescript-language-server
+  # Opens source VPN solution that can work in place for Cisco's AnyConnect and
+  # possibly others.
+  pkgs.openconnect
   # oq is like jq but for xml. It parses xml and yaml files and can convert
   # them to xml, yaml, or json (with jq as a backend). It uses the same snytax
   # as jq with the exception of the -i and -o arguments to indicate which
@@ -192,30 +195,6 @@
     ps.pip
     ps.lxml
     #ps.pyqt5
-    # (ps.buildPythonPackage rec {
-    #   pname = "openconnect-sso";
-    #   version = "0.7.3";
-    #   # disabled = isPy27;
-
-    #   src = pkgs.python39.pkgs.fetchPypi {
-    #     inherit pname version;
-    #     sha256 = "065s5c8q80jh0psdw7694nlabwpra7aw6yc4jlgsc9vxx8rx2na1";
-    #   };
-
-    #   propagatedBuildInputs = [ ps.attrs ];
-    #   doCheck = false;
-    #   # checkInputs = [ pytest ];
-    #   # checkPhase = ''
-    #   #   py.test -m "not webtest"
-    #   # '';
-
-    #   meta = with pkgs.python39.lib; {
-    #     description = "Wrapper script for OpenConnect supporting Azure AD (SAMLv2) authentication to Cisco SSL-VPNs.";
-    #     homepage = "https://github.com/vlaci/openconnect-sso";
-    #     # license = licenses.asl20;
-    #     # maintainers = with maintainers; [ flokli ];
-    #   };
-    # })
     # This does nothing.
     # PyQt5
     # This does something, but breaks.
@@ -343,7 +322,10 @@
   # Oh, but we can't build it directly on macOS. wtf :(
   # And its binary isn't available from the help I've discovered.
   #
-  # vpnc
+  #
+  # Disabled until this is supported on Darwin or I figure out how to debug the
+  # clang issues (see overlays/vpnc.nix for more info).
+  # pkgs.vpnc
   # The penultimate editor.
   pkgs.vim
   # The open source version of VSCode is VSCodium (a play on Chromium, I
