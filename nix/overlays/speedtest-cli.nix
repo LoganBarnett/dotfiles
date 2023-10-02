@@ -40,7 +40,7 @@ final: prev: {
 
     doCheck = false;
 
-    meta  = with prev.lib; {
+    meta = with prev.lib; {
       description = "Command line interface for testing internet bandwidth using speedtest.net";
       homepage = "https://github.com/sivel/speedtest-cli";
       # TODO: Change to apache 2.0.

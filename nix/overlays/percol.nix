@@ -40,7 +40,7 @@ final: prev: {
 
     doCheck = false;
 
-    meta  = with prev.lib; {
+    meta = with prev.lib; {
       description = "Adds flavor of interactive selection to the traditional pipe concept on UNIX";
       homepage = "https://github.com/mooz/percol/";
       license = licenses.mit;
