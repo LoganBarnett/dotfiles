@@ -1,5 +1,5 @@
 #+title:     Avy
-#+author:    Logan Barnett-Hoy
+#+author:    Logan Barnett
 #+email:     logustus@gmail.com
 #+date:      <2020-05-02 Sat>
 #+language:  en

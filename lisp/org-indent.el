@@ -1,9 +1,9 @@
 ;;; org-indent.el --- description -*- lexical-binding: t; -*-
 ;;
-;; Copyright (C) 2020 Logan Barnett-Hoy
+;; Copyright (C) 2020 Logan Barnett
 ;;
-;; Author: Logan Barnett-Hoy <http://github/logan>
-;; Maintainer: Logan Barnett-Hoy <logustus@gmail.com>
+;; Author: Logan Barnett <http://github/logan>
+;; Maintainer: Logan Barnett <logustus@gmail.com>
 ;; Created: May 13, 2020
 ;; Modified: May 13, 2020
 ;; Version: 0.0.1

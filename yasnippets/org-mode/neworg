@@ -4,7 +4,7 @@
 # group: org
 # --
 #+title:     $1
-#+author:    Logan Barnett-Hoy
+#+author:    Logan Barnett
 #+email:     logustus@gmail.com
 #+date:      `(format-time-string "<%Y-%m-%d %a>" (org-current-time))`
 #+language:  en

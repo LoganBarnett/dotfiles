@@ -1,5 +1,5 @@
 #+title:     Dotfiles
-#+author:    Logan Barnett-Hoy
+#+author:    Logan Barnett
 #+email:     logustus@gmail.com
 #+date:      <2021-03-20 Sat>
 #+language:  en

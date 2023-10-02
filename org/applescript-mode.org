@@ -1,5 +1,5 @@
 #+title:     Applescript Mode
-#+author:    Logan Barnett-Hoy
+#+author:    Logan Barnett
 #+email:     logustus@gmail.com
 #+date:      <2022-03-17 Thu>
 #+language:  en

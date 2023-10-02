@@ -1,9 +1,9 @@
 ;;; org-babel-tangle-block.el --- Tangle org-babel blocks -*- lexical-binding: t; -*-
 ;;
-;; Copyright (C) 2021 Logan Barnett-Hoy
+;; Copyright (C) 2021 Logan Barnett
 ;;
-;; Author: Logan Barnett-Hoy <https://github.com/logan>
-;; Maintainer: Logan Barnett-Hoy <logustus@gmail.com>
+;; Author: Logan Barnett <https://github.com/logan>
+;; Maintainer: Logan Barnett <logustus@gmail.com>
 ;; Created: November 06, 2021
 ;; Modified: November 06, 2021
 ;; Version: 0.0.1

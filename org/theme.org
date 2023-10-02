@@ -1,5 +1,5 @@
 #+title:     Emacs Theme
-#+author:    Logan Barnett-Hoy
+#+author:    Logan Barnett
 #+email:     logustus@gmail.com
 #+date:      <2021-02-27 Sat>
 #+language:  en

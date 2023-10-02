@@ -1,5 +1,5 @@
 #+title:     Jira
-#+author:    Logan Barnett-Hoy
+#+author:    Logan Barnett
 #+email:     logustus@gmail.com
 #+date:      <2020-10-22 Thu>
 #+language:  en

@@ -1,5 +1,5 @@
 #+title:     Rename me
-#+author:    Logan Barnett-Hoy
+#+author:    Logan Barnett
 #+email:     logustus@gmail.com
 #+date:      <2020-11-02 Mon>
 #+language:  en

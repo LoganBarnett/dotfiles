@@ -1,5 +1,5 @@
 #+title:     Magit GPG Lock Issue
-#+author:    Logan Barnett-Hoy
+#+author:    Logan Barnett
 #+email:     logustus@gmail.com
 #+date:      <2021-05-10 Mon>
 #+language:  en

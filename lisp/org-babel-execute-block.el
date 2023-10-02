@@ -1,9 +1,9 @@
 ;;; org-babel-execute-block.el --- Execute org-babel blocks  -*- lexical-binding: t; -*-
 ;;
-;; Copyright (C) 2022 Logan Barnett-Hoy
+;; Copyright (C) 2022 Logan Barnett
 ;;
-;; Author: Logan Barnett-Hoy <logustus@gmail.com>
-;; Maintainer: Logan Barnett-Hoy <logustus@gmail.com>
+;; Author: Logan Barnett <logustus@gmail.com>
+;; Maintainer: Logan Barnett <logustus@gmail.com>
 ;; Created: May 07, 2022
 ;; Modified: May 07, 2022
 ;; Version: 0.0.1

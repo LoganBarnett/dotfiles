@@ -1,5 +1,5 @@
 #+title:     Docker
-#+author:    Logan Barnett-Hoy
+#+author:    Logan Barnett
 #+email:     logustus@gmail.com
 #+date:      <2021-11-09 Tue>
 #+language:  en
