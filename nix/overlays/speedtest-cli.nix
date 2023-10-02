@@ -9,30 +9,30 @@
 # consuming nix file it is simply presented as "pkgs.speedtest-cli". I might
 # like to keep this around as an example.
 self: super: {
-  speedtest-cli = super.python39.pkgs.buildPythonApplication rec {
+  speedtest-cli = super.python3.pkgs.buildPythonApplication rec {
     pname = "speedtest-cli";
     version = "2.1.3";
     format = "other";
 
-    pythonPath = [ super.python39.pkgs.setuptools ];
+    pythonPath = [ super.python3.pkgs.setuptools ];
     nativeBuildInputs = [
-      super.python39.pkgs.wrapPython
+      super.python3.pkgs.wrapPython
       super.makeWrapper
     ];
 
-    src = super.python39.pkgs.fetchPypi {
+    src = super.python3.pkgs.fetchPypi {
       inherit pname version;
       sha256 = "1w4h7m0isbvfy4zx6m5j4594p5y4pjbpzsr0h4yzmdgd7hip69sy";
     };
     buildPhase = ''
-      ${super.python39.interpreter} setup.py build
+      ${super.python3.interpreter} setup.py build
     '';
 
     installPhase = ''
-      ${super.python39.interpreter} setup.py install --prefix="$out"
+      ${super.python3.interpreter} setup.py install --prefix="$out"
       for i in "$out/bin"/*; do
       head -n 1 "$i" | grep -E '[/ ]python( |$)' && {
-        wrapProgram "$i" --prefix PYTHONPATH : "$PYTHONPATH:$out/${super.python39.sitePackages}"
+        wrapProgram "$i" --prefix PYTHONPATH : "$PYTHONPATH:$out/${super.python3.sitePackages}"
       } || true
       done
     '';

@@ -188,7 +188,7 @@
   # ps.percol
   # ]))
   # Like Ruby, but not.
-  (pkgs.python39.withPackages (ps: [
+  (pkgs.python3.withPackages (ps: [
     ps.pip
     ps.lxml
     #ps.pyqt5
