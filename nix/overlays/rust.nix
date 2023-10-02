@@ -8,10 +8,10 @@
 #
 # Use `rustup doc --book` to view the docs. There are possibly other useful
 # invocations as well.
-self: super: {
-  fenix = (super.fenix or {}) //
-    (super.callPackage
-      (super.fetchFromGitHub {
+final: prev: {
+  fenix = (prev.fenix or {}) //
+    (prev.callPackage
+      (prev.fetchFromGitHub {
         owner = "nix-community";
         repo = "fenix";
         # Commit from 2023-07-18.

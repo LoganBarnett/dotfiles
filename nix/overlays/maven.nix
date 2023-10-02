@@ -1,5 +1,5 @@
-self: super: {
-  maven = (super.maven or {}) // {
-    jdk = super.jdk;
+final: prev: {
+  maven = (prev.maven or {}) // {
+    jdk = prev.jdk;
   };
 }

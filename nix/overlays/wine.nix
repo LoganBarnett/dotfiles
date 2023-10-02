@@ -1,4 +1,4 @@
-self: super: {
+final: prev: {
   wine = {
     imports = let
       wine-wow64 = fetchTarball

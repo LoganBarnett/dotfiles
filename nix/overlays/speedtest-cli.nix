@@ -8,43 +8,44 @@
 # This is a working Python application constructed in an overlay. In the
 # consuming nix file it is simply presented as "pkgs.speedtest-cli". I might
 # like to keep this around as an example.
-self: super: {
-  speedtest-cli = super.python3.pkgs.buildPythonApplication rec {
+final: prev: {
+  speedtest-cli = prev.python3.pkgs.buildPythonApplication rec {
     pname = "speedtest-cli";
     version = "2.1.3";
     format = "other";
 
-    pythonPath = [ super.python3.pkgs.setuptools ];
+    pythonPath = [ prev.python3.pkgs.setuptools ];
     nativeBuildInputs = [
-      super.python3.pkgs.wrapPython
-      super.makeWrapper
+      prev.cacert
+      prev.python3.pkgs.wrapPython
+      prev.makeWrapper
     ];
 
-    src = super.python3.pkgs.fetchPypi {
+    src = prev.python3.pkgs.fetchPypi {
       inherit pname version;
       sha256 = "1w4h7m0isbvfy4zx6m5j4594p5y4pjbpzsr0h4yzmdgd7hip69sy";
     };
     buildPhase = ''
-      ${super.python3.interpreter} setup.py build
+      ${prev.python3.interpreter} setup.py build
     '';
 
     installPhase = ''
-      ${super.python3.interpreter} setup.py install --prefix="$out"
+      ${prev.python3.interpreter} setup.py install --prefix="$out"
       for i in "$out/bin"/*; do
       head -n 1 "$i" | grep -E '[/ ]python( |$)' && {
-        wrapProgram "$i" --prefix PYTHONPATH : "$PYTHONPATH:$out/${super.python3.sitePackages}"
+        wrapProgram "$i" --prefix PYTHONPATH : "$PYTHONPATH:$out/${prev.python3.sitePackages}"
       } || true
       done
     '';
 
     doCheck = false;
 
-    meta  = with super.lib; {
+    meta  = with prev.lib; {
       description = "Command line interface for testing internet bandwidth using speedtest.net";
       homepage = "https://github.com/sivel/speedtest-cli";
       # TODO: Change to apache 2.0.
       license = licenses.mit;
-      platforms = super.lib.platforms.linux ++ super.lib.platforms.darwin;
+      platforms = prev.lib.platforms.linux ++ prev.lib.platforms.darwin;
       # What should I put here? I don't maintain this, do I?
       # maintainers = with maintainers; [ somename ];
     };
