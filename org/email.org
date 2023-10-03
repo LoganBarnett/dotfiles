@@ -539,6 +539,17 @@ The personal flag ( - a vague outline of a person) appears to be set via
 =To:= corresponds with my personal addresses (specifically whatever
 =mu4e-personal-address-p= says is =t=).
 
+**** marks
+
+I thought the fringe was messed up, but the icon is just shared between moving
+and deleting. Do not apply this as it doesn't fix anything.
+
+#+name: config/mark-fringe-fix
+#+begin_src emacs-lisp :results none :tangle no
+;; (setq mu4e--mark-fringe-format (format "%%-%ds" mu4e--mark-fringe-len))
+#+end_src
+
+
 **** prevent next message upon scroll
      This prevents scrolling to the next message if you scroll down too far.
 
