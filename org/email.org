@@ -461,6 +461,67 @@ invoke
      #+end_src
 
 *** reading: mail list
+**** hide tall icons
+
+Some icons in the flags section are quite tall and make for a jarring reading
+experience. Disable the icons.
+
+#+name: config/mu4e-tall-icons-hide
+#+begin_src emacs-lisp :results none :tangle no
+(setq
+ ;; mu4e-headers-personal-mark '("p" . "Ⓟ")
+ ;; mu4e-headers-list-mark     '("l" . "l")
+ ;; It looks like 'new' is the only goofy label so far.
+ mu4e-headers-new-mark      '("N" . "N")
+ )
+#+end_src
+
+This is an example of a more curated icon. I don't know where it comes from but
+I think it's Doom.
+
+#+begin_example emacs-lisp
+("p" .
+ #(" " 0 1
+   (display
+    (space :width 0.8571428571428572))
+   1 2
+   (face
+    (:family "Symbols Nerd Font Mono" :height 0.8)
+    font-lock-face
+    (:family "Symbols Nerd Font Mono" :height 0.8)
+    display
+    (raise 0.02)
+    rear-nonsticky t)))
+#+end_example
+
+This would need to be applied to every icon to keep the height consistent, and
+as discovered the =new= "mark" doesn't render at all.
+
+This is what the =new= mark was set to before it was fixed:
+#+begin_example emacs-lisp
+
+("N" .
+ #(" 󰓦" 0 1
+   (display
+    (space :width 0.0))
+   1 2
+   (face
+    (:family "Symbols Nerd Font Mono" :height 0.8)
+    font-lock-face
+    (:family "Symbols Nerd Font Mono" :height 0.8)
+    display
+    (raise -0.1)
+    rear-nonsticky t)))
+#+end_example
+
+**** flags and their meanings
+
+The personal flag ( - a vague outline of a person) appears to be set via
+=mu4e~headers-from-or-to= which documents the behavior as being an email whose
+=To:= corresponds with my personal addresses (specifically whatever
+=mu4e-personal-address-p= says is =t=).
+
+**** prevent next message upon scroll
      This prevents scrolling to the next message if you scroll down too far.
 
      #+begin_src emacs-lisp :results none
@@ -822,6 +883,7 @@ https://emacs.stackexchange.com/questions/69719/fingerprint-has-changed-message-
   (use-package "mu4e"
     :init
     <<mu4e-open>>
+    <<config/mu4e-tall-icons-hide>>
     <<config/maildir-account-dir-create>>
     <<config/mu4e-mark-for-spam>>
     <<config/email-mu4e-capture-template-add>>
