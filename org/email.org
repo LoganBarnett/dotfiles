@@ -468,12 +468,30 @@ experience. Disable the icons.
 
 #+name: config/mu4e-tall-icons-hide
 #+begin_src emacs-lisp :results none :tangle no
+;; Setting the values this way doesn't work because `+mu4e-initialise-icons'
+;; crushes the values later. So just override the function with a fixed one.
 (setq
  ;; mu4e-headers-personal-mark '("p" . "Ⓟ")
  ;; mu4e-headers-list-mark     '("l" . "l")
  ;; It looks like 'new' is the only goofy label so far.
  mu4e-headers-new-mark      '("N" . "N")
  )
+(defun +mu4e-initialise-icons ()
+  (setq mu4e-use-fancy-chars t
+        mu4e-headers-draft-mark      (cons "D" (+mu4e-normalised-icon "nf-fa-pencil"))
+        mu4e-headers-flagged-mark    (cons "F" (+mu4e-normalised-icon "nf-fa-flag"))
+;;        mu4e-headers-new-mark        (cons "N" (+mu4e-normalised-icon "nf-md-sync" :set "mdicon" :height 0.8 :v-adjust -0.10))
+        mu4e-headers-passed-mark     (cons "P" (+mu4e-normalised-icon "nf-fa-arrow_right"))
+        mu4e-headers-replied-mark    (cons "R" (+mu4e-normalised-icon "nf-fa-reply"))
+        mu4e-headers-seen-mark       (cons "S" "") ;(+mu4e-normalised-icon "eye" :height 0.6 :v-adjust 0.07 :color "dsilver"))
+        mu4e-headers-trashed-mark    (cons "T" (+mu4e-normalised-icon "nf-fa-trash"))
+        mu4e-headers-attach-mark     (cons "a" (+mu4e-normalised-icon "nf-fa-file_text_o" :color "silver"))
+        mu4e-headers-encrypted-mark  (cons "x" (+mu4e-normalised-icon "nf-fa-lock"))
+        mu4e-headers-signed-mark     (cons "s" (+mu4e-normalised-icon "nf-fa-certificate" :height 0.7 :color "dpurple"))
+        mu4e-headers-unread-mark     (cons "u" (+mu4e-normalised-icon "nf-fa-eye_slash" :v-adjust 0.05))
+        mu4e-headers-list-mark       (cons "l" (+mu4e-normalised-icon "nf-fa-sitemap" :set "faicon"))
+        mu4e-headers-personal-mark   (cons "p" (+mu4e-normalised-icon "nf-fa-user"))
+        mu4e-headers-calendar-mark   (cons "c" (+mu4e-normalised-icon "nf-fa-calendar"))))
 #+end_src
 
 This is an example of a more curated icon. I don't know where it comes from but
@@ -883,7 +901,6 @@ https://emacs.stackexchange.com/questions/69719/fingerprint-has-changed-message-
   (use-package "mu4e"
     :init
     <<mu4e-open>>
-    <<config/mu4e-tall-icons-hide>>
     <<config/maildir-account-dir-create>>
     <<config/mu4e-mark-for-spam>>
     <<config/email-mu4e-capture-template-add>>
@@ -899,7 +916,11 @@ https://emacs.stackexchange.com/questions/69719/fingerprint-has-changed-message-
     <<config/mu4e-composing>>
     :config
     (message "initializing mu4e...")
-    ;; mu4e resets the value configured here, so just set it back again.
+    ;; mu4e (or the Doom module) resets the value configured here, so just set
+    ;; it back again.
+    <<config/mu4e-tall-icons-hide>>
+    ;; mu4e (or the Doom module) resets the value configured here, so just set
+    ;; it back again.
     <<config/email-get-mail-command>>
     (pinentry-start)
     (require 'org-mime)
