@@ -16,7 +16,7 @@ itself. However no alternative exists. Yet!
 It would seem that whether or not we're in Doom or Spacemacs, some modeline
 cruft gets added and I have to take it out.
 #+name: omit-modeline-cruft
-#+begin_src emacs-lisp :results none :tangle yes
+#+begin_src emacs-lisp :results none :tangle no
 (setq
  doom-modeline-major-mode-icon nil
  doom-modeline-minor-modes nil
