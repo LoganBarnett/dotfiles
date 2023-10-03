@@ -21,12 +21,19 @@ even make them the same gray color as vanilla text, but use a separator line.
   )
 #+end_src
 ** comments
+
+At one point I wanted comments to be brighter, but it's mostly fine and I can
+see extra colors applied to certain symbols within the comments. So best not to
+touch them unless I have a comprehensive solution.
+
+Old settings:
+
 Comments shouldn't appear muted. I want to read them!
 
 #+begin_src emacs-lisp :results none
-(set-face-attribute 'font-lock-comment-face nil
-                    :foreground "#bb88ff"
-                    )
+;; (set-face-attribute 'font-lock-comment-face nil
+;;                     :foreground "#bb88ff"
+;;                     )
 #+end_src
 
 * load
