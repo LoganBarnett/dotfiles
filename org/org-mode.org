@@ -860,6 +860,40 @@ Test that =org-get-outline-path= does what we expect.
 
 #+RESULTS:
 : clock a full day
+** inactive timestamp with both date and time
+
+#+name: config/org-mode-insert-inactive-time-stamp-with-time
+#+begin_src emacs-lisp :results none :tangle no
+(defun config/org-mode-insert-inactive-time-stamp-with-time ()
+  (org-insert-time-stamp (current-time) t t)
+  )
+#+end_src
+
+Show the code works.
+
+#+begin_src emacs-lisp :results value :tangle no :noweb yes
+<<config/org-mode-insert-inactive-time-stamp-with-time>>
+(with-temp-buffer
+  (config/org-mode-insert-inactive-time-stamp-with-time)
+  )
+#+end_src
+
+#+RESULTS:
+: [2023-10-03 Tue 19:38]
+
+Wire it up to our key bindings.
+
+#+name: config/org-mode-insert-inactive-time-stamp-with-time-keymap
+#+begin_src emacs-lisp :results none :noweb yes
+<<config/org-mode-insert-inactive-time-stamp-with-time>>
+(map!
+  :mode org-mode
+  :leader
+  :desc "Inactive timestamp + time"
+  "m d C"
+  #'config/org-mode-insert-inactive-time-stamp-with-time
+  )
+#+end_src
 
 
 * typing
@@ -970,6 +1004,7 @@ This is the region of offending code, I think:
 #+begin_src emacs-lisp :results none :noweb yes :tangle yes
 (use-package "org"
   :init
+  <<config/org-mode-insert-inactive-time-stamp-with-time-keymap>>
   <<config/org-mode-manage-initial-folding>>
   <<config/org-mode-set-paths>>
   <<config/org-todo-log-done>>
