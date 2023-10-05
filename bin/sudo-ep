@@ -1,5 +1,6 @@
-#!/usr/bin/env bash
+#!/usr/bin/env expect -f
 
+# WIP - doesn't do the trick yet.
 ################################################################################
 # sudo-ep
 #
@@ -17,4 +18,21 @@
 #
 ################################################################################
 
-SUDO_ASKPASS="$(which sudo-ep-askpass)" /usr/bin/sudo -A $*
+# SUDO_ASKPASS="$(which sudo-ep-askpass)" /usr/bin/sudo -A -u "$EP_USER" $*
+
+# pass show ep \
+#   | SUDO_ASKPASS="$(which sudo-ep-askpass)" /usr/bin/sudo -A $*
+
+# pass show ep \
+#   | su $EP_USER \
+#   ls
+  #SUDO_ASKPASS="$(which sudo-ep-askpass)" /usr/bin/sudo -A $*
+
+exp_internal 1
+spawn -noecho pass show ep
+set pass $expect_out(1,string)
+eval spawn su -l "$env(EP_USER)"
+set prompt ":"
+# send "$(pass show ep)"
+send_user "$pass"
+send "ls"

@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+#
+# WIP - doesn't do the trick yet.
 
 ##
 # sudo-ep-askpass
@@ -13,6 +15,8 @@
 # expired.
 ##
 
-dscl /Local/Default -authonly "$USER"
+# dscl /Local/Default -authonly "$USER"
 
-secret-server-secret-get "$EP_SECRET_SERVER_ID"
+# secret-server-secret-get "$EP_SECRET_SERVER_ID"
+
+pass show ep
