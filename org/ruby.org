@@ -36,7 +36,10 @@ noticed no shortcomings.
  ruby-block-hanging-re nil
  ruby-deep-indent-paren-style nil
  enh-ruby-deep-indent-paren nil
- ruby-smie-grammar '((:smie-closer-alist
+  enh-ruby-hanging-brace-indent-level 2
+  enh-ruby-hanging-indent-level 2
+  enh-ruby-deep-indent-construct nil
+ruby-smie-grammar '((:smie-closer-alist
   ("def" . "end")
   ("begin" . "end")
   ("do" . "end")
@@ -161,8 +164,10 @@ noticed no shortcomings.
  ("or" 64 78)
  ("and" 65 79)
  (";" 52 52)
- ("iuwu-mod" 66 80))
+ ("iuwu-mod" 66 80)
+ ;; ("->" (425) 0)
  )
+)
 #+end_src
 
 ** multi-line
