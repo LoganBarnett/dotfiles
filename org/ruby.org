@@ -207,6 +207,10 @@ quite built into =ruby-mode=, but it does have a flag we can use to disable it.
 (use-package "enh-ruby-mode"
   :mode "\\.rb\\'" "\\`Gemfile" "\\.gemspec\\'"
   :init
+  ;; Lifted from what ruby-mode uses.
+  (add-to-list 'auto-mode-alist '("\\(?:\\.\\(?:rbw?\\|ru\\|rake\\|thor\\|jbuilder\\|rabl\\|gemspec\\|podspec\\)\\|/\\(?:Gem\\|Rake\\|Cap\\|Thor\\|Puppet\\|Berks\\|Brew\\|Vagrant\\|Guard\\|Pod\\)file\\)\\'" . enh-ruby-mode))
+  ;; Selects the right mode from the shebang.
+  (add-to-list 'interpreter-mode-alist '("ruby" . enh-ruby-mode))
   <<config/ruby-rubocopy-disable>>
   <<config/ruby-multi-line-strategy-hook>>
   <<config/ruby-mode-fix-hanging-indentation>>
