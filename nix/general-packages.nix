@@ -85,6 +85,10 @@
   # Convert media (sound, video). The "-full" suffix brings in all of the
   # codecs one could desire.
   pkgs.ffmpeg-full
+  # macOS doesn't ship with free.
+  # pkgs.unixtools.free
+  pkgs.utillinux
+  pkgs.procps
   # The BSD awk I have found lacking. Not really a surprise. Replace it with
   # GNU.
   pkgs.gawk
