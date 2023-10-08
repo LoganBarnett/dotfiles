@@ -865,6 +865,7 @@ Test that =org-get-outline-path= does what we expect.
 #+name: config/org-mode-insert-inactive-time-stamp-with-time
 #+begin_src emacs-lisp :results none :tangle no
 (defun config/org-mode-insert-inactive-time-stamp-with-time ()
+  (interactive)
   (org-insert-time-stamp (current-time) t t)
   )
 #+end_src
