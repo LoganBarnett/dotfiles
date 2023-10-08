@@ -1,5 +1,7 @@
 { pkgs, ... }:
 [
+  # Manage bluetooth settings easily from the command line.
+  pkgs.blueutil
   # These are a suggestion from https://stackoverflow.com/a/51161923 to get
   # clang behaving properly for some trouble I was having with lxml (a Python
   # package).

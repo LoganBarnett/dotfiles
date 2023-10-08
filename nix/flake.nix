@@ -21,6 +21,7 @@
       pkgs = import nixpkgs {
         inherit system;
         overlays = [
+          (import ./overlays/blueutil.nix)
           (import ./overlays/cacert.nix)
           # (import ./overlays/crystal.nix)
           (import ./overlays/gnupg.nix)
