@@ -284,6 +284,7 @@
   (auto-compile-on-load-mode 1)
   (init-org-file "emacs-config.org")
   (init-org-file "macos.org")
+  (init-org-file "gpg.org")
   (dirty-init)
   (message "[INIT] Loading mu4e to fix startup issue...")
   ;; There is a startup error whose stack ends near org-store-link and within
