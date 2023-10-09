@@ -189,6 +189,8 @@
   pkgs.plantuml
   # Query an HTML DOM from the command line.
   pkgs.pup
+  # Show progress via a pipe, such as with dd.
+  pkgs.pv
   # Disabled until allowBroken is addressed.
   # See https://github.com/mooz/percol/issues/110
   #
