@@ -838,7 +838,7 @@ that time.
     (insert
      (format
       ":LOGBOOK:
-:CLOCK: %s
+CLOCK: %s
 :END:
 "
       (let (
