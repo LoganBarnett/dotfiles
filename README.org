@@ -89,6 +89,7 @@ ecosystem.
 
 Use =nix-direnv-add-envrc= to lay down the necessary =direnv= files and also
 =allow= the setup immediately.
+
 ** Global Packages from VMs
 
 Some languages that require runtimes (Ruby, Python, Node.js) all have packages
