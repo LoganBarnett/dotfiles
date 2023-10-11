@@ -106,6 +106,7 @@
   )
 (package! multi-line)
 (package! multi-term)
+(package! nyan-mode)
 (package! noflet)
 ;; Org-babel support for OpenSCAD.
 (package! ob-scad :recipe (:repo "https://github.com/wose/ob-scad.git"))
