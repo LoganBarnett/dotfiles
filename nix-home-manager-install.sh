@@ -28,8 +28,10 @@ mkdir -p ~/.config/home-manager
 # ln -snf $PWD/nix/home.nix ~/.config/nixpkgs/home.nix
 ln -snf $PWD/nix/home.nix ~/.config/home-manager/home.nix
 ln -snf $PWD/nix/flake.nix ~/.config/home-manager/flake.nix
+# If you see the "overlays must be a directory" error, look further. This is
+# likely an error of an error.
 ln -snf $PWD/nix/overlays ~/.config/nixpkgs/overlays
-mkdir -p ~/config/nix
+mkdir -p ~/.config/nix
 ln -snf $PWD/nix/nix.conf ~/.config/nix/nix.conf
 
 . $HOME/.nix-profile/etc/profile.d/hm-session-vars.sh
