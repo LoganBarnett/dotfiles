@@ -62,7 +62,6 @@
     in {
       homeConfigurations."logan" = home-manager.lib.homeManagerConfiguration {
         inherit pkgs;
-        # configuration = ./home.nix;
         modules = [
           ./home.nix
           {
@@ -76,12 +75,27 @@
             };
           }
         ];
-        # homeDirectory = /Users/logan ;
       };
-      # homeConfigurations."logan.barnett" = home-manager.lib.homeManagerConfiguration {
-      #   inherit pkgs;
-      #   modules = [ ./home.nix ];
-      # };
+      homeConfigurations."logan.barnett" = home-manager.lib.homeManagerConfiguration {
+        inherit pkgs;
+        modules = [
+          ./home.nix
+          {
+            home = {
+              username = "logan.barnett" ;
+              homeDirectory = "/Users/logan.barnett" ;
+              packages = []
+                ++ (import ./general-packages.nix) {pkgs = pkgs;}
+                # TODO: Need a means of using private nix files. Perhaps via a
+                # git submodule.
+      #          ++ (import ../../dotfiles-private/work-new-e-ah-packages.nix) {
+                #   pkgs = pkgs;
+                # }
+              ;
+            };
+          }
+        ];
+      };
     };
 }
 # The docs recommends this, using nix-darwin as an assumption (I don't think
