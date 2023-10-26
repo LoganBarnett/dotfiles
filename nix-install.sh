@@ -52,6 +52,13 @@ slog "Loading nix-daemon so we don't need to close our shell..."
 . '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh'
 slog "nix-daemon loaded."
 
+# This indicates issues that can come up with a user missing. This can come up
+# when on an extended-priviledge account (no sudo, but separate account for it).
+# https://github.com/nix-community/home-manager/issues/3734
+# Example commands to fix:
+# sudo mkdir /nix/var/nix/profiles/per-user/$user
+# chown -R $user:nixbld /nix/var/nix/profiles/per-user/$user
+
 ./nix-home-manager-install.sh
 
 # The guide recommends the below flag for catalina.
