@@ -173,6 +173,26 @@ allows for interactive editing, which can include refactoring identifiers.
 (define-key evil-normal-state-map (kbd "#") #'config/begin-evil-iedit-state)
 
 #+end_src
+* evil-command-line
+
+The =evil-command-line= is the modal input that appears at the bottom of the
+editor when typing things like =:=. So =:e foo.sh= would invoke the
+=evil-command-line=.
+
+** evil-command-line command history navigation
+
+According to [[https://github.com/emacs-evil/evil/blob/d28206ccff74bc07ba335b8ff77805564f6928d7/evil-maps.el#L607][the code]] this should already be set, but I have not found that to
+be the case. Essentially, pressing =C-p= and =C-n= should go to the next and
+previous _history matches_ instead of _history elements_. So if I do =:e= and
+then =C-p=, I should see myself moving backwards through my history of any
+commands prefixed with =:e=.
+
+#+name: config/evil-command-line-history-bindings
+#+begin_src emacs-lisp :results none
+(define-key evil-command-line-map "\C-p" #'previous-complete-history-element)
+(define-key evil-command-line-map "\C-n" #'next-complete-history-element)
+#+end_src
+
 
 * searching
 
@@ -240,6 +260,7 @@ library is already loaded.
   :init
   <<config/evil-global-substitute>>
   <<config/evil-Y-yanks-to-eol>>
+  <<config/evil-command-line-history-bindings>>
   :config
   <<config/evil-comment-yanks>>
   )
