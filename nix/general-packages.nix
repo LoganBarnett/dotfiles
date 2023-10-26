@@ -275,6 +275,8 @@
   #   rev = "29b0d4d0b600f8f5dd0b86e3362a33d4181938f9";
   # }) {}).shards
   # pkgs.shards
+  # Use OpenSSH since macOS's doesn't come with Kerberos support.
+  pkgs.openssh
   # Run speed tests from the command line.
   pkgs.speedtest-cli
   # A self-proclaimed better netcat.
