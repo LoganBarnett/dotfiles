@@ -276,7 +276,10 @@
   # }) {}).shards
   # pkgs.shards
   # Use OpenSSH since macOS's doesn't come with Kerberos support.
-  pkgs.openssh
+  # I can't get Kerberos support working just yet, because it can't see the
+  # macOS ticket list.  This might be remedied by installing Kerberos via Nix as
+  # well.
+  # pkgs.openssh
   # Run speed tests from the command line.
   pkgs.speedtest-cli
   # A self-proclaimed better netcat.
