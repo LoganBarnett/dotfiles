@@ -56,7 +56,9 @@
   #  rev = "84e8bdba798312ace0e854f885cb76a5ddad1101";
   #  sha256 = "iij2TsujINT/hgIHn3epchE09hWGkPk8UdtwFBjdAsU=";
   #}) {}).emacsMacport
-  pkgs.emacs
+  # We have moved this to home.nix and are using home-manager's version of
+  # Emacs.
+  # pkgs.emacs
   # Detect character encoding of files.
   pkgs.enca
   # This is a binary apparently. Universal editor settings. Kind of like a
@@ -146,7 +148,11 @@
   # A union of ping and traceroute - ping all hosts along a route.
   pkgs.mtr
   # Email indexing, viewing, etc. Needed in general because it is required by
-  # the Emacs config.
+  # the Emacs config.  This does not install the mu4e package any longer due to
+  # this: https://github.com/NixOS/nixpkgs/pull/253438
+  # To work around this, make sure the package `emacs.pkgs.mu4e` is included.
+  # See home.nix for how emacs is configured to include mu4e, plus additional
+  # documentation on the configuration.
   pkgs.mu
   # This lets me search for parts of nix to help debug collisions.
   pkgs.nix-index

@@ -25,6 +25,20 @@ in
 
   # Let Home Manager install and manage itself.
   programs.home-manager.enable = true;
+  # I haven't fully tested this, but it doesn't lay down
+  # ~/.nix-profile/share/emacs/site-lisp, let alone ~/nix-profile/share/emacs.
+  # This means we can't refer to mu4e, or perhaps even built-in packages.  From
+  # what I can gather, this just means to refer to mu4e via the load-path that
+  # Nix sets up.  From there, mu4e can be found. It _must not_ be listed in
+  # packages.el under Doom's package list with straight.el.  This will cause a
+  # problem.
+  programs.emacs = {
+    enable = true;
+    package = pkgs.emacs;
+    extraPackages = epkgs: [
+      epkgs.mu4e
+    ];
+  };
   programs.direnv.enable = true;
   programs.direnv.nix-direnv.enable = true;
   # Start keychain, which ensures only one ssh-agent and one gpg-agent. This may

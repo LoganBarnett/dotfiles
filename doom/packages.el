@@ -90,20 +90,26 @@
 ;; Desperately attempt to fix the SSH passphrase prompting issue.
 (package! magit :pin "a4a78d341a7006ccdec708b424048ba3b22ee801")
 (package! markdown-mode)
+;; mu4e is now intended to be installed via Nix in a Nix-based environment.  See
+;; home.nix for additional documentation.  For this section, it just means that
+;; Nix manages mu4e and thus we don't tell straight.el anything about mu4e.
+;;
+;; Older notes:
+;;
 ;; mu4e's lisp build doesn't appear in a place that straight.el finds, so the
 ;; build directory for mu4e will appear as empty. To work around this we can
 ;; point it straight to the nix mu4e site-lisp directory. See
 ;; https://github.com/raxod502/straight.el/issues/491 for more context.
-(package! mu4e
-  :recipe (
-           :type built-in
-           :local-repo "~/.nix-profile/share/emacs/site-lisp/mu4e"
-           ;; pre-build must be disabled when using the nix derivation - in part
-           ;; because it is alreadt built, but also because the directory is
-           ;; read-only because that's how nix likes to do things.
-           :pre-build ()
-           )
-  )
+;; (package! mu4e
+;;   :recipe (
+;;            :type built-in
+;;            :local-repo "~/.nix-profile/share/emacs/site-lisp/mu4e"
+;;            ;; pre-build must be disabled when using the nix derivation - in part
+;;            ;; because it is alreadt built, but also because the directory is
+;;            ;; read-only because that's how nix likes to do things.
+;;            :pre-build ()
+;;            )
+;;   )
 (package! multi-line)
 (package! multi-term)
 (package! nyan-mode)
