@@ -242,6 +242,8 @@
   # PyQt5
   # Doesn't exist?
   # rbenv
+  # Change encoding. Can convert HTML entities.
+  pkgs.recode
   # Really fast grep alternative.
   pkgs.ripgrep
   # Copy files recursively. Replaces BSD version on macOS.
