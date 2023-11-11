@@ -75,10 +75,14 @@ Tramp can be debugged with a verbose number. I know you can set it as high as
 11, but is for maintainers only. 3 is the default which includes some connection
 information.
 
+It seems after running org-babel blocks, this gets reset to =1= so it may need
+to be run again.
+
 #+name: config/tramp-log-verbosity
 #+begin_src emacs-lisp :tangle yes :results none
-(setq tramp-verbose 3)
+(setq-default tramp-verbose 3)
 #+end_src
+
 * troubleshooting
 ** huge recentf error
 
@@ -97,6 +101,81 @@ https://discourse.doomemacs.org/t/recentf-cleanup-logs-a-lot-of-error-messages/3
 This is because it's trying to ssh to a host and there are no ssh keys to use.
 Other ssh errors might also produce this issue. Make sure the ssh key is loaded
 via =keychain= (which =ssh-add= should also handle).
+** Tramp just hangs
+
+See [[prompt recognition errors]] as it is a likely outcome.
+
+** prompt recognition errors
+
+Prompt recognition errors are tricky and not obvious. This is because Tramp will
+try to move forward anyways but will fail.  Look closely using instructions
+below to determine if you have this error.  Generally this will appear as a
+hang - nothing gets done.
+
+Note that the prompt can change on the fly _because you logged in earlier_ so
+Tramp might work the first time but minutes later will be broken.
+
+*** determining if you have a prompt recognition error
+
+You will sometimes see this in the log (if verbosity is at least 3):
+
+#+begin_example
+10:50:22.239339 tramp-process-actions (3) # Waiting for prompts from remote shell...
+#+end_example
+
+If verbosity is higher, you will likely see a lot more spew after that with
+verbosity around 5.
+
+Then you can find the dreaded, actual error:
+#+begin_example
+10:50:30.712477 tramp-process-actions (3) # Waiting for prompts from remote shell...failed
+#+end_example
+
+Tramp will continue anyways but will fail. You may see a lot of this:
+
+#+begin_example
+10:50:34.852722 tramp-get-test-command (5) # Finding a suitable ‘test’ command
+#+end_example
+
+*** fixing the issue
+
+You need to cleanup the prompt on the remote host.
+
+**** fix =setlocale= issue
+
+The =setlocale= issue looks like this when logging in manually:
+
+#+begin_example
+-bash: warning: setlocale: LC_ALL: cannot change locale (en_US.UTF-8)
+#+end_example
+
+macOS maintains a =/etc/ssh/ssh_config= which is a fool's errand to maintain.
+It's rewritten on updates and perhaps other arbitrary events. However, this file
+is applied _after_ the =~/.ssh/config= is applied, which means it wins
+collisions. If it didn't, we could use =SendEnv= and a =-= prefix (such as
+=SendEnv -LC_ALL=) to remove environment variables which cause the mixup here. I
+have not found anything about making sure the user configuration takes
+precedence, and frankly, I am surprised it works this way.
+
+Instead, just login to the host and run the example below. It assumes you're on
+macOS, using US English as your language and locale.
+
+#+begin_src shell :exports code
+sudo locale-gen en_US.UTF-8
+#+end_src
+**** squelch Ubuntu's MOTD
+
+Ubuntu's MOTD can present information about updates, commands to run, etc.  This
+can interfere with Tramp's prompt discovery.  Stop sending an MOTD by editing
+=/etc/pam/sshd= and commenting out this line:
+
+#+begin_example
+session    optional     pam_motd.so  motd=/run/motd.dynamic
+#+end_example
+
+I have not found a way to ensure this banner is ignored when logging in
+non-interactively.  My research has been basic, not thorough, though.
+
 
 * ls and dired
 Need to override this function because =cmd= is defined with =ls= first instead
