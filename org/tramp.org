@@ -80,7 +80,7 @@ to be run again.
 
 #+name: config/tramp-log-verbosity
 #+begin_src emacs-lisp :tangle yes :results none
-(setq-default tramp-verbose 3)
+(setq-default tramp-verbose 5)
 #+end_src
 
 * troubleshooting
@@ -175,6 +175,28 @@ session    optional     pam_motd.so  motd=/run/motd.dynamic
 
 I have not found a way to ensure this banner is ignored when logging in
 non-interactively.  My research has been basic, not thorough, though.
+**** using a clean, non-interactive prompt
+
+A snippet like this should be at the top of =~/.bashrc= or something similar for
+other remote shells.  I found this is the case by default on Ubuntu setups (as
+of which version, I do not know.
+
+#+begin_src shell :results none :exports code
+if [[ "$TERM" == "dumb" ]]; then
+  PS1="$ "
+  return
+fi
+#+end_src
+
+Even with this, Tramp can still have problems with prompt discovery.
+**** restart Emacs
+
+From prior troubleshooting experience with Tramp as well as even trying to
+address this bug - sometimes Tramp just holds onto something in a cache that
+cannot be seen, and thus new outcomes cannot manifest.  Restart Emacs and maybe
+things will just work.  This potentially has to be done after any fixes
+mentioned here.
+
 
 
 * ls and dired
