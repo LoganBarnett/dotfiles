@@ -93,6 +93,9 @@ fi
 # xbox360-controller-driver-unofficial
 
 slog "Installing homebrew casks."
-brew install --cask $CASKS $MACHINE_CASKS
+# Install under ~/Applications so we don't need to require admin priviledges.
+# This is helpful for work machines.
+# See https://github.com/Homebrew/homebrew-cask/issues/27431 for reference.
+brew install --cask $CASKS $MACHINE_CASKS --appdir=~/Applications
 
 slog "Done installing casks."
