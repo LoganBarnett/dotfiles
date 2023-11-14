@@ -62,6 +62,11 @@ else
   # corsair-icue - This hogs resources and causes audio to skip when other
   # processor intensive activities are going. Perhaps a later update will fix
   # this, but my limited research shows MacOs support to be relatively new.
+  #
+  # iterm2 isn't my preference but it avoids the dreaded paste-on-middle-click
+  # affliction that Termina.app suffers from to this day.  At least with iterm2
+  # there is a setting to avoid that nonsense.  This can be quite dangerous,
+  # depending on the contents of the clip buffer.
   MACHINE_CASKS="
 arduino
 battlescribe
@@ -69,6 +74,7 @@ discord
 doxie
 firefox
 gimp
+iterm2
 keycastr
 mixxx
 obs
