@@ -19,15 +19,17 @@
       )
   #+end_src
 * file templates
-File templates are templates that expand for new or blank files. This is a
+File templates are templates that expand for new or blank files.  This is a
 feature introduced in Doom via the =file-templates= editor module.
 
 Setting the =+file-templates-dir= gives us the power to override the templates.
 However this isn't a great way to support a mix of both private and official
-packages. An undocumented way to support overrides is to place a =__= file in
-the appropriate snippet directory. For specifically named files, =__<filename>=
-works as well. The key for these files is assumed to be =__= and we should
-continue that when writing file templates.
+packages.  An undocumented way to support overrides is to place a =__= file in
+the appropriate snippet directory.  For specifically named files, =__<filename>=
+works as well.  The key for these files is assumed to be =__= and we should
+continue that when writing file templates.  Files with the =__<filename>=
+pattern should use the same =__<filename>= as their key.
+
 * allow require-file-newline
 
 =require-file-newline= set to =nil= makes it such that I must add the newline to
@@ -53,6 +55,15 @@ question.
 (setq-default +snippets-dir "~/dev/dotfiles/yasnippets")
 #+end_src
 
+* overriding default snippets
+
+I think this can be done, but a [[https://emacs.stackexchange.com/a/66215][Stack Overflow answer]] seems to indicate that
+might be otherwise.  I would prefer there to be some kind of load order or
+shadowing I could use, but I am unsure.
+
+My findings thus far have shown that if this seems to be happening, it is likely
+that I have not named the key correctly, the file correctly, or both. See [[file
+templates]] for more details on things like the =__= files.
 
 * apply
 
