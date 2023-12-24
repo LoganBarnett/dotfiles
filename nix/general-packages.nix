@@ -154,6 +154,9 @@
   # See home.nix for how emacs is configured to include mu4e, plus additional
   # documentation on the configuration.
   pkgs.mu
+  # An n-curses based interface to du.  Shows disk usage in a way that makes
+  # identification/cleaning quick+easy.
+  pkgs.ncdu
   # This lets me search for parts of nix to help debug collisions.
   pkgs.nix-index
   # The code injector bootstrap script is written in Node.js, so we need to
