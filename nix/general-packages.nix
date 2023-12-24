@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ pkgs, system ? builtins.currentSystem, ... }:
 [
   # A grep-sed like alternative. Offers a scripting language for
   # transformations.
@@ -87,6 +87,16 @@
   # Convert media (sound, video). The "-full" suffix brings in all of the
   # codecs one could desire.
   pkgs.ffmpeg-full
+  pkgs.fuse-ext2
+  # (import (builtins.fetchGit {
+  #   # Descriptive name to make the store path easier to identify
+  #   name = "nixpkgs-early-fuse-ext2";
+  #   url = https://github.com/nixos/nixpkgs/;
+  #   rev = "277ea6cac2fca11859ca8a29fafda7af681b4943";
+  # }) {
+  #   inherit system;
+  # }).fuse-ext2
+  pkgs.e2fsprogs
   # macOS doesn't ship with free.
   # pkgs.unixtools.free
   pkgs.utillinux
@@ -370,6 +380,8 @@
   # Folks suggest installing an application from the AppStore. I'd prefer
   # to have an unattended install of the Wireguard client.
   pkgs.wireguard-tools
+  # Allow extracting and creating .xz archives.
+  pkgs.xz
   # A tool for installing node packages. Better than npm in most ways.
   pkgs.yarn
   # Decode QR codes from images or an onboard camera (such as a webcam).

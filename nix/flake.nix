@@ -24,6 +24,7 @@
           (import ./overlays/blueutil.nix)
           (import ./overlays/cacert.nix)
           # (import ./overlays/crystal.nix)
+          (import ./overlays/e2fsprogs.nix)
           (import ./overlays/gnupg.nix)
           (import ./overlays/maven.nix)
           (import ./overlays/percol.nix)
@@ -69,7 +70,7 @@
               username = "logan" ;
               homeDirectory = "/Users/logan" ;
               packages = []
-                ++ (import ./general-packages.nix) {pkgs = pkgs;}
+                ++ (import ./general-packages.nix) {pkgs = pkgs; inherit system; }
                 ++ (import ./personal-packages.nix) { pkgs = pkgs; }
               ;
             };
@@ -85,7 +86,7 @@
               username = "logan.barnett" ;
               homeDirectory = "/Users/logan.barnett" ;
               packages = []
-                ++ (import ./general-packages.nix) {pkgs = pkgs;}
+                ++ (import ./general-packages.nix) {pkgs = pkgs; inherit system; }
                 # TODO: Need a means of using private nix files. Perhaps via a
                 # git submodule.
       #          ++ (import ../../dotfiles-private/work-new-e-ah-packages.nix) {

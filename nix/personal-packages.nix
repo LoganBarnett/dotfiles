@@ -147,4 +147,6 @@
   # pkgs.wow64Experimental
   # This was my last attempt, but I don't think it entirely worked.
   # pkgs.pkgsx86_64Darwin.wine64
+  # For working with zst archives.
+  pkgs.zstd
 ]

@@ -28,6 +28,7 @@ mkdir -p ~/.config/home-manager
 # ln -snf $PWD/nix/home.nix ~/.config/nixpkgs/home.nix
 ln -snf $PWD/nix/home.nix ~/.config/home-manager/home.nix
 ln -snf $PWD/nix/flake.nix ~/.config/home-manager/flake.nix
+ln -snf $PWD/nix/flake.lock ~/.config/home-manager/flake.lock
 # If you see the "overlays must be a directory" error, look further. This is
 # likely an error of an error.
 ln -snf $PWD/nix/overlays ~/.config/nixpkgs/overlays
