@@ -196,6 +196,30 @@ address this bug - sometimes Tramp just holds onto something in a cache that
 cannot be seen, and thus new outcomes cannot manifest.  Restart Emacs and maybe
 things will just work.  This potentially has to be done after any fixes
 mentioned here.
+** ispell, reentrant calls, timers, etc
+
+Abandon all hope. This locks up Emacs, effectively, via repeat calls.
+
+I don't know why ispell is involved.
+
+I don't know why flycheck is running, or what it is running on.
+
+I believe this is pushing the limits of the usefulness of Tramp. Abandon it for
+now, and seek shelter elsewhere.  Perhaps this is a bug, or a bug of a bug.  But
+the nature of how it effectively destroys the Emacs session makes it impossible
+to debug properly.
+
+To move forward with this, I should try some kind of means of disabling timers.
+I'd also like to make sure the debug log itself doesn't have timers and such
+running on it, because it might be some of the cause.  The log is in
+=outline-mode=.
+
+
+** getconf errors
+
+=getconf PATH= fails.  It actually defaults the value on the host.
+
+No idea on this one.  I haven't found much online.  I suspect a bug.
 
 
 
