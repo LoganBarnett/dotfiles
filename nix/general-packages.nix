@@ -206,6 +206,15 @@
   # A charting tool with a declarative language. Uses graphviz dot, ditaa,
   # and others.
   pkgs.plantuml
+  # A containerd wrapper like Docker, but without the Docker branding stuff.
+  # Note that on macOS this will be a wrapper for podman-machine, and a VM must
+  # be installed on the host.  I don't really know the idiomatic Nix way of
+  # doing this just yet.  See https://github.com/NixOS/nixpkgs/issues/169118 for
+  # when it was introduced/fixed for macOS.  Note that per
+  # https://github.com/skogsbrus/os/commit/2b10be2d1a48727470a72f9e7b1f307d327adee3
+  # it seems to need qemu installed too, though how these packages know about
+  # each other is not something I understand at present.
+  pkgs.podman
   # Query an HTML DOM from the command line.
   pkgs.pup
   # Show progress via a pipe, such as with dd.
@@ -253,6 +262,12 @@
   # pkgs.pyqtbuild
   # pkgs.qt5Full
   # PyQt5
+  # qemu is a is an open source virtualizer. This contributes to a successful
+  # podman installation on macOS.  How one detects the other and does the
+  # needful is not clear, but perhaps it is not necessary at install/compile
+  # time and thus my quizzical thoughts on it are unwarranted.  See the podman
+  # package declaration for more information.
+  pkgs.qemu
   # Doesn't exist?
   # rbenv
   # Change encoding. Can convert HTML entities.
