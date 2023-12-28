@@ -165,7 +165,7 @@
   # documentation on the configuration.
   pkgs.mu
   # An n-curses based interface to du.  Shows disk usage in a way that makes
-  # identification/cleaning quick+easy.
+  # identification/cleaning quick+easy.  See: https://dev.yorhel.nl/ncdu
   pkgs.ncdu
   # This lets me search for parts of nix to help debug collisions.
   pkgs.nix-index
