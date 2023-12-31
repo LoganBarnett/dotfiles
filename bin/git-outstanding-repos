@@ -26,7 +26,8 @@ if [[ "$rootScanDir" == "" ]]; then
 fi
 
 if [[ "$rootScanDir" == "--help" || "$rootScanDir" == "-h" ]]; then
-  echo "Lists git repositories that contain unstaged changes."
+  echo "Lists git repositories that contain unstaged changes or unpushed \
+commits."
   usage
   exit 0
 fi
@@ -69,7 +70,10 @@ for dir in "${dirsToScan[@]}" ; do
     if [[ "$repo" != "$dir" ]] ; then
       if ( test -d "$repo/.git" ) ; then
         cd "$repo"
+        # Using || here doesn't seem to work.
         if (( $(git status --porcelain=v1 | wc -l) != 0 )); then
+          reposUnstaged+=("$repo")
+        elif (( $(git status --porcelain=v2 | grep -E 'ab' | wc -l ) != 0 )); then
           reposUnstaged+=("$repo")
         fi
       fi
@@ -77,7 +81,7 @@ for dir in "${dirsToScan[@]}" ; do
   done
 done
 
-echo "Found ${#reposUnstaged[@]} unstaged repos:" 1>&2
+echo "Found ${#reposUnstaged[@]} outstanding repos:" 1>&2
 for repo in ${reposUnstaged[@]} ; do
   echo "$repo"
 done
