@@ -4,6 +4,8 @@
   status = auto
   branch = auto
   diff = auto
+[commit]
+  gpgsign = true
 [init]
   defaultBranch = main
 [merge]
