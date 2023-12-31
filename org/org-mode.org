@@ -446,6 +446,13 @@ A common form of hidden content is collapsed headings."
 ;;    ;; (R . t)
 ;;    ))
 (add-to-list 'org-src-lang-modes '("javascript" . js2))
+;; Stack Overflow exports using my/html2org-clipboard use things like
+;; "lang-bash" for describing the language of the code block.  Since I use Stack
+;; Overflow a lot, and I'd prefer not to have to repair a bunch of translated
+;; material upon each translation, we'll just have org-mode support the
+;; languages as I use them.  There's perhaps a more durable way to do this, but
+;; this works for me for now.
+(add-to-list 'org-src-lang-modes '("lang-bash" . sh))
 (setq-default
  org-confirm-babel-evaluate 'my/org-confirm-babel-evaluate
  org-default-notes-file "~/notes/inbox.org"
