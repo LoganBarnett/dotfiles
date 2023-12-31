@@ -72,6 +72,8 @@
   # This is a binary apparently. Universal editor settings. Kind of like a
   # pre-prettier. I don't know the nix pacakge though, if it exists.
   #pkgs.editorconfig
+  # Read/write speed tests using f3read and f3write.
+  pkgs.f3
   # Searches for files. Used by projectile in Emacs.
   pkgs.fd
   # fenix comes from an overlay in this configuration.
