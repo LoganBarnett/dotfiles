@@ -10,6 +10,8 @@
   # Write certificates out - these aren't present on macOS in a freely
   # available way.
   pkgs.cacert
+  # A command line based music player.
+  pkgs.cmus
   # This is a suite of GNU utilities.
   pkgs.coreutils
   # curl does http requests. Comes with MacOS but no reason to use a dated
@@ -28,6 +30,12 @@
   #   url = https://github.com/nixos/nixpkgs/;
   #   rev = "3b6c3bee9174dfe56fd0e586449457467abe7116";
   # }) {}).crystal
+  # Allows us to query the status of USB devices.  This uses lsusb or
+  # systemprofile -json under the hood in a cross-platform manner.
+  # Unfortunately it does not work on non-USB devices (like SD cards) like one
+  # might think.  This is _not_ for storage devices (many things imply it will
+  # work, but it won't).
+  pkgs.cyme
   # Gives us diff --color support via GNU diff.
   pkgs.diffutils
   # Just loads and unloads environment variables based on directory. Really
