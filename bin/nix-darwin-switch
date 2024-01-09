@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+nix run nix-darwin -- switch --flake ~/dev/dotfiles/nix

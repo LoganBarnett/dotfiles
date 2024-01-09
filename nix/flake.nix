@@ -3,6 +3,13 @@
   description = "Home Manager configuration of logan";
 
   inputs = {
+    darwin = {
+      url = "github:lnl7/nix-darwin";
+      # Leaving this present breaks things and nix-darwin will not load or
+      # otherwise will not be present.  It is not understood why, even though
+      # documentation typically recommends this step.
+      # inputs.nixpkgs.follows = "nixpkgs";
+    };
     flake-utils.url = "github:numtide/flake-utils";
     # Specify the source of Home Manager and Nixpkgs.
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
@@ -15,7 +22,7 @@
     };
   };
 
-  outputs = { flake-utils, nixpkgs, home-manager, ... }:
+  outputs = { darwin, flake-utils, nixpkgs, home-manager, ... }:
     let
       system = "aarch64-darwin";
       pkgs = import nixpkgs {
@@ -75,6 +82,13 @@
               ;
             };
           }
+        ];
+      };
+      darwinConfigurations."scandium" = darwin.lib.darwinSystem {
+        inherit system;
+        modules = [
+          home-manager.darwinModules.home-manager
+          ./darwin.nix
         ];
       };
       homeConfigurations."logan.barnett" = home-manager.lib.homeManagerConfiguration {
