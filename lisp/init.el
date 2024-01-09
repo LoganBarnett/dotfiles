@@ -354,6 +354,7 @@
   (init-org-file "yaml.org")
   ;; End languages.
   (init-org-file "hipchat.org")
+  (init-org-file "keychain.org")
   (init-org-file "tramp.org")
   (init-org-file "time.org")
   (init-org-file "diagram.org")

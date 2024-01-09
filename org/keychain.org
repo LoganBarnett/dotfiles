@@ -1,0 +1,50 @@
+#+title:     Keychain
+#+author:    Logan Barnett
+#+email:     logustus@gmail.com
+#+date:      <2024-01-08 Mon>
+#+language:  en
+#+file_tags:
+#+tags:
+
+Keychain is a tool which orchestrates sharing of =gpg-agent= and =ssh-agent=.
+It's useful because I can add my identities once and never really have to check
+on them again.
+
+The default [[https://github.com/tarsius/keychain-environment][keychain-environment]] is rather quiet so I have a copy here that
+increases its verbosity.  I should consider submitting a pull request when
+=$TIME= quantities are sufficient.
+
+The =keychain= configuration for my shells is in [[file:../nix/home.nix]] under the
+=programs.keychain= section.
+
+#+begin_src emacs-lisp :results none
+(defun keychain-refresh-environment ()
+  "Set ssh-agent and gpg-agent environment variables.
+
+Set the environment variables `SSH_AUTH_SOCK', `SSH_AGENT_PID'
+and `GPG_AGENT' in Emacs' `process-environment' according to
+information retrieved from files created by the keychain script."
+  (interactive)
+  (let* ((ssh (shell-command-to-string "keychain -q --noask --agents ssh --eval"))
+         (gpg (shell-command-to-string "keychain -q --noask --agents gpg --eval")))
+    (message "SSH: %s" ssh)
+    (message "GPG: %s" gpg)
+    (list (and ssh
+               (string-match "SSH_AUTH_SOCK[=\s]\\([^\s;\n]*\\)" ssh)
+               (setenv       "SSH_AUTH_SOCK" (match-string 1 ssh)))
+          (and ssh
+               (string-match "SSH_AGENT_PID[=\s]\\([0-9]*\\)?" ssh)
+               (setenv       "SSH_AGENT_PID" (match-string 1 ssh)))
+          (and gpg
+               (string-match "GPG_AGENT_INFO[=\s]\\([^\s;\n]*\\)" gpg)
+               (setenv       "GPG_AGENT_INFO" (match-string 1 gpg)))))
+  (message "Using SSH settings:
+SSH_AGENT_PID:  %s
+SSH_AUTH_SOCK:  %s
+GPG_AGENT_INFO: %s"
+           (getenv "SSH_AGENT_PID")
+           (getenv "SSH_AUTH_SOCK")
+           (getenv "GPG_AGENT_INFO")
+           )
+  )
+#+end_src

@@ -41,15 +41,20 @@ in
   };
   programs.direnv.enable = true;
   programs.direnv.nix-direnv.enable = true;
-  # Start keychain, which ensures only one ssh-agent and one gpg-agent. This may
-  # prompt us for a password though. The results print out the standard
-  # environment variables much like ssh-agent and gpg-agent do, so we must eval
-  # them to take effect.  Weird things happen if that is omitted, since it will
-  # use the system defaults (which are wrong or separate).
+  # Start keychain, which ensures only one ssh-agent and one gpg-agent. The
+  # results print out the standard environment variables much like ssh-agent and
+  # gpg-agent do, so we must eval them to take effect.  Weird things happen if
+  # that is omitted, since it will use the system defaults (which are wrong or
+  # separate).
+  #
+  # Without --noask, the SSH_AGENT_PID won't be setup.  Somehow though,
+  # identities can be added and used without issue, except via Emacs (and
+  # perhaps other tools).  I still have to add the SSH keys by hand with a
+  # simple `ssh-add` invocation, but it is a one-time thing.
   programs.keychain = {
     enable = true;
     agents = [ "gpg" "ssh" ];
-    extraFlags = [ "--quiet" ];
+    extraFlags = [ "--noask" "--quiet" ];
     enableZshIntegration = true;
   };
   programs.tmux = import ./tmux.nix;
