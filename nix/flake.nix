@@ -27,26 +27,10 @@
       system = "aarch64-darwin";
       pkgs = import nixpkgs {
         inherit system;
-        overlays = [
-          (import ./overlays/blueutil.nix)
-          (import ./overlays/cacert.nix)
-          # (import ./overlays/crystal.nix)
-          (import ./overlays/e2fsprogs.nix)
-          (import ./overlays/gnupg.nix)
-          (import ./overlays/maven.nix)
-          (import ./overlays/percol.nix)
-          (import ./overlays/speedtest-cli.nix)
-          # (import ./overlays/tmux.nix)
-          (import ./overlays/wine.nix)
-          # Give us rust-docs.
-          (import ./overlays/rust.nix)
-          # (import (builtins.fetchTarball
-          #   "https://github.com/oxalica/rust-overlay/archive/master.tar.gz"))
-          # (import ./overlays/openconnect-sso.nix)
-          # Kept as an example of using someone else's overlay remotely.
-          # (import "${builtins.fetchTarball https://github.com/vlaci/openconnect-sso/archive/master.tar.gz}/overlay.nix")
-          (import ./overlays/vpnc.nix)
-        ];
+        # Based on observations from running `home-manager switch` I believe
+        # that this has no effect. At one point it did. This is probably a
+        # breaking change.
+        overlays = (import ./overlays/default.nix);
         # Some packages are not "free". We need to specifically bless those.
         # I had trouble using a real function because the depended functions are
         # hard/impossible to reach from this place. It cannot exist later
