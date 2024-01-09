@@ -85,6 +85,7 @@ the home page value but that's not as useful as linking to the file itself.
     :leader
     :prefix ("g y" . "git url")
     :n
+    "b" #'browse-branch-at-remote-kill
     "y" #'browse-at-remote-kill
     "h" #'+vc/browse-at-remote-homepage
     )
