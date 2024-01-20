@@ -96,7 +96,18 @@
   ])
   # Convert media (sound, video). The "-full" suffix brings in all of the
   # codecs one could desire.
-  pkgs.ffmpeg-full
+  # See https://github.com/NixOS/nixpkgs/issues/271313 for workaround to fix
+  # ffmpeg segfaulting (signal 11) until this can make it to nixpkgs-unstable
+  # (currently in staging as of 2024-01-08).
+  # pkgs.ffmpeg-full
+  (pkgs.ffmpeg-full.override {
+    x264 = pkgs.x264.overrideAttrs (old: {
+      postPatch = old.postPatch
+                  + pkgs.lib.optionalString (pkgs.stdenv.isDarwin) ''
+        substituteInPlace Makefile --replace '$(if $(STRIP), $(STRIP) -x $@)' '$(if $(STRIP), $(STRIP) -S $@)'
+      '';
+    });
+  })
   pkgs.fuse-ext2
   # (import (builtins.fetchGit {
   #   # Descriptive name to make the store path easier to identify
