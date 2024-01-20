@@ -41,6 +41,9 @@ in
   };
   programs.direnv.enable = true;
   programs.direnv.nix-direnv.enable = true;
+  # Enabling flakes is implicit now, so don't even enable this, despite advice
+  # to the contrary still floating around.
+  # programs.direnv.nix-direnv.enableFlakes = true;
   # Start keychain, which ensures only one ssh-agent and one gpg-agent. The
   # results print out the standard environment variables much like ssh-agent and
   # gpg-agent do, so we must eval them to take effect.  Weird things happen if

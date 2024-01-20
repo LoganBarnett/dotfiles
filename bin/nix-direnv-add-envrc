@@ -1,4 +1,40 @@
 #!/usr/bin/env bash
 
-echo 'use nix' > .envrc
+echo 'use flake' > .envrc
+if test -f flake.nix ; then
+  echo "flake.nix already exists, but be sure to stage with \`git add
+flake.nix\` if you haven't already\!"
+else
+  cat <<EOF > flake.nix
+{
+  description = "Home Manager configuration of logan";
+
+  inputs = {
+    flake-utils.url = "github:numtide/flake-utils";
+    # Specify the source of Home Manager and Nixpkgs.
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
+  };
+  outputs = { flake-utils, nixpkgs, ... }:
+    flake-utils.lib.eachDefaultSystem (system:
+    let
+      pkgs = import nixpkgs {
+        inherit system;
+      };
+    in {
+      devShell = pkgs.mkShell {
+        buildInputs = [
+          # Add required packages here, ex:
+          # pkgs.cmake
+        ];
+      };
+    });
+}
+EOF
+  echo "Created a fresh flake.nix.  You will want to edit this."
+  echo "Staging flake.nix because nix-flakes is funky..."
+  git add flake.nix
+fi
 direnv allow
+
+echo "Environment blessed for direnv.  Use \`direnv allow\` to test changes if
+the initial run breaks."
