@@ -56,6 +56,8 @@ hopefully head off having to explain this over and over.
   buffer's fringes are not automatically updated. However a simple hook
   configuration should bind these together quite well:
 
+  I think this is backwards.
+
   #+begin_src emacs-lisp :results none
     (defun config/connect-git-gutter-and-magit ()
       (add-hook 'git-gutter:update-hooks 'magit-after-revert-hook)
@@ -95,6 +97,41 @@ the home page value but that's not as useful as linking to the file itself.
   )
 #+end_src
 
+* signing commits
+
+I have turned on commit signing in my =.gitconfig=.  However this means that
+commits fail when making them from Magit.  This is because (I think) that Magit
+doesn't expect GPG signing to occur, and thus doesn't anticipate a prompt from
+the GPG agent.  Thus the process is identified as non-interactive and it fails.
+Magit does have an option, but it doesn't follow the =.gitconfig= value, and
+isn't enabled by default.
+
+Per [[https://github.com/magit/magit/issues/2610][magit#2610]], Magit doesn't consistently read from the =.gitconfig=.  It does
+in some cases, and also does so for determining _which_ key to use, but it
+doesn't determine _if_ the commit should be signed.
+
+See [[https://github.com/magit/magit/issues/2993][magit#2993]] for a more cohesive solution, still in the works circa
+[2024-01-19 Fri].
+
+[[https://github.com/magit/magit/pull/4929][magit#4929]] has an example of setting the =:init-value= which I needed to get
+this complete.
+
+This snippet should cause the variable to be read from the =.gitconfig=.
+
+#+name: config/magit-read-gpgsign-from-gitconfig
+#+begin_src emacs-lisp :results none :tangle no
+(transient-define-argument magit:--gpg-sign ()
+  :description "Sign using gpg"
+  :class 'transient-option
+  :shortarg "-S"
+  :argument "--gpg-sign="
+  :allow-empty t
+  :reader #'magit-read-gpg-signing-key
+  :init-value (lambda (obj)
+                (oset obj value (magit-read-gpg-signing-key "Secret: ")))
+  )
+#+end_src
+
 * all together
   #+begin_src emacs-lisp :results none :noweb yes
     (require 'use-package)
@@ -102,6 +139,7 @@ the home page value but that's not as useful as linking to the file itself.
     (use-package "magit"
       :init
       (config/git-blame-output)
+      <<config/magit-read-gpgsign-from-gitconfig>>
       <<config/gitignore-file-template-disable>>
       :config
       (config/connect-git-gutter-and-magit)

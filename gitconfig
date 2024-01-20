@@ -5,7 +5,9 @@
   branch = auto
   diff = auto
 [commit]
-  gpgsign = true
+  # Case _might_ matter for Magit detecting this, even though Git itself doesn't
+  # seem to care.
+  gpgSign = true
 [init]
   defaultBranch = main
 [merge]
