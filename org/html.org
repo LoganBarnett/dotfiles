@@ -6,6 +6,19 @@
 #+file_tags:
 #+tags:
 
+* indentation
+
+By default, =html-mode= seems to start with tabs as the preferred indentation
+character.  Change it to spaces.
+
+Keep in mind that =dtrt-indent= can override this value.  Use
+=dtrt-indent-diagnosis= to see why it's getting set to one or the other.
+
+#+name: config/html-indentation-use-spaces
+#+begin_src emacs-lisp :results none :tangle no
+(setq-local indent-tabs-mode nil)
+#+end_src
+
 * file templates
 ** default
 Set the default file template for HTML.
@@ -50,11 +63,13 @@ Since Emacs seems to find it correctly I don't think there's anything to change.
 * stitch
 
 Using =use-package= here actually runs =mhtml-mode= and that causes startup
-issues. Just disable it for now.
+issues.  Just disable it for now.
 
 #+begin_src emacs-lisp :results none :noweb yes
-;; (use-package "mhtml-mode"
-  ;; :init
-  ;; <<config/html-set-file-templates>>
-  ;; )
+(use-package "mhtml-mode"
+  :init
+  <<config/html-set-file-templates>>
+  :config
+  <<config/html-indentation-use-spaces>>
+  )
 #+end_src

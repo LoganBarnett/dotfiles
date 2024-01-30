@@ -182,17 +182,29 @@
          )
      )
    #+end_src
+* indentation
+** tabs vs spaces
 
+Spaces won!
+
+Keep in mind that =dtrt-indent= can override this value.  Use
+=dtrt-indent-diagnosis= to see why it's getting set to one or the other.
+
+#+name: config/web-mode-indentation-use-spaces
+#+begin_src emacs-lisp :results none :tangle no
+(setq-local indent-tabs-mode nil)
+#+end_src
 
 * apply configuration
 
-  #+begin_src emacs-lisp :results none
-    (require 'use-package)
+#+begin_src emacs-lisp :results none :noweb yes
+  (require 'use-package)
 
-    (use-package "org"
-      :config
-      ;; (config/add-web-capture-template)
-      ;; (require 'org-protocol)
-      ;; (require 'org-protocol-capture-html)
-      )
-  #+end_src
+  (use-package "org"
+    :config
+    <<config/web-mode-indentation-use-spaces>>
+    ;; (config/add-web-capture-template)
+    ;; (require 'org-protocol)
+    ;; (require 'org-protocol-capture-html)
+    )
+#+end_src

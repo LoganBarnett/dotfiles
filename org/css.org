@@ -10,8 +10,37 @@ appearance of a UI. Complain as many people do, I've yet to see its better.
 
 * css-mode
 
+
+** indentation
+
+*** offset
+
 I don't know where people get a tab width of 4 from, but let's fix that pronto.
 
-#+BEGIN_SRC emacs-lisp
+#+name: config/css-indentation-offset-fix
+#+begin_src emacs-lisp :tangle no
   (setq-default css-indent-offset 2)
-#+END_SRC
+#+end_src
+
+*** spaces
+
+Tabs lost.  Let's just use spaces please.
+
+Keep in mind that =dtrt-indent= can override this value.  Use
+=dtrt-indent-diagnosis= to see why it's getting set to one or the other.
+
+#+name: config/css-indentation-use-spaces
+#+begin_src emacs-lisp :tangle no
+  (setq-default indent-tabs-mode nil)
+#+end_src
+
+* stitch
+
+#+begin_src emacs-lisp :results none :noweb yes
+(use-package "css-mode"
+  :init
+  <<config/css-indentation-offset-fix>>
+  :config
+  <<config/css-indentation-use-spaces>>
+  )
+#+end_src
