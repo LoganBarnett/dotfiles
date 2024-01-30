@@ -14,3 +14,10 @@ export PATH="$PATH:/Library/TeX/texbin/"
 # program has been a stable workhorse for as long as I can remember, it is not
 # immune to bugs.
 export GIT_SSH_COMMAND="ssh -4"
+
+# Nix has some weird stuff going on with curl and TLS certificates.  Nix won't
+# assume the system certificate trust, so we have to make it do that for us.  I
+# believe ca-bundle.crt is a file I have emitted somewhow but I need to check.
+# In any case, this is required to get it working.  I do have NIX_SSL_CERT_FILE
+# set elsewhere but that doesn't do the trick.
+export SSL_CERT_FILE="$HOME/.nix-profile/etc/ssl/certs/ca-bundle.crt"
