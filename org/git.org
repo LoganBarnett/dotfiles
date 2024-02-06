@@ -120,26 +120,29 @@ This snippet should cause the variable to be read from the =.gitconfig=.
 
 #+name: config/magit-read-gpgsign-from-gitconfig
 #+begin_src emacs-lisp :results none :tangle no
-(transient-define-argument magit:--gpg-sign ()
-  :description "Sign using gpg"
-  :class 'transient-option
-  :shortarg "-S"
-  :argument "--gpg-sign="
-  :allow-empty t
-  :reader #'magit-read-gpg-signing-key
-  :init-value (lambda (obj)
-                (oset obj value (magit-read-gpg-signing-key "Secret: ")))
+(use-package "transient"
+  :config
+  (transient-define-argument magit:--gpg-sign ()
+    :description "Sign using gpg"
+    :class 'transient-option
+    :shortarg "-S"
+    :argument "--gpg-sign="
+    :allow-empty t
+    :reader #'magit-read-gpg-signing-key
+    :init-value (lambda (obj)
+                  (oset obj value (magit-read-gpg-signing-key "Secret: ")))
+    )
   )
 #+end_src
 
 * all together
   #+begin_src emacs-lisp :results none :noweb yes
     (require 'use-package)
+    <<config/magit-read-gpgsign-from-gitconfig>>
 
     (use-package "magit"
       :init
       (config/git-blame-output)
-      <<config/magit-read-gpgsign-from-gitconfig>>
       <<config/gitignore-file-template-disable>>
       :config
       (config/connect-git-gutter-and-magit)
