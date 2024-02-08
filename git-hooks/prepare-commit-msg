@@ -12,7 +12,7 @@ set -eo pipefail
 # detection to see the ticket number and not write it in there. To get uppercase
 # branch names to work with this system, we must filter out the comments.
 function filterComments() {
-  sed -E 's/^(.+?)#(.+)$/\1/' "$1"
+  sed -E 's/^([^#]*)#?(.*)$/\1/' "$1"
 }
 
 original=$1
