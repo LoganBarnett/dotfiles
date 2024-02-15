@@ -1,0 +1,23 @@
+#!/usr/bin/env ruby
+# TODO: Handle arguments, maybe stop using Ruby (or is Ruby the point?), better
+# documentation and code flow.
+require 'openssl'
+ctx = OpenSSL::SSL::SSLContext.new           # Get OpenSSL context
+remote_host=ARGV[1] # Get remote TCP socket
+sock = TCPSocket.new(remote_host, 443)
+ssl = OpenSSL::SSL::SSLSocket.new(sock, ctx) # pass that socket to OpenSSL
+ssl.connect                                  # establish connection, if possible
+cert = ssl.peer_cert                         # get peer cert, class OpenSSL::X509::Certificate
+%w{version issuer subject not_after not_before extensions}
+  .each do |field|
+    value = cert.send(field)
+    if value.kind_of?(Array)
+      puts "field:#{field} class:Array length:#{value.length}"
+      value.each_with_index do |el,i|
+        puts "field:#{field} el:#{i} class:#{el.class} -> #{el.to_s}"
+        #puts "  #{el.to_s}"
+      end
+    else
+      puts "field:#{field} class:#{value.class} -> #{value}"
+    end
+  end
