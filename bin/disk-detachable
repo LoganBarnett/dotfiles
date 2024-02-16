@@ -1,0 +1,47 @@
+#!/usr/bin/env bash
+##
+# Finds the device file for the attached SD card (eg. /dev/disk4) or USB drive.
+# It will assume /dev as a relative directory to make consumption easier.
+#
+# This has a non-zero exit code if more than one disk is found, or no disks are
+# found.
+##
+
+set -euo pipefail
+
+while true; do
+  case "${1:-}" in
+    -h | --help)
+      cat <<EOH
+Usage: $0
+
+Finds the device file for the attached SD card (eg. /dev/disk4) or USB drive.
+It will assume /dev as a relative directory to make consumption easier.
+EOH
+      exit
+      ;;
+    * ) break ;;
+  esac
+done
+
+IFS=$'\n'
+sd_results=$(
+  system_profiler SPCardReaderDataType -json \
+    | jq -r \
+      '.SPCardReaderDataType[]._items[].bsd_name'
+)
+usb_results=$(
+  system_profiler SPUSBDataType -json \
+    | jq -r \
+      '.. | select(.bsd_name? and .volumes?).bsd_name'
+)
+unset IFS
+array=( "${sd_results[@]}""${usb_results[@]}" )
+count="${#array[@]}"
+if [[ $count != 1 ]]; then
+  echo "Error: Query result '${array[@]}' has $count results but we expect exactly \
+1." 1>&2
+  exit 1
+else
+  echo -n "${array[@]}"
+fi
