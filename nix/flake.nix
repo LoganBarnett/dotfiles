@@ -4,11 +4,12 @@
 
   inputs = {
     darwin = {
-      url = "github:lnl7/nix-darwin";
+      url = "github:LoganBarnett/nix-darwin/linux-builder-big-config";
+      # rev = "72dd60bfc98c128149d84213b17d1b8a68863055";
       # Leaving this present breaks things and nix-darwin will not load or
       # otherwise will not be present.  It is not understood why, even though
       # documentation typically recommends this step.
-      # inputs.nixpkgs.follows = "nixpkgs";
+      inputs.nixpkgs.follows = "nixpkgs";
     };
     flake-utils.url = "github:numtide/flake-utils";
     # Specify the source of Home Manager and Nixpkgs.
@@ -72,7 +73,7 @@
         inherit system;
         modules = [
           home-manager.darwinModules.home-manager
-          ./darwin.nix
+          (import ./darwin.nix { inherit nixpkgs; })
         ];
       };
       homeConfigurations."logan.barnett" = home-manager.lib.homeManagerConfiguration {

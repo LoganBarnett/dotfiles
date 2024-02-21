@@ -17,10 +17,7 @@
 # Much of this is shamelessly lifted from:
 # https://github.com/nmasur/dotfiles/blob/master/modules/darwin/system.nix
 
-{ pkgs, ... }:
-# let
-#   zsh = import ./zsh.nix { pkgs = pkgs; };
-# in
+{ nixpkgs } : { lib, pkgs, ... }:
 {
   # Global packages that can't be bound to a specific user, such as shells.
   environment = {
@@ -30,9 +27,61 @@
       pkgs.zsh
     ];
   };
-  # From the nix-darwin readme (https://github.com/LnL7/nix-darwin):
-  # Auto upgrade nix package and the daemon service.
-  nix.package = pkgs.nix;
+  nix = {
+    # Does not need to be set because linux-builder sets this itself and will be
+    # less error prone.
+    # buildMachines = [
+    #   {
+    #   hostName = "linux-builder";
+    #   systems = [
+    #     "aarch64-linux"
+    #     "x86_64-linux"
+    #   ];
+    # }
+    # ];
+    distributedBuilds = true;
+    linux-builder = {
+      enable = true;
+      config = (import ./darwin-linux-builder.nix { inherit nixpkgs; inherit lib; });
+      protocol = "ssh-ng";
+      systems = [
+        "x86_64-linux"
+        "aarch64-linux"
+      ];
+    };
+    # Lack of pluralization is intentional (package vs packages), but it is
+    # unknown as to why.
+    package = pkgs.nix;
+    # See https://gist.github.com/jmatsushita/5c50ef14b4b96cb24ae5268dab613050
+    # for an example of how to make this work across platforms.
+    extraOptions = ''
+      # Place any extra options in extraOptions fthat are not supported via
+      # nix.settings.
+      # Work around 'warning: ignoring untrusted substituter
+      # 'https://yoriksar-gh.cachix.org', you are not a trusted user.' per:
+      # https://github.com/YorikSar/nixos-vm-on-macos
+      # extra-trusted-substituters = https://yoriksar-gh.cachix.org
+      # extra-trusted-public-keys = yoriksar-gh.cachix.org-1:YrztCV1unI7qDV6IXmiXFig5PgptqTlUa4MiobULGT8=
+    '';
+    # https://nixcademy.com/2024/02/12/macos-linux-builder/ states to use this,
+    # but it doesn't exist.  Perhaps I need to bump nix-darwin?  The date is
+    # _very_ recent.
+    settings = {
+      #
+      builders = [ "ssh-ng://linux-builder aarch64-linux,x86_64-linux" ];
+      experimental-features = [ "nix-command" "flakes" ];
+      # extra-platforms = [ "x86_64-linux" "i686-linux" ];
+      # Trust my user so we can open SSH on port 22 for using the Nix builder.
+      # It cannot be overridden as of 2024-02-18.  This is demanded in
+      # https://nixos.org/manual/nixpkgs/unstable/#sec-darwin-builder but
+      # explained here:
+      # https://github.com/Gabriella439/macos-builder?tab=readme-ov-file
+      extra-trusted-users = [ "logan" ];
+      # Trusting @admin is demanded by the darwin.linux-builder package.
+      trusted-users = [ "@admin" ];
+      # trusted-builders = [ "linux-builder" ];
+    };
+  };
   security.pam.enableSudoTouchIdAuth = true;
   # Without this, nothing works.
   services.nix-daemon.enable = true;
@@ -183,7 +232,7 @@
         # 75% = 0.7788008
         # 50% = 0.6065307
         # 25% = 0.4723665
-        "com.apple.sound.beep.volume" = 1;
+        "com.apple.sound.beep.volume" = 1.0;
         # Set the spring loading delay for directories.
         "com.apple.springing.delay" = 1.0;
         # Whether to enable spring loading (expose) for directories.
@@ -303,11 +352,8 @@
         # Change the default search scope.  Use “SCcf” to default to current
         # folder.  The default is unset (“This Mac”).
         FXDefaultSearchScope = "SCcf";
-        FXEnableExtensionChangeWarning
         # Default Finder window set to column view.
         # FXPreferredViewStyle = "clmv";
-        # Finder search in current folder by default.
-        FXDefaultSearchScope = "SCcf";
         # Disable warning when changing file extension.
         FXEnableExtensionChangeWarning = false;
         # Allow quitting of Finder application
