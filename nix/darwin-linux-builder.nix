@@ -57,10 +57,10 @@ in {
       ];
     };
   };
-  nix.settings = {
-    trusted-users = [ "builder" "logan" "@admin" ];
-    # "i686-linux"
-    # extra-platforms = [ "aarch64-linux" "x86_64-linux" ];
-    # system = "aarch64-linux";
-  };
+  # nix.settings = {
+  #   trusted-users = [ "builder" "logan" "@admin" ];
+  #   # "i686-linux"
+  #   # extra-platforms = [ "aarch64-linux" "x86_64-linux" ];
+  #   # system = "aarch64-linux";
+  # };
 }
