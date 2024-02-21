@@ -68,6 +68,13 @@
           }
         ];
       };
+      darwinConfigurations."M-CL64PK702X" = darwin.lib.darwinSystem {
+        inherit system;
+        modules = [
+          home-manager.darwinModules.home-manager
+          (import ./darwin.nix { inherit nixpkgs; })
+        ];
+      };
       darwinConfigurations."scandium" = darwin.lib.darwinSystem {
         inherit system;
         modules = [
