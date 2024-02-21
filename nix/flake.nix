@@ -11,7 +11,6 @@
       # documentation typically recommends this step.
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    flake-utils.url = "github:numtide/flake-utils";
     # Specify the source of Home Manager and Nixpkgs.
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     home-manager = {
@@ -23,7 +22,7 @@
     };
   };
 
-  outputs = { darwin, flake-utils, nixpkgs, home-manager, ... }:
+  outputs = { darwin, nixpkgs, home-manager, ... }:
     let
       system = "aarch64-darwin";
       pkgs = import nixpkgs {
