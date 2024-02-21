@@ -16,6 +16,7 @@ of =prog-mode= as well.
 #+begin_src emacs-lisp :results none :tangle yes
 (add-hook 'text-mode-hook #'flyspell-mode)
 (add-hook 'org-mode-hook #'flyspell-mode)
+(add-hook 'prog-mode-hook #'flyspell-prog-mode)
 (add-hook 'git-commit-setup-hook #'flyspell-mode)
 #+end_src
 
