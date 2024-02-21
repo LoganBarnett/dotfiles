@@ -72,14 +72,20 @@
         inherit system;
         modules = [
           home-manager.darwinModules.home-manager
-          (import ./darwin.nix { inherit nixpkgs; })
+          (import ./darwin.nix {
+            inherit nixpkgs;
+            linux-builder-enabled = false;
+          })
         ];
       };
       darwinConfigurations."scandium" = darwin.lib.darwinSystem {
         inherit system;
         modules = [
           home-manager.darwinModules.home-manager
-          (import ./darwin.nix { inherit nixpkgs; })
+          (import ./darwin.nix {
+            inherit nixpkgs;
+            linux-builder-enabled = true;
+          })
         ];
       };
       homeConfigurations."logan.barnett" = home-manager.lib.homeManagerConfiguration {

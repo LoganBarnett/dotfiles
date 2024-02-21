@@ -17,7 +17,7 @@
 # Much of this is shamelessly lifted from:
 # https://github.com/nmasur/dotfiles/blob/master/modules/darwin/system.nix
 
-{ nixpkgs } : { lib, pkgs, ... }:
+{ nixpkgs, linux-builder-enabled } : { lib, pkgs, ... }:
 {
   # Global packages that can't be bound to a specific user, such as shells.
   environment = {
@@ -41,7 +41,7 @@
     # ];
     distributedBuilds = true;
     linux-builder = {
-      enable = true;
+      enable = linux-builder-enabled;
       config = (import ./darwin-linux-builder.nix { inherit nixpkgs; inherit lib; });
       protocol = "ssh-ng";
       systems = [
