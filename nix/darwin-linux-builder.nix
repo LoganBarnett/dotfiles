@@ -1,3 +1,31 @@
+##
+# NixOS can be bootstraped in various ways but it requires running on  the
+# target architecture and OS.  Both of these can be emulated but not presently
+# on macOS.  So instead we fire up a VM that's running Nix.  The nix-darwin
+# module provides a handy way to stand all of that up.  This is the
+# configuration that goes into the `config' attribute for nix-darwin's
+# linux-builder.  This VM is stateful, and requires both some bootstrapping and
+# some manual invocation to operate.  Once up, it should present itself as a
+# "builder" (a Nix entity) for the local Nix installation.
+#
+# To force changes to take effect:
+# sudo launchctl kickstart -k system/org.nixos.linux-builder
+#
+# To get a fresh image:
+# 1. Set linux-builder.enabled (in ./darwin.nix) to false.
+# 2. Run `nix-darwin-switch` (my personal shortcut for nix-darwin).
+# 3. Run `nix run nixpkgs#darwin.linux-builder'.
+# 4. Verify the VM starts up correctly.
+# 5. Run `shutdown now` in the VM.
+# 6. Set linux-builder.enabled (in ./darwin.nix) to true.
+# 7. Run `nix-darwin-switch` (my personal shortcut for nix-darwin).
+# 8. Observe the new instance running.
+#
+# *Getting to run as a builder*
+#
+# I'm still working on this.  I can see the builder with `nix store ping --store
+# ssh-ng://linux-builder`, but it does not trust my host.
+
 {
   # cross-architecture-test-pkgs,
   # linux-builder-pkgs,
@@ -53,7 +81,6 @@ in {
       extraGroups = [
         # Allow this user to sudo.
         "wheel"
-        "@admin"
       ];
     };
   };
