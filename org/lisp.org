@@ -28,6 +28,7 @@ investigation is needed. ~advice-mapc~ was not iterating over all of the advice.
 
 * file local variables
 
+** prompt if unsafe
 Things like =.dir-locals.el= and =org= files can have certain variables set from
 the file itself. While some of these are safe, some of these are unsafe. Doom
 has decided in this [[https://github.com/hlissner/doom-emacs/commit/5e7864838a7f65204b8ad3fe96febc603675e24a][commit]] that the prompting should be disabled by default.
@@ -40,6 +41,27 @@ means to accept all "safe" variables and prompt if unsafe variables are present.
 #+begin_src emacs-lisp :results none :tangle no
 (setq-default enable-local-variables t)
 #+end_src
+
+* safe variables
+
+#+name: config/lisp-safe-local-variable-values
+#+begin_src emacs-lisp :results none :tangle no
+;; Just repeat this as needed.  These allow a predicate to determine values.
+;; Setting `safe-local-variable-values' is static and only allows one value.
+(put 'c-block-comment-prefix 'safe-local-variable #'stringp)
+(put 'indicate-empty-lines 'safe-local-variable #'booleanp)
+;; Eval is a little more tricky, but I want to support these:
+;; (eval . (c-set-offset 'innamespace 0))
+;; (eval . (c-set-offset 'defun-open 0))
+;; (eval . (c-set-offset 'inline-open 0))
+;; (eval . (c-set-offset 'arglist-intro '+))
+;; (eval . (c-set-offset 'arglist-cont 0))
+;; (eval . (c-set-offset 'arglist-cont-nonempty '+))
+;; (eval . (c-set-offset 'substatement-open 0))
+;; (eval . (c-set-offset 'access-label '-))
+;; (eval . (c-set-offset 'inlambda 0))
+#+end_src
+
 
 * string truncation in package.el
 
@@ -137,6 +159,7 @@ The before and after looks the same with =lisp-backquote-indentation= set to
 <<config/fill-string>>
 (use-package "lisp-mode"
   :init
+  <<config/lisp-safe-local-variable-values>>
   <<config/lisp-file-local-variables-prompt-if-unsafe>>
   <<config/lisp-indentation-align-fix>>
   )
