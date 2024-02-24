@@ -4,7 +4,7 @@
 
   inputs = {
     darwin = {
-      url = "github:LoganBarnett/nix-darwin/linux-builder-big-config";
+      url = "github:LnL7/nix-darwin/master";
       # rev = "72dd60bfc98c128149d84213b17d1b8a68863055";
       # Leaving this present breaks things and nix-darwin will not load or
       # otherwise will not be present.  It is not understood why, even though
@@ -12,7 +12,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     # Specify the source of Home Manager and Nixpkgs.
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
+    nixpkgs.url = "github:nixos/nixpkgs/master";
     home-manager = {
       url = "github:nix-community/home-manager";
       # I've had mixed advice to use this or not use this.
