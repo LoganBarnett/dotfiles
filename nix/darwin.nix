@@ -45,6 +45,7 @@
       config = (import ./darwin-linux-builder.nix { inherit nixpkgs; inherit lib; });
       protocol = "ssh-ng";
       systems = [
+        "i686-linux"
         "x86_64-linux"
         "aarch64-linux"
       ];
@@ -68,7 +69,7 @@
     # _very_ recent.
     settings = {
       #
-      builders = [ "ssh-ng://linux-builder aarch64-linux,x86_64-linux" ];
+      # builders = [ "ssh-ng://linux-builder aarch64-linux,x86_64-linux" ];
       experimental-features = [ "nix-command" "flakes" ];
       # extra-platforms = [ "x86_64-linux" "i686-linux" ];
       # Trust my user so we can open SSH on port 22 for using the Nix builder.

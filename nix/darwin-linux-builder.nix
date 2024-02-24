@@ -25,13 +25,7 @@
 #
 # I'm still working on this.  I can see the builder with `nix store ping --store
 # ssh-ng://linux-builder`, but it does not trust my host.
-
 {
-  # cross-architecture-test-pkgs,
-  # linux-builder-pkgs,
-  # config,
-  # lib,
-  # pkgs,
   nixpkgs,
   lib,
   ...
@@ -43,30 +37,12 @@
     system = "aarch64-linux";
   };
 in {
-  boot.binfmt.emulatedSystems = [ "x86_64-linux" ];
+  boot.binfmt.emulatedSystems = [ "i686-linux" "x86_64-linux" ];
   environment.systemPackages = [
     linux-builder-pkgs.file
     cross-architecture-test-pkgs.hello
   ];
-  # virtualisation.host.pkgs = lib.mkForce linux-builder-pkgs;
-  # modules = [
-  #   {
-  #     virtualisation.host.pkgs = linux-builder-pkgs;
-  #   }
-  #   ./logan.nix
-  #   ({ pkgs, config, ... }: {
-  #     # cross compile to armv7l-hf-multiplatform
-  #     # boot.kernelPackages = pkgs.linuxPackagesFor (pkgs.callPackage ./kernel.nix { });
-  #     # nixpkgs.overlays = [ self.overlays.default ];
-  #     # system.stateVersion = "23.05";
-  #   })
-  # ];
   nixpkgs.buildPlatform = { system = "aarch64-linux"; };
-  # nixpkgs.hostPlatform = {
-  #   system = "x86_64-linux";
-  #   # I am not sure what this shold be in my case.
-  #   # config = "armv7l-unknown-linux-gnueabihf";
-  # };
   users.users = {
     logan = {
       # TODO: You can set an initial password for your user.
@@ -84,10 +60,7 @@ in {
       ];
     };
   };
-  # nix.settings = {
-  #   trusted-users = [ "builder" "logan" "@admin" ];
-  #   # "i686-linux"
-  #   # extra-platforms = [ "aarch64-linux" "x86_64-linux" ];
-  #   # system = "aarch64-linux";
-  # };
+  nix.settings = {
+    extra-platforms = [ "aarch64-linux" "i686-linux" "x86_64-linux" ];
+  };
 }
