@@ -72,20 +72,29 @@
         inherit system;
         modules = [
           home-manager.darwinModules.home-manager
-          (import ./darwin.nix {
-            inherit nixpkgs;
-            linux-builder-enabled = false;
-          })
+          {
+            _module.args.linux-builder-enabled = false;
+            _module.args.nixpkgs = nixpkgs;
+          }
+          ./darwin.nix
         ];
       };
       darwinConfigurations."scandium" = darwin.lib.darwinSystem {
         inherit system;
         modules = [
           home-manager.darwinModules.home-manager
-          (import ./darwin.nix {
-            inherit nixpkgs;
-            linux-builder-enabled = true;
-          })
+          # Before I was using a curried function to pass these things in, but
+          # the _module.args idiom is how I can ensure these values get passed
+          # via the internal callPackage mechanism for darwinSystem on these
+          # modules.  We want callPackage because it does automatic "splicing"
+          # of nixpkgs to achieve cross-system compiling.  I don't know that we
+          # need to use this at this point, but making it all consistent has
+          # value.
+          {
+            _module.args.linux-builder-enabled = true;
+            _module.args.nixpkgs = nixpkgs;
+          }
+          ./darwin.nix
         ];
       };
       homeConfigurations."logan.barnett" = home-manager.lib.homeManagerConfiguration {

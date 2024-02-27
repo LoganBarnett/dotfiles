@@ -30,19 +30,99 @@
   lib,
   ...
 }: let
-  cross-architecture-test-pkgs = import nixpkgs {
-    system = "x86_64-linux";
-  };
   linux-builder-pkgs = import nixpkgs {
     system = "aarch64-linux";
+    crossSystem = {
+      # config = "x86_64-linux";
+      config = "x86_64-unknown-linux-gnu";
+      # config = {
+      #   hostPlatform = "aarch64-unknown-linux-gnu";
+      #   buildPlatform = "x86_64-unknown-linux-gnu";
+      #   targetPlatform = "x86_64-unknown-linux-gnu";
+      # };
+      hostPlatform = "aarch64-unknown-linux-gnu";
+      buildPlatform = "x86_64-unknown-linux-gnu";
+      targetPlatform = "x86_64-unknown-linux-gnu";
+      # stdenv = linux-builder-pkgs.stdenv.override {
+      #   hostPlatform = "aarch64-unknown-linux-gnu";
+      #   buildPlatform = "x86_64-unknown-linux-gnu";
+      #   targetPlatform = "x86_64-unknown-linux-gnu";
+      # };
+    };
+
+    # hostPlatform = "aarch64-linux";
+    # buildPlatform = "x86_64-linux";
+    # targetPlatform = "x86_64-linux";
   };
+  # pkgs = import <nixpkgs> { };
+  # pkgsCross = import <nixpkgs> {
+  #   crossSystem = { config = "x86_64-unknown-linux-gnu"; };
+  # };
+  # localSystem = pkgs.lib.systems.elaborate builtins.currentSystem;
+  # crossSystem = pkgs.lib.systems.elaborate {
+  #   config = "aarch64-unknown-linux-gnu";
+  # };
+  # crGcc10 = pkgs.wrapCCWith {
+  #   cc = pkgs.gcc10.cc.override {
+  #     libcCross = pkgsCross.libcCross;
+  #     stdenv = pkgs.stdenv.override {
+  #       hostPlatform = localSystem;
+  #       buildPlatform = localSystem;
+  #       targetPlatform = crossSystem;
+  #     };
+  #   };
+  # };
+  cross-architecture-test-pkgs = import nixpkgs {
+    system = "x86_64-linux";
+    crossSystem = {
+      config = "x86_64-unknown-linux-gnu";
+      hostPlatform = "aarch64-unknown-linux-gnu";
+      buildPlatform = "x86_64-unknown-linux-gnu";
+      targetPlatform = "x86_64-unknown-linux-gnu";
+    };
+    # stdenv = linux-builder-pkgs.stdenv.override {
+    #   hostPlatform = "aarch64-unknown-linux-gnu";
+    #   buildPlatform = "x86_64-unknown-linux-gnu";
+    #   targetPlatform = "x86_64-unknown-linux-gnu";
+    # };
+  };
+  # cross-architecture-test-pkgs = import nixpkgs {
+  #   system = "aarch64-linux";
+  #   crossSystem = {
+  #     # config = "x86_64-linux";
+  #     config = "x86_64-unknown-linux-gnu";
+  #   };
+  # };
 in {
   boot.binfmt.emulatedSystems = [ "i686-linux" "x86_64-linux" ];
   environment.systemPackages = [
+    # Gives us a utility for inspecting binary meta-data.
     linux-builder-pkgs.file
-    cross-architecture-test-pkgs.hello
+    linux-builder-pkgs.gdb
+    linux-builder-pkgs.gnu-config
+    # A test to show we can run x86_64-linux programs on an aarch64-linux
+    # system.
+    linux-builder-pkgs.pkgsCross.gnu64.hello
+    # This provides us readelf, which is useful for getting extended information
+    # from ELF binaries.
+    linux-builder-pkgs.binutils-unwrapped
+    # cross-architecture-test-pkgs.hello
   ];
-  nixpkgs.buildPlatform = { system = "aarch64-linux"; };
+  nixpkgs = {
+    buildPlatform = { system = "aarch64-linux"; };
+  };
+  # Shows us what package an executable resides in when attempting to run an
+  # missing command.  This is enabled by default but doesn't seem to work.  See
+  # https://discourse.nixos.org/t/command-not-found-unable-to-open-database/3807/4
+  # for some troubleshooting ideas but might not work since this is a Flake.  I
+  # will use nix-index instead, and nix-index is mutually exclusive to
+  # command-not-found, so I'm disabling command-not-found.
+  programs.command-not-found.enable = false;
+  # Of course, this doesn't work because we don't have a nix-channel.
+  programs.nix-index = {
+    enable = true;
+    enableBashIntegration = true;
+  };
   users.users = {
     logan = {
       # TODO: You can set an initial password for your user.
