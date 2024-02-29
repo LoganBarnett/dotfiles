@@ -129,6 +129,9 @@
       if ! [ "$SPCTL" = "assessments disabled" ]; then
         sudo spctl --master-disable
       fi
+      # This doesn't necessarily make all changes appear, but it'll get a lot of
+      # them.
+      /System/Library/PrivateFrameworks/SystemAdministration.framework/Resources/activateSettings -u
 '';
     # User-level settings
     activationScripts.postUserActivation.text = ''
@@ -152,9 +155,33 @@
       defaults write com.apple.dock persistent-apps -array \
           "$(__dock_item /System/Applications/Utilities/Terminal.app)" \
           "$(__dock_item /System/Applications/System\ Settings.app)"
+      echo "Fixing dictation spam..."
+      # Example invocation can be found at:
+      # https://zameermanji.com/blog/2021/6/8/applying-com-apple-symbolichotkeys-changes-instantaneously/
+      defaults write com.apple.symbolichotkeys.plist AppleSymbolicHotKeys -dict-add 164 "
+        <dict>
+          <key>enabled</key><false/>
+          <key>value</key><dict>
+            <key>type</key><string>standard</string>
+            <key>parameters</key>
+            <array>
+              <integer>65535</integer>
+              <integer>65535</integer>
+              <integer>0</integer>
+            </array>
+          </dict>
+        </dict>
+      "
+      # The -int part of this command is critical, or the value won't be
+      # respected.
+      defaults write com.apple.HIToolbox.plist AppleDictationAutoEnable -int 0
 
       # Example of writing using something from Nix itself:
       # "$(__dock_item \$\{pkgs.slack}/Applications/Slack.app)"
+
+      # Yes this is duplicated, just to be sure.  It completes sub-second
+      # anyways.
+      /System/Library/PrivateFrameworks/SystemAdministration.framework/Resources/activateSettings -u
 '';
     defaults = {
       NSGlobalDomain = {
