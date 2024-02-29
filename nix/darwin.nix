@@ -3,7 +3,26 @@
 # via preference panes and the like, but Nix can actually handle quite a bit of
 # this.
 #
-# See https://macos-defaults.com for where you can get a list of these settings.
+# See the following sources for configuration values availble:
+# - https://macos-defaults.com
+# - https://gist.github.com/mkhl/455002#file-ctrl-f1-c-L12
+#
+# Also use these invocations to detect settings made in the UI:
+# Search for a known value.  Prints the file name so you can see what file it
+# resides within.
+# ls ~/Library/Preferences | xargs -I{} bash -c 'echo {} ; defaults read ~/Library/Preferences/{}' | grep AppleDictationAutoEnable
+# Search for a known value with added context.  Prints the file name so you can
+# see what file it resides within.
+# ls ~/Library/Preferences | xargs -I{} bash -c 'echo {} ; defaults read ~/Library/Preferences/{}' | grep -B10 AppleDictationAutoEnable
+# Before capture, includes file name in output:
+# ls ~/Library/Preferences | xargs -I{} bash -c 'echo {} ; defaults read ~/Library/Preferences/{}' > dictation-after.txt
+# After capture, includes file name in output:
+# ls ~/Library/Preferences | xargs -I{} bash -c 'echo {} ; defaults read ~/Library/Preferences/{}' > dictation-before.txt
+# The number may need to be bigger to capture additional context.
+# diff dictation-before2.txt dictation-after2.txt --color -C10
+# Be sure to capture the before-state first!  Surprising variables can change.
+# The invocations will need adaptation for your needs as well, and might need
+# further study for how to activate with and without user settings.
 #
 # Per https://github.com/LnL7/nix-darwin/issues/658 some of these changes
 # require restarting the process (ie `killall Dock`), logging out, or
