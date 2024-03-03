@@ -2,4 +2,4 @@
 
 set -euo pipefail
 
-nix run nix-darwin -- switch --flake ~/dev/dotfiles/nix
+nix run nix-darwin -- switch --flake ~/dev/dotfiles/nix "$@"

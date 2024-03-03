@@ -10,6 +10,9 @@ NIX_PATH_ASDF="/nix/var/nix/profiles/default/bin"
 # Per the home-manager instructions.
 export NIX_PATH="$HOME/.nix-defexpr/channels${NIX_PATH:+:}$NIX_PATH:\
 nixpkgs-overlays=$HOME/.config/nixpkgs/overlays/"
+export NIX_PATH="darwin-config=$HOME/.nixpkgs/darwin-configuration.nix:\
+$HOME/.nix-defexpr/channels:$NIX_PATH"
+
 
 # Nix will flip out if it sees itself in the PATH, but it needs to be there.
 # Chop up the string to defeat its detection. This allows us to do the install
@@ -21,13 +24,15 @@ $HOME/bin:\
 /usr/sbin:\
 $NIX_PATH_ASDF:\
 $HOME/.nix""-profile/bin:\
+/nix/var/nix/profiles/default/bin:\
+/run/current-system/sw/bin:\
 /usr/local/sbin:\
 /opt/local/sbin:\
 /bin:\
 /usr/local/bin:\
 /opt/local/bin:\
 $HOME/dev/adt-bundle-mac/sdk/platform-tools:\
-$HOME/.doom-emacs.d/bin:\
+$HOME/.config/emacs/bin:\
 /Library/TeX/texbin:\
 /usr/bin:\
 /opt/X11/bin:\
@@ -57,7 +62,8 @@ if [ -e '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh' ]; then
 fi
 # End Nix
 # Source home-manager.
-. $HOME/.nix-profile/etc/profile.d/hm-session-vars.sh
+# . $HOME/.nix-profile/etc/profile.d/hm-session-vars.sh
+. /etc/profiles/per-user/$USER/etc/profile.d/hm-session-vars.sh
 
 # Useful support for interacting with Terminal.app or other terminal programs
 [ -r "/etc/zshrc_$TERM_PROGRAM" ] && . "/etc/zshrc_$TERM_PROGRAM"

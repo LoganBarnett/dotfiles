@@ -28,14 +28,16 @@ if [[ "$distro" == 'spacemacs' ]]; then
   mkdir -p ~/.spacemacs.d/private/layers
   cd ~/.spacemacs.d/private/layers
 elif [[ "$distro" == 'doom' ]]; then
-  git clone --depth 1 https://github.com/hlissner/doom-emacs ~/.doom-emacs.d || true
-  ln -snf ~/.doom-emacs.d ~/.emacs.d
+  #git clone --depth 1 https://github.com/hlissner/doom-emacs ~/.doom-emacs.d || true
+  # ln -snf ~/.doom-emacs.d ~/.emacs.d
+  git clone --depth 1 https://github.com/doomemacs/doomemacs ~/.config/emacs || true
   # Use --no-hooks to prevent git hooks from being installed in my home
   # directory. This is not the intention of these hooks and this arg is provided
   # as a release valve for the issue here:
   # https://github.com/doomemacs/doomemacs/issues/5878
   # Use --env to keep it from prompting if we want an env file (I think we do).
-  ~/.doom-emacs.d/bin/doom install --no-hooks --env
+  #~/.doom-emacs.d/bin/doom install --no-hooks --env
+  ~/.config/emacs/bin/doom install --no-hooks --env
   # I shouldn't need these init files to be stored locally, since they can be
   # modified upstream and break a reinstall.
   #ln -sfn $PWD/emacs.d/early-init.el ~/.doom-emacs.d/early-init.el
@@ -45,6 +47,7 @@ elif [[ "$distro" == 'doom' ]]; then
   ln -sfn $PWD/doom/packages.el ~/.doom.d/packages.el
   mkdir -p $PWD/doom/snippets
   ln -sfn $PWD/doom/snippets ~/.doom.d/snippets
+  ln -sfn ~/.config/emacs ~/.emacs.d
 elif [[ "$distro" == 'vanilla' ]]; then
   mkdir -p ~/.vanilla-emacs.d
   ln -snf $PWD/lisp/vanilla-init.el ~/.vanilla-emacs.d/init.el

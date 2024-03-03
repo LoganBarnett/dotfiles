@@ -11,18 +11,24 @@
       # documentation typically recommends this step.
       inputs.nixpkgs.follows = "nixpkgs";
     };
+		emacs-overlay = {
+			url = "github:nix-community/emacs-overlay/master";
+
+			inputs.nixpkgs.follows = "nixpkgs";
+		};
     # Specify the source of Home Manager and Nixpkgs.
     nixpkgs.url = "github:nixos/nixpkgs/master";
+    nix-doom-emacs.url = "github:nix-community/nix-doom-emacs";
     home-manager = {
       url = "github:nix-community/home-manager";
       # I've had mixed advice to use this or not use this.
       # This is said to tie into issues with pkgs and nixpkgs mixings due to
       # Home-manager and the nixpkgs.config.
-      # inputs.nixpkgs.follows = "nixpkgs";
+      inputs.nixpkgs.follows = "nixpkgs";
     };
   };
 
-  outputs = { darwin, nixpkgs, home-manager, ... }:
+  outputs = { darwin, emacs-overlay, nixpkgs, home-manager, ... }:
     let
       system = "aarch64-darwin";
       pkgs = import nixpkgs {
@@ -52,22 +58,22 @@
 
       };
     in {
-      homeConfigurations."logan" = home-manager.lib.homeManagerConfiguration {
-        inherit pkgs;
-        modules = [
-          ./home.nix
-          {
-            home = {
-              username = "logan" ;
-              homeDirectory = "/Users/logan" ;
-              packages = []
-                ++ (import ./general-packages.nix) {pkgs = pkgs; inherit system; }
-                ++ (import ./personal-packages.nix) { pkgs = pkgs; }
-              ;
-            };
-          }
-        ];
-      };
+      # homeConfigurations."logan" = home-manager.lib.homeManagerConfiguration {
+      #   inherit pkgs;
+      #   modules = [
+      #     ./home.nix
+      #     {
+      #       home = {
+      #         username = "logan" ;
+      #         homeDirectory = "/Users/logan" ;
+      #         packages = []
+      #           ++ (import ./general-packages.nix) {pkgs = pkgs; inherit system; }
+      #           ++ (import ./personal-packages.nix) { pkgs = pkgs; }
+      #         ;
+      #       };
+      #     }
+      #   ];
+      # };
       darwinConfigurations."M-CL64PK702X" = darwin.lib.darwinSystem {
         inherit system;
         modules = [
@@ -82,6 +88,7 @@
       darwinConfigurations."scandium" = darwin.lib.darwinSystem {
         inherit system;
         modules = [
+					./emacs.nix
           home-manager.darwinModules.home-manager
           # Before I was using a curried function to pass these things in, but
           # the _module.args idiom is how I can ensure these values get passed
@@ -91,10 +98,17 @@
           # need to use this at this point, but making it all consistent has
           # value.
           {
+						_module.args.emacs-overlay = emacs-overlay;
             _module.args.linux-builder-enabled = true;
             _module.args.nixpkgs = nixpkgs;
           }
           ./darwin.nix
+          {
+            home-manager.users.logan.imports = [ ./home.nix ];
+            # Must be explicitly set per
+            # https://github.com/nix-community/home-manager/issues/4026
+            users.users.logan.home = "/Users/logan";
+          }
         ];
       };
       homeConfigurations."logan.barnett" = home-manager.lib.homeManagerConfiguration {

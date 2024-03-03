@@ -1,4 +1,11 @@
-{ environment, config, pkgs, lib, fetchFromGitHub, ... }:
+{
+  home-manager,
+  config,
+  pkgs,
+  lib,
+  fetchFromGitHub,
+  ...
+}:
 let
   # PyQt5 = pkgs.callPackage ./PyQt5.nix;
   # PyQt5 = (import ./PyQt5.nix);
@@ -24,7 +31,7 @@ in
       ;
 
   # Let Home Manager install and manage itself.
-  programs.home-manager.enable = true;
+  # programs.home-manager.enable = true;
   # I haven't fully tested this, but it doesn't lay down
   # ~/.nix-profile/share/emacs/site-lisp, let alone ~/nix-profile/share/emacs.
   # This means we can't refer to mu4e, or perhaps even built-in packages.  From
@@ -32,13 +39,15 @@ in
   # Nix sets up.  From there, mu4e can be found. It _must not_ be listed in
   # packages.el under Doom's package list with straight.el.  This will cause a
   # problem.
-  programs.emacs = {
-    enable = true;
-    package = pkgs.emacs;
-    extraPackages = epkgs: [
-      epkgs.mu4e
-    ];
-  };
+  # Emacs is disabled here in favor of allowing nix-darwin to manage it.  This
+  # doesn't work anyways when nix-darwin is running.
+  # programs.emacs = {
+  #   enable = true;
+  #   package = pkgs.emacs;
+  #   extraPackages = epkgs: [
+  #     epkgs.mu4e
+  #   ];
+  # };
   programs.direnv.enable = true;
   programs.direnv.nix-direnv.enable = true;
   # Enabling flakes is implicit now, so don't even enable this, despite advice
@@ -65,7 +74,9 @@ in
 
   # This is the magic that makes fonts get installed to ~/Library/Fonts on
   # macOS, and I imagine other dirs for other systems.
-  fonts.fontconfig.enable = true;
+  # This was causing problems after the nix-darwin migration but I don't recall
+  # specifically what it was.  nix-darwin manages fonts now.
+  # fonts.fontconfig.enable = true;
 
   home.activation = {
     # Is there a better way to handle the directory? Relative dir does not work.
@@ -93,7 +104,6 @@ in
     pathsToLink = "/Applications";
   };
   in lib.mkIf pkgs.stdenv.targetPlatform.isDarwin "${apps}/Applications";
-
   # My little colorized/bracketed logger.
   home.file.".bash-logging".source = ./bash-logging;
 

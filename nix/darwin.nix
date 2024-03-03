@@ -36,16 +36,60 @@
 # Much of this is shamelessly lifted from:
 # https://github.com/nmasur/dotfiles/blob/master/modules/darwin/system.nix
 
-{ nixpkgs, linux-builder-enabled, lib, pkgs, ... }:
+{ emacs-overlay, nixpkgs, linux-builder-enabled, lib, pkgs, ... }:
 {
   # Global packages that can't be bound to a specific user, such as shells.
   environment = {
     loginShell = pkgs.zsh;
     shells = [ pkgs.zsh ];
-    systemPackages = [
-      pkgs.zsh
+    systemPackages = (pkgs.callPackage ./general-packages.nix {});
+    # systemPackages = [
+    #   # Read EXIF metadata from images.
+    #   pkgs.exiftool
+    #   # Handy for moving files around, over SSH or locally.  I think it supports
+    #   # FTP as well.  Keep in mind that rsync needs to be installed on both
+    #   # sides, or you will get a cryptic "command not found" error.
+    #   pkgs.rsync
+    #   pkgs.zsh
+    # ] ++ (pkgs.callPackage ./general-packages.nix {});
+  };
+  fonts = {
+    fontDir.enable = true;
+    fonts = [
+      pkgs.source-code-pro
     ];
   };
+  home-manager = {
+    useGlobalPkgs = true;
+    useUserPackages = true;
+  };
+  # Enable the ability to search packages offline, assuming the index was built
+  # ahead of time (need to check if it actually needs Internet access during
+  # initial indexing).  The nix-index package also provides a command-not-found
+  # helper which is injected into the shell automatically by nix-darwin.
+  # To use this, run `nix-index` manually to generate this index.  This takes
+  # several minutes.
+  #
+  # Now how do you actually _use_ this?  Who knows.  The code of
+  # command-not-found.sh (not from the command-not-found package, but
+  # nix-index) has this:
+  # nix-locate --minimal --no-group --type x --type s --top-level --whole-name --at-root "/bin/$cmd"
+
+  # I haven't fully tested this, but it doesn't lay down
+  # ~/.nix-profile/share/emacs/site-lisp, let alone ~/nix-profile/share/emacs.
+  # This means we can't refer to mu4e, or perhaps even built-in packages.  From
+  # what I can gather, this just means to refer to mu4e via the load-path that
+  # Nix sets up.  From there, mu4e can be found. It _must not_ be listed in
+  # packages.el under Doom's package list with straight.el.  This will cause a
+  # problem.
+  programs.emacs = {
+    enable = true;
+    package = pkgs.emacs-unstable; # Emacs 29.2.
+    extraPackages = epkgs: [
+      epkgs.mu4e
+    ];
+  };
+  programs.nix-index.enable = true;
   nix = {
     # Does not need to be set because linux-builder sets this itself and will be
     # less error prone.
@@ -72,8 +116,8 @@
         "aarch64-linux"
       ];
     };
-    # Lack of pluralization is intentional (package vs packages), but it is
-    # unknown as to why.
+    # Lack of pluralization is intentional (package vs packages) - it refers to
+    # the package "nix", which is the base of Nix.
     package = pkgs.nix;
     # See https://gist.github.com/jmatsushita/5c50ef14b4b96cb24ae5268dab613050
     # for an example of how to make this work across platforms.
@@ -105,6 +149,27 @@
       # trusted-builders = [ "linux-builder" ];
     };
   };
+  nixpkgs.overlays = import ./overlays/default.nix ++ [
+	  emacs-overlay.overlays.default
+	];
+  # Some packages are not "free". We need to specifically bless those.
+  # I had trouble using a real function because the depended functions are
+  # hard/impossible to reach from this place. It cannot exist later
+  # because setting nixpkgs.config is ignored if pkgs is set. I found some
+  # of those functions declared here:
+  # https://github.com/NixOS/nixpkgs/blob/d84cc41f8babd418c295fcbfbd41a1fd4e2adaec/lib/strings.nix#L699
+  # This ticket https://github.com/nix-community/home-manager/issues/2954
+  # talks about the issue directly, but never comes to a workable
+  # resolution for the allowUnfreePredicate value, which  needs "lib" to
+  # work. I'm not familiar enough with nix's structure to really move
+  # forward here. What we have now is the equivalent of what's commented
+  # below:
+  # config.allowUnfree = true;
+  nixpkgs.config.allowUnfreePredicate = (pkg: true);
+  # This has been needed to individually bless some older packages, such
+  # as packages depending upon an older OpenSSL.
+  nixpkgs.config.permittedInsecurePackages = [];
+  # nixpkgs.legacyPackages.${system};
   security.pam.enableSudoTouchIdAuth = true;
   # Without this, nothing works.
   services.nix-daemon.enable = true;
@@ -124,14 +189,45 @@
       echo "Require password immediately after sleep or screen saver begins..."
       defaults write com.apple.screensaver askForPassword -int 1
       defaults write com.apple.screensaver askForPasswordDelay -int 0
+      echo "Swapping Option + Command keys on external keyboard..."
+      # These can be found with `hidutil --list`.
+      # This will need to be reapplied on a restart.  See about integrating this
+      # with the built-in system for nix-darwin, because it likely handles all
+      # of that.  See
+      # https://apple.stackexchange.com/questions/329085/tilde-and-plus-minus-±-in-wrong-place-on-keyboard/353941#353941
+      # for more context.
+      # When remapping for a specific device, that device loses the global
+      # mappings.  So we have to reapply them manually.  Specifically that is
+      # done for caps->control.
+      hidutil property --matching '{"ProductID":0x1baf}' --set '{"UserKeyMapping": 
+        [
+          {
+            "HIDKeyboardModifierMappingSrc":0x7000000E3,
+            "HIDKeyboardModifierMappingDst":0x7000000E2
+          },
+          {
+            "HIDKeyboardModifierMappingSrc":0x7000000E2,
+            "HIDKeyboardModifierMappingDst":0x7000000E3
+          },
+          {
+            "HIDKeyboardModifierMappingSrc":0x700000039,
+            "HIDKeyboardModifierMappingDst":0x7000000E0
+          }
+        ]
+      }'
       echo "Allow apps from anywhere..."
-      SPCTL=$(spctl --status)
+      SPCTL=$(spctl --status &2>1 || true)
+      echo "spctl: $SPCTL"
       if ! [ "$SPCTL" = "assessments disabled" ]; then
+        echo "Disabling master assessments..."
         sudo spctl --master-disable
+        echo "Disabled master assessments."
       fi
       # This doesn't necessarily make all changes appear, but it'll get a lot of
       # them.
+      echo "Invoking activateSettings to make changes stick..."
       /System/Library/PrivateFrameworks/SystemAdministration.framework/Resources/activateSettings -u
+      echo "activateSettings finished with $?."
 '';
     # User-level settings
     activationScripts.postUserActivation.text = ''

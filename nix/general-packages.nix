@@ -1,4 +1,4 @@
-{ pkgs, system ? builtins.currentSystem, ... }:
+{ pkgs, system, ... }:
 [
   # A grep-sed like alternative. Offers a scripting language for
   # transformations.
@@ -67,6 +67,9 @@
   # We have moved this to home.nix and are using home-manager's version of
   # Emacs.
   # pkgs.emacs
+  # (pkgs.emacsWithPackages (epkgs: [
+  #   epkgs.mu4e
+  # ]))
   # Detect character encoding of files.
   pkgs.enca
   # This is a binary apparently. Universal editor settings. Kind of like a
@@ -121,6 +124,8 @@
   # macOS doesn't ship with free.
   # pkgs.unixtools.free
   pkgs.utillinux
+  # Read EXIF metadata from images.
+  pkgs.exiftool
   pkgs.procps
   # The BSD awk I have found lacking. Not really a surprise. Replace it with
   # GNU.
@@ -352,7 +357,9 @@
   # Gives us GNU's makeinfo, which I use to build org-mode successfully. This
   # is because the make target eventually invokes `info', which expects a gnu
   # makeinfo. The BSD makeinfo has "mismatch" errors.
-  pkgs.texinfo
+  # Disabled to work out a collision:
+  # error: collision between `/nix/store/dpjw0569z88lldqfn2sq4hckgwvrm1i1-texinfo-7.0.3/bin/pod2texi' and `/nix/store/h3iw2viz7g98xy7qj9yfvm688fvwlla7-texinfo-interactive-7.0.3/bin/pod2texi'
+  # pkgs.texinfo
   # Binary for incremental parsing of various languages for Emacs.
   pkgs.tree-sitter
   # LaTeX is for rendering a number of diagrams and documents.
