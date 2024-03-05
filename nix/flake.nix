@@ -11,14 +11,17 @@
       # documentation typically recommends this step.
       inputs.nixpkgs.follows = "nixpkgs";
     };
-		emacs-overlay = {
-			url = "github:nix-community/emacs-overlay/master";
-
-			inputs.nixpkgs.follows = "nixpkgs";
-		};
+		# emacs-overlay = {
+		# 	url = "github:nix-community/emacs-overlay/master";
+		# 	inputs.nixpkgs.follows = "nixpkgs";
+		# };
+    fenix = {
+      url = "github:nix-community/fenix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     # Specify the source of Home Manager and Nixpkgs.
     nixpkgs.url = "github:nixos/nixpkgs/master";
-    nix-doom-emacs.url = "github:nix-community/nix-doom-emacs";
+    # nix-doom-emacs.url = "github:nix-community/nix-doom-emacs";
     home-manager = {
       url = "github:nix-community/home-manager";
       # I've had mixed advice to use this or not use this.
@@ -28,7 +31,7 @@
     };
   };
 
-  outputs = { darwin, emacs-overlay, nixpkgs, home-manager, ... }:
+  outputs = { darwin, emacs-overlay, fenix, nixpkgs, home-manager, ... }:
     let
       system = "aarch64-darwin";
       pkgs = import nixpkgs {
@@ -90,6 +93,9 @@
         modules = [
 					./emacs.nix
           home-manager.darwinModules.home-manager
+          {
+            nixpkgs.overlays = [ fenix.overlays.default ];
+          }
           # Before I was using a curried function to pass these things in, but
           # the _module.args idiom is how I can ensure these values get passed
           # via the internal callPackage mechanism for darwinSystem on these
@@ -109,25 +115,10 @@
             # https://github.com/nix-community/home-manager/issues/4026
             users.users.logan.home = "/Users/logan";
           }
-        ];
-      };
-      homeConfigurations."logan.barnett" = home-manager.lib.homeManagerConfiguration {
-        inherit pkgs;
-        modules = [
-          ./home.nix
           {
-            home = {
-              username = "logan.barnett" ;
-              homeDirectory = "/Users/logan.barnett" ;
-              packages = []
-                ++ (import ./general-packages.nix) {pkgs = pkgs; inherit system; }
-                # TODO: Need a means of using private nix files. Perhaps via a
-                # git submodule.
-      #          ++ (import ../../dotfiles-private/work-new-e-ah-packages.nix) {
-                #   pkgs = pkgs;
-                # }
-              ;
-            };
+            environment.systemPackages = (
+              pkgs.callPackage ./personal-packages.nix {}
+            );
           }
         ];
       };

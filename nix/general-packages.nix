@@ -67,9 +67,15 @@
   # We have moved this to home.nix and are using home-manager's version of
   # Emacs.
   # pkgs.emacs
-  # (pkgs.emacsWithPackages (epkgs: [
-  #   epkgs.mu4e
-  # ]))
+  (pkgs.emacsWithPackages (epkgs: [
+    epkgs.mu4e
+  ]))
+  # ((pkgs.emacsPackagesFor pkgs.emacs-unstable).emacsWithPackages (
+  # # package = ((pkgs.emacsPackagesFor pkgs.emacs).emacsWithPackages (
+  #   epkgs: [
+  #     epkgs.mu4e
+  #   ]
+  # ))
   # Detect character encoding of files.
   pkgs.enca
   # This is a binary apparently. Universal editor settings. Kind of like a
@@ -388,6 +394,8 @@
   pkgs.thefuck
   # Highly controllable terminal emulation and session management.
   pkgs.tmux
+  # Show a tree-listing of directories and files.
+  pkgs.tree
   # Some folks still use rar for an archive format. This lets us decompress
   # those archives.
   pkgs.unrar

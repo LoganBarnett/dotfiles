@@ -834,8 +834,9 @@ See `mu4e-trash-folder'."
 *** look at the path for mu
 
 The default =mu= binary directory defaults to =/usr/local/bin/mu= which might
-not always be the case. For me it is setup via =nix=. Instead of hardcoding a
-=nix= path, let's just look at =PATH= for it.
+not always be the case.  For me it is setup via =nix=.  Instead of hardcoding a
+=nix= path, let's just look at =PATH= for it.  The =PATH= is computed from
+=$HOME/.bash_profile=, which is just =bash_profile= in this repository.
 
 #+name: config/set-mu-path
 #+begin_src emacs-lisp :results none :tangle yes
@@ -849,8 +850,8 @@ Run his block to clear an errant install of =mu4e=. I don't know what's causing
 this yet, or if this was a one-time thing. Runs of =doom upgrade= might have
 laid this file down again, but I haven't checked.
 
-#+begin_src shell :results output :tangle no :var emacsVersion=(print emacs-version)
-rm -rfv ~/.doom-emacs.d/.local/straight/$emacsVersion/mu4e
+#+begin_src shell :results output :tangle no :var emacsVersion=(print emacs-version) :exports code
+rm -rfv ~/.emacs.d/.local/straight/$emacsVersion/mu4e
 #+end_src
 
 ---- trim or store below
@@ -896,6 +897,7 @@ We'll apply the workaround here.
 This doesn't do the trick. The actual local code is in disagreement here. It's
 not just the version string out of whack. =mu --version= shows the correct
 version. =mu4e= does not.
+
 **** fingerprint has changed when sending email
 
 This is resulting from the certificate being rotated. It is safe to accept. We

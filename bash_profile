@@ -11,6 +11,7 @@
 export PATH="\
 /nix/var/nix/profiles/default/bin:\
 $HOME/.nix""-profile/bin:\
+/run/current-system/sw/bin:\
 ${PATH}\
 "
 
