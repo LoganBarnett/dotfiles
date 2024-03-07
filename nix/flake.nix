@@ -93,9 +93,7 @@
             security.pki.certificateFiles = [
               ./new-e-ah-certs.pem
             ];
-            environment.systemPackages = (
-              pkgs.callPackage ./work-packages.nix {}
-            ) ++ [
+            environment.systemPackages = [
               cacert
             ];
           })
