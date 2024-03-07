@@ -1,12 +1,12 @@
-# User must be explicitly set per
-# https://github.com/nix-community/home-manager/issues/4026
-{ pkgs, ... }: {
+{ pkgs, config, ... }: {
   imports = [
-    ./home.nix
   ];
   # This is one half of the glue between home-manager and nix-darwin.  The other
   # is including the home-manager module, as an import to the
   # `darwinConfiguration`.
+  # It has to be done like this (and not via `imports`, or the wrong
+  # `config.lib` will be provided - it won't be home-manager's.  This causes
+  # things like symlinking to break the build.
   home-manager.users.logan = import ../home.nix;
   # TODO: Make this configurable such that my client machines require
   # passwords but service machines do not.

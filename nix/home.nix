@@ -18,11 +18,6 @@ in
       lib = lib;
       pkgs = pkgs;
     }
-    // # if builtins.getEnv "USER" == "logan" then
-         (import ./personal-config.nix) {
-           lib = lib;
-           pkgs = pkgs;
-         }
          # else (import ../../dotfiles-private/work-new-e-ah-config.nix) {
          #   lib = lib;
          #   pkgs = pkgs;
