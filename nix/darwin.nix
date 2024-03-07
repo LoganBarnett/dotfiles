@@ -36,7 +36,7 @@
 # Much of this is shamelessly lifted from:
 # https://github.com/nmasur/dotfiles/blob/master/modules/darwin/system.nix
 
-{ emacs-overlay, nixpkgs, linux-builder-enabled, lib, pkgs, ... }:
+{ emacs-overlay, nixpkgs, lib, pkgs, ... }:
 {
   # Global packages that can't be bound to a specific user, such as shells.
   environment = {
@@ -74,31 +74,6 @@
   # nix-index) has this:
   # nix-locate --minimal --no-group --type x --type s --top-level --whole-name --at-root "/bin/$cmd"
   nix = {
-    # Does not need to be set because linux-builder sets this itself and will be
-    # less error prone.
-    # buildMachines = [
-    #   {
-    #   hostName = "linux-builder";
-    #   systems = [
-    #     "aarch64-linux"
-    #     "x86_64-linux"
-    #   ];
-    # }
-    # ];
-    distributedBuilds = true;
-    linux-builder = {
-      enable = linux-builder-enabled;
-      config = (import ./darwin-linux-builder.nix {
-        inherit lib;
-        inherit nixpkgs;
-      });
-      protocol = "ssh-ng";
-      systems = [
-        "i686-linux"
-        "x86_64-linux"
-        "aarch64-linux"
-      ];
-    };
     # Lack of pluralization is intentional (package vs packages) - it refers to
     # the package "nix", which is the base of Nix.
     package = pkgs.nix;

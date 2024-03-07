@@ -76,7 +76,6 @@
           # value.
           {
 						_module.args.emacs-overlay = emacs-overlay;
-            _module.args.linux-builder-enabled = true;
             _module.args.nixpkgs = nixpkgs;
           }
           ./darwin.nix
@@ -115,12 +114,12 @@
           # value.
           {
 						_module.args.emacs-overlay = emacs-overlay;
-            _module.args.linux-builder-enabled = true;
             _module.args.nixpkgs = nixpkgs;
           }
           ./darwin.nix
           ./users/logan-personal.nix
           ./headed-host.nix
+          ./darwin-linux-builder-module.nix
         ];
       };
     };
