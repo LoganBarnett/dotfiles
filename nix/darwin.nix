@@ -42,7 +42,6 @@
   environment = {
     loginShell = pkgs.zsh;
     shells = [ pkgs.zsh ];
-    systemPackages = (pkgs.callPackage ./general-packages.nix {});
     # systemPackages = [
     #   # Read EXIF metadata from images.
     #   pkgs.exiftool

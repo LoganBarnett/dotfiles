@@ -1,4 +1,4 @@
-{ pkgs, system, ... }:
+{ pkgs, ... }:
 [
   # A grep-sed like alternative. Offers a scripting language for
   # transformations.

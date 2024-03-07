@@ -61,37 +61,24 @@
 
       };
     in {
-      # homeConfigurations."logan" = home-manager.lib.homeManagerConfiguration {
-      #   inherit pkgs;
-      #   modules = [
-      #     ./home.nix
-      #     {
-      #       home = {
-      #         username = "logan" ;
-      #         homeDirectory = "/Users/logan" ;
-      #         packages = []
-      #           ++ (import ./general-packages.nix) {pkgs = pkgs; inherit system; }
-      #           ++ (import ./personal-packages.nix) { pkgs = pkgs; }
-      #         ;
-      #       };
-      #     }
-      #   ];
-      # };
       darwinConfigurations."M-CL64PK702X" = darwin.lib.darwinSystem {
         inherit system;
         modules = [
           home-manager.darwinModules.home-manager
           {
+            nixpkgs.overlays = [ fenix.overlays.default ];
+          }
+          {
             _module.args.linux-builder-enabled = false;
             _module.args.nixpkgs = nixpkgs;
           }
           ./darwin.nix
+          ./headed-host.nix
         ];
       };
       darwinConfigurations."scandium" = darwin.lib.darwinSystem {
         inherit system;
         modules = [
-					./emacs.nix
           home-manager.darwinModules.home-manager
           {
             nixpkgs.overlays = [ fenix.overlays.default ];
@@ -109,12 +96,14 @@
             _module.args.nixpkgs = nixpkgs;
           }
           ./darwin.nix
+          ./users/logan-personal.nix
           {
             home-manager.users.logan.imports = [ ./home.nix ];
             # Must be explicitly set per
             # https://github.com/nix-community/home-manager/issues/4026
-            users.users.logan.home = "/Users/logan";
+            # users.users.logan.home = "/Users/logan";
           }
+          ./headed-host.nix
           {
             environment.systemPackages = (
               pkgs.callPackage ./personal-packages.nix {}
@@ -124,37 +113,3 @@
       };
     };
 }
-# The docs recommends this, using nix-darwin as an assumption (I don't think
-# that is safe).
-# {
-#   description = "Darwin configuration";
-
-#   inputs = {
-#     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
-#     darwin.url = "github:lnl7/nix-darwin";
-#     darwin.inputs.nixpkgs.follows = "nixpkgs";
-#     home-manager.url = "github:nix-community/home-manager";
-#     home-manager.inputs.nixpkgs.follows = "nixpkgs";
-#   };
-
-#   outputs = inputs@{ nixpkgs, home-manager, darwin, ... }: {
-#     darwinConfigurations = {
-#       hostname = darwin.lib.darwinSystem {
-#         # system = "x86_64-darwin";
-#         modules = [
-#           # ./configuration.nix
-#           home-manager.darwinModules.home-manager
-#           {
-#             home-manager.useGlobalPkgs = true;
-#             home-manager.useUserPackages = true;
-#             home-manager.users.logan = import ./home.nix;
-#             home-manager.users."logan.barnett" = import ./home.nix;
-
-#             # Optionally, use home-manager.extraSpecialArgs to pass
-#             # arguments to home.nix
-#           }
-#         ];
-#       };
-#     };
-#   };
-# }
