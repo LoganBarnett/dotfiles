@@ -68,11 +68,19 @@
           {
             nixpkgs.overlays = [ fenix.overlays.default ];
           }
+          # the _module.args idiom is how I can ensure these values get passed
+          # via the internal callPackage mechanism for darwinSystem on these
+          # modules.  We want callPackage because it does automatic "splicing"
+          # of nixpkgs to achieve cross-system compiling.  I don't know that we
+          # need to use this at this point, but making it all consistent has
+          # value.
           {
-            _module.args.linux-builder-enabled = false;
+						_module.args.emacs-overlay = emacs-overlay;
+            _module.args.linux-builder-enabled = true;
             _module.args.nixpkgs = nixpkgs;
           }
           ./darwin.nix
+          ./users/logan-new-e-ah.nix
           ./headed-host.nix
         ];
       };
@@ -97,18 +105,20 @@
           }
           ./darwin.nix
           ./users/logan-personal.nix
-          {
-            home-manager.users.logan.imports = [ ./home.nix ];
-            # Must be explicitly set per
-            # https://github.com/nix-community/home-manager/issues/4026
-            # users.users.logan.home = "/Users/logan";
-          }
           ./headed-host.nix
-          {
+          (let
+            cacert = pkgs.cacert.overrideAttrs (finalAttrs: previousAttrs: {
+              extra-certificatesFile = [ ./new-e-ah-certs.pem ];
+              extraCertificatesFile = ./new-e-ah-certs.pem;
+              extraCertificatesFiles = [ ./new-e-ah-certs.pem ];
+            });
+          in {
             environment.systemPackages = (
-              pkgs.callPackage ./personal-packages.nix {}
-            );
-          }
+              pkgs.callPackage ./work-packages.nix {}
+            ) ++ [
+              cacert
+            ];
+          })
         ];
       };
     };
