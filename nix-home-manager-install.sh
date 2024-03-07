@@ -15,6 +15,23 @@ $HOME/.nix""-profile/bin:\
 ${PATH}\
 "
 
+slog "First, ensure we are using the right certs in the nix-daemon..."
+# There is some advice to do this per https://github.com/NixOS/nix/issues/2780
+# but it doesn't work because the System Integrity Protection must be disabled
+# to use setenv.
+# sudo launchctl setenv \
+#      NIX_SSL_CERT_FILE \
+#      "/nix/var/nix/profiles/default/etc/ssl/certs/ca-bundle.crt"
+sudo launchctl kickstart -k system/org.nixos.nix-daemon
+# Per https://github.com/NixOS/nix/issues/2899 the TLS certificates can get
+# borked.  This unborks them:
+sudo rm /etc/ssl/certs/ca-certificates.crt
+sudo ln -s \
+     /nix/var/nix/profiles/default/etc/ssl/certs/ca-bundle.crt \
+     /etc/ssl/certs/ca-certificates.crt
+# I think restarting might not be a blocking operation.  Just wait a second just
+# in case.
+sleep 1
 slog "Installing nix packages for this host..."
 nix-channel --add https://github.com/nix-community/home-manager/archive/master.tar.gz home-manager
 # Somehow the main nixpkgs channel gets stomped. This makes sure it's still in.
