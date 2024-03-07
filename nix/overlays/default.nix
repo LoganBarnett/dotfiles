@@ -1,3 +1,16 @@
+# If you run into this issue:
+#
+# All overlays passed to nixpkgs must be functions.
+#
+# 1. Move this file (ie default.nix.old).
+# 2. Run the installer/switch again.
+# 3. Observe it break on overlays/default.nix not existing.
+# 4. Move the file back.
+# 5. Run the installer/switch yet another time.
+#
+# Hopefully we one day find out what is causing this.
+#
+# See: https://github.com/NixOS/nix/issues/8443
 [
   (import ./blueutil.nix)
   (import ./cacert.nix)
