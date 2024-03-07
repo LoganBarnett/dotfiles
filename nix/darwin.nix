@@ -243,6 +243,8 @@
           }
         ]
       }'
+      echo "Do not sleep when on AC power."
+      pmset -c sleep 0 # Needs testing - UI not immediately updated.
       echo "Allow apps from anywhere..."
       SPCTL=$(spctl --status &2>1 || true)
       echo "spctl: $SPCTL"
