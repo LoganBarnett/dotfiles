@@ -23,17 +23,18 @@ yes | sh <(curl -L https://nixos.org/nix/install) \
   --daemon \
   || true
 
+slog "Reloading daemon..."
+sudo launchctl remove org.nixos.nix-daemon
+# nix-env -iA nixpkgs.nix
+# The -w is necessary to fix an issue if the nix-daemon ever got disabled.  -w
+# forces the "Disabled" key to get rewritten. and thus prevents startup issues
+# here.
+# https://github.com/NixOS/nix/issues/2780
+sudo launchctl load -w /Library/LaunchDaemons/org.nixos.nix-daemon.plist
+# sudo launchctl enable system/org.nixos.nix-daemon.plist
 # Their generated script checks first, but it better damn sure be there or this
 # endeavor is in error.
 . '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh'
-
-#slog "Attempting to upgrade nix. It may fail but we will proceed."
-# Attempt to upgrade.
-#sudo nix-channel --update || true
-# nix-env -iA nixpkgs.nix
-slog "Reloading daemon..."
-sudo launchctl remove org.nixos.nix-daemon
-sudo launchctl load /Library/LaunchDaemons/org.nixos.nix-daemon.plist
 
 mkdir -p ~/.config/nixpkgs
 # Link the file for this machine. This allows for host specific configurations.
