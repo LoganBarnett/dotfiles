@@ -51,31 +51,6 @@
   # Allow split DNS lookups while on the VPN, so I can still reach the
   # intranet.
   pkgs.dnsmasq
-  # The ultimate editor. But how to make it conditional on OS?
-  # pkgs.emacsMacport
-  # aarch64 (arm) is lacking on the mainline build of emacs/emacsMacPort. This
-  # branch builds. See https://github.com/NixOS/nixpkgs/pull/138424 for
-  # progress on it getting merged.
-  #(import (pkgs.fetchFromGitHub {
-  #  # Descriptive name to make the store path easier to identify
-  #  name = "emacs-macport-m1";
-  #  owner = "mikroskeem";
-  #  repo = "nixpkgs";
-  #  rev = "84e8bdba798312ace0e854f885cb76a5ddad1101";
-  #  sha256 = "iij2TsujINT/hgIHn3epchE09hWGkPk8UdtwFBjdAsU=";
-  #}) {}).emacsMacport
-  # We have moved this to home.nix and are using home-manager's version of
-  # Emacs.
-  # pkgs.emacs
-  (pkgs.emacsWithPackages (epkgs: [
-    epkgs.mu4e
-  ]))
-  # ((pkgs.emacsPackagesFor pkgs.emacs-unstable).emacsWithPackages (
-  # # package = ((pkgs.emacsPackagesFor pkgs.emacs).emacsWithPackages (
-  #   epkgs: [
-  #     epkgs.mu4e
-  #   ]
-  # ))
   # Detect character encoding of files.
   pkgs.enca
   # This is a binary apparently. Universal editor settings. Kind of like a
