@@ -14,6 +14,10 @@ source bash-logging
 slog "The first step is to make nix think we are worthy of install (no existing
 nix). We will remove everything! This script requires sudoer."
 
+slog "Disabling the nix-daemon..."
+
+sudo launchctl disable system/org.nixos.nix-daemon
+
 slog "Hold onto your butts - no turning back now..."
 
 sudo rm -rf \
@@ -26,7 +30,11 @@ sudo rm -rf \
   $HOME/.nix-defexpr \
   $HOME/.nix-channels \
   $HOME/.config/home-manager
-
+# If reinstalling from an existing home-manager installation, you'll probably
+# have previous generations floating around somewhere.  This cleans that up, per
+# the installation error that pops up from home-manager if this doesn't happen.
+rm $HOME/.local/state/nix/profiles/home-manager*
+rm $HOME/.local/state/home-manager/gcroots/current-home
 slog "Purged all nix files."
 
 slog "Restoring pre-nix system wide shell configs..."
