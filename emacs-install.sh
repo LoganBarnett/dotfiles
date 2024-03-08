@@ -48,6 +48,10 @@ elif [[ "$distro" == 'doom' ]]; then
   mkdir -p $PWD/doom/snippets
   ln -sfn $PWD/doom/snippets ~/.doom.d/snippets
   ln -sfn ~/.config/emacs ~/.emacs.d
+  # If `doom sync` is not run afterwards, Doom is not really loaded - it's a
+  # wierd semi-state.  You can't use standard Doom bindings, even though the
+  # Doom splash screen comes up.
+  doom sync
 elif [[ "$distro" == 'vanilla' ]]; then
   mkdir -p ~/.vanilla-emacs.d
   ln -snf $PWD/lisp/vanilla-init.el ~/.vanilla-emacs.d/init.el
