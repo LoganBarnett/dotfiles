@@ -82,18 +82,12 @@
           ./users/logan-new-e-ah.nix
           ./headed-host.nix
           (let
-            cacert = pkgs.cacert.overrideAttrs (finalAttrs: previousAttrs: {
-              extra-certificatesFile = [ ./new-e-ah-certs.pem ];
-              extraCertificatesFile = ./new-e-ah-certs.pem;
-              extraCertificatesFiles = [ ./new-e-ah-certs.pem ];
-            });
           in {
-            # Might be too much?
             security.pki.certificateFiles = [
+              "${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt"
               ./new-e-ah-certs.pem
             ];
             environment.systemPackages = [
-              cacert
             ];
           })
         ];
