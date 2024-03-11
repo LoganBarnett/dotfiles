@@ -19,6 +19,14 @@
 ;; To install SOME-PACKAGE from MELPA, ELPA or emacsmirror:
 ;(package! some-package)
 
+;; To remove a package:
+;; (package! package-name :disable t)
+
+;; Package pinning:
+;; Keep in mind that you have to run `doom sync -u` to make the settings stick
+;; per: https://github.com/doomemacs/doomemacs/issues/3490
+;; The -u argument is required or it won't work..
+
 ;; For AppleScript files - automation for GUI applications in macOS.
 ;; Currently not supported by Doom's package manager.
 ;; (package! applescript-mode)
