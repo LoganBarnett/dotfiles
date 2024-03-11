@@ -1,7 +1,8 @@
 # -*- mode: snippet; require-file-newline: nil -*-
-# name: nix-mode
+# name: nix-shell
 # key: __shell.nix
-# condition: t
+# group: yatemplate
+# condition: "shell.nix"
 # Maybe this could be multi-purpose or something. I'll need to read up on how
 # yasnippet can generate different snippets based on different file names.
 # --

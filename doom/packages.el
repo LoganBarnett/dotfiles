@@ -198,6 +198,7 @@
 (package! typescript-mode)
 ;; Allow editing TypeScript with JSX.
 ;; (package! typescript-tsx-mode)
+(package! vimrc-mode)
 (package! web-beautify)
 ;; Pin with-editor to an older version. Doom doesn't yet support Emacs 29, nor
 ;; do I have it installed yet. But magit is expecting these variables to be
@@ -207,7 +208,14 @@
           :pin "bbc60f68ac190f02da8a100b6fb67cf1c27c53ab"
           :recipe (:host github :repo "magit/with-editor"))
 
-(package! vimrc-mode)
+;; Adds file templates to YASnippet.  This fork provides an alternative to
+;; placing regular expressions inside the filename itself ("foo.*.el" would be
+;; an actual filename under the prior method).  It hasn't been merged in well
+;; over a year circa 2024-03-10, so we just defer to the fork.
+(package! yatemplate
+  :pin "0a5616216b6d8b15e50c2384f9b3fa2ff1616c80"
+  :recipe (:host github :repo "piknik/yatemplate")
+  )
 
 ;; To install a package directly from a particular repo, you'll need to specify
 ;; a `:recipe'. You'll find documentation on what `:recipe' accepts here:

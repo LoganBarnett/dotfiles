@@ -19,6 +19,8 @@
       )
   #+end_src
 * file templates
+
+** Doom's file-templates
 File templates are templates that expand for new or blank files.  This is a
 feature introduced in Doom via the =file-templates= editor module.
 
@@ -29,6 +31,104 @@ the appropriate snippet directory.  For specifically named files, =__<filename>=
 works as well.  The key for these files is assumed to be =__= and we should
 continue that when writing file templates.  Files with the =__<filename>=
 pattern should use the same =__<filename>= as their key.
+
+The above doesn't seem reliable anymore.
+
+With this we override the directory and forego updates or a complete set of
+templates.  It just doesn't seem to work with a custom set of templates.
+
+There is an interactive =+file-templates/debug= function that can be run but it
+doesn't print the conflicts, probably because having a custom directory
+alongside the official one just isn't supported, or isn't supported wholly.
+
+#+name: config/yasnippets-override-doom-template-dir
+#+begin_src emacs-lisp :results none :tangle no
+(on-doom
+  (setq-default +file-templates-dir "~/dev/dotfiles/yasnippets")
+  )
+#+end_src
+
+** yatemplate - yasnippets meets auto-insert-mode
+
+=yatemplate= integrates with =yasnippets= directly.  I like this because it gets
+me away from relying on Doom too much.  Doom is becoming increasingly difficult
+to work with, in large part because it's too monolithic.  There is work being
+done to break it all apart, but it's been years in the making, and probably
+needs more years of work still.  It's also more or less completely documented.
+
+The only problem with =yatemplate= is that it requires regular expressions
+within the file names themselves.  Fortunately there is a [[https://github.com/piknik/yatemplate][fork by piknik]] which
+addresses this by placing the configuration inside the template itself.
+
+*** configuring yatemplate
+
+=auto-insert-mode= is what =yatemplate= uses to hook itself in.
+
+#+name: config/auto-insert-mode-enable
+#+begin_src emacs-lisp :results none :tangle no
+(auto-insert-mode t)
+#+end_src
+
+And then we need to actually pull in =yatemplate=.  I have experienced
+difficulty getting =yatemplate= snippets to expand on a file opening.  I believe
+this is because I had =yatemplate-dir= set to my =yasnippets= directory.
+Forcing it to the default seems to have done the trick after an Emacs restart.
+Additionally, be wary of =yas-reload-all=.  When called interactively, it
+implies the =NO-JIT= argument.  This is documented but it's easy to miss and not
+intuitive.
+
+#+name: config/yatemplate
+#+begin_src emacs-lisp :results none :tangle no :noweb yes
+(defun yatemplate-reload-all-verify ()
+  (message "Actually calling yatemplate-reload-all...")
+  (message "snippet dirs %s" yas/snippet-dirs)
+  (yatemplate-reload-all)
+  (message "auto-insert-alist (after hook): flake.nix %s"
+           (assoc "flake.nix" auto-insert-alist)
+  )
+  (message "Done calling yatemplate-reload-all.")
+  )
+
+(use-package "yatemplate"
+  :demand t
+  ;; :after yasnippet
+  :init
+  (message "[CONFIG] Loading yatemplate settings...")
+  (setq-default yatemplate-dir "~/.emacs.d/.local/cache/templates")
+  <<config/auto-insert-mode-enable>>
+  :config
+  (add-hook 'yas-after-reload-hook #'yatemplate-reload-all-verify)
+  <<config/yatemplate-yasnippet-guess-major-mode-fix>>
+  ;; (yatemplate-reload-all)
+  (message "auto-insert-alist (after initial reload): flake.nix %s"
+           (assoc "flake.nix" auto-insert-alist)
+  )
+  (message "[CONFIG] Done loading yatemplate settings!")
+  )
+#+end_src
+
+*** fix possible yatemplate bug
+
+I have not filed an issue with this yet.
+
+I noticed when pulling in =yatemplate= that I lose the ability to properly
+select a major mode when compiling a template.  It always selects =snippet-mode=
+and I cannot select any other mode.  This seems to be caused by
+=yatemplate--find-file-hook= which just looks like a monkey patch on =yasnippet=
+based on the comments.  I wish to un-monkey patch it, and perhaps I can later
+figure out why it's causing a problem.
+
+#+name: config/yatemplate-yasnippet-guess-major-mode-fix
+#+begin_src emacs-lisp :results none :tangle no
+;; Remove so we don't have increasing layers if we run again.
+(advice-remove 'yatemplate--find-file-hook #'override-yatemplate--find-file-hook)
+(defun override-yatemplate--find-file-hook ()
+  ;; Yep, we do nothing here.
+  )
+
+(advice-add 'yatemplate--find-file-hook :override #'override-yatemplate--find-file-hook)
+#+end_src
+
 
 * allow require-file-newline
 
@@ -71,12 +171,28 @@ templates]] for more details on things like the =__= files.
     (require 'use-package)
 
     (use-package "yasnippet"
+      :demand t
       :init
+      <<config/yasnippets-override-doom-template-dir>>
       <<config/yasnippet-require-file-newline-mark-safe>>
       <<config/yasnippet-snippet-dirs>>
+      ;; This gets crushed by Doom.  Leave for reference.
+      (setq-default yas/snippet-dirs '("~/dev/dotfiles/yasnippets"))
+      (message "Just set yas/snippet-dirs to %s" yas/snippet-dirs)
       (config/yasnippet-fundamental-mode)
       :config
+      ;; Controlling when things get loaded and dependences (together) is best
+      ;; accomplished by actually nesting the declaration.  This way we can
+      ;; ensure that yatemplate is loaded by the time that we go to do
+      ;; yas/reload-all/yas-recompile-all.  See
+      ;; https://github.com/jwiegley/use-package/issues/315 for the official
+      ;; run-down.
+      <<config/yatemplate>>
+      (yas-global-mode 1)
       (yas-recompile-all)
-      (yas/reload-all)
+      ;; Set NO-JIT to `t' so that it actually reloads everything.  Without
+      ;; this, we lose the yatemplates.
+      (yas-reload-all t)
       )
+
   #+end_src
