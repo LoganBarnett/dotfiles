@@ -96,7 +96,7 @@
 (package! lsp-mode)
 (package! lsp-ui)
 ;; Desperately attempt to fix the SSH passphrase prompting issue.
-(package! magit :pin "a4a78d341a7006ccdec708b424048ba3b22ee801")
+(package! magit)
 (package! markdown-mode)
 ;; mu4e is now intended to be installed via Nix in a Nix-based environment.  See
 ;; home.nix for additional documentation.  For this section, it just means that
@@ -192,13 +192,7 @@
 ;; (package! smartparens :disable t)
 ;; (package! sql-mode)
 (package! terraform-mode)
-;; Pin transient to an older version. Doom doesn't yet support Emacs 29, nor do
-;; I have it installed yet. But magit is expecting these variables to be
-;; present. See https://emacs.stackexchange.com/a/75836 for more details.
-;; Both this and with-editor must be pinned.
-(package! transient
-      :pin "c2bdf7e12c530eb85476d3aef317eb2941ab9440"
-      :recipe (:host github :repo "magit/transient"))
+(package! transient)
 
 (package! tree-sitter)
 (package! tree-sitter-langs)
@@ -208,13 +202,7 @@
 ;; (package! typescript-tsx-mode)
 (package! vimrc-mode)
 (package! web-beautify)
-;; Pin with-editor to an older version. Doom doesn't yet support Emacs 29, nor
-;; do I have it installed yet. But magit is expecting these variables to be
-;; present. See https://emacs.stackexchange.com/a/75836 for more details. Both
-;; this and transient must be pinned.
-(package! with-editor
-          :pin "bbc60f68ac190f02da8a100b6fb67cf1c27c53ab"
-          :recipe (:host github :repo "magit/with-editor"))
+(package! with-editor)
 
 ;; Adds file templates to YASnippet.  This fork provides an alternative to
 ;; placing regular expressions inside the filename itself ("foo.*.el" would be
