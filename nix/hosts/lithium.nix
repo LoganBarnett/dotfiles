@@ -144,6 +144,7 @@ in {
       ];
       # Hostname is not an FQDN.
       networking.hostName = "lithium";
+      system.stateVersion = "23.11";
     })
   ];
 }

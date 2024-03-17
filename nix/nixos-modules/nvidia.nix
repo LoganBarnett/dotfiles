@@ -7,6 +7,9 @@
 in {
   # See https://nixos.wiki/wiki/Linux_kernel for values and options.
   boot.kernelPackages = linux-packages;
+  boot.kernelModules = [
+    "nvidia_uvm"
+  ];
   environment.systemPackages = [
     # Allow us to get the PCI Bus ID for the graphics card.  This will render a
     # litle differently than lspci, and nvidiaBusId demands a specific format
@@ -16,7 +19,7 @@ in {
     # The wiki is also wrong about this package - it doesn't exist.
     # pkgs.nvidia-persistenced
     # pkgs.nvidia-settings
-    # pkgs.nvidia-x11
+    linux-packages.nvidia_x11
     # Somehow this executable is available to some folks for diagnostic
     # purposes, but this package apparently doesn't exist.
     # pkgs.nvidia-smi
@@ -64,12 +67,22 @@ in {
     # actual output of lspci.
     prime.nvidiaBusId = "PCI:1:0:0";
   };
-  # TODO: Use this to bless specific packages.
-  # nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) [
-  #   "roon-server"
-  #   "vscode"
-  # ];
-  nixpkgs.config.allowUnfree = true;
-  nixpkgs.config.nvidia.acceptLicense = true;
+  # One can arrive at compiler errors like this:
+  # ...due to signal 11 (invalid memory reference)
+  #
+  # This indicates a lack of configuration on this NixOS module.  See
+  # https://github.com/NixOS/nixpkgs/issues/248242 for the specifics that need to
+  # be added.
+  nixpkgs.config = {
+    # TODO: Use this to bless specific packages.
+    # nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) [
+    #   "roon-server"
+    #   "vscode"
+    # ];
+    allowUnfree = true;
+    nvidia.acceptLicense = true;
+    cudaCapabilities = [ "8.6" ];
+    cudaSupport = true;
+  };
   services.xserver.videoDrivers = [ "nvidia" ];
 }
