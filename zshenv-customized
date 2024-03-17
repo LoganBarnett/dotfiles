@@ -2,6 +2,9 @@
 
 # export GEM_PATH="~/.gem/ruby/2.6.0:$GEM_PATH"
 export PATH="$PATH:/Library/TeX/texbin/"
+# Should fix the "gpg: signing failed: Inappropriate ioctl for device" per
+# https://stackoverflow.com/a/57591830
+export GPG_TTY=$(tty)
 
 # Force git to use ssh with IPv4. When tethered over my phone, everything is
 # IPv6. While dig, nslookup, and ping all agree on the IP used by a source like
