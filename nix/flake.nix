@@ -149,7 +149,10 @@
       };
 
       packages.x86_64-linux.nixosConfigurations.lithium = let
-        pkgs = import nixpkgs-comfyui {};
+        system = "x86_64-linux";
+        pkgs = import nixpkgs-comfyui {
+          inherit system;
+        };
       in
         (pkgs.callPackage ./hosts/lithium.nix {
           nixpkgs = nixpkgs-comfyui;
