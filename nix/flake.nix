@@ -32,7 +32,8 @@
     };
     nixos-hardware = {
       url = "github:NixOS/nixos-hardware/master";
-      inputs.nixpkgs.follows = "nixpkgs-comfyui";
+      # nixos-hardware doesn't actually use nixpkgs.
+      # inputs.nixpkgs.follows = "nixpkgs-comfyui";
     };
     # Specify the source of Home Manager and Nixpkgs.
     nixpkgs.url = "github:nixos/nixpkgs/master";
