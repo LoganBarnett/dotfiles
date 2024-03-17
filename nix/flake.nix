@@ -11,14 +11,26 @@
       # documentation typically recommends this step.
       inputs.nixpkgs.follows = "nixpkgs";
     };
-		# emacs-overlay = {
-		# 	url = "github:nix-community/emacs-overlay/master";
-		# 	inputs.nixpkgs.follows = "nixpkgs";
-		# };
+    disko = {
+      url = "github:nix-community/disko";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+		emacs-overlay = {
+			url = "github:nix-community/emacs-overlay/master";
+			inputs.nixpkgs.follows = "nixpkgs";
+		};
     fenix = {
       url = "github:nix-community/fenix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    nixos-anywhere = {
+      url = "github:numtide/nixos-anywhere";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        disko.follows = "disko";
+      };
+    };
+    nixos-hardware.url = "github:NixOS/nixos-hardware/master";
     # Specify the source of Home Manager and Nixpkgs.
     nixpkgs.url = "github:nixos/nixpkgs/master";
     # nix-doom-emacs.url = "github:nix-community/nix-doom-emacs";
@@ -31,11 +43,21 @@
     };
   };
 
-  outputs = { darwin, emacs-overlay, fenix, nixpkgs, home-manager, ... }:
+  outputs = {
+    darwin,
+    disko,
+    emacs-overlay,
+    fenix,
+    nixpkgs,
+    nixos-anywhere,
+    nixos-genereators,
+    home-manager,
+    ...
+  }:
     let
-      system = "aarch64-darwin";
-      pkgs = import nixpkgs {
-        inherit system;
+      aarch64-darwin-system = "aarch64-darwin";
+      aarch64-darwin-pkgs = import nixpkgs {
+        system = aarch64-darwin-system;
         # Based on observations from running `home-manager switch` I believe
         # that this has no effect. At one point it did. This is probably a
         # breaking change.
@@ -58,11 +80,11 @@
         # as packages depending upon an older OpenSSL.
         config.permittedInsecurePackages = [];
         # nixpkgs.legacyPackages.${system};
-
       };
     in {
+
       darwinConfigurations."M-CL64PK702X" = darwin.lib.darwinSystem {
-        inherit system;
+        system = aarch64-darwin-system;
         modules = [
           home-manager.darwinModules.home-manager
           {
@@ -84,7 +106,7 @@
           (let
           in {
             security.pki.certificateFiles = [
-              "${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt"
+              "${aarch64-darwin-pkgs.cacert}/etc/ssl/certs/ca-bundle.crt"
               ./new-e-ah-certs.pem
             ];
             environment.systemPackages = [
@@ -92,8 +114,9 @@
           })
         ];
       };
+
       darwinConfigurations."scandium" = darwin.lib.darwinSystem {
-        inherit system;
+        system = aarch64-darwin-system;
         modules = [
           home-manager.darwinModules.home-manager
           {
@@ -116,5 +139,11 @@
           ./darwin-linux-builder-module.nix
         ];
       };
+
+      packages.x86_64-linux.nixosConfigurations.lithium =
+        (pkgs.callPackage ./hosts/lithium.nix {
+        nixpkgs = comfyui-nixpkgs;
+      });
+
     };
 }
