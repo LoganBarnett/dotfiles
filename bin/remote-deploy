@@ -42,7 +42,7 @@ ssh $dest 'rm -rf $HOME/proton-nix'
 # to be intact, and by all observations that is the case.  I have heard about
 # "git bundle" that might help here.  It packs and unpacks a git blob that more
 # safely can traverse the wire, and wouldn't require rsync as badly.
-scp -r $HOME/dev/dotfiles/nix $dest':~/proton-nix' > /dev/null
+scp -r $HOME/dev/dotfiles/nix/ $dest':~/proton-nix' > /dev/null
 ssh $dest "\
 set -e; \
 set -x; \
