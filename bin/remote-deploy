@@ -36,7 +36,9 @@ echo "Deploying to $dest..."
 # that setup yet - or at least I have old installer without it.  Next time we
 # look, switch.
 # rsync --archive --verbose --human-readable ./ $dest':~/proton-nix'
-ssh $dest 'rm -rf $HOME/proton-nix'
+# This needs to be sudo because nixos-rebuild claims one or more of the .git
+# files.
+ssh $dest 'sudo rm -rf $HOME/proton-nix'
 # This creates a bunch of noise, but as far as I can tell there's no problems
 # had.  Some of the history is probably borked, but I just need the working tree
 # to be intact, and by all observations that is the case.  I have heard about
