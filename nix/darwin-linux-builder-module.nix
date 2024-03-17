@@ -10,8 +10,8 @@
   #   ];
   # }
   # ];
-  distributedBuilds = true;
-  linux-builder = {
+  nix.distributedBuilds = true;
+  nix.linux-builder = {
     enable = true;
     config = (import ./darwin-linux-builder-vm.nix {
       inherit lib;
