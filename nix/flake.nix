@@ -56,7 +56,7 @@
     nixpkgs,
     nixpkgs-comfyui,
     nixos-anywhere,
-    nixos-genereators,
+    # nixos-generators,
     home-manager,
     home-manager-comfyui,
     ...
