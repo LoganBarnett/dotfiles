@@ -2,9 +2,11 @@
 # Installs necesssary NVidia drivers.  Can be used for games or CUDA
 # computation.  Both will be supported here.
 ################################################################################
-{ lib, pkgs, ... }: {
+{ nixos-hardware, pkgs, ... }: let
+  linux-packages = pkgs.linuxPackages_latest;
+in {
   # See https://nixos.wiki/wiki/Linux_kernel for values and options.
-  boot.kernelPackages = pkgs.linuxPackages_latest;
+  boot.kernelPackages = linux-packages;
   environment.systemPackages = [
     # Allow us to get the PCI Bus ID for the graphics card.  This will render a
     # litle differently than lspci, and nvidiaBusId demands a specific format
@@ -21,10 +23,10 @@
   ];
   # I'd like to better understand what these are doing.
   imports = [
-    pkgs.flake-inputs.nixos-hardware.nixosModules.common-pc
-    pkgs.flake-inputs.nixos-hardware.nixosModules.common-pc-ssd
-    pkgs.flake-inputs.nixos-hardware.nixosModules.common-cpu-amd-pstate
-    pkgs.flake-inputs.nixos-hardware.nixosModules.common-gpu-nvidia-nonprime
+    nixos-hardware.nixosModules.common-pc
+    nixos-hardware.nixosModules.common-pc-ssd
+    nixos-hardware.nixosModules.common-cpu-amd-pstate
+    nixos-hardware.nixosModules.common-gpu-nvidia-nonprime
   ];
   hardware.opengl.enable = true;
   hardware.opengl.driSupport = true;
@@ -32,7 +34,7 @@
   # Most of this can be found here:
   # https://nixos.wiki/wiki/Nvidia#Nvidia_PRIME
   hardware.nvidia = {
-    package = pkgs.linux-packages.nvidiaPackages.beta;
+    package = linux-packages.nvidiaPackages.beta;
     # Actually this expression is broken.  The wiki is wrong?  Error:
     # error: attribute 'boot' missing
     # package = config.boot.kernelPackages.nvidiaPackages.production;

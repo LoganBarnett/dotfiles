@@ -57,11 +57,13 @@
     nixpkgs,
     nixpkgs-comfyui,
     nixos-anywhere,
+    nixos-hardware,
     # nixos-generators,
     home-manager,
     home-manager-comfyui,
+    self,
     ...
-  }:
+  }@flake-inputs:
     let
       aarch64-darwin-system = "aarch64-darwin";
       aarch64-darwin-pkgs = import nixpkgs {
@@ -148,15 +150,22 @@
         ];
       };
 
-      packages.x86_64-linux.nixosConfigurations.lithium = let
+      nixosConfigurations.lithium = let
         system = "x86_64-linux";
         pkgs = import nixpkgs-comfyui {
           inherit system;
+          specialArgs = {
+            inherit nixos-hardware;
+          };
         };
       in
-        (pkgs.callPackage ./hosts/lithium.nix {
-          nixpkgs = nixpkgs-comfyui;
+        nixpkgs-comfyui.lib.nixosSystem (import ./hosts/lithium.nix {
+          diskoProper = disko;
+          inherit nixos-hardware;
         });
+      # Unsure if we need this, but if we do, it serves as a shortcut
+      # essentially.
+      packages.x86_64-linux.lithium = self.nixosConfigurations.lithium;
 
     };
 }

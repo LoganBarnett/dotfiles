@@ -11,29 +11,21 @@
 # The final NixOS module is the server specific configuration, with everything
 # before that being reusable modules (or parameterized, reusable modules).
 ################################################################################
-{ disko, nixos-generators, nixpkgs, ... }@inputs: let
+{ diskoProper, nixos-hardware }: let
   system = "x86_64-linux";
-  pkgs = import nixpkgs {
-    inherit system;
-    _module.args = {
-      diskoProper = disko;
-      disko = disko;
-      flake-inputs = inputs;
-    };
-    specialArgs.flake-inputs = inputs;
-    specialArgs.diskoProper = disko;
-    specialArgs.disko = disko;
-  };
-in nixpkgs.lib.nixosSystem {
+in {
   inherit system;
+  specialArgs = {
+    inherit nixos-hardware;
+  };
   modules = [
+    # We can't use `disko` because it's taken, I guess.
+    diskoProper.nixosModules.disko
     ../users/logan-server.nix
     ../nixos-modules/nix-flakes.nix
     ../nixos-modules/nix-store-optimize.nix
     ../nixos-modules/nvidia.nix
     ../nixos-modules/sshd.nix
-    # We can't use `disko` because it's taken, I guess.
-    pkgs.diskoProper.nixosModules.disko
     ../nixos-modules/comfyui-server.nix
     ({ lib, ... }: {
       disko.devices = {
@@ -98,7 +90,7 @@ in nixpkgs.lib.nixosSystem {
         };
       };
     })
-    {
+    ({ pkgs, ... }: {
       # I don't know what else to set this to that's meaningful, but it has to
       # be set to _something_.  This is very likely something that will bite me
       # later.
@@ -152,6 +144,6 @@ in nixpkgs.lib.nixosSystem {
       ];
       # Hostname is not an FQDN.
       networking.hostName = "lithium";
-    }
+    })
   ];
 }
