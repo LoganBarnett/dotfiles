@@ -16,7 +16,7 @@
   attributesfile = ~/dev/dotfiles/gitattributes_global
   # Now defaults to ~/.config/git/ignore
   excludesfile = ~/dev/dotfiles/gitignore_global
-  editor = ~/.nix-profile/bin/vim
+  editor = vim
   # Requires git 2.19, defaults to ~/.config/git/hooks
   hooksPath = ~/dev/dotfiles/git-hooks
   #autocrlf = true
