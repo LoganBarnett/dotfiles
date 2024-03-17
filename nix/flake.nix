@@ -13,7 +13,7 @@
     };
     disko = {
       url = "github:nix-community/disko";
-      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.nixpkgs.follows = "nixpkgs-comfyui";
     };
 		emacs-overlay = {
 			url = "github:nix-community/emacs-overlay/master";
@@ -26,19 +26,24 @@
     nixos-anywhere = {
       url = "github:numtide/nixos-anywhere";
       inputs = {
-        nixpkgs.follows = "nixpkgs";
+        nixpkgs.follows = "nixpkgs-comfyui";
         disko.follows = "disko";
       };
     };
-    nixos-hardware.url = "github:NixOS/nixos-hardware/master";
+    nixos-hardware = {
+      url = "github:NixOS/nixos-hardware/master";
+      inputs.nixpkgs.follows = "nixpkgs-comfyui";
+    };
     # Specify the source of Home Manager and Nixpkgs.
     nixpkgs.url = "github:nixos/nixpkgs/master";
+    nixpkgs-comfyui.url = "github:LoganBarnett/nixpkgs/comfyui";
     # nix-doom-emacs.url = "github:nix-community/nix-doom-emacs";
+    home-manager-comfyui = {
+      url = "github:nix-community/home-manager";
+      inputs.nixpkgs.follows = "nixpkgs-comfyui";
+    };
     home-manager = {
       url = "github:nix-community/home-manager";
-      # I've had mixed advice to use this or not use this.
-      # This is said to tie into issues with pkgs and nixpkgs mixings due to
-      # Home-manager and the nixpkgs.config.
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
@@ -49,9 +54,11 @@
     emacs-overlay,
     fenix,
     nixpkgs,
+    nixpkgs-comfyui,
     nixos-anywhere,
     nixos-genereators,
     home-manager,
+    home-manager-comfyui,
     ...
   }:
     let
@@ -140,10 +147,12 @@
         ];
       };
 
-      packages.x86_64-linux.nixosConfigurations.lithium =
+      packages.x86_64-linux.nixosConfigurations.lithium = let
+        pkgs = import nixpkgs-comfyui;
+      in
         (pkgs.callPackage ./hosts/lithium.nix {
-        nixpkgs = comfyui-nixpkgs;
-      });
+          nixpkgs = nixpkgs-comfyui;
+        });
 
     };
 }

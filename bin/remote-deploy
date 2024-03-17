@@ -1,0 +1,53 @@
+#!/usr/bin/env bash
+
+################################################################################
+# This script aims at faking some of the remote build stuff Nix claims to
+# support.
+#
+# The problem:
+# I can't figure out how to get Nix to deploy to another machine.  I've tried:
+# 1. Writing the image to disk: QEMU segfault with a funky, trimmed down glibc
+#    that I can't get rid of.
+# 2. nixos-rebuild switch --target host - same problem:  It doesn't want to
+#    build on the target host.  Probably because I don't have it setup as a
+#    build machine.  Further investigation is needed there.
+# 3. Praying to the machine god.  Offerings made according to specifications.
+#    Prayers have gone unanswered, or a long journey of discovery awaits.
+# 4. Using deploy-rs.  Same cross-build issues.
+# 5. Using nixos-anywhere.  It's nixos-nowhere as far as I can tell.  Same
+#    cross-build issues.
+# 6. Using nixos-generate.  Same cross-build issues.
+#
+# The common theme seems to be cross compiling from aarch64 to x86_64, which is
+# apparently not a direction many folks travel in.  Usually it goes in the other
+# direction (x86_64 to aarch64).  There's some deep assumptions built into the
+# build process as a result, I think.
+#
+# I've found that the manual is basically not be trusted.  Blog posts are far
+# too outdated, or claims are made under a different arrangement of platforms.
+# The message has been "read the code lol", to which I have done but I am just
+# not deep enough into it with 4 weeks of massive personal time put into this.
+################################################################################
+
+# TODO: Argument handling.
+dest=$1.proton
+echo "Deploying to $dest..."
+# rsync is ideal, but needs to be present on the remote machine.  We don't have
+# that setup yet - or at least I have old installer without it.  Next time we
+# look, switch.
+# rsync --archive --verbose --human-readable ./ $dest':~/proton-nix'
+ssh $dest 'rm -rf $HOME/proton-nix'
+# This creates a bunch of noise, but as far as I can tell there's no problems
+# had.  Some of the history is probably borked, but I just need the working tree
+# to be intact, and by all observations that is the case.  I have heard about
+# "git bundle" that might help here.  It packs and unpacks a git blob that more
+# safely can traverse the wire, and wouldn't require rsync as badly.
+scp -r $HOME/dev/dotfiles/nix $dest':~/proton-nix' > /dev/null
+ssh $dest "\
+set -e; \
+set -x; \
+cd proton-nix && \
+git init && \
+git add . && \
+sudo nixos-rebuild switch --flake '.#lithium' \
+"
