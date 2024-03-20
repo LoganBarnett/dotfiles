@@ -95,6 +95,7 @@
 
       darwinConfigurations."M-CL64PK702X" =
         darwin.lib.darwinSystem (import ./hosts/M-CL64PK702X.nix {
+          inherit emacs-overlay fenix home-manager nixpkgs;
         });
 
       darwinConfigurations."scandium" =

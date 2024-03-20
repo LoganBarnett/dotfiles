@@ -1054,7 +1054,12 @@ GEM
       aws-sdk-kms
     highline (2.0.3)
     jmespath (1.4.0)
+    mini_portile2 (2.8.5)
+    nokogiri (1.16.3)
+      mini_portile2 (~> 2.8.2)
+      racc (~> 1.4)
     optimist (3.0.1)
+    racc (1.7.3)
 
 PLATFORMS
   ruby
@@ -1063,6 +1068,7 @@ DEPENDENCIES
   aws-sdk
   hiera-eyaml
   hiera-eyaml-kms
+  nokogiri
 
 BUNDLED WITH
-   2.1.4
+   2.5.6

@@ -1,4 +1,4 @@
-{ emacs-overlay, fenix, home-manager, nixpkgs, pkgs }: {
+{ emacs-overlay, fenix, home-manager, nixpkgs }: {
   system = "aarch64-darwin";
   modules = [
     home-manager.darwinModules.home-manager
@@ -14,16 +14,18 @@
 			_module.args.emacs-overlay = emacs-overlay;
       _module.args.nixpkgs = nixpkgs;
     }
-    ./darwin.nix
-    ./users/logan-new-e-ah.nix
-    ./headed-host.nix
-    (let
+    ../darwin.nix
+    ../users/logan-new-e-ah.nix
+    ../headed-host.nix
+    ({ pkgs, ...}: let
     in {
       security.pki.certificateFiles = [
         "${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt"
-        ./new-e-ah-certs.pem
+        ../new-e-ah-certs.pem
       ];
       environment.systemPackages = [
+        pkgs.awscli
+        (pkgs.callPackage ../../nix-gems/hiera-eyaml/default.nix {})
       ];
     })
   ];
