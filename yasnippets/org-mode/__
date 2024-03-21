@@ -1,7 +1,9 @@
 # -*- mode: snippet -*-
 # name: org mode file template
-# key: __
+# key: org-mode
 # condition: t
+# condition: ".*\\.org"
+# group: yatemplate
 # --
 #+title:     Rename me
 #+author:    Logan Barnett

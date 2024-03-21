@@ -80,13 +80,18 @@ intuitive.
 #+name: config/yatemplate
 #+begin_src emacs-lisp :results none :tangle no :noweb yes
 (defun yatemplate-reload-all-verify ()
+  (interactive)
   (message "Actually calling yatemplate-reload-all...")
   (message "snippet dirs %s" yas/snippet-dirs)
   (yatemplate-reload-all)
   (message "auto-insert-alist (after hook): flake.nix %s"
            (assoc "flake.nix" auto-insert-alist)
-  )
-  (message "Done calling yatemplate-reload-all.")
+           )
+  (message "auto-insert-alist (after hook): *.org %s"
+           (assoc "*.org" auto-insert-alist)
+           )
+  (message "auto-insert-alist (after hook): %s" auto-insert-alist)
+  ;; (message "Done calling yatemplate-reload-all.")
   )
 
 (use-package "yatemplate"
