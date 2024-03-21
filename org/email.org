@@ -643,7 +643,7 @@ much of that is shadowed by =evil-mode=.
            (while (and (> (point) top)
                        (backward-paragraph))
              (unless (or (looking-at ">") (looking-at "-"))
-               (mu4e-fill-paragraph))))
+               (fill-flowed-display-column))))
          )
 
 (defun config/mu4e-unfill-body-conditionally ()
@@ -658,6 +658,8 @@ much of that is shadowed by =evil-mode=.
   :local t
   :type 'boolean
   )
+
+(setq-default mu4e-compose-format-flowed t)
 
      #+end_src
 
@@ -684,10 +686,10 @@ formatting I do myself (such as lists), and =mu4e-compose-format-flowed= as
            "Sets `use-hard-newlines' to t for the mu4e buffer."
            (message "opting to use hardlines")
            (setq-default mu4e-compose-format-flowed nil)
-           (add-hook
-            'message-send-hook
-            'config/mu4e-unfill-body-conditionally
-            )
+           ;; (add-hook
+           ;;  'message-send-hook
+           ;;  #'config/mu4e-unfill-body-conditionally
+           ;;  )
            (add-hook
             'mu4e-compose-mode-hook
             (lambda ()
