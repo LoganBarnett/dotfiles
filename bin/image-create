@@ -1,0 +1,74 @@
+#!/usr/bin/env bash
+##
+# Creates a bootable Raspberry Pi image with NixOS.  This image should contain
+# the entirety of the configuration, sans password updates (until I can get
+# secret management going).
+#
+# The image file name is printed upon success.
+##
+
+set -euo pipefail
+
+function usage() {
+  cat <<EOH
+Usage: $0
+
+Creates a bootable Raspberry Pi image with NixOS.  This image should contain
+the entirety of the configuration, sans password updates (until I can get
+secret management going).
+
+The image file name is printed upon success.
+EOH
+}
+
+while true; do
+  case "${1:-}" in
+    -h | --help)
+      usage
+      exit
+      ;;
+    -H | --host)
+      host="${2:-}"
+      shift 2
+      ;;
+    * ) break ;;
+  esac
+done
+
+if [[ -z ${host+x} ]]; then
+  echo "--host argument missing"
+  usage
+  exit 1
+fi
+
+image_name='nixos-image.img'
+./with-podman " \
+set -x
+sed -i '/extra-platforms/d' /etc/nix/nix.conf
+# tail -n +1 /proc/sys/fs/binfmt_misc/*
+echo 'extra-platforms = i686-linux x86_64-linux aarch64-linux aarch64-darwin' \
+  >> /etc/nix/nix.conf
+cat /etc/nix/nix.conf
+cat /etc/nixos/configuration.nix
+# qemu-system-x86_64 --version
+ls -al /usr/bin/qemu*
+nix-env -i qemu-system-x86_64
+nix \
+  --extra-experimental-features nix-command \
+  --extra-experimental-features flakes \
+  build '.#${host}'
+ls -al \$(readlink result)/nix-support
+cp \$(readlink result)/sd-image/* /workdir/$image_name.zst
+rm result
+"
+unzstd \
+  --force \
+  --decompress $image_name.zst \
+  -o $image_name
+rm --force $image_name.zst
+hdiutil imageinfo $image_name
+
+echo 'Image built successfully.' 1>&2
+# Print the name used so we can use it elsewhere, and scripts needn't be tightly
+# coupled.
+echo $image_name

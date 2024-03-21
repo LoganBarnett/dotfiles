@@ -1,0 +1,50 @@
+#!/usr/bin/env bash
+set -euo pipefail
+container_name="nix-run"
+if [[ "$1" == "--help" ]]; then
+  cat <<EOH
+Usage: $0 ...script
+
+Executes script in the context of a podman nixos/nix container.  The Podman VM
+is created on demand.  Afterwards the container and the VM are shut down.
+EOH
+  exit
+fi
+
+script="$@"
+
+podman machine init --cpus 12 --memory 8192 --disk-size 50 \
+      --volume $HOME:$HOME || true
+podman machine stop || true # In case it didn't shut down last time.
+# Sometimes this process can get lodged and it causes startup instability.
+# Kill the process before trying to start the machine.  See
+# https://github.com/containers/podman/issues/19611#issuecomment-1777314224
+# for the suggested workaround.
+killall qemu-system-aarch64 || true
+podman machine start || true
+# Allow running x86_64 binaries at the VM level.
+podman run --rm --privileged aptman/qus --static -- --persistent
+image_label='qemu-nix-personal'
+podman build -t qemu-nix-personal --file Dockerfile .
+podman container ls -a | grep $container_name > /dev/null || \
+        podman create -t --name $container_name -w /workdir \
+            -v $PWD:/workdir qemu-nix-personal
+echo "Starting $container_name..."
+# container_id=$(podman start $container_name)
+# echo "Containers:"
+# podman container ls -a
+# echo "ps:"
+# podman ps
+# echo "Container ID: $container_id"
+echo "Executing script:
+$script
+"
+# podman run $container_name
+# Running bash -c "$script" here allows us to include multiple commands and
+# hopefully stave off shell quoting issues for a while longer.
+podman run \
+       --privileged \
+       --workdir /workdir \
+       $image_label bash -c "$script" || true
+podman stop $container_name || true
+podman machine stop
