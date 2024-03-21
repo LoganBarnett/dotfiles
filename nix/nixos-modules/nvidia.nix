@@ -71,8 +71,8 @@ in {
   # ...due to signal 11 (invalid memory reference)
   #
   # This indicates a lack of configuration on this NixOS module.  See
-  # https://github.com/NixOS/nixpkgs/issues/248242 for the specifics that need to
-  # be added.
+  # https://github.com/NixOS/nixpkgs/issues/248242 for the specifics that need
+  # to be added.
   nixpkgs.config = {
     # TODO: Use this to bless specific packages.
     # nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) [
@@ -81,8 +81,33 @@ in {
     # ];
     allowUnfree = true;
     nvidia.acceptLicense = true;
-    cudaCapabilities = [ "8.6" ];
-    cudaSupport = true;
+    # cudaCapabilities = [ "8.6" ];
+    # According to https://en.wikipedia.org/wiki/Pascal_(microarchitecture) this
+    # only goes to 6.0, and this can cause build problems with magma/ptxas
+    # later.  This (https://en.wikipedia.org/wiki/CUDA#GPUs_supported) shows we
+    # can go to ... 8.0 or 6.x?  I'm not sure how to read this chart.  The
+    # actual name of the chip (from the product level that I understand it - a
+    # GTX 1060 6GB) says 6.1.
+    cudaCapabilities = [ "6.0" ];
+    # Disable until I can figure out what's causing the compilation problems.  I
+    # currently get:
+    # error: builder for '/nix/store/4q3mh591j2dn6cb817bif8l9z0jyv1bh-magma-2.7.2.drv' failed with exit code 1;
+    #  last 10 log lines:
+    #  > nvcc warning : incompatible redefinition for option 'compiler-bindir', the last value of this option was used
+    #  > nvcc error   : 'ptxas' died due to signal 11 (Invalid memory reference)
+    #  > nvcc error   : 'ptxas' core dumped
+    #  > [1286/3430] Building CUDA object CMakeFiles/magma.dir/magmablas/dgeqr2_batched_fused_reg_medium.cu.o
+    #  > nvcc warning : incompatible redefinition for option 'compiler-bindir', the last value of this option was used
+    #  > [1287/3430] Building CUDA object CMakeFiles/magma.dir/magmablas/cgeqr2_batched_fused_reg_medium.cu.o
+    #  > nvcc warning : incompatible redefinition for option 'compiler-bindir', the last value of this option was used
+    #  > [1288/3430] Building CUDA object CMakeFiles/magma.dir/magmablas/dgeqr2_batched_fused_reg_tall.cu.o
+    #  > nvcc warning : incompatible redefinition for option 'compiler-bindir', the last value of this option was used
+    #  > ninja: build stopped: subcommand failed.
+    #  For full logs, run 'nix log /nix/store/4q3mh591j2dn6cb817bif8l9z0jyv1bh-magma-2.7.2.drv'.
+    #
+    # The full log is written to ./nvidia-cuda-magma-opencv-fail.log.
+    cudaSupport = false;
+    # cudaSupport = true;
   };
   services.xserver.videoDrivers = [ "nvidia" ];
 }
