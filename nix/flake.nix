@@ -120,5 +120,32 @@
       # essentially.
       packages.x86_64-linux.lithium = self.nixosConfigurations.lithium;
 
+      nixosConfigurations.nucleus-installer = (let
+        pkgs = import nixpkgs {
+          system = "x86_64-linux";
+          # _module.args is an idiom for populating the arguments available to
+          # callPackge, but I don't understand its nuances so it's repeated
+          # below.
+          _module.args = {
+            buildPlatform = "aarch64-linux";
+            destinationPlatform = "x86_64-linux";
+          };
+        };
+      in
+        nixpkgs.lib.nixosSystem (import ./hosts/nucleus.nix {
+          buildPlatform = "aarch64-linux";
+          destinationHostname = "lithium";
+          destinationPlatform = "x86_64-linux";
+          inherit nixpkgs pkgs;
+        }));
+      packages.aarch64-darwin.nucleus-installer = self
+        .nixosConfigurations
+        .nucleus-installer
+        .config
+        .system
+        .build
+        .isoImage
+      ;
+
     };
 }

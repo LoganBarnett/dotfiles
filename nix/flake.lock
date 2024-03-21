@@ -266,11 +266,11 @@
     },
     "nixpkgs-comfyui": {
       "locked": {
-        "lastModified": 1710701908,
-        "narHash": "sha256-1mkMk1F4XZcKs25JBlE5fYA8jTqRQqYGBFm/9tX0U78=",
+        "lastModified": 1710896086,
+        "narHash": "sha256-xgZWIJnTr/dznsrpHlAdL7iELq/MbIZqRX6dYEJap0o=",
         "owner": "LoganBarnett",
         "repo": "nixpkgs",
-        "rev": "a8850e7880f8cd6979bf03ee238efc8945381dae",
+        "rev": "18b345ffc1ac60af96943e03d4f102a6e99a2072",
         "type": "github"
       },
       "original": {
