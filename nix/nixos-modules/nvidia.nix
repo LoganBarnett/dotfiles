@@ -1,6 +1,12 @@
 ################################################################################
 # Installs necesssary NVidia drivers.  Can be used for games or CUDA
 # computation.  Both will be supported here.
+#
+# This seems to be the most up to date version of anything resembling a cohesive
+# document for CUDA + Torch + Nix:
+# https://discourse.nixos.org/t/on-nixpkgs-and-the-ai-follow-up-to-2023-nix-developer-dialogues/37087#binary-cache-3
+# Not all of the configuration here comes from that, but I am starting to
+# integrate it where I can.
 ################################################################################
 { nixos-hardware, pkgs, ... }: let
   linux-packages = pkgs.linuxPackages_latest;
@@ -10,6 +16,14 @@ in {
   boot.kernelModules = [
     "nvidia_uvm"
   ];
+  # The open source module doesn't support my card.  See
+  # https://github.com/NVIDIA/open-gpu-kernel-modules for supported cards.  For
+  # some reason, `lshw -c display` shows `nouveau` for the display driver, even
+  # though I have `hardware.nvidia.open = false`.  That said, this can happen
+  # because a reboot wasn't done.  See
+  # https://github.com/NixOS/nixpkgs/issues/16711 someone who had the same
+  # problem on a much older NixOS.
+  boot.blacklistedKernelModules = ["nouveau"];
   environment.systemPackages = [
     # Allow us to get the PCI Bus ID for the graphics card.  This will render a
     # litle differently than lspci, and nvidiaBusId demands a specific format
@@ -20,9 +34,25 @@ in {
     # pkgs.nvidia-persistenced
     # pkgs.nvidia-settings
     linux-packages.nvidia_x11
+    # Includes `lspci`.  `lspci` gets more information about the PCI bus.
+    # Useful for debugging issues with the driver not picking up the hardware.
+    pkgs.pciutils
     # Somehow this executable is available to some folks for diagnostic
     # purposes, but this package apparently doesn't exist.
     # pkgs.nvidia-smi
+    # If encountering "RuntimeError: No CUDA GPUs are available", use this to
+    # debug:
+    # LD_DEBUG=libs python -c "import torch ; torch.cuda.is_available()"
+    # Thus we need Python.
+    # pkgs.python3.withPackages (ps: [
+    #   ps.torch-bin
+    # ]).env
+    # Actually that doesn't work.  You have to enter a shell manually:
+    # nix-shell -p 'python3.withPackages (ps: [ps.torch-bin])'
+    # That doesn't work, but this looks promising and is quick:
+    # [logan@lithium:~]$ nvidia-smi
+    # NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA
+    # driver. Make sure that the latest NVIDIA driver is installed and running.
   ];
   # I'd like to better understand what these are doing.
   imports = [
@@ -106,8 +136,14 @@ in {
     #  For full logs, run 'nix log /nix/store/4q3mh591j2dn6cb817bif8l9z0jyv1bh-magma-2.7.2.drv'.
     #
     # The full log is written to ./nvidia-cuda-magma-opencv-fail.log.
-    cudaSupport = false;
-    # cudaSupport = true;
+    # cudaSupport = false;
+    cudaSupport = true;
+    extra-substituters = [
+      "https://nix-community.cachix.org"
+    ];
+    extra-trusted-public-keys = [
+      "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
+    ];
   };
   services.xserver.videoDrivers = [ "nvidia" ];
 }

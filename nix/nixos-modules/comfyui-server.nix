@@ -8,9 +8,13 @@
 { lib, pkgs, ... }: {
   # The firewall is enabled by default, per:
   # https://nixos.org/manual/nixos/unstable/index.html#sec-firewall
-  networking.firewall.allowedTCPPortRanges = [
+  networking.firewall.allowedTCPPorts = [
     # Default ComfyUI port.
-    { from = 8188; to = 8188; }
+    8188
+  ];
+  networking.firewall.allowedUDPPorts = [
+    # Default ComfyUI port.
+    8188
   ];
   nixpkgs.overlays = [
     (final: prev: {
@@ -34,6 +38,15 @@
           # ''-DPYTHON_INCLUDE_DIR=$(python -c "import sysconfig; print(sysconfig.get_config_var('LIBDIR'))")''
         ] ++ prev-pkg.cmakeFlags;
       });
+      # python3 = prev.python3.override {
+      #   packageOverrides = (pf: pp: {
+      #     torch = pp.pytorch-bin;
+      #   });
+      # };
+      # Prefer this version:
+      pythonPackagesExtensions = [(py-final: py-prev: {
+        torch = py-final.torch-bin;
+      })];
     })
   ];
   services.comfyui = {
@@ -42,7 +55,42 @@
     # Leaving this as the default seems to be broken with this error:
     # error: attribute 'cudaSupport' missing
     # package = pkgs.comfyui-cpu;
-    # package = pkgs.comfyui-cuda;
-    package = pkgs.comfyui;
+    package = pkgs.callPackage ../hacks/comfyui/package.nix {};
+
+    # package = pkgs.comfyui;
   };
 }
+
+# Next up, try this: eb9b60a from
+# https://github.com/r-ryantm/nixpkgs/commit/eb9b60a2de7e9f406efed12f68c2024d5955b35e
+# https://github.com/NixOS/nixpkgs/pull/293555/files
+# Original invocation:
+# nix build --impure -L nixpkgs/383e4b2b#cudaPackages.nccl
+# Adapted invocation:
+# nix build --impure -L nixpkgs/eb9b60a#cudaPackages.nccl
+
+    #   pythonEnv = (pkgs.python311.withPackages (ps: with ps; [
+    #     ps.pytorch-bin
+    #     # (
+    #     #   if gpuBackend == "cuda"
+    #     #   then torchWithCuda
+    #     #   else if gpuBackend == "rocm"
+    #     #   then torchWithRocm
+    #     #   else torch
+    #     # )
+    #     # torchsde
+    #     # torchvision
+    #     # torchaudio
+    #     transformers
+    #     safetensors
+    #     accelerate
+    #     aiohttp
+    #     einops
+    #     pyyaml
+    #     pillow
+    #     scipy
+    #     psutil
+    #     tqdm
+    #   ] # ++ (builtins.concatMap (node: node.dependencies) customNodes)));
+    #   ));
+    # });

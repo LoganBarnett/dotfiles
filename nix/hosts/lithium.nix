@@ -132,6 +132,10 @@ in {
         # Strangely, virtually required because of the odd way in which Nix
         # Flakes copies the configuration to the Nix store.
         pkgs.git
+        # Top, but prettier.
+        pkgs.htop
+        # Let us see ports and file handles held by processes.
+        pkgs.lsof
         # So we can run a janky session with the server, until it gets better
         # operationalized.
         pkgs.tmux
@@ -141,6 +145,10 @@ in {
         # The only valid rsync destinations and sources are hosts that have
         # rsync installed.
         pkgs.rsync
+        # We need an editor.  Even if we don't want to edit configuration files
+        # because we already have Nix, it's still helpful for things that use
+        # EDTIOR, such as C-x C-e in the shell.  Can we just uninstall nano?
+        pkgs.vim
       ];
       # Hostname is not an FQDN.
       networking.hostName = "lithium";
