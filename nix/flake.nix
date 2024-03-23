@@ -37,6 +37,9 @@
     };
     # Specify the source of Home Manager and Nixpkgs.
     nixpkgs.url = "github:nixos/nixpkgs/master";
+    # See if we can nix this (get it?!) because
+    # https://github.com/NixOS/nixpkgs/pull/296249 is now merged with a hopeful
+    # fix.
     nixpkgs-comfyui.url = "github:LoganBarnett/nixpkgs/comfyui";
     # nix-doom-emacs.url = "github:nix-community/nix-doom-emacs";
     home-manager-comfyui = {
