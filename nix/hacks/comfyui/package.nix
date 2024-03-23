@@ -41,8 +41,6 @@ let
     #   meta.mainProgram = "comfyui";
     #   paths = models;
     # }
-    # lib.strings.concatMapStrings (model: "ln -s ${model} $out${config.comfyui.${name}};") models
-    # lib.strings.concatMapStrings (model: "ln -s ${lib.debug.traceVal model} $out${config.comfyui.${name}};") models
     lib.strings.concatMapStrings (model:
       "mkdir -p $out/${path}/${name} ; ln -s ${model}  $out/${path}/${name}/ ;"
     ) models
@@ -80,13 +78,6 @@ let
     # )
     # torchsde
     torchvision-bin
-    # (torchvision-bin.override {
-    #   torch = pytorch-bin;
-    #   # torch = pytorch-bin.overrideAttrs {
-    #   #   # For some reason this has to be explicitly set.
-    #   #   cudaSupport = config.cudaSupport;
-    #   # };
-    # })
     # torchaudio
     (transformers.override { torch = pytorch-bin; })
     (safetensors.override { torch = pytorch-bin; })

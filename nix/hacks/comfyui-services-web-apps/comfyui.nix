@@ -12,6 +12,8 @@ let
     outputPath = "${cfg.dataPath}/output";
     customNodes = cfg.customNodes;
     checkpoints = cfg.models.checkpoints;
+    loras = cfg.models.loras;
+    vae = cfg.models.vae;
   };
 in
 {
@@ -129,6 +131,10 @@ in
         '';
       };
 
+      # TODO: Validate that the name of the package has extensions expected for
+      # file depending on where it's going.  Without the extension, comfyui
+      # won't find the file (or know how to treat the file), and a rename will
+      # have to be done, potentially triggering a very expensive re-download.
       models = mkOption {
         # TODO: See if we can make this tighter.
         # type = types.attrsOf {
@@ -142,6 +148,15 @@ in
         # }));
         default = {
           checkpoints = [];
+          clip = [];
+          clip_vision = [];
+          configs = [];
+          controlnet = [];
+          embeddings = [];
+          loras = [];
+          upscale_modules = [];
+          vae = [];
+          vae_approx = [];
         };
       };
     };
@@ -192,6 +207,15 @@ in
         mkdir -p $DATA/models
         ln -snf ${cfg.package}/extra_model_paths.yaml $DATA/extra_model_paths.yaml
         ${linkModels "checkpoints" cfg.models.checkpoints "${cfg.dataPath}/models"}
+        ${linkModels "clip" cfg.models.clip "${cfg.dataPath}/models"}
+        ${linkModels "clip_vision" cfg.models.clip_vision "${cfg.dataPath}/models"}
+        ${linkModels "configs" cfg.models.configs "${cfg.dataPath}/models"}
+        ${linkModels "controlnet" cfg.models.controlnet "${cfg.dataPath}/models"}
+        ${linkModels "embeddings" cfg.models.embeddings "${cfg.dataPath}/models"}
+        ${linkModels "loras" cfg.models.loras "${cfg.dataPath}/models"}
+        ${linkModels "vae" cfg.models.vae "${cfg.dataPath}/models"}
+        ${linkModels "vae_approx" cfg.models.vae_approx "${cfg.dataPath}/models"}
+        ${linkModels "upscale_modules" cfg.models.upscale_modules "${cfg.dataPath}/models"}
       '';
 
       serviceConfig = let

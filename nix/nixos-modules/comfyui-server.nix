@@ -59,11 +59,42 @@ in {
     models = {
       checkpoints = [
         (fetchModel {
-          name = "pony-xl-v6";
+          # It's critical that the extension is present, or comfyui won't find
+          # the file.
+          name = "pony-xl-v6.safetensors";
           url = "https://civitai.com/api/download/models/290640?type=Model&format=SafeTensor&size=pruned&fp=fp16";
           sha256 = "1cxh5450k3y9mkrf9dby7hbaydj3ymjwq5fvzsrqk6j3xkc2zav7";
         })
       ];
+      clip = [];
+      clip_vision = [];
+      configs = [];
+      controlnet = [];
+      embeddings = [];
+      loras = [
+        # https://civitai.com/models/264290?modelVersionId=398292
+        (fetchModel {
+          name = "ponx-xl-v6-artist-styles.safetensors";
+          url = "https://civitai.com/api/download/models/398292?type=Model&format=SafeTensor";
+          sha256 = "01m4zq2i1hyzvx95nq2v3n18b2m98iz0ryizdkyc1y42f1rwd0kx";
+        })
+        # https://civitai.com/models/200255/hands-xl-sd-15?modelVersionId=254267
+        # Requires an auth token.
+        # (fetchModel {
+        #   name = "hands-sdxl.safetensors";
+        #   url = "https://civitai.com/api/download/models/254267?type=Model&format=SafeTensor";
+        #   sha256 = "00f65fia7g0ammwjw2vw1yhijw5kd2c54ksv3d64mgw6inplamr3";
+        # })
+      ];
+      upscale_modules = [];
+      vae = [
+        (fetchModel {
+          name = "sdxl_vae.safetensors";
+          url = "https://civitai.com/api/download/models/290640?type=VAE";
+          sha256 = "1qf65fia7g0ammwjw2vw1yhijw5kd2c54ksv3d64mgw6inplamr3";
+        })
+      ];
+      vae_approx = [];
     };
     # package = pkgs.comfyui;
   };

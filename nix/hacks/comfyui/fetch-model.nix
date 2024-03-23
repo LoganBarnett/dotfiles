@@ -1,6 +1,6 @@
 { pkgs }:
 { url
-, name
+, name ? null
 , sha256
 # }: nixpkgs.fetchurl {
 }: builtins.fetchurl {
