@@ -16,6 +16,21 @@ in {
   # inject our own version via `imports`.
   disabledModules = [ "services/web-apps/comfyui.nix" ];
   imports = [ ../hacks/comfyui-services-web-apps/comfyui.nix ];
+  environment.systemPackages = [
+    # It's useful to be able to watch a network graph when downloading large
+    # models.  Otherwise I just stare at a blank terminal.  These packages
+    # (iftop and speedometer) provide means to watch the bits fly over the wire.
+    # It won't give me a sense of progress though.  I'm not sure how to do that
+    # besides use --verbose on the switch command (and even that seems iffy).
+    pkgs.iftop
+    # Uh wait, I thought I saw this somewhere.  Where did it go?
+    # pkgs.speedometer
+    # I've only been able to find this:
+    # https://manpages.ubuntu.com/manpages/jammy/man1/speedometer.1.html
+    # Here it is?
+    # https://github.com/wardi/speedometer
+    # Also: https://excess.org/speedometer/
+  ];
   # The firewall is enabled by default, per:
   # https://nixos.org/manual/nixos/unstable/index.html#sec-firewall
   networking.firewall.allowedTCPPorts = [ port ];
