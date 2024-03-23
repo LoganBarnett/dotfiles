@@ -17,6 +17,7 @@
 , modelsPath ? "/var/lib/comfyui/models"
 , inputPath ? "/var/lib/comfyui/input"
 , outputPath ? "/var/lib/comfyui/output"
+, tempPath ? "/var/lib/comfyui/temp"
 , userPath ? "/var/lib/comfyui/user"
 , customNodes ? []
 , loras ? []
@@ -94,12 +95,16 @@ let
     tqdm
   ] ++ (builtins.concatMap (node: node.dependencies) customNodes)));
 
+  # TODO: This needs to invoke things like --gpu-only or --cuda-device to force
+  # it to use the GPU correctly.  Though I don't know how to confirm that other
+  # than looking at speeds of inference runs.
   executable = writers.writeDashBin "comfyui" ''
     cd $out && \
     ${pythonEnv}/bin/python comfyui \
       --input-directory ${inputPath} \
       --output-directory ${outputPath} \
       --extra-model-paths-config ${modelPathsFile} \
+      --temp-directory ${tempPath} \
       "$@"
   '';
 
@@ -137,6 +142,7 @@ in stdenv.mkDerivation rec {
     echo "Setting up input and output folders"
     ln -s ${inputPath} $out/input
     ln -s ${outputPath} $out/output
+    mkdir -p $out/${tempPath}
     echo "Setting up custom nodes"
     ln -s ${customNodesCollection} $out/custom_nodes
     echo "Copying executable script"
