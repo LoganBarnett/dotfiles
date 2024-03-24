@@ -11,9 +11,7 @@ let
     inputPath = "${cfg.dataPath}/input";
     outputPath = "${cfg.dataPath}/output";
     customNodes = cfg.customNodes;
-    checkpoints = cfg.models.checkpoints;
-    loras = cfg.models.loras;
-    vae = cfg.models.vae;
+    models = cfg.models;
   };
 in
 {
@@ -123,8 +121,8 @@ in
       #                 [--windows-standalone-build] [--disable-metadata]
       #                 [--multi-user] [--verbose]
       extraArgs = mkOption {
-        type = types.str;
-        default = "";
+        type = types.attrOf types.str;
+        default = {};
         example = "--preview-method auto";
         description = mdDoc ''
           Additional arguments to be passed to comfyui
@@ -147,16 +145,16 @@ in
         #   };
         # }));
         default = {
-          checkpoints = [];
-          clip = [];
-          clip_vision = [];
-          configs = [];
-          controlnet = [];
-          embeddings = [];
-          loras = [];
-          upscale_modules = [];
-          vae = [];
-          vae_approx = [];
+          checkpoints = {};
+          clip = {};
+          clip_vision = {};
+          configs = {};
+          controlnet = {};
+          embeddings = {};
+          loras = {};
+          upscale_modules = {};
+          vae = {};
+          vae_approx = {};
         };
       };
     };
@@ -185,27 +183,75 @@ in
       };
 
       preStart = let
-  linkModels = name: models: path:
-    # symlinkJoin doesn't work because the models aren't directories, and
-    # symlinkJoin requires directories only.  No advice has been given on how to
-    # nest/wrap to overcome this.
-    # symlinkJoin {
-    #   name = "comfyui-models-${name}";
-    #   meta.mainProgram = "comfyui";
-    #   paths = models;
-    # }
-    # lib.strings.concatMapStrings (model: "ln -s ${model} $out${config.comfyui.${name}};") models
-    # lib.strings.concatMapStrings (model: "ln -s ${lib.debug.traceVal model} $out${config.comfyui.${name}};") models
-    lib.strings.concatMapStrings (model:
-      "mkdir -p ${path}/${name} ; ln -snf ${model}  ${path}/${name}/ ;"
-    ) models
-      ;
+        # Take all of the model files for the various model types defined in the
+        # config of `models`, and translate it into a series of symlink shell
+        # invocations.  The destination corresponds to the definitions in
+        # `config-data`.
+        # ex:
+        #
+        # linkModels
+        #   {
+        #     checkpoints = "/foo/checkpoints";
+        #     vae = "/foo/vae";
+        #   }
+        #   {
+        #     checkpoints = {
+        #       sdxxl = fetchModel {
+        #         url = "foo.com/sdxxl-v123";
+        #         sha256 = "sha-string";
+        #         format = "safetensors";
+        #       };
+        #     };
+        #     vae = {
+        #       fancy-vae = fetchModel {
+        #         url = "foo.com/fancy-vae-v456";
+        #         sha256 = "sha-string";
+        #         # TODO: Use another format for example.
+        #         format = "safetensors";
+        #       };
+        #     };
+        #   }
+        # Returns: ''
+        # mkdir -p /foo/checkpoints
+        # ln -s <sdxxl.drv> /foo/checkpoints/sdxxl.safetensors
+        # mkdir -p /foo/vae
+        # ln -s <fancy-vae.drv> /foo/vae/fancy-vae.safetensors
+        # ''
+        linkModels = model-paths: models:
+          (lib.strings.join "\n"
+            builtins.attrValues (
+              builtins.mapAttrs (mk: mv: let
+                path = model-paths.${mk};
+              in
+                builtins.attrValues
+                  (builtins.mapAttrs (name: value: ''
+                    mkdir -p ${path}
+                    ln -snf ${value} ${path}/${name}.${value.format}
+                  ''))
+              )
+            )
+          )
+        ;
+  # linkModels = name: models: path:
+  #   # symlinkJoin doesn't work because the models aren't directories, and
+  #   # symlinkJoin requires directories only.  No advice has been given on how to
+  #   # nest/wrap to overcome this.
+  #   # symlinkJoin {
+  #   #   name = "comfyui-models-${name}";
+  #   #   meta.mainProgram = "comfyui";
+  #   #   paths = models;
+  #   # }
+  #   lib.strings.concatMapStrings (model:
+  #     "mkdir -p ${path}/${name} ; ln -snf ${model}  ${path}/${name}/ ;"
+  #   ) models
+  #     ;
       in ''
         mkdir -p $DATA/input
         mkdir -p $DATA/output
         mkdir -p $DATA/custom_nodes
         mkdir -p $DATA/models
         ln -snf ${cfg.package}/extra_model_paths.yaml $DATA/extra_model_paths.yaml
+        ${linkModels }
         ${linkModels "checkpoints" cfg.models.checkpoints "${cfg.dataPath}/models"}
         ${linkModels "clip" cfg.models.clip "${cfg.dataPath}/models"}
         ${linkModels "clip_vision" cfg.models.clip_vision "${cfg.dataPath}/models"}

@@ -72,15 +72,15 @@ in {
     # package = pkgs.comfyui-cpu;
     package = pkgs.callPackage ../hacks/comfyui/package.nix {};
     models = {
-      checkpoints = [
-        (fetchModel {
+      checkpoints = {
+        pony-xl-v6 = (fetchModel {
           # It's critical that the extension is present, or comfyui won't find
           # the file.
-          name = "pony-xl-v6.safetensors";
+          format = "safetensors";
           url = "https://civitai.com/api/download/models/290640?type=Model&format=SafeTensor&size=pruned&fp=fp16";
           sha256 = "1cxh5450k3y9mkrf9dby7hbaydj3ymjwq5fvzsrqk6j3xkc2zav7";
-        })
-      ];
+        });
+      };
       clip = [];
       clip_vision = [];
       configs = [];

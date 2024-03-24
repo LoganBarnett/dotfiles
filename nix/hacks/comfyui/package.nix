@@ -20,32 +20,20 @@
 , tempPath ? "/var/lib/comfyui/temp"
 , userPath ? "/var/lib/comfyui/user"
 , customNodes ? []
-, loras ? []
-, checkpoints ? []
-, clip ? []
-, clip_vision ? []
-, configs ? []
-, controlnet ? []
-, embeddings ? []
-, upscale_modules ? []
-, vae ? []
-, vae_approx ? []
+, models ? {
+    checkpoints = {};
+    clip = {};
+    clip_vision = {};
+    configs = {};
+    controlnet = {};
+    embeddings = {};
+    upscale_modules = {};
+    vae = {};
+    vae_approx = {};
+  }
 }:
 
 let
-  linkModels = name: models: path:
-    # symlinkJoin doesn't work because the models aren't directories, and
-    # symlinkJoin requires directories only.  No advice has been given on how to
-    # nest/wrap to overcome this.
-    # symlinkJoin {
-    #   name = "comfyui-models-${name}";
-    #   meta.mainProgram = "comfyui";
-    #   paths = models;
-    # }
-    lib.strings.concatMapStrings (model:
-      "mkdir -p $out/${path}/${name} ; ln -s ${model}  $out/${path}/${name}/ ;"
-    ) models
-      ;
 
   config-data = {
     comfyui = {
