@@ -97,6 +97,7 @@ in
         description = mdDoc "custom nodes to add to the ComfyUI setup. Expects a list of packages from pkgs.comfyui-custom-nodes";
       };
 
+      # TODO: Provide these as formal arguments.
       # Argument dump:
       #  usage: comfyui [-h] [--listen [IP]] [--port PORT]
       #                 [--enable-cors-header [ORIGIN]]
@@ -121,7 +122,7 @@ in
       #                 [--windows-standalone-build] [--disable-metadata]
       #                 [--multi-user] [--verbose]
       extraArgs = mkOption {
-        type = types.attrOf types.str;
+        type = types.attrsOf types.str;
         default = {};
         example = "--preview-method auto";
         description = mdDoc ''
@@ -133,17 +134,37 @@ in
       # file depending on where it's going.  Without the extension, comfyui
       # won't find the file (or know how to treat the file), and a rename will
       # have to be done, potentially triggering a very expensive re-download.
-      models = mkOption {
-        # TODO: See if we can make this tighter.
-        # type = types.attrsOf {
-        # type = types.lazyAttrsOf {
-        # type = types.attrsOf (types.submodule ({ config, ... }: {
-        #   options = {
-        #     checkpoints = mkOption {
-        #       type = types.listOf types.package;
-        #     };
-        #   };
-        # }));
+      models = mkOption (let
+        fetcher-type = (types.submodule {
+          options = {
+            format = mkOption {
+              type = types.string;
+              default = "safetensors";
+            };
+            path = mkOption {
+              type = types.string;
+            };
+          };
+        });
+        fetcher-option = mkOption {
+          type = types.attrsOf fetcher-type;
+          default = {};
+        };
+      in {
+        type = (types.submodule {
+          options = {
+            checkpoints     = fetcher-option;
+            clip            = fetcher-option;
+            clip_vision     = fetcher-option;
+            configs         = fetcher-option;
+            controlnet      = fetcher-option;
+            embeddings      = fetcher-option;
+            loras           = fetcher-option;
+            upscale_modules = fetcher-option;
+            vae             = fetcher-option;
+            vae_approx      = fetcher-option;
+          };
+        });
         default = {
           checkpoints = {};
           clip = {};
@@ -156,7 +177,7 @@ in
           vae = {};
           vae_approx = {};
         };
-      };
+      });
     };
   };
 
@@ -183,6 +204,30 @@ in
       };
 
       preStart = let
+        inherit (lib.trivial) throwIfNot;
+        inherit (lib) isAttr isString;
+        inherit (lib.strings) concatStrings intersperse;
+        inherit (lib.lists) flatten;
+        inherit (lib.attrsets) attrValues mapAttrsToList;
+        # And here is ++leftPad++ sorry `join`.
+        join = (xs: concatStrings (intersperse "\n" xs));
+        throw-if-not-fetched = fetched:
+          throwIfNot (isAttrs fetched) "fetched must be an attrset."
+          throwIfNot (isString fetched.format) "fetched.format must be a string."
+          throwIfNot (isString fetched.path) "fetched.path must be a string."
+        ;
+        fetched-to-symlink = path: name: fetched: (
+          throwIfNot (isString path) "path must be a string."
+          throwIfNot (isString name) "name must be a string."
+          throw-if-not-fetched fetched
+            ''
+             ln -snf ${fetched.path} $out/${name}.${fetched.format}
+            ''
+          #   ''
+          #   mkdir -p ${path}
+          #   ln -snf ${fetched.path} ${path}/${name}.${fetched.format}
+          # ''
+        );
         # Take all of the model files for the various model types defined in the
         # config of `models`, and translate it into a series of symlink shell
         # invocations.  The destination corresponds to the definitions in
@@ -217,51 +262,68 @@ in
         # mkdir -p /foo/vae
         # ln -s <fancy-vae.drv> /foo/vae/fancy-vae.safetensors
         # ''
-        linkModels = model-paths: models:
-          (lib.strings.join "\n"
-            builtins.attrValues (
-              builtins.mapAttrs (mk: mv: let
-                path = model-paths.${mk};
-              in
-                builtins.attrValues
-                  (builtins.mapAttrs (name: value: ''
-                    mkdir -p ${path}
-                    ln -snf ${value} ${path}/${name}.${value.format}
-                  ''))
+        #
+        linkModels = base-path: models:
+          throwIfNot (isString base-path) "base-path must be a string."
+            throwIfNot (isAttrs models) "models must be an attrset."
+            (join (builtins.map
+              (x: let _ = lib.debug.traceVal x.model-type; in
+                lib.debug.traceVal ''
+                  ln -snf ${x.drv} ${cfg.dataPath}/models/${x.model-type}
+                ''
               )
-            )
-          )
+              (lib.debug.traceVal (flatten
+                (mapAttrsToList
+                  # TODO: Need to symlink the derivations created here to the
+                  # corresponding directories (like
+                  # /var/lib/comfyui/models/checkpoints).  The derivations
+                  # themselves hold onto the symlinks to the actual assets.
+                  (type: fetched-by-name:
+                    lib.debug.traceVal {
+                      model-type = type;
+                      # See
+                      # https://discourse.nixos.org/t/how-to-create-package-with-multiple-sources/9308/3
+                      # for how one should handle multiple sources.
+                      drv = (pkgs.stdenv.mkDerivation (let
+                        name = "comfyui-models-${type}";
+                      in {
+                        inherit name;
+                        pname = name;
+                        sourceRoot = name;
+                        # Nix doesn't know what to do with the fetched values,
+                        # erroring out with "do not know how to unpack source
+                        # archive <path>".
+                        # srcs = lib.debug.traceVal (mapAttrsToList
+                        #   (k: v: v.path)
+                        #   fetched-by-name
+                        # );
+                        installPhase = ''
+                          mkdir -p $out
+                        '' + (join (mapAttrsToList
+                          # (fetched-to-symlink (lib.debug.traceVal "${base-path}/${type}"))
+                          # TODO: Since these are derivations now, I'll need to
+                          # update fetched-to-symlink to copy or symlink to $out
+                          # instead of an absolute path.
+                          (fetched-to-symlink (lib.debug.traceVal base-path))
+                          fetched-by-name
+                        ));
+                        # No src/srcs, so don't do anything here.
+                        phases = [ "installPhase" ];
+                      }));
+                    }
+                  )
+                  (lib.debug.traceVal models)
+                )
+              ))
+            ))
         ;
-  # linkModels = name: models: path:
-  #   # symlinkJoin doesn't work because the models aren't directories, and
-  #   # symlinkJoin requires directories only.  No advice has been given on how to
-  #   # nest/wrap to overcome this.
-  #   # symlinkJoin {
-  #   #   name = "comfyui-models-${name}";
-  #   #   meta.mainProgram = "comfyui";
-  #   #   paths = models;
-  #   # }
-  #   lib.strings.concatMapStrings (model:
-  #     "mkdir -p ${path}/${name} ; ln -snf ${model}  ${path}/${name}/ ;"
-  #   ) models
-  #     ;
       in ''
-        mkdir -p $DATA/input
-        mkdir -p $DATA/output
-        mkdir -p $DATA/custom_nodes
-        mkdir -p $DATA/models
-        ln -snf ${cfg.package}/extra_model_paths.yaml $DATA/extra_model_paths.yaml
-        ${linkModels }
-        ${linkModels "checkpoints" cfg.models.checkpoints "${cfg.dataPath}/models"}
-        ${linkModels "clip" cfg.models.clip "${cfg.dataPath}/models"}
-        ${linkModels "clip_vision" cfg.models.clip_vision "${cfg.dataPath}/models"}
-        ${linkModels "configs" cfg.models.configs "${cfg.dataPath}/models"}
-        ${linkModels "controlnet" cfg.models.controlnet "${cfg.dataPath}/models"}
-        ${linkModels "embeddings" cfg.models.embeddings "${cfg.dataPath}/models"}
-        ${linkModels "loras" cfg.models.loras "${cfg.dataPath}/models"}
-        ${linkModels "vae" cfg.models.vae "${cfg.dataPath}/models"}
-        ${linkModels "vae_approx" cfg.models.vae_approx "${cfg.dataPath}/models"}
-        ${linkModels "upscale_modules" cfg.models.upscale_modules "${cfg.dataPath}/models"}
+        mkdir -p ${cfg.dataPath}/input
+        mkdir -p ${cfg.dataPath}/output
+        mkdir -p ${cfg.dataPath}/custom_nodes
+        mkdir -p ${cfg.dataPath}/models
+        ln -snf ${cfg.package}/extra_model_paths.yaml ${cfg.dataPath}/extra_model_paths.yaml
+        ${lib.debug.traceVal (linkModels "${cfg.dataPath}/models" cfg.models )}
       '';
 
       serviceConfig = let
@@ -282,8 +344,11 @@ in
             port = cfg.port;
           };
         in ''
-          ${mkComfyUIPackage cfg}/bin/comfyui ${toString args} ${cfg.extraArgs}
-        '';
+          ${mkComfyUIPackage cfg}/bin/comfyui ${toString args} ${
+            lib.strings.concatStrings (
+              lib.attrsets.mapAttrsToList (k: v: "--${k} ${v} ") cfg.extraArgs
+            )
+          }'';
         # TODO: Figure out what to do with dataPath, since it isn't used here
         # anymore.
         # StateDirectory = cfg.dataPath;

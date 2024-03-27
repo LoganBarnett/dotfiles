@@ -62,10 +62,10 @@ in {
   ];
   services.comfyui = {
     enable = true;
-    extraArgs =
+    extraArgs = {
       # Listen on 0.0.0.0, otherwise it's localhost connections only.
-      "--listen"
-    ;
+      listen = "0.0.0.0";
+    };
     dataPath = "/var/lib/comfyui";
     # Leaving this as the default seems to be broken with this error:
     # error: attribute 'cudaSupport' missing
@@ -81,18 +81,24 @@ in {
           sha256 = "1cxh5450k3y9mkrf9dby7hbaydj3ymjwq5fvzsrqk6j3xkc2zav7";
         });
       };
-      clip = [];
-      clip_vision = [];
-      configs = [];
-      controlnet = [];
-      embeddings = [];
-      loras = [
+      clip = {};
+      clip_vision = {};
+      configs = {};
+      controlnet = {
+        controlnet-v1_1_f1e-sd15-tile = (fetchModel {
+          format = "pth";
+          url = "https://huggingface.co/lllyasviel/ControlNet-v1-1/blob/main/control_v11f1e_sd15_tile.pth";
+          sha256 = "11qndcrfz5jrjghn6v9is813igfd8310knl1l9rwxbf8lvwjncbc";
+        });
+      };
+      embeddings = {};
+      loras = {
         # https://civitai.com/models/264290?modelVersionId=398292
-        (fetchModel {
-          name = "ponx-xl-v6-artist-styles.safetensors";
+        ponx-xl-v6-artist-styles = (fetchModel {
+          format = "safetensors";
           url = "https://civitai.com/api/download/models/398292?type=Model&format=SafeTensor";
           sha256 = "01m4zq2i1hyzvx95nq2v3n18b2m98iz0ryizdkyc1y42f1rwd0kx";
-        })
+        });
         # https://civitai.com/models/200255/hands-xl-sd-15?modelVersionId=254267
         # Requires an auth token.
         # (fetchModel {
@@ -100,16 +106,16 @@ in {
         #   url = "https://civitai.com/api/download/models/254267?type=Model&format=SafeTensor";
         #   sha256 = "00f65fia7g0ammwjw2vw1yhijw5kd2c54ksv3d64mgw6inplamr3";
         # })
-      ];
-      upscale_modules = [];
-      vae = [
-        (fetchModel {
-          name = "sdxl_vae.safetensors";
+      };
+      upscale_modules = {};
+      vae = {
+        sdxl_vae = (fetchModel {
+          format = "safetensors";
           url = "https://civitai.com/api/download/models/290640?type=VAE";
           sha256 = "1qf65fia7g0ammwjw2vw1yhijw5kd2c54ksv3d64mgw6inplamr3";
-        })
-      ];
-      vae_approx = [];
+        });
+      };
+      vae_approx = {};
     };
     # package = pkgs.comfyui;
   };
