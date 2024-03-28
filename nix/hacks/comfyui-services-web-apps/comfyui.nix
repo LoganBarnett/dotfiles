@@ -6,6 +6,7 @@ let
   cfg = config.services.comfyui;
   defaultUser = "comfyui";
   defaultGroup = defaultUser;
+  service-name = "comfyui";
   mkComfyUIPackage = cfg: cfg.package.override {
     modelsPath = "${cfg.dataPath}/models";
     inputPath = "${cfg.dataPath}/input";
@@ -22,10 +23,12 @@ in
 
       dataPath = mkOption {
         type = types.str;
-        default = "/var/lib/comfyui";
+        default = "/var/lib/${service-name}";
         description = mdDoc "path to the folders which stores models, custom nodes, input and output files";
       };
 
+      # TODO: This should probably use the global system cudaSupport by default
+      # and then allow overrides as necessary.
       cudaSupport = mkOption {
         type = types.bool;
         default = false;
@@ -86,7 +89,7 @@ in
       };
 
       port = mkOption {
-        type = types.int;
+        type = types.port;
         default = 8188;
         description = mdDoc "Set the listen port for the Web UI and API.";
       };
@@ -95,6 +98,61 @@ in
         type = types.listOf types.package;
         default = [];
         description = mdDoc "custom nodes to add to the ComfyUI setup. Expects a list of packages from pkgs.comfyui-custom-nodes";
+      };
+
+      listen = mkOption {
+        # TODO: Use a net mask, if such a type exists.
+        type = types.string;
+        # Assume a higher security posture by default.
+        default = "127.0.0.1";
+        description = "The net mask to listen to.";
+        example = "0.0.0.0";
+      };
+
+      cors-origin-domain = mkOption {
+        # TODO: Use a CORS "domain", which is a hostname + a port.  It might
+        # also include IPs and a port.  The port is required per CORS.
+        type = types.string;
+        default = "disabled";
+        description = ''The CORS domain to bless.  Use "disabled" to disable.  This must include a port'';
+        example = "foo.com:443";
+      };
+
+      cuda-malloc = mkOption {
+        type = types.bool;
+        # TODO: Verify this works.
+        default = cfg.cudaSupport;
+      };
+
+      max-upload-size = mkOption {
+        type = types.int;
+        default = null;
+      };
+
+      multi-user = mkOption {
+        type = types.bool;
+        default = false;
+      };
+
+      cuda-device = mkOption {
+        type = types.string;
+        description = ''The CUDA device to use.  Query for this using lspci or lshw.  Leave as null to auto-detect and/or use Nix CUDA settings (verify this before merging!).'';
+        default = null;
+      };
+
+      verbose = mkOption {
+        type = types.bool;
+        description = ''Use verbose logging.'';
+        default = false;
+      };
+
+      cross-attention = mkOption {
+        # TODO: Learn2enum in Nix.
+        # Valid types should be "split", "quad", and "pytorch".
+        type = types.enum;
+        # TODO: Learn what cross-attention is, and describe it here.
+        description = '' '';
+        default = null;
       };
 
       # TODO: Provide these as formal arguments.
@@ -142,6 +200,7 @@ in
               default = "safetensors";
             };
             path = mkOption {
+              # TODO: See if there is a path type we can use.
               type = types.string;
             };
           };
@@ -210,7 +269,11 @@ in
         inherit (lib.lists) flatten;
         inherit (lib.attrsets) attrValues mapAttrsToList;
         # And here is ++leftPad++ sorry `join`.
-        join = (xs: concatStrings (intersperse "\n" xs));
+        join = (sep: (xs: concatStrings (intersperse sep xs)));
+        join-lines = join "\n";
+        # We don't have a type system and this is pretty deep in the call stack,
+        # so do some checking on the inputs so we have fewer stones to overturn
+        # when something goes wrong later.
         throw-if-not-fetched = fetched:
           throwIfNot (isAttrs fetched) "fetched must be an attrset."
           throwIfNot (isString fetched.format) "fetched.format must be a string."
@@ -223,11 +286,8 @@ in
             ''
              ln -snf ${fetched.path} $out/${name}.${fetched.format}
             ''
-          #   ''
-          #   mkdir -p ${path}
-          #   ln -snf ${fetched.path} ${path}/${name}.${fetched.format}
-          # ''
         );
+        # TODO: Make sure this comment still holds true.
         # Take all of the model files for the various model types defined in the
         # config of `models`, and translate it into a series of symlink shell
         # invocations.  The destination corresponds to the definitions in
@@ -266,55 +326,44 @@ in
         linkModels = base-path: models:
           throwIfNot (isString base-path) "base-path must be a string."
             throwIfNot (isAttrs models) "models must be an attrset."
-            (join (builtins.map
-              (x: let _ = lib.debug.traceVal x.model-type; in
-                lib.debug.traceVal ''
+            (join-lines (builtins.map
+              (x: ''
                   ln -snf ${x.drv} ${cfg.dataPath}/models/${x.model-type}
-                ''
-              )
-              (lib.debug.traceVal (flatten
+                '')
+              (flatten
                 (mapAttrsToList
-                  # TODO: Need to symlink the derivations created here to the
-                  # corresponding directories (like
-                  # /var/lib/comfyui/models/checkpoints).  The derivations
-                  # themselves hold onto the symlinks to the actual assets.
-                  (type: fetched-by-name:
-                    lib.debug.traceVal {
-                      model-type = type;
-                      # See
-                      # https://discourse.nixos.org/t/how-to-create-package-with-multiple-sources/9308/3
-                      # for how one should handle multiple sources.
-                      drv = (pkgs.stdenv.mkDerivation (let
-                        name = "comfyui-models-${type}";
-                      in {
-                        inherit name;
-                        pname = name;
-                        sourceRoot = name;
-                        # Nix doesn't know what to do with the fetched values,
-                        # erroring out with "do not know how to unpack source
-                        # archive <path>".
-                        # srcs = lib.debug.traceVal (mapAttrsToList
-                        #   (k: v: v.path)
-                        #   fetched-by-name
-                        # );
-                        installPhase = ''
+                  (type: fetched-by-name: {
+                    model-type = type;
+                    # See
+                    # https://discourse.nixos.org/t/how-to-create-package-with-multiple-sources/9308/3
+                    # for how one should handle multiple sources.
+                    drv = (pkgs.stdenv.mkDerivation (let
+                      name = "comfyui-models-${type}";
+                    in {
+                      inherit name;
+                      pname = name;
+                      sourceRoot = name;
+                      # Nix doesn't know what to do with the fetched values,
+                      # erroring out with "do not know how to unpack source
+                      # archive <path>".
+                      # srcs = (mapAttrsToList
+                      #   (k: v: v.path)
+                      #   fetched-by-name
+                      # );
+                      installPhase = ''
                           mkdir -p $out
-                        '' + (join (mapAttrsToList
-                          # (fetched-to-symlink (lib.debug.traceVal "${base-path}/${type}"))
-                          # TODO: Since these are derivations now, I'll need to
-                          # update fetched-to-symlink to copy or symlink to $out
-                          # instead of an absolute path.
-                          (fetched-to-symlink (lib.debug.traceVal base-path))
+                        '' + (join-lines (mapAttrsToList
+                          (fetched-to-symlink base-path)
                           fetched-by-name
                         ));
-                        # No src/srcs, so don't do anything here.
-                        phases = [ "installPhase" ];
-                      }));
-                    }
+                      # No src/srcs, so don't do anything with them.
+                      phases = [ "installPhase" ];
+                    }));
+                  }
                   )
-                  (lib.debug.traceVal models)
+                  models
                 )
-              ))
+              )
             ))
         ;
       in ''
@@ -323,32 +372,36 @@ in
         mkdir -p ${cfg.dataPath}/custom_nodes
         mkdir -p ${cfg.dataPath}/models
         ln -snf ${cfg.package}/extra_model_paths.yaml ${cfg.dataPath}/extra_model_paths.yaml
-        ${lib.debug.traceVal (linkModels "${cfg.dataPath}/models" cfg.models )}
+        ${linkModels "${cfg.dataPath}/models" cfg.models}
       '';
 
-      serviceConfig = let
-        # This should be hoisted higher and applied elsewhere.
-        name = "comfyui";
-      in {
+      serviceConfig = {
         User = cfg.user;
         Group = cfg.group;
         # These directories must be relative to /var/lib.  Absolute paths are
         # greeted with:
         #  <path-to-unit>: StateDirectory= path is absolute, ignoring: <abs-path>
-        RuntimeDirectory = [ name ];
-        StateDirectory = [ name ];
-        WorkingDirectory = "/run/${name}";
+        RuntimeDirectory = [ service-name ];
+        StateDirectory = [ service-name ];
+        WorkingDirectory = "/run/${service-name}";
         ExecStart = let
           args = cli.toGNUCommandLine {} {
             cpu = cfg.useCPU;
+            enable-cors-header = cfg.cors-origin-domain;
+            cuda-device = cfg.cuda-device;
+            cuda-malloc = cfg.cuda-malloc;
+            disable-cuda-malloc = !cfg.cuda-malloc;
+            listen = cfg.listen;
+            max-upload-size = cfg.max-upload-size;
+            multi-user = cfg.multi-user;
             port = cfg.port;
-          };
-        in ''
-          ${mkComfyUIPackage cfg}/bin/comfyui ${toString args} ${
-            lib.strings.concatStrings (
-              lib.attrsets.mapAttrsToList (k: v: "--${k} ${v} ") cfg.extraArgs
-            )
-          }'';
+            verbose = cfg.verbose;
+            # TODO: Figure out how to enum into this.
+            # Like this?
+            use-pytorch-cross-attention = cfg.cross-attention == "pytorch";
+            # Or something dynamic + future proof?
+          } // cfg.extraArgs;
+        in ''${mkComfyUIPackage cfg}/bin/comfyui ${toString args}'';
         # TODO: Figure out what to do with dataPath, since it isn't used here
         # anymore.
         # StateDirectory = cfg.dataPath;
@@ -357,6 +410,9 @@ in
         # Prevent it from restarting _too_ much though.  Stop if three times a
         # minute.  This might need a better default from someone with better
         # sysadmin chops.
+        # TODO: One of these fields is invalid even though it's listed in the
+        # documentation.  Need a link to the offending doc, the correct field to
+        # use, and a pull request to correct it.
         StartLimitIntervalSec = "1m";
         StartLimitBurst = 3;
       };

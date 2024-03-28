@@ -62,9 +62,9 @@ in {
   ];
   services.comfyui = {
     enable = true;
+    # Listen on 0.0.0.0, otherwise it's localhost connections only.
+    listen = "0.0.0.0";
     extraArgs = {
-      # Listen on 0.0.0.0, otherwise it's localhost connections only.
-      listen = "0.0.0.0";
     };
     dataPath = "/var/lib/comfyui";
     # Leaving this as the default seems to be broken with this error:
