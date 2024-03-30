@@ -125,7 +125,7 @@ in
       };
 
       max-upload-size = mkOption {
-        type = types.int;
+        type = types.nullOr types.int;
         default = null;
       };
 
@@ -135,7 +135,7 @@ in
       };
 
       cuda-device = mkOption {
-        type = types.string;
+        type = types.nullOr types.string;
         description = ''The CUDA device to use.  Query for this using lspci or lshw.  Leave as null to auto-detect and/or use Nix CUDA settings (verify this before merging!).'';
         default = null;
       };
@@ -149,7 +149,7 @@ in
       cross-attention = mkOption {
         # TODO: Learn2enum in Nix.
         # Valid types should be "split", "quad", and "pytorch".
-        type = types.enum;
+        type = types.nullOr types.enum;
         # TODO: Learn what cross-attention is, and describe it here.
         description = '' '';
         default = null;
@@ -385,7 +385,7 @@ in
         StateDirectory = [ service-name ];
         WorkingDirectory = "/run/${service-name}";
         ExecStart = let
-          args = cli.toGNUCommandLine {} {
+          args = cli.toGNUCommandLine {} ({
             cpu = cfg.useCPU;
             enable-cors-header = cfg.cors-origin-domain;
             cuda-device = cfg.cuda-device;
@@ -398,9 +398,9 @@ in
             verbose = cfg.verbose;
             # TODO: Figure out how to enum into this.
             # Like this?
-            use-pytorch-cross-attention = cfg.cross-attention == "pytorch";
+            # use-pytorch-cross-attention = cfg.cross-attention == "pytorch";
             # Or something dynamic + future proof?
-          } // cfg.extraArgs;
+          } // cfg.extraArgs);
         in ''${mkComfyUIPackage cfg}/bin/comfyui ${toString args}'';
         # TODO: Figure out what to do with dataPath, since it isn't used here
         # anymore.
