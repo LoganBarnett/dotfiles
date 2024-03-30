@@ -287,6 +287,36 @@ in
              ln -snf ${fetched.path} $out/${name}.${fetched.format}
             ''
         );
+
+        # TODO: Should we submit this as a core/built-in function?
+        # In its current state, it is not suitable for a general purpose tool.
+        # Right now `paths` is expected to be symlink statements, with the name
+        # done a particular way.  More thought should be given as to how that is
+        # to be made generic, or the parameter must be renamed and documented.
+        # Perhaps the consumer should make intermediate derivations that capture
+        # the name in its pure form?
+        # Like joinSymlinks, creates a derivation whose assets are joined.
+        # joinSymlinks doesn't support joining a derivation that is the asset
+        # itself.  This handles the single-asset case only.  See
+        # https://discourse.nixos.org/t/how-to-create-package-with-multiple-sources/9308/3
+        # for how to handle packages with multiple assets.
+        join-single-assets-symlinks = { name, paths, ... }@args :
+          pkgs.stdenv.mkDerivation ({
+            inherit name;
+            pname = name;
+            sourceRoot = name; # Is this required?
+            # When using srcs, Nix doesn't know what to do with the fetched
+            # values, erroring out with "do not know how to unpack source
+            # archive <path>".  Instead we use installPhase to symlink the
+            # assets under $out.
+            # srcs = ...;
+            installPhase = ''
+              mkdir -p $out
+            '' + (join-lines paths);
+            # No src/srcs, so don't do anything with them.
+            phases = [ "installPhase" ];
+          });
+
         # TODO: Make sure this comment still holds true.
         # Take all of the model files for the various model types defined in the
         # config of `models`, and translate it into a series of symlink shell
@@ -334,33 +364,14 @@ in
                 (mapAttrsToList
                   (type: fetched-by-name: {
                     model-type = type;
-                    # See
-                    # https://discourse.nixos.org/t/how-to-create-package-with-multiple-sources/9308/3
-                    # for how one should handle multiple sources.
-                    drv = (pkgs.stdenv.mkDerivation (let
+                    drv = (join-single-assets-symlinks {
                       name = "comfyui-models-${type}";
-                    in {
-                      inherit name;
-                      pname = name;
-                      sourceRoot = name;
-                      # Nix doesn't know what to do with the fetched values,
-                      # erroring out with "do not know how to unpack source
-                      # archive <path>".
-                      # srcs = (mapAttrsToList
-                      #   (k: v: v.path)
-                      #   fetched-by-name
-                      # );
-                      installPhase = ''
-                          mkdir -p $out
-                        '' + (join-lines (mapAttrsToList
-                          (fetched-to-symlink base-path)
-                          fetched-by-name
-                        ));
-                      # No src/srcs, so don't do anything with them.
-                      phases = [ "installPhase" ];
-                    }));
-                  }
-                  )
+                      paths = (mapAttrsToList
+                        (fetched-to-symlink base-path)
+                        fetched-by-name
+                      );
+                    });
+                  })
                   models
                 )
               )
