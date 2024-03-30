@@ -101,11 +101,13 @@ in {
         });
         # https://civitai.com/models/200255/hands-xl-sd-15?modelVersionId=254267
         # Requires an auth token.
-        # (fetchModel {
-        #   name = "hands-sdxl.safetensors";
-        #   url = "https://civitai.com/api/download/models/254267?type=Model&format=SafeTensor";
-        #   sha256 = "00f65fia7g0ammwjw2vw1yhijw5kd2c54ksv3d64mgw6inplamr3";
-        # })
+        # Versions are not posted, so just use the "Updated:" date.
+        hands-sdxl-v20240305 = (fetchModel {
+          bearer = (builtins.readFile ./civitai-token.txt);
+          format = "safetensors";
+          url = "https://civitai.com/api/download/models/254267?type=Model&format=SafeTensor";
+          sha256 = "sha256-a/NpZNiVK09Kdzs/pl0yADCF57BdCVuugYJd+g8Q9Kk=";
+        });
       };
       upscale_modules = {};
       vae = {
