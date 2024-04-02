@@ -1,9 +1,20 @@
-{ emacs-overlay, fenix, home-manager, nixpkgs }: {
+let
   system = "aarch64-darwin";
+in
+{ flake-inputs }: {
+  inherit system;
   modules = [
-    home-manager.darwinModules.home-manager
+    (import ../nixos-modules/secrets.nix {
+      inherit flake-inputs system;
+      host-id = "scandium";
+    })
     {
-      nixpkgs.overlays = [ fenix.overlays.default ];
+      age.rekey.hostPubkey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIN3jJteck5yCfIm0iA4qKSIVx9zh6qhCuAt5cV1Ysib+";
+      # age.secrets = [];
+    }
+    flake-inputs.home-manager.darwinModules.home-manager
+    {
+      nixpkgs.overlays = [ flake-inputs.fenix.overlays.default ];
     }
     # Before I was using a curried function to pass these things in, but
     # the _module.args idiom is how I can ensure these values get passed
@@ -13,8 +24,11 @@
     # need to use this at this point, but making it all consistent has
     # value.
     {
-      _module.args.emacs-overlay = emacs-overlay;
-      _module.args.nixpkgs = nixpkgs;
+      _module.args.emacs-overlay = flake-inputs.emacs-overlay;
+      _module.args.nixpkgs = flake-inputs.nixpkgs;
+    }
+    {
+      config.networking.hostName = "scandium";
     }
     ../darwin.nix
     ../users/logan-personal.nix

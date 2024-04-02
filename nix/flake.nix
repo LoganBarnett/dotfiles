@@ -3,6 +3,18 @@
   description = "Nix configuration of logan";
 
   inputs = {
+    agenix = {
+      url = "github:ryantm/agenix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    # https://github.com/oddlama/agenix-rekey
+    # Allows re-keying and bootstrapping of secrets used by agenix.
+    agenix-rekey = {
+      url = "github:oddlama/agenix-rekey";
+      # There is a documented gotcha in the readme if this must change.  Review
+      # agenix-rekey's README for details.
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     darwin = {
       url = "github:LnL7/nix-darwin/master";
       # rev = "72dd60bfc98c128149d84213b17d1b8a68863055";
@@ -53,6 +65,8 @@
   };
 
   outputs = {
+    agenix,
+    agenix-rekey,
     darwin,
     disko,
     emacs-overlay,
@@ -98,12 +112,12 @@
 
       darwinConfigurations."M-CL64PK702X" =
         darwin.lib.darwinSystem (import ./hosts/M-CL64PK702X.nix {
-          inherit emacs-overlay fenix home-manager nixpkgs;
+          inherit flake-inputs;
         });
 
       darwinConfigurations."scandium" =
         darwin.lib.darwinSystem (import ./hosts/scandium.nix {
-          inherit emacs-overlay fenix home-manager nixpkgs;
+          inherit flake-inputs;
         });
 
       nixosConfigurations.lithium = let
@@ -111,13 +125,13 @@
         pkgs = import nixpkgs-comfyui {
           inherit system;
           specialArgs = {
-            inherit nixos-hardware;
+            inherit flake-inputs;
           };
         };
       in
         nixpkgs-comfyui.lib.nixosSystem (import ./hosts/lithium.nix {
           diskoProper = disko;
-          inherit nixos-hardware;
+          inherit flake-inputs;
         });
       # Unsure if we need this, but if we do, it serves as a shortcut
       # essentially.
@@ -150,5 +164,14 @@
         .isoImage
       ;
 
+      agenix-rekey = agenix-rekey.configure {
+      #   # Must be relative to the flake.nix file.
+      #   localStorageDir = ./. + "/secrets/${self.nixosConfigurations.config.networking.hostName}";
+        userFlake = self;
+        nodes = self.nixosConfigurations;
+      #   storageMode = "local";
+      };
+
     };
+
 }

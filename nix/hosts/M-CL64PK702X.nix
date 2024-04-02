@@ -1,9 +1,9 @@
-{ emacs-overlay, fenix, home-manager, nixpkgs }: {
+{ flake-inputs }: {
   system = "aarch64-darwin";
   modules = [
-    home-manager.darwinModules.home-manager
+    flake-inputs.home-manager.darwinModules.home-manager
     {
-      nixpkgs.overlays = [ fenix.overlays.default ];
+      nixpkgs.overlays = [ flake-inputs.fenix.overlays.default ];
     }
     # the _module.args idiom is how I can ensure these values get passed via the
     # internal callPackage mechanism for darwinSystem on these modules.  We want
@@ -11,8 +11,11 @@
     # cross-system compiling.  I don't know that we need to use this at this
     # point, but making it all consistent has value.
     {
-			_module.args.emacs-overlay = emacs-overlay;
-      _module.args.nixpkgs = nixpkgs;
+			_module.args.emacs-overlay = flake-inputs.emacs-overlay;
+      _module.args.nixpkgs = flake-inputs.nixpkgs;
+    }
+    {
+      config.networking.hostName = "M-CL64PK702X";
     }
     ../darwin.nix
     ../users/logan-new-e-ah.nix

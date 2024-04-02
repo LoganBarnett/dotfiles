@@ -8,7 +8,7 @@
 # Not all of the configuration here comes from that, but I am starting to
 # integrate it where I can.
 ################################################################################
-{ nixos-hardware, pkgs, ... }: let
+{ flake-inputs, pkgs, ... }: let
   linux-packages = pkgs.linuxPackages_latest;
 in {
   # See https://nixos.wiki/wiki/Linux_kernel for values and options.
@@ -56,10 +56,10 @@ in {
   ];
   # I'd like to better understand what these are doing.
   imports = [
-    nixos-hardware.nixosModules.common-pc
-    nixos-hardware.nixosModules.common-pc-ssd
-    nixos-hardware.nixosModules.common-cpu-amd-pstate
-    nixos-hardware.nixosModules.common-gpu-nvidia-nonprime
+    flake-inputs.nixos-hardware.nixosModules.common-pc
+    flake-inputs.nixos-hardware.nixosModules.common-pc-ssd
+    flake-inputs.nixos-hardware.nixosModules.common-cpu-amd-pstate
+    flake-inputs.nixos-hardware.nixosModules.common-gpu-nvidia-nonprime
   ];
   hardware.opengl.enable = true;
   hardware.opengl.driSupport = true;

@@ -11,14 +11,21 @@
 # The final NixOS module is the server specific configuration, with everything
 # before that being reusable modules (or parameterized, reusable modules).
 ################################################################################
-{ diskoProper, nixos-hardware }: let
+{ diskoProper, flake-inputs }: let
   system = "x86_64-linux";
 in {
   inherit system;
   specialArgs = {
-    inherit nixos-hardware;
+    inherit flake-inputs;
   };
   modules = [
+    # (import ../nixos-modules/secrets.nix {
+    #   inherit flake-inputs system;
+    #   host-id = "lithium";
+    # })
+    # {
+    #   age.rekey.hostPubKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFTo4RIiSgrhycr+bUYnWi+XoaDM3tSC1f/luCLJtzcf";
+    # }
     # We can't use `disko` because it's taken, I guess.
     diskoProper.nixosModules.disko
     ../users/logan-server.nix
