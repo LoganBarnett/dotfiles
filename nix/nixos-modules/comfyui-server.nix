@@ -73,6 +73,12 @@ in {
     package = pkgs.callPackage ../hacks/comfyui/package.nix {};
     models = {
       checkpoints = {
+        # Pony generates some really high quality images - they tend to be more
+        # based on a digital painting style but can do other things as well.
+        # This makes it an excellent model for generating characters.
+        # WARNING:  Pony is capable of generating some _very_ NSFW
+        # images.  You should be able to use the negative prompt "nsfw" and
+        # perhaps others to avoid this.
         pony-xl-v6 = (fetchModel {
           # It's critical that the extension is present, or comfyui won't find
           # the file.
