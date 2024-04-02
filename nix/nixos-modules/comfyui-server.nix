@@ -89,8 +89,18 @@ in {
       };
       clip = {};
       clip_vision = {};
-      configs = {};
+      configs = {
+        # https://huggingface.co/lllyasviel/ControlNet-v1-1
+        # See also the accompanying file in `controlnet`.
+        controlnet-v1_1_fe-sd15-tile = (fetchModel {
+          format = "yaml";
+          url = "https://huggingface.co/lllyasviel/ControlNet-v1-1/raw/main/control_v11f1e_sd15_tile.yaml";
+          sha256 = "01qndcrfz5jrjghn6v9is813igfd8310knl1l9rwxbf8lvwjncbc";
+        });
+      };
       controlnet = {
+        # https://huggingface.co/lllyasviel/ControlNet-v1-1
+        # See also the accompanying file in `configs`.
         controlnet-v1_1_f1e-sd15-tile = (fetchModel {
           format = "pth";
           url = "https://huggingface.co/lllyasviel/ControlNet-v1-1/blob/main/control_v11f1e_sd15_tile.pth";
