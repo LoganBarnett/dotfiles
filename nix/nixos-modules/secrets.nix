@@ -1,4 +1,8 @@
 { flake-inputs, system, host-id }: { pkgs, ... }: {
+  nixpkgs.overlays = [
+    # This lets us include the agenix-rekey package.
+    flake-inputs.agenix-rekey.overlays.default
+  ];
   rekey.secrets = (import ../secrets/secrets.nix);
   # rekey.nixosConfigurations = flake-inputs.self.nixosConfigurations;
   # rekey.nodes = flake-inputs.self.nixosConfigurations;

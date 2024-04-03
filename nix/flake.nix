@@ -153,7 +153,7 @@
           buildPlatform = "aarch64-linux";
           destinationHostname = "lithium";
           destinationPlatform = "x86_64-linux";
-          inherit nixpkgs pkgs;
+          inherit flake-inputs nixpkgs pkgs;
         }));
       packages.aarch64-darwin.nucleus-installer = self
         .nixosConfigurations
@@ -168,7 +168,7 @@
       #   # Must be relative to the flake.nix file.
       #   localStorageDir = ./. + "/secrets/${self.nixosConfigurations.config.networking.hostName}";
         userFlake = self;
-        nodes = self.nixosConfigurations;
+        nodes = self.nixosConfigurations // self.darwinConfigurations;
       #   storageMode = "local";
       };
 

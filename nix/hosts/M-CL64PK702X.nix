@@ -1,6 +1,16 @@
-{ flake-inputs }: {
+{ flake-inputs }: let
+  hostname = "M-CL64PK702X";
   system = "aarch64-darwin";
+in {
+  inherit system;
   modules = [
+    (import ../nixos-modules/secrets.nix {
+      inherit flake-inputs system;
+      host-id = hostname;
+    })
+    {
+      age.rekey.hostPubkey = "";
+    }
     flake-inputs.home-manager.darwinModules.home-manager
     {
       nixpkgs.overlays = [ flake-inputs.fenix.overlays.default ];
@@ -15,7 +25,7 @@
       _module.args.nixpkgs = flake-inputs.nixpkgs;
     }
     {
-      config.networking.hostName = "M-CL64PK702X";
+      config.networking.hostName = hostname;
     }
     ../darwin.nix
     ../users/logan-new-e-ah.nix

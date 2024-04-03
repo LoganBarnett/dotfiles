@@ -12,12 +12,21 @@
 {
   buildPlatform,
   destinationPlatform,
+  flake-inputs,
   nixpkgs,
   ...
 } : let
-in {
   system = destinationPlatform;
+in {
+  inherit system;
   modules = [
+    (import ../nixos-modules/secrets.nix {
+      inherit flake-inputs system;
+      host-id = "nucleus";
+    })
+    {
+      age.rekey.hostPubkey = "";
+    }
     ../hacks/installer/installation-cd-minimal.nix
     # "${nixpkgs}/nixos/modules/installer/cd-dvd/installation-cd-minimal.nix"
     ../users/logan-server.nix

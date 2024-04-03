@@ -19,13 +19,13 @@ in {
     inherit flake-inputs;
   };
   modules = [
-    # (import ../nixos-modules/secrets.nix {
-    #   inherit flake-inputs system;
-    #   host-id = "lithium";
-    # })
-    # {
-    #   age.rekey.hostPubKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFTo4RIiSgrhycr+bUYnWi+XoaDM3tSC1f/luCLJtzcf";
-    # }
+    (import ../nixos-modules/secrets.nix {
+      inherit flake-inputs system;
+      host-id = "lithium";
+    })
+    {
+      age.rekey.hostPubkey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFTo4RIiSgrhycr+bUYnWi+XoaDM3tSC1f/luCLJtzcf";
+    }
     # We can't use `disko` because it's taken, I guess.
     diskoProper.nixosModules.disko
     ../users/logan-server.nix
