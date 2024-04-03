@@ -26,16 +26,16 @@ let
     scandium
   ];
 in {
-  "lithium-age-ssh-private.age" = {
-    name = "lithium-age-ssh-private.age";
-    rekeyFile = ./lithium-age-ssh-private.age;
-    # publicKeys = deployers;
-  };
-  "civitai-token.age" = {
-    name = "civitai-token.age";
-    rekeyFile = ./civitai-token.age;
-    # publicKeys = [ lithium ];
-  };
+  # lithium-age-ssh-private = {
+  #   # name = "lithium-age-ssh-private.age";
+  #   rekeyFile = ./lithium-age-ssh-private.age;
+  #   # publicKeys = deployers;
+  # };
+  # "civitai-token.age" = {
+  #   name = "civitai-token.age";
+  #   rekeyFile = ./civitai-token.age;
+  #   # publicKeys = [ lithium ];
+  # };
   # How to make a new secret (substitute $secret as needed):
   # 1. Create an attribute here with `"$secret.age".publicKeys = [];`.
   # 2. Populate the `publicKeys` list with the public keys for the systems where

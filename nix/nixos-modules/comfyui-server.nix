@@ -5,7 +5,7 @@
 # This leverages work from https://github.com/NixOS/nixpkgs/pull/268378 by
 # @fazo96.  As such it will be using my fork of fazo96's fork.
 ################################################################################
-{ lib, pkgs, ... }: let
+{ config, lib, pkgs, ... }: let
   # Default ComfyUI port.
   port = 8188;
   fetchModel = pkgs.callPackage ../hacks/comfyui/fetch-model.nix {};
@@ -116,10 +116,9 @@ in {
           sha256 = "01m4zq2i1hyzvx95nq2v3n18b2m98iz0ryizdkyc1y42f1rwd0kx";
         });
         # https://civitai.com/models/200255/hands-xl-sd-15?modelVersionId=254267
-        # Requires an auth token.
         # Versions are not posted, so just use the "Updated:" date.
         hands-sdxl-v20240305 = (fetchModel {
-          bearer = (builtins.readFile ./civitai-token.txt);
+          bearer = lib.fileContents config.age.secrets.civitai-token.path;
           format = "safetensors";
           url = "https://civitai.com/api/download/models/254267?type=Model&format=SafeTensor";
           sha256 = "sha256-a/NpZNiVK09Kdzs/pl0yADCF57BdCVuugYJd+g8Q9Kk=";
