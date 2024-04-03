@@ -58,7 +58,19 @@ echo "Deploying to $dest..."
 # rsync is ideal, but needs to be present on the remote machine.  We don't have
 # that setup yet - or at least I have old installer without it.  Next time we
 # look, switch.
-rsync --archive --verbose --human-readable --exclude='result' ./ $dest':~/proton-nix'
+# We exclude .git because we do a `git init && git add .` on the remote side,
+# and this creates a .git directory.  This will prevent rsync from deleting the
+# .git directory and then subsequently our script recreates it.  The process is
+# very slow and we're going to update the staged state anyways.
+rsync \
+  --archive \
+  --verbose \
+  --human-readable \
+  --update \
+  --delete-after \
+  --exclude='result' \
+  --exclude='.git' \
+  ./ $dest':~/proton-nix'
 # This needs to be sudo because nixos-rebuild claims one or more of the .git
 # files.
 # ssh $dest 'sudo rm -rf $HOME/proton-nix'
