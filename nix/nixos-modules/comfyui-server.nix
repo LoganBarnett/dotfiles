@@ -124,6 +124,16 @@ in {
           url = "https://civitai.com/api/download/models/254267?type=Model&format=SafeTensor";
           sha256 = "sha256-a/NpZNiVK09Kdzs/pl0yADCF57BdCVuugYJd+g8Q9Kk=";
         });
+        # https://civitai.com/models/200251/feet?modelVersionId=225347
+        # Versions are not posted, so just use the "Updated:" date.
+        # This is posted by the same author as the hands lora, and releases seem
+        # to go out together.
+        # feet-sdxl-v20240305 = (fetchModel {
+        #   bearer = lib.fileContents config.age.secrets.civitai-token.path;
+        #   format = "safetensors";
+        #   url = "https://civitai.com/api/download/models/225347?type=Model&format=SafeTensor";
+        #   sha256 = "";
+        # });
       };
       upscale_modules = {};
       vae = {
