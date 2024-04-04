@@ -7,10 +7,8 @@ in {
     (import ../nixos-modules/secrets.nix {
       inherit flake-inputs system;
       host-id = hostname;
+      host-public-key = "";
     })
-    {
-      age.rekey.hostPubkey = "";
-    }
     flake-inputs.home-manager.darwinModules.home-manager
     {
       nixpkgs.overlays = [ flake-inputs.fenix.overlays.default ];

@@ -7,11 +7,8 @@ in
     (import ../nixos-modules/secrets.nix {
       inherit flake-inputs system;
       host-id = "scandium";
+      host-public-key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIN3jJteck5yCfIm0iA4qKSIVx9zh6qhCuAt5cV1Ysib+";
     })
-    {
-      age.rekey.hostPubkey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIN3jJteck5yCfIm0iA4qKSIVx9zh6qhCuAt5cV1Ysib+";
-      # age.secrets = [];
-    }
     flake-inputs.home-manager.darwinModules.home-manager
     {
       nixpkgs.overlays = [ flake-inputs.fenix.overlays.default ];

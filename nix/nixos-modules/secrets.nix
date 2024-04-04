@@ -1,4 +1,4 @@
-{ flake-inputs, system, host-id }: { pkgs, ... }: {
+{ flake-inputs, system, host-id, host-public-key }: { config, pkgs, lib, assertMsg, ... }: {
   nixpkgs.overlays = [
     # This lets us include the agenix-rekey package.
     flake-inputs.agenix-rekey.overlays.default
@@ -11,6 +11,7 @@
     secrets = (import ../secrets/secrets.nix );
   # age.secrets = ../secrets/secrets.nix;
     rekey = {
+      hostPubkey = host-public-key;
       masterIdentities = [
         ../secrets/agenix-master-key.pub
       ];

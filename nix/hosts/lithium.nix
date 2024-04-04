@@ -22,13 +22,11 @@ in {
     (import ../nixos-modules/secrets.nix {
       inherit flake-inputs system;
       host-id = "lithium";
+      host-public-key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFTo4RIiSgrhycr+bUYnWi+XoaDM3tSC1f/luCLJtzcf";
     })
-    {
-      age.rekey.hostPubkey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFTo4RIiSgrhycr+bUYnWi+XoaDM3tSC1f/luCLJtzcf";
       age.secrets.civitai-token = {
         rekeyFile = ../secrets/rekeyed/lithium/civitai-token.age;
       };
-    }
     # We can't use `disko` because it's taken, I guess.
     diskoProper.nixosModules.disko
     ../users/logan-server.nix
