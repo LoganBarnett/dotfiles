@@ -12,6 +12,7 @@
 # before that being reusable modules (or parameterized, reusable modules).
 ################################################################################
 { diskoProper, flake-inputs }: let
+  host-id = "lithium";
   system = "x86_64-linux";
 in {
   inherit system;
@@ -20,14 +21,10 @@ in {
   };
   modules = [
     (import ../nixos-modules/secrets.nix {
-      inherit flake-inputs system;
-      host-id = "lithium";
+      inherit flake-inputs host-id system;
       host-public-key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFTo4RIiSgrhycr+bUYnWi+XoaDM3tSC1f/luCLJtzcf";
     })
     ({ lib, ... }: {
-      age.secrets.civitai-token = {
-        rekeyFile = (builtins.trace "civitai-token.age path" (lib.debug.traceVal ../secrets/rekeyed/lithium/civitai-token.age));
-      };
     })
     # We can't use `disko` because it's taken, I guess.
     diskoProper.nixosModules.disko
@@ -36,7 +33,7 @@ in {
     ../nixos-modules/nix-store-optimize.nix
     ../nixos-modules/nvidia.nix
     ../nixos-modules/sshd.nix
-    ../nixos-modules/comfyui-server.nix
+    (import ../nixos-modules/comfyui-server.nix { inherit host-id; })
     ({ lib, ... }: {
       disko.devices = {
         disk.disk1 = {

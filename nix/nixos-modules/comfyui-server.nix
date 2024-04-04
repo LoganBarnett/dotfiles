@@ -5,12 +5,15 @@
 # This leverages work from https://github.com/NixOS/nixpkgs/pull/268378 by
 # @fazo96.  As such it will be using my fork of fazo96's fork.
 ################################################################################
-{ config, lib, pkgs, ... }: let
+{ host-id }: { config, lib, pkgs, ... }: let
   # Default ComfyUI port.
   port = 8188;
   fetchModel = pkgs.callPackage ../hacks/comfyui/fetch-model.nix {};
   # fetchModel = import ../hacks/comfyui/fetch-model.nix;
 in {
+  age.secrets.civitai-token = {
+    rekeyFile = (builtins.trace "civitai-token.age path" (lib.debug.traceVal ../secrets/rekeyed/${host-id}/civitai-token.age));
+  };
   # We need to override the original if we want to provide our own for rapid
   # iteration.  First we disable the original via `disabledModules`, and then
   # inject our own version via `imports`.
