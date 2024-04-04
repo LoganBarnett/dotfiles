@@ -18,8 +18,8 @@
       # Must be relative to the flake.nix file.
       # localStorageDir = ../. + "/secrets/${host-id}";
       # localStorageDir = ../. + "/secrets";
-      localStorageDir = ../. + "/secrets/rekeyed/${host-id}";
-      generatedSecretsDir = ../. + "/secrets/generated/${host-id}";
+      localStorageDir = (builtins.trace "localStorageDir" (lib.debug.traceVal ../secrets/rekeyed/${host-id}));
+      generatedSecretsDir = (builtins.trace "generatedSecretsDir" (lib.debug.traceVal ../secrets/generated/${host-id}));
       # These fields are labeled as missing with:
       #  The option `age.rekey.userFlake' does not exist. Definition values:
       # userFlake = flake-inputs.self;
