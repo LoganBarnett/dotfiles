@@ -12,7 +12,7 @@
   # age.secrets = ../secrets/secrets.nix;
     rekey = {
       masterIdentities = [
-        ./agenix-master-key.pub
+        ../secrets/agenix-master-key.pub
       ];
       # Must be relative to the flake.nix file.
       # localStorageDir = ../. + "/secrets/${host-id}";
