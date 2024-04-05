@@ -14,6 +14,9 @@ in {
   age.secrets.civitai-token = {
     rekeyFile = (builtins.trace "civitai-token.age path" (lib.debug.traceVal ../secrets/rekeyed/${host-id}/civitai-token.age));
   };
+  # age.rekey.secrets.civitai-token = {
+  #   rekeyFile = (builtins.trace "civitai-token.age path" (lib.debug.traceVal ../secrets/rekeyed/${host-id}/civitai-token.age));
+  # };
   # We need to override the original if we want to provide our own for rapid
   # iteration.  First we disable the original via `disabledModules`, and then
   # inject our own version via `imports`.

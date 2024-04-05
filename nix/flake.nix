@@ -165,11 +165,8 @@
       ;
 
       agenix-rekey = agenix-rekey.configure {
-      #   # Must be relative to the flake.nix file.
-      #   localStorageDir = ./. + "/secrets/${self.nixosConfigurations.config.networking.hostName}";
         userFlake = self;
         nodes = self.nixosConfigurations // self.darwinConfigurations;
-      #   storageMode = "local";
       };
 
     };

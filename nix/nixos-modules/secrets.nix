@@ -1,45 +1,30 @@
-{ flake-inputs, system, host-id, host-public-key }: { config, pkgs, lib, assertMsg, ... }: {
+{ flake-inputs, system, host-id, host-public-key }: { pkgs, lib, ... }: {
   nixpkgs.overlays = [
+    flake-inputs.agenix.overlays.default
     # This lets us include the agenix-rekey package.
     flake-inputs.agenix-rekey.overlays.default
   ];
-  rekey.secrets = (import ../secrets/secrets.nix);
-  # rekey.nixosConfigurations = flake-inputs.self.nixosConfigurations;
-  # rekey.nodes = flake-inputs.self.nixosConfigurations;
-  # rekey.userFlake = flake-inputs.self;
-  age = {
-    secrets = (import ../secrets/secrets.nix );
-  # age.secrets = ../secrets/secrets.nix;
-    rekey = {
-      hostPubkey = host-public-key;
-      masterIdentities = [
-        ../secrets/agenix-master-key.pub
-      ];
-      # Must be relative to the flake.nix file.
-      # localStorageDir = ../. + "/secrets/${host-id}";
-      # localStorageDir = ../. + "/secrets";
-      localStorageDir = (builtins.trace "localStorageDir" (lib.debug.traceVal ../secrets/rekeyed/${host-id}));
-      generatedSecretsDir = (builtins.trace "generatedSecretsDir" (lib.debug.traceVal ../secrets/generated/${host-id}));
-      # These fields are labeled as missing with:
-      #  The option `age.rekey.userFlake' does not exist. Definition values:
-      # userFlake = flake-inputs.self;
-      # nodes = flake-inputs.self.nixosConfigurations;
-      storageMode = "local";
-    };
+  age.rekey = {
+    hostPubkey = host-public-key;
+    masterIdentities = [
+      ../secrets/agenix-master-key.pub
+    ];
+    # Must be relative to the flake.nix file.
+    localStorageDir = (builtins.trace "localStorageDir" (lib.debug.traceVal ../secrets/rekeyed/${host-id}));
+    generatedSecretsDir = (builtins.trace "generatedSecretsDir" (lib.debug.traceVal ../secrets/generated/${host-id}));
+    # These fields are labeled as missing with:
+    #  The option `age.rekey.userFlake' does not exist. Definition values:
+    # userFlake = flake-inputs.self;
+    # nodes = flake-inputs.self.nixosConfigurations;
+    storageMode = "local";
   };
   imports = [
     flake-inputs.agenix-rekey.nixosModules.default
   ];
-  # agenix-rekey = agenix-rekey.configure {
-  #   # Must be relative to the flake.nix file.
-  #   localStorageDir = ../. + "/secrets/${self.nixosConfigurations.config.networking.hostName}";
-  #   userFlake = self;
-  #   nodes = self.nixosConfigurations;
-  #   storageMode = "local";
-  # };
   environment.systemPackages = [
-    # Just importing the package directly is enough for our purposes.
+    # This should remain out because agenix-rekey brings in agenix - or at least
+    # the bits of it we are interested in.
     # flake-inputs.agenix.packages.${system}.default
-    pkgs.agenix-rekey
+    # pkgs.agenix-rekey
   ];
 }

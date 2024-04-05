@@ -32,9 +32,14 @@ in
     ../headed-host.nix
     ../darwin-linux-builder-module.nix
     ({ pkgs, ...}: {
-      environment.systemPackages = import ../personal-packages.nix {
+      environment.systemPackages = (import ../personal-packages.nix {
         inherit pkgs;
-      };
+      }) ++ [
+        # This should remain out because agenix-rekey brings in agenix - or at
+        # least the bits of it we are interested in.
+        # flake-inputs.agenix.packages.${system}.default
+        pkgs.agenix-rekey
+      ];
     })
   ];
 }
