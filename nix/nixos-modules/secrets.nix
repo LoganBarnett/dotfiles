@@ -31,9 +31,8 @@
     flake-inputs.agenix-rekey.nixosModules.default
   ];
   environment.systemPackages = [
-    # This should remain out because agenix-rekey brings in agenix - or at least
-    # the bits of it we are interested in.
+    # This should remain out because agenix-rekey brings in a replacement
+    # agenix.
     # flake-inputs.agenix.packages.${system}.default
-    # pkgs.agenix-rekey
   ];
 }
