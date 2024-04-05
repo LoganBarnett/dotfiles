@@ -1,3 +1,6 @@
+# TODO: Remove this file, but make sure it doesn't have anything helpful in it
+# first.
+#
 # I want to call this defaults.nix, but the ergonomics of Agenix demand a
 # "secrets.nix" name.
 #
