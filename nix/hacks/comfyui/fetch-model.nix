@@ -4,6 +4,7 @@
 , format ? null
 , sha256
 , bearer ? null
+, bearerFile ? null
 }: {
   inherit format;
   # I think builtins.fetchurl _can_ show progress but needs --verbose to do so.
@@ -19,6 +20,13 @@
       # https://github.com/NixOS/nixpkgs/issues/41820#issuecomment-396120262
       curlOptsList = [
         "--header" "Authorization: Bearer ${bearer}"
+      ];
+    })
+    // (lib.optionalAttrs (bearerFile != null) {
+      # The closest thing to documentation for curlOptsList that I've found:
+      # https://github.com/NixOS/nixpkgs/issues/41820#issuecomment-396120262
+      curlOptsList = [
+        "--header" "@${bearerFile}"
       ];
     })
   ))

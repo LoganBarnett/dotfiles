@@ -14,14 +14,16 @@ in {
   age.secrets.civitai-token = {
     rekeyFile = (builtins.trace "civitai-token.age path" (lib.debug.traceVal ../secrets/rekeyed/${host-id}/civitai-token.age));
   };
-  # age.rekey.secrets.civitai-token = {
-  #   rekeyFile = (builtins.trace "civitai-token.age path" (lib.debug.traceVal ../secrets/rekeyed/${host-id}/civitai-token.age));
-  # };
+  age.secrets.civitai-bearer-token-header = {
+    rekeyFile = (builtins.trace "civitai-bearer-token-header.age path" (lib.debug.traceVal ../secrets/rekeyed/${host-id}/civitai-bearer-token-header.age));
+  };
   # We need to override the original if we want to provide our own for rapid
   # iteration.  First we disable the original via `disabledModules`, and then
   # inject our own version via `imports`.
   disabledModules = [ "services/web-apps/comfyui.nix" ];
-  imports = [ ../hacks/comfyui-services-web-apps/comfyui.nix ];
+  imports = [
+    ../hacks/comfyui-services-web-apps/comfyui.nix
+  ];
   environment.systemPackages = [
     # It's useful to be able to watch a network graph when downloading large
     # models.  Otherwise I just stare at a blank terminal.  These packages
@@ -124,7 +126,8 @@ in {
         # https://civitai.com/models/200255/hands-xl-sd-15?modelVersionId=254267
         # Versions are not posted, so just use the "Updated:" date.
         hands-sdxl-v20240305 = (fetchModel {
-          bearer = lib.fileContents config.age.secrets.civitai-token.path;
+          # bearer = config.age.secrets.civitai-token.path;
+          bearerFile = config.age.secrets.civitai-bearer-token-header.path;
           format = "safetensors";
           url = "https://civitai.com/api/download/models/254267?type=Model&format=SafeTensor";
           sha256 = "sha256-a/NpZNiVK09Kdzs/pl0yADCF57BdCVuugYJd+g8Q9Kk=";
