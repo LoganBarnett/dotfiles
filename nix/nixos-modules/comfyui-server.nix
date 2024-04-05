@@ -12,10 +12,10 @@
   # fetchModel = import ../hacks/comfyui/fetch-model.nix;
 in {
   age.secrets.civitai-token = {
-    rekeyFile = (builtins.trace "civitai-token.age path" (lib.debug.traceVal ../secrets/rekeyed/${host-id}/civitai-token.age));
+    rekeyFile = (builtins.trace "civitai-token.age path" (lib.debug.traceVal ../secrets/civitai-token.age));
   };
   age.secrets.civitai-bearer-token-header = {
-    rekeyFile = (builtins.trace "civitai-bearer-token-header.age path" (lib.debug.traceVal ../secrets/rekeyed/${host-id}/civitai-bearer-token-header.age));
+    rekeyFile = (builtins.trace "civitai-bearer-token-header.age path" (lib.debug.traceVal ../secrets/civitai-bearer-token-header.age));
   };
   # We need to override the original if we want to provide our own for rapid
   # iteration.  First we disable the original via `disabledModules`, and then
