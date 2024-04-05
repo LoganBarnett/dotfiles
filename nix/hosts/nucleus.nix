@@ -23,6 +23,7 @@ in {
     (import ../nixos-modules/secrets.nix {
       inherit flake-inputs system;
       host-id = "nucleus";
+      host-public-key = "";
     })
     {
       age.rekey.hostPubkey = "";

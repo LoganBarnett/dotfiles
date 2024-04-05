@@ -22,9 +22,7 @@ in {
   modules = [
     (import ../nixos-modules/secrets.nix {
       inherit flake-inputs host-id system;
-      host-public-key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFTo4RIiSgrhycr+bUYnWi+XoaDM3tSC1f/luCLJtzcf";
-    })
-    ({ lib, ... }: {
+      host-public-key-file = ../secrets/lithium-ssh-key.pub;
     })
     # We can't use `disko` because it's taken, I guess.
     diskoProper.nixosModules.disko

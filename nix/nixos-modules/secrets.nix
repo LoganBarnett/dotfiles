@@ -1,13 +1,21 @@
-{ flake-inputs, system, host-id, host-public-key }: { pkgs, lib, ... }: {
+{
+  flake-inputs,
+  system,
+  host-id,
+  host-public-key ? null,
+  host-public-key-file ? null
+}: { pkgs, lib, ... }: {
   nixpkgs.overlays = [
     flake-inputs.agenix.overlays.default
     # This lets us include the agenix-rekey package.
     flake-inputs.agenix-rekey.overlays.default
   ];
   age.rekey = {
-    hostPubkey = host-public-key;
+    hostPubkey = if host-public-key != null
+                 then host-public-key
+                 else (lib.fileContents host-public-key-file);
     masterIdentities = [
-      ../secrets/agenix-master-key.pub
+      ../secrets/agenix-master-key
     ];
     # Must be relative to the flake.nix file.
     localStorageDir = (builtins.trace "localStorageDir" (lib.debug.traceVal ../secrets/rekeyed/${host-id}));
@@ -19,6 +27,7 @@
     storageMode = "local";
   };
   imports = [
+    flake-inputs.agenix.nixosModules.default
     flake-inputs.agenix-rekey.nixosModules.default
   ];
   environment.systemPackages = [
