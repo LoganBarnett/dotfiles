@@ -15,11 +15,11 @@
                  then host-public-key
                  else (lib.fileContents host-public-key-file);
     masterIdentities = [
-      ../secrets/agenix-master-key.pub
+      ../secrets/agenix-master-key-3.age
     ];
     # Must be relative to the flake.nix file.
-    localStorageDir = (builtins.trace "localStorageDir" (lib.debug.traceVal ../secrets/rekeyed/${host-id}));
-    generatedSecretsDir = (builtins.trace "generatedSecretsDir" (lib.debug.traceVal ../secrets/generated/${host-id}));
+    localStorageDir = ../secrets/rekeyed/${host-id};
+    generatedSecretsDir = ../secrets/generated/${host-id};
     # These fields are labeled as missing with:
     #  The option `age.rekey.userFlake' does not exist. Definition values:
     # userFlake = flake-inputs.self;

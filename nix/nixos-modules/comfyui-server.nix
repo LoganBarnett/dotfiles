@@ -11,11 +11,16 @@
   fetchModel = pkgs.callPackage ../hacks/comfyui/fetch-model.nix {};
   # fetchModel = import ../hacks/comfyui/fetch-model.nix;
 in {
+  # We don't actually need this file, but it's kept for reference.
   age.secrets.civitai-token = {
-    rekeyFile = (builtins.trace "civitai-token.age path" (lib.debug.traceVal ../secrets/civitai-token.age));
+    rekeyFile = ../secrets/civitai-token.age;
   };
+  # There's problems with feeding in secrets at build time, so we've written a
+  # file that is essentially "Authorization: Bearer <token>".  Curl can use a
+  # file as a header listing if the argument starts with @ to denote a file path
+  # instead of a header value.
   age.secrets.civitai-bearer-token-header = {
-    rekeyFile = (builtins.trace "civitai-bearer-token-header.age path" (lib.debug.traceVal ../secrets/civitai-bearer-token-header.age));
+    rekeyFile = ../secrets/civitai-bearer-token-header.age;
   };
   # We need to override the original if we want to provide our own for rapid
   # iteration.  First we disable the original via `disabledModules`, and then
