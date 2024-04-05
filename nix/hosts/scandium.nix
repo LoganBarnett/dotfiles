@@ -39,6 +39,8 @@ in
         # least the bits of it we are interested in.
         # flake-inputs.agenix.packages.${system}.default
         pkgs.agenix-rekey
+        # Rage is a Rust based Age that claims a more consistent CLI API.
+        pkgs.rage
       ];
     })
   ];
