@@ -15,6 +15,8 @@
                  then host-public-key
                  else (lib.fileContents host-public-key-file);
     masterIdentities = [
+      # TODO: There is a documented way to do this securely but I need to
+      # understand it better.
       ../secrets/agenix-master-key
     ];
     # Must be relative to the flake.nix file.
