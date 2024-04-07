@@ -77,6 +77,14 @@ in {
     enable = true;
     # Listen on 0.0.0.0, otherwise it's localhost connections only.
     listen = "0.0.0.0";
+    customNodes = [
+      pkgs.comfyui-custom-nodes.ultimate-sd-upscale
+      # (pkgs.fetchgit {
+      #   name = "ultimate-sd-upscale";
+      #   url = "https://github.com/ssitu/ComfyUI_UltimateSDUpscale.git";
+      #   rev = "b303386bd363df16ad6706a13b3b47a1c2a1ea49";
+      # })
+    ];
     extraArgs = {
     };
     dataPath = "/var/lib/comfyui";

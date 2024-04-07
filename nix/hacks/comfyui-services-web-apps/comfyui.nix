@@ -212,16 +212,16 @@ in
       in {
         type = (types.submodule {
           options = {
-            checkpoints     = fetcher-option;
-            clip            = fetcher-option;
-            clip_vision     = fetcher-option;
-            configs         = fetcher-option;
-            controlnet      = fetcher-option;
-            embeddings      = fetcher-option;
-            loras           = fetcher-option;
-            upscale_modules = fetcher-option;
-            vae             = fetcher-option;
-            vae_approx      = fetcher-option;
+            checkpoints    = fetcher-option;
+            clip           = fetcher-option;
+            clip_vision    = fetcher-option;
+            configs        = fetcher-option;
+            controlnet     = fetcher-option;
+            embeddings     = fetcher-option;
+            loras          = fetcher-option;
+            upscale_models = fetcher-option;
+            vae            = fetcher-option;
+            vae_approx     = fetcher-option;
           };
         });
         default = {
@@ -232,7 +232,7 @@ in
           controlnet = {};
           embeddings = {};
           loras = {};
-          upscale_modules = {};
+          upscale_models = {};
           vae = {};
           vae_approx = {};
         };
