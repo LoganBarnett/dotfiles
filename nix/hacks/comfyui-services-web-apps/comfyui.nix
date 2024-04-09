@@ -300,6 +300,11 @@ in
         );
 
         # TODO: Should we submit this as a core/built-in function?
+        # TODO: I think linkFarm or linkFarmFromDrvs will work.  See
+        # https://github.com/NixOS/nixpkgs/blob/b43d3db76831cb80db01dd2ed50d66175fa2a325/pkgs/build-support/trivial-builders.nix#L475
+        # and
+        # https://github.com/NixOS/nixpkgs/blob/b43d3db76831cb80db01dd2ed50d66175fa2a325/pkgs/build-support/trivial-builders.nix#L503
+        # - commits not specific intentionally.
         # In its current state, it is not suitable for a general purpose tool.
         # Right now `paths` is expected to be symlink statements, with the name
         # done a particular way.  More thought should be given as to how that is
