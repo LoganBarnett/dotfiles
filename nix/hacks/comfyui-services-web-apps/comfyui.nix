@@ -155,6 +155,17 @@ in
         default = null;
       };
 
+      preview-method = mkOption {
+        type = types.nullOr types.oneOf [
+          "none"
+          "auto"
+          "latent2rgb"
+          "taesd"
+        ];
+        description = '' '';
+        default = null;
+      };
+
       # TODO: Provide these as formal arguments.
       # Argument dump:
       #  usage: comfyui [-h] [--listen [IP]] [--port PORT]

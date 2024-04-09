@@ -85,6 +85,7 @@ in {
       #   rev = "b303386bd363df16ad6706a13b3b47a1c2a1ea49";
       # })
     ];
+    preview-method = "auto";
     extraArgs = {
     };
     dataPath = "/var/lib/comfyui";
