@@ -102,7 +102,7 @@ in
 
       listen = mkOption {
         # TODO: Use a net mask, if such a type exists.
-        type = types.string;
+        type = types.str;
         # Assume a higher security posture by default.
         default = "127.0.0.1";
         description = "The net mask to listen to.";
@@ -112,7 +112,7 @@ in
       cors-origin-domain = mkOption {
         # TODO: Use a CORS "domain", which is a hostname + a port.  It might
         # also include IPs and a port.  The port is required per CORS.
-        type = types.string;
+        type = types.str;
         default = "disabled";
         description = ''The CORS domain to bless.  Use "disabled" to disable.  This must include a port'';
         example = "foo.com:443";
@@ -135,7 +135,7 @@ in
       };
 
       cuda-device = mkOption {
-        type = types.nullOr types.string;
+        type = types.nullOr types.str;
         description = ''The CUDA device to use.  Query for this using lspci or lshw.  Leave as null to auto-detect and/or use Nix CUDA settings (verify this before merging!).'';
         default = null;
       };
@@ -196,12 +196,12 @@ in
         fetcher-type = (types.submodule {
           options = {
             format = mkOption {
-              type = types.string;
+              type = types.str;
               default = "safetensors";
             };
             path = mkOption {
               # TODO: See if there is a path type we can use.
-              type = types.string;
+              type = types.str;
             };
           };
         });
