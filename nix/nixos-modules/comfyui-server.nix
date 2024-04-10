@@ -187,6 +187,15 @@ in {
       };
       embeddings = {};
       loras = {
+        # Helps with eyes.
+        # https://civitai.com/models/118427/perfect-eyes-xl?modelVersionId=128461
+        perfect-eyes-xl = (fetchModel {
+          format = "safetensors";
+          url = "https://civitai.com/api/download/models/128461?type=Model&format=SafeTensor";
+          sha256 = "sha256-8kg2TPCsx6ALxLUUW0TA378Q5x6bDvtrd/CVauryQRw=";
+        });
+        # Helps with indicating various styles in PonyXL, such as oil,
+        # realistic, digital art, and combinations thereof.
         # https://civitai.com/models/264290?modelVersionId=398292
         ponx-xl-v6-artist-styles = (fetchModel {
           format = "safetensors";
