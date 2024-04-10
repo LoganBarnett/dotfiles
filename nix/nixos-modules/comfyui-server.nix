@@ -107,6 +107,38 @@ in {
     package = pkgs.callPackage ../hacks/comfyui/package.nix {};
     models = {
       checkpoints = {
+        # A high quality checkpoint but beware it also does nsfw very
+        # easily.
+        # https://civitai.com/models/147720/colossus-project-xl-sfwandnsfw
+        # Some notes on usage, from the description:
+        # Be aware that some samplers aren't working. Don't use following samplers:
+        # DPM++ 2M Karras, DPM++ 2M,DPM++ 2M, DPM++ 2M SDE, DPM++ 2M SDE Heun,
+        # Euler, LMS, LMS Karras, Heun, 3M SDE Karras, DPM fast, DPM2 Karras,
+        # Restart, PLMS, DDIM, Uni PC, LCM, LCM Karras.
+        # Recommended sampler:
+        # In my tests DPM 2 a and DPM++ 2S a worked really good for fine
+        # details. You can also use the Karras versions of these samplers. Also
+        # DPM++ SDE, DPM++ SDE Karras, Euler a, Euler a Turbo, DDPM, DDPM
+        # Karras, DPM++ 2M Turbo, DPM++ 2M SDE Heun Exponential worked great in
+        # my tests.
+        #
+        # Keep the CFG around 2-4.
+        colossus-xl-v6 = (fetchModel {
+          url = "https://civitai.com/api/download/models/355884";
+          format = "safetensors";
+          sha256 = "sha256-ZymMt9jS1Z698wujJGxEMQZeyt0E97qaOtLfDdWjhuc=";
+        });
+        # https://civitai.com/models/112902/dreamshaper-xl
+        # Preferred settings:
+        # CFG = 2
+        # 4-8 sampling steps.
+        # Sampler: DPM SDE Kerras (not 2M).
+        # ComfyUI workflow for upscaling: https://pastebin.com/79XN01xs
+        dreamshaper-xl-fp16 = (fetchModel {
+          url = "https://civitai.com/api/download/models/351306";
+          format = "safetensors";
+          sha256 = "sha256-RJazbUi/18/k5dvONIXbVnvO+ivvcjjSkNvUVhISUIM=";
+        });
         # Pony generates some really high quality images - they tend to be more
         # based on a digital painting style but can do other things as well.
         # This makes it an excellent model for generating characters.
