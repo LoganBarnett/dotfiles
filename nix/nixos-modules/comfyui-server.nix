@@ -197,7 +197,7 @@ in {
         # Helps with indicating various styles in PonyXL, such as oil,
         # realistic, digital art, and combinations thereof.
         # https://civitai.com/models/264290?modelVersionId=398292
-        ponx-xl-v6-artist-styles = (fetchModel {
+        ponyx-xl-v6-non-artist-styles = (fetchModel {
           format = "safetensors";
           url = "https://civitai.com/api/download/models/398292?type=Model&format=SafeTensor";
           sha256 = "01m4zq2i1hyzvx95nq2v3n18b2m98iz0ryizdkyc1y42f1rwd0kx";
