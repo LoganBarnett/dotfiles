@@ -9,6 +9,7 @@
   # Default ComfyUI port.
   port = 8188;
   fetchModel = pkgs.callPackage ../hacks/comfyui/fetch-model.nix {};
+  mkComfyUICustomNodes = (pkgs.callPackage ../hacks/comfyui/custom-nodes.nix {}).mkComfyUICustomNodes;
   # fetchModel = import ../hacks/comfyui/fetch-model.nix;
 in {
   # We don't actually need this file, but it's kept for reference.
@@ -78,7 +79,18 @@ in {
     # Listen on 0.0.0.0, otherwise it's localhost connections only.
     listen = "0.0.0.0";
     customNodes = [
-      pkgs.comfyui-custom-nodes.ultimate-sd-upscale
+      (mkComfyUICustomNodes {
+        pname = "ultimate-sd-upscale";
+        version = "unstable-2023-08-16";
+        sha256 = "";
+        src = pkgs.fetchFromGitHub {
+          owner = "ssitu";
+          repo = "ComfyUI_UltimateSDUpscale";
+          rev = "b303386bd363df16ad6706a13b3b47a1c2a1ea49";
+          sha256 = "sha256-kcvhafXzwZ817y+8LKzOkGR3Y3QBB7Nupefya6s/HF4=";
+          fetchSubmodules = true;
+        };
+      })
       # (pkgs.fetchgit {
       #   name = "ultimate-sd-upscale";
       #   url = "https://github.com/ssitu/ComfyUI_UltimateSDUpscale.git";
@@ -113,6 +125,7 @@ in {
       clip_vision = {};
       configs = {
         # https://huggingface.co/lllyasviel/ControlNet-v1-1
+        # https://github.com/lllyasviel/ControlNet-v1-1-nightly
         # See also the accompanying file in `controlnet`.
         controlnet-v1_1_fe-sd15-tile = (fetchModel {
           format = "yaml";
@@ -121,6 +134,17 @@ in {
         });
       };
       controlnet = {
+        # https://huggingface.co/TTPlanet/TTPLanet_SDXL_Controlnet_Tile_Realistic_V1
+        ttplanet-sdxl-controlnet-tile-realistic-32-v1 = (fetchModel {
+          format = "safetensors";
+          url = "https://huggingface.co/TTPlanet/TTPLanet_SDXL_Controlnet_Tile_Realistic_V1/resolve/main/TTPLANET_Controlnet_Tile_realistic_v1_fp32.safetensors?download=true";
+          sha256 = "sha256-Xj+FHFZvH5ApauL9IRaKR9aIIcK0xTO66SWdx/pqsdI=";
+        });
+        ttplanet-sdxl-controlnet-tile-realistic-16-v1 = (fetchModel {
+          format = "safetensors";
+          url = "https://huggingface.co/TTPlanet/TTPLanet_SDXL_Controlnet_Tile_Realistic_V1/resolve/main/TTPLANET_Controlnet_Tile_realistic_v1_fp16.safetensors?download=true";
+          sha256 = "sha256-+ipfL+yBSBnINUA8d4viwkN9FHkxkhMEVp/M7CtFFzw=";
+        });
         # https://huggingface.co/lllyasviel/ControlNet-v1-1
         # See also the accompanying file in `configs`.
         controlnet-v1_1_f1e-sd15-tile = (fetchModel {
@@ -157,7 +181,38 @@ in {
         #   sha256 = "";
         # });
       };
-      upscale_modules = {};
+      # Upscaler comparisons can be found here:
+      # https://civitai.com/articles/636/sd-upscalers-comparison
+      upscale_models = {
+        # https://openmodeldb.info/models/4x-realesrgan-x4plus
+        # https://github.com/xinntao/Real-ESRGAN
+        real-esrgan-4xplus = (fetchModel {
+          url = "https://github.com/xinntao/Real-ESRGAN/releases/download/v0.1.0/RealESRGAN_x4plus.pth";
+          format = "pth";
+          sha256 = "sha256-T6DTiQX3WsButJp5UbQmZwAhvjAYJl/RkdISXfnWgvE=";
+        });
+        # Doesn't work at all - unsupported model.  Must be older SD version
+        # only.
+        stable-diffusion-4x-upscaler = (fetchModel {
+          url = "https://huggingface.co/stabilityai/stable-diffusion-x4-upscaler/resolve/main/x4-upscaler-ema.safetensors?download=true";
+          format = "safetensors";
+          sha256 = "35c01d6160bdfe6644b0aee52ac2667da2f40a33a5d1ef12bbd011d059057bc6";
+        });
+        # Samael1976 reposted this to civitai.com - the alternative is to
+        # download it from mega.nz, which I do not believe is friendly to
+        # headless activity such as this.  The original model is listed here:
+        # https://openmodeldb.info/models/4x-UltraSharp
+        kim2091-4k-ultrasharp = (fetchModel {
+          format = "pth";
+          url = "https://huggingface.co/Kim2091/UltraSharp/blob/main/4x-UltraSharp.pth";
+          # sha256 = "sha256-pYEiMfyTa0KvCKXtunhBlUldMD1bMkjCRInvDEAh/gE=";
+          # sha256 = "sha256-JZDtqx4ZEUbexkONl9z2BV8viMFmRnalj6NfoDeYNgU=";
+          sha256 = "sha256-weKbF1v8Yi1+8r/eagg6FWJ5QFdFmmTLXZlJFQdFiIU=";
+          # SHA256 reported by civitai.com.  Unsure how these relate.  It is not
+          # base64 encoded.
+          # "A5812231FC936B42AF08A5EDBA784195495D303D5B3248C24489EF0C4021FE01"
+        });
+      };
       vae = {
         sdxl_vae = (fetchModel {
           format = "safetensors";

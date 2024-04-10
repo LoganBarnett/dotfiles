@@ -17,6 +17,7 @@ let
   } // args);
 in
 {
+  inherit mkComfyUICustomNodes;
   ultimate-sd-upscale = mkComfyUICustomNodes {
     pname = "ultimate-sd-upscale";
     version = "unstable-2023-08-16";
