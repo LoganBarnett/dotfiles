@@ -104,8 +104,17 @@ in {
     # error: attribute 'cudaSupport' missing
     # package = pkgs.comfyui-cpu;
     package = pkgs.callPackage ../hacks/comfyui/package.nix {};
-    models = {
+    models = let
+      bearer = builtins.readFile config.age.secrets.civitai-token.path;
+    in {
       checkpoints = {
+        # https://civitai.com/models/288584/autismmix-sdxl
+        autism-mix-sdxl = (fetchModel {
+          inherit bearer;
+          url = "https://civitai.com/api/download/models/324619";
+          format = "safetensors";
+          sha256 = "sha256-ghqlU3+N2v2/ljgnVRhlwxxbv6savnkly18AbI9x5IU=";
+        });
         # A high quality checkpoint but beware it also does nsfw very
         # easily.
         # https://civitai.com/models/147720/colossus-project-xl-sfwandnsfw
@@ -204,8 +213,7 @@ in {
         # https://civitai.com/models/200255/hands-xl-sd-15?modelVersionId=254267
         # Versions are not posted, so just use the "Updated:" date.
         hands-sdxl-v20240305 = (fetchModel {
-          # bearer = config.age.secrets.civitai-token.path;
-          bearerFile = config.age.secrets.civitai-bearer-token-header.path;
+          inherit bearer;
           format = "safetensors";
           url = "https://civitai.com/api/download/models/254267?type=Model&format=SafeTensor";
           sha256 = "sha256-a/NpZNiVK09Kdzs/pl0yADCF57BdCVuugYJd+g8Q9Kk=";
@@ -214,12 +222,13 @@ in {
         # Versions are not posted, so just use the "Updated:" date.
         # This is posted by the same author as the hands lora, and releases seem
         # to go out together.
-        # feet-sdxl-v20240305 = (fetchModel {
-        #   bearer = lib.fileContents config.age.secrets.civitai-token.path;
-        #   format = "safetensors";
-        #   url = "https://civitai.com/api/download/models/225347?type=Model&format=SafeTensor";
-        #   sha256 = "";
-        # });
+        feet-sdxl-v20240305 = (fetchModel {
+          inherit bearer;
+          # bearerFile = config.age.secrets.civitai-bearer-token-header.path;
+          format = "safetensors";
+          url = "https://civitai.com/api/download/models/225347?type=Model&format=SafeTensor";
+          sha256 = "sha256-5OuEVEBiNYj+ja7BpBGwf+8uCnlQg6+xvAjt45RueNI=";
+        });
       };
       # Upscaler comparisons can be found here:
       # https://civitai.com/articles/636/sd-upscalers-comparison
