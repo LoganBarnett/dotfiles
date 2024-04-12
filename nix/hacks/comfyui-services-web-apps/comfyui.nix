@@ -206,6 +206,9 @@ in
       models = mkOption (let
         fetcher-type = (types.submodule {
           options = {
+            name = mkOption {
+              type = types.str;
+            };
             format = mkOption {
               type = types.str;
               default = "safetensors";
