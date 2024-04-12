@@ -266,7 +266,9 @@ in
       ${defaultGroup} = {};
     };
 
-    systemd.services.comfyui = {
+    systemd.services.comfyui = let
+      package = mkComfyUIPackage cfg;
+    in {
       description = "ComfyUI Service";
       wantedBy = [ "multi-user.target" ];
       environment = {
@@ -396,9 +398,9 @@ in
       in ''
         mkdir -p ${cfg.dataPath}/input
         mkdir -p ${cfg.dataPath}/output
-        mkdir -p ${cfg.dataPath}/custom_nodes
+        ln -snf ${package}/custom_nodes ${cfg.dataPath}/custom_nodes
+        ln -snf ${package}/extra_model_paths.yaml ${cfg.dataPath}/extra_model_paths.yaml
         mkdir -p ${cfg.dataPath}/models
-        ln -snf ${cfg.package}/extra_model_paths.yaml ${cfg.dataPath}/extra_model_paths.yaml
         ${linkModels "${cfg.dataPath}/models" cfg.models}
       '';
 
@@ -428,7 +430,7 @@ in
             # use-pytorch-cross-attention = cfg.cross-attention == "pytorch";
             # Or something dynamic + future proof?
           } // cfg.extraArgs);
-        in ''${mkComfyUIPackage cfg}/bin/comfyui ${toString args}'';
+        in ''${package}/bin/comfyui ${toString args}'';
         # TODO: Figure out what to do with dataPath, since it isn't used here
         # anymore.
         # StateDirectory = cfg.dataPath;

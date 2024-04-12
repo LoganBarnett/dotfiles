@@ -132,7 +132,7 @@ in stdenv.mkDerivation rec {
     ln -s ${outputPath} $out/output
     mkdir -p $out/${tempPath}
     echo "Setting up custom nodes"
-    ln -s ${customNodesCollection} $out/custom_nodes
+    ln -snf ${customNodesCollection} $out/custom_nodes
     echo "Copying executable script"
     cp ${executable}/bin/comfyui $out/bin/comfyui
     substituteInPlace $out/bin/comfyui --replace "\$out" "$out"
