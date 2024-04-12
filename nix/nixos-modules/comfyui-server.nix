@@ -83,7 +83,6 @@ in {
       (mkComfyUICustomNodes {
         pname = "ultimate-sd-upscale";
         version = "unstable-2023-08-16";
-        sha256 = "";
         src = pkgs.fetchFromGitHub {
           owner = "ssitu";
           repo = "ComfyUI_UltimateSDUpscale";
@@ -92,11 +91,10 @@ in {
           fetchSubmodules = true;
         };
       })
-      # (pkgs.fetchgit {
-      #   name = "ultimate-sd-upscale";
-      #   url = "https://github.com/ssitu/ComfyUI_UltimateSDUpscale.git";
-      #   rev = "b303386bd363df16ad6706a13b3b47a1c2a1ea49";
-      # })
+      custom-nodes.comfyui-browser
+      custom-nodes.comfyui-profiler
+      custom-nodes.comfyui-crystools
+      custom-nodes.comfyui-custom-scripts
     ];
     preview-method = "auto";
     extraArgs = {
