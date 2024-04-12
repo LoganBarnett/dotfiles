@@ -42,6 +42,10 @@ in
   # <comfyui-dir>/custom_nodes/comfyui-browser/collections
   # Perhaps there is something we can do to help Nix manage this further?  Or a
   # setting that can "unmanage" it.
+  #
+  # TODO: This requires the <comfyui-browser>/collections dir to exist.  Can we
+  # override it and place it elsewhere in the comfyui directory?  Even if we
+  # created it as part of this package, it would be read-only and thus useless.
   comfyui-browser = mkComfyUICustomNodes {
     pname = "comfyui-browser";
     version = "unstable-2024-04-07";
@@ -83,6 +87,9 @@ in
   #    original primitives.
   # 9. Switch - turn on or off functionality based on a boolean primitive.
   # 9. More™!
+  #
+  # TODO: cystools requires the deepdiff dependency, and perhaps others.  We
+  # should install these.
   comfyui-crystools = mkComfyUICustomNodes (let
     version = "1.12.0";
   in {
@@ -123,6 +130,10 @@ in
   # 19. Save and load workflows (already in stock?).
   # 20. 90º reroutes...?
   # 21. Link render mode - linear, spline, straight.
+  #
+  # TODO: This requires a "pysssss.json" to be laid down, but this necessitates
+  # writing to the nix store and that doesn't work.  The directory does have an
+  # example.  How can we specify this?
   comfyui-custom-scripts = mkComfyUICustomNodes {
     pname = "comfyui-custom-scripts";
     version = "unstable-2024-04-07";
