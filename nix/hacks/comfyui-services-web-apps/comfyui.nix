@@ -19,12 +19,12 @@ in
   options = {
     services.comfyui = {
       enable = mkEnableOption
-        (mdDoc "The most powerful and modular stable diffusion GUI with a graph/nodes interface.");
+        ("The most powerful and modular stable diffusion GUI with a graph/nodes interface.");
 
       dataPath = mkOption {
         type = types.str;
         default = "/var/lib/${service-name}";
-        description = mdDoc "path to the folders which stores models, custom nodes, input and output files";
+        description = "path to the folders which stores models, custom nodes, input and output files";
       };
 
       # TODO: This should probably use the global system cudaSupport by default
@@ -32,7 +32,7 @@ in
       cudaSupport = mkOption {
         type = types.bool;
         default = false;
-        description = mdDoc "Whether or not to enable CUDA for NVidia GPU acceleration.";
+        description = "Whether or not to enable CUDA for NVidia GPU acceleration.";
         defaultText = literalExpression "false";
         example = literalExpression "true";
       };
@@ -40,7 +40,7 @@ in
       rocmSupport = mkOption {
         type = types.bool;
         default = false;
-        description = mdDoc "Whether or not to enable ROCM for ATi GPU acceleration.";
+        description = "Whether or not to enable ROCM for ATi GPU acceleration.";
         defaultText = literalExpression "false";
         example = literalExpression "true";
       };
@@ -56,14 +56,14 @@ in
         );
         defaultText = literalExpression "pkgs.comfyui";
         example = literalExpression "pkgs.comfyui-rocm";
-        description = mdDoc "ComfyUI base package to use";
+        description = "ComfyUI base package to use";
       };
 
       user = mkOption {
         type = types.str;
         default = defaultUser;
         example = "yourUser";
-        description = mdDoc ''
+        description = ''
           The user to run ComfyUI as.
           By default, a user named `${defaultUser}` will be created whose home
           directory will contain input, output, custom nodes and models.
@@ -74,7 +74,7 @@ in
         type = types.str;
         default = defaultGroup;
         example = "yourGroup";
-        description = mdDoc ''
+        description = ''
           The group to run ComfyUI as.
           By default, a group named `${defaultUser}` will be created.
         '';
@@ -83,7 +83,7 @@ in
       useCPU = mkOption {
         type = types.bool;
         default = false;
-        description = mdDoc ''
+        description = ''
           Uses the CPU for everything. Very slow, but needed if there is no hardware acceleration.
         '';
       };
@@ -91,13 +91,13 @@ in
       port = mkOption {
         type = types.port;
         default = 8188;
-        description = mdDoc "Set the listen port for the Web UI and API.";
+        description = "Set the listen port for the Web UI and API.";
       };
 
       customNodes = mkOption {
         type = types.listOf types.package;
         default = [];
-        description = mdDoc "custom nodes to add to the ComfyUI setup. Expects a list of packages from pkgs.comfyui-custom-nodes";
+        description = "custom nodes to add to the ComfyUI setup. Expects a list of packages from pkgs.comfyui-custom-nodes";
       };
 
       listen = mkOption {
@@ -194,7 +194,7 @@ in
         type = types.attrsOf types.str;
         default = {};
         example = "--preview-method auto";
-        description = mdDoc ''
+        description = ''
           Additional arguments to be passed to comfyui
         '';
       };
