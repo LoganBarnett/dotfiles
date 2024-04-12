@@ -385,6 +385,20 @@ in
                 (mapAttrsToList
                   (type: fetched-by-name: {
                     model-type = type;
+                    # I cannot get linkFarm and linkFarmFromDrvs to work here. I
+                    # get the error "error: value is a string with context while
+                    # a set was expected".  This is in "dischargeProperties".  I
+                    # cannot divine how that relates to my current calls and
+                    # types, because we have no types and everything is lazily
+                    # evaluated.  Perhaps a better Nix user than I can figure
+                    # this out.
+                    #
+                    # That said, I get the same error when not using linkFarm.
+                    # Changes are suspected to be related to work with getting
+                    # the secrets to apply to fetchurl.
+                    # drv = pkgs.linkFarm "comfyui-models-${type}" (
+                    #   attrValues fetched-by-name
+                    # );
                     drv = (join-single-assets-symlinks {
                       name = "comfyui-models-${type}";
                       paths = (mapAttrsToList
