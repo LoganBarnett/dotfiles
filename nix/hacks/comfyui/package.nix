@@ -83,9 +83,6 @@ let
     tqdm
   ] ++ (builtins.concatMap (node: node.dependencies) customNodes)));
 
-  # TODO: This needs to invoke things like --gpu-only or --cuda-device to force
-  # it to use the GPU correctly.  Though I don't know how to confirm that other
-  # than looking at speeds of inference runs.
   executable = writers.writeDashBin "comfyui" ''
     cd $out && \
     ${pythonEnv}/bin/python comfyui \
