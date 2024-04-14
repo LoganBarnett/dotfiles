@@ -5,7 +5,22 @@
 #+language:  en
 #+file_tags: git config
 
-* blame output
+* gitignore template
+
+The built-in file template for =.gitignore= files is flat out wrong.
+=.gitignore= should never have OS, editor, or any other non-project specific
+files listed in it. This is the responsibility of the global git ignore, which
+by default is =~/.config/git/ignore=. We could unset the template, but I'd
+rather use another template. This template will espouse the above policy to
+hopefully head off having to explain this over and over.
+
+#+name: config/gitignore-file-template-disable
+#+begin_src emacs-lisp :results none :tangle no
+(set-file-template! 'gitignore-mode :trigger "gitignore" :mode 'gitignore-mode)
+#+end_src
+
+* magit
+** blame output
   =magit= uses the committer date of a commit, which is misleading on branches that
   have undergone a rebase. The committer date will show as the rebase date, rather
   than the date of the commit. The standard blame output uses the author date,
@@ -34,21 +49,7 @@
                   )
   )
 #+end_src
-* gitignore template
-
-The built-in file template for =.gitignore= files is flat out wrong.
-=.gitignore= should never have OS, editor, or any other non-project specific
-files listed in it. This is the responsibility of the global git ignore, which
-by default is =~/.config/git/ignore=. We could unset the template, but I'd
-rather use another template. This template will espouse the above policy to
-hopefully head off having to explain this over and over.
-
-#+name: config/gitignore-file-template-disable
-#+begin_src emacs-lisp :results none :tangle no
-(set-file-template! 'gitignore-mode :trigger "gitignore" :mode 'gitignore-mode)
-#+end_src
-
-* syncing git-gutter and magit
+** syncing git-gutter and magit
   =git-gutter= shows "fringe" indicators for adds, edits, and removals of lines
   for a given buffer. This is different than =magit= which serves as a general
   interface to =git= itself. Both are incredibly useful, but they don't talk to
@@ -65,7 +66,7 @@ hopefully head off having to explain this over and over.
      )
   #+end_src
 
-* linking to web mirrors
+** linking to web mirrors
 I'm not sure if "web mirror" is the proper term, but it kind of makes sense: A
 web version of the git repository. Generally we see this when browsing source in
 GitHub, BitBucket, GitLab, etc.
