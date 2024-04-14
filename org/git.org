@@ -96,8 +96,24 @@ the home page value but that's not as useful as linking to the file itself.
   (config/init-org-file-private "git-private.org")
   )
 #+end_src
+** magit log display
 
-* signing commits
+Typically Magit has this bound to =$= but this is an =evil-mode= binding.
+=evil-mode= is winning, and I prefer it this way.  Instead let's make our own
+binding.
+
+For now it seems to be bound to =`= and is the =magit-process-buffer=
+interactive function..
+
+** magit extended help
+
+This is undocumented but you can use =C-h= in Magit's popup window to drill into
+help for a particular binding (much like =describe-key=).  This should be listed
+somewhere but isn't.  I'd prefer to see it under =essential commands=, which
+will require some work with =transient= to make happen.  This could serve as a
+good contribution to Magit.
+
+** signing commits
 
 I have turned on commit signing in my =.gitconfig=.  However this means that
 commits fail when making them from Magit.  This is because (I think) that Magit
@@ -135,6 +151,31 @@ This snippet should cause the variable to be read from the =.gitconfig=.
   )
 #+end_src
 
+*** troubleshooting commit signing
+**** "timed out"
+
+This should point to =emacsclient=:
+
+#+begin_src emacs-lisp :results value
+(getenv "EDITOR")
+#+end_src
+
+#+RESULTS:
+: emacsclient
+
+This should fix it:
+
+#+name: config/editor-env-emacscliet-ensure
+#+begin_src emacs-lisp :results value :tangle no
+(setf (getenv "EDITOR") "emacsclient")
+#+end_src
+
+#+RESULTS:
+: emacsclient
+
+Without this, it might be trying to open this as =vim=. I do want =vim= to be my
+=EDITOR= in most cases.
+
 * all together
   #+begin_src emacs-lisp :results none :noweb yes
     (require 'use-package)
@@ -144,6 +185,7 @@ This snippet should cause the variable to be read from the =.gitconfig=.
       :init
       (config/git-blame-output)
       <<config/gitignore-file-template-disable>>
+      <<config/editor-env-emacscliet-ensure>>
       :config
       (config/connect-git-gutter-and-magit)
       )
