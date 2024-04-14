@@ -30,13 +30,16 @@ files.
 Run =./install.sh=.
 
 Other installers are named =install-<thing>.sh= or =<thing>-install.sh=, with
-the latter being preferred but refactoring is not done yet.
+the latter being preferred but refactoring is not done yet.  In addition,
+installers are slowly being removed in favor of Nix.  See the [[Nix]] section for
+details on its preferred layout.
 
 * Nix
 
-This repository uses [[https://nixos.org][Nix]] (but not the OS) extensively. Some parts are in its
-infancy though. Nix is used in conjunction with [[https://github.com/nix-community/home-manager][home-manager]] to manage a global
-installation.
+This repository uses [[https://nixos.org][Nix]] extensively. Nix is used in conjunction with
+[[https://github.com/nix-community/home-manager][home-manager]] to manage a user's configuration. [[https://github.com/LnL7/nix-darwin][nix-darwin]] is used for macOS
+configurations.  Everything locked via Nix Flakes.  The entry point is
+[[file:./nix/flake.nix][./nix/flake.nix]].
 
 Nix installation can be run by itself via =./nix-install.sh=.
 
@@ -48,12 +51,24 @@ This is done via:
 nix-channel --update
 #+end_src
 
+** Switching
+
+Use this to apply changes on macOS:
+
+#+begin_src shell :results none :exports code
+nix-darwin-switch
+#+end_src
+
+This wraps the normal invocation.
+
 ** Home Manager
 
-Home Manager manages the global configuration of the system for the primary
-user.
+Home Manager manages the configuration of a user.
 
-To build (or test to see if it can even build), use:
+Warning: Do not use the invocations below.  Home manager is in use but delegated
+to by =nix-darwin= or NixOS.
+
+Normally you would use this to build a home-manager configuration:
 
 #+begin_example shell
 home-manager build
@@ -68,15 +83,17 @@ home-manager switch
 =switch= implies =build=.
 
 =home.nix= is the starting point for =home-manager=, and is required to be named
-that via =home-manager=. To keep a clean setup across multiple machines, there
-is a =general.nix= for all configurations, =personal.nix= for my personal
-machine, and a work setup for my workstation kept in a private repository.
+that via =home-manager= _when =home-manager= is the only entity in control.
+This does not apply when using =nix-darwin= or NixOS.
 
 Generally we want to avoid global tool installs for various things (like what
 version of Node.js you're running), and instead push those to specific
 repositories.
 
 ** With Direnv and shell.nix Files
+
+Old - needs updating since we now use =flake.nix= instead of =shell.nix= but
+much of this still applies.
 
 This installation includes =direnv=, which can automatically load a =shell.nix=
 file when entering its directory if the path has been blessed via =direnv
