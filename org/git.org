@@ -75,6 +75,17 @@ GitHub, BitBucket, GitLab, etc.
 the home page value but that's not as useful as linking to the file itself.
 
 #+begin_src emacs-lisp :results none
+;; This should live elsewhere.  The SPC g prefix is for general git stuff.  I
+;; could keep the convention that the capital letter is the "remote web"
+;; version, or I could put it under something like SPC G.
+(defun config/git-branch-kill ()
+  (interactive)
+  ;; This answer (https://emacs.stackexchange.com/a/72568) suggests using
+  ;; `(vc-git--symbolic-ref (buffer-file-name))' but it is a private function.
+  ;; vc-git-branches is slower because it gets all branches, but I don't think
+  ;; that will prove to be an issue.
+  (kill-new (car (vc-git-branches)))
+  )
 
 (use-package "browse-at-remote"
   :init
@@ -88,7 +99,8 @@ the home page value but that's not as useful as linking to the file itself.
     :leader
     :prefix ("g y" . "git url")
     :n
-    "b" #'browse-branch-at-remote-kill
+    "b" #'config/git-branch-kill
+    "F" #'+vc/browse-at-remote-kill
     "y" #'browse-at-remote-kill
     "h" #'+vc/browse-at-remote-homepage
     )
@@ -97,6 +109,7 @@ the home page value but that's not as useful as linking to the file itself.
   (config/init-org-file-private "git-private.org")
   )
 #+end_src
+
 ** magit log display
 
 Typically Magit has this bound to =$= but this is an =evil-mode= binding.
