@@ -98,13 +98,13 @@ let
   );
 in stdenv.mkDerivation rec {
   pname = "comfyui";
-  version = "unstable-2023-11-19";
+  version = "unstable-2024-04-15";
 
   src = fetchFromGitHub {
     owner = "comfyanonymous";
     repo = "ComfyUI";
-    rev = "062483823738ed610d8d074ba63910c90e9d45b7";
-    hash = "sha256-AMj2K/mGEd+wtiSscZUnhWhhBXGnpcuvxEvqdCgwdIU=";
+    rev = "45ec1cbe963055798765645c4f727122a7d3e35e";
+    hash = "sha256-oK+PwAJdvItK1NaRRJMNI4Oh/g4jNt1M5gWfXEy3C9g=";
   };
 
   installPhase = ''
