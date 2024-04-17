@@ -79,6 +79,7 @@ in {
     enable = true;
     # Listen on 0.0.0.0, otherwise it's localhost connections only.
     listen = "0.0.0.0";
+    multi-user = true;
     customNodes = [
       custom-nodes.comfyui-browser
       custom-nodes.comfyui-profiler
