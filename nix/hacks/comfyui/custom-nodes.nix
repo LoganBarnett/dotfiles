@@ -88,8 +88,6 @@ in
   # 9. Switch - turn on or off functionality based on a boolean primitive.
   # 9. More™!
   #
-  # TODO: cystools requires the deepdiff dependency, and perhaps others.  We
-  # should install these.
   comfyui-crystools = mkComfyUICustomNodes (let
     version = "1.12.0";
   in {
@@ -101,6 +99,13 @@ in
       rev = version;
       hash = "sha256-ZzbMgFeV5rrRU76r/wKnbhujoqE7UDOSaLgQZhguXuY=";
     };
+    # TODO: Can we read from one of the Python library tools or build the list
+    # from the project metadata?
+    passthru.dependencies = with pkgs.python3Packages; [
+      deepdiff
+      py-cpuinfo
+      pynvml
+    ];
   });
 
   # https://github.com/pythongosssss/ComfyUI-Custom-Scripts
