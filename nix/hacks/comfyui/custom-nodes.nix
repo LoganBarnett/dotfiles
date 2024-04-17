@@ -24,13 +24,13 @@ in
   # from a prototyped image to a highly detailed, high resolution version.
   ultimate-sd-upscale = mkComfyUICustomNodes {
     pname = "ultimate-sd-upscale";
-    version = "unstable-2023-08-16";
+    version = "unstable-2024-03-30";
 
     src = fetchFromGitHub {
       owner = "ssitu";
       repo = "ComfyUI_UltimateSDUpscale";
-      rev = "6ea48202a76ccf5904ddfa85f826efa80dd50520";
-      hash = "sha256-fUZ0AO+LARa+x30Iu+8jvEDun4T3f9G0DOlB2XNxY9Q=";
+      rev = "b303386bd363df16ad6706a13b3b47a1c2a1ea49";
+      hash = "sha256-kcvhafXzwZ817y+8LKzOkGR3Y3QBB7Nupefya6s/HF4=";
       fetchSubmodules = true;
     };
   };

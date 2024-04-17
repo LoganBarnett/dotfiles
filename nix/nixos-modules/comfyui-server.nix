@@ -80,21 +80,11 @@ in {
     # Listen on 0.0.0.0, otherwise it's localhost connections only.
     listen = "0.0.0.0";
     customNodes = [
-      (mkComfyUICustomNodes {
-        pname = "ultimate-sd-upscale";
-        version = "unstable-2023-08-16";
-        src = pkgs.fetchFromGitHub {
-          owner = "ssitu";
-          repo = "ComfyUI_UltimateSDUpscale";
-          rev = "b303386bd363df16ad6706a13b3b47a1c2a1ea49";
-          sha256 = "sha256-kcvhafXzwZ817y+8LKzOkGR3Y3QBB7Nupefya6s/HF4=";
-          fetchSubmodules = true;
-        };
-      })
       custom-nodes.comfyui-browser
       custom-nodes.comfyui-profiler
       custom-nodes.comfyui-crystools
       custom-nodes.comfyui-custom-scripts
+      custom-nodes.ultimate-sd-upscale
     ];
     preview-method = "auto";
     extraArgs = {
