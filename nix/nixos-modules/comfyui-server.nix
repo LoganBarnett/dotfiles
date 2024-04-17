@@ -151,6 +151,14 @@ in {
           url = "https://civitai.com/api/download/models/290640?type=Model&format=SafeTensor&size=pruned&fp=fp16";
           sha256 = "1cxh5450k3y9mkrf9dby7hbaydj3ymjwq5fvzsrqk6j3xkc2zav7";
         });
+        # Allow for video from images.  See
+        # https://comfyanonymous.github.io/ComfyUI_examples/video/ for the
+        # official ComfyUI documentation.
+        stable-video-diffusion-img2vid-xt = (fetchModel {
+          url = "https://huggingface.co/stabilityai/stable-video-diffusion-img2vid-xt/resolve/main/svd_xt.safetensors?download=true";
+          format = "safetensors";
+          sha256 = "b2652c23d64a1da5f14d55011b9b6dce55f2e72e395719f1cd1f8a079b00a451";
+        });
       };
       clip = {};
       clip_vision = {};
