@@ -1,7 +1,19 @@
-{
-  fetchFromGitHub
-, stdenv
+# TODO: Document how to override this data (let alone that it exists).  Show how
+# to specify the workflow directory ala:
+# https://github.com/pythongosssss/ComfyUI-Custom-Scripts/blob/main/pysssss.example.json
+{ comfyui-custom-scripts-autocomplete-text ? (builtins.fetchurl {
+  url = "https://gist.githubusercontent.com/pythongosssss/1d3efa6050356a08cea975183088159a/raw/a18fb2f94f9156cf4476b0c24a09544d6c0baec6/danbooru-tags.txt";
+  sha256 = "15xmm538v0mjshncglpbkw2xdl4cs6y0faz94vfba70qq87plz4p";
+})
+, comfyui-custom-scripts-data ? {
+  name = "CustomScripts";
+  logging = false;
+}
+, fetchFromGitHub
 , lib
+, writeTextFile
+, pkgs
+, stdenv
 }:
 
 let
@@ -136,10 +148,12 @@ in
   # 20. 90º reroutes...?
   # 21. Link render mode - linear, spline, straight.
   #
-  # TODO: This requires a "pysssss.json" to be laid down, but this necessitates
-  # writing to the nix store and that doesn't work.  The directory does have an
-  # example.  How can we specify this?
-  comfyui-custom-scripts = mkComfyUICustomNodes {
+  comfyui-custom-scripts = mkComfyUICustomNodes (let
+    pysssss-config = (writeTextFile {
+      name = "pysssss.json";
+      text = (lib.generators.toJSON {} comfyui-custom-scripts-data);
+    });
+  in {
     pname = "comfyui-custom-scripts";
     version = "unstable-2024-04-07";
     src = fetchFromGitHub {
@@ -148,7 +162,35 @@ in
       rev = "3f2c021e50be2fed3c9d1552ee8dcaae06ad1fe5";
       hash = "sha256-Kc0zqPyZESdIQ+umepLkQ/GyUq6fev0c/Z7yyTew5dY=";
     };
-  };
+    installPhase = ''
+      runHook preInstall
+      mkdir -p $out/
+      cp -r $src/* $out/
+      cp ${pysssss-config} $out/pysssss.json
+      mkdir -p $out/user
+      chmod +w $out/user
+      cp ${comfyui-custom-scripts-autocomplete-text} $out/user/autocomplete.txt
+      chmod -w $out/user
+      # Copy the patched version separately.  See
+      # https://discourse.nixos.org/t/solved-how-to-apply-a-patch-in-a-flake/27227/4
+      # for reference.  Perhaps a better reference exists?
+      # But this doesn't work for reasons I can't understand.  I get permission
+      # denied.
+      # cp pysssss.py $out/
+      # It seems that I need to grant myself write permissions first.  Is any of
+      # this documented anywhere?
+      chmod -R +w $out
+      cp pysssss.py $out/
+      cp __init__.py $out/
+      # Put it back I guess?
+      chmod -R -w $out/
+      runHook postInstall
+    '';
+    # TODO: Determine if this is actually necessary.
+    patches = [
+      ./comfyui-custom-scripts-remove-js-install-step.patch
+    ];
+  });
 
   # More to add:
   # https://github.com/pythongosssss/ComfyUI-WD14-Tagger - Reverse image
