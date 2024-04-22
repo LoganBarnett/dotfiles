@@ -87,6 +87,11 @@ the home page value but that's not as useful as linking to the file itself.
   (kill-new (car (vc-git-branches)))
   )
 
+(defun config/git-rev-kill ()
+  (interactive)
+  (kill-new (vc-git-working-revision (buffer-file-name)))
+  )
+
 (use-package "browse-at-remote"
   :init
   (on-doom
@@ -101,8 +106,9 @@ the home page value but that's not as useful as linking to the file itself.
     :n
     "b" #'config/git-branch-kill
     "F" #'+vc/browse-at-remote-kill
-    "y" #'browse-at-remote-kill
     "h" #'+vc/browse-at-remote-homepage
+    "r" #'config/git-rev-kill
+    "y" #'browse-at-remote-kill
     )
    )
   :config
