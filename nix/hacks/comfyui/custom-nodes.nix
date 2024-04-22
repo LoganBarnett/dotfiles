@@ -50,14 +50,6 @@ in
   # Manages workflows in comfyui such that they can be version controlled
   # easily.
   # https://github.com/talesofai/comfyui-browser
-  # This saves things here:
-  # <comfyui-dir>/custom_nodes/comfyui-browser/collections
-  # Perhaps there is something we can do to help Nix manage this further?  Or a
-  # setting that can "unmanage" it.
-  #
-  # TODO: This requires the <comfyui-browser>/collections dir to exist.  Can we
-  # override it and place it elsewhere in the comfyui directory?  Even if we
-  # created it as part of this package, it would be read-only and thus useless.
   #
   # This uses a fork that allows for configurable directories.
   comfyui-browser = mkComfyUICustomNodes {
