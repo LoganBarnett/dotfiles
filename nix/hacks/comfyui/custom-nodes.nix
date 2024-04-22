@@ -58,15 +58,27 @@ in
   # TODO: This requires the <comfyui-browser>/collections dir to exist.  Can we
   # override it and place it elsewhere in the comfyui directory?  Even if we
   # created it as part of this package, it would be read-only and thus useless.
+  #
+  # This uses a fork that allows for configurable directories.
   comfyui-browser = mkComfyUICustomNodes {
     pname = "comfyui-browser";
-    version = "unstable-2024-04-07";
+    version = "unstable-fork-2024-04-21";
     src = fetchFromGitHub {
-      owner = "talesofai";
+      owner = "LoganBarnett";
       repo = "comfyui-browser";
-      rev = "0a39d125cbf182154d940e7f4f930ac3c0bf3e2e";
-      hash = "sha256-096x+n9TKRzG+sfbZJG6stMEmk7KFxZsGCU0TLlw+6s=";
+      rev = "87a0707e7d5cafc6d5f34b54d10bbb8404bb711f";
+      hash = "sha256-k7W5Lb4kTAHeHGdkGle+8+X8tj5StuqaIj3DwOjPIMk=";
     };
+    installPhase = ''
+      mkdir -p $out/
+      cp -r $src/* $out/
+      cp ${pkgs.writeText "config.json" (builtins.toJSON {
+        collections = "/var/lib/comfyui/comfyui-browser/collections";
+        download_logs = "/var/lib/comfyui/comfyui-browser/download-logs";
+        outputs = "/var/lib/comfyui/outputs";
+        sources = "/var/lib/comfyui/comfyui-browser/sources";
+      })} $out/config.json
+    '';
   };
 
   # Show the time spent in various nodes of a workflow.
