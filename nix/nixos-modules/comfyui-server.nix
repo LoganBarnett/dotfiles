@@ -85,6 +85,7 @@ in {
       custom-nodes.comfyui-profiler
       custom-nodes.comfyui-crystools
       custom-nodes.comfyui-custom-scripts
+      custom-nodes.images-grid-comfy-plugin
       custom-nodes.ultimate-sd-upscale
     ];
     preview-method = "auto";

@@ -204,6 +204,21 @@ in
     ];
   });
 
+  # https://github.com/LEv145/images-grid-comfy-plugin
+  images-grid-comfy-plugin = mkComfyUICustomNodes (let
+    version = "2.6";
+  in {
+    pname = "images-grid-comfy-plugin";
+    inherit version;
+    src = fetchFromGitHub {
+      owner = "LEv145";
+      repo = "images-grid-comfy-plugin";
+      # Space character is deliberate.
+      rev = "refs/tags/${version}";
+      hash = "sha256-YG08pF6Z44y/gcS9MrCD/X6KqG99ig+VKLfZOd49w9s=";
+    };
+  });
+
   # More to add:
   # https://github.com/pythongosssss/ComfyUI-WD14-Tagger - Reverse image
   # inference - generate keywords (or a prompt of sorts) from an image.
