@@ -73,10 +73,10 @@ in
       mkdir -p $out/
       cp -r $src/* $out/
       cp ${pkgs.writeText "config.json" (builtins.toJSON {
-        collections = "/var/lib/comfyui/comfyui-browser/collections";
-        download_logs = "/var/lib/comfyui/comfyui-browser/download-logs";
+        collections = "/var/lib/comfyui/comfyui-browser-collections";
+        download_logs = "/var/lib/comfyui/comfyui-browser-download-logs";
         outputs = "/var/lib/comfyui/outputs";
-        sources = "/var/lib/comfyui/comfyui-browser/sources";
+        sources = "/var/lib/comfyui/comfyui-browser-sources";
       })} $out/config.json
     '';
   };

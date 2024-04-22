@@ -23,6 +23,11 @@ in {
   # instead of a header value.
   age.secrets.civitai-bearer-token-header = {
     rekeyFile = ../secrets/civitai-bearer-token-header.age;
+    # path = "/nix/var/secrets/civitai-bearer-token-header";
+    path = "/etc/civitai-bearer-token-header";
+    symlink = false;
+    group = "nixbld";
+    mode = "0444";
   };
   # We need to override the original if we want to provide our own for rapid
   # iteration.  First we disable the original via `disabledModules`, and then
@@ -217,6 +222,12 @@ in {
           format = "safetensors";
           url = "https://civitai.com/api/download/models/254267?type=Model&format=SafeTensor";
           sha256 = "sha256-a/NpZNiVK09Kdzs/pl0yADCF57BdCVuugYJd+g8Q9Kk=";
+        });
+        # TODO: Maybe figure out how to obfuscate?
+        ralph-breaks-internet-disney-princesses = (fetchModel {
+          url = "https://civitai.com/api/download/models/244808?type=Model&format=SafeTensor";
+          format = "safetensors";
+          sha256 = "sha256-gKpnkTrryJoBvhkH5iEi8zn9/ucMFxq3upZ8Xl/PJ+o=";
         });
         # https://civitai.com/models/200251/feet?modelVersionId=225347
         # Versions are not posted, so just use the "Updated:" date.
