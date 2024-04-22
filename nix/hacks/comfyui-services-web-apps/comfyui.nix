@@ -453,6 +453,9 @@ in
         # StateDirectory = cfg.dataPath;
         # comfyui is prone to crashing on long slow workloads.
         Restart = "always";
+        StartLimitBurst = 3;
+      };
+      unitConfig = {
         # Prevent it from restarting _too_ much though.  Stop if three times a
         # minute.  This might need a better default from someone with better
         # sysadmin chops.
@@ -460,7 +463,6 @@ in
         # documentation.  Need a link to the offending doc, the correct field to
         # use, and a pull request to correct it.
         StartLimitIntervalSec = "1m";
-        StartLimitBurst = 3;
       };
     };
   };
