@@ -58,8 +58,8 @@ in
     src = fetchFromGitHub {
       owner = "LoganBarnett";
       repo = "comfyui-browser";
-      rev = "e406d40ad655add0398c26cfce95f3346863aa9b";
-      hash = "sha256-0WlR4G5fyWJVjk3yGlskrebOypCRyquAUMyZKa2gHA0=";
+      rev = "506cf662e390ba736481faf1e080ed94eb85dc2c";
+      hash = "sha256-Ja+NWEXTMxYUG/NKuYfj6LqbjWAeMoU7FuLqdLKMb8M=";
     };
     installPhase = ''
       mkdir -p $out/
@@ -67,7 +67,7 @@ in
       cp ${pkgs.writeText "config.json" (builtins.toJSON {
         collections = "/var/lib/comfyui/comfyui-browser-collections";
         download_logs = "/var/lib/comfyui/comfyui-browser-download-logs";
-        outputs = "/var/lib/comfyui/outputs";
+        outputs = "/var/lib/comfyui/output";
         sources = "/var/lib/comfyui/comfyui-browser-sources";
       })} $out/config.json
     '';
