@@ -58,8 +58,8 @@ in
     src = fetchFromGitHub {
       owner = "LoganBarnett";
       repo = "comfyui-browser";
-      rev = "87a0707e7d5cafc6d5f34b54d10bbb8404bb711f";
-      hash = "sha256-k7W5Lb4kTAHeHGdkGle+8+X8tj5StuqaIj3DwOjPIMk=";
+      rev = "e406d40ad655add0398c26cfce95f3346863aa9b";
+      hash = "sha256-0WlR4G5fyWJVjk3yGlskrebOypCRyquAUMyZKa2gHA0=";
     };
     installPhase = ''
       mkdir -p $out/
