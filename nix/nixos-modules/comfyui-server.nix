@@ -86,7 +86,8 @@ in {
     multi-user = true;
     customNodes = [
       custom-nodes.comfyui-browser
-      custom-nodes.comfyui-profiler
+      # Disabled due to https://github.com/tzwm/comfyui-profiler/issues/2
+      # custom-nodes.comfyui-profiler
       custom-nodes.comfyui-crystools
       custom-nodes.comfyui-custom-scripts
       custom-nodes.images-grid-comfy-plugin
