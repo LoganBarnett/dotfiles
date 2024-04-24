@@ -11,7 +11,6 @@
   fetchModel = pkgs.callPackage ../hacks/comfyui/fetch-model.nix {};
   custom-nodes = (pkgs.callPackage ../hacks/comfyui/custom-nodes.nix {});
   mkComfyUICustomNodes = custom-nodes.mkComfyUICustomNodes;
-  # fetchModel = import ../hacks/comfyui/fetch-model.nix;
 in {
   # We don't actually need this file, but it's kept for reference.
   age.secrets.civitai-token = {

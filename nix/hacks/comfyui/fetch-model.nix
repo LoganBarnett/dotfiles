@@ -1,6 +1,8 @@
+# This is a fetcher made specifically for fetching models to be used by
+# ComfyUI's custom-nodes, the name given to ComfyUI's plugin system.  A list of
+# nixpkgs provided custom nodes can be found in ./custom-nodes.nix.
 { lib, pkgs }:
 { url
-# , name ? null
 , format ? null
 , sha256
 , bearer ? null
