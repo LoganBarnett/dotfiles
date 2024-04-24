@@ -17,11 +17,20 @@
 }:
 
 let
+  # Patches don't apply to $src, and as with many scripting languages that don't
+  # have a build output per se, we just want the script source itself placed
+  # into $out.  So just copy everything into $out instead of from $src so we can
+  # make sure we get everything in the future, and we use the patched versions.
+  install = ''
+  shopt -s dotglob
+  shopt -s extglob
+  cp -r ./!($out|$src) $out/
+'';
   mkComfyUICustomNodes = args: stdenv.mkDerivation ({
     installPhase = ''
       runHook preInstall
       mkdir -p $out/
-      cp -r $src/* $out/
+      ${install}
       runHook postInstall
     '';
 
@@ -32,17 +41,43 @@ in
 {
   inherit mkComfyUICustomNodes;
 
-  # Handle upscaling of smaller images into larger ones.  This is helpful to go
-  # from a prototyped image to a highly detailed, high resolution version.
-  ultimate-sd-upscale = mkComfyUICustomNodes {
-    pname = "ultimate-sd-upscale";
-    version = "unstable-2024-03-30";
-
+  # Generates masks for inpainting based on text prompts..
+  # https://github.com/biegert/ComfyUI-CLIPSeg
+  clipseg = mkComfyUICustomNodes {
+    pname = "clipseg";
+    version = "unstable-2023-04-12";
+    pyproject = true;
+    installPhase = ''
+      runHook preInstall
+      mkdir -p $out
+      cp $src/custom_nodes/clipseg.py $out/__init__.py # https://github.com/biegert/ComfyUI-CLIPSeg/issues/12
+      runHook postInstall
+    '';
     src = fetchFromGitHub {
-      owner = "ssitu";
-      repo = "ComfyUI_UltimateSDUpscale";
-      rev = "b303386bd363df16ad6706a13b3b47a1c2a1ea49";
-      hash = "sha256-kcvhafXzwZ817y+8LKzOkGR3Y3QBB7Nupefya6s/HF4=";
+      owner = "biegert";
+      repo = "ComfyUI-CLIPSeg";
+      rev = "7f38951269888407de45fb934958c30c27704fdb";
+      hash = "sha256-qqrl1u1wOKMRRBvMHD9gE80reDqLWn+vJEiM1yKZeUo=";
+      fetchSubmodules = true;
+    };
+  };
+
+  # https://github.com/Fannovel16/comfyui_controlnet_aux
+  # Nodes for providing ControlNet hint images.
+  controlnet-aux = mkComfyUICustomNodes {
+    pname = "comfyui-controlnet-aux";
+    version = "unstable-2024-04-05";
+    pyproject = true;
+    dependencies = with pkgs.python3Packages; [
+      matplotlib
+      opencv4
+      scikit-image
+    ];
+    src = fetchFromGitHub {
+      owner = "Fannovel16";
+      repo = "comfyui_controlnet_aux";
+      rev = "c0b33402d9cfdc01c4e0984c26e5aadfae948e05";
+      hash = "sha256-D9nzyE+lr6EJ+9Egabu+th++g9ZR05wTg0KSRUBaAZE=";
       fetchSubmodules = true;
     };
   };
@@ -58,12 +93,15 @@ in
     src = fetchFromGitHub {
       owner = "LoganBarnett";
       repo = "comfyui-browser";
-      rev = "506cf662e390ba736481faf1e080ed94eb85dc2c";
-      hash = "sha256-Ja+NWEXTMxYUG/NKuYfj6LqbjWAeMoU7FuLqdLKMb8M=";
+      rev = "209106316655a58b7f49695c0a0bcab57d5a0c0e";
+      hash = "sha256-/vYCxzT0YvBiNl3B0s8na5QRYWxUgNUleRgCQrEJgvI=";
     };
+    patches = [
+      ./comfyui-browser-debug-xyz-plot.patch
+    ];
     installPhase = ''
       mkdir -p $out/
-      cp -r $src/* $out/
+      ${install}
       cp ${pkgs.writeText "config.json" (builtins.toJSON {
         collections = "/var/lib/comfyui/comfyui-browser-collections";
         download_logs = "/var/lib/comfyui/comfyui-browser-download-logs";
@@ -210,6 +248,83 @@ in
       hash = "sha256-YG08pF6Z44y/gcS9MrCD/X6KqG99ig+VKLfZOd49w9s=";
     };
   });
+
+  # https://github.com/Acly/comfyui-inpaint-nodes
+  # Provides nodes for doing better inpainting.
+  inpaint-nodes = mkComfyUICustomNodes {
+    pname = "comfyui-inpaint-nodes";
+    version = "unstable-2024-04-08";
+    pyproject = true;
+    src = fetchFromGitHub {
+      owner = "Acly";
+      repo = "comfyui-inpaint-nodes";
+      rev = "8469f5531116475abb6d7e9c04720d0a29485a66";
+      hash = "sha256-Ane8zA9BN9QlRcQOwji4hZF2xoDPe/GvSqEyAPR+T28=";
+      fetchSubmodules = true;
+    };
+  };
+
+  # https://github.com/cubiq/ComfyUI_IPAdapter_plus
+  # This allows use of IP-Adapter models (IP meaning Image Prompt in this
+  # context).  IP-Adapter models can out-perform fine tuned models
+  # (checkpoints?).
+  ipadapter-plus = mkComfyUICustomNodes {
+    pname = "comfyui-ipadapter-plus";
+    version = "unstable-2024-04-10";
+    pyproject = true;
+    src = fetchFromGitHub {
+      owner = "cubiq";
+      repo = "ComfyUI_IPAdapter_plus";
+      rev = "417d806e7a2153c98613e86407c1941b2b348e88";
+      hash = "sha256-yuZWc2PsgMRCFSLTqniZDqZxevNt2/na7agKm7Xhy7Y=";
+      fetchSubmodules = true;
+    };
+  };
+
+  # https://github.com/Gourieff/comfyui-reactor-node
+  # Fast and simple face swap node(s).
+  reactor-node = mkComfyUICustomNodes {
+    pname = "comfyui-reactor-node";
+    version = "unstable-2024-04-07";
+    pyproject = true;
+    dependencies = with pkgs.python3Packages; [ insightface ];
+    src = fetchFromGitHub {
+      owner = "Gourieff";
+      repo = "comfyui-reactor-node";
+      rev = "05bf228e623c8d7aa5a33d3a6f3103a990cfe09d";
+      hash = "sha256-2IrpOp7N2GR1zA4jgMewAp3PwTLLZa1r8D+/uxI8yzw=";
+      fetchSubmodules = true;
+    };
+  };
+
+  # https://github.com/Acly/comfyui-tooling-nodes
+  # Make ComfyUI more friendly towards API usage.
+  tooling-nodes = mkComfyUICustomNodes {
+    pname = "comfyui-tooling-nodes";
+    version = "unstable-2024-03-04";
+    pyproject = true;
+    src = fetchFromGitHub {
+      owner = "Acly";
+      repo = "comfyui-tooling-nodes";
+      rev = "bcb591c7b998e13f12e2d47ee08cf8af8f791e50";
+      hash = "sha256-dXeDABzu0bhMDN/ryHac78oTyEBCmM/rxCIPfr99ol0=";
+      fetchSubmodules = true;
+    };
+  };
+
+  # Handle upscaling of smaller images into larger ones.  This is helpful to go
+  # from a prototyped image to a highly detailed, high resolution version.
+  ultimate-sd-upscale = mkComfyUICustomNodes {
+    pname = "ultimate-sd-upscale";
+    version = "unstable-2024-03-30";
+    src = fetchFromGitHub {
+      owner = "ssitu";
+      repo = "ComfyUI_UltimateSDUpscale";
+      rev = "b303386bd363df16ad6706a13b3b47a1c2a1ea49";
+      hash = "sha256-kcvhafXzwZ817y+8LKzOkGR3Y3QBB7Nupefya6s/HF4=";
+      fetchSubmodules = true;
+    };
+  };
 
   # More to add:
   # https://github.com/pythongosssss/ComfyUI-WD14-Tagger - Reverse image
