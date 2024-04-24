@@ -74,7 +74,7 @@ rsync \
 # This needs to be sudo because nixos-rebuild claims one or more of the .git
 # files.
 # ssh $dest 'sudo rm -rf $HOME/proton-nix'
-command="sudo nixos-rebuild switch --flake '.#$host' --show-trace"
+command="cd proton-nix; sudo nixos-rebuild switch --flake '.#$host' --show-trace --impure"
 # This creates a bunch of noise, but as far as I can tell there's no problems
 # had.  Some of the history is probably borked, but I just need the working tree
 # to be intact, and by all observations that is the case.  I have heard about
@@ -89,7 +89,7 @@ git init && \
 git add . \
 "
 if $switch ; then
-  ssh $des "\
+  ssh $dest "\
   $command \
 "
 else
