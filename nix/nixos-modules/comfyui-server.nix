@@ -181,7 +181,7 @@ in {
         # https://huggingface.co/lllyasviel/ControlNet-v1-1
         # https://github.com/lllyasviel/ControlNet-v1-1-nightly
         # See also the accompanying file in `controlnet`.
-        controlnet-v1_1_fe-sd15-tile = {
+        controlnet-v1_1_fe-sd15-tile-yaml = {
           format = "yaml";
           path = {
             url = "https://huggingface.co/lllyasviel/ControlNet-v1-1/raw/69fc48b9cbd98661f6d0288dc59b59a5ccb32a6b/control_v11f1e_sd15_tile.yaml";
@@ -207,11 +207,11 @@ in {
         };
         # https://huggingface.co/lllyasviel/ControlNet-v1-1
         # See also the accompanying file in `configs`.
-        controlnet-v1_1_f1e-sd15-tile = {
+        controlnet-v1_1_f1e-sd15-tile-pth = {
           format = "pth";
           path = {
-            url = "https://huggingface.co/lllyasviel/ControlNet-v1-1/blob/69fc48b9cbd98661f6d0288dc59b59a5ccb32a6b/control_v11f1e_sd15_tile.pth";
-            sha256 = "11qndcrfz5jrjghn6v9is813igfd8310knl1l9rwxbf8lvwjncbc";
+            url = "https://huggingface.co/lllyasviel/ControlNet-v1-1/raw/69fc48b9cbd98661f6d0288dc59b59a5ccb32a6b/control_v11f1e_sd15_tile.pth";
+            sha256 = "8aa69b8d391e72c2fced6a650268137dc0ed594cafe8a2c0f8b994799a21979b";
           };
         };
       };
