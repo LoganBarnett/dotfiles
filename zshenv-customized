@@ -6,6 +6,10 @@ export PATH="$PATH:/Library/TeX/texbin/"
 # https://stackoverflow.com/a/57591830
 export GPG_TTY=$(tty)
 
+# Recently while tethered, the `ssh -4` value actually started causing problems
+# for git operations against GitHub.  So it would seem this workaround is no
+# longer needed.  Kept for reference.  The below no longer holds.
+#
 # Force git to use ssh with IPv4. When tethered over my phone, everything is
 # IPv6. While dig, nslookup, and ping all agree on the IP used by a source like
 # github.com, this doesn't seem to be the case with ssh. Switching to IPv4 fixes
@@ -16,7 +20,8 @@ export GPG_TTY=$(tty)
 # than the one bundled on macOS, which is probably tailing behind. While the ssh
 # program has been a stable workhorse for as long as I can remember, it is not
 # immune to bugs.
-export GIT_SSH_COMMAND="ssh -4"
+#
+# export GIT_SSH_COMMAND="ssh -4"
 
 # Nix has some weird stuff going on with curl and TLS certificates.  Nix won't
 # assume the system certificate trust, so we have to make it do that for us.  I
