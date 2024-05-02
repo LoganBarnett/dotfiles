@@ -433,16 +433,16 @@
     },
     "nixpkgs-comfyui": {
       "locked": {
-        "lastModified": 1710988384,
-        "narHash": "sha256-ZejAlPD26SdPDlYDYpkzNF7GptJL4Dju/ik5nC28978=",
+        "lastModified": 1714619853,
+        "narHash": "sha256-UI0pjOy1Ud8lksL9ijO/wEbMJPPQgnBgU2HZOUkCDFI=",
         "owner": "LoganBarnett",
         "repo": "nixpkgs",
-        "rev": "516fb5eadceb83bbaf7f0e97113969730743d305",
+        "rev": "1a2f37f4c8fd960e709ffd8d10425db1331c7036",
         "type": "github"
       },
       "original": {
         "owner": "LoganBarnett",
-        "ref": "comfyui",
+        "ref": "comfyui-fetch-model-hide",
         "repo": "nixpkgs",
         "type": "github"
       }
