@@ -2,32 +2,35 @@
 
 echo 'use flake' > .envrc
 if test -f flake.nix ; then
-  echo "flake.nix already exists, but be sure to stage with \`git add
-flake.nix\` if you haven't already\!"
+  echo "flake.nix already exists..."
+  if git ls-files --error-unmatch ; then
+    echo "And it is tracked by git.  Moving on."
+  else
+    echo "flake.nix not in the git repo.  This will cause an error.  Adding
+    flake.nix to git repo..."
+    git add flake.nix
+    echo "flake.nix added to repository!"
+  fi
 else
   cat <<EOF > flake.nix
 {
-  description = "Home Manager configuration of logan";
-
+  description = "Populate me!";
   inputs = {
-    flake-utils.url = "github:numtide/flake-utils";
-    # Specify the source of Home Manager and Nixpkgs.
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
+    nixpkgs.url = github:NixOS/nixpkgs/nixpkgs-unstable;
   };
-  outputs = { flake-utils, nixpkgs, ... }:
-    flake-utils.lib.eachDefaultSystem (system:
-    let
+
+  outputs = { self, nixpkgs }@inputs: {
+
+    devShells.aarch64-darwin.default = let
+      system = "aarch64-darwin";
       pkgs = import nixpkgs {
         inherit system;
       };
-    in {
-      devShell = pkgs.mkShell {
-        buildInputs = [
-          # Add required packages here, ex:
-          # pkgs.cmake
-        ];
-      };
-    });
+    in pkgs.mkShell {
+      buildInputs = [];
+    };
+
+  };
 }
 EOF
   echo "Created a fresh flake.nix.  You will want to edit this."
