@@ -27,7 +27,7 @@ cd $dir
 secretsJson='['
 for i in ${#bypassSecrets[@]}; do
   secretName=${#bypassSecrets[$i]}
-  secretsJson+=$(pass show $secretName)
+  secretsJson+=$(passn show $secretName)
   # JSON does not support trailing commas, so omit the comma on the last entry.
   if ((! ${#bypassSecrets[@]} == ( $i - 1 ))); then
     secretsJson+=','

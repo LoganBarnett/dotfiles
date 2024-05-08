@@ -19,4 +19,4 @@
 
 # secret-server-secret-get "$EP_SECRET_SERVER_ID"
 
-pass show ep
+passn show ep
