@@ -246,7 +246,6 @@ in {
             sha256 = "sha256-a/NpZNiVK09Kdzs/pl0yADCF57BdCVuugYJd+g8Q9Kk=";
           };
         };
-        # TODO: Maybe figure out how to obfuscate?
         ralph-breaks-internet-disney-princesses = {
           format = "safetensors";
           path = {
