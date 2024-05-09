@@ -211,7 +211,7 @@ in {
           format = "pth";
           path = {
             url = "https://huggingface.co/lllyasviel/ControlNet-v1-1/raw/69fc48b9cbd98661f6d0288dc59b59a5ccb32a6b/control_v11f1e_sd15_tile.pth";
-            sha256 = "8aa69b8d391e72c2fced6a650268137dc0ed594cafe8a2c0f8b994799a21979b";
+            sha256 = "sha256-hpBH/B2u4eXcHvhqxOrjX52Nxh6cQyltx/z8XoEjcds=";
           };
         };
       };
@@ -295,13 +295,8 @@ in {
         kim2091-4k-ultrasharp = {
           format = "pth";
           path = {
-            url = "https://huggingface.co/Kim2091/UltraSharp/blob/main/4x-UltraSharp.pth";
-            # sha256 = "sha256-pYEiMfyTa0KvCKXtunhBlUldMD1bMkjCRInvDEAh/gE=";
-            # sha256 = "sha256-JZDtqx4ZEUbexkONl9z2BV8viMFmRnalj6NfoDeYNgU=";
-            sha256 = "sha256-weKbF1v8Yi1+8r/eagg6FWJ5QFdFmmTLXZlJFQdFiIU=";
-            # SHA256 reported by civitai.com.  Unsure how these relate.  It is not
-            # base64 encoded.
-            # "A5812231FC936B42AF08A5EDBA784195495D303D5B3248C24489EF0C4021FE01"
+            url = "https://huggingface.co/Kim2091/UltraSharp/raw/main/4x-UltraSharp.pth";
+            sha256 = "sha256-1UUMW6f2bilb9iROW6olbMcUnwOImHAgeEQaVDs6jW4=";
           };
         };
       };
