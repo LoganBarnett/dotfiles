@@ -1,0 +1,17 @@
+# -*- mode: snippet; require-file-newline: nil -*-
+# name: rustfmt.toml
+# key: rustfmt.toml
+# condition: "rustfmt.toml"
+# group: yatemplate
+# Emit my most favored of rustfmt settings.  This is contrary to some of the
+# defaults, but for my projects I will write them as I wish.  Folks can write
+# what they wish, but it must be passed through rustfmt first.
+#
+# At present this assumes a lot of defaults that I am happy with.
+#
+# Settings can be found here:
+# - https://rust-lang.github.io/rustfmt/
+# --
+# Find additionl settings here: https://rust-lang.github.io/rustfmt/
+max_width = 80
+tab_spaces = 2
