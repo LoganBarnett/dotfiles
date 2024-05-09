@@ -74,6 +74,12 @@
 (package! flycheck)
 (package! flyspell)
 (package! flyspell-correct)
+;; Provide rainbow indentation guides/bars.  Even highlights the current
+;; indentation level based on cursor location.
+;; Not on Melpa yet.
+(package! indent-bars :recipe
+  (:repo "https://github.com/jdtsmith/indent-bars.git")
+  )
 ;; Include code blocks with language support in org->markdown exports.
 (package! ox-gfm)
 (package! glsl-mode)

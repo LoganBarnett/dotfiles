@@ -287,13 +287,31 @@ This highlights indentation, which can be helpful for large sets of indentation.
 
 #+name: config/indentation-highlight
 #+begin_src emacs-lisp :results none :tangle yes
-(setq-default highlight-indent-guides-method 'character)
-(add-hook 'prog-mode-hook #'highlight-indent-guides-mode)
+;; (setq-default highlight-indent-guides-method 'character)
+;; (add-hook 'prog-mode-hook #'highlight-indent-guides-mode)
+(use-package "indent-bars"
+  :hook
+  ((prog-mode) . indent-bars-mode)
+  :init
+  (setq-default
+   ;; This is the default value, but for some reason Emacs isn't seeing
+   ;; indent-bars-color.  It is defined via defcustom so this is pretty weird.
+   ;; Without this, the cursor will be black (regardless of whether or not
+   ;; indent-bars is running in the buffer).  When it gets defined, Emacs sees
+   ;; the variable definition.
+   indent-bars-color '(highlight :face-bg t :blend 0.5)
+   indent-bars-prefer-character t
+   ;; Pump up the BG blend on the cursor's indentation.
+   indent-bars-highlight-current-depth '(:blend 0.75)
+   )
+)
 #+end_src
 
 * all together
 
 #+begin_src emacs-lisp :results none :noweb yes :tangle yes
+<<config/indentation-highlight>>
+
 (use-package "prog-mode"
   :init
   <<config/prog-mode-fix-c-indentation>>
@@ -301,7 +319,6 @@ This highlights indentation, which can be helpful for large sets of indentation.
   (config/rainbow-delimiters)
   <<config/prog-mode-line-numbers-enable>>
   <<config/prog-mode-manage-final-newline>>
-  <<config/indentation-highlight>>
   <<config/fix-multi-line-comment-continuations>>
   (add-hook 'prog-mode-hook #'config/auto-fill-comments)
   (add-hook 'prog-mode-hook #'config/disable-line-wrapping)
