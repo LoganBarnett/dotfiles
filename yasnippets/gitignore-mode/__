@@ -1,7 +1,8 @@
 # -*- mode: snippet; require-file-newline: nil -*-
 # name: gitignore
 # key: gitignore
-# condition: t
+# condition: ".gitignore"
+# group: yatemplate
 # --
 
 # Before adding things like .DS_Store, ignores for your editors, etc, consider
