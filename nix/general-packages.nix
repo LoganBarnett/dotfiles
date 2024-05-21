@@ -60,24 +60,6 @@
   pkgs.f3
   # Searches for files. Used by projectile in Emacs.
   pkgs.fd
-  # fenix comes from an overlay in this configuration.
-  #
-  # fenix is a rustup replacement I am using to give us some tools as well as
-  # the Rust documentation. Rust documentation is something I want installed on
-  # the system so a potential patch version update doesn't mean I have to
-  # re-download the documentation even when offline.
-  #
-  # Right now the documentation isn't something I can get to, even though it
-  # seems to isntall. I have https://github.com/nix-community/fenix/issues/113
-  # open to try to address it.
-  (pkgs.fenix.complete.withComponents [
-    "cargo"
-    "clippy"
-    "rust-docs"
-    "rust-std"
-    "rustfmt"
-    "rust-src"
-  ])
   # Convert media (sound, video). The "-full" suffix brings in all of the
   # codecs one could desire.
   # See https://github.com/NixOS/nixpkgs/issues/271313 for workaround to fix
@@ -142,13 +124,6 @@
   pkgs.imagemagick
   # A spell checker.
   pkgs.ispell
-  # I think I have some extra memory. Java should take care of that.  For now
-  # this seems broken - I suspect it is a collision with maven.  See
-  # https://github.com/NixOS/nixpkgs/issues/56549 - my local version also
-  # seems to be Zulu, for what it's worth.
-  # jdk
-  # Managed Java on a per-project basis. Doesn't exist in nix?
-  # jenv
   # Manage Jira from the command line, like a scholar.
   pkgs.jira-cli-go
   # JSON parsing, querying, and updating.
@@ -160,8 +135,6 @@
   # pkgs.libreoffice
   # Give us man pages for GNU stuff.
   pkgs.man-pages
-  # Java builds. Pom.xml files as far as the eyes can see.
-  pkgs.maven
   # A union of ping and traceroute - ping all hosts along a route.
   pkgs.mtr
   # Email indexing, viewing, etc. Needed in general because it is required by
@@ -176,13 +149,12 @@
   pkgs.ncdu
   # This lets me search for parts of nix to help debug collisions.
   pkgs.nix-index
-  # The code injector bootstrap script is written in Node.js, so we need to
-  # run it from the command line.
-  pkgs.nodejs
+  # Kept as reference until I can leverage a project templating tool that would
+  # lay out a flake.nix for Node.js/TypeScript projects.
   # Language Server (Protocol) - a generic means of consuming languages in an
   # editor agnostic manner.
   # Lifted from https://code-notes.jhuizy.com/add-custom-npm-to-home-manager/
-  pkgs.nodePackages.typescript-language-server
+  # pkgs.nodePackages.typescript-language-server
   # Opens source VPN solution that can work in place for Cisco's AnyConnect and
   # possibly others.
   pkgs.openconnect
@@ -224,14 +196,8 @@
   pkgs.pup
   # Show progress via a pipe, such as with dd.
   pkgs.pv
-  # Disabled until allowBroken is addressed.
-  # See https://github.com/mooz/percol/issues/110
-  #
-  # ps.percol
-  # ]))
   # Like Ruby, but not.
   (pkgs.python3.withPackages (ps: [
-    ps.pip
     ps.lxml
     #ps.pyqt5
     # This does nothing.
@@ -273,34 +239,19 @@
   # time and thus my quizzical thoughts on it are unwarranted.  See the podman
   # package declaration for more information.
   pkgs.qemu
-  # Doesn't exist?
-  # rbenv
   # Change encoding. Can convert HTML entities.
   pkgs.recode
   # Really fast grep alternative.
   pkgs.ripgrep
   # Copy files recursively. Replaces BSD version on macOS.
   pkgs.rsync
-  # Like Python, but not.
-  # DO NOT RUN RUBY IN NIX. NIX IS NOT READY FOR RUBY.
-  # ruby
-
-  # Rust is a memory safe, type safe, performant language.
-  # rust-src is needed for rustracer to be fully functional.
-  # (pkgs.rustChannels.stable.rust.override { extensions = ["rust-src"]; })
-  # Racer is an auto-complete tool for Rust.
-  #pkgs.rustracer
 
   # A Language Server (LSP) implementation for Rust
   # pkgs.rust-analyzer
-  # A version management tool for Rust.
-  # Disabled because I don't think this is needed, or at least not needed
-  # globally.
-  # pkgs.rustup
   # Assume an account on AWS via SAML.
   pkgs.saml2aws
   # Screenkey displays what's being typed on the screen. Too bad it doesn't
-  # work on aarch64. For macOs, keycastr https://github.com/keycastr/keycastr
+  # work on aarch64. For macOS, keycastr https://github.com/keycastr/keycastr
   # works great, but is installed via homebrew's cask.
   # pkgs.screenkey
   # Needed to do Crystal development, or really when I want to contribute to
@@ -331,8 +282,6 @@
   # A lightweight SQL database which requires no server. This also installs
   # CLI tools in which to access SQLite databases.
   pkgs.sqlite
-  # Declarative server orchestration.
-  pkgs.terraform
   # Gives us GNU's makeinfo, which I use to build org-mode successfully. This
   # is because the make target eventually invokes `info', which expects a gnu
   # makeinfo. The BSD makeinfo has "mismatch" errors.
@@ -390,8 +339,10 @@
   # pkgs.vscodium
   # Renders HTML formatted emails.
   pkgs.w3m
-  # Sign Firefox extensions authored by me.
-  pkgs.nodePackages.web-ext
+  # Sign Firefox extensions authored by me.  This was hard to find so I want to
+  # keep a reference of it, but it should be moved to a project's flake.nix
+  # which needs extensions to be signed.  I don't have such a project currently.
+  # pkgs.nodePackages.web-ext
   # A handy alternative to curl, best suited for downloading content.
   pkgs.wget
   # Run Windows programs (sometimes even I need this).
@@ -406,8 +357,6 @@
   pkgs.wireguard-tools
   # Allow extracting and creating .xz archives.
   pkgs.xz
-  # A tool for installing node packages. Better than npm in most ways.
-  pkgs.yarn
   # Decode QR codes from images or an onboard camera (such as a webcam).
   # Example of using zbar to tie in auth with pass-otp:
   # zbarimg -q --raw qrcode.png | pass otp insert totp-secret
