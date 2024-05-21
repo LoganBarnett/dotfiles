@@ -6,7 +6,8 @@ pkgs.stdenv.mkDerivation {
   name = "blueutil";
   src = pkgs.fetchgit {
     url = "https://github.com/toy/blueutil.git";
-    sha256 = "/HjrZ3lab1SxSn/aEcT+CYIJYVJteimP59Yjy/2zsys=";
+    rev = "90a4fdc4cfd5fb33bc6d8e39483b122a46194b60";
+    sha256 = "sha256-x2khx8Y0PolpMiyrBatT2aHHyacrQVU/02Z4Dz9fBtI=";
   };
 
   buildInputs = [] ++ (
