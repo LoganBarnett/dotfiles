@@ -1,11 +1,32 @@
+{ pkgs, ... }: {
+  # TODO: Modify similar to git-config to allow any number of users to inherit
+  # this configuration.
+  home-manager.users.logan = {
+    home.file.".gnupg/gpg-agent.conf".text = ''
+pinentry-program '' + (if pkgs.stdenv.isDarwin
+  then (pkgs.pinentry_mac + "/bin/pinentry-mac")
+  else pkgs.pinentry
+) + "\n" + ''
+allow-emacs-pinentry
+allow-loopback-pinentry
+default-cache-ttl 3600
+# I have automation that needs the cached value to essentially be permanent,
+# instead of obeying some arbitrary upper limit. If the cache continues to get
+# refreshed, this will allow us to keep using the cache for a whole year (I
+# expect to reboot long before then).
+max-cache-ttl 34560000
+    '';
+    # I like to know what's available and/or what the defaults are, so this file
+    # is present to provide that.  `gpg` does just fine with an empty file.
+    home.file.".gnupg/gpg.conf".text = ''
 # Options for GnuPG
 # Copyright 1998, 1999, 2000, 2001, 2002, 2003,
 #           2010 Free Software Foundation, Inc.
-# 
+#
 # This file is free software; as a special exception the author gives
 # unlimited permission to copy and/or distribute it, with or without
 # modifications, as long as this notice is preserved.
-# 
+#
 # This file is distributed in the hope that it will be useful, but
 # WITHOUT ANY WARRANTY, to the extent permitted by law; without even the
 # implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
@@ -197,14 +218,14 @@ keyserver hkp://keys.gnupg.net
 # you have to run an agent as daemon and use the option
 #
 # use-agent
-# 
+#
 # which tries to use the agent but will fallback to the regular mode
 # if there is a problem connecting to the agent.  The normal way to
 # locate the agent is by looking at the environment variable
 # GPG_AGENT_INFO which should have been set during gpg-agent startup.
 # In certain situations the use of this variable is not possible, thus
 # the option
-# 
+#
 # --gpg-agent-info=<path>:<pid>:1
 #
 # may be used to override it.
@@ -216,7 +237,7 @@ keyserver hkp://keys.gnupg.net
 # address (in the "user@example.com" form), and there are no
 # user@example.com keys on the local keyring.  This option takes the
 # following arguments, in the order they are to be tried:
-# 
+#
 # cert = locate a key using DNS CERT, as specified in RFC-4398.
 #        GnuPG can handle both the PGP (key) and IPGP (URL + fingerprint)
 #        CERT methods.
@@ -234,3 +255,22 @@ keyserver hkp://keys.gnupg.net
 #
 # Try CERT, then PKA, then LDAP, then hkp://subkeys.net:
 #auto-key-locate cert pka ldap hkp://subkeys.pgp.net
+    '';
+  # Home-manager doesn't support macOS with this.
+  #   programs.gpg.enable = false;
+  #   services.gpg-agent = {
+  #     enable = false;
+  #     defaultCacheTtl = 3600;
+  #     extraConfig = ''
+  #       allow-emacs-pinentry
+  #       allow-loopback-pinentry
+  #     '';
+  #     # An interface for reading passwords.  Unfortunately nixpkgs doesn't seem
+  #     # to have the intelligence to just use the macOS version if we're on
+  #     # macOS...
+  #     pinentryPackage = if stdenv.isDarwin
+  #       then pkgs.pinentry_mac
+  #       else pkgs.pinentry;
+  #   };
+  };
+}

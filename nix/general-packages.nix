@@ -208,8 +208,6 @@
   ]))
   # Use Unix pipes and direct them to a human program.
   pkgs.percol
-  # An interface for reading passwords.
-  pkgs.pinentry
   # A charting tool with a declarative language. Uses graphviz dot, ditaa,
   # and others.
   pkgs.plantuml
