@@ -1,3 +1,4 @@
+# TODO Contribute this to nix-darwin.
 { config, lib, pkgs, ... }:
 
 with lib;

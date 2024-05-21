@@ -19,6 +19,7 @@
   (import ./man-pages-fix.nix)
   (import ./maven.nix)
   (import ./percol.nix)
+  # (import ./python-hatch-vcs-fix.nix)
   (import ./speedtest-cli.nix)
   # (import ./tmux.nix)
   (import ./wine.nix)
