@@ -3,7 +3,7 @@
 # pull it in elsewhere though.
 {pkgs}: {
   enable = true;
-  enableAutosuggestions = true;
+  autosuggestion.enable = true;
   syntaxHighlighting = {
     enable = true;
   };
