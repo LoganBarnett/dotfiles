@@ -10,9 +10,6 @@ in
       host-public-key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIN3jJteck5yCfIm0iA4qKSIVx9zh6qhCuAt5cV1Ysib+";
     })
     flake-inputs.home-manager.darwinModules.home-manager
-    {
-      nixpkgs.overlays = [ flake-inputs.fenix.overlays.default ];
-    }
     # Before I was using a curried function to pass these things in, but
     # the _module.args idiom is how I can ensure these values get passed
     # via the internal callPackage mechanism for darwinSystem on these

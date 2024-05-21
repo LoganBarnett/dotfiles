@@ -25,39 +25,31 @@
     };
     disko = {
       url = "github:nix-community/disko";
-      inputs.nixpkgs.follows = "nixpkgs-comfyui";
+      inputs.nixpkgs.follows = "nixpkgs";
     };
-		emacs-overlay = {
-			url = "github:nix-community/emacs-overlay/master";
-			inputs.nixpkgs.follows = "nixpkgs";
-		};
-    fenix = {
-      url = "github:nix-community/fenix";
+    emacs-overlay = {
+      url = "github:nix-community/emacs-overlay/master";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     nixos-anywhere = {
       url = "github:numtide/nixos-anywhere";
       inputs = {
-        nixpkgs.follows = "nixpkgs-comfyui";
+        nixpkgs.follows = "nixpkgs";
         disko.follows = "disko";
       };
     };
     nixos-hardware = {
       url = "github:NixOS/nixos-hardware/master";
       # nixos-hardware doesn't actually use nixpkgs.
-      # inputs.nixpkgs.follows = "nixpkgs-comfyui";
+      # inputs.nixpkgs.follows = "nixpkgs";
     };
     # Specify the source of Home Manager and Nixpkgs.
     nixpkgs.url = "github:nixos/nixpkgs/master";
     # See if we can nix this (get it?!) because
     # https://github.com/NixOS/nixpkgs/pull/296249 is now merged with a hopeful
     # fix.
-    nixpkgs-comfyui.url = "github:LoganBarnett/nixpkgs/comfyui-fetch-model-hide";
+    # nixpkgs-comfyui.url = "github:LoganBarnett/nixpkgs/comfyui-fetch-mode-hide-rebase";
     # nix-doom-emacs.url = "github:nix-community/nix-doom-emacs";
-    home-manager-comfyui = {
-      url = "github:nix-community/home-manager";
-      inputs.nixpkgs.follows = "nixpkgs-comfyui";
-    };
     home-manager = {
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -70,14 +62,11 @@
     darwin,
     disko,
     emacs-overlay,
-    fenix,
     nixpkgs,
-    nixpkgs-comfyui,
     nixos-anywhere,
     nixos-hardware,
     # nixos-generators,
     home-manager,
-    home-manager-comfyui,
     self,
     ...
   }@flake-inputs:
@@ -122,14 +111,14 @@
 
       nixosConfigurations.lithium = let
         system = "x86_64-linux";
-        pkgs = import nixpkgs-comfyui {
+        pkgs = import nixpkgs {
           inherit system;
           specialArgs = {
             inherit flake-inputs;
           };
         };
       in
-        nixpkgs-comfyui.lib.nixosSystem (import ./hosts/lithium.nix {
+        nixpkgs.lib.nixosSystem (import ./hosts/lithium.nix {
           diskoProper = disko;
           inherit flake-inputs;
         });
