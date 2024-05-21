@@ -20,10 +20,20 @@ in
     {
       _module.args.emacs-overlay = flake-inputs.emacs-overlay;
       _module.args.nixpkgs = flake-inputs.nixpkgs;
+      _module.args.git-users = [
+        {
+          git-email = "logustus@gmail.com";
+          git-username = "LoganBarnett";
+          git-signing-key = "41E46FB1ACEA3EF0";
+          host-username = "logan";
+        }
+      ];
+      _module.args.flake-inputs = flake-inputs;
     }
     {
       config.networking.hostName = "scandium";
     }
+    ../nixos-modules/development.nix
     ../darwin.nix
     ../users/logan-personal.nix
     ../headed-host.nix
