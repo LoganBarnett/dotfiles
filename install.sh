@@ -37,9 +37,6 @@ slog "Creating ssh key if it doesn't exist"
 ./create-ssh-key.sh
 slog "Done create ssh key"
 
-slog "Configuring git"
-./git-config.sh
-
 # get submodules set up
 git submodule init || true
 git submodule update || true
