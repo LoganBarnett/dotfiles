@@ -16,6 +16,7 @@
   (import ./cacert.nix)
   # (import ./crystal.nix)
   (import ./gnupg.nix)
+  (import ./man-pages-fix.nix)
   (import ./maven.nix)
   (import ./percol.nix)
   (import ./speedtest-cli.nix)
