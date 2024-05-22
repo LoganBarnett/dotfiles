@@ -134,6 +134,33 @@ in {
         "ntfs"
         "xfs"
       ];
+      # This was the only way I could get around this error:
+      #
+      # building '/nix/store/dvcd1s8gmpw2whz34cqmk1sxaws6mzjm-lazy-options.json.drv'...
+      # error: builder for '/nix/store/dvcd1s8gmpw2whz34cqmk1sxaws6mzjm-lazy-options.json.drv' failed with exit code 1;
+      #        last 10 log lines:
+      #        >           957|   fixupOptionType = loc: opt:
+      #        >              |                          ^
+      #        >           958|     if opt.type.getSubModules or null == null
+      #        >
+      #        >        error: value is a function while a set was expected
+      #        > Cacheable portion of option doc build failed.
+      #        > Usually this means that an option attribute that ends up in documentation (eg `default` or `description`) depends on the restricted module arguments `config` or `pkgs`.
+      #        >
+      #        > Rebuild your configuration with `--show-trace` to find the offending location. Remove the references to restricted arguments (eg by escaping their antiquotations or adding a `defaultText`) or disable the sandboxed build for the failing module by setting `meta.buildDocsInSandbox = false`.
+      #        >
+      #        For full logs, run 'nix log /nix/store/dvcd1s8gmpw2whz34cqmk1sxaws6mzjm-lazy-options.json.drv'.
+      #
+      # I did not ask to build lazy-options, and it wasn't apparent why it was
+      # needed.  The options there (printed via a debug version) show it's
+      # normal to have functions there that are decorated for option-use.  No
+      # option I have set seems to be causing this.  It's shown up in a somewhat
+      # recent commit (sometime in November 2023, by my estimation), but I lack
+      # the capability to do a proper bisect on it to find out.  There may be a
+      # way to do it, but given how brittle torch is to build, I will leave this
+      # to more eager minds.  This error should be much more helpful than it is,
+      # and that is perhaps the _real_ bug here that I need to file for.
+      documentation.enable = false;
       environment.systemPackages = [
         # Strangely, virtually required because of the odd way in which Nix
         # Flakes copies the configuration to the Nix store.
