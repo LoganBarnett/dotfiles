@@ -9,44 +9,5 @@
 # consuming nix file it is simply presented as "pkgs.percol". I might like to
 # keep this around as an example.
 final: prev: {
-  percol = prev.python3.pkgs.buildPythonApplication rec {
-    pname = "percol";
-    version = "0.1.0";
-    format = "other";
-
-    pythonPath = [ prev.python3.pkgs.setuptools ];
-    nativeBuildInputs = [
-      prev.cacert
-      prev.python3.pkgs.wrapPython
-      prev.makeWrapper
-    ];
-
-    src = prev.python3.pkgs.fetchPypi {
-      inherit pname version;
-      sha256 = "1bchvqf4prdmfm1cg6y2i76kcd3jwmzz5wmlx1zhi7f3asgksjf8";
-    };
-    buildPhase = ''
-      ${prev.python3.interpreter} setup.py build
-    '';
-
-    installPhase = ''
-      ${prev.python3.interpreter} setup.py install --prefix="$out"
-      for i in "$out/bin"/*; do
-      head -n 1 "$i" | grep -E '[/ ]python( |$)' && {
-        wrapProgram "$i" --prefix PYTHONPATH : "$PYTHONPATH:$out/${prev.python3.sitePackages}"
-      } || true
-      done
-    '';
-
-    doCheck = false;
-
-    meta = with prev.lib; {
-      description = "Adds flavor of interactive selection to the traditional pipe concept on UNIX";
-      homepage = "https://github.com/mooz/percol/";
-      license = licenses.mit;
-      platforms = prev.lib.platforms.linux ++ prev.lib.platforms.darwin;
-      # What should I put here? I don't maintain this, do I?
-      # maintainers = with maintainers; [ somename ];
-    };
-  };
+  percol = prev.callPackage ../derivations/percol.nix {};
 }
