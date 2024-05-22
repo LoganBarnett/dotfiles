@@ -31,6 +31,7 @@ in {
     ../nixos-modules/nix-store-optimize.nix
     ../nixos-modules/nvidia.nix
     ../nixos-modules/sshd.nix
+    ../nixos-modules/user-can-admin.nix
     (import ../nixos-modules/comfyui-server.nix { inherit host-id; })
     ({ lib, ... }: {
       disko.devices = {
@@ -156,7 +157,8 @@ in {
         pkgs.vim
       ];
       # Hostname is not an FQDN.
-      networking.hostName = "lithium";
+      networking.hostName = host-id;
+      nixpkgs.overlays = (import ../overlays/default.nix);
       system.stateVersion = "23.11";
     })
   ];

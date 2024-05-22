@@ -1,22 +1,10 @@
 { pkgs, ... }:
 [
-  # A grep-sed like alternative. Offers a scripting language for
-  # transformations.
-  pkgs.ack
-  # Convert Ruby gems to valid nix derivations or Ruby dependencies within
-  # Nix. Or that's the idea. While this builds, I haven't accomplished what it
-  # says on the tin just yet.
-  pkgs.bundix
   # Write certificates out - these aren't present on macOS in a freely
   # available way.
   pkgs.cacert
   # A command line based music player.
   pkgs.cmus
-  # This is a suite of GNU utilities.
-  pkgs.coreutils
-  # curl does http requests. Comes with MacOS but no reason to use a dated
-  # version.
-  pkgs.curl
   # (import (builtins.fetchGit {
   #   # Descriptive name to make the store path easier to identify
   #   name = "curl-8-1-0-fix-ssl";
@@ -30,21 +18,6 @@
   #   url = https://github.com/nixos/nixpkgs/;
   #   rev = "3b6c3bee9174dfe56fd0e586449457467abe7116";
   # }) {}).crystal
-  # Allows us to query the status of USB devices.  This uses lsusb or
-  # systemprofile -json under the hood in a cross-platform manner.
-  # Unfortunately it does not work on non-USB devices (like SD cards) like one
-  # might think.  This is _not_ for storage devices (many things imply it will
-  # work, but it won't).
-  pkgs.cyme
-  # Gives us diff --color support via GNU diff.
-  pkgs.diffutils
-  # Just loads and unloads environment variables based on directory. Really
-  # useful with nix to declare local dependencies for a project, and see them
-  # auto loaded when entering the directory. See the local shell configuration
-  # for how direnv is hooked up.
-  #
-  # See more at https://nixos.wiki/wiki/Development_environment_with_nix-shell
-  pkgs.direnv
   # A specialized charting tool using a declarative language. Supports a
   # specific set of charts but I don't remember which. Used by plantuml.
   pkgs.ditaa
@@ -58,8 +31,6 @@
   #pkgs.editorconfig
   # Read/write speed tests using f3read and f3write.
   pkgs.f3
-  # Searches for files. Used by projectile in Emacs.
-  pkgs.fd
   # Convert media (sound, video). The "-full" suffix brings in all of the
   # codecs one could desire.
   # See https://github.com/NixOS/nixpkgs/issues/271313 for workaround to fix
@@ -96,19 +67,10 @@
   # Consume Github from the command line. Can make testing pull requests very
   # easy without needing to do a bunch of git remote management.
   pkgs.gh
-  # git manages my code. Comes with MacOS but no reason to use a dated
-  # version.
-  pkgs.git
-  # Who wants BSD grep when you could have GNU grep?
-  pkgs.gnugrep
   # Make pretty graphs from a declarative language.
   pkgs.gnuplot
   # A password storage system.
   pkgs.gnupg
-  # Who wants BSD sed when you could have GNU sed?
-  pkgs.gnused
-  # Who wants BSD ls when you could have GNU ls? And other GNU things.
-  pkgs.gnutls
   # A specialized charting tool using a declarative language. Supports a
   # large set of charts. Used by plantuml.
   pkgs.graphviz
@@ -116,14 +78,8 @@
   pkgs.hello-unfree
   # An HTML validation tool.
   pkgs.html-tidy
-  # A more visual version of top.
-  pkgs.htop
-  # IBM font that looks good outside of source code contexts.
-  pkgs.ibm-plex
   # For previewing LaTeX in Emacs.
   pkgs.imagemagick
-  # A spell checker.
-  pkgs.ispell
   # Manage Jira from the command line, like a scholar.
   pkgs.jira-cli-go
   # JSON parsing, querying, and updating.
@@ -135,8 +91,6 @@
   # pkgs.libreoffice
   # Give us man pages for GNU stuff.
   pkgs.man-pages
-  # A union of ping and traceroute - ping all hosts along a route.
-  pkgs.mtr
   # Email indexing, viewing, etc. Needed in general because it is required by
   # the Emacs config.  This does not install the mu4e package any longer due to
   # this: https://github.com/NixOS/nixpkgs/pull/253438
@@ -144,9 +98,6 @@
   # See home.nix for how emacs is configured to include mu4e, plus additional
   # documentation on the configuration.
   pkgs.mu
-  # An n-curses based interface to du.  Shows disk usage in a way that makes
-  # identification/cleaning quick+easy.  See: https://dev.yorhel.nl/ncdu
-  pkgs.ncdu
   # This lets me search for parts of nix to help debug collisions.
   pkgs.nix-index
   # Kept as reference until I can leverage a project templating tool that would
@@ -178,8 +129,6 @@
     # See readme for other cool uses: https://github.com/tadfisher/pass-otp
     px.pass-otp
   ]))
-  # Use Unix pipes and direct them to a human program.
-  pkgs.percol
   # A charting tool with a declarative language. Uses graphviz dot, ditaa,
   # and others.
   pkgs.plantuml
@@ -194,8 +143,6 @@
   pkgs.podman
   # Query an HTML DOM from the command line.
   pkgs.pup
-  # Show progress via a pipe, such as with dd.
-  pkgs.pv
   # Like Ruby, but not.
   (pkgs.python3.withPackages (ps: [
     ps.lxml
@@ -241,15 +188,7 @@
   pkgs.qemu
   # Change encoding. Can convert HTML entities.
   pkgs.recode
-  # Really fast grep alternative.
-  pkgs.ripgrep
-  # Copy files recursively. Replaces BSD version on macOS.
-  pkgs.rsync
 
-  # A Language Server (LSP) implementation for Rust
-  # pkgs.rust-analyzer
-  # Assume an account on AWS via SAML.
-  pkgs.saml2aws
   # Screenkey displays what's being typed on the screen. Too bad it doesn't
   # work on aarch64. For macOS, keycastr https://github.com/keycastr/keycastr
   # works great, but is installed via homebrew's cask.
@@ -272,13 +211,6 @@
   # macOS ticket list.  This might be remedied by installing Kerberos via Nix as
   # well.
   # pkgs.openssh
-  # Run speed tests from the command line.
-  pkgs.speedtest-cli
-  # A self-proclaimed better netcat.
-  pkgs.socat
-  # A good mono-spaced font that is largely sans-serif, but uses serifs to
-  # disambuguate.
-  pkgs.source-code-pro
   # A lightweight SQL database which requires no server. This also installs
   # CLI tools in which to access SQLite databases.
   pkgs.sqlite
@@ -314,10 +246,6 @@
   # or just do the needful after a silly command that tells you what you
   # _should_ have done.
   pkgs.thefuck
-  # Highly controllable terminal emulation and session management.
-  pkgs.tmux
-  # Show a tree-listing of directories and files.
-  pkgs.tree
   # Some folks still use rar for an archive format. This lets us decompress
   # those archives.
   pkgs.unrar
@@ -331,8 +259,6 @@
   # Disabled until this is supported on Darwin or I figure out how to debug the
   # clang issues (see overlays/vpnc.nix for more info).
   # pkgs.vpnc
-  # The penultimate editor.
-  pkgs.vim
   # The open source version of VSCode is VSCodium (a play on Chromium, I
   # suppose). Doesn't install on aarch64 yet. I want this package so I can
   # work with those who have not come to Holy Emacs yet.
@@ -343,8 +269,6 @@
   # keep a reference of it, but it should be moved to a project's flake.nix
   # which needs extensions to be signed.  I don't have such a project currently.
   # pkgs.nodePackages.web-ext
-  # A handy alternative to curl, best suited for downloading content.
-  pkgs.wget
   # Run Windows programs (sometimes even I need this).
   # Doesn't work on Darwin...? But it worked on my other machine. I need to sync
   # versions.

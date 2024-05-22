@@ -33,7 +33,8 @@ in
     {
       config.networking.hostName = "scandium";
     }
-    ../nixos-modules/development.nix
+    ../nixos-modules/user-can-admin.nix
+    ../nixos-modules/user-can-develop.nix
     ../darwin.nix
     ../users/logan-personal.nix
     ../headed-host.nix
