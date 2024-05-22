@@ -15,7 +15,7 @@
       # agenix-rekey's README for details.
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    darwin = {
+    nix-darwin = {
       url = "github:LnL7/nix-darwin/master";
       # rev = "72dd60bfc98c128149d84213b17d1b8a68863055";
       # Leaving this present breaks things and nix-darwin will not load or
@@ -60,7 +60,7 @@
   outputs = {
     agenix,
     agenix-rekey,
-    darwin,
+    nix-darwin,
     disko,
     # emacs-overlay,
     nixpkgs,
@@ -101,12 +101,12 @@
     in {
 
       darwinConfigurations."M-CL64PK702X" =
-        darwin.lib.darwinSystem (import ./hosts/M-CL64PK702X.nix {
+        nix-darwin.lib.darwinSystem (import ./hosts/M-CL64PK702X.nix {
           inherit flake-inputs;
         });
 
       darwinConfigurations."scandium" =
-        darwin.lib.darwinSystem (import ./hosts/scandium.nix {
+        nix-darwin.lib.darwinSystem (import ./hosts/scandium.nix {
           inherit flake-inputs;
         });
 
