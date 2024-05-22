@@ -114,6 +114,7 @@
         system = "x86_64-linux";
         pkgs = import nixpkgs {
           inherit system;
+          overlays = (import ./overlays/default.nix);
           specialArgs = {
             inherit flake-inputs;
           };
