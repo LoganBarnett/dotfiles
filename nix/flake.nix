@@ -27,10 +27,10 @@
       url = "github:nix-community/disko";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    emacs-overlay = {
-      url = "github:nix-community/emacs-overlay/master";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
+    # emacs-overlay = {
+    #   url = "github:nix-community/emacs-overlay/master";
+    #   inputs.nixpkgs.follows = "nixpkgs";
+    # };
     nixos-anywhere = {
       url = "github:numtide/nixos-anywhere";
       inputs = {
@@ -44,7 +44,8 @@
       # inputs.nixpkgs.follows = "nixpkgs";
     };
     # Specify the source of Home Manager and Nixpkgs.
-    nixpkgs.url = "github:nixos/nixpkgs/master";
+    # nixpkgs.url = "github:nixos/nixpkgs/master";
+    nixpkgs.url = "github:LoganBarnett/nixpkgs/comfyui-fetch-model-hide-rebase";
     # See if we can nix this (get it?!) because
     # https://github.com/NixOS/nixpkgs/pull/296249 is now merged with a hopeful
     # fix.
@@ -61,7 +62,7 @@
     agenix-rekey,
     darwin,
     disko,
-    emacs-overlay,
+    # emacs-overlay,
     nixpkgs,
     nixos-anywhere,
     nixos-hardware,
