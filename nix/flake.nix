@@ -10,7 +10,7 @@
     # https://github.com/oddlama/agenix-rekey
     # Allows re-keying and bootstrapping of secrets used by agenix.
     agenix-rekey = {
-      url = "github:oddlama/agenix-rekey";
+      url = "github:LoganBarnett/agenix-rekey/parameterize-generators";
       # There is a documented gotcha in the readme if this must change.  Review
       # agenix-rekey's README for details.
       inputs.nixpkgs.follows = "nixpkgs";

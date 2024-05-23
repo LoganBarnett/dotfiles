@@ -12,6 +12,17 @@
 /O=${subject.organization}\
 /OU=${subject.organizational-unit}''
     ;
+  validate-tls-settings = let
+    inherit (lib) isAttrs isInt isString;
+    inherit (lib.trivial) id throwIfNot;
+  in name: tls:
+      throwIfNot (isAttrs tls) "Secret '${name}' must have a `tls` attrset."
+      throwIfNot (isString tls.domain) "Secret '${name}' must have a `tls.domain` string."
+      throwIfNot (isInt tls.validity) "Secret '${name}' must have a `tls.validity` integer."
+      validate-tls-subject name tls.subject
+      id
+    ;
+
   validate-tls-subject = let
     inherit (lib) isAttrs isString;
     inherit (lib.trivial) id throwIfNot;
@@ -21,7 +32,7 @@
     throwIfNot (isString subject.state) "Secret '${name}' must have a `tls.subject.state` string."
     throwIfNot (isString subject.location) "Secret '${name}' must have a `tls.subject.location` string."
     throwIfNot (isString subject.organization) "Secret '${name}' must have a `tls.subject.organization` string."
-    throwIfNot (isString subject.organization-unit) "Secret '${name}' must have a `tls.subject.organization-unit` string."
+    throwIfNot (isString subject.organizational-unit) "Secret '${name}' must have a `tls.subject.organizational-unit` string."
     id
   ;
 in {
@@ -40,14 +51,13 @@ in {
   # propagate.  Allow this to be indicated and document how this is done.  For
   # specifics on the features themselves, refer to some external documentation.
   # This applies to this generator as well as the other, related generators.
-  age.generators.tls-ca-root = {
-    script = { name, secret, ... }: let
+  age.generators.tls-ca-root = { pkgs, name, secret, ... }: let
       inherit (lib) isAttrs isString;
       inherit (lib.trivial) throwIfNot;
+      inherit (secret) settings;
     in
-      throwIfNot (isAttrs secret.tls) "Secret '${name}' must have an `tls` attrset."
-      throwIfNot (isString secret.tls.domain) "Secret '${name}' must have an `tls.domain` string."
-      validate-tls-subject name secret
+      throwIfNot (isAttrs settings) "Secret '${name}' must have a `settings` attrset."
+      validate-tls-settings name settings.tls
       '' \
       ${pkgs.openssl}/bin/openssl req \
          -new \
@@ -55,20 +65,20 @@ in {
          -keyout root.key \
          -x509 \
          -nodes \
-         -out "root.crt \
-         -subj "/CN=${secret.tls.domain}${subject-string secret.tls.subject}" \
-         -days "${secret.tls.validity -> (365 * 25)}"
+         -out root.crt \
+         -subj "/CN=${settings.tls.domain}${subject-string settings.tls.subject}" \
+         -days "${toString settings.tls.validity}"
     '';
-  };
-  age.generators.tls-signing-certificate = {
-    script = { name, secret, ... }: let
+
+  age.generators.tls-signing-request = { name, secret, ... }: let
       inherit (lib) isAttrs isString;
       inherit (lib.trivial) throwIfNot;
+      inherit (secret) settings;
     in
-      throwIfNot (isString secret.fqdn) ""
-      throwIfNot (isAttrs secret.root-certificate) ""
-      throwIfNot (isAttrs secret.tls) "Secret '${name}' must have an `tls` attrset."
-      validate-tls-subject name secret
+      throwIfNot (isAttrs settings) "Secret '${name}' must have a `settings` attrset."
+      throwIfNot (isString settings.fqdn) "Secret '${name}' must have an `fqdn` string."
+      throwIfNot (isAttrs settings.root-certificate) "Secret '${name}' must have a `root-certificate` attrset."
+      (validate-tls-settings name settings.tls)
       # Needs sha256 for increased security demands (citation?).
       # Needs subjectAltName for Apple devices (citation?).
       ''
@@ -79,33 +89,42 @@ in {
          -nodes \
          -keyout signing.key \
          -out signing.crt \
-         -subj "/CN=${secret.fqdn}${subject-string secret.tls.subject}" \
-         -addext "subjectAltName = DNS:${secret.fqdn}" \
+         -subj "/CN=${settings.fqdn}${subject-string settings.tls.subject}" \
+         -addext "subjectAltName = DNS:${settings.fqdn}" \
       ''
     ;
-  };
-  age.generators.tls-signed-certificate = {
-    script = { secret, ... }: let
+
+  age.generators.tls-signed-certificate = { deps, secret, file, ... }: let
       inherit (lib) isAttrs isString;
       inherit (lib.trivial) throwIfNot;
+      inherit (secret) settings;
     in
-      throwIfNot (isString secret.fqdn) ""
-      throwIfNot (isAttrs secret.root-certificate) ""
-      throwIfNot (isAttrs secret.signing-certificate) ""
+      throwIfNot (isAttrs settings) "Secret '${secret.name}' must have a `settings` attrset."
+      throwIfNot (isString settings.fqdn) "Secret '${secret.name}' is missing a `fqdn` key."
+      throwIfNot (isAttrs settings.root-certificate) "Secret '${secret.name}' is missing a `root-certificate` value."
       ''
+      ${pkgs.openssl}/bin/openssl req \
+         -new \
+         -newkey rsa:4096 \
+         -sha256 \
+         -nodes \
+         -keyout signing.key \
+         -out signing.crt \
+         -subj "/CN=${settings.fqdn}${subject-string settings.tls.subject}" \
+         -addext "subjectAltName = DNS:${settings.fqdn}" \
       echo "subjectAltName = DNS:${secret.fqdn}" > san.cnf
       ${pkgs.openssl}/bin/openssl x509 \
          -req \
          -in signing.key \
-         -CA root.crt \
-         -CAkey root.key \
+         -CA ${deps[0].file}.crt \
+         -CAkey ${deps[0].file}.key \
          -CAcreateserial \
-         -out signed.crt \
+         -out ${file}.crt \
          -days 356 \
          -extfile san.cnf \
       ''
     ;
-  };
+
   age.rekey = {
     hostPubkey = if host-public-key != null
                  then host-public-key
@@ -122,6 +141,25 @@ in {
     # nodes = flake-inputs.self.nixosConfigurations;
     storageMode = "local";
   };
+
+  age.secrets.internal-ca = {
+    rekeyFile = ../secrets/internal-ca.age;
+    settings = {
+      tls = {
+        domain = "proton";
+        subject = {
+          country = "US";
+          state = "Oregon";
+          location = "Portland";
+          organization = "Barnett family";
+          organizational-unit = "IT Department";
+        };
+        validity = 365 * 5;
+      };
+    };
+    generator.script = "tls-ca-root";
+  };
+
   imports = [
     flake-inputs.agenix.nixosModules.default
     flake-inputs.agenix-rekey.nixosModules.default
