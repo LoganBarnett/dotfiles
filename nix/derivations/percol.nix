@@ -14,9 +14,17 @@
     inherit pname version;
     sha256 = "1bchvqf4prdmfm1cg6y2i76kcd3jwmzz5wmlx1zhi7f3asgksjf8";
   };
+
   buildPhase = ''
     ${pkgs.python3.interpreter} setup.py build
   '';
+
+  dependencies = with pkgs.python3Packages; [
+    six
+  ] ++
+    # cmigemo is marked as broken for Darwin.  Percol seems fine without it on
+    # Darwin.
+    (if stdenv.isDarwin then [] else [ pkgs.python3Packages.cmigemo ]);
 
   installPhase = ''
     ${pkgs.python3.interpreter} setup.py install --prefix="$out"
