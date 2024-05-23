@@ -194,8 +194,8 @@ in {
         ttplanet-sdxl-controlnet-tile-realistic-32-v1 = {
           format = "safetensors";
           path = {
-            url = "https://huggingface.co/TTPlanet/TTPLanet_SDXL_Controlnet_Tile_Realistic_V1/resolve/main/TTPLANET_Controlnet_Tile_realistic_v1_fp32.safetensors?download=true";
-            sha256 = "sha256-Xj+FHFZvH5ApauL9IRaKR9aIIcK0xTO66SWdx/pqsdI=";
+            url = "https://huggingface.co/TTPlanet/TTPLanet_SDXL_Controlnet_Tile_Realistic/raw/83fbced5f508ee3c78288f1db3dd93306a760d4d/TTPLANET_Controlnet_Tile_realistic_v1_fp32.safetensors";
+            sha256 = "f33012cbac5839885f143aa2accb2e403414c7dad119364bbe18de37e4a65f67";
           };
         };
         ttplanet-sdxl-controlnet-tile-realistic-16-v1 = {
