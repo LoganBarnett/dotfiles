@@ -12,6 +12,8 @@
 # before that being reusable modules (or parameterized, reusable modules).
 ################################################################################
 { diskoProper, flake-inputs }: let
+  # Default ComfyUI port.
+  comfyui-port = 8188;
   host-id = "lithium";
   system = "x86_64-linux";
 in {
@@ -26,13 +28,22 @@ in {
     })
     # We can't use `disko` because it's taken, I guess.
     diskoProper.nixosModules.disko
+    (import ../nixos-modules/https.nix {
+      inherit host-id;
+      listen-port = 443;
+      server-port = comfyui-port;
+      fqdn = "lithium.proton";
+    })
     ../users/logan-server.nix
     ../nixos-modules/nix-flakes.nix
     ../nixos-modules/nix-store-optimize.nix
     ../nixos-modules/nvidia.nix
     ../nixos-modules/sshd.nix
     ../nixos-modules/user-can-admin.nix
-    (import ../nixos-modules/comfyui-server.nix { inherit host-id; })
+    (import ../nixos-modules/comfyui-server.nix {
+      inherit host-id;
+      port = comfyui-port;
+    })
     ({ lib, ... }: {
       disko.devices = {
         disk.disk1 = {
@@ -96,7 +107,20 @@ in {
         };
       };
     })
-    ({ pkgs, ... }: {
+    ({ config, pkgs, ... }: {
+
+      age.secrets."tls-${host-id}" = {
+        # dependencies = [
+        #   config.age.secrets.internal-ca
+        # ];
+        generator.script = "tls-signed-certificate";
+        settings = {
+          root-certificate = config.age.secrets.internal-ca;
+          fqdn = "lithium.proton";
+        };
+        rekeyFile = ../secrets/tls-${host-id}.age;
+      };
+
       # I don't know what else to set this to that's meaningful, but it has to
       # be set to _something_.  This is very likely something that will bite me
       # later.

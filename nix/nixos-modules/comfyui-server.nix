@@ -5,9 +5,7 @@
 # This leverages work from https://github.com/NixOS/nixpkgs/pull/268378 by
 # @fazo96.  As such it will be using my fork of fazo96's fork.
 ################################################################################
-{ host-id }: { config, lib, pkgs, ... }: let
-  # Default ComfyUI port.
-  port = 8188;
+{ host-id, port }: { config, lib, pkgs, ... }: let
   # fetchModel = pkgs.callPackage ../hacks/comfyui/fetch-model.nix {};
   # custom-nodes = (pkgs.callPackage ../hacks/comfyui/custom-nodes.nix {});
   # mkComfyUICustomNodes = custom-nodes.mkComfyUICustomNodes;
@@ -28,13 +26,6 @@ in {
     group = "nixbld";
     mode = "0444";
   };
-  # We need to override the original if we want to provide our own for rapid
-  # iteration.  First we disable the original via `disabledModules`, and then
-  # inject our own version via `imports`.
-  # disabledModules = [ "services/web-apps/comfyui.nix" ];
-  # imports = [
-  #   ../hacks/comfyui-services-web-apps/comfyui.nix
-  # ];
   environment.systemPackages = [
     # It's useful to be able to watch a network graph when downloading large
     # models.  Otherwise I just stare at a blank terminal.  These packages
@@ -52,8 +43,8 @@ in {
   ];
   # The firewall is enabled by default, per:
   # https://nixos.org/manual/nixos/unstable/index.html#sec-firewall
-  networking.firewall.allowedTCPPorts = [ port ];
-  networking.firewall.allowedUDPPorts = [ port ];
+  # networking.firewall.allowedTCPPorts = [ port ];
+  # networking.firewall.allowedUDPPorts = [ port ];
   nixpkgs.overlays = [
     (final: prev: {
       # See https://github.com/NixOS/nixpkgs/issues/280621 for the issue report

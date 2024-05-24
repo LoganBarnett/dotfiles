@@ -33,11 +33,11 @@
         "pre-commit-hooks": "pre-commit-hooks"
       },
       "locked": {
-        "lastModified": 1716499954,
+        "lastModified": 1716520612,
         "narHash": "sha256-IvJgkqSPVbOmXtUwNZBY1brcSw97+xTIicGF7B+jHqY=",
         "owner": "LoganBarnett",
         "repo": "agenix-rekey",
-        "rev": "d5cb4b1c4a607749ed355ad10c3786fc528e940d",
+        "rev": "7255a1b3ca603e9e01db4eaac04cd403c4119ba6",
         "type": "github"
       },
       "original": {

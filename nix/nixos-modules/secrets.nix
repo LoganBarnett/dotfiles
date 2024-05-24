@@ -51,7 +51,7 @@ in {
   # propagate.  Allow this to be indicated and document how this is done.  For
   # specifics on the features themselves, refer to some external documentation.
   # This applies to this generator as well as the other, related generators.
-  age.generators.tls-ca-root = { pkgs, name, secret, ... }: let
+  age.generators.tls-ca-root = { name, pkgs, secret, ... }: let
       inherit (lib) isAttrs isString;
       inherit (lib.trivial) throwIfNot;
       inherit (secret) settings;
@@ -70,7 +70,7 @@ in {
          -days "${toString settings.tls.validity}"
     '';
 
-  age.generators.tls-signing-request = { name, secret, ... }: let
+  age.generators.tls-signing-request = { name, pkgs, secret, ... }: let
       inherit (lib) isAttrs isString;
       inherit (lib.trivial) throwIfNot;
       inherit (secret) settings;
@@ -94,14 +94,21 @@ in {
       ''
     ;
 
-  age.generators.tls-signed-certificate = { deps, secret, file, ... }: let
+    age.generators.tls-signed-certificate = {
+      deps,
+      file,
+      name,
+      pkgs,
+      secret,
+      ...
+    }: let
       inherit (lib) isAttrs isString;
       inherit (lib.trivial) throwIfNot;
       inherit (secret) settings;
     in
-      throwIfNot (isAttrs settings) "Secret '${secret.name}' must have a `settings` attrset."
-      throwIfNot (isString settings.fqdn) "Secret '${secret.name}' is missing a `fqdn` key."
-      throwIfNot (isAttrs settings.root-certificate) "Secret '${secret.name}' is missing a `root-certificate` value."
+      throwIfNot (isAttrs settings) "Secret '${name}' must have a `settings` attrset."
+      throwIfNot (isString settings.fqdn) "Secret '${name}' is missing a `fqdn` string."
+      # throwIfNot (isAttrs settings.root-certificate) "Secret '${name}' is missing a `root-certificate` value."
       ''
       ${pkgs.openssl}/bin/openssl req \
          -new \
@@ -110,14 +117,14 @@ in {
          -nodes \
          -keyout signing.key \
          -out signing.crt \
-         -subj "/CN=${settings.fqdn}${subject-string settings.tls.subject}" \
+         -subj "/CN=${settings.fqdn}${subject-string settings.root-certificate.settings.tls.subject}" \
          -addext "subjectAltName = DNS:${settings.fqdn}" \
-      echo "subjectAltName = DNS:${secret.fqdn}" > san.cnf
+      echo "subjectAltName = DNS:${settings.fqdn}" > san.cnf
       ${pkgs.openssl}/bin/openssl x509 \
          -req \
          -in signing.key \
-         -CA ${deps[0].file}.crt \
-         -CAkey ${deps[0].file}.key \
+         -CA ${settings.root-certificate.path}.crt \
+         -CAkey ${settings.root-certificate.path}.key \
          -CAcreateserial \
          -out ${file}.crt \
          -days 356 \
