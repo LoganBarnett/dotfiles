@@ -47,6 +47,7 @@ in {
   age.generators.long-passphrase = {pkgs, ...}:
     "${pkgs.xkcdpass}/bin/xkcdpass --numwords=10 delimiter=' '"
   ;
+
   # TODO: TLS has a means of allowing certain features as well as how they
   # propagate.  Allow this to be indicated and document how this is done.  For
   # specifics on the features themselves, refer to some external documentation.
@@ -70,6 +71,9 @@ in {
          -days "${toString settings.tls.validity}"
     '';
 
+  # Since the signing request is a transient file we can discard anyways, this
+  # is unused.  The signing request is just part of issuing the leaf certificate
+  # now.
   age.generators.tls-signing-request = { name, pkgs, secret, ... }: let
       inherit (lib) isAttrs isString;
       inherit (lib.trivial) throwIfNot;
@@ -110,6 +114,18 @@ in {
       throwIfNot (isString settings.fqdn) "Secret '${name}' is missing a `fqdn` string."
       # throwIfNot (isAttrs settings.root-certificate) "Secret '${name}' is missing a `root-certificate` value."
       ''
+      ${pkgs.openssl}/bin/openssl req \
+         -new \
+         -newkey rsa:4096 \
+         -sha256 \
+         -nodes \
+         -keyout signing.key \
+         -out signing.crt \
+         -subj "/CN=${settings.fqdn}${subject-string settings.root-certificate.settings.tls.subject}" \
+         -addext "subjectAltName = DNS:${settings.fqdn}"
+      ls -al signing.* 1>&2
+      ls -al ${settings.root-certificate.path}* 1>&2
+
       ${pkgs.openssl}/bin/openssl req \
          -new \
          -newkey rsa:4096 \
