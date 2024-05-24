@@ -1,23 +1,20 @@
 # This is a fetcher made specifically for fetching models to be used by
-# ComfyUI's custom-nodes, the name given to ComfyUI's plugin system.  A list of
-# nixpkgs provided custom nodes can be found in ./custom-nodes.nix.
+# ComfyUI.
 { lib, pkgs }:
 { url
 , format ? null
-, sha256
 , bearer ? null
 , bearerFile ? null
-}: let
+,  ...
+}@args: let
   name = lib.replaceStrings ["?" "&" ":" "/"] ["__questionmark__" "__ampersand__" "__colon__" "__slash__"] url;
 in {
-  inherit name format;
+  inherit format;
   # I think builtins.fetchurl _can_ show progress but needs --verbose to do so.
   # Need to confirm if this is any better than alternatives (like
   # nixpkgs.fetchurl).
   # path = (builtins.fetchurl ({
-  path = (pkgs.fetchurl ({
-    inherit name url sha256;
-  }
+  path = (pkgs.fetchurl (args
     // (lib.optionalAttrs (bearer != null) {
       # The closest thing to documentation for curlOptsList that I've found:
       # https://github.com/NixOS/nixpkgs/issues/41820#issuecomment-396120262
