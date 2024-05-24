@@ -42,6 +42,6 @@
     homepage = "https://github.com/mooz/percol/";
     license = lib.licenses.mit;
     platforms = lib.platforms.linux ++ lib.platforms.darwin;
-    # maintainers = with maintainers; [ somename ];
+    maintainers = with lib.maintainers; [ logan-barnett ];
   };
 }
