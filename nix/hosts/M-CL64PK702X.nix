@@ -11,7 +11,7 @@ in {
     })
     flake-inputs.home-manager.darwinModules.home-manager
     {
-      nixpkgs.overlays = [ flake-inputs.fenix.overlays.default ];
+      nixpkgs.overlays = [];
     }
     # the _module.args idiom is how I can ensure these values get passed via the
     # internal callPackage mechanism for darwinSystem on these modules.  We want
