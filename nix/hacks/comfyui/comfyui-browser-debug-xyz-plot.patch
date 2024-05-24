@@ -1,0 +1,57 @@
+diff --git a/nodes/xyz_plot.py b/nodes/xyz_plot.py
+index 684c769..a4fcc18 100644
+--- a/nodes/xyz_plot.py
++++ b/nodes/xyz_plot.py
+@@ -33,7 +33,9 @@ class XyzPlot:
+             "required": {
+                 "images": ["IMAGE", {}],
+                 "input_x": ["INPUT", {}],
++                "update_mode_x": (['replace', 'append'], ),
+                 "input_y": ["INPUT", {}],
++                "update_mode_y": (['replace', 'append'], ),
+                 "value_x": ["STRING", {"multiline": True, "placeholder": 'X values split by semicolon such as "1girl; 1boy"'}],
+                 "value_y": ["STRING", {"multiline": True, "placeholder": 'Y values split by semicolon such as "1girl; 1boy"'}],
+                 "value_z": ["STRING", {"multiline": True, "placeholder": 'Z values split by semicolon such as "1girl; 1boy"'}],
+@@ -81,7 +83,7 @@ class XyzPlot:
+             target_path = os.path.join(self.output_folder_name, filename)
+             img.save(target_path, 'JPEG', quality=90)
+ 
+-    def run(self, images, input_x, input_y, value_x, value_y, output_folder_name, prompt, unique_id, input_z=None, value_z="", extra_pnginfo=None):
++    def run(self, images, input_x, update_mode_x, input_y, update_mode_y, value_x, value_y, output_folder_name, prompt, unique_id, input_z=None, value_z="", extra_pnginfo=None):
+         self.output_folder_name = os.path.join(
+             folder_paths.get_output_directory(),
+             output_folder_name,
+@@ -107,7 +109,7 @@ class XyzPlot:
+ 
+             # for some special network environments like AutoDL
+             proxies = {"http": "", "https": ""}
+-            log(f'Queueing XYZ prompt: {prompt}')
++            log(f'Queueing XYZ prompt: {json.dumps(prompt, indent=2)}')
+             return requests.post(SERVER_BASE_URL + '/prompt', data=data, proxies=proxies)
+ 
+ 
+@@ -122,8 +124,22 @@ class XyzPlot:
+             row = []
+             for iy, vy in enumerate(values_y):
+                 vy = vy.strip()
+-                new_prompt[input_x["node_id"]]["inputs"][input_x["widget_name"]] = vx
+-                new_prompt[input_y["node_id"]]["inputs"][input_y["widget_name"]] = vy
++                x_original = new_prompt[input_x["node_id"]]["inputs"][input_x["widget_name"]]
++                if update_mode_x == 'append':
++                    log(f'Appending {vx} to {x_original}')
++                    new_prompt[input_x["node_id"]]["inputs"][input_x["widget_name"]] = x_original + vx
++                elif update_mode_x == 'replace':
++                    new_prompt[input_x["node_id"]]["inputs"][input_x["widget_name"]] = vx
++                else:
++                    log(f'Update mode {update_mode_x} not supported!')
++                y_original = new_prompt[input_y["node_id"]]["inputs"][input_y["widget_name"]]
++                if update_mode_y == 'append':
++                    log(f'Appending {vy} to {y_original}')
++                    new_prompt[input_y["node_id"]]["inputs"][input_y["widget_name"]] = y_original + vy
++                elif update_mode_y == 'replace':
++                    new_prompt[input_y["node_id"]]["inputs"][input_y["widget_name"]] = vy
++                else:
++                    log(f'Update mode {update_mode_y} not supported!')
+ 
+                 new_prompt[unique_id]['inputs']['xyz_data'] = {
+                     "source_unique_id": unique_id,
