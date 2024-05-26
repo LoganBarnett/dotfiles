@@ -39,6 +39,9 @@ in {
     ../nixos-modules/nix-store-optimize.nix
     ../nixos-modules/nvidia.nix
     ../nixos-modules/sshd.nix
+    (import ../nixos-modules/tls-leaf-proton.nix {
+      inherit host-id;
+    })
     ../nixos-modules/user-can-admin.nix
     (import ../nixos-modules/comfyui-server.nix {
       inherit host-id;
@@ -108,20 +111,6 @@ in {
       };
     })
     ({ config, pkgs, ... }: {
-
-      age.secrets."tls-${host-id}" = {
-        generator = {
-          dependencies = [
-            config.age.secrets.internal-ca
-          ];
-          script = "tls-signed-certificate";
-        };
-        settings = {
-          root-certificate = config.age.secrets.internal-ca;
-          fqdn = "lithium.proton";
-        };
-        rekeyFile = ../secrets/tls-${host-id}.age;
-      };
 
       # I don't know what else to set this to that's meaningful, but it has to
       # be set to _something_.  This is very likely something that will bite me

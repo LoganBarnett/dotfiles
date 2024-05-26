@@ -74,6 +74,9 @@ in {
       rm root.key
     '';
 
+    # srl files can created during the leaf certificate creation.  The files
+    # track which serial numbers have been used (for auditing?) so openssl
+    # won't use the same one twice.  This should be checked in.
     age.generators.tls-signed-certificate = {
       decrypt,
       deps,
@@ -121,8 +124,9 @@ in {
         -CAfile $cert_path \
         $out_file
       cat signing.key
-      rm signing.{crt,key}
+      rm ca.key
       rm san.cnf
+      rm signing.{crt,key}
       ''
     ;
 
@@ -143,8 +147,8 @@ in {
     storageMode = "local";
   };
 
-  age.secrets.internal-ca = {
-    rekeyFile = ../secrets/internal-ca.age;
+  age.secrets.proton-ca = {
+    rekeyFile = ../secrets/proton-ca.age;
     settings = {
       tls = {
         domain = "proton";
