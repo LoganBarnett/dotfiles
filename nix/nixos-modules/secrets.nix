@@ -52,7 +52,7 @@ in {
   # propagate.  Allow this to be indicated and document how this is done.  For
   # specifics on the features themselves, refer to some external documentation.
   # This applies to this generator as well as the other, related generators.
-  age.generators.tls-ca-root = { name, pkgs, secret, ... }: let
+  age.generators.tls-ca-root = { file, name, pkgs, secret, ... }: let
       inherit (lib) isAttrs isString;
       inherit (lib.trivial) throwIfNot;
       inherit (secret) settings;
@@ -60,45 +60,22 @@ in {
       throwIfNot (isAttrs settings) "Secret '${name}' must have a `settings` attrset."
       validate-tls-settings name settings.tls
       '' \
+      set -euo pipefail
       ${pkgs.openssl}/bin/openssl req \
          -new \
          -newkey rsa:4096 \
          -keyout root.key \
          -x509 \
          -nodes \
-         -out root.crt \
+         -out "$(dirname "${file}")/${name}.crt" \
          -subj "/CN=${settings.tls.domain}${subject-string settings.tls.subject}" \
          -days "${toString settings.tls.validity}"
+      cat root.key
+      rm root.key
     '';
 
-  # Since the signing request is a transient file we can discard anyways, this
-  # is unused.  The signing request is just part of issuing the leaf certificate
-  # now.
-  age.generators.tls-signing-request = { name, pkgs, secret, ... }: let
-      inherit (lib) isAttrs isString;
-      inherit (lib.trivial) throwIfNot;
-      inherit (secret) settings;
-    in
-      throwIfNot (isAttrs settings) "Secret '${name}' must have a `settings` attrset."
-      throwIfNot (isString settings.fqdn) "Secret '${name}' must have an `fqdn` string."
-      throwIfNot (isAttrs settings.root-certificate) "Secret '${name}' must have a `root-certificate` attrset."
-      (validate-tls-settings name settings.tls)
-      # Needs sha256 for increased security demands (citation?).
-      # Needs subjectAltName for Apple devices (citation?).
-      ''
-      ${pkgs.openssl}/bin/openssl req \
-         -new \
-         -newkey rsa:4096 \
-         -sha256 \
-         -nodes \
-         -keyout signing.key \
-         -out signing.crt \
-         -subj "/CN=${settings.fqdn}${subject-string settings.tls.subject}" \
-         -addext "subjectAltName = DNS:${settings.fqdn}" \
-      ''
-    ;
-
     age.generators.tls-signed-certificate = {
+      decrypt,
       deps,
       file,
       name,
@@ -109,11 +86,17 @@ in {
       inherit (lib) isAttrs isString;
       inherit (lib.trivial) throwIfNot;
       inherit (secret) settings;
+      root-cert-dep = (builtins.elemAt deps 0);
+      out-file = file + ".crt";
     in
       throwIfNot (isAttrs settings) "Secret '${name}' must have a `settings` attrset."
       throwIfNot (isString settings.fqdn) "Secret '${name}' is missing a `fqdn` string."
       # throwIfNot (isAttrs settings.root-certificate) "Secret '${name}' is missing a `root-certificate` value."
       ''
+      set -euo pipefail
+      ${decrypt} "${root-cert-dep.file}" > ca.key
+      cert_path="$(dirname "${root-cert-dep.file}")/${root-cert-dep.name}.crt"
+      out_file="$(dirname "${file}")/${name}.crt"
       ${pkgs.openssl}/bin/openssl req \
          -new \
          -newkey rsa:4096 \
@@ -123,28 +106,23 @@ in {
          -out signing.crt \
          -subj "/CN=${settings.fqdn}${subject-string settings.root-certificate.settings.tls.subject}" \
          -addext "subjectAltName = DNS:${settings.fqdn}"
-      ls -al signing.* 1>&2
-      ls -al ${settings.root-certificate.path}* 1>&2
-
-      ${pkgs.openssl}/bin/openssl req \
-         -new \
-         -newkey rsa:4096 \
-         -sha256 \
-         -nodes \
-         -keyout signing.key \
-         -out signing.crt \
-         -subj "/CN=${settings.fqdn}${subject-string settings.root-certificate.settings.tls.subject}" \
-         -addext "subjectAltName = DNS:${settings.fqdn}" \
       echo "subjectAltName = DNS:${settings.fqdn}" > san.cnf
       ${pkgs.openssl}/bin/openssl x509 \
          -req \
-         -in signing.key \
-         -CA ${settings.root-certificate.path}.crt \
-         -CAkey ${settings.root-certificate.path}.key \
+         -in signing.crt \
+         -CA $cert_path \
+         -CAkey ca.key \
          -CAcreateserial \
-         -out ${file}.crt \
+         -out $out_file \
          -days 356 \
-         -extfile san.cnf \
+         -extfile san.cnf
+      # Verify it works!
+      ${pkgs.openssl}/bin/openssl verify \
+        -CAfile $cert_path \
+        $out_file
+      cat signing.key
+      rm signing.{crt,key}
+      rm san.cnf
       ''
     ;
 

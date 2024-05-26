@@ -110,10 +110,12 @@ in {
     ({ config, pkgs, ... }: {
 
       age.secrets."tls-${host-id}" = {
-        # dependencies = [
-        #   config.age.secrets.internal-ca
-        # ];
-        generator.script = "tls-signed-certificate";
+        generator = {
+          dependencies = [
+            config.age.secrets.internal-ca
+          ];
+          script = "tls-signed-certificate";
+        };
         settings = {
           root-certificate = config.age.secrets.internal-ca;
           fqdn = "lithium.proton";
