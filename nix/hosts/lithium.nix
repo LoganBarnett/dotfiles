@@ -176,29 +176,7 @@ in {
       # way to do it, but given how brittle torch is to build, I will leave this
       # to more eager minds.  This error should be much more helpful than it is,
       # and that is perhaps the _real_ bug here that I need to file for.
-      documentation.enable = false;
-      environment.systemPackages = [
-        # Strangely, virtually required because of the odd way in which Nix
-        # Flakes copies the configuration to the Nix store.
-        pkgs.git
-        # Top, but prettier.
-        pkgs.htop
-        # Let us see ports and file handles held by processes.
-        pkgs.lsof
-        # So we can run a janky session with the server, until it gets better
-        # operationalized.
-        pkgs.tmux
-        # A base requirement for projectile searching with Emacs, but also a
-        # handy too.
-        pkgs.ripgrep
-        # The only valid rsync destinations and sources are hosts that have
-        # rsync installed.
-        pkgs.rsync
-        # We need an editor.  Even if we don't want to edit configuration files
-        # because we already have Nix, it's still helpful for things that use
-        # EDTIOR, such as C-x C-e in the shell.  Can we just uninstall nano?
-        pkgs.vim
-      ];
+      documentation.enable = true;
       # Hostname is not an FQDN.
       networking.hostName = host-id;
       nixpkgs.overlays = (import ../overlays/default.nix);
