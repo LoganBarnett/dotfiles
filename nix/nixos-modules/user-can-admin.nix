@@ -19,6 +19,9 @@
     # administrative tools because it needs to be on the remote host when using
     # Tramp.
     pkgs.fd
+    # Perhaps the everlasting version control system.
+    # git is needed on a server to do various Nix flake operations.
+    pkgs.git
     # Who wants BSD grep when you could have GNU grep?
     pkgs.gnugrep
     # Who wants BSD sed when you could have GNU sed?
@@ -27,6 +30,8 @@
     pkgs.gnutls
     # A more visual version of top.
     pkgs.htop
+    # Let us see ports and file handles held by processes.
+    pkgs.lsof
     # A union of ping and traceroute - ping all hosts along a route.
     pkgs.mtr
     # Use Unix pipes and direct them to a human program.
@@ -40,7 +45,8 @@
     pkgs.speedtest-cli
     # A self-proclaimed better netcat.
     pkgs.socat
-    # Really fast grep alternative.
+    # Really fast grep alternative.  Required by Emacs (which is also used via
+    # Tramp).
     pkgs.ripgrep
     # Copy files recursively. Replaces BSD version on macOS.
     pkgs.rsync
@@ -48,7 +54,9 @@
     pkgs.tree
     # Highly controllable terminal emulation and session management.
     pkgs.tmux
-    # The penultimate editor.
+    # We need an editor.  Even if we don't want to edit configuration files
+    # because we already have Nix, it's still helpful for things that use
+    # EDTIOR, such as C-x C-e in the shell.  Can we just uninstall nano?
     pkgs.vim
     # A handy alternative to curl, best suited for downloading content.
     pkgs.wget

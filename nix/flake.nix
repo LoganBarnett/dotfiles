@@ -27,6 +27,10 @@
       url = "github:nix-community/disko";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    disko-comfyui = {
+      url = "github:nix-community/disko";
+      inputs.nixpkgs.follows = "nixpkgs-comfyui";
+    };
     # emacs-overlay = {
     #   url = "github:nix-community/emacs-overlay/master";
     #   inputs.nixpkgs.follows = "nixpkgs";
@@ -44,8 +48,8 @@
       # inputs.nixpkgs.follows = "nixpkgs";
     };
     # Specify the source of Home Manager and Nixpkgs.
-    # nixpkgs.url = "github:nixos/nixpkgs/master";
-    nixpkgs.url = "github:LoganBarnett/nixpkgs/comfyui-fetch-model-hide-rebase";
+    nixpkgs.url = "github:nixos/nixpkgs/master";
+    nixpkgs-comfyui.url = "github:LoganBarnett/nixpkgs/comfyui-fetch-model-hide-rebase";
     # See if we can nix this (get it?!) because
     # https://github.com/NixOS/nixpkgs/pull/296249 is now merged with a hopeful
     # fix.
@@ -62,8 +66,10 @@
     agenix-rekey,
     nix-darwin,
     disko,
+    disko-comfyui,
     # emacs-overlay,
     nixpkgs,
+    nixpkgs-comfyui,
     nixos-anywhere,
     nixos-hardware,
     # nixos-generators,
@@ -112,7 +118,7 @@
 
       nixosConfigurations.lithium = let
         system = "x86_64-linux";
-        pkgs = import nixpkgs {
+        pkgs = import nixpkgs-comfyui {
           inherit system;
           overlays = (import ./overlays/default.nix);
           specialArgs = {
@@ -120,8 +126,8 @@
           };
         };
       in
-        nixpkgs.lib.nixosSystem (import ./hosts/lithium.nix {
-          diskoProper = disko;
+        nixpkgs-comfyui.lib.nixosSystem (import ./hosts/lithium.nix {
+          diskoProper = disko-comfyui;
           inherit flake-inputs;
         });
       # Unsure if we need this, but if we do, it serves as a shortcut
