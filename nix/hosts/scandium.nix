@@ -33,6 +33,7 @@ in
     {
       config.networking.hostName = "scandium";
     }
+    ../nixos-modules/tls-trust.nix
     ../nixos-modules/user-can-admin.nix
     ../nixos-modules/user-can-develop.nix
     ../darwin.nix

@@ -90,7 +90,6 @@ in {
       inherit (lib.trivial) throwIfNot;
       inherit (secret) settings;
       root-cert-dep = (builtins.elemAt deps 0);
-      out-file = file + ".crt";
     in
       throwIfNot (isAttrs settings) "Secret '${name}' must have a `settings` attrset."
       throwIfNot (isString settings.fqdn) "Secret '${name}' is missing a `fqdn` string."
@@ -99,7 +98,7 @@ in {
       set -euo pipefail
       ${decrypt} "${root-cert-dep.file}" > ca.key
       cert_path="$(dirname "${root-cert-dep.file}")/${root-cert-dep.name}.crt"
-      out_file="$(dirname "${file}")/${name}.crt"
+      out_file="$(dirname "${file}")/$(basename ${name} '.key').crt"
       ${pkgs.openssl}/bin/openssl req \
          -new \
          -newkey rsa:4096 \
@@ -122,7 +121,8 @@ in {
       # Verify it works!
       ${pkgs.openssl}/bin/openssl verify \
         -CAfile $cert_path \
-        $out_file
+        $out_file \
+        1>&2
       cat signing.key
       rm ca.key
       rm san.cnf

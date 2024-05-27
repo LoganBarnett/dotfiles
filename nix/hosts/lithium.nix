@@ -24,7 +24,7 @@ in {
   modules = [
     (import ../nixos-modules/secrets.nix {
       inherit flake-inputs host-id system;
-      host-public-key-file = ../secrets/lithium-ssh-key.pub;
+      host-public-key-file = ../secrets/${host-id}-ssh-key.pub;
     })
     # We can't use `disko` because it's taken, I guess.
     diskoProper.nixosModules.disko
@@ -32,7 +32,7 @@ in {
       inherit host-id;
       listen-port = 443;
       server-port = comfyui-port;
-      fqdn = "lithium.proton";
+      fqdn = "${host-id}.proton";
     })
     ../users/logan-server.nix
     ../nixos-modules/nix-flakes.nix
@@ -42,6 +42,7 @@ in {
     (import ../nixos-modules/tls-leaf-proton.nix {
       inherit host-id;
     })
+    ../nixos-modules/tls-trust.nix
     ../nixos-modules/user-can-admin.nix
     (import ../nixos-modules/comfyui-server.nix {
       inherit host-id;

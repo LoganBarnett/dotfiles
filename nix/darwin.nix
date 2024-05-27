@@ -178,6 +178,15 @@
   system = {
     # Settings that don't have an option in nix-darwin
     activationScripts.postActivation.text = ''
+      # Note that a lot of advice out there will say to use "trustAsRoot" per
+      # newer versions of macOS.  This might be correct advice in the context of
+      # the question given, but since we're running _as root_ already, we can
+      # just trustRoot. `trustAsRoot` is for non-root command line invocations.
+      security add-trusted-cert \
+        -d \
+        -r trustRoot \
+        -k /Library/Keychains/System.keychain \
+        ${./secrets/proton-ca.crt}
       echo "Set disk image verification..."
       # I don't know what I want these set to, or what the defaults are, so
       # skipping for now.
