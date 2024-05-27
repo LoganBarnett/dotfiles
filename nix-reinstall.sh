@@ -9,7 +9,7 @@
 # focus on upgrading packages.
 ####
 
-source bash-logging
+source nix/bash-logging
 
 slog "The first step is to make nix think we are worthy of install (no existing
 nix). We will remove everything! This script requires sudoer."

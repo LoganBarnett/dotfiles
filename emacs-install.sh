@@ -2,7 +2,7 @@
 
 set -e
 
-source bash-logging
+source nix/bash-logging
 
 slog "Setting up Emacs distro - Emacs installed via nix-pkg..."
 distro='doom'

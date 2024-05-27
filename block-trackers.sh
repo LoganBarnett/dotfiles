@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 set -e
-source bash-logging
+source nix/bash-logging
 
 slog "Writing to /etc/hosts to block trackers and other hostile sites. sudo \
 will be used..."

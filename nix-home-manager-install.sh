@@ -2,7 +2,7 @@
 #!/usr/bin/env bash
 set -eo pipefail
 
-source bash-logging
+source nix/bash-logging
 
 # Establish the NIX_PATH for home-manager. Probably a symptom of running out of
 # a stale terminal session. I do see some errors using this, but they aren't

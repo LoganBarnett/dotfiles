@@ -2,7 +2,7 @@
 
 set -e
 
-source bash-logging
+source nix/bash-logging
 
 slog "Add homebrew to the path (on fresh installs this is missing)."
 export PATH="$PATH:/opt/homebrew/bin"

@@ -2,7 +2,7 @@
 # The nix daemon doesn't work with -u.
 set -eo pipefail
 
-source bash-logging
+source nix/bash-logging
 
 slog "Prompting for sudo..."
 sudo printf "\n" # To ensure we're in a sudo context first.

@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-source bash-logging
+source nix/bash-logging
 
 dir="$(dirname "${BASH_SOURCE[0]}")"
 source $dir/dotfiles-functions.sh

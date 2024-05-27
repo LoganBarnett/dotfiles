@@ -4,7 +4,7 @@ set -euo pipefail
 # Any macOS specific installation requirements should go here.
 
 dir="$(dirname "${BASH_SOURCE[0]}")"
-source bash-logging
+source nix/bash-logging
 
 slog "Installing XCode..."
 xcode-select --install || true

@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-source bash-logging
+source nix/bash-logging
 slog "Installing private settings..."
 
 if [[ -d ../dotfiles-private/.git ]]; then

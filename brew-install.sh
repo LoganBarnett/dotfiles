@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-source bash-logging
+source nix/bash-logging
 
 dir="$(dirname "${BASH_SOURCE[0]}")"
 
