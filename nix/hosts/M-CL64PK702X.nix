@@ -27,6 +27,8 @@ in {
     }
     ../darwin.nix
     ../users/logan-new-e-ah.nix
+    ../nixos-modules/user-can-admin.nix
+    ../nixos-modules/user-can-develop.nix
     ../headed-host.nix
     ({ pkgs, ...}: let
     in {
