@@ -22,6 +22,14 @@ in {
     {
 			_module.args.emacs-overlay = flake-inputs.emacs-overlay;
       _module.args.nixpkgs = flake-inputs.nixpkgs;
+      _module.args.git-users = [
+        {
+          git-email = "logan.barnett@nwea.org";
+          git-username = "logan-barnett-nwea";
+          git-signing-key = "85D2D1CE81A7A529FA4ABAE61841B0A4F704B99A";
+          host-username = "logan.barnett";
+        }
+      ];
     }
     {
     }
