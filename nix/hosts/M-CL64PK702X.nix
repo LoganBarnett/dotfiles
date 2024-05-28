@@ -1,13 +1,13 @@
 { flake-inputs }: let
-  hostname = "M-CL64PK702X";
+  host-id = "M-CL64PK702X";
   system = "aarch64-darwin";
 in {
   inherit system;
   modules = [
     (import ../nixos-modules/secrets.nix {
       inherit flake-inputs system;
-      host-id = hostname;
-      host-public-key = "";
+      inherit host-id;
+      host-public-key-file = ../secrets/${host-id}-ssh-key.pub;
     })
     flake-inputs.home-manager.darwinModules.home-manager
     {
@@ -23,7 +23,7 @@ in {
       _module.args.nixpkgs = flake-inputs.nixpkgs;
     }
     {
-      config.networking.hostName = hostname;
+      config.networking.hostName = host-id;
     }
     ../darwin.nix
     ../users/logan-new-e-ah.nix
