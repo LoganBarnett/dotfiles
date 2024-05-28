@@ -35,6 +35,7 @@ in {
       security.pki.certificateFiles = [
         "${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt"
         ../new-e-ah-certs.pem
+        ../secrets/proton-ca.crt
       ];
       environment.systemPackages = [
         pkgs.awscli
