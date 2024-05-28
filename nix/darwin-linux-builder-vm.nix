@@ -106,7 +106,7 @@ in {
     # This provides us readelf, which is useful for getting extended information
     # from ELF binaries.
     linux-builder-pkgs.binutils-unwrapped
-    cross-architecture-test-pkgs.hello
+    # cross-architecture-test-pkgs.hello
   ];
   nixpkgs = {
     buildPlatform = { system = "aarch64-linux"; };
@@ -142,5 +142,6 @@ in {
   };
   nix.settings = {
     extra-platforms = [ "aarch64-linux" "i686-linux" "x86_64-linux" ];
+    # extra-platforms = [ "aarch64-linux" ];
   };
 }

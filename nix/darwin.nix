@@ -92,7 +92,9 @@
     # but it doesn't exist.  Perhaps I need to bump nix-darwin?  The date is
     # _very_ recent.
     settings = {
-      #
+      # Do not add this, as nix-darwin sets this up for us, and more
+      # intelligently.  Specifying this will crush what nix-darwin configures
+      # and will harm bootstrapping efforts with the VM.
       # builders = [ "ssh-ng://linux-builder aarch64-linux,x86_64-linux" ];
       experimental-features = [ "nix-command" "flakes" ];
       # extra-platforms = [ "x86_64-linux" "i686-linux" ];
@@ -104,7 +106,6 @@
       extra-trusted-users = [ "logan" ];
       # Trusting @admin is demanded by the darwin.linux-builder package.
       trusted-users = [ "@admin" ];
-      # trusted-builders = [ "linux-builder" ];
     };
   };
   nixpkgs.overlays = import ./overlays/default.nix ++ [
