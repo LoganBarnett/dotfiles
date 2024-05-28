@@ -44,7 +44,7 @@ in {
         ../new-e-ah-certs.pem
         ../secrets/proton-ca.crt
       ];
-      system.stateVersion = "23.11";
+      # system.stateVersion = "23.11";
     })
   ];
 }
