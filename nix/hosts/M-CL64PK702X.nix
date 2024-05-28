@@ -1,6 +1,7 @@
 { flake-inputs }: let
   host-id = "M-CL64PK702X";
   system = "aarch64-darwin";
+  username = "logan.barnett";
 in {
   inherit system;
   modules = [
@@ -27,7 +28,9 @@ in {
     ../darwin.nix
     ../users/logan-new-e-ah.nix
     ../nixos-modules/user-can-admin.nix
-    ../nixos-modules/user-can-develop.nix
+    (import ../nixos-modules/user-can-develop.nix {
+      inherit username;
+    })
     ../headed-host.nix
     ({ pkgs, ...}: let
     in {

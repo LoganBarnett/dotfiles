@@ -1,7 +1,7 @@
-{ pkgs, ... }: {
+{ gpg-user } : { pkgs, ... }: {
   # TODO: Modify similar to git-config to allow any number of users to inherit
   # this configuration.
-  home-manager.users.logan = {
+  home-manager.users.${gpg-user} = {
     home.file.".gnupg/gpg-agent.conf".text = ''
 pinentry-program '' + (if pkgs.stdenv.isDarwin
   then (pkgs.pinentry_mac + "/bin/pinentry-mac")

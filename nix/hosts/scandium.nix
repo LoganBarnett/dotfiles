@@ -1,12 +1,14 @@
 let
+  host-id = "scandium";
   system = "aarch64-darwin";
+  username = "logan";
 in
 { flake-inputs }: {
   inherit system;
   modules = [
     (import ../nixos-modules/secrets.nix {
       inherit flake-inputs system;
-      host-id = "scandium";
+      inherit host-id;
       host-public-key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIN3jJteck5yCfIm0iA4qKSIVx9zh6qhCuAt5cV1Ysib+";
     })
     flake-inputs.home-manager.darwinModules.home-manager
@@ -25,17 +27,19 @@ in
           git-email = "logustus@gmail.com";
           git-username = "LoganBarnett";
           git-signing-key = "41E46FB1ACEA3EF0";
-          host-username = "logan";
+          host-username = username;
         }
       ];
       _module.args.flake-inputs = flake-inputs;
     }
     {
-      config.networking.hostName = "scandium";
+      config.networking.hostName = host-id;
     }
     ../nixos-modules/tls-trust.nix
     ../nixos-modules/user-can-admin.nix
-    ../nixos-modules/user-can-develop.nix
+    (import ../nixos-modules/user-can-develop.nix {
+      inherit username;
+    })
     ../darwin.nix
     ../users/logan-personal.nix
     ../headed-host.nix

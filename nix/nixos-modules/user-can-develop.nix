@@ -1,7 +1,7 @@
-{ pkgs, ... }: {
+{ username }: { pkgs, ... }: {
   imports = [
     ./git-config.nix
-    ./gpg-config.nix
+    (import ./gpg-config.nix { gpg-user = username; })
   ];
   environment.systemPackages = [
     # Gives us diff --color support via GNU diff.
