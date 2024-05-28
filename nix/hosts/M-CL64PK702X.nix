@@ -23,7 +23,6 @@ in {
       _module.args.nixpkgs = flake-inputs.nixpkgs;
     }
     {
-      config.networking.hostName = host-id;
     }
     ../darwin.nix
     ../users/logan-new-e-ah.nix
@@ -32,15 +31,17 @@ in {
     ../headed-host.nix
     ({ pkgs, ...}: let
     in {
+      environment.systemPackages = [
+        pkgs.awscli
+        (pkgs.callPackage ../../nix-gems/hiera-eyaml/default.nix {})
+      ];
+      networking.hostName = host-id;
       security.pki.certificateFiles = [
         "${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt"
         ../new-e-ah-certs.pem
         ../secrets/proton-ca.crt
       ];
-      environment.systemPackages = [
-        pkgs.awscli
-        (pkgs.callPackage ../../nix-gems/hiera-eyaml/default.nix {})
-      ];
+      system.stateVersion = "23.11";
     })
   ];
 }
