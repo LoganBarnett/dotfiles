@@ -1,8 +1,6 @@
 {
   flake-inputs,
   host-id,
-  host-public-key ? null,
-  host-public-key-file ? null
 }: { pkgs, lib, ... }: let
   subject-string = subject:
     ''/C=${subject.country}\
@@ -130,9 +128,7 @@ in {
     ;
 
   age.rekey = {
-    hostPubkey = if host-public-key != null
-                 then host-public-key
-                 else (lib.fileContents host-public-key-file);
+    hostPubkey = ../secrets/${host-id}-pub-key.pub;
     masterIdentities = [
       ../secrets/agenix-master-key-3.age
     ];
@@ -144,6 +140,34 @@ in {
     # userFlake = flake-inputs.self;
     # nodes = flake-inputs.self.nixosConfigurations;
     storageMode = "local";
+  };
+
+  age.generators.ssh-ed25519-with-pub = {
+    file,
+    lib,
+    name,
+    pkgs,
+    ...
+  }: ''
+    mkdir -p "$(dirname "${file}")"
+    (exec 3>&1;
+    ${pkgs.openssh}/bin/ssh-keygen \
+      -q \
+      -t ed25519 \
+      -N "" \
+      -C ${lib.escapeShellArg "${host-id}:${name}"} \
+      -f ${name} \
+      <<<y >/dev/null 2>&1;
+      cp "${name}.pub" "$(dirname "${file}")"
+      echo copied public key ${name}.pub to "$(dirname "${file}")" 1>&2
+      cat "${name}"
+      rm "${name}"{,.pub}
+    true)
+  '';
+
+  age.secrets."${host-id}-pub-key" = {
+    generator.script = "ssh-ed25519-with-pub";
+    rekeyFile = ../secrets/${host-id}-pub-key.age;
   };
 
   age.secrets.proton-ca = {

@@ -147,6 +147,7 @@
           buildPlatform = "aarch64-linux";
           destinationHostname = "lithium";
           destinationPlatform = "x86_64-linux";
+          disko-proper = disko;
           inherit flake-inputs nixpkgs pkgs;
         }));
       packages.aarch64-darwin.nucleus-installer = self

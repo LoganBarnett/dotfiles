@@ -11,14 +11,12 @@ in {
   modules = [
     # We can't use `disko` because it's taken, I guess.
     disko-proper.nixosModules.disko
+    ../hacks/installer/installation-cd-minimal.nix
+    ../hacks/installer/cd-dvd-channel.nix
+    (import ../nixos-modules/server-host.nix {
+      inherit disko-proper flake-inputs host-id;
+    })
     ({ config, pkgs, ... }: {
-      imports = [
-        ../hacks/installer/installation-cd-minimal.nix
-        ../hacks/installer/cd-dvd-channel.nix
-        (import ../nixos-modules/server-host.nix {
-          inherit disko-proper flake-inputs host-id;
-        })
-      ];
       services.openldap = {
         enable = true;
         # suffix = "dc=proton,dc=org";

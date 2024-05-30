@@ -12,28 +12,21 @@
 {
   buildPlatform,
   destinationPlatform,
+  disko-proper,
   flake-inputs,
   nixpkgs,
   ...
 } : let
+  host-id = "nucleus";
   system = destinationPlatform;
 in {
   inherit system;
   modules = [
-    (import ../nixos-modules/secrets.nix {
-      inherit flake-inputs;
-      host-id = "nucleus";
-      host-public-key = "";
-    })
-    {
-      age.rekey.hostPubkey = "";
-    }
     ../hacks/installer/installation-cd-minimal.nix
+    (import ../nixos-modules/server-host.nix {
+      inherit disko-proper flake-inputs host-id;
+    })
     # "${nixpkgs}/nixos/modules/installer/cd-dvd/installation-cd-minimal.nix"
-    ../users/logan-server.nix
-    ../nixos-modules/nix-flakes.nix
-    ../nixos-modules/nix-store-optimize.nix
-    ../nixos-modules/sshd.nix
     # Per the NixOS documentation:
     # Provide an initial copy of the NixOS channel so that the user doesn't need
     # to run "nix-channel --update" first.

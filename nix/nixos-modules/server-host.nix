@@ -17,12 +17,10 @@
     disko-proper.nixosModules.disko
     (import ./secrets.nix {
       inherit flake-inputs host-id;
-      host-public-key-file = ../secrets/${host-id}/initrd_host_ed25519_key.pub;
     })
     (import ./tls-leaf-proton.nix {
       inherit host-id;
     })
-    ./server-host-pub-key.nix
     ./nix-flakes.nix
     ./nix-store-optimize.nix
     ./sshd.nix

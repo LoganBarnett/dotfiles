@@ -8,7 +8,6 @@ in {
     (import ../nixos-modules/secrets.nix {
       inherit flake-inputs;
       inherit host-id;
-      host-public-key-file = ../secrets/${host-id}-ssh-key.pub;
     })
     flake-inputs.home-manager.darwinModules.home-manager
     {
