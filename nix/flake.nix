@@ -116,23 +116,20 @@
           inherit flake-inputs;
         });
 
-      nixosConfigurations.lithium = let
-        system = "x86_64-linux";
-        pkgs = import nixpkgs-comfyui {
-          inherit system;
-          overlays = (import ./overlays/default.nix);
-          specialArgs = {
-            inherit flake-inputs;
-          };
-        };
-      in
+      nixosConfigurations.lithium =
         nixpkgs-comfyui.lib.nixosSystem (import ./hosts/lithium.nix {
-          diskoProper = disko-comfyui;
+          disko-proper = disko-comfyui;
           inherit flake-inputs;
         });
       # Unsure if we need this, but if we do, it serves as a shortcut
       # essentially.
       packages.x86_64-linux.lithium = self.nixosConfigurations.lithium;
+
+      nixosConfigurations.nickel =
+        nixpkgs-comfyui.lib.nixosSystem (import ./hosts/nickel.nix {
+          disko-proper = disko-comfyui;
+          inherit flake-inputs;
+        });
 
       nixosConfigurations.nucleus-installer = (let
         pkgs = import nixpkgs {

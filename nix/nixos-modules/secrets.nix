@@ -1,6 +1,5 @@
 {
   flake-inputs,
-  system,
   host-id,
   host-public-key ? null,
   host-public-key-file ? null

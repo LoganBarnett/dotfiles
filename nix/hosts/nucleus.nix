@@ -21,7 +21,7 @@ in {
   inherit system;
   modules = [
     (import ../nixos-modules/secrets.nix {
-      inherit flake-inputs system;
+      inherit flake-inputs;
       host-id = "nucleus";
       host-public-key = "";
     })
@@ -88,12 +88,12 @@ in {
               inherit suidHelper serviceDirectories apparmor;
             };
           nixos-configuration-reference-manpage =
-            abort builtins.traceVerbose "lithium-configuration overlay for nixos-configuration-reference-manpage"
+            abort builtins.traceVerbose "nucleus-configuration overlay for nixos-configuration-reference-manpage"
               prev.stdenv.mkDerivation {
                 name = "nixos-configuration-reference-manpage";
               };
           documentation =
-            builtins.traceVerbose "lithium-configuration overlay for documentation"
+            builtins.traceVerbose "nucleus-configuration overlay for documentation"
               prev.documentation.overrideAttrs {
                 baseOptionsJSON = null;
               };

@@ -11,39 +11,26 @@
 # The final NixOS module is the server specific configuration, with everything
 # before that being reusable modules (or parameterized, reusable modules).
 ################################################################################
-{ diskoProper, flake-inputs }: let
+{ disko-proper, flake-inputs }: let
   # Default ComfyUI port.
   comfyui-port = 8188;
   host-id = "lithium";
   system = "x86_64-linux";
 in {
   inherit system;
-  specialArgs = {
-    inherit flake-inputs;
-  };
   modules = [
-    (import ../nixos-modules/secrets.nix {
-      inherit flake-inputs host-id system;
-      host-public-key-file = ../secrets/${host-id}-ssh-key.pub;
+    (import ../nixos-modules/server-host.nix {
+      inherit disko-proper flake-inputs host-id;
     })
-    # We can't use `disko` because it's taken, I guess.
-    diskoProper.nixosModules.disko
     (import ../nixos-modules/https.nix {
       inherit host-id;
       listen-port = 443;
       server-port = comfyui-port;
       fqdn = "${host-id}.proton";
     })
-    ../users/logan-server.nix
-    ../nixos-modules/nix-flakes.nix
-    ../nixos-modules/nix-store-optimize.nix
-    ../nixos-modules/nvidia.nix
-    ../nixos-modules/sshd.nix
-    (import ../nixos-modules/tls-leaf-proton.nix {
-      inherit host-id;
+    (import ../nixos-modules/nvidia.nix {
+      inherit flake-inputs;
     })
-    ../nixos-modules/tls-trust.nix
-    ../nixos-modules/user-can-admin.nix
     (import ../nixos-modules/comfyui-server.nix {
       inherit host-id;
       port = comfyui-port;
@@ -111,7 +98,7 @@ in {
         };
       };
     })
-    ({ config, pkgs, ... }: {
+    ({ pkgs, ... }: {
 
       # I don't know what else to set this to that's meaningful, but it has to
       # be set to _something_.  This is very likely something that will bite me
@@ -177,10 +164,6 @@ in {
       # to more eager minds.  This error should be much more helpful than it is,
       # and that is perhaps the _real_ bug here that I need to file for.
       documentation.enable = true;
-      # Hostname is not an FQDN.
-      networking.hostName = host-id;
-      nixpkgs.overlays = (import ../overlays/default.nix);
-      system.stateVersion = "23.11";
     })
   ];
 }

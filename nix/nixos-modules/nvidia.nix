@@ -8,7 +8,7 @@
 # Not all of the configuration here comes from that, but I am starting to
 # integrate it where I can.
 ################################################################################
-{ flake-inputs, pkgs, ... }: let
+{ flake-inputs, }: { pkgs, ... }: let
   linux-packages = pkgs.linuxPackages_latest;
 in {
   # See https://nixos.wiki/wiki/Linux_kernel for values and options.

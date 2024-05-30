@@ -6,7 +6,7 @@ in {
   inherit system;
   modules = [
     (import ../nixos-modules/secrets.nix {
-      inherit flake-inputs system;
+      inherit flake-inputs;
       inherit host-id;
       host-public-key-file = ../secrets/${host-id}-ssh-key.pub;
     })

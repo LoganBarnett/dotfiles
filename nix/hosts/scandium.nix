@@ -7,7 +7,7 @@ in
   inherit system;
   modules = [
     (import ../nixos-modules/secrets.nix {
-      inherit flake-inputs system;
+      inherit flake-inputs;
       inherit host-id;
       host-public-key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIN3jJteck5yCfIm0iA4qKSIVx9zh6qhCuAt5cV1Ysib+";
     })
