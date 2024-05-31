@@ -6,7 +6,7 @@
       programs.git = {
         enable = true;
         extraConfig = {
-          aliases = {
+          alias = {
             branchg="!git branch -avv | grep";
             fast-amend = "commit --amend --no-edit";
             # Removes branches that have been merged already.
@@ -106,7 +106,8 @@
   });
 in {
   imports = [
-    ./git-program.nix
+    # We no longer need this, but maybe handy to add to nix-darwin proper.
+    # ./git-program.nix
   ];
   environment.etc = {
     gitignore.source = ../git/gitignore_global;
