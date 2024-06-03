@@ -51,6 +51,20 @@ in {
             ])
           ];
         });
+        # I used to manage .yarnrc the same way, but it has a lastUpdateCheck
+        # field that is automatically written to, so it would need some
+        # different plumbing.  I have examples of just writing files out that
+        # can be written by external processes later, but there are better ways
+        # to tackle this.
+        # https://github.com/yarnpkg/yarn/issues/4134 outlines this exact issue,
+        # and it is now closed because yarn v2 separates the auto-generated
+        # stuff.  I don't have any projects with which to test this on yet, so
+        # no action is to be taken.  I've just removed the yarnrc file instead.
+        # This is the last vestiges of my yarnrc, for reference:
+        # "--add.exact" true
+        # email logustus@gmail.com
+        # lastUpdateCheck
+        # username logustus
         home.file.".npmrc".text = (pkgs.callPackage ../npmrc.nix {
           extra-npm-registries = [
             (lib.concatStrings [

@@ -10,7 +10,6 @@ bashrc
 pentadactylrc
 profile
 vimrc
-yarnrc
 zlogin-customized
 zshenv-customized
 zshrc-customized
