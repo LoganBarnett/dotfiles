@@ -200,6 +200,56 @@ quite built into =ruby-mode=, but it does have a flag we can use to disable it.
 #+begin_src emacs-lisp :results none
 (setq-default ruby-flymake-use-rubocop-if-available nil)
 #+end_src
+** ruby version
+
+The Ruby version used can make a big difference in how things work.  One example
+is a syntax difference with "fluent dots" (Ruby's silly name for having dots for
+chained calls/references at the beginning of a line rather than at the end).
+"Fluent dots" works fine typically, until you start to interlace them with
+comments.  Ruby's "I don't about whitespace but sometimes I do" kicks in, and
+everyone is sad.  Fortunately this is fixed in 2.7, but Emacs won't pick that up
+on macOS, because macOS uses Ruby 2.6 by default with no shell hooks (like
+=direnv=) in place for Emacs' =PATH= lookups.
+
+This applies to both =enh-ruby-mode= via =enh-ruby-program= as well as
+=flycheck= via =flycheck-ruby-executable=.  There may be others as well, but
+this was the most apparent I could find.
+
+#+name: config/ruby-exec-version
+#+begin_src emacs-lisp :results none
+(defun config/ruby-path ()
+  (let (
+    (ruby-program
+      ;; The easiest thing to do is jump into a shell at the directory in
+      ;; question, allow any shell hooks to run (like direnv), and then
+      ;; query for Ruby.
+      (shell-command-to-string
+        (concat
+           "/run/current-system/sw/bin/zsh -c '"
+           "eval \"$(/nix/store/1nslf9a1isrmxh3hxvwkrbxy6ssr116s-direnv-2.34.0/bin/direnv hook zsh)\" > /dev/null; "
+           "cd " (projectile-project-root) " 2> /dev/null; "
+           "which ruby;"
+           "' | tr -d '\\n'"
+           )
+        )
+      )
+    )
+      (setq-local enh-ruby-program ruby-program)
+      (setq-local flycheck-ruby-executable ruby-program)
+      (if config/debug-ruby
+        (progn
+          (message "ruby-program: %s" ruby-program)
+          (message "Getting Ruby version with: %s" (concat ruby-program " --version"))
+          (message "Ruby version: %s" (shell-command-to-string (concat ruby-program " --version")))
+          )
+        nil
+        )
+    )
+  (setq-default config/debug-ruby nil)
+  )
+(add-hook 'enh-ruby-mode-hook #'config/ruby-path)
+#+end_src
+
 
 ** stitch
 
@@ -211,6 +261,7 @@ quite built into =ruby-mode=, but it does have a flag we can use to disable it.
   (add-to-list 'auto-mode-alist '("\\(?:\\.\\(?:rbw?\\|ru\\|rake\\|thor\\|jbuilder\\|rabl\\|gemspec\\|podspec\\)\\|/\\(?:Gem\\|Rake\\|Cap\\|Thor\\|Puppet\\|Berks\\|Brew\\|Vagrant\\|Guard\\|Pod\\)file\\)\\'" . enh-ruby-mode))
   ;; Selects the right mode from the shebang.
   (add-to-list 'interpreter-mode-alist '("ruby" . enh-ruby-mode))
+  <<config/ruby-exec-version>>
   <<config/ruby-rubocopy-disable>>
   <<config/ruby-multi-line-strategy-hook>>
   <<config/ruby-mode-fix-hanging-indentation>>
