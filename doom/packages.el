@@ -53,6 +53,8 @@
   ) ; Atlassian Jira integration.
 ;; (package! ejira :recipe (:local-repo "~/dev/ejira"))
 (package! elm-mode)
+;; I've confirmed this is using this version:
+;; https://github.com/zenspider/enhanced-ruby-mode
 (package! enh-ruby-mode)
 ;; Workaround per https://github.com/doomemacs/doomemacs/issues/7196 so mu4e
 ;; evil bindings work again.
