@@ -236,6 +236,10 @@ this was the most apparent I could find.
     )
       (setq-local enh-ruby-program ruby-program)
       (setq-local flycheck-ruby-executable ruby-program)
+      ;; ehn-ruby-mode's process needs to be reset to pick up this change.  I'm
+      ;; unsure as to how to assert this hook before anything else happens.
+      (erm-reset)
+      (setq-default config/debug-ruby t)
       (if config/debug-ruby
         (progn
           (message "ruby-program: %s" ruby-program)
@@ -245,7 +249,6 @@ this was the most apparent I could find.
         nil
         )
     )
-  (setq-default config/debug-ruby nil)
   )
 (add-hook 'enh-ruby-mode-hook #'config/ruby-path)
 #+end_src
