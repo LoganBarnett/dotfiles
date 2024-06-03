@@ -10,9 +10,6 @@ in {
       inherit host-id;
     })
     flake-inputs.home-manager.darwinModules.home-manager
-    {
-      nixpkgs.overlays = [];
-    }
     # the _module.args idiom is how I can ensure these values get passed via the
     # internal callPackage mechanism for darwinSystem on these modules.  We want
     # callPackage because it does automatic "splicing" of nixpkgs to achieve
@@ -37,8 +34,23 @@ in {
       inherit username;
     })
     ../headed-host.nix
-    ({ pkgs, ...}: let
+    ({ lib, pkgs, ...}: let
     in {
+      nixpkgs.overlays = [];
+      home-manager.users."logan.barnett" = {
+        home.file.".gemrc".text = (pkgs.callPackage ../gemrc.nix {
+          extra-gem-sources = [
+            (lib.concatStrings [
+              "http://gems.mgmt."
+              "n"
+              "w"
+              "e"
+              "a"
+              "colo.pvt:8080/"
+            ])
+          ];
+        });
+      };
       environment.systemPackages = [
         pkgs.awscli
         (pkgs.callPackage ../../nix-gems/hiera-eyaml/default.nix {})

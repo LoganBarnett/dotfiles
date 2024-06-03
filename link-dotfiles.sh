@@ -7,7 +7,6 @@ EASYFILES="
 Xdefaults
 bash_profile
 bashrc
-gemrc
 npmrc
 pentadactylrc
 profile
