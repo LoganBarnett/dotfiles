@@ -216,7 +216,7 @@ This applies to both =enh-ruby-mode= via =enh-ruby-program= as well as
 this was the most apparent I could find.
 
 #+name: config/ruby-exec-version
-#+begin_src emacs-lisp :results none
+#+begin_src emacs-lisp :results none :tangle no
 (defun config/ruby-path ()
   (let (
     (ruby-program
