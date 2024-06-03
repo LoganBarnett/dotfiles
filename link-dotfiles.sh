@@ -7,7 +7,6 @@ EASYFILES="
 Xdefaults
 bash_profile
 bashrc
-npmrc
 pentadactylrc
 profile
 vimrc

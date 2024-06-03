@@ -35,18 +35,27 @@ in {
     })
     ../headed-host.nix
     ({ lib, pkgs, ...}: let
+      work-alias = lib.concatStrings [
+        "n"
+        "w"
+        "e"
+        "a"
+      ];
     in {
       nixpkgs.overlays = [];
       home-manager.users."logan.barnett" = {
         home.file.".gemrc".text = (pkgs.callPackage ../gemrc.nix {
           extra-gem-sources = [
             (lib.concatStrings [
-              "http://gems.mgmt."
-              "n"
-              "w"
-              "e"
-              "a"
-              "colo.pvt:8080/"
+              "http://gems.mgmt.${work-alias}colo.pvt:8080/"
+            ])
+          ];
+        });
+        home.file.".npmrc".text = (pkgs.callPackage ../npmrc.nix {
+          extra-npm-registries = [
+            (lib.concatStrings [
+              "@${work-alias}:registry="
+              "https://artifacts.americas.${work-alias}.pvt/nexus/content/groups/npm-all/"
             ])
           ];
         });
