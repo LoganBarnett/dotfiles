@@ -307,7 +307,16 @@
   (init-org-file "prog-mode.org")
   (init-org-file "org-mode.org")
   (init-org-file "elisp-mode.org")
-  (init-org-file "org-contacts.org")
+  ;; org-contacts adds the contacts file to org-agenda-files but this fails.
+  ;; Some recent version of _something_ causes this to prompt to remove the file
+  ;; from the list.  Since this happens during startup, naturally Emacs just
+  ;; sits around with a white screen.  Disable org-contacts if the file isn't
+  ;; present.  This might be a land mine later, but at least this will prevent
+  ;; startup locks.
+  (if (file-exists-p "~/notes/contacts.org")
+    (init-org-file "org-contacts.org")
+    nil
+    )
   (init-org-file "keybindings.org")
   (init-org-file "modeline.org")
   (init-org-file "ui.org")
