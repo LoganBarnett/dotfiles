@@ -68,8 +68,6 @@ in {
   ];
   services.comfyui = {
     enable = true;
-    # Listen on 0.0.0.0, otherwise it's localhost connections only.
-    listen = "0.0.0.0";
     multi-user = true;
     customNodes = with pkgs.comfyui-custom-nodes; [
       comfyui-browser
