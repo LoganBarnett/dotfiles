@@ -6,9 +6,6 @@
 # @fazo96.  As such it will be using my fork of fazo96's fork.
 ################################################################################
 { host-id, port }: { config, lib, pkgs, ... }: let
-  # fetchModel = pkgs.callPackage ../hacks/comfyui/fetch-model.nix {};
-  # custom-nodes = (pkgs.callPackage ../hacks/comfyui/custom-nodes.nix {});
-  # mkComfyUICustomNodes = custom-nodes.mkComfyUICustomNodes;
 in {
   # We don't actually need this file, but it's kept for reference.
   age.secrets.civitai-token = {
@@ -20,7 +17,6 @@ in {
   # instead of a header value.
   age.secrets.civitai-bearer-token-header = {
     rekeyFile = ../secrets/civitai-bearer-token-header.age;
-    # path = "/nix/var/secrets/civitai-bearer-token-header";
     path = "/etc/civitai-bearer-token-header";
     symlink = false;
     group = "nixbld";
