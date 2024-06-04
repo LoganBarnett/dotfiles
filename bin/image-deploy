@@ -1,9 +1,8 @@
 #!/usr/bin/env bash
 ##
 # Deploys a bootable image with NixOS to a removable storage.  This image should
-# contain the entirety of the configuration, sans password updates (until I can
-# get secret management going).  The image is built and then the removable
-# storage is reformmatted to use the built image contents.
+# contain the entirety of the configuration. The image is built and then the
+# removable storage is reformmatted to use the built image contents.
 ##
 
 set -euo pipefail
@@ -17,12 +16,12 @@ Usage: $0 [opts]
   --image <image-file> Instead of building the image, use the one provided.
                        Ex: result/iso/*.iso or result/sd-image/*.img
   --disk  <dev-path>   Instead of auto detecting the disk, use the one provided.
-                       Must be a fully qualified path.  Ex: /dev/disk4
+                       Must be a fully qualified path.  Defaults to the
+                       disk-detachable output.  Ex: /dev/disk4
 
 Deploys a bootable image with NixOS to a removable storage.  This image should
-contain the entirety of the configuration, sans password updates (until I can
-get secret management going).  The image is built and then the removable storage
-is reformmatted to use the built image contents.
+contain the entirety of the configuration.  The image is built and then the
+removable storage is reformmatted to use the built image contents.
 
 EOH
       exit
@@ -53,3 +52,6 @@ sudo dd \
      bs=4M \
      status=progress \
      conv=fsync
+
+echo "Image has been copied to disk and it remains unmounted.\
+  You may remove the disk."
