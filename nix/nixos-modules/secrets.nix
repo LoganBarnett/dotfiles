@@ -165,6 +165,12 @@ in {
     true)
   '';
 
+  # TODO: This doesn't quite work as expected.  We need something to sync up
+  # with the /etc/ssh/ssh_host_ed25519_key and its .pub sibling.  This will
+  # break for new hosts trying to get secrets.  To fix it, overwrite the .pub
+  # file in this repository for the host in question with
+  # /etc/ssh/ssh_host_ed25519_key.pub and run `agenix rekey -a` to rekey the
+  # files.
   age.secrets."${host-id}-pub-key" = {
     generator.script = "ssh-ed25519-with-pub";
     rekeyFile = ../secrets/${host-id}-pub-key.age;
