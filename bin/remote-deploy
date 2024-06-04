@@ -29,15 +29,28 @@
 # not deep enough into it with 4 weeks of massive personal time put into this.
 ################################################################################
 
+set -euo pipefail
+
 switch=true
+build=false
 while true; do
   case "${1:-}" in
     -h | --help)
       cat <<EOH
 Usage: $0 [opts] <hostname>
 
-  --no-switch Do not `nixos-rebuild switch` - just copy the files.  This can be
-              helpful for running this session over tmux.
+  --bootstrap <host>   Put this on a host first, then attempt to build it.
+                       Normally remote-deploy assumes the remote to deploy to
+                       and the build target are the same.  This allows for a
+                       different deployment.  This can be helpful when Nix
+                       cannot build on macOS because it still uses a case
+                       insensitive file system (see
+                       https://github.com/tstat/raspberry-pi-nix/issues/2 and
+                       https://github.com/NixOS/nix/issues/2415 for open issues
+                       on these as of 2024-06-03).
+
+  --no-switch          Do not `nixos-rebuild switch` - just copy the files.
+                       This can be helpful for running this session over tmux.
 
 Copies nix files to a host via rsync over SSH, and attempts to do a
 `nixos-rebuild switch`.
@@ -45,16 +58,31 @@ Copies nix files to a host via rsync over SSH, and attempts to do a
 EOH
       exit
       ;;
+    --bootstrap)
+      shift 1
+      bootstrap_host="${1:-}"
+      shift 1
+      ;;
     --no-switch)
       switch=false
+      shift 1
+      ;;
+    --build)
+      build=true
       shift 1
       ;;
     * ) break ;;
   esac
 done
-host=$1
-dest=$host.proton
-echo "Deploying to $dest..."
+# I can't bash well enough to simplify this.
+if [[ "${bootstrap_host:-}" == "" ]]; then
+  host="${1:-}.proton"
+else
+  host=$bootstrap_host
+fi
+target="${1:-}"
+shift
+echo "Deploying $target to $host..."
 # rsync is ideal, but needs to be present on the remote machine.  We don't have
 # that setup yet - or at least I have old installer without it.  Next time we
 # look, switch.
@@ -70,18 +98,22 @@ rsync \
   --delete-after \
   --exclude='result' \
   --exclude='.git' \
-  ./ $dest':~/proton-nix'
+  ./ $host':~/proton-nix'
 # This needs to be sudo because nixos-rebuild claims one or more of the .git
 # files.
-# ssh $dest 'sudo rm -rf $HOME/proton-nix'
-command="cd proton-nix; sudo nixos-rebuild switch --flake '.#$host' --show-trace --impure"
+# ssh $host 'sudo rm -rf $HOME/proton-nix'
+echo $build
+# No, you can't simplify this because $build is a boolean.
+nix_command=$([[ $build == true ]] && echo 'nix build' || echo 'nixos-rebuild switch')
+command="set -x; cd proton-nix ;
+sudo $nix_command --flake '.#$target' --show-trace --impure"
 # This creates a bunch of noise, but as far as I can tell there's no problems
 # had.  Some of the history is probably borked, but I just need the working tree
 # to be intact, and by all observations that is the case.  I have heard about
 # "git bundle" that might help here.  It packs and unpacks a git blob that more
 # safely can traverse the wire, and wouldn't require rsync as badly.
-# scp -r $HOME/dev/dotfiles/nix/ $dest':~/proton-nix' > /dev/null
-ssh $dest "\
+# scp -r $HOME/dev/dotfiles/nix/ $host':~/proton-nix' > /dev/null
+ssh $host "\
 set -e; \
 set -x; \
 cd proton-nix && \
@@ -89,7 +121,7 @@ git init && \
 git add . \
 "
 if $switch ; then
-  ssh $dest "\
+  ssh $host "\
   $command \
 "
 else
