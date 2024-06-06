@@ -43,6 +43,8 @@ configurations.  Everything locked via Nix Flakes.  The entry point is
 
 Nix installation can be run by itself via =./nix-install.sh=.
 
+I have in-progress work and notes in [[./nix/README.org]].
+
 ** Updating Nix packages
 
 This is done via:

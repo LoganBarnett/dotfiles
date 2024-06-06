@@ -1,0 +1,152 @@
+#+title:     Nix
+#+author:    Logan Barnett
+#+email:     logustus@gmail.com
+#+date:      <2024-06-05 Wed>
+#+language:  en
+#+file_tags:
+#+tags:
+
+Here I store my notes regarding Nix as it pertains to this repository.  This
+will include some findings and also projects I'm working on.  I do have separate
+notes for Nix in my private notes repository, and I haven't yet come up with a
+method of consolidating them.
+
+This helps me close the many tabs I have open.  This is very incomplete and I
+have many more tabs to go.  I think I like this as a general "wut I do in Nix"
+scratch pad though.
+
+* projects
+
+** comfyui
+
+*** setting up lithium
+
+This is largely done.
+
+*** TODO finishing the =comfyui= NixOS module [0/7]
+
+I am working on helping finish a pull request started by @fazo96 here:
+https://github.com/NixOS/nixpkgs/pull/268378/
+
+I was able to get things running locally and have been enjoying the
+functionality there for some time, as well as putting it through its paces.  My
+most notable improvement was getting the model stuff more or less sorted out,
+and declarative in a clean way.  There remains some feedback items to address,
+but everything works.
+
+In addition to the work left, there is a lingering question about some similar
+work done by @lboklin on [[https://github.com/nixified-ai/flake/pull/94][nixified-ai#94]].  I've brought in some of the work, but
+many commits have been added to it since then and I haven't taken a look yet.
+
+In addition to feedback items, but as part of a separate pull request, I feel
+the need to also add a wiki or documentation entry showing how one could run
+=comfyui= using Nix.
+
+My tasks that remain for the pull request:
+
++ [ ] Document the justification for =fetchModel=.
++ [ ] Fix issue where the URL changing for =fetchModel= causes a re-fetch.
++ [ ] Do we still need =fetchModel=?
++ [ ] See if we can use =buildPythonApplication= to build a Python application
+      out of =comfyui=.
++ [ ] Check for other feedback items.
++ [ ] Link the feedback items in the pull requests to these tasks.
++ [ ] There's a suggestion to bring in a =pyproject.toml= but I don't know if
+  comfyui has it, but this reviewer has gotten it working regardless:
+  https://github.com/SomeoneSerge/pkgs/blob/f28af3c0d60500697a987794b2b1e64f70cfd3b7/python-packages/by-name/co/comfy-ui/pyproject.toml
+
+** ldap
+
+I want to run LDAP on =nickel=, which is a Raspberry Pi version 4 model B.  I
+have built for the 3 or 4 before with great success (see my Nix Adventures blog
+post).  However it hasn't been building lately due to things moving around.  So
+I have some work via [[raspberry pi builds]] that I need to complete first.
+
+https://nixos.wiki/wiki/OpenLDAP
+
+There is a big deprecated section I copied unwittingly.
+
+** TODO raspberry pi builds via =raspberry-pi-nix=
+
+[[https://github.com/NixOS/nixpkgs/issues/260754][nixpkgs#260754]] led me to using =rasbperry-pi-nix= for building Raspberry Pi
+images.  I would like to tie that in with =nixos-generators= if at all
+reasonable.
+
+Example of =raspberry-pi-nix=:
+https://github.com/tstat/raspberry-pi-nix-example/blob/master/flake.nix
+
+Dated documentation, as is typical:
+https://wiki.nixos.org/wiki/NixOS_on_ARM/Raspberry_Pi
+
+Out of the box, =raspberry-pi-nix= didn't work for me.  I filed
+[[https://github.com/tstat/raspberry-pi-nix/issues/17][raspberry-pi-nix#17]] for the issue I was having with patches to the kernel not
+applying properly.  I have since then done a lot of pinning on my flake inputs,
+and now it's building.  I don't have success yet, but it's still going after
+5-ish hours - I am well past the patching phase.  I've closed out the ticket
+with those notes.
+
+When building an older version, I ran into a "NAR mismatch".  =raspberry-pi-nix=
+is pinned to [[https://github.com/raspberrypi/linux/tree/stable_20231123][raspberrypi/linux#stable_20231123]].  I don't know why this is.  I
+did find @lilyball ran into that same issue with [[https://github.com/tstat/raspberry-pi-nix/issues/2][raspberry-pi-nix#2]] building on
+=aarch64-darwin=.  I'd run into it there too.  She moved her =/nix= partition to
+case-sensitive APFS.  I asked and she said she moved everything to a new
+partition, and replaced the old partition with the new.  Some folks have done
+this via a [[https://github.com/cr/MacCaseSensitiveConversion][Time Machine backup and restore]].  Rightly, @lilyball [[https://github.com/NixOS/nix/issues/2415#issuecomment-1574731526][asked in
+nix#2415]] if we can't just make that the default since APFS is the default
+filesystem for Nix nowadays.  There is no reply yet.
+
+I'd tried less extreme options.  Building via =linux-builder= directly didn't
+work, because =linux-builder= is a slimmed down NixOS, and isn't a fully
+operational NixOS VM.  I can't run =nix build= or =nixos-rebuild switch=.
+
++ The original =tstat= repository: https://github.com/tstat/raspberry-pi-nix
++ My fork: https://github.com/LoganBarnett/raspberry-pi-nix
++ Someone's notes on building for the Raspberry Pi with Nix:
+  https://github.com/lucernae/nixos-pi
++ [[https://app.cachix.org/cache/raspberry-pi-nix#pins][Pins of the kernel on cachix]] - note that it's just one, and it's older than
+  what's on =master=.
++ [[https://nixos.wiki/wiki/Linux_kernel][NixOS wiki on the Linux kernel]] - This shows how to set the kernel.  Notably:
+  #+begin_src nix :results none
+  boot.kernelPackages = pkgs.linuxPackages_latest;
+  #+end_src
++
+** TODO raspberry pi builds via =nixos-generators=
+
+I'm paused on this in favor of [[raspberry pi builds via =raspberry-pi-nix=]].
+
+https://github.com/nix-community/nixos-generators
+
+This is mostly a light wrapper about images in =nixpkgs= that allow directly
+building images.  I don't quite understand why this is needed and one cannot
+build directly via =nixpkgs=.
+
+This is a GitHub [[https://github.com/search?q=path%3A*.nix+formatConfigs&type=code][search of other people using =formatConfigs=]].
+
+[[https://github.com/nix-community/nixos-generators/pull/203][nixos-generators#203]] simplifies the building of Raspberry Pi images by removing
+all of the local configuration and instead leaning on what's in =nixpkgs=, since
+it's being handled there now.  Unfortunately =sd-aarch64= has recently been
+migrated to just be an SD card for =aarch64= in a general sense, and now there's
+=sd-aarch64-raspberrypi= file/image for Raspberry Pi but =nixos-generators= has
+not followed it.  I have been trying to make this work via =formatConfigs= but I
+had some trouble with it.  Eventually I found out that the identifiers like
+=sdImage= are hard coded somewhere.  I don't know why or where, but I feel this
+should be documented in =nixos-generators= and I would like contribute to this.
+
+[[https://github.com/nix-community/nixos-generators/issues/168][nixos-generators#168]] remains as an issue - I noticed both the
+=sd-aarch64-installer= and =sd-aarch64= both refer to the same =nixpkgs= entity
+(file/module?).  Because of this, it seems like there's no difference between
+the two.  Some of the work I was thinking about contributing might relate to
+this.  The findings of the last comment are now outdated because of the move to
+=sd-aarch-raspberrypi= et. al,.
+
+** TODO =percol= doesn't consistently build
+
+Something about the dependencies coming from pypi.
+
+** TODO =agenix-rekey= automatic self-signed TLS CA and leaf certificates
+
+I have some promising progress here for contributing back into =agenix-rekey=.
+
+** TODO help error message for =agenix-rekey= if =agenix= is incorrectly included
+
+I said I would work on this per my two tickets I filed.
