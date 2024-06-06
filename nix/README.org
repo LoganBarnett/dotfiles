@@ -17,6 +17,8 @@ scratch pad though.
 
 * projects
 
+This is all the Nix related projects I have.
+
 ** comfyui
 
 *** setting up lithium
@@ -66,7 +68,8 @@ https://nixos.wiki/wiki/OpenLDAP
 
 There is a big deprecated section I copied unwittingly.
 
-** TODO raspberry pi builds via =raspberry-pi-nix=
+** raspberry pi
+*** TODO raspberry pi builds via =raspberry-pi-nix=
 
 [[https://github.com/NixOS/nixpkgs/issues/260754][nixpkgs#260754]] led me to using =rasbperry-pi-nix= for building Raspberry Pi
 images.  I would like to tie that in with =nixos-generators= if at all
@@ -110,7 +113,7 @@ operational NixOS VM.  I can't run =nix build= or =nixos-rebuild switch=.
   boot.kernelPackages = pkgs.linuxPackages_latest;
   #+end_src
 +
-** TODO raspberry pi builds via =nixos-generators=
+*** TODO raspberry pi builds via =nixos-generators=
 
 I'm paused on this in favor of [[raspberry pi builds via =raspberry-pi-nix=]].
 
@@ -143,10 +146,65 @@ this.  The findings of the last comment are now outdated because of the move to
 
 Something about the dependencies coming from pypi.
 
-** TODO =agenix-rekey= automatic self-signed TLS CA and leaf certificates
+** secrets
+*** TODO =agenix-rekey= automatic self-signed TLS CA and leaf certificates
 
 I have some promising progress here for contributing back into =agenix-rekey=.
+See [[./nixos-modules/secrets.nix]] for details.
 
-** TODO help error message for =agenix-rekey= if =agenix= is incorrectly included
+*** TODO help error message for =agenix-rekey= if =agenix= is incorrectly included
 
 I said I would work on this per my two tickets I filed.
+
+*** TODO look into a =security.pki.extraTrustedCertificates= in =nix-darwin= [0/2]
+**** TODO fix my work machine always prompts for a password
+
+Using the command line invocation to add the trust (see [[./darwin.nix]]), a
+password prompt always comes up.  This doesn't happen on my personal.  What's
+the difference?  More importantly: Can we avoid it?
+**** TODO NixOS module for =nix-darwin=
+
+I need to check if this exists already, but I don't think it does.
+*** external CA
+
+Get a domain for public hosting.  Get a wildcard certificate probably, because I
+just don't want to mess with it.
+
+** mail server
+
+A long way away, but I want this done too.  I was going to use some pre-built
+mail server image (I forgot the name), but now that I'm on the Nix boat, I want
+it in Nix.
+** octoprint
+*** Ender 3 Pro
+
+Convert this to Nix.  Currently uses OctoPrint.
+
+=argon.proton= is the current host.
+
+*** laser engraver
+
+Convert this to Nix.  Currently uses OctoPrint with a plugin.
+
+** wireguard
+
+*** replace old host
+
+It's been down for some time.  I want to spin up a new copy entirely.
+
+*** Japan bridge
+
+This is a Pi I send home to the Japan family to setup a regional bridge between
+this network and theirs.
+** nextcloud
+
+Migrate my existing nextcloud to a Nix based one.  =silicon.proton= is the
+current host.
+
+** gitea
+
+Yes please.  This is =cobalt= I think.
+
+** incremental backups
+
+Oh boy this is going to be its own project probably.
