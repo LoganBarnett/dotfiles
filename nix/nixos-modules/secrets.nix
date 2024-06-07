@@ -1,3 +1,18 @@
+################################################################################
+# Manage secret generators and declare all secrets here.
+#
+# This makes heavy use of agenix-rekey to declare secrets that are encrypted per
+# host by both a master key and host keys.  These secrets do not wind up in the
+# Nix store though they are manage declaratively.
+#
+# There are some challenges when a secret is managed or needed at _build_ time
+# (as opposed to, for example, a service that reads in a secret when it starts).
+# I don't have specific steps for getting around that yet.
+#
+# To decrypt a secret manually, use `rage --decrypt <file>.age`.  You will be
+# prompted for the master password's key (which is the 3rd one I've create, "-3"
+# as a suffix).  I don't know if the .pub file matters or not.
+################################################################################
 {
   flake-inputs,
   host-id,
