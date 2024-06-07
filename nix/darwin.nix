@@ -80,7 +80,7 @@
     # See https://gist.github.com/jmatsushita/5c50ef14b4b96cb24ae5268dab613050
     # for an example of how to make this work across platforms.
     extraOptions = ''
-      # Place any extra options in extraOptions fthat are not supported via
+      # Place any extra options in extraOptions that are not supported via
       # nix.settings.
       # Work around 'warning: ignoring untrusted substituter
       # 'https://yoriksar-gh.cachix.org', you are not a trusted user.' per:
