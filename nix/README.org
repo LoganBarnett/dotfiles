@@ -78,8 +78,8 @@ reasonable.
 Example of =raspberry-pi-nix=:
 https://github.com/tstat/raspberry-pi-nix-example/blob/master/flake.nix
 
-Dated documentation, as is typical:
-https://wiki.nixos.org/wiki/NixOS_on_ARM/Raspberry_Pi
+The documentation on the [[https://wiki.nixos.org/wiki/NixOS_on_ARM/Raspberry_Pi][official Wiki for Raspberry Pi]] is outdated, as is
+typical.  I might want to update it when I get everything working.
 
 Out of the box, =raspberry-pi-nix= didn't work for me.  I filed
 [[https://github.com/tstat/raspberry-pi-nix/issues/17][raspberry-pi-nix#17]] for the issue I was having with patches to the kernel not
@@ -87,6 +87,20 @@ applying properly.  I have since then done a lot of pinning on my flake inputs,
 and now it's building.  I don't have success yet, but it's still going after
 5-ish hours - I am well past the patching phase.  I've closed out the ticket
 with those notes.
+
+From that ticket, @tstat did show me how to do this to look at a derivation's
+output metadata:
+
+#+begin_src shell :results none
+nix derivation show '.#nixosConfigurations.nickel.config.boot.kernelPackages.kernel'
+#+end_src
+
+
+I tried using the Cachix builds, but couldn't get them to work.  It's not
+obvious how to debug it.  The [[https://docs.cachix.org/faq#why-is-nix-not-picking-up-on-any-of-the-pre-built-artifacts][Cachix FAQ]] has some things to try there but
+nothing seemed to work for me.  I couldn't get the [[https://nix.dev/guides/troubleshooting.html#how-to-force-nix-to-re-check-if-something-exists-in-the-binary-cache][negative caching]] to work (as
+in it just seemed to do nothing).  The [[https://discourse.nixos.org/t/nix-rebuilds-instead-of-downloading-from-substituters/11928/8][Cachix folks seem eager to help]] with
+this, but I just haven't pursued that yet.
 
 When building an older version, I ran into a "NAR mismatch".  =raspberry-pi-nix=
 is pinned to [[https://github.com/raspberrypi/linux/tree/stable_20231123][raspberrypi/linux#stable_20231123]].  I don't know why this is.  I
@@ -96,7 +110,10 @@ case-sensitive APFS.  I asked and she said she moved everything to a new
 partition, and replaced the old partition with the new.  Some folks have done
 this via a [[https://github.com/cr/MacCaseSensitiveConversion][Time Machine backup and restore]].  Rightly, @lilyball [[https://github.com/NixOS/nix/issues/2415#issuecomment-1574731526][asked in
 nix#2415]] if we can't just make that the default since APFS is the default
-filesystem for Nix nowadays.  There is no reply yet.
+filesystem for Nix nowadays.  There is no reply yet.  Other possible reasons for
+a NAR mismatch is Flake inputs using =follows= improperly/inconsistently, or the
+lock file being borked per [[https://github.com/NixOS/nix/issues/6061][nix#6061]].  There is some [[https://github.com/NixOS/nix/issues/10649][prior work]] on preventing
+mismatches, but I don't think this is what's affecting me.
 
 I'd tried less extreme options.  Building via =linux-builder= directly didn't
 work, because =linux-builder= is a slimmed down NixOS, and isn't a fully
@@ -112,7 +129,9 @@ operational NixOS VM.  I can't run =nix build= or =nixos-rebuild switch=.
   #+begin_src nix :results none
   boot.kernelPackages = pkgs.linuxPackages_latest;
   #+end_src
-+
+
+My build of the kernel on =lithium= has been running for over 24 hours...
+
 *** TODO raspberry pi builds via =nixos-generators=
 
 I'm paused on this in favor of [[raspberry pi builds via =raspberry-pi-nix=]].
@@ -135,12 +154,47 @@ had some trouble with it.  Eventually I found out that the identifiers like
 =sdImage= are hard coded somewhere.  I don't know why or where, but I feel this
 should be documented in =nixos-generators= and I would like contribute to this.
 
+I think =customFormats= is the old way of doing this.  There is an [[https://discourse.nixos.org/t/using-nixos-generators-in-a-flake-with-customformats/35115/7][example of it
+in Discourse]].
+
 [[https://github.com/nix-community/nixos-generators/issues/168][nixos-generators#168]] remains as an issue - I noticed both the
 =sd-aarch64-installer= and =sd-aarch64= both refer to the same =nixpkgs= entity
 (file/module?).  Because of this, it seems like there's no difference between
 the two.  Some of the work I was thinking about contributing might relate to
 this.  The findings of the last comment are now outdated because of the move to
 =sd-aarch-raspberrypi= et. al,.
+
+One thing I haven't tried in this journey is looking at image compression.  I've
+seen mention (link?) that the image needs to be decompressed - I don't want to
+just =dd= a =zst= file over to the SD card.  There's something that can be done
+to emit a raw image, but I don't know what it is - I think there is a mechanism
+for it.  I believe most of my tests were done against =zst=, which would render
+virtually all of my testing here invalid.
+
+*** TODO raspberry pi builds to =zstd=
+
+I don't know how these builds were working.  One of the above perhaps?  This
+emits an image in =zstd= format.  I've been using =dd= on that file directly,
+like an idiot.  If I decompress that file and then copy it, well, it just works!
+So how did I do that?  And can I use that method and document it down the road?
+
+Some issues I've had:
+
+1. When trying out =nixos-generators=, I now run into an issue where
+   =linux-builder= won't build the image due to =uboot= not building for
+   =armv7l-linux= (the target I should use for the Pi, I guess) - it wants
+   =armv6l-linux=.  But I'm supposed to use =armv7l-linux= I think?
+2. the issue something up with supported build platforms / =qemu= emulation.  I
+   think I've moved past that mostly, onto the specific =uboot= issue above.
+
+I don't know how this image got emitted, what its hardware support looks like,
+and if there's anything additional I will want to do with it.  I suppose if I
+can do a pure =nixpkgs= setup then all the work going into =nixos-generators=
+and =raspberry-pi-nix= must do something _extra_, right?  Or is it just a bunch
+of people working on the same problems but not coordinating with each other?  My
+experience with my own open source work indicates it _might_ be the latter, but
+also me doing things incorrectly is a constant factor in every problem I run
+into.
 
 ** TODO =percol= doesn't consistently build
 
