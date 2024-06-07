@@ -36,3 +36,6 @@ scratch/
 result/
 venv/
 result
+
+# Ignore stuff we might just remove anyways.
+*.test-if-can-be-removed/
