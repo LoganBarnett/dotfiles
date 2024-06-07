@@ -12,6 +12,7 @@
 in {
   # inherit system;
   imports = [
+    ../nixos-modules/nix-builder-provide.nix
     # Pi stuff.
     ({ pkgs, ... }: {
       # nixpkgs.hostPlatform = system;

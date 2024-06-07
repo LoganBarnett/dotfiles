@@ -6,6 +6,10 @@ in
 { flake-inputs }: {
   inherit system;
   modules = [
+    ../nixos-modules/nix-builder-consume.nix
+    (import ../nixos-modules/sd-image-raspberrypi.nix {
+      inherit flake-inputs;
+    })
     (import ../nixos-modules/secrets.nix {
       inherit flake-inputs;
       inherit host-id;

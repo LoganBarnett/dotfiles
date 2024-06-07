@@ -155,7 +155,7 @@ in {
       -q \
       -t ed25519 \
       -N "" \
-      -C ${lib.escapeShellArg "${host-id}:${name}"} \
+      -C ${lib.escapeShellArg "${name}"} \
       -f ${name} \
       <<<y >/dev/null 2>&1;
       cp "${name}.pub" "$(dirname "${file}")"
@@ -192,6 +192,11 @@ in {
       };
     };
     generator.script = "tls-ca-root";
+  };
+
+  age.secrets.builder-key = {
+    generator.script = "ssh-ed25519-with-pub";
+    rekeyFile = ../secrets/builder-key.age;
   };
 
   imports = [
