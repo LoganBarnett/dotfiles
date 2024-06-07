@@ -7,6 +7,9 @@
 
 set -euo pipefail
 
+noop=false
+cleanup_image=false
+
 while true; do
   case "${1:-}" in
     -h | --help)
@@ -18,6 +21,7 @@ Usage: $0 [opts]
   --disk  <dev-path>   Instead of auto detecting the disk, use the one provided.
                        Must be a fully qualified path.  Defaults to the
                        disk-detachable output.  Ex: /dev/disk4
+  --noop               Do not perform any operations but output as if it did.
 
 Deploys a bootable image with NixOS to a removable storage.  This image should
 contain the entirety of the configuration.  The image is built and then the
@@ -34,24 +38,56 @@ EOH
       disk="${2:-}"
       shift 2
       ;;
+    --noop)
+      noop=true
+      shift 1
+      ;;
     * ) break ;;
   esac
 done
+
+if [[ $noop == true ]]; then
+  echo 'WARNING:  This is running with noop!  Nothing will happen!'
+fi
 
 if [ -z ${disk+x} ]; then
   disk="/dev/$(disk-detachable)"
 fi
 
 if [ -z ${image_name+x} ]; then
-  image_name="$(./image-create.sh)"
+  if [[ $noop == false ]]; then
+    image_name="$(./image-create.sh)"
+  fi
 fi
-diskutil unmountDisk $disk
-sudo dd \
-     if="$image_name" \
-     of=$disk \
-     bs=4M \
-     status=progress \
-     conv=fsync
 
+if [[ "$image_name" =~ \.zst$ ]]; then
+  echo "Image is compressed.  Unzipping image..."
+  uncompressed_image_name=$(basename $image_name .zst)
+  if [[ $noop == false ]]; then
+    # I could get this to work, but found it as a recommendation.
+    # tar --use-compress-program=zstd -xvf $image_name
+    unzstd -d $image_name -o $uncompressed_image_name
+  fi
+  image_name=$uncompressed_image_name
+  # These images get pretty big.  We'll need to clean it up afterwards.
+  cleanup_image=true
+  echo "Using '$image_name' going forward."
+fi
+
+if [[ $noop == false ]]; then
+  diskutil unmountDisk $disk
+  sudo dd \
+   if="$image_name" \
+   of=$disk \
+   bs=4M \
+   status=progress \
+   conv=fsync
+fi
 echo "Image has been copied to disk and it remains unmounted.\
   You may remove the disk."
+
+# Decompressed images are copies and so we can safely remove them and still run
+# the script again.
+if [[ $cleanup_image == true ]]; then
+  rm -f $image_name
+fi
