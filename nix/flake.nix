@@ -11,6 +11,7 @@
     # Allows re-keying and bootstrapping of secrets used by agenix.
     agenix-rekey = {
       url = "github:LoganBarnett/agenix-rekey/parameterize-generators";
+      # url = "git+file:///Users/logan/dev/agenix-rekey?ref=parameterize-generators";
       # There is a documented gotcha in the readme if this must change.  Review
       # agenix-rekey's README for details.
       inputs.nixpkgs.follows = "nixpkgs";
@@ -21,6 +22,10 @@
       # Leaving this present breaks things and nix-darwin will not load or
       # otherwise will not be present.  It is not understood why, even though
       # documentation typically recommends this step.
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    nixos-generators = {
+      url = "github:LoganBarnett/nixos-generators?ref=add-sd-image-raspberrypi";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     disko = {
@@ -49,7 +54,9 @@
     };
     # Specify the source of Home Manager and Nixpkgs.
     nixpkgs.url = "github:nixos/nixpkgs/master";
-    nixpkgs-comfyui.url = "github:LoganBarnett/nixpkgs/comfyui-fetch-model-hide-rebase";
+    # nixpkgs.url = "github:nixos/nixpkgs?ref=9a9960b98418f8c385f52de3b09a63f9c561427a";
+    # nixpkgs-comfyui.url = "github:LoganBarnett/nixpkgs/comfyui-fetch-model-hide-rebase";
+    nixpkgs-comfyui.url = "github:nixos/nixpkgs?ref=9a9960b98418f8c385f52de3b09a63f9c561427a";
     # See if we can nix this (get it?!) because
     # https://github.com/NixOS/nixpkgs/pull/296249 is now merged with a hopeful
     # fix.
@@ -58,6 +65,13 @@
     home-manager = {
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
+    };
+    nixpkgs-nickel.url = "github:nixos/nixpkgs?ref=9a9960b98418f8c385f52de3b09a63f9c561427a";
+    raspberry-pi-nix = {
+      url = "github:tstat/raspberry-pi-nix";
+      # url = "github:tstat/raspberry-pi-nix?ref=8fc9cbd3e4a53d365596c9cc4fc3cc07cd447af4";
+      # url = "github:LoganBarnett/raspberry-pi-nix?ref=revert-kernel-to-6-1";
+      inputs.nixpkgs.follows = "nixpkgs-nickel";
     };
   };
 
@@ -70,10 +84,12 @@
     # emacs-overlay,
     nixpkgs,
     nixpkgs-comfyui,
+    nixpkgs-nickel,
     nixos-anywhere,
     nixos-hardware,
-    # nixos-generators,
+    nixos-generators,
     home-manager,
+    raspberry-pi-nix,
     self,
     ...
   }@flake-inputs:
@@ -117,7 +133,7 @@
         });
 
       nixosConfigurations.lithium =
-        nixpkgs-comfyui.lib.nixosSystem (import ./hosts/lithium.nix {
+        nixpkgs.lib.nixosSystem (import ./hosts/lithium.nix {
           disko-proper = disko-comfyui;
           inherit flake-inputs;
         });
@@ -125,11 +141,87 @@
       # essentially.
       packages.x86_64-linux.lithium = self.nixosConfigurations.lithium;
 
-      nixosConfigurations.nickel =
-        nixpkgs-comfyui.lib.nixosSystem (import ./hosts/nickel.nix {
-          disko-proper = disko-comfyui;
-          inherit flake-inputs;
-        });
+      nixosConfigurations.nickel = nixpkgs.lib.nixosSystem {
+        modules = [
+          (import ./hosts/nickel.nix {
+            disko-proper = disko-comfyui;
+            inherit flake-inputs nixpkgs;
+          })
+        ];
+      };
+
+      # nixosConfigurations.nickel = nixpkgs-nickel.lib.nixosSystem {
+      #   modules = [
+      #     raspberry-pi-nix.nixosModules.raspberry-pi (import ./hosts/nickel.nix {
+      #       disko-proper = disko-comfyui;
+      #       nixpkgs = nixpkgs-nickel;
+      #       inherit flake-inputs ;
+      #     })
+      #     # (import ./hosts/nickel.nix {
+      #     #   disko-proper = disko-comfyui;
+      #     #   inherit flake-inputs nixpkgs;
+      #     # })
+      #   ];
+      # };
+
+      # nixosModules.nickel = { ... }: {
+      #   imports = [
+      #     (import ./hosts/nickel.nix {
+      #       disko-proper = disko-comfyui;
+      #       inherit flake-inputs nixpkgs;
+      #     })
+      #   ];
+      #   format = "sd-image-raspberrypi";
+      # };
+      # packages.aarch64-linux.nickel-image = self
+      #   .nixosConfigurations
+      #   .nickel
+      #   .config
+      #   .formats
+      #   .sdImage
+      # ;
+
+      # packages.aarch64-linux.nickel-image = self
+      #   .nixosConfigurations
+      #   .nickel
+      #   .config
+      #   .system
+      #   .build
+      #   .sdImage
+      # ;
+
+      # Thie nixos-generators approach.
+      # I've switched to raspberry-pi-nix but may return here once that is
+      # proved out.
+      # packages.aarch64-linux.nickel = nixos-generators.nixosGenerate {
+      # packages.armv6l-linux.nickel = nixos-generators.nixosGenerate {
+      packages.armv7l-linux.nickel = nixos-generators.nixosGenerate {
+      # nixosConfigurations.nickel = nixos-generators.nixosGenerate {
+        # system = "aarch64-linux";
+        # system = "armv6l-linux";
+        system = "armv7l-linux";
+        # system = "aarch64-unknown-linux-gnu";
+        modules = [
+          # ./nixos-modules/sd-image-rasbperrypi.nix
+          (import ./hosts/nickel.nix {
+            disko-proper = disko-comfyui;
+            nixpkgs = nixpkgs;
+            inherit flake-inputs;
+          })
+        ];
+        format = "sd-image-raspberrypi";
+        # format = "sdImageRaspberryPi";
+        # customFormats = {
+        #   sd-image-raspberrypi = { modulesPath, ... }: {
+        #     imports = [
+        #       "${toString modulesPath}/installer/sd-card/sd-image-raspberrypi.nix"
+        #     ];
+        #     formatAttr = "sd-image-raspberrypi";
+        #   };
+        # };
+        # Is there a point in setting this?  The command line doesn't seem to
+        # see it.
+      };
 
       nixosConfigurations.nucleus-installer = (let
         pkgs = import nixpkgs {

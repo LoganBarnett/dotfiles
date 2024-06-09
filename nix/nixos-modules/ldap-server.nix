@@ -1,4 +1,9 @@
 { host-id }: { config, pkgs, lib, ... }: {
+  age.secrets.ldap-root-pass = {
+    generator.script = "passphrase";
+    # Always specify the rekey file or it goes into a weird directory?
+    rekeyFile = ../secrets/ldap-root-pass.age;
+  };
   services.openldap = {
     enable = true;
     urlList = [
@@ -63,7 +68,8 @@
           olcSuffix = "dc=proton,dc=org";
           /* your admin account, do not use writeText on a production system */
           olcRootDN = "cn=admin,dc=proton,dc=org";
-          olcRootPW.path = pkgs.writeText "olcRootPW" "pass";
+          # Untested.  Should work but no run done yet.
+          olcRootPW.path = config.age.secrets.ldap-root-pass.path;
           olcAccess = [
             /* custom access rules for userPassword attributes */
             ''{0}to attrs=userPassword
@@ -74,6 +80,30 @@
             ''{1}to *
                 by * read''
           ];
+
+          # TODO: This doesn't validate in Nix for some reason.  Need to
+          # investigate.
+          "olcOverlay={2}ppolicy".attrs = {
+            objectClass = [ "olcOverlayConfig" "olcPPolicyConfig" "top" ];
+            olcOverlay = "{2}ppolicy";
+            olcPPolicyHashCleartext = "TRUE";
+          };
+
+          "olcOverlay={3}memberof".attrs = {
+            objectClass = [ "olcOverlayConfig" "olcMemberOf" "top" ];
+            olcOverlay = "{3}memberof";
+            olcMemberOfRefInt = "TRUE";
+            olcMemberOfDangling = "ignore";
+            olcMemberOfGroupOC = "groupOfNames";
+            olcMemberOfMemberAD = "member";
+            olcMemberOfMemberOfAD = "memberOf";
+          };
+
+          "olcOverlay={4}refint".attrs = {
+            objectClass = [ "olcOverlayConfig" "olcRefintConfig" "top" ];
+            olcOverlay = "{4}refint";
+            olcRefintAttribute = "memberof member manager owner";
+          };
         };
       };
     };

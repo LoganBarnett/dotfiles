@@ -8,6 +8,10 @@
 ################################################################################
 { disko-proper, flake-inputs, nixpkgs }: let
   host-id = "nickel";
+  # Isn't it actually one of these though?  It identifies as aarch64-darwin when
+  # running.
+  # system = "armv6l-linux";
+  # system = "armv7l-linux";
   system = "aarch64-linux";
 in {
   # inherit system;
@@ -15,7 +19,17 @@ in {
     ../nixos-modules/nix-builder-provide.nix
     # Pi stuff.
     ({ pkgs, ... }: {
-      # nixpkgs.hostPlatform = system;
+      # networking.hostId is needed by the filesystem stuffs.
+      # An arbitrary ID needed for zfs so a pool isn't accidentally imported on
+      # a wrong machine (I'm not even sure what that means).  See
+      # https://search.nixos.org/options?channel=24.05&show=networking.hostId&from=0&size=50&sort=relevance&type=packages&query=networking.hostId
+      # for docs.
+      # Get from an existing machine using:
+      # head -c 8 /etc/machine-id
+      # Generate for a new machine using:
+      # head -c4 /dev/urandom | od -A none -t x4
+      networking.hostId = "027a9bda";
+      nixpkgs.hostPlatform = system;
       # nixpkgs.hostPlatform = "aarch64-unknown-linux-gnu";
       # Workaround for issue?
       # programs.command-not-found.enable = false;
@@ -38,8 +52,6 @@ in {
       inherit disko-proper flake-inputs host-id;
     })
     (import ../nixos-modules/ldap-server.nix { inherit host-id; })
-    ({ ... }: {
-      nixpkgs.hostPlatform = system;
-    })
+    ../nixos-modules/raspberry-pi-disk.nix
   ];
 }

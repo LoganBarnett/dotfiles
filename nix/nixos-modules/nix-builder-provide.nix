@@ -18,7 +18,7 @@
       # Create a home so we can store SSH key info privately.
       createHome = true;
       openssh.authorizedKeys.keys = [
-        ../secrets/builder-key.pub
+        (builtins.readFile ../secrets/builder-key.pub)
       ];
     };
   };

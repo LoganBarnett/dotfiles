@@ -32,23 +32,26 @@
 }: let
   linux-builder-pkgs = import nixpkgs {
     system = "aarch64-linux";
-    crossSystem = {
-      # config = "x86_64-linux";
-      config = "x86_64-unknown-linux-gnu";
-      # config = {
-      #   hostPlatform = "aarch64-unknown-linux-gnu";
-      #   buildPlatform = "x86_64-unknown-linux-gnu";
-      #   targetPlatform = "x86_64-unknown-linux-gnu";
-      # };
-      hostPlatform = "aarch64-unknown-linux-gnu";
-      buildPlatform = "x86_64-unknown-linux-gnu";
-      targetPlatform = "x86_64-unknown-linux-gnu";
-      # stdenv = linux-builder-pkgs.stdenv.override {
-      #   hostPlatform = "aarch64-unknown-linux-gnu";
-      #   buildPlatform = "x86_64-unknown-linux-gnu";
-      #   targetPlatform = "x86_64-unknown-linux-gnu";
-      # };
-    };
+    # This seems to cause the build to be x86_64 which I don't think we want, or
+    # at least don't want as this primary packages for this system.  It needs to
+    # be broken out into a separate import nixpkgs expression.
+    # crossSystem = {
+    #   # config = "x86_64-linux";
+    #   config = "x86_64-unknown-linux-gnu";
+    #   # config = {
+    #   #   hostPlatform = "aarch64-unknown-linux-gnu";
+    #   #   buildPlatform = "x86_64-unknown-linux-gnu";
+    #   #   targetPlatform = "x86_64-unknown-linux-gnu";
+    #   # };
+    #   hostPlatform = "aarch64-unknown-linux-gnu";
+    #   buildPlatform = "x86_64-unknown-linux-gnu";
+    #   targetPlatform = "x86_64-unknown-linux-gnu";
+    #   # stdenv = linux-builder-pkgs.stdenv.override {
+    #   #   hostPlatform = "aarch64-unknown-linux-gnu";
+    #   #   buildPlatform = "x86_64-unknown-linux-gnu";
+    #   #   targetPlatform = "x86_64-unknown-linux-gnu";
+    #   # };
+    # };
 
     # hostPlatform = "aarch64-linux";
     # buildPlatform = "x86_64-linux";
@@ -94,8 +97,26 @@
   #   };
   # };
 in {
-  boot.binfmt.emulatedSystems = [ "i686-linux" "x86_64-linux" ];
+  boot.binfmt.emulatedSystems = [
+    "i686-linux"
+    "x86_64-linux"
+    # To get the Raspberry Pi building from linux-builder.  Only two of them
+    # work here.
+    # "armv7a-darwin"
+    # "armv5tel-linux"
+    "armv6l-linux"
+    # "armv7a-linux"
+    "armv7l-linux"
+    # "armv6l-netbsd"
+    # "armv7a-netbsd"
+    # "armv7l-netbsd"
+    # "arm-none"
+    # "armv6l-none"
+  ];
   environment.systemPackages = [
+    # Allow us to do a "bootstrapped" remote deploy - see bin/remote-deploy for
+    # details on why this is needed.
+    linux-builder-pkgs.git
     # Gives us a utility for inspecting binary meta-data.
     linux-builder-pkgs.file
     linux-builder-pkgs.gdb
@@ -106,10 +127,12 @@ in {
     # This provides us readelf, which is useful for getting extended information
     # from ELF binaries.
     linux-builder-pkgs.binutils-unwrapped
+    # Ensure I can remote-deploy to this host.
+    linux-builder-pkgs.rsync
     # cross-architecture-test-pkgs.hello
   ];
   nixpkgs = {
-    buildPlatform = { system = "aarch64-linux"; };
+    # buildPlatform = { system = "aarch64-linux"; };
   };
   # Shows us what package an executable resides in when attempting to run an
   # missing command.  This is enabled by default but doesn't seem to work.  See
@@ -123,6 +146,7 @@ in {
     enable = true;
     enableBashIntegration = true;
   };
+  security.sudo.wheelNeedsPassword = false;
   users.users = {
     logan = {
       # TODO: You can set an initial password for your user.
@@ -141,7 +165,22 @@ in {
     };
   };
   nix.settings = {
-    extra-platforms = [ "aarch64-linux" "i686-linux" "x86_64-linux" ];
+    extra-platforms = [
+      "this-is-darwin-linux-builders-list"
+      "aarch64-unknown-linux-gnu"
+      "aarch64-linux"
+      "i686-linux"
+      "x86_64-linux"
+      "armv5tel-linux"
+      "armv6l-linux"
+      "armv7a-linux"
+      "armv7l-linux"
+      "armv6l-netbsd"
+      "armv7a-netbsd"
+      "armv7l-netbsd"
+      "arm-none"
+      "armv6l-none"
+    ];
     # extra-platforms = [ "aarch64-linux" ];
   };
 }

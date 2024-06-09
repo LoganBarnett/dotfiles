@@ -35,7 +35,8 @@
     # A union of ping and traceroute - ping all hosts along a route.
     pkgs.mtr
     # Use Unix pipes and direct them to a human program.
-    pkgs.percol
+    # Sometimes pypi just fails to look up the requisite packages.
+    # pkgs.percol
     # Show progress via a pipe, such as with dd.
     pkgs.pv
     # An n-curses based interface to du.  Shows disk usage in a way that makes
