@@ -59,12 +59,136 @@ My tasks that remain for the pull request:
 
 ** ldap
 
+https://nixos.wiki/wiki/OpenLDAP
+
+*** [2024-06-08 Sat]
+
+I have =nickel= building.  I was dumbly copying over the =.zst= file which can
+never boot because it's a compressed archive.  After decompressing it, I was
+able to boot =nickel= just fine.  Questions remain on how I got it to that
+state, and what purpose exists for all the other fancy stuff I have found
+regarding Raspberry Pi and Nix.
+
+My knowledge about LDAP is weak.  I've had trouble setting it up, and I've been
+copying examples from the NixOS Wiki in hopes of making things work.  So far the
+snippets are not working because the =options= validation is failing - it's not
+even getting to LDAP yet.  This is while declaring the password policy for LDAP.
+The current error is:
+
+#+begin_example
+       error: A definition for option `services.openldap.settings.children."olcDatabase={1}mdb".attrs."olcOverlay={2}ppolicy"' is not of type `(LDAP value - either a string, or an attrset containing
+       `path` or `base64` for included
+       values or base-64 encoded values respectively.
+       ) or list of (LDAP value - either a string, or an attrset containing
+       `path` or `base64` for included
+       values or base-64 encoded values respectively.
+       )'. Definition values:
+       - In `/nix/store/v24qicc8f4h1xafv4qzbn49crg6h2nvb-source/flake.nix':
+           {
+             attrs = {
+               objectClass = [
+                 "olcOverlayConfig"
+                 "olcPPolicyConfig"
+           ...
+#+end_example
+
+And the code for that is:
+
+#+begin_src nix :results none
+          "olcOverlay={2}ppolicy".attrs = {
+            objectClass = [ "olcOverlayConfig" "olcPPolicyConfig" "top" ];
+            olcOverlay = "{2}ppolicy";
+            olcPPolicyHashCleartext = "TRUE";
+          };
+#+end_src
+
+Put in greater context:
+
+#+begin_src nix :results none
+  services.openldap = {
+    enable = true;
+    urlList = [
+      "ldaps:///"
+    ];
+    declarativeContents = {
+      "dc=proton,dc=org" = ''
+      ...
+          '';
+    };
+    settings = {
+      attrs = {
+        # ...
+      };
+      children = {
+        "cn=schema".includes = [
+          "${pkgs.openldap}/etc/schema/core.ldif"
+          "${pkgs.openldap}/etc/schema/cosine.ldif"
+          "${pkgs.openldap}/etc/schema/inetorgperson.ldif"
+        ];
+        "olcDatabase={1}mdb".attrs = {
+          objectClass = [ "olcDatabaseConfig" "olcMdbConfig" ];
+          olcDatabase = "{1}mdb";
+          olcDbDirectory = "/var/lib/openldap/data";
+          olcSuffix = "dc=proton,dc=org";
+          /* your admin account, do not use writeText on a production system */
+          olcRootDN = "cn=admin,dc=proton,dc=org";
+          # Untested.  Should work but no run done yet.
+          olcRootPW.path = config.age.secrets.ldap-root-pass.path;
+          olcAccess = [
+            /* custom access rules for userPassword attributes */
+            ''{0}to attrs=userPassword
+                by self write
+                by anonymous auth
+                by * none''
+            /* allow read on anything else */
+            ''{1}to *
+                by * read''
+          ];
+
+          # TODO: This doesn't validate in Nix for some reason.  Need to
+          # investigate.
+          "olcOverlay={2}ppolicy".attrs = {
+            objectClass = [ "olcOverlayConfig" "olcPPolicyConfig" "top" ];
+            olcOverlay = "{2}ppolicy";
+            olcPPolicyHashCleartext = "TRUE";
+          };
+
+          "olcOverlay={3}memberof".attrs = {
+            objectClass = [ "olcOverlayConfig" "olcMemberOf" "top" ];
+            olcOverlay = "{3}memberof";
+            olcMemberOfRefInt = "TRUE";
+            olcMemberOfDangling = "ignore";
+            olcMemberOfGroupOC = "groupOfNames";
+            olcMemberOfMemberAD = "member";
+            olcMemberOfMemberOfAD = "memberOf";
+          };
+
+          "olcOverlay={4}refint".attrs = {
+            objectClass = [ "olcOverlayConfig" "olcRefintConfig" "top" ];
+            olcOverlay = "{4}refint";
+            olcRefintAttribute = "memberof member manager owner";
+          };
+        };
+      };
+    };
+  };
+#+end_src
+
+This makes me wonder if this stuff is actually recursively nested even though
+the =settings= declaration in =nixpkgs=' =openldap.nix= suggests otherwise.
+
+I have found no tickets in =nixpkgs= yet.
+
+Upon further reading for the OpenLDAP Nix Wiki page, I can see this is not
+placed correctly.  The =ppolicy= and other sections must be under
+=olcDatabase={1}mdb=.  I have applied the edits but cannot test it yet.
+
+*** [2024-06-05 Wed]
+
 I want to run LDAP on =nickel=, which is a Raspberry Pi version 4 model B.  I
 have built for the 3 or 4 before with great success (see my Nix Adventures blog
 post).  However it hasn't been building lately due to things moving around.  So
 I have some work via [[raspberry pi builds]] that I need to complete first.
-
-https://nixos.wiki/wiki/OpenLDAP
 
 There is a big deprecated section I copied unwittingly.
 

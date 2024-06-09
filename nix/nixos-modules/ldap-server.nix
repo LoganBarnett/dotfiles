@@ -81,28 +81,33 @@
                 by * read''
           ];
 
-          # TODO: This doesn't validate in Nix for some reason.  Need to
-          # investigate.
-          "olcOverlay={2}ppolicy".attrs = {
-            objectClass = [ "olcOverlayConfig" "olcPPolicyConfig" "top" ];
-            olcOverlay = "{2}ppolicy";
-            olcPPolicyHashCleartext = "TRUE";
-          };
+          # TODO: Test this now that these are nested under children for
+          # `olcDatabase={1}mdb`.  I just now followed that from the wiki page,
+          # where just before I had incorrectly copied it.
+          children = {
 
-          "olcOverlay={3}memberof".attrs = {
-            objectClass = [ "olcOverlayConfig" "olcMemberOf" "top" ];
-            olcOverlay = "{3}memberof";
-            olcMemberOfRefInt = "TRUE";
-            olcMemberOfDangling = "ignore";
-            olcMemberOfGroupOC = "groupOfNames";
-            olcMemberOfMemberAD = "member";
-            olcMemberOfMemberOfAD = "memberOf";
-          };
+            "olcOverlay={2}ppolicy".attrs = {
+              objectClass = [ "olcOverlayConfig" "olcPPolicyConfig" "top" ];
+              olcOverlay = "{2}ppolicy";
+              olcPPolicyHashCleartext = "TRUE";
+            };
 
-          "olcOverlay={4}refint".attrs = {
-            objectClass = [ "olcOverlayConfig" "olcRefintConfig" "top" ];
-            olcOverlay = "{4}refint";
-            olcRefintAttribute = "memberof member manager owner";
+            "olcOverlay={3}memberof".attrs = {
+              objectClass = [ "olcOverlayConfig" "olcMemberOf" "top" ];
+              olcOverlay = "{3}memberof";
+              olcMemberOfRefInt = "TRUE";
+              olcMemberOfDangling = "ignore";
+              olcMemberOfGroupOC = "groupOfNames";
+              olcMemberOfMemberAD = "member";
+              olcMemberOfMemberOfAD = "memberOf";
+            };
+
+            "olcOverlay={4}refint".attrs = {
+              objectClass = [ "olcOverlayConfig" "olcRefintConfig" "top" ];
+              olcOverlay = "{4}refint";
+              olcRefintAttribute = "memberof member manager owner";
+            };
+
           };
         };
       };
