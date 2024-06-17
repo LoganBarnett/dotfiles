@@ -221,9 +221,6 @@ grepp() {
 # TODO: Make note of this handy command: /usr/libexec/java_home
 # But we can't use it anymore because Nix manages all of this now.
 
-# thefuck - `fuck` after a failed command and it will try to do the right thing.
-eval $(thefuck --alias)
-
 # When we're running ansi-term from emacs, we don't want the evil-mode bindings
 # and zsh's vim bindings stumbling over each other. See
 # https://github.com/syl20bnr/spacemacs/issues/7140#issuecomment-252036519 for

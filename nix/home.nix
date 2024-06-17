@@ -49,6 +49,8 @@ in
     enableZshIntegration = true;
   };
   programs.tmux = import ./tmux.nix;
+  # Correct the previous console command with `fuck`.
+  programs.thefuck.enable = true;
   programs.zsh = import ./zsh.nix { pkgs = pkgs; };
 
   # This is the magic that makes fonts get installed to ~/Library/Fonts on
