@@ -6,6 +6,10 @@
 # @fazo96.  As such it will be using my fork of fazo96's fork.
 ################################################################################
 { host-id, port }: { config, lib, pkgs, ... }: let
+  # Set this to true to disable anything that needs build time secrets, so
+  # agenix-rekey can actually lay down those files.  Run a switch to execute.
+  # Then set it back to true and run a switch again.
+  key-catch-22 = false;
 in {
   # We don't actually need this file, but it's kept for reference.
   age.secrets.civitai-token = {
@@ -101,7 +105,10 @@ in {
     # package = pkgs.comfyui-cpu;
     # package = pkgs.callPackage ../hacks/comfyui/package.nix {};
     package = pkgs.comfyui-cuda;
-    models = let
+    models = if key-catch-22 then
+      {}
+    else
+    let
       bearer = builtins.readFile config.age.secrets.civitai-token.path;
     in {
       checkpoints = {
