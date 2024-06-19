@@ -62,7 +62,21 @@ in {
         ] ++ prev-pkg.cmakeFlags;
       });
       pythonPackagesExtensions = [(py-final: py-prev: {
-        torch = py-final.torch-bin;
+        # Some of this is required to use torch-bin, but I couldn't get it to
+        # work.  That said, I didn't build it while I had a _working_ Cuda
+        # configuration - the library and kernel module didn't match.  I have
+        # only recently learned this can cause cryptic build issues.  Simply
+        # switching out `torch` with `torch-bin` (and the `pytorch` alias)
+        # doesn't seem to be enough, as it will complain about a lack of
+        # `cudaCapabilities` attribute later.  I don't know where this attribute
+        # comes from and haven't had luck finding it.
+        # transformers = py-prev.transformers.override { torch = py-final.pytorch-bin; };
+        # safetensors = py-prev.safetensors.override { torch = py-final.pytorch-bin; };
+        # accelerate = py-prev.accelerate.override { torch = py-final.pytorch-bin; };
+        # openai-triton = py-final.openai-triton-cuda;
+        # torch = py-final.torch-bin;
+        # pytorch = py-final.pytorch-bin;
+        # torchaudio = py-final.torchaudio-bin;
       })];
     })
   ];
