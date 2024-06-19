@@ -56,6 +56,512 @@ My tasks that remain for the pull request:
 + [ ] There's a suggestion to bring in a =pyproject.toml= but I don't know if
   comfyui has it, but this reviewer has gotten it working regardless:
   https://github.com/SomeoneSerge/pkgs/blob/f28af3c0d60500697a987794b2b1e64f70cfd3b7/python-packages/by-name/co/comfy-ui/pyproject.toml
+**** TODO Fix pytorch-bin overrides
+
+I have this error when using this override in my overlays:
+
+#+begin_src nix :results none
+      pythonPackagesExtensions = [(py-final: py-prev: {
+        torch = py-final.pytorch-bin;
+      })];
+#+end_src
+
+The error:
+
+#+begin_example
+trace: warning: cudaPackages.autoAddDriverRunpath is deprecated, use pkgs.autoAddDriverRunpath instead
+error:
+       … while calling anonymous lambda
+
+         at /nix/store/58g9mmyj8ja8i0cp4s4j367h1kgjdabw-source/lib/attrsets.nix:1571:24:
+
+         1570|     let f = attrPath:
+         1571|       zipAttrsWith (n: values:
+             |                        ^
+         1572|         let here = attrPath ++ [n]; in
+
+       … while calling anonymous lambda
+
+         at /nix/store/58g9mmyj8ja8i0cp4s4j367h1kgjdabw-source/lib/attrsets.nix:1205:18:
+
+         1204|         mapAttrs
+         1205|           (name: value:
+             |                  ^
+         1206|             if isAttrs value && cond value
+
+       … from call site
+
+         at /nix/store/58g9mmyj8ja8i0cp4s4j367h1kgjdabw-source/lib/attrsets.nix:1208:18:
+
+         1207|             then recurse (path ++ [ name ]) value
+         1208|             else f (path ++ [ name ]) value);
+             |                  ^
+         1209|     in
+
+       … while calling anonymous lambda
+
+         at /nix/store/58g9mmyj8ja8i0cp4s4j367h1kgjdabw-source/lib/modules.nix:242:72:
+
+          241|           # For definitions that have an associated option
+          242|           declaredConfig = mapAttrsRecursiveCond (v: ! isOption v) (_: v: v.value) options;
+             |                                                                        ^
+          243|
+
+       … while evaluating the option `system.build.toplevel':
+
+       … while calling anonymous lambda
+
+         at /nix/store/58g9mmyj8ja8i0cp4s4j367h1kgjdabw-source/lib/modules.nix:824:28:
+
+          823|         # Process mkMerge and mkIf properties.
+          824|         defs' = concatMap (m:
+             |                            ^
+          825|           map (value: { inherit (m) file; inherit value; }) (builtins.addErrorContext "while evaluating definitions from `${m.file}':" (dischargeProperties m.value))
+
+       … while evaluating definitions from `/nix/store/58g9mmyj8ja8i0cp4s4j367h1kgjdabw-source/nixos/modules/system/activation/top-level.nix':
+
+       … from call site
+
+         at /nix/store/58g9mmyj8ja8i0cp4s4j367h1kgjdabw-source/lib/modules.nix:825:137:
+
+          824|         defs' = concatMap (m:
+          825|           map (value: { inherit (m) file; inherit value; }) (builtins.addErrorContext "while evaluating definitions from `${m.file}':" (dischargeProperties m.value))
+             |                                                                                                                                         ^
+          826|         ) defs;
+
+       … while calling 'dischargeProperties'
+
+         at /nix/store/58g9mmyj8ja8i0cp4s4j367h1kgjdabw-source/lib/modules.nix:896:25:
+
+          895|   */
+          896|   dischargeProperties = def:
+             |                         ^
+          897|     if def._type or "" == "merge" then
+
+       … from call site
+
+         at /nix/store/58g9mmyj8ja8i0cp4s4j367h1kgjdabw-source/nixos/modules/system/activation/top-level.nix:71:12:
+
+           70|   # Replace runtime dependencies
+           71|   system = foldr ({ oldDependency, newDependency }: drv:
+             |            ^
+           72|       pkgs.replaceDependency { inherit oldDependency newDependency drv; }
+
+       … while calling 'foldr'
+
+         at /nix/store/58g9mmyj8ja8i0cp4s4j367h1kgjdabw-source/lib/lists.nix:121:20:
+
+          120|   */
+          121|   foldr = op: nul: list:
+             |                    ^
+          122|     let
+
+       … from call site
+
+         at /nix/store/58g9mmyj8ja8i0cp4s4j367h1kgjdabw-source/lib/lists.nix:128:8:
+
+          127|         else op (elemAt list n) (fold' (n + 1));
+          128|     in fold' 0;
+             |        ^
+          129|
+
+       … while calling 'fold''
+
+         at /nix/store/58g9mmyj8ja8i0cp4s4j367h1kgjdabw-source/lib/lists.nix:124:15:
+
+          123|       len = length list;
+          124|       fold' = n:
+             |               ^
+          125|         if n == len
+
+       … from call site
+
+         at /nix/store/58g9mmyj8ja8i0cp4s4j367h1kgjdabw-source/nixos/modules/system/activation/top-level.nix:68:10:
+
+           67|     then throw "\nFailed assertions:\n${concatStringsSep "\n" (map (x: "- ${x}") failedAssertions)}"
+           68|     else showWarnings config.warnings baseSystem;
+             |          ^
+           69|
+
+       … while calling 'showWarnings'
+
+         at /nix/store/58g9mmyj8ja8i0cp4s4j367h1kgjdabw-source/lib/trivial.nix:867:28:
+
+          866|
+          867|   showWarnings = warnings: res: lib.foldr (w: x: warn w x) res warnings;
+             |                            ^
+          868|
+
+       … from call site
+
+         at /nix/store/58g9mmyj8ja8i0cp4s4j367h1kgjdabw-source/lib/trivial.nix:867:33:
+
+          866|
+          867|   showWarnings = warnings: res: lib.foldr (w: x: warn w x) res warnings;
+             |                                 ^
+          868|
+
+       … while calling 'foldr'
+
+         at /nix/store/58g9mmyj8ja8i0cp4s4j367h1kgjdabw-source/lib/lists.nix:121:20:
+
+          120|   */
+          121|   foldr = op: nul: list:
+             |                    ^
+          122|     let
+
+       … from call site
+
+         at /nix/store/58g9mmyj8ja8i0cp4s4j367h1kgjdabw-source/lib/lists.nix:128:8:
+
+          127|         else op (elemAt list n) (fold' (n + 1));
+          128|     in fold' 0;
+             |        ^
+          129|
+
+       … while calling 'fold''
+
+         at /nix/store/58g9mmyj8ja8i0cp4s4j367h1kgjdabw-source/lib/lists.nix:124:15:
+
+          123|       len = length list;
+          124|       fold' = n:
+             |               ^
+          125|         if n == len
+
+       … while calling anonymous lambda
+
+         at /nix/store/58g9mmyj8ja8i0cp4s4j367h1kgjdabw-source/lib/attrsets.nix:1205:18:
+
+         1204|         mapAttrs
+         1205|           (name: value:
+             |                  ^
+         1206|             if isAttrs value && cond value
+
+       … from call site
+
+         at /nix/store/58g9mmyj8ja8i0cp4s4j367h1kgjdabw-source/lib/attrsets.nix:1208:18:
+
+         1207|             then recurse (path ++ [ name ]) value
+         1208|             else f (path ++ [ name ]) value);
+             |                  ^
+         1209|     in
+
+       … while calling anonymous lambda
+
+         at /nix/store/58g9mmyj8ja8i0cp4s4j367h1kgjdabw-source/lib/modules.nix:242:72:
+
+          241|           # For definitions that have an associated option
+          242|           declaredConfig = mapAttrsRecursiveCond (v: ! isOption v) (_: v: v.value) options;
+             |                                                                        ^
+          243|
+
+       … while evaluating the option `warnings':
+
+       … while calling anonymous lambda
+
+         at /nix/store/58g9mmyj8ja8i0cp4s4j367h1kgjdabw-source/lib/modules.nix:824:28:
+
+          823|         # Process mkMerge and mkIf properties.
+          824|         defs' = concatMap (m:
+             |                            ^
+          825|           map (value: { inherit (m) file; inherit value; }) (builtins.addErrorContext "while evaluating definitions from `${m.file}':" (dischargeProperties m.value))
+
+       … while evaluating definitions from `/nix/store/58g9mmyj8ja8i0cp4s4j367h1kgjdabw-source/nixos/modules/system/boot/systemd.nix':
+
+       … from call site
+
+         at /nix/store/58g9mmyj8ja8i0cp4s4j367h1kgjdabw-source/lib/modules.nix:825:137:
+
+          824|         defs' = concatMap (m:
+          825|           map (value: { inherit (m) file; inherit value; }) (builtins.addErrorContext "while evaluating definitions from `${m.file}':" (dischargeProperties m.value))
+             |                                                                                                                                         ^
+          826|         ) defs;
+
+       … while calling 'dischargeProperties'
+
+         at /nix/store/58g9mmyj8ja8i0cp4s4j367h1kgjdabw-source/lib/modules.nix:896:25:
+
+          895|   */
+          896|   dischargeProperties = def:
+             |                         ^
+          897|     if def._type or "" == "merge" then
+
+       … while calling anonymous lambda
+
+         at /nix/store/58g9mmyj8ja8i0cp4s4j367h1kgjdabw-source/lib/attrsets.nix:1096:10:
+
+         1095|     attrs:
+         1096|     map (name: f name attrs.${name}) (attrNames attrs);
+             |          ^
+         1097|
+
+       … from call site
+
+         at /nix/store/58g9mmyj8ja8i0cp4s4j367h1kgjdabw-source/lib/attrsets.nix:1096:16:
+
+         1095|     attrs:
+         1096|     map (name: f name attrs.${name}) (attrNames attrs);
+             |                ^
+         1097|
+
+       … while calling anonymous lambda
+
+         at /nix/store/58g9mmyj8ja8i0cp4s4j367h1kgjdabw-source/nixos/modules/system/boot/systemd.nix:443:16:
+
+          442|       mapAttrsToList
+          443|         (name: service:
+             |                ^
+          444|           let
+
+       … from call site
+
+         at /nix/store/58g9mmyj8ja8i0cp4s4j367h1kgjdabw-source/nixos/modules/system/boot/systemd.nix:450:16:
+
+          449|             concatLists [
+          450|               (optional (type == "oneshot" && (restart == "always" || restart == "on-success"))
+             |                ^
+          451|                 "Service '${name}.service' with 'Type=oneshot' cannot have 'Restart=always' or 'Restart=on-success'"
+
+       … while calling 'optional'
+
+         at /nix/store/58g9mmyj8ja8i0cp4s4j367h1kgjdabw-source/lib/lists.nix:784:20:
+
+          783|   */
+          784|   optional = cond: elem: if cond then [elem] else [];
+             |                    ^
+          785|
+
+       … while calling anonymous lambda
+
+         at /nix/store/58g9mmyj8ja8i0cp4s4j367h1kgjdabw-source/lib/attrsets.nix:1205:18:
+
+         1204|         mapAttrs
+         1205|           (name: value:
+             |                  ^
+         1206|             if isAttrs value && cond value
+
+       … from call site
+
+         at /nix/store/58g9mmyj8ja8i0cp4s4j367h1kgjdabw-source/lib/attrsets.nix:1208:18:
+
+         1207|             then recurse (path ++ [ name ]) value
+         1208|             else f (path ++ [ name ]) value);
+             |                  ^
+         1209|     in
+
+       … while calling anonymous lambda
+
+         at /nix/store/58g9mmyj8ja8i0cp4s4j367h1kgjdabw-source/lib/modules.nix:242:72:
+
+          241|           # For definitions that have an associated option
+          242|           declaredConfig = mapAttrsRecursiveCond (v: ! isOption v) (_: v: v.value) options;
+             |                                                                        ^
+          243|
+
+       … while evaluating the option `systemd.services.comfyui.serviceConfig':
+
+       … while calling anonymous lambda
+
+         at /nix/store/58g9mmyj8ja8i0cp4s4j367h1kgjdabw-source/lib/modules.nix:824:28:
+
+          823|         # Process mkMerge and mkIf properties.
+          824|         defs' = concatMap (m:
+             |                            ^
+          825|           map (value: { inherit (m) file; inherit value; }) (builtins.addErrorContext "while evaluating definitions from `${m.file}':" (dischargeProperties m.value))
+
+       … while evaluating definitions from `/nix/store/58g9mmyj8ja8i0cp4s4j367h1kgjdabw-source/nixos/modules/system/boot/systemd.nix':
+
+       … from call site
+
+         at /nix/store/58g9mmyj8ja8i0cp4s4j367h1kgjdabw-source/lib/modules.nix:825:137:
+
+          824|         defs' = concatMap (m:
+          825|           map (value: { inherit (m) file; inherit value; }) (builtins.addErrorContext "while evaluating definitions from `${m.file}':" (dischargeProperties m.value))
+             |                                                                                                                                         ^
+          826|         ) defs;
+
+       … while calling 'dischargeProperties'
+
+         at /nix/store/58g9mmyj8ja8i0cp4s4j367h1kgjdabw-source/lib/modules.nix:896:25:
+
+          895|   */
+          896|   dischargeProperties = def:
+             |                         ^
+          897|     if def._type or "" == "merge" then
+
+       … while calling anonymous lambda
+
+         at /nix/store/58g9mmyj8ja8i0cp4s4j367h1kgjdabw-source/lib/attrsets.nix:1205:18:
+
+         1204|         mapAttrs
+         1205|           (name: value:
+             |                  ^
+         1206|             if isAttrs value && cond value
+
+       … from call site
+
+         at /nix/store/58g9mmyj8ja8i0cp4s4j367h1kgjdabw-source/lib/attrsets.nix:1208:18:
+
+         1207|             then recurse (path ++ [ name ]) value
+         1208|             else f (path ++ [ name ]) value);
+             |                  ^
+         1209|     in
+
+       … while calling anonymous lambda
+
+         at /nix/store/58g9mmyj8ja8i0cp4s4j367h1kgjdabw-source/lib/modules.nix:242:72:
+
+          241|           # For definitions that have an associated option
+          242|           declaredConfig = mapAttrsRecursiveCond (v: ! isOption v) (_: v: v.value) options;
+             |                                                                        ^
+          243|
+
+       … while evaluating the option `systemd.services.comfyui.preStart':
+
+       … while calling anonymous lambda
+
+         at /nix/store/58g9mmyj8ja8i0cp4s4j367h1kgjdabw-source/lib/modules.nix:824:28:
+
+          823|         # Process mkMerge and mkIf properties.
+          824|         defs' = concatMap (m:
+             |                            ^
+          825|           map (value: { inherit (m) file; inherit value; }) (builtins.addErrorContext "while evaluating definitions from `${m.file}':" (dischargeProperties m.value))
+
+       … while evaluating definitions from `/nix/store/58g9mmyj8ja8i0cp4s4j367h1kgjdabw-source/nixos/modules/services/web-apps/comfyui.nix':
+
+       … from call site
+
+         at /nix/store/58g9mmyj8ja8i0cp4s4j367h1kgjdabw-source/lib/modules.nix:825:137:
+
+          824|         defs' = concatMap (m:
+          825|           map (value: { inherit (m) file; inherit value; }) (builtins.addErrorContext "while evaluating definitions from `${m.file}':" (dischargeProperties m.value))
+             |                                                                                                                                         ^
+          826|         ) defs;
+
+       … while calling 'dischargeProperties'
+
+         at /nix/store/58g9mmyj8ja8i0cp4s4j367h1kgjdabw-source/lib/modules.nix:896:25:
+
+          895|   */
+          896|   dischargeProperties = def:
+             |                         ^
+          897|     if def._type or "" == "merge" then
+
+       … while evaluating derivation 'comfyui-unstable-2024-04-15'
+         whose name attribute is located at /nix/store/58g9mmyj8ja8i0cp4s4j367h1kgjdabw-source/pkgs/stdenv/generic/make-derivation.nix:331:7
+
+       … while evaluating attribute 'installPhase' of derivation 'comfyui-unstable-2024-04-15'
+
+         at /nix/store/58g9mmyj8ja8i0cp4s4j367h1kgjdabw-source/pkgs/by-name/co/comfyui/package.nix:110:3:
+
+          109|
+          110|   installPhase = ''
+             |   ^
+          111|     runHook preInstall
+
+       … from call site
+
+         at /nix/store/58g9mmyj8ja8i0cp4s4j367h1kgjdabw-source/pkgs/by-name/co/comfyui/package.nix:86:16:
+
+           85|
+           86|   executable = writers.writeDashBin "comfyui" ''
+             |                ^
+           87|     cd $out && \
+
+       … while calling 'writeDash'
+
+         at /nix/store/58g9mmyj8ja8i0cp4s4j367h1kgjdabw-source/pkgs/build-support/writers/scripts.nix:233:21:
+
+          232|   #     ''
+          233|   writeDash = name: argsOrScript:
+             |                     ^
+          234|     if lib.isAttrs argsOrScript && ! lib.isDerivation argsOrScript
+
+       … while evaluating derivation 'python3-3.11.9-env'
+         whose name attribute is located at /nix/store/58g9mmyj8ja8i0cp4s4j367h1kgjdabw-source/pkgs/stdenv/generic/make-derivation.nix:331:7
+
+       … while evaluating attribute 'passAsFile' of derivation 'python3-3.11.9-env'
+
+         at /nix/store/58g9mmyj8ja8i0cp4s4j367h1kgjdabw-source/pkgs/build-support/trivial-builders/default.nix:69:9:
+
+           68|         inherit buildCommand name;
+           69|         passAsFile = [ "buildCommand" ]
+             |         ^
+           70|           ++ (derivationArgs.passAsFile or [ ]);
+
+       … from call site
+
+         at /nix/store/58g9mmyj8ja8i0cp4s4j367h1kgjdabw-source/pkgs/development/interpreters/python/wrapper.nix:20:13:
+
+           19|   env = let
+           20|     paths = requiredPythonModules (extraLibs ++ [ python ] ) ;
+             |             ^
+           21|     pythonPath = "${placeholder "out"}/${python.sitePackages}";
+
+       … while calling 'requiredPythonModules'
+
+         at /nix/store/58g9mmyj8ja8i0cp4s4j367h1kgjdabw-source/pkgs/development/interpreters/python/python-packages-base.nix:54:27:
+
+           53|   # Get list of required Python modules given a list of derivations.
+           54|   requiredPythonModules = drvs: let
+             |                           ^
+           55|     modules = lib.filter hasPythonModule drvs;
+
+       … while calling anonymous lambda
+
+         at /nix/store/58g9mmyj8ja8i0cp4s4j367h1kgjdabw-source/lib/lists.nix:1793:25:
+
+         1792|   */
+         1793|   unique = foldl' (acc: e: if elem e acc then acc else acc ++ [ e ]) [];
+             |                         ^
+         1794|
+
+       … while evaluating derivation 'python3.11-torchaudio-2.3.1'
+         whose name attribute is located at /nix/store/58g9mmyj8ja8i0cp4s4j367h1kgjdabw-source/pkgs/stdenv/generic/make-derivation.nix:331:7
+
+       … while evaluating attribute 'TORCH_CUDA_ARCH_LIST' of derivation 'python3.11-torchaudio-2.3.1'
+
+         at «none»:0: (source not available)
+
+       … while calling anonymous lambda
+
+         at /nix/store/58g9mmyj8ja8i0cp4s4j367h1kgjdabw-source/pkgs/stdenv/generic/make-derivation.nix:576:11:
+
+          575|     mapAttrs
+          576|       (n: v: assert assertMsg (isString v || isBool v || isInt v || isDerivation v)
+             |           ^
+          577|         "The ‘env’ attribute set can only contain derivation, string, boolean or integer attributes. The ‘${n}’ attribute is of type ${builtins.typeOf v}."; v)
+
+       … from call site
+
+         at /nix/store/58g9mmyj8ja8i0cp4s4j367h1kgjdabw-source/pkgs/stdenv/generic/make-derivation.nix:576:21:
+
+          575|     mapAttrs
+          576|       (n: v: assert assertMsg (isString v || isBool v || isInt v || isDerivation v)
+             |                     ^
+          577|         "The ‘env’ attribute set can only contain derivation, string, boolean or integer attributes. The ‘${n}’ attribute is of type ${builtins.typeOf v}."; v)
+
+       … while calling 'assertMsg'
+
+         at /nix/store/58g9mmyj8ja8i0cp4s4j367h1kgjdabw-source/lib/asserts.nix:41:5:
+
+           40|     pred:
+           41|     msg:
+             |     ^
+           42|     pred || builtins.throw msg;
+
+       error: attribute 'cudaCapabilities' missing
+
+       at /nix/store/58g9mmyj8ja8i0cp4s4j367h1kgjdabw-source/pkgs/development/python-modules/torchaudio/default.nix:100:56:
+
+           99|   env = {
+          100|     TORCH_CUDA_ARCH_LIST = "${lib.concatStringsSep ";" torch.cudaCapabilities}";
+             |                                                        ^
+          101|   };
+#+end_example
+
+I'm trying a pytorch build once again (getting away from the cachix stuff would
+be great.
 
 ** ldap
 
@@ -195,6 +701,10 @@ There is a big deprecated section I copied unwittingly.
 ** raspberry pi
 *** TODO raspberry pi builds via =raspberry-pi-nix=
 
+#+begin_src shell :results none
+nix build '.#nixosConfigurations.cobalt-pi.config.system.build.sdImage' --system 'aarch64-linux' --no-eval-cache
+#+end_src
+
 [[https://github.com/NixOS/nixpkgs/issues/260754][nixpkgs#260754]] led me to using =rasbperry-pi-nix= for building Raspberry Pi
 images.  I would like to tie that in with =nixos-generators= if at all
 reasonable.
@@ -258,6 +768,14 @@ My build of the kernel on =lithium= has been running for over 24 hours...
 
 *** TODO raspberry pi builds via =nixos-generators=
 
+**** [2024-06-05 Wed]
+
+#+begin_src shell :results none
+nix build '.#cobalt-nixos-generate' --system 'aarch64-linux' --no-eval-cache
+#+end_src
+
+Date is guessed - this is the earliest entry.
+
 I'm paused on this in favor of [[raspberry pi builds via =raspberry-pi-nix=]].
 
 https://github.com/nix-community/nixos-generators
@@ -294,6 +812,58 @@ just =dd= a =zst= file over to the SD card.  There's something that can be done
 to emit a raw image, but I don't know what it is - I think there is a mechanism
 for it.  I believe most of my tests were done against =zst=, which would render
 virtually all of my testing here invalid.
+
+**** [2024-06-10 Mon]
+
+I continue to run into this issue:
+
+#+begin_example
+error: Package ‘linux-6.1.63-stable_20231123’ in /nix/store/v24qicc8f4h1xafv4qzbn49crg6h2nvb-source/pkgs/os-specific/linux/kernel/linux-rpi.nix:9 is not available on the requested hostPlatform:
+         hostPlatform.config = "aarch64-unknown-linux-gnu"
+         package.meta.platforms = [
+           "armv7a-darwin"
+           "armv5tel-linux"
+           "armv6l-linux"
+           "armv7a-linux"
+           "armv7l-linux"
+           "armv6l-netbsd"
+           "armv7a-netbsd"
+           "armv7l-netbsd"
+           "arm-none"
+           "armv6l-none"
+         ]
+         package.meta.badPlatforms = [ ]
+       , refusing to evaluate.
+
+       a) To temporarily allow packages that are unsupported for this system, you can use an environment variable
+          for a single invocation of the nix tools.
+
+            $ export NIXPKGS_ALLOW_UNSUPPORTED_SYSTEM=1
+
+          Note: When using `nix shell`, `nix build`, `nix develop`, etc with a flake,
+                then pass `--impure` in order to allow use of environment variables.
+
+       b) For `nixos-rebuild` you can set
+         { nixpkgs.config.allowUnsupportedSystem = true; }
+       in configuration.nix to override this.
+
+       c) For `nix-env`, `nix-build`, `nix-shell` or any other Nix command you can add
+         { allowUnsupportedSystem = true; }
+       to ~/.config/nixpkgs/config.nix.
+#+end_example
+
+This is the case when using the following invocation:
+
+#+begin_example
+nix build '.#cobalt-nixos-generate' --system 'aarch64-linux' --no-eval-cache
+#+end_example
+
+I've tried excluding all modules, but still no joy.  I don't know if the
+builders are setup properly at all.  I don't know how to test it.  I used to be
+able to see it about 6 months ago, but not anymore.  That this is the same exact
+issue with =raspberry-pi-nix= and even the _standard_ means of doing this makes
+me think that my builders are not working at all.  But also there could be other
+issues going on with the kernel package.
 
 *** TODO raspberry pi builds to =zstd=
 
