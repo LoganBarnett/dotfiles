@@ -1,5 +1,5 @@
 # Global system administration tools.
-{ pkgs, ... }: {
+{ flake-inputs, system }: { pkgs, ... }: {
   environment.systemPackages = [
     # A grep-sed like alternative. Offers a scripting language for
     # transformations.
@@ -9,6 +9,7 @@
     # curl does http requests. Comes with MacOS but no reason to use a dated
     # version.
     pkgs.curl
+    flake-inputs.current-system.packages.${system}.default
     # Allows us to query the status of USB devices.  This uses lsusb or
     # systemprofile -json under the hood in a cross-platform manner.
     # Unfortunately it does not work on non-USB devices (like SD cards) like one
@@ -41,7 +42,9 @@
     pkgs.pv
     # An n-curses based interface to du.  Shows disk usage in a way that makes
     # identification/cleaning quick+easy.  See: https://dev.yorhel.nl/ncdu
-    pkgs.ncdu
+    # Disabled due to: https://github.com/NixOS/nixpkgs/issues/317055
+    # The workaround can be found in ../overlays/zig.nix but it isn't working.
+    # pkgs.ncdu
     # Run speed tests from the command line.
     pkgs.speedtest-cli
     # A self-proclaimed better netcat.

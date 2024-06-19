@@ -5,6 +5,7 @@
   disko-proper,
   flake-inputs,
   host-id,
+  system,
 }: { ... }: {
   imports = [
     {
@@ -25,7 +26,9 @@
     ./nix-store-optimize.nix
     ./sshd.nix
     ./tls-trust.nix
-    ./user-can-admin.nix
+    (import ./user-can-admin.nix {
+      inherit flake-inputs system;
+    })
     ../users/logan-server.nix
   ];
   # This is just blindly copied from somewhere, but I don't know where.  I

@@ -20,7 +20,7 @@ in {
   inherit system;
   modules = [
     (import ../nixos-modules/server-host.nix {
-      inherit disko-proper flake-inputs host-id;
+      inherit disko-proper flake-inputs host-id system;
     })
     (import ../nixos-modules/https.nix {
       inherit host-id;

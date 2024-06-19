@@ -39,7 +39,9 @@ in
       config.networking.hostName = host-id;
     }
     ../nixos-modules/tls-trust.nix
-    ../nixos-modules/user-can-admin.nix
+    (import ../nixos-modules/user-can-admin.nix {
+      inherit flake-inputs system;
+    })
     (import ../nixos-modules/user-can-develop.nix {
       inherit username;
     })

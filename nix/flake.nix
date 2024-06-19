@@ -16,6 +16,13 @@
       # agenix-rekey's README for details.
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    # Give us a tool for getting the current system.  See
+    # https://discourse.nixos.org/t/getting-the-current-system-from-the-command-line/19781/10
+    # for discussion on the matter.
+    current-system = {
+      url = "github:nix-systems/current-system";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     nix-darwin = {
       url = "github:LnL7/nix-darwin/master";
       # rev = "72dd60bfc98c128149d84213b17d1b8a68863055";
@@ -78,10 +85,11 @@
   outputs = {
     agenix,
     agenix-rekey,
-    nix-darwin,
+    current-system,
     disko,
     disko-comfyui,
     # emacs-overlay,
+    nix-darwin,
     nixpkgs,
     nixpkgs-comfyui,
     nixpkgs-nickel,

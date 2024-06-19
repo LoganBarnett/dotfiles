@@ -24,7 +24,7 @@ in {
   modules = [
     ../hacks/installer/installation-cd-minimal.nix
     (import ../nixos-modules/server-host.nix {
-      inherit disko-proper flake-inputs host-id;
+      inherit disko-proper flake-inputs host-id system;
     })
     # "${nixpkgs}/nixos/modules/installer/cd-dvd/installation-cd-minimal.nix"
     # Per the NixOS documentation:
