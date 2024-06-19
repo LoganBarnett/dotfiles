@@ -31,4 +31,5 @@
   # Kept as an example of using someone else's overlay remotely.
   # (import "${builtins.fetchTarball https://github.com/vlaci/openconnect-sso/archive/master.tar.gz}/overlay.nix")
   (import ./vpnc.nix)
+  (import ./zig.nix)
 ]
