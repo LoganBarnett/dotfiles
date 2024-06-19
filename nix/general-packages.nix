@@ -100,6 +100,11 @@
   pkgs.mu
   # This lets me search for parts of nix to help debug collisions.
   pkgs.nix-index
+  # Provides `nixos-generate` which can be used to build ready-to-go images of
+  # NixOS.  Useful for writing state to an SD card and putting into an Rasberry
+  # Pi, for example.  The nixpkgs version lags behind a lot, so see overlays for
+  # managing the specific version/rev.
+  # pkgs.nixos-generators
   # Kept as reference until I can leverage a project templating tool that would
   # lay out a flake.nix for Node.js/TypeScript projects.
   # Language Server (Protocol) - a generic means of consuming languages in an

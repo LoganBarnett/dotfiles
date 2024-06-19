@@ -18,6 +18,7 @@
   (import ./gnupg.nix)
   (import ./man-pages-fix.nix)
   (import ./maven.nix)
+  (import ./nixos-generators.nix)
   (import ./percol.nix)
   # (import ./python-hatch-vcs-fix.nix)
   (import ./speedtest-cli.nix)
