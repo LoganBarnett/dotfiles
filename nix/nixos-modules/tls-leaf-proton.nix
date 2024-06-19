@@ -21,7 +21,14 @@
   };
 
   users.groups = {
+    nginx = {};
     tls-leaf = {};
+  };
+
+  users.users.nginx = {
+    extraGroups = [ "tls-leaf" ];
+    group = "nginx";
+    isSystemUser = true;
   };
 
 }
