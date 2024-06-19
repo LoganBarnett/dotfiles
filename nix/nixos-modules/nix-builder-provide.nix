@@ -19,6 +19,7 @@
       createHome = true;
       openssh.authorizedKeys.keys = [
         (builtins.readFile ../secrets/builder-key.pub)
+        # (builtins.readFile /etc/nix/builder_ed25519.pub)
       ];
     };
   };

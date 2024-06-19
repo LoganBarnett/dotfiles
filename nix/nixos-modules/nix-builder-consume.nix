@@ -1,14 +1,16 @@
 ################################################################################
 # Make this host consume our various builders.
 ################################################################################
-{ config, ... }: let
-  sshKey = config.age.secrets.builder-key.path;
+{ config, pkgs, ... }: let
+  # sshKey = config.age.secrets.builder-key.path;
+  sshKey = "/etc/nix/builder_ed25519";
   sshUser = "nixremote";
+  toBase64 = (pkgs.callPackage ../base64.nix {}).toBase64;
 in {
   nix.buildMachines = [
     {
       inherit sshKey sshUser;
-      hostName = "nickel";
+      hostName = "nickel.proton";
       systems = [
         "aarch64-linux"
         "armv6l-linux"
@@ -21,11 +23,13 @@ in {
       speedFactor = 2;
       supportedFeatures = [ "benchmark" ];
       mandatoryFeatures = [];
-      publicHostKey = builtins.readFile ../secrets/nickel-pub-key.pub;
+      publicHostKey = toBase64
+        (builtins.readFile ../secrets/builder-key.pub)
+      ;
     }
     {
       inherit sshKey sshUser;
-      hostName = "lithium";
+      hostName = "lithium.proton";
       # Or use systems with a list.
       system = "x86_64-linux";
       protocol = "ssh-ng";
@@ -33,9 +37,11 @@ in {
       maxJobs = 1;
       # What's this for?
       speedFactor = 2;
-      supportedFeatures = [ "benchmark" ];
+      supportedFeatures = [ "big-parallel" "benchmark" "kvm" ];
       mandatoryFeatures = [];
-      publicHostKey = builtins.readFile ../secrets/lithium-pub-key.pub;
+      publicHostKey = toBase64
+        (builtins.readFile /etc/nix/builder_ed25519.pub)
+      ;
     }
   ];
   nix.distributedBuilds = true;

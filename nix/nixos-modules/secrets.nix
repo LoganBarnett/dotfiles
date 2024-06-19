@@ -209,6 +209,9 @@ in {
     generator.script = "tls-ca-root";
   };
 
+  # TODO: agenix-rekey doesn't work with nix-darwin in terms of laying down and
+  # managing the /run/agenix directory.  Until this is supported, this file is
+  # both added as a secret here but also under `/etc/nix/builder_...`.
   age.secrets.builder-key = {
     generator.script = "ssh-ed25519-with-pub";
     rekeyFile = ../secrets/builder-key.age;
