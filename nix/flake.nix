@@ -130,6 +130,66 @@
       };
     in {
 
+      nixosConfigurations.cobalt = nixpkgs.lib.nixosSystem
+        (import ./hosts/cobalt.nix {
+          build-system = "nixpkgs";
+          disko-proper = disko-comfyui;
+          inherit flake-inputs nixpkgs;
+        })
+      ;
+      packages.aarch64-linux.cobalt-nixpkgs =
+        self
+          .nixosConfigurations
+          .cobalt
+          .config
+          .system
+          .build
+          .sdImage
+      ;
+
+      nixosConfigurations.cobalt-pi = nixpkgs.lib.nixosSystem
+        (import ./hosts/cobalt.nix {
+          build-system = "raspberry-pi-nix";
+          disko-proper = disko-comfyui;
+          inherit flake-inputs nixpkgs;
+        })
+      ;
+
+      packages.aarch64-linux.cobalt-nixos-generate =
+        nixos-generators.nixosGenerate  (import ./hosts/cobalt.nix {
+          disko-proper = disko-comfyui;
+          build-system = "nixos-generators";
+          inherit flake-inputs nixpkgs;
+        });
+
+      packages.aarch64-linux.cobalt-image = self
+        .nixosConfigurations
+        .cobalt
+        .config
+        .system
+        .build
+        .sdImage
+      ;
+
+      packages.armv7l-linux.cobalt-image = self
+        .nixosConfigurations
+        .cobalt
+        .config
+        .system
+        .build
+        .sdImage
+      ;
+
+      nixosModules.cobalt = { ... }: {
+        imports = [
+          (import ./hosts/nickel.nix {
+            disko-proper = disko-comfyui;
+            inherit flake-inputs nixpkgs;
+          })
+        ];
+        format = "sdImage";
+      };
+
       darwinConfigurations."M-CL64PK702X" =
         nix-darwin.lib.darwinSystem (import ./hosts/M-CL64PK702X.nix {
           inherit flake-inputs;
@@ -217,7 +277,7 @@
             inherit flake-inputs;
           })
         ];
-        format = "sd-image-raspberrypi";
+        # format = "sd-image-raspberrypi";
         # format = "sdImageRaspberryPi";
         # customFormats = {
         #   sd-image-raspberrypi = { modulesPath, ... }: {
@@ -250,6 +310,7 @@
           disko-proper = disko;
           inherit flake-inputs nixpkgs pkgs;
         }));
+
       packages.aarch64-darwin.nucleus-installer = self
         .nixosConfigurations
         .nucleus-installer
@@ -263,6 +324,13 @@
         userFlake = self;
         nodes = self.nixosConfigurations // self.darwinConfigurations;
       };
+
+      packages.aarch64-linux.distributed-test = let
+        pkgs = import nixpkgs {
+          system = "aarch64-linux";
+        };
+      in
+        pkgs.hello;
 
     };
 

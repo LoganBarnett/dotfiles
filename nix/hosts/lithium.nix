@@ -35,6 +35,18 @@ in {
       inherit host-id;
       port = comfyui-port;
     })
+    # This is just to make lithium able to emit a Raspberry Pi image.
+    ({ ... }: {
+      # boot.binfmt.emulatedSystems = [ "aarch64-linux" ];
+      # nix.settings = {
+      #   trusted-substituters = [
+      #     "https://raspberry-pi-nix.cachix.org"
+      #   ];
+      #   trusted-public-keys = [
+      #     "raspberry-pi-nix.cachix.org-1:WmV2rdSangxW0rZjY/tBvBDSaNFQ3DyEQsVw8EvHn9o="
+      #   ];
+      # };
+    })
     ({ lib, ... }: {
       disko.devices = {
         disk.disk1 = {

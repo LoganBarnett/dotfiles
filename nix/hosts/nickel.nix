@@ -19,6 +19,17 @@ in {
     ../nixos-modules/nix-builder-provide.nix
     # Pi stuff.
     ({ pkgs, ... }: {
+      nix.distributedBuilds = true;
+      boot.binfmt.emulatedSystems = [
+        "armv6l-linux"
+        "armv7l-linux"
+      ];
+      nix.settings = {
+        extra-platforms = [
+          "armv6l-linux"
+          "armv7l-linux"
+        ];
+      };
       # networking.hostId is needed by the filesystem stuffs.
       # An arbitrary ID needed for zfs so a pool isn't accidentally imported on
       # a wrong machine (I'm not even sure what that means).  See

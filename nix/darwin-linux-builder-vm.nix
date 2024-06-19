@@ -77,12 +77,12 @@
   # };
   cross-architecture-test-pkgs = import nixpkgs {
     system = "x86_64-linux";
-    crossSystem = {
-      config = "x86_64-unknown-linux-gnu";
-      hostPlatform = "aarch64-unknown-linux-gnu";
-      buildPlatform = "x86_64-unknown-linux-gnu";
-      targetPlatform = "x86_64-unknown-linux-gnu";
-    };
+    # crossSystem = {
+    #   config = "x86_64-unknown-linux-gnu";
+    #   hostPlatform = "aarch64-unknown-linux-gnu";
+    #   buildPlatform = "x86_64-unknown-linux-gnu";
+    #   targetPlatform = "x86_64-unknown-linux-gnu";
+    # };
     # stdenv = linux-builder-pkgs.stdenv.override {
     #   hostPlatform = "aarch64-unknown-linux-gnu";
     #   buildPlatform = "x86_64-unknown-linux-gnu";
@@ -166,6 +166,8 @@ in {
   };
   nix.settings = {
     extra-platforms = [
+      # This might show up or not show up in an error list, helping us
+      # identify what list is being shown.
       "this-is-darwin-linux-builders-list"
       "aarch64-unknown-linux-gnu"
       "aarch64-linux"

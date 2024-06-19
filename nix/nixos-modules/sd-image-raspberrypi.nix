@@ -13,6 +13,6 @@ in {
   imports = [
     flake-inputs.nixos-generators.nixosModules.all-formats
   ];
-  formatConfigs.sd-image-raspberrypi = format "sd-image-raspberrypi";
+  formatConfigs.sd-image-raspberrypi = format "sdImage";
   formatConfigs.sdImageRaspberrypi = format "sdImageRaspberryPi";
 }
