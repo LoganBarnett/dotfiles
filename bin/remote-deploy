@@ -97,7 +97,6 @@ rsync \
   --archive \
   --verbose \
   --human-readable \
-  --update \
   --delete-after \
   --exclude='result' \
   --exclude='.git' \
