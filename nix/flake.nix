@@ -60,20 +60,22 @@
       # inputs.nixpkgs.follows = "nixpkgs";
     };
     # Specify the source of Home Manager and Nixpkgs.
-    nixpkgs.url = "github:nixos/nixpkgs/master";
+    # nixpkgs.url = "github:nixos/nixpkgs/master";
+    nixpkgs.url = "github:LoganBarnett/nixpkgs/comfyui-fetch-model-hide-rebase";
     # nixpkgs.url = "github:nixos/nixpkgs?ref=9a9960b98418f8c385f52de3b09a63f9c561427a";
-    # nixpkgs-comfyui.url = "github:LoganBarnett/nixpkgs/comfyui-fetch-model-hide-rebase";
-    nixpkgs-comfyui.url = "github:nixos/nixpkgs?ref=9a9960b98418f8c385f52de3b09a63f9c561427a";
+    nixpkgs-comfyui.url = "github:LoganBarnett/nixpkgs/comfyui-fetch-model-hide-rebase";
+    # nixpkgs-comfyui.url = "github:nixos/nixpkgs?ref=9a9960b98418f8c385f52de3b09a63f9c561427a";
     # See if we can nix this (get it?!) because
     # https://github.com/NixOS/nixpkgs/pull/296249 is now merged with a hopeful
     # fix.
-    # nixpkgs-comfyui.url = "github:LoganBarnett/nixpkgs/comfyui-fetch-mode-hide-rebase";
+    # nixpkgs-comfyui.url = "github:LoganBarnett/nixpkgs/comfyui-fetch-model-hide-rebase";
     # nix-doom-emacs.url = "github:nix-community/nix-doom-emacs";
     home-manager = {
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    nixpkgs-nickel.url = "github:nixos/nixpkgs?ref=9a9960b98418f8c385f52de3b09a63f9c561427a";
+    nixpkgs-nickel.url = "github:LoganBarnett/nixpkgs/comfyui-fetch-model-hide-rebase";
+    # nixpkgs-nickel.url = "github:nixos/nixpkgs?ref=9a9960b98418f8c385f52de3b09a63f9c561427a";
     raspberry-pi-nix = {
       url = "github:tstat/raspberry-pi-nix";
       # url = "github:tstat/raspberry-pi-nix?ref=8fc9cbd3e4a53d365596c9cc4fc3cc07cd447af4";
