@@ -49,6 +49,9 @@ Usage: $0 [opts] <hostname>
                        https://github.com/NixOS/nix/issues/2415 for open issues
                        on these as of 2024-06-03).
 
+  --build              Indicate we should do a `nix build` instead of `nixos
+                       rebuild switch`. Default: false.
+
   --no-switch          Do not `nixos-rebuild switch` - just copy the files.
                        This can be helpful for running this session over tmux.
 
