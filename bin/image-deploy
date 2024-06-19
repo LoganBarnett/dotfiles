@@ -61,6 +61,10 @@ if [ -z ${image_name+x} ]; then
 fi
 
 if [[ "$image_name" =~ \.zst$ ]]; then
+  # TODO: This article (https://wiki.nixos.org/wiki/NixOS_on_ARM/Installation)
+  # shows we can accomplish all of this without an intermediate file.  This
+  # might be a better way to go, and we just use `cat` as the alternate command.
+  # nix-shell -p zstd --run "zstdcat image.img.zst | dd of=/dev/mmcblk0 status=progress"
   echo "Image is compressed.  Unzipping image..."
   uncompressed_image_name=$(basename $image_name .zst)
   if [[ $noop == false ]]; then
