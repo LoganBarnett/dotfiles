@@ -110,22 +110,25 @@ in {
     else
     let
       bearer = builtins.readFile config.age.secrets.civitai-token.path;
+      fetch-civitai = { ... }@args: pkgs.fetchurl ({
+        curlOptsList = [
+          "--header" "Authorization: Bearer ${bearer}"
+          "--location"
+        ];
+      } // args);
     in {
       checkpoints = {
         # https://civitai.com/models/288584/autismmix-sdxl
-        autism-mix-sdxl = {
-          format = "safetensors";
-          path = {
-            inherit bearer;
-            url = "https://civitai.com/api/download/models/324619";
-            sha256 = "sha256-ghqlU3+N2v2/ljgnVRhlwxxbv6savnkly18AbI9x5IU=";
-          };
+        "autism-mix-sdxl.safetensors" = fetch-civitai {
+          url = "https://civitai.com/api/download/models/324619";
+          sha256 = "sha256-ghqlU3+N2v2/ljgnVRhlwxxbv6savnkly18AbI9x5IU=";
         };
         # A high quality checkpoint but beware it also does nsfw very
         # easily.
         # https://civitai.com/models/147720/colossus-project-xl-sfwandnsfw
         # Some notes on usage, from the description:
-        # Be aware that some samplers aren't working. Don't use following samplers:
+        # Be aware that some samplers aren't working. Don't use following
+        # samplers:
         # DPM++ 2M Karras, DPM++ 2M,DPM++ 2M, DPM++ 2M SDE, DPM++ 2M SDE Heun,
         # Euler, LMS, LMS Karras, Heun, 3M SDE Karras, DPM fast, DPM2 Karras,
         # Restart, PLMS, DDIM, Uni PC, LCM, LCM Karras.
@@ -137,12 +140,9 @@ in {
         # my tests.
         #
         # Keep the CFG around 2-4.
-        colossus-xl-v6 = {
-          format = "safetensors";
-          path = {
-            url = "https://civitai.com/api/download/models/355884";
-            sha256 = "sha256-ZymMt9jS1Z698wujJGxEMQZeyt0E97qaOtLfDdWjhuc=";
-          };
+        "colossus-xl-v6.safetensors" = fetch-civitai {
+          url = "https://civitai.com/api/download/models/355884";
+          sha256 = "sha256-ZymMt9jS1Z698wujJGxEMQZeyt0E97qaOtLfDdWjhuc=";
         };
         # https://civitai.com/models/112902/dreamshaper-xl
         # Preferred settings:
@@ -150,12 +150,9 @@ in {
         # 4-8 sampling steps.
         # Sampler: DPM SDE Kerras (not 2M).
         # ComfyUI workflow for upscaling: https://pastebin.com/79XN01xs
-        dreamshaper-xl-fp16 = {
-          format = "safetensors";
-          path = {
-            url = "https://civitai.com/api/download/models/351306";
-            sha256 = "sha256-RJazbUi/18/k5dvONIXbVnvO+ivvcjjSkNvUVhISUIM=";
-          };
+        "dreamshaper-xl-fp16.safetensors" = fetch-civitai {
+          url = "https://civitai.com/api/download/models/351306";
+          sha256 = "sha256-RJazbUi/18/k5dvONIXbVnvO+ivvcjjSkNvUVhISUIM=";
         };
         # Pony generates some really high quality images - they tend to be more
         # based on a digital painting style but can do other things as well.
@@ -163,22 +160,16 @@ in {
         # WARNING:  Pony is capable of generating some _very_ NSFW
         # images.  You should be able to use the negative prompt "nsfw" and
         # perhaps others to avoid this.
-        pony-xl-v6 = {
-          format = "safetensors";
-          path = {
-            url = "https://civitai.com/api/download/models/290640?type=Model&format=SafeTensor&size=pruned&fp=fp16";
-            sha256 = "1cxh5450k3y9mkrf9dby7hbaydj3ymjwq5fvzsrqk6j3xkc2zav7";
-          };
+        "pony-xl-v6.safetensors" = fetch-civitai {
+          url = "https://civitai.com/api/download/models/290640?type=Model&format=SafeTensor&size=pruned&fp=fp16";
+          sha256 = "1cxh5450k3y9mkrf9dby7hbaydj3ymjwq5fvzsrqk6j3xkc2zav7";
         };
         # Allow for video from images.  See
         # https://comfyanonymous.github.io/ComfyUI_examples/video/ for the
         # official ComfyUI documentation.
-        stable-video-diffusion-img2vid-xt = {
-          format = "safetensors";
-          path = {
-            url = "https://huggingface.co/stabilityai/stable-video-diffusion-img2vid-xt/resolve/main/svd_xt.safetensors?download=true";
-            sha256 = "b2652c23d64a1da5f14d55011b9b6dce55f2e72e395719f1cd1f8a079b00a451";
-          };
+        "stable-video-diffusion-img2vid-xt.safetensors" = pkgs.fetchurl {
+          url = "https://huggingface.co/stabilityai/stable-video-diffusion-img2vid-xt/resolve/f4aeeadd844420611e9f9d16332d440621841550/svd_xt.safetensors?download=true";
+          sha256 = "b2652c23d64a1da5f14d55011b9b6dce55f2e72e395719f1cd1f8a079b00a451";
         };
       };
       clip = {};
@@ -187,90 +178,60 @@ in {
         # https://huggingface.co/lllyasviel/ControlNet-v1-1
         # https://github.com/lllyasviel/ControlNet-v1-1-nightly
         # See also the accompanying file in `controlnet`.
-        controlnet-v1_1_fe-sd15-tile-yaml = {
-          format = "yaml";
-          path = {
-            url = "https://huggingface.co/lllyasviel/ControlNet-v1-1/raw/69fc48b9cbd98661f6d0288dc59b59a5ccb32a6b/control_v11f1e_sd15_tile.yaml";
-            sha256 = "sha256-OeEzjEFDYYrbF2BPlsOj90DBq10VV9cbBE8DB6CmrbQ=";
-          };
+        "controlnet-v1_1_fe-sd15-tile.yaml" = pkgs.fetchurl {
+          url = "https://huggingface.co/lllyasviel/ControlNet-v1-1/resolve/69fc48b9cbd98661f6d0288dc59b59a5ccb32a6b/control_v11f1e_sd15_tile.yaml?download=true";
+          sha256 = "sha256-OeEzjEFDYYrbF2BPlsOj90DBq10VV9cbBE8DB6CmrbQ=";
         };
       };
       controlnet = {
         # https://huggingface.co/TTPlanet/TTPLanet_SDXL_Controlnet_Tile_Realistic_V1
-        ttplanet-sdxl-controlnet-tile-realistic-32-v1 = {
-          format = "safetensors";
-          path = {
-            url = "https://huggingface.co/TTPlanet/TTPLanet_SDXL_Controlnet_Tile_Realistic/raw/83fbced5f508ee3c78288f1db3dd93306a760d4d/TTPLANET_Controlnet_Tile_realistic_v1_fp32.safetensors";
-            sha256 = "f33012cbac5839885f143aa2accb2e403414c7dad119364bbe18de37e4a65f67";
-          };
+        "ttplanet-sdxl-controlnet-tile-realistic-32-v1.safetensors" = pkgs.fetchurl {
+          url = "https://huggingface.co/TTPlanet/TTPLanet_SDXL_Controlnet_Tile_Realistic/resolve/83fbced5f508ee3c78288f1db3dd93306a760d4d/TTPLANET_Controlnet_Tile_realistic_v1_fp32.safetensors?download=true";
+          sha256 = "f33012cbac5839885f143aa2accb2e403414c7dad119364bbe18de37e4a65f67";
         };
-        ttplanet-sdxl-controlnet-tile-realistic-16-v1 = {
-          format = "safetensors";
-          path = {
-            url = "https://huggingface.co/TTPlanet/TTPLanet_SDXL_Controlnet_Tile_Realistic_V1/resolve/main/TTPLANET_Controlnet_Tile_realistic_v1_fp16.safetensors?download=true";
-            sha256 = "sha256-+ipfL+yBSBnINUA8d4viwkN9FHkxkhMEVp/M7CtFFzw=";
-          };
+        "ttplanet-sdxl-controlnet-tile-realistic-16-v1.safetensors" = pkgs.fetchurl {
+          url = "https://huggingface.co/TTPlanet/TTPLanet_SDXL_Controlnet_Tile_Realistic/resolve/83fbced5f508ee3c78288f1db3dd93306a760d4d/TTPLANET_Controlnet_Tile_realistic_v1_fp16.safetensors?download=true";
+          sha256 = "sha256-+ipfL+yBSBnINUA8d4viwkN9FHkxkhMEVp/M7CtFFzw=";
         };
         # https://huggingface.co/lllyasviel/ControlNet-v1-1
         # See also the accompanying file in `configs`.
-        controlnet-v1_1_f1e-sd15-tile-pth = {
-          format = "pth";
-          path = {
-            url = "https://huggingface.co/lllyasviel/ControlNet-v1-1/raw/69fc48b9cbd98661f6d0288dc59b59a5ccb32a6b/control_v11f1e_sd15_tile.pth";
-            sha256 = "sha256-hpBH/B2u4eXcHvhqxOrjX52Nxh6cQyltx/z8XoEjcds=";
-          };
+        "controlnet-v1_1_f1e-sd15-tile.pth" = pkgs.fetchurl {
+          url = "https://huggingface.co/lllyasviel/ControlNet-v1-1/resolve/69fc48b9cbd98661f6d0288dc59b59a5ccb32a6b/control_v11f1e_sd15_tile.pth?download=true";
+          hash = "sha256-iqabjTkecsL87WplAmgTfcDtWUyv6KLA+LmUeZohl5s=";
         };
       };
       embeddings = {};
       loras = {
         # Helps with eyes.
         # https://civitai.com/models/118427/perfect-eyes-xl?modelVersionId=128461
-        perfect-eyes-xl = {
-          format = "safetensors";
-          path = {
-            url = "https://civitai.com/api/download/models/128461?type=Model&format=SafeTensor";
-            sha256 = "sha256-8kg2TPCsx6ALxLUUW0TA378Q5x6bDvtrd/CVauryQRw=";
-          };
+        "perfect-eyes-xl.safetensors" = fetch-civitai {
+          url = "https://civitai.com/api/download/models/128461?type=Model&format=SafeTensor";
+          sha256 = "sha256-8kg2TPCsx6ALxLUUW0TA378Q5x6bDvtrd/CVauryQRw=";
         };
         # Helps with indicating various styles in PonyXL, such as oil,
         # realistic, digital art, and combinations thereof.
         # https://civitai.com/models/264290?modelVersionId=398292
-        ponyx-xl-v6-non-artist-styles = {
-          format = "safetensors";
-          path = {
-            url = "https://civitai.com/api/download/models/398292?type=Model&format=SafeTensor";
-            sha256 = "01m4zq2i1hyzvx95nq2v3n18b2m98iz0ryizdkyc1y42f1rwd0kx";
-          };
+        "ponyx-xl-v6-non-artist-styles.safetensors" = fetch-civitai {
+          url = "https://civitai.com/api/download/models/398292?type=Model&format=SafeTensor";
+          sha256 = "01m4zq2i1hyzvx95nq2v3n18b2m98iz0ryizdkyc1y42f1rwd0kx";
         };
         # https://civitai.com/models/200255/hands-xl-sd-15?modelVersionId=254267
         # Versions are not posted, so just use the "Updated:" date.
-        hands-sdxl-v20240305 = {
-          format = "safetensors";
-          path = {
-            inherit bearer;
-            url = "https://civitai.com/api/download/models/254267?type=Model&format=SafeTensor";
-            sha256 = "sha256-a/NpZNiVK09Kdzs/pl0yADCF57BdCVuugYJd+g8Q9Kk=";
-          };
+        "hands-sdxl-v20240305.safetensors" = fetch-civitai {
+          url = "https://civitai.com/api/download/models/254267?type=Model&format=SafeTensor";
+          sha256 = "sha256-a/NpZNiVK09Kdzs/pl0yADCF57BdCVuugYJd+g8Q9Kk=";
         };
-        ralph-breaks-internet-disney-princesses = {
-          format = "safetensors";
-          path = {
-            url = "https://civitai.com/api/download/models/244808?type=Model&format=SafeTensor";
-            sha256 = "sha256-gKpnkTrryJoBvhkH5iEi8zn9/ucMFxq3upZ8Xl/PJ+o=";
-          };
+        "ralph-breaks-internet-disney-princesses.safetensors" = fetch-civitai {
+          url = "https://civitai.com/api/download/models/244808?type=Model&format=SafeTensor";
+          sha256 = "sha256-gKpnkTrryJoBvhkH5iEi8zn9/ucMFxq3upZ8Xl/PJ+o=";
         };
         # https://civitai.com/models/200251/feet?modelVersionId=225347
         # Versions are not posted, so just use the "Updated:" date.
         # This is posted by the same author as the hands lora, and releases seem
         # to go out together.
-        feet-sdxl-v20240305 = {
-          format = "safetensors";
-          path = {
-            inherit bearer;
-            # bearerFile = config.age.secrets.civitai-bearer-token-header.path;
-            url = "https://civitai.com/api/download/models/225347?type=Model&format=SafeTensor";
-            sha256 = "sha256-5OuEVEBiNYj+ja7BpBGwf+8uCnlQg6+xvAjt45RueNI=";
-          };
+        "feet-sdxl-v20240305.safetensors" = fetch-civitai {
+          url = "https://civitai.com/api/download/models/225347?type=Model&format=SafeTensor";
+          sha256 = "sha256-5OuEVEBiNYj+ja7BpBGwf+8uCnlQg6+xvAjt45RueNI=";
         };
       };
       # Upscaler comparisons can be found here:
@@ -278,41 +239,29 @@ in {
       upscale_models = {
         # https://openmodeldb.info/models/4x-realesrgan-x4plus
         # https://github.com/xinntao/Real-ESRGAN
-        real-esrgan-4xplus = {
-          format = "pth";
-          path = {
-            url = "https://github.com/xinntao/Real-ESRGAN/releases/download/v0.1.0/RealESRGAN_x4plus.pth";
-            sha256 = "sha256-T6DTiQX3WsButJp5UbQmZwAhvjAYJl/RkdISXfnWgvE=";
-          };
+        "real-esrgan-4xplus.pth" = pkgs.fetchurl {
+          url = "https://github.com/xinntao/Real-ESRGAN/releases/download/v0.1.0/RealESRGAN_x4plus.pth";
+          sha256 = "sha256-T6DTiQX3WsButJp5UbQmZwAhvjAYJl/RkdISXfnWgvE=";
         };
         # Doesn't work at all - unsupported model.  Must be older SD version
         # only.
-        stable-diffusion-4x-upscaler = {
-          format = "safetensors";
-          path = {
-            url = "https://huggingface.co/stabilityai/stable-diffusion-x4-upscaler/resolve/main/x4-upscaler-ema.safetensors?download=true";
-            sha256 = "35c01d6160bdfe6644b0aee52ac2667da2f40a33a5d1ef12bbd011d059057bc6";
-          };
+        "stable-diffusion-4x-upscaler.safetensors" = pkgs.fetchurl {
+          url = "https://huggingface.co/stabilityai/stable-diffusion-x4-upscaler/resolve/a44206cef52cdd20c6a32fea6257860474f0be43/x4-upscaler-ema.safetensors?download=true";
+          sha256 = "35c01d6160bdfe6644b0aee52ac2667da2f40a33a5d1ef12bbd011d059057bc6";
         };
         # Samael1976 reposted this to civitai.com - the alternative is to
         # download it from mega.nz, which I do not believe is friendly to
         # headless activity such as this.  The original model is listed here:
         # https://openmodeldb.info/models/4x-UltraSharp
-        kim2091-4k-ultrasharp = {
-          format = "pth";
-          path = {
-            url = "https://huggingface.co/Kim2091/UltraSharp/raw/main/4x-UltraSharp.pth";
-            sha256 = "sha256-1UUMW6f2bilb9iROW6olbMcUnwOImHAgeEQaVDs6jW4=";
-          };
+        "kim2091-4k-ultrasharp.pth" = pkgs.fetchurl {
+          url = "https://huggingface.co/Kim2091/UltraSharp/resolve/b32be1b8c6f81d1f6ef8ce11f016aad3a139d1e0/4x-UltraSharp.pth";
+          sha256 = "sha256-1UUMW6f2bilb9iROW6olbMcUnwOImHAgeEQaVDs6jW4=";
         };
       };
       vae = {
-        sdxl_vae = {
-          format = "safetensors";
-          path = {
-            url = "https://civitai.com/api/download/models/290640?type=VAE";
-            sha256 = "1qf65fia7g0ammwjw2vw1yhijw5kd2c54ksv3d64mgw6inplamr3";
-          };
+        "sdxl_vae.safetensors" = fetch-civitai {
+          url = "https://civitai.com/api/download/models/290640?type=VAE";
+          sha256 = "1qf65fia7g0ammwjw2vw1yhijw5kd2c54ksv3d64mgw6inplamr3";
         };
       };
       vae_approx = {};
