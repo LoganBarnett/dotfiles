@@ -30,6 +30,7 @@
     (import ./tls-leaf-proton.nix {
       inherit host-id;
     })
+    ./nix-builder-provide.nix
     ./nix-flakes.nix
     ./nix-store-optimize.nix
     ./sshd.nix
