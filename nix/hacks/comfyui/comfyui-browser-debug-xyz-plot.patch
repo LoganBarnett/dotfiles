@@ -1,7 +1,16 @@
 diff --git a/nodes/xyz_plot.py b/nodes/xyz_plot.py
-index 684c769..a4fcc18 100644
+index 8282ba5..998fcd4 100644
 --- a/nodes/xyz_plot.py
 +++ b/nodes/xyz_plot.py
+@@ -9,7 +9,7 @@ import copy
+ 
+ import folder_paths
+ 
+-from ..utils import SERVER_BASE_URL
++from ..utils import SERVER_BASE_URL, log
+ 
+ class XyzPlot:
+     CATEGORY = "Browser"
 @@ -33,7 +33,9 @@ class XyzPlot:
              "required": {
                  "images": ["IMAGE", {}],
@@ -21,22 +30,21 @@ index 684c769..a4fcc18 100644
          self.output_folder_name = os.path.join(
              folder_paths.get_output_directory(),
              output_folder_name,
-@@ -107,7 +109,7 @@ class XyzPlot:
+@@ -107,6 +109,7 @@ class XyzPlot:
  
              # for some special network environments like AutoDL
              proxies = {"http": "", "https": ""}
--            log(f'Queueing XYZ prompt: {prompt}')
 +            log(f'Queueing XYZ prompt: {json.dumps(prompt, indent=2)}')
              return requests.post(SERVER_BASE_URL + '/prompt', data=data, proxies=proxies)
  
  
-@@ -122,8 +124,22 @@ class XyzPlot:
+@@ -121,8 +124,22 @@ class XyzPlot:
              row = []
              for iy, vy in enumerate(values_y):
                  vy = vy.strip()
 -                new_prompt[input_x["node_id"]]["inputs"][input_x["widget_name"]] = vx
 -                new_prompt[input_y["node_id"]]["inputs"][input_y["widget_name"]] = vy
-+                x_original = new_prompt[input_x["node_id"]]["inputs"][input_x["widget_name"]]
++                x_original = prompt[input_x["node_id"]]["inputs"][input_x["widget_name"]]
 +                if update_mode_x == 'append':
 +                    log(f'Appending {vx} to {x_original}')
 +                    new_prompt[input_x["node_id"]]["inputs"][input_x["widget_name"]] = x_original + vx
@@ -44,7 +52,7 @@ index 684c769..a4fcc18 100644
 +                    new_prompt[input_x["node_id"]]["inputs"][input_x["widget_name"]] = vx
 +                else:
 +                    log(f'Update mode {update_mode_x} not supported!')
-+                y_original = new_prompt[input_y["node_id"]]["inputs"][input_y["widget_name"]]
++                y_original = prompt[input_y["node_id"]]["inputs"][input_y["widget_name"]]
 +                if update_mode_y == 'append':
 +                    log(f'Appending {vy} to {y_original}')
 +                    new_prompt[input_y["node_id"]]["inputs"][input_y["widget_name"]] = y_original + vy

@@ -88,7 +88,47 @@ in {
     enable = true;
     multi-user = true;
     customNodes = with pkgs.comfyui-custom-nodes; [
-      comfyui-browser
+      # Manages workflows in comfyui such that they can be version controlled
+      # easily.
+      # https://github.com/talesofai/comfyui-browser
+      #
+      # This uses a fork that allows for configurable directories and debugging
+      # the XYZ Plot node.
+      (pkgs.comfyui-custom-nodes.mkComfyUICustomNodes {
+        pname = "comfyui-browser";
+        version = "unstable-fork-2024-04-21";
+        src = pkgs.fetchFromGitHub {
+          owner = "LoganBarnett";
+          repo = "comfyui-browser";
+          rev = "1d8ce54d06081c7477895de284e6c0bfd604c906";
+          hash = "sha256-X9pJtkeRO+RQiwHlg4bVKQYY2XvdLREm3J6Af1x97vs=";
+        };
+        patches = [
+          # ../hacks/comfyui/comfyui-browser-debug-xyz-plot.patch
+        ];
+        installPhase = let
+          # Patches don't apply to $src, and as with many scripting languages
+          # that don't have a build output per se, we just want the script
+          # source itself placed into $out.  So just copy everything into $out
+          # instead of from $src so we can make sure we get everything in the
+          # future, and we use the patched versions.
+          install = ''
+            shopt -s dotglob
+            shopt -s extglob
+            cp -r ./!($out|$src) $out/
+          '';
+          in ''
+          mkdir -p $out/
+          ${install}
+          cp ${pkgs.writeText "config.json" (builtins.toJSON {
+            collections = "/var/lib/comfyui/comfyui-browser-collections";
+            download_logs = "/var/lib/comfyui/comfyui-browser-download-logs";
+            outputs = "/var/lib/comfyui/output";
+            sources = "/var/lib/comfyui/comfyui-browser-sources";
+          })} $out/config.json
+        '';
+      })
+      # comfyui-browser
       # Disabled due to https://github.com/tzwm/comfyui-profiler/issues/2
       # comfyui-profiler
       comfyui-crystools
