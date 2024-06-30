@@ -39,10 +39,6 @@
       url = "github:nix-community/disko";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    disko-comfyui = {
-      url = "github:nix-community/disko";
-      inputs.nixpkgs.follows = "nixpkgs-comfyui";
-    };
     # emacs-overlay = {
     #   url = "github:nix-community/emacs-overlay/master";
     #   inputs.nixpkgs.follows = "nixpkgs";
@@ -63,12 +59,6 @@
     # nixpkgs.url = "github:nixos/nixpkgs/master";
     nixpkgs.url = "github:LoganBarnett/nixpkgs/comfyui-fetch-model-hide-rebase";
     # nixpkgs.url = "github:nixos/nixpkgs?ref=9a9960b98418f8c385f52de3b09a63f9c561427a";
-    nixpkgs-comfyui.url = "github:LoganBarnett/nixpkgs/comfyui-fetch-model-hide-rebase";
-    # nixpkgs-comfyui.url = "github:nixos/nixpkgs?ref=9a9960b98418f8c385f52de3b09a63f9c561427a";
-    # See if we can nix this (get it?!) because
-    # https://github.com/NixOS/nixpkgs/pull/296249 is now merged with a hopeful
-    # fix.
-    # nixpkgs-comfyui.url = "github:LoganBarnett/nixpkgs/comfyui-fetch-model-hide-rebase";
     # nix-doom-emacs.url = "github:nix-community/nix-doom-emacs";
     home-manager = {
       url = "github:nix-community/home-manager";
@@ -89,11 +79,9 @@
     agenix-rekey,
     current-system,
     disko,
-    disko-comfyui,
     # emacs-overlay,
     nix-darwin,
     nixpkgs,
-    nixpkgs-comfyui,
     nixpkgs-nickel,
     nixos-anywhere,
     nixos-hardware,
@@ -103,39 +91,12 @@
     self,
     ...
   }@flake-inputs:
-    let
-      aarch64-darwin-system = "aarch64-darwin";
-      aarch64-darwin-pkgs = import nixpkgs {
-        system = aarch64-darwin-system;
-        # Based on observations from running `home-manager switch` I believe
-        # that this has no effect. At one point it did. This is probably a
-        # breaking change.
-        overlays = (import ./overlays/default.nix);
-        # Some packages are not "free". We need to specifically bless those.
-        # I had trouble using a real function because the depended functions are
-        # hard/impossible to reach from this place. It cannot exist later
-        # because setting nixpkgs.config is ignored if pkgs is set. I found some
-        # of those functions declared here:
-        # https://github.com/NixOS/nixpkgs/blob/d84cc41f8babd418c295fcbfbd41a1fd4e2adaec/lib/strings.nix#L699
-        # This ticket https://github.com/nix-community/home-manager/issues/2954
-        # talks about the issue directly, but never comes to a workable
-        # resolution for the allowUnfreePredicate value, which  needs "lib" to
-        # work. I'm not familiar enough with nix's structure to really move
-        # forward here. What we have now is the equivalent of what's commented
-        # below:
-        # config.allowUnfree = true;
-        config.allowUnfreePredicate = (pkg: true);
-        # This has been needed to individually bless some older packages, such
-        # as packages depending upon an older OpenSSL.
-        config.permittedInsecurePackages = [];
-        # nixpkgs.legacyPackages.${system};
-      };
-    in {
+    {
 
       nixosConfigurations.cobalt = nixpkgs.lib.nixosSystem
         (import ./hosts/cobalt.nix {
           build-system = "nixpkgs";
-          disko-proper = disko-comfyui;
+          disko-proper = disko;
           inherit flake-inputs nixpkgs;
         })
       ;
@@ -152,14 +113,14 @@
       nixosConfigurations.cobalt-pi = nixpkgs.lib.nixosSystem
         (import ./hosts/cobalt.nix {
           build-system = "raspberry-pi-nix";
-          disko-proper = disko-comfyui;
+          disko-proper = disko;
           inherit flake-inputs nixpkgs;
         })
       ;
 
       packages.aarch64-linux.cobalt-nixos-generate =
         nixos-generators.nixosGenerate  (import ./hosts/cobalt.nix {
-          disko-proper = disko-comfyui;
+          disko-proper = disko;
           build-system = "nixos-generators";
           inherit flake-inputs nixpkgs;
         });
@@ -185,7 +146,7 @@
       nixosModules.cobalt = { ... }: {
         imports = [
           (import ./hosts/nickel.nix {
-            disko-proper = disko-comfyui;
+            disko-proper = disko;
             inherit flake-inputs nixpkgs;
           })
         ];
@@ -204,7 +165,7 @@
 
       nixosConfigurations.lithium =
         nixpkgs.lib.nixosSystem (import ./hosts/lithium.nix {
-          disko-proper = disko-comfyui;
+          disko-proper = disko;
           inherit flake-inputs;
         });
       # Unsure if we need this, but if we do, it serves as a shortcut
@@ -214,21 +175,49 @@
       nixosConfigurations.nickel = nixpkgs.lib.nixosSystem {
         modules = [
           (import ./hosts/nickel.nix {
-            disko-proper = disko-comfyui;
+            disko-proper = disko;
             inherit flake-inputs nixpkgs;
           })
         ];
       };
 
+      nixosConfigurations.titanium = nixpkgs.lib.nixosSystem {
+        modules = [
+          (import ./hosts/titanium.nix {
+            disko-proper = disko;
+            inherit flake-inputs;
+          })
+        ];
+      };
+
+      packages.x86_64-linux.titanium = self
+        .nixosConfigurations
+        .titanium
+        .config
+        .system
+        .build
+        .isoImage;
+
+      packages.x86_64-linux.titanium-ng = nixos-generators.nixosGenerate {
+        system = "x86_64-linux";
+        modules = [
+          (import ./hosts/titanium.nix {
+            disko-proper = disko;
+            inherit flake-inputs;
+          })
+        ];
+        format = "iso";
+      };
+
       # nixosConfigurations.nickel = nixpkgs-nickel.lib.nixosSystem {
       #   modules = [
       #     raspberry-pi-nix.nixosModules.raspberry-pi (import ./hosts/nickel.nix {
-      #       disko-proper = disko-comfyui;
+      #       disko-proper = disko;
       #       nixpkgs = nixpkgs-nickel;
       #       inherit flake-inputs ;
       #     })
       #     # (import ./hosts/nickel.nix {
-      #     #   disko-proper = disko-comfyui;
+      #     #   disko-proper = disko;
       #     #   inherit flake-inputs nixpkgs;
       #     # })
       #   ];
@@ -237,7 +226,7 @@
       # nixosModules.nickel = { ... }: {
       #   imports = [
       #     (import ./hosts/nickel.nix {
-      #       disko-proper = disko-comfyui;
+      #       disko-proper = disko;
       #       inherit flake-inputs nixpkgs;
       #     })
       #   ];
@@ -274,7 +263,7 @@
         modules = [
           # ./nixos-modules/sd-image-rasbperrypi.nix
           (import ./hosts/nickel.nix {
-            disko-proper = disko-comfyui;
+            disko-proper = disko;
             nixpkgs = nixpkgs;
             inherit flake-inputs;
           })
