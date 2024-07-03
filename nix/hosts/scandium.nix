@@ -52,14 +52,7 @@ in
     ({ pkgs, ...}: {
       environment.systemPackages = (import ../personal-packages.nix {
         inherit pkgs;
-      }) ++ [
-        # This should remain out because agenix-rekey brings in agenix - or at
-        # least the bits of it we are interested in.
-        # flake-inputs.agenix.packages.${system}.default
-        pkgs.agenix-rekey
-        # Rage is a Rust based Age that claims a more consistent CLI API.
-        pkgs.rage
-      ];
+      });
     })
   ];
 }

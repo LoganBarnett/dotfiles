@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+################################################################################
+# Used for installing the host key on the system if it isn't automatically setup
+# already (such as is the case for macOS systems).  Without doing this,
+# attempting to start the launch daemon will show this:
+# [agenix] WARNING: no readable identities found!
+# age: error: no identity matched any of the recipients
+# And the launch daemon will fail.
+# One can get a print out of this (it won't show up in Console.app) by doing
+# `sudo launchctl print system/org.nixos.activate-agenix` to show the script.
+# Copy the path seen in the arguments entry, and prefix the command with sudo.
+# Remember that if a new generation of your configuration is built that you will
+# need to get the path to the executable again.
+################################################################################
+
+set -euo pipefail
+
+scriptDir="$( dirname -- "${BASH_SOURCE[0]}" )"
+secretsDir="$scriptDir/../nix/secrets"
+host=$(hostname --short)
+
+# TODO: Query the Nix configuration for age.rekey.masterIdentities[0] for the
+# --identity argument.
+# TODO: Query the Nix configuration for age.rekey.hostPubkey for the
+# --decrypt argument.
+rage \
+  --identity $secretsDir/agenix-master-key-3.age \
+  --decrypt $secretsDir/$host-pub-key.age \
+  | sudo tee /etc/ssh/ssh_host_ed25519_key >/dev/null
+
+sudo cp $secretsDir/$host-pub-key.age /etc/ssh/ssh_host_ed25519_key.pub

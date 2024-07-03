@@ -16,7 +16,7 @@
 {
   flake-inputs,
   host-id,
-}: { pkgs, lib, ... }: let
+}: { config, pkgs, lib, ... }: let
   subject-string = subject:
     ''/C=${subject.country}\
 /ST=${subject.state}\
@@ -143,6 +143,10 @@ in {
     ;
 
   age.rekey = {
+    # TODO:  This is the host key, and we should call it that instead of the pub
+    # key.  The .pub is the pub key, but we also have a private key and having
+    # that called the pub-key doesn't make sense.  Make sure to capture other
+    # references, and rename what's already on disk.
     hostPubkey = ../secrets/${host-id}-pub-key.pub;
     masterIdentities = [
       ../secrets/agenix-master-key-3.age
@@ -191,6 +195,11 @@ in {
     rekeyFile = ../secrets/${host-id}-pub-key.age;
   };
 
+  # This is a catch22.  This is needed at build time but isn't available until
+  # activation time.  See bin/nix-host-new in this repository as well as
+  # bin/nix-host-key-install for putting this file in the right place.
+  # environment.etc."ssh/ssh_host_ed25519_key".file = config.age.secrets."${host-id}-pub-key".file;
+
   age.secrets.proton-ca = {
     rekeyFile = ../secrets/proton-ca.age;
     settings = {
@@ -209,15 +218,30 @@ in {
     generator.script = "tls-ca-root";
   };
 
-  # TODO: agenix-rekey doesn't work with nix-darwin in terms of laying down and
-  # managing the /run/agenix directory.  Until this is supported, this file is
-  # both added as a secret here but also under `/etc/nix/builder_...`.
   age.secrets.builder-key = {
     generator.script = "ssh-ed25519-with-pub";
     rekeyFile = ../secrets/builder-key.age;
+    # This used to be required due to some trouble I was having on nix-darwin
+    # but no longer (see secretsDir below for information about that).
+    # path = "/etc/nix/builder-agenix-key";
   };
 
+  # If you're here because you can't find /run/agenix, you're probably on
+  # darwin/macOS and you don't have any host keys in /etc/ssh.  You will have to
+  # generate them for this host (which can be done with `agenix-rekey
+  # generate`), and then have them copied to the correct location by running
+  # `nix-host-key-install` on the host in question, with this repository in
+  # place (which you have to have cloned to make the executable available
+  # anyways).  Then you should find a /run/agenix.  Additional notes can be
+  # found in the nix-host-key-install script.
+  #
+  # This value is left to help me find it again when I forget all of this again.
+  # I have a checklist executable started in nix-host-new.
+  age.secretsDir = "/run/agenix";
+
   imports = [
+    # This should work equally for macOS.  This and the darwinModules version
+    # both reference the same file.
     flake-inputs.agenix.nixosModules.default
     flake-inputs.agenix-rekey.nixosModules.default
   ];
@@ -225,6 +249,9 @@ in {
     # This should remain out because agenix-rekey brings in a replacement
     # agenix.
     # flake-inputs.agenix.packages.${system}.default
+    pkgs.agenix-rekey
+    # Rage is a Rust based Age that claims a more consistent CLI API.
+    pkgs.rage
   ];
   # These files are not actually temporary files, especially if the "-" at the
   # end is included to keep systemd from cleaning up the directory (at some

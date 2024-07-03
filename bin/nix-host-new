@@ -1,0 +1,13 @@
+#!/usr/bin/bash
+################################################################################
+# This is the executable checklist for creating a new host that is Nix managed.
+# This can also apply to a fresh macOS system.  This differs from the
+# nix-install scripts I have in that this is for any host and ensures all
+# secrets needed are generated and in the correct location.
+################################################################################
+
+
+# At the moment, I don't have anything.  Add to this as I make new hosts.
+# At the very least, the host SSH key (not to be confused with a user's SSH key)
+# must be generated.  This is then copied to the right place via
+# nix-host-key-install.
