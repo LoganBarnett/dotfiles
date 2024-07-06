@@ -211,22 +211,25 @@
       # When remapping for a specific device, that device loses the global
       # mappings.  So we have to reapply them manually.  Specifically that is
       # done for caps->control.
-      hidutil property --matching '{"ProductID":0x1baf}' --set '{"UserKeyMapping": 
-        [
-          {
-            "HIDKeyboardModifierMappingSrc":0x7000000E3,
-            "HIDKeyboardModifierMappingDst":0x7000000E2
-          },
-          {
-            "HIDKeyboardModifierMappingSrc":0x7000000E2,
-            "HIDKeyboardModifierMappingDst":0x7000000E3
-          },
-          {
-            "HIDKeyboardModifierMappingSrc":0x700000039,
-            "HIDKeyboardModifierMappingDst":0x7000000E0
-          }
-        ]
-      }'
+      keyboards=('0x1bc3' '0x1baf')
+      for keyboard in $keyboards; do
+        hidutil property --matching "{\"ProductID\":$keyboard}" --set '{"UserKeyMapping":
+          [
+            {
+              "HIDKeyboardModifierMappingSrc":0x7000000E3,
+              "HIDKeyboardModifierMappingDst":0x7000000E2
+            },
+            {
+              "HIDKeyboardModifierMappingSrc":0x7000000E2,
+              "HIDKeyboardModifierMappingDst":0x7000000E3
+            },
+            {
+              "HIDKeyboardModifierMappingSrc":0x700000039,
+              "HIDKeyboardModifierMappingDst":0x7000000E0
+            }
+          ]
+        }'
+      done
       echo "Do not sleep when on AC power."
       pmset -c sleep 0 # Needs testing - UI not immediately updated.
       echo "Allow apps from anywhere..."
