@@ -286,13 +286,14 @@ For some major modes we just need to tie this to the mode hook.
 This highlights indentation, which can be helpful for large sets of indentation.
 
 #+name: config/indentation-highlight
-#+begin_src emacs-lisp :results none :tangle yes
+#+begin_src emacs-lisp :results none :tangle yes :noweb yes
 ;; (setq-default highlight-indent-guides-method 'character)
 ;; (add-hook 'prog-mode-hook #'highlight-indent-guides-mode)
 (use-package "indent-bars"
   :hook
   ((prog-mode) . indent-bars-mode)
   :init
+  <<config/standard-indent>>
   (setq-default
    ;; This is the default value, but for some reason Emacs isn't seeing
    ;; indent-bars-color.  It is defined via defcustom so this is pretty weird.
@@ -305,6 +306,18 @@ This highlights indentation, which can be helpful for large sets of indentation.
    indent-bars-highlight-current-depth '(:blend 0.75)
    )
 )
+#+end_src
+** standard indent
+
+This is used by [[highlight indentation]]'s =indent-bars= when it can't find
+indentation elsewhere.  Perhaps it should ask the buffer what indentation is
+being used, such as =tab-width=?  It does check this variable for certain modes.
+One can also set =indent-bars-spacing-override=.  The function in question is
+=indent-bars--guess-spacing=.
+
+#+name: config/standard-indent
+#+begin_src emacs-lisp :results none :tangle yes
+(setq-default standard-indent 2)
 #+end_src
 
 * all together
