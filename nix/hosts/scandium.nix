@@ -28,7 +28,7 @@ in
       _module.args.git-users = [
         {
           git-email = "logustus@gmail.com";
-          git-username = "LoganBarnett";
+          git-name = "Logan Barnett";
           git-signing-key = "41E46FB1ACEA3EF0";
           host-username = username;
         }

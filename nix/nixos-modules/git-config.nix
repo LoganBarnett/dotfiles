@@ -95,8 +95,14 @@
             autoStash = true;
           };
           user = {
+            # GitHub uses the email address to associate to the account.  Other
+            # services may do this too.  See
+            # https://docs.github.com/en/account-and-profile/setting-up-and-managing-your-personal-account-on-github/managing-email-preferences/setting-your-commit-email-address#about-commit-email-addresses
+            # for reference.  This means the user name can be anything (not to
+            # be confused with a username).  So in most cases, it will be either
+            # an alias or my proper name.
             email = user.git-email;
-            name = user.git-username;
+            name = user.git-name;
             signingkey = user.git-signing-key;
           };
           # includeIf."gitdir:~/dev/nwea/" = {};
