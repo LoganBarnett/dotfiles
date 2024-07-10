@@ -177,7 +177,7 @@
   # Without this, nothing works.
   services.nix-daemon.enable = true;
   system = {
-    # Settings that don't have an option in nix-darwin
+    # Settings that don't have an option in nix-darwin.
     activationScripts.postActivation.text = ''
       # Note that a lot of advice out there will say to use "trustAsRoot" per
       # newer versions of macOS.  This might be correct advice in the context of
@@ -202,17 +202,44 @@
       defaults write com.apple.screensaver askForPassword -int 1
       defaults write com.apple.screensaver askForPasswordDelay -int 0
       echo "Swapping Option + Command keys on external keyboard..."
-      # These can be found with `hidutil --list`.
+      # TODO: Move this to its own shell script for easier testing and
+      # portability.
       # This will need to be reapplied on a restart.  See about integrating this
       # with the built-in system for nix-darwin, because it likely handles all
       # of that.  See
       # https://apple.stackexchange.com/questions/329085/tilde-and-plus-minus-±-in-wrong-place-on-keyboard/353941#353941
-      # for more context.
+      # for an example of a startup-level setting.  However this means the
+      # system needs to login or finish a clean boot first.  Having a global
+      # setting is probably better than having a watch-dog process.
+      #
       # When remapping for a specific device, that device loses the global
-      # mappings.  So we have to reapply them manually.  Specifically that is
-      # done for caps->control.
-      keyboards=('0x1bc3' '0x1baf')
-      for keyboard in $keyboards; do
+      # mappings.  So we have to reapply them manually.  We use a global setting
+      # for for caps->control.  Swapping option and command is desirable for
+      # external keyboards (unless they are Apple keyboards).  `hidutil property
+      # --help` has a lot of useful information on how to go about this.
+      # Warning:  If the device indicated with --matching isn't present, the
+      # hidutil will apply the configuration globally and we don't want that.
+      # This will cause the command and option keys to be inverted on the
+      # onboard laptop keyboard - undesirable.  We must first detect if our
+      # keyboard is present, and then proceed to provide mappings if we so
+      # choose.  In fact, we should invert for all non-Apple keyboards.  Per
+      # https://www.usb.org/sites/default/files/documents/hut1_12v2.pdf
+      # keyboards are page ID 07.  I've tried this and 0x07 but they do not
+      # work.
+      # keyboards=$(hidutil list --matching '{"PrimaryUsagePage":7}')
+      # Use `hidutil property --set '{"UserKeyMapping": []}'` to set.
+      keyboards=$(
+        hidutil list \
+          | grep -i keyboard \
+          | grep -v 'Apple ' \
+          | grep AppleUserHIDDevice \
+          | tr -s ' ' \
+          | cut -d $' ' -f 2 \
+          | uniq
+      )
+      echo "Keyboards found: $keyboards"
+      for keyboard in ''${keyboards[@]}; do
+        echo "Setting keyboard remaps for $keyboard..."
         hidutil property --matching "{\"ProductID\":$keyboard}" --set '{"UserKeyMapping":
           [
             {
