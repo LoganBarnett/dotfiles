@@ -9,6 +9,28 @@
 =prog-mode= will be reflected in practically any mode with code or configuration
 files. It generally doesn't effect text files.
 
+* comments
+** dreaded line break in block comments
+
+C-style block comments (=/* ... */=) behave strangely in Emacs.  I'm not sure
+what exactly introduces this problem, but it exists for any mode that uses
+C-style comments.  What happens is if one is in the comment block, and adds a
+line, the comment block is terminated at the end of the line, and a new block
+comment is started on the next line.  This amounts to us having to do a lot of
+repair on the comments as we write them, and is very counterproductive.
+
+This appears to be documented behavior per [[https://www.gnu.org/software/emacs/manual/html_node/emacs/Multi_002dLine-Comments.html#:~:text=If%20you%20are%20typing%20a,indentation%20to%20continue%20the%20comment][Emacs Manual - Multiple]] Lines of
+Comments]].  It mentions that =comment-multi-line= governs this behavior.  When
+=nil=, the break -> recreate behavior is observed.  Non-=nil= just continues the
+comment using the configured delimiters (which should just be =*= in C style
+comments).  The =*= doesn't appear with just this setting alone, and further
+investigation is required to figure this out.  At least this is far better than
+it was before.
+
+#+name: config/prog-mode-c-style-comment-block-fix
+(setq-default comment-multi-line t)
+#+end_src
+
 * parens, braces, oh my
 ** multi-line
 
@@ -327,6 +349,7 @@ One can also set =indent-bars-spacing-override=.  The function in question is
 
 (use-package "prog-mode"
   :init
+  <<config/prog-mode-c-style-comment-block-fix>>
   <<config/prog-mode-fix-c-indentation>>
   <<prog-mode-disable-visual-line-mode>>
   (config/rainbow-delimiters)
