@@ -26,9 +26,39 @@ comment using the configured delimiters (which should just be =*= in C style
 comments).  The =*= doesn't appear with just this setting alone, and further
 investigation is required to figure this out.  At least this is far better than
 it was before.
-
 #+name: config/prog-mode-c-style-comment-block-fix
-(setq-default comment-multi-line t)
+#+begin_src emacs-lisp :tangle no :results none
+(setq-default
+  comment-multi-line t
+  c-block-comment-prefix "* "
+  c-comment-prefix-regexp "//+\\|\\**"
+  )
+;; Per
+;; https://www.gnu.org/software/emacs/manual/html_node/ccmode/Custom-Filling-and-Breaking.html
+;; this needs to be executed after updating `c-comment-prefix-regexp'.  It will
+;; need to be done manually in a buffer if you wish to test without a restart.
+;; (c-setup-paragraph-variables)
+#+end_src
+
+There is still some other behaviors unresolved here:
+1. Adding a new line does not continue comment prefixes (such as the line of
+   stars seen in many C-style comment blocks - especially documentation
+   comments).
+2. Fills do not preserve the comment block prefixes.
+3. Joining lines seems to not work on comment block prefixes (by removing the
+   prefix when joining with =J=).  Single line comments seem to work.
+
+** comment yank
+
+There's some functionality (I think it's =evilnc-yank-and-comment-operator=)
+which allows commenting via the =g c= operator.  The region is commented, and
+the uncommented version of that text is yanked into the kill ring.  This is a
+really handy operation but oftentimes it stumbles on issues with indentation and
+new lines.  Setting =comment-style= to ='extra-line= fixes this issue.
+
+#+name: config/prog-mode-comment-and-yank-newline-fix
+#+begin_src emacs-lisp :results none :tangle no
+(setq-default comment-style 'extra-line)
 #+end_src
 
 * parens, braces, oh my
@@ -349,6 +379,7 @@ One can also set =indent-bars-spacing-override=.  The function in question is
 
 (use-package "prog-mode"
   :init
+  <<config/prog-mode-comment-and-yank-newline-fix>>
   <<config/prog-mode-c-style-comment-block-fix>>
   <<config/prog-mode-fix-c-indentation>>
   <<prog-mode-disable-visual-line-mode>>
