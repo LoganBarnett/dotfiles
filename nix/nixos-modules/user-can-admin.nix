@@ -44,7 +44,7 @@
     # identification/cleaning quick+easy.  See: https://dev.yorhel.nl/ncdu
     # Disabled due to: https://github.com/NixOS/nixpkgs/issues/317055
     # The workaround can be found in ../overlays/zig.nix but it isn't working.
-    # pkgs.ncdu
+    pkgs.ncdu
     # Run speed tests from the command line.
     pkgs.speedtest-cli
     # A self-proclaimed better netcat.
