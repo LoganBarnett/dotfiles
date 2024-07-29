@@ -87,6 +87,10 @@ if [[ $noop == false ]]; then
    status=progress \
    conv=fsync
   echo "Unmounting again because it can get mounted again..."
+  # In the new macOS version (Sonoma, 14.4), the behavior seems to have changed
+  # in that the disk is either immediately mounted or it wasn't truly unmounted
+  # to begin with.  Just unmount it again, since we generally want to put the
+  # disk into something else right afterwards.
   diskutil unmountDisk $disk || true
   echo "Unmounting done."
 fi
