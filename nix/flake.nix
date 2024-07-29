@@ -177,11 +177,34 @@
         ];
       };
 
+      nixosModules.gallium = { ... }: {
+        imports = [
+          (import ./hosts/gallium.nix {
             disko-proper = disko;
             inherit flake-inputs nixpkgs;
           })
         ];
-        format = "sdImage";
+        format = "sd-aarch64";
+      };
+
+      nixosConfigurations.gallium = nixpkgs.lib.nixosSystem {
+        modules = [
+          (import ./hosts/gallium.nix {
+            disko-proper = disko;
+            inherit flake-inputs nixpkgs;
+          })
+        ];
+      };
+
+      packages.aarch64-linux.gallium-ng = nixos-generators.nixosGenerate {
+        system = "aarch64-linux";
+        format = "sd-aarch64";
+        modules = [
+          (import ./hosts/gallium.nix {
+            disko-proper = disko;
+            inherit flake-inputs nixpkgs;
+          })
+        ];
       };
 
       darwinConfigurations."M-CL64PK702X" =
