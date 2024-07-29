@@ -17,8 +17,8 @@ Some configuration here is private and cannot reasonably shared with the
 community at large. These exist as separate repositories whose permissions are
 locked down to my personal access only. Some paths in here will refer to private
 repositories or files. _All_ of them will have a =private= identifier somewhere in
-the name. It is recommended that you stub these out, but if you're in a rush you
-can just comment/remove these references to get you going.
+the name. It is recommended that you stub these out if you're not me, but if
+you're in a rush you can just comment/remove these references to get you going.
 
 * If Installing From an Existing Configuration
 
