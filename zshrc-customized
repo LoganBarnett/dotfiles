@@ -20,12 +20,12 @@ $HOME/.nix-defexpr/channels:$NIX_PATH"
 export PATH="\
 $HOME/dev/dotfiles-private/bin:\
 $HOME/bin:\
-/sbin:\
-/usr/sbin:\
 $NIX_PATH_ASDF:\
 $HOME/.nix""-profile/bin:\
 /nix/var/nix/profiles/default/bin:\
 /run/current-system/sw/bin:\
+/sbin:\
+/usr/sbin:\
 /usr/local/sbin:\
 /opt/local/sbin:\
 /bin:\
