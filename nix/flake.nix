@@ -145,7 +145,13 @@
 
       nixosModules.cobalt = { ... }: {
         imports = [
-          (import ./hosts/nickel.nix {
+          (import ./hosts/cobalt.nix {
+            disko-proper = disko;
+            inherit flake-inputs nixpkgs;
+          })
+        ];
+        format = "sd-aarch64";
+      };
 
       nixosModules.copper = { ... }: {
         imports = [
