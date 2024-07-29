@@ -147,6 +147,37 @@
       nixosModules.cobalt = { ... }: {
         imports = [
           (import ./hosts/nickel.nix {
+
+      nixosModules.copper = { ... }: {
+        imports = [
+          (import ./hosts/copper.nix {
+            disko-proper = disko;
+            inherit flake-inputs nixpkgs;
+          })
+        ];
+        format = "sd-aarch64";
+      };
+
+      nixosConfigurations.copper = nixpkgs.lib.nixosSystem {
+        modules = [
+          (import ./hosts/copper.nix {
+            disko-proper = disko;
+            inherit flake-inputs nixpkgs;
+          })
+        ];
+      };
+
+      packages.aarch64-linux.copper-ng = nixos-generators.nixosGenerate {
+        system = "aarch64-linux";
+        format = "sd-aarch64";
+        modules = [
+          (import ./hosts/copper.nix {
+            disko-proper = disko;
+            inherit flake-inputs nixpkgs;
+          })
+        ];
+      };
+
             disko-proper = disko;
             inherit flake-inputs nixpkgs;
           })
