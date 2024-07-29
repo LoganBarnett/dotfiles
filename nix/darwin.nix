@@ -51,6 +51,9 @@
     #   pkgs.rsync
     #   pkgs.zsh
     # ] ++ (pkgs.callPackage ./general-packages.nix {});
+    systemPackages = [
+      # pkgs.nightlight
+    ];
   };
   fonts = {
     fontDir.enable = true;
