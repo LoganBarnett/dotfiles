@@ -1,0 +1,52 @@
+#+title:     Raspberry Pi
+#+author:    Logan Barnett
+#+email:     logustus@gmail.com
+#+date:      <2024-07-29 Mon>
+#+language:  en
+#+file_tags:
+#+tags:
+
+Raspberry Pis are tiny, cheap computers with incredibly low power draw, and the
+hardware for them allows them to act as servers as well as embedded devices or
+at least the interface to embedded devices (which in turn can be services).  I
+am in progress of migrating most of my services to Raspberry Pis as a cost and
+space saving measure.
+
+* Building NixOS Raspberry Pi Images
+
+It's such a powerful act to emit a disk image which is an entire NixOS
+installation of a host with absolutely everything already configured.
+
+I have an =image-deploy= program in this repository to handle copying the built
+image to the disk.  It properly detects the disk and handles mounting/unmounting
+as needed, as well as automatic decompression of the image if it is in =zst=
+format.
+
+** Building Raspberry Pi 4 Bootable Images
+
+Building the image is a somewhat streamlined process.  For a Raspberry Pi 4,
+[[https://github.com/nix-community/nixos-generators][nixos-generators]] works more or less out-of-box.  Indicate =format =
+"sd-aarch64";= and it can be ready to go (a more complete code sample coming).
+
+** Raspberry Pi 5
+
+This is different.  I cannot emit bootable Raspberry Pi images using
+=nixos-generators= as I do with [[Building Raspberry Pi 4 Bootable Images]].  Some
+investigation has been done about this, and I have a branch with
+=nixos-generators= in an attempt to resolve it.  Some of it has to do with the
+main =nixpkgs= repository doing some house cleaning.  =sd-aarch64= doesn't
+really indicate that it should be Raspberry Pi at first blush.  Indeed,
+Raspberry Pi uses a proprietary boot system and it should not be expected that
+all =aarch64= boards that boot from an SD card would somehow be Pi compatible.
+So someone in =nixpkgs= started doing the appropriate renames and I _think_ this
+is how one can build a Raspberry Pi 5 bootable image.  =nixos-generators= is not
+yet aware of this new image.
+
+The work in =nixos-generators= is rather light at this point, as most of the
+work is done in =nixpkgs=, but I haven't gotten far in my research yet.
+Furthermore, if the image isn't =aarch64-linux= in a true sense, then I won't be
+able to build it without setting up some kind of emulation.  This comes back to
+some other work I've been doing in regards to remote builders being totally
+declarative.
+
+I need to compile my research together and point my findings here.
