@@ -215,7 +215,12 @@
   # I can't get Kerberos support working just yet, because it can't see the
   # macOS ticket list.  This might be remedied by installing Kerberos via Nix as
   # well.
-  # pkgs.openssh
+  pkgs.openssh
+  # I found this in the openssh/default.nix file.  Doesn't build on macOS yet
+  # due to a missing "security framework":
+  # > configure: error: *** Need a security framework to use the credentials cache API ***
+  # This needs more investigation.  No ticket searching has been done yet.
+  # pkgs.openssh_gssapi
   # A lightweight SQL database which requires no server. This also installs
   # CLI tools in which to access SQLite databases.
   pkgs.sqlite

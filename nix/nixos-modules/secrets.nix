@@ -224,6 +224,7 @@ in {
     # This used to be required due to some trouble I was having on nix-darwin
     # but no longer (see secretsDir below for information about that).
     # path = "/etc/nix/builder-agenix-key";
+    path = "/etc/nix/remote-builder_ed25519";
   };
 
   # If you're here because you can't find /run/agenix, you're probably on

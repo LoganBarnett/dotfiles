@@ -1,12 +1,12 @@
 ##
-# NixOS can be bootstraped in various ways but it requires running on  the
-# target architecture and OS.  Both of these can be emulated but not presently
-# on macOS.  So instead we fire up a VM that's running Nix.  The nix-darwin
-# module provides a handy way to stand all of that up.  This is the
-# configuration that goes into the `config' attribute for nix-darwin's
-# linux-builder.  This VM is stateful, and requires both some bootstrapping and
-# some manual invocation to operate.  Once up, it should present itself as a
-# "builder" (a Nix entity) for the local Nix installation.
+# NixOS can be bootstraped in various ways but it requires running on the target
+# architecture and OS.  Both of these can be emulated but not presently on
+# macOS.  So instead we fire up a VM that's running Nix.  The nix-darwin module
+# provides a handy way to stand all of that up.  This is the configuration that
+# goes into the `config' attribute for nix-darwin's linux-builder.  This VM is
+# stateful, and requires both some bootstrapping and some manual invocation to
+# operate.  Once up, it should present itself as a "builder" (a Nix entity) for
+# the local Nix installation.
 #
 # To force changes to take effect:
 # sudo launchctl kickstart -k system/org.nixos.linux-builder
@@ -26,10 +26,13 @@
 # I'm still working on this.  I can see the builder with `nix store ping --store
 # ssh-ng://linux-builder`, but it does not trust my host.
 {
-  nixpkgs,
+  flake-inputs,
   lib,
+  nixpkgs,
+  pkgs,
   ...
 }: let
+  system = "aarch64-linux";
   linux-builder-pkgs = import nixpkgs {
     system = "aarch64-linux";
     # This seems to cause the build to be x86_64 which I don't think we want, or
@@ -97,6 +100,12 @@
   #   };
   # };
 in {
+  imports = [
+    # (import ./nixos-modules/user-can-admin.nix {
+    #   inherit flake-inputs;
+    #   inherit system;
+    # })
+  ];
   boot.binfmt.emulatedSystems = [
     "i686-linux"
     "x86_64-linux"
@@ -114,6 +123,7 @@ in {
     # "armv6l-none"
   ];
   environment.systemPackages = [
+    pkgs.lsof
     # Allow us to do a "bootstrapped" remote deploy - see bin/remote-deploy for
     # details on why this is needed.
     linux-builder-pkgs.git
