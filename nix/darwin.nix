@@ -53,6 +53,15 @@
     # ] ++ (pkgs.callPackage ./general-packages.nix {});
     systemPackages = [
       # pkgs.nightlight
+      # I worry macOS ships with a weird version of ssh-keyscan and I've been
+      # trying to get Nix to install the GNU version.  `openssh` is the
+      # package in nixpkgs and from my poking around in the Nix code I cannot
+      # see anything that would exclude it from showing up.  In fact I can
+      # see the package in the store with bin/ssh et. al,.  However these do not
+      # appear in /run/current-system/sw/bin.  I have also tried placing the
+      # pkgs.openssh declaration in the general-packages.nix file but still no
+      # joy.
+      # pkgs.openssh
     ];
   };
   fonts = {
