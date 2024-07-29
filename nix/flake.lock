@@ -338,11 +338,11 @@
     },
     "nixlib": {
       "locked": {
-        "lastModified": 1712450863,
-        "narHash": "sha256-K6IkdtMtq9xktmYPj0uaYc8NsIqHuaAoRBaMgu9Fvrw=",
+        "lastModified": 1719708727,
+        "narHash": "sha256-XFNKtyirrGNdehpg7lMNm1skEcBApjqGhaHc/OI95HY=",
         "owner": "nix-community",
         "repo": "nixpkgs.lib",
-        "rev": "3c62b6a12571c9a7f65ab037173ee153d539905f",
+        "rev": "1bba8a624b3b9d4f68db94fb63aaeb46039ce9e6",
         "type": "github"
       },
       "original": {
@@ -386,16 +386,16 @@
         ]
       },
       "locked": {
-        "lastModified": 1717357914,
-        "narHash": "sha256-84V5jMNUEGbUjTPgS5e+xIqMmy5UtLTtvlM69wjyGKQ=",
-        "owner": "LoganBarnett",
+        "lastModified": 1720859326,
+        "narHash": "sha256-i8BiZj5faQS6gsupE0S9xtiyZmWinGpVLwxXWV342aQ=",
+        "owner": "nix-community",
         "repo": "nixos-generators",
-        "rev": "c9f26500c0c1309912b9687ef851aee18f130214",
+        "rev": "076ea5b672bb1ea535ee84cfdabd0c2f0b7f20c7",
         "type": "github"
       },
       "original": {
-        "owner": "LoganBarnett",
-        "ref": "add-sd-image-raspberrypi",
+        "owner": "nix-community",
+        "ref": "master",
         "repo": "nixos-generators",
         "type": "github"
       }
@@ -489,22 +489,6 @@
         "type": "github"
       }
     },
-    "nixpkgs-nickel": {
-      "locked": {
-        "lastModified": 1718072928,
-        "narHash": "sha256-b8JcV6prMGTvMv6llldgGBcS+9SEvB9PuPj+Az3lKkk=",
-        "owner": "LoganBarnett",
-        "repo": "nixpkgs",
-        "rev": "5a88e970a6b952afd6f4a3bb4d6590f5822ff87b",
-        "type": "github"
-      },
-      "original": {
-        "owner": "LoganBarnett",
-        "ref": "comfyui-fetch-model-hide-rebase",
-        "repo": "nixpkgs",
-        "type": "github"
-      }
-    },
     "nixpkgs-stable": {
       "locked": {
         "lastModified": 1685801374,
@@ -590,7 +574,7 @@
         "libcamera-src": "libcamera-src",
         "libpisp-src": "libpisp-src",
         "nixpkgs": [
-          "nixpkgs-nickel"
+          "nixpkgs"
         ],
         "rpi-bluez-firmware-src": "rpi-bluez-firmware-src",
         "rpi-firmware-nonfree-src": "rpi-firmware-nonfree-src",
@@ -624,7 +608,6 @@
         "nixos-generators": "nixos-generators",
         "nixos-hardware": "nixos-hardware",
         "nixpkgs": "nixpkgs_2",
-        "nixpkgs-nickel": "nixpkgs-nickel",
         "raspberry-pi-nix": "raspberry-pi-nix"
       }
     },

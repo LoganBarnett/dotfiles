@@ -33,7 +33,8 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     nixos-generators = {
-      url = "github:LoganBarnett/nixos-generators?ref=add-sd-image-raspberrypi";
+      # url = "github:LoganBarnett/nixos-generators?ref=add-sd-image-raspberrypi";
+      url = "github:nix-community/nixos-generators/master";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     disko = {
@@ -65,13 +66,12 @@
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    nixpkgs-nickel.url = "github:LoganBarnett/nixpkgs/comfyui-fetch-model-hide-rebase";
     # nixpkgs-nickel.url = "github:nixos/nixpkgs?ref=9a9960b98418f8c385f52de3b09a63f9c561427a";
     raspberry-pi-nix = {
       url = "github:tstat/raspberry-pi-nix";
       # url = "github:tstat/raspberry-pi-nix?ref=8fc9cbd3e4a53d365596c9cc4fc3cc07cd447af4";
       # url = "github:LoganBarnett/raspberry-pi-nix?ref=revert-kernel-to-6-1";
-      inputs.nixpkgs.follows = "nixpkgs-nickel";
+      inputs.nixpkgs.follows = "nixpkgs";
     };
   };
 
@@ -83,7 +83,6 @@
     # emacs-overlay,
     nix-darwin,
     nixpkgs,
-    nixpkgs-nickel,
     nixos-anywhere,
     nixos-hardware,
     nixos-generators,
