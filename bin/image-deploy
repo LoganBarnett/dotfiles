@@ -86,6 +86,9 @@ if [[ $noop == false ]]; then
    bs=4M \
    status=progress \
    conv=fsync
+  echo "Unmounting again because it can get mounted again..."
+  diskutil unmountDisk $disk || true
+  echo "Unmounting done."
 fi
 echo "Image has been copied to disk and it remains unmounted.\
   You may remove the disk."
