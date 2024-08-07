@@ -76,6 +76,17 @@ in {
           ];
         });
       };
+      environment.etc."krb5.conf".text = ''
+        [libdefaults]
+          default_realm = IPA.${lib.toUpper work-alias}COLO.PVT
+
+        [realms]
+          IPA.${lib.toUpper work-alias}COLO.PVT = {
+            kdc = ipa01.mgmt.${work-alias}colo.pvt
+          }
+          AMERICAS.${lib.toUpper work-alias}.PVT = {
+          }
+      '';
       environment.systemPackages = [
         pkgs.awscli
         pkgs.saml2aws
