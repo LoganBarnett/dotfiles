@@ -211,11 +211,7 @@
   #   rev = "29b0d4d0b600f8f5dd0b86e3362a33d4181938f9";
   # }) {}).shards
   # pkgs.shards
-  # Use OpenSSH since macOS's doesn't come with Kerberos support.
-  # I can't get Kerberos support working just yet, because it can't see the
-  # macOS ticket list.  This might be remedied by installing Kerberos via Nix as
-  # well.
-  pkgs.openssh
+  (pkgs.openssh.override { withKerberos = true; })
   # I found this in the openssh/default.nix file.  Doesn't build on macOS yet
   # due to a missing "security framework":
   # > configure: error: *** Need a security framework to use the credentials cache API ***
