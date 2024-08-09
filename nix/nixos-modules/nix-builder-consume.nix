@@ -65,12 +65,12 @@ in {
   # This demonstrates that Nix doesn't actually use the data found in
   # /etc/nix/machines but instead relies upon SSH configuration.  Documentation
   # should be addressed.
-  environment.etc."ssh/ssh_config.d/101-lithium.conf".text = ''
-    Host lithium.proton
-      HostName lithium.proton
-      User builder
-      IdentityFile ${config.age.secrets.builder-key.path}
-  '';
+  # environment.etc."ssh/ssh_config.d/101-lithium.conf".text = ''
+  #   Host lithium.proton
+  #     HostName lithium.proton
+  #     User builder
+  #     IdentityFile ${config.age.secrets.builder-key.path}
+  # '';
 
   # environment.etc."nix/remote-builder-key".text =
   #   builtins.readFile ../secrets/builder-key.age;
