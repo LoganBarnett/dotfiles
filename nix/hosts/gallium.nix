@@ -12,6 +12,9 @@
   system = "aarch64-linux";
 in {
   imports = [
+    (import ../nixos-modules/raspberry-pi-5.nix {
+      inherit flake-inputs;
+    })
     (import ../nixos-modules/dhcp-server.nix {
       inherit host-id;
       interface = "eth0";

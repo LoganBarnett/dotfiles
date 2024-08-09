@@ -68,7 +68,8 @@
     };
     # nixpkgs-nickel.url = "github:nixos/nixpkgs?ref=9a9960b98418f8c385f52de3b09a63f9c561427a";
     raspberry-pi-nix = {
-      url = "github:tstat/raspberry-pi-nix";
+      # url = "github:tstat/raspberry-pi-nix";
+      url = "github:nix-community/raspberry-pi-nix";
       # url = "github:tstat/raspberry-pi-nix?ref=8fc9cbd3e4a53d365596c9cc4fc3cc07cd447af4";
       # url = "github:LoganBarnett/raspberry-pi-nix?ref=revert-kernel-to-6-1";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -190,7 +191,7 @@
             inherit flake-inputs nixpkgs;
           })
         ];
-        format = "sd-aarch64";
+        format = "sd-aarch64-raspberrypi";
       };
 
       nixosConfigurations.gallium = nixpkgs.lib.nixosSystem {
