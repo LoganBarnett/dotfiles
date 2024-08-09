@@ -33,14 +33,18 @@ Building the image is a somewhat streamlined process.  For a Raspberry Pi 4,
 This is different.  I cannot emit bootable Raspberry Pi images using
 =nixos-generators= as I do with [[Building Raspberry Pi 4 Bootable Images]].  Some
 investigation has been done about this, and I have a branch with
-=nixos-generators= in an attempt to resolve it.  Some of it has to do with the
-main =nixpkgs= repository doing some house cleaning.  =sd-aarch64= doesn't
-really indicate that it should be Raspberry Pi at first blush.  Indeed,
-Raspberry Pi uses a proprietary boot system and it should not be expected that
-all =aarch64= boards that boot from an SD card would somehow be Pi compatible.
-So someone in =nixpkgs= started doing the appropriate renames and I _think_ this
-is how one can build a Raspberry Pi 5 bootable image.  =nixos-generators= is not
-yet aware of this new image.
+=nixos-generators= in an attempt to resolve it.
+
+*** cause of problems
+
+Some of it has to do with the main =nixpkgs= repository doing some house
+cleaning.  =sd-aarch64=, the identifier used by =nixos-generators= and declared
+by =nixpkgs=, doesn't really indicate that it should be Raspberry Pi at first
+blush.  Indeed, Raspberry Pi uses a proprietary boot system and it should not be
+expected that all =aarch64= boards that boot from an SD card would somehow be Pi
+compatible.  So someone in =nixpkgs= started doing the appropriate renames and I
+_think_ this is how one can build a Raspberry Pi 5 bootable image.
+=nixos-generators= is not yet aware of this new image.
 
 The work in =nixos-generators= is rather light at this point, as most of the
 work is done in =nixpkgs=, but I haven't gotten far in my research yet.
@@ -49,4 +53,45 @@ able to build it without setting up some kind of emulation.  This comes back to
 some other work I've been doing in regards to remote builders being totally
 declarative.
 
-I need to compile my research together and point my findings here.
+*** ticket findings
+
+This is the main ticket for adding support:
+https://github.com/NixOS/nixpkgs/issues/260754
+
+Someone official-sounding has said RPi5 _official_ support won't be coming to
+=nixpkgs= and the current level of support extended to RPi4 is a mistake that
+won't be repeated.
+
+Much of the discussion seems distant from building a bootable image (indeed,
+some authors seem to not value it at all).
+
+The ticket indicates some write up has been done here, and sounds like it's
+being kept reasonably up to date:
+https://wiki.nixos.org/wiki/NixOS_on_ARM/Raspberry_Pi_5
+
+*** wiki findings
+
+Trying to build per the instructions results in this error:
+
+#+begin_example
+@ nix build '.#nixosConfigurations.gallium.config.system.build.sdImage' --show-trace
+warning: Git tree '/Users/logan/dev/dotfiles' is dirty
+cannot build on 'ssh-ng://builder@nickel.proton': error: failed to start SSH connection to 'builder@nickel.proton'
+error: build of '/nix/store/vsafrcbqs2d77rcb331ffsl8wzjbjyyq-linux-rpi-6.6.31.drv' on 'ssh-ng://builder@linux-builder' failed: builder for '/nix/store/vsafrcbqs2d77rcb331ffsl8wzjbjyyq-linux-rpi-6.6.31.drv' failed with exit code 2;
+       last 10 log lines:
+       >   CC [M]  net/netfilter/xt_nat.o
+       >   CC [M]  net/netfilter/xt_AUDIT.o
+       >   CC [M]  net/netfilter/xt_CHECKSUM.o
+       >   CC [M]  net/netfilter/xt_CLASSIFY.o
+       >   CC [M]  net/netfilter/xt_CT.o
+       > make[4]: *** No rule to make target 'net/netfilter/xt_DSCP.o', needed by 'net/netfilter/'.  Stop.
+       > make[3]: *** [../scripts/Makefile.build:480: net/netfilter] Error 2
+       > make[2]: *** [../scripts/Makefile.build:480: net] Error 2
+       > make[1]: *** [/build/source/Makefile:1913: .] Error 2
+       > make: *** [../Makefile:234: __sub-make] Error 2
+       For full logs, run 'nix-store -l /nix/store/vsafrcbqs2d77rcb331ffsl8wzjbjyyq-linux-rpi-6.6.31.drv'.
+error: builder for '/nix/store/vsafrcbqs2d77rcb331ffsl8wzjbjyyq-linux-rpi-6.6.31.drv' failed with exit code 1
+error: 1 dependencies of derivation '/nix/store/hnnfnag2iycspjshmk5cn51hrx2nb7pl-nixos-sd-image-24.11.20240629.8150b52-aarch64-linux.img.drv' failed to build
+#+end_example
+
+An expanded log can be found at [[file:./rpi5-linux-kernel-netfilter-build-error-01.log]].
