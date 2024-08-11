@@ -214,6 +214,17 @@
         ];
       };
 
+      # Build this with:
+      # nix build '.#nixosConfigurations.germanium.config.system.build.image'
+      nixosConfigurations.germanium = nixpkgs.lib.nixosSystem {
+        modules = [
+          (import ./hosts/germanium.nix {
+            disko-proper = disko;
+            inherit flake-inputs;
+          })
+        ];
+      };
+
       darwinConfigurations."M-CL64PK702X" =
         nix-darwin.lib.darwinSystem (import ./hosts/M-CL64PK702X.nix {
           inherit flake-inputs;
