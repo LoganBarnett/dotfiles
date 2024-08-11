@@ -31,9 +31,12 @@ sd_results=$(
       '.SPCardReaderDataType[]._items[].bsd_name'
 )
 usb_results=$(
+  # At some point we had `and volumes?` in the select below, but that proved to
+  # not work for some partition or media types - particularly a USB hard drive
+  # dock.  If it was needed, we need to figure out what difference is made.
   system_profiler SPUSBDataType -json \
     | jq -r \
-      '.. | select(.bsd_name? and .volumes?).bsd_name'
+      '.. | select(.bsd_name?).bsd_name'
 )
 unset IFS
 array=( "${sd_results[@]}""${usb_results[@]}" )
