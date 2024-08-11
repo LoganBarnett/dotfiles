@@ -51,7 +51,14 @@ if [[ $noop == true ]]; then
 fi
 
 if [ -z ${disk+x} ]; then
-  disk="/dev/$(disk-detachable)"
+  disk="/dev/$(disk-detachable | head -n 1)"
+fi
+
+if [[ "$disk" == "/dev/" ]]; then
+  echo "No disk detected.  Aborting..."
+  exit 1
+else
+  echo "Found disk: '$disk'"
 fi
 
 if [ -z ${image_name+x} ]; then
@@ -79,7 +86,7 @@ if [[ "$image_name" =~ \.zst$ ]]; then
 fi
 
 if [[ $noop == false ]]; then
-  diskutil unmountDisk $disk
+  sudo diskutil unmountDisk force $disk
   sudo dd \
    if="$image_name" \
    of=$disk \
