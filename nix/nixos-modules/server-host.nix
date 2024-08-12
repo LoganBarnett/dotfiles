@@ -6,7 +6,7 @@
   flake-inputs,
   host-id,
   system,
-}: { ... }: {
+}: { pkgs, ... }: {
   imports = [
     {
       # Hostname is not an FQDN.
@@ -65,5 +65,11 @@
     "fat32"
     "ntfs"
     "xfs"
+  ];
+  environment.systemPackages = [
+    # Should address potential speed concerns with scp/rsync transfers.
+    # I'm not sure why this wouldn't be the default, and haven't found anything
+    # to that effect yet.
+    pkgs.openssh_hpn
   ];
 }

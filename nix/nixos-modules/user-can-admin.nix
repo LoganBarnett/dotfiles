@@ -9,6 +9,7 @@
     # curl does http requests. Comes with MacOS but no reason to use a dated
     # version.
     pkgs.curl
+    # Show us the current system as a double.
     flake-inputs.current-system.packages.${system}.default
     # Allows us to query the status of USB devices.  This uses lsusb or
     # systemprofile -json under the hood in a cross-platform manner.
@@ -16,6 +17,8 @@
     # might think.  This is _not_ for storage devices (many things imply it will
     # work, but it won't).
     pkgs.cyme
+    # Use for debugging network issues such as checking full or half duplex.
+    pkgs.ethtool
     # Searches for files. Used by projectile in Emacs.  Included in
     # administrative tools because it needs to be on the remote host when using
     # Tramp.
@@ -31,6 +34,9 @@
     pkgs.gnutls
     # A more visual version of top.
     pkgs.htop
+    # Performance test IP connections.  Supports TCP/UDP/SCTP and both IPv4 and
+    # IPv6.  It requires running a client and a server simultaneously.
+    pkgs.iperf
     # Let us see ports and file handles held by processes.
     pkgs.lsof
     # A union of ping and traceroute - ping all hosts along a route.
@@ -54,6 +60,13 @@
     pkgs.ripgrep
     # Copy files recursively. Replaces BSD version on macOS.
     pkgs.rsync
+    # Gives us iostat.  Show us IO usage (such as disk reads/writes).  Useful
+    # for identifying performance bottlenecks relating to disk.
+    pkgs.sysstat
+    # Watch TCP packets!
+    pkgs.tcpdump
+    # Show the path that packets take.
+    pkgs.traceroute
     # Show a tree-listing of directories and files.
     pkgs.tree
     # Highly controllable terminal emulation and session management.

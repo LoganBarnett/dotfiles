@@ -65,6 +65,7 @@
   pkgs.utillinux
   # Read EXIF metadata from images.
   pkgs.exiftool
+  # Give us free? and watch on macOS.
   pkgs.procps
   # The BSD awk I have found lacking. Not really a surprise. Replace it with
   # GNU.
