@@ -240,6 +240,8 @@
       # work.
       # keyboards=$(hidutil list --matching '{"PrimaryUsagePage":7}')
       # Use `hidutil property --set '{"UserKeyMapping": []}'` to set.
+      # echo "Move old key map file out of the way to fix non-save error in hidutil."
+      # mv --verbose ~/Library/Preferences/com.apple.symbolichotkeys.plist{,.old}
       keyboards=$(
         hidutil list \
           | grep -i keyboard \
