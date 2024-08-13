@@ -148,6 +148,9 @@
   pkgs.podman
   # Query an HTML DOM from the command line.
   pkgs.pup
+  # A tool for generating random passwords.  Helpful to have for generating on
+  # the fly.
+  pkgs.pwgen
   # Like Ruby, but not.
   (pkgs.python3.withPackages (ps: [
     ps.lxml
