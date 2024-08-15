@@ -9,6 +9,7 @@ set -euo pipefail
 
 noop=false
 cleanup_image=false
+verify_boot=""
 
 while true; do
   case "${1:-}" in
@@ -22,6 +23,8 @@ Usage: $0 [opts]
                        Must be a fully qualified path.  Defaults to the
                        disk-detachable output.  Ex: /dev/disk4
   --noop               Do not perform any operations but output as if it did.
+  --verify-boot <type> Verify the bootability of this image after it is copied.
+                       Valid values for <type> are: efi.
 
 Deploys a bootable image with NixOS to a removable storage.  This image should
 contain the entirety of the configuration.  The image is built and then the
@@ -41,6 +44,10 @@ EOH
     --noop)
       noop=true
       shift 1
+      ;;
+    --verify-boot)
+      verify_boot="${2:-}"
+      shift 2
       ;;
     * ) break ;;
   esac
@@ -101,8 +108,28 @@ if [[ $noop == false ]]; then
   diskutil unmountDisk $disk || true
   echo "Unmounting done."
 fi
+sync --file-system $disk
 echo "Image has been copied to disk and it remains unmounted.\
   You may remove the disk."
+
+echo "Here's what we got from the imaging:"
+
+diskutil list $disk
+
+if [[ "$verify_boot" == 'efi' ]]; then
+  # macOS specific - remember to update this when generalizing this script for
+  # Linux.
+  # sudo mkdir -p /Volumes/efi-test
+  # diskutil mount $disk /Volumes/efi-test
+  # ls /Volumes/efi-test/boot
+  # -r is read-only opening.
+  sudo gpt -r show $disk
+  # -l displays the labels.
+  sudo gpt -r show -l $disk
+  sudo fdisk --list-details $disk
+  # Run the fix:
+  # echo '' | sudo sfdisk $disk
+fi
 
 # Decompressed images are copies and so we can safely remove them and still run
 # the script again.
