@@ -2,7 +2,6 @@
 # Configuration common to all hosts that are servers.
 ################################################################################
 {
-  disko-proper,
   flake-inputs,
   host-id,
   system,
@@ -22,8 +21,6 @@
         registry.nixpkgs.flake = flake-inputs.nixpkgs;
       };
     }
-    # We can't use `disko` because it's taken, I guess.
-    disko-proper.nixosModules.disko
     (import ./secrets.nix {
       inherit flake-inputs host-id;
     })

@@ -32,7 +32,7 @@ in {
     })
     ../nixos-modules/nix-builder-provide.nix
     (import ../nixos-modules/server-host.nix {
-      inherit disko-proper flake-inputs host-id system;
+      inherit flake-inputs host-id system;
     })
     (import ../nixos-modules/https.nix {
       inherit host-id;

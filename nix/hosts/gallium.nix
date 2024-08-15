@@ -21,7 +21,7 @@ in {
     })
     ../nixos-modules/nix-builder-provide.nix
     (import ../nixos-modules/server-host.nix {
-      inherit disko-proper flake-inputs host-id system;
+      inherit flake-inputs host-id system;
     })
     ({ pkgs, ... }: {
       # networking.hostId is needed by the filesystem stuffs.

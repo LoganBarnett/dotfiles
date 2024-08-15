@@ -8,7 +8,7 @@ in {
   imports = [
     ../nixos-modules/amd-gpu.nix
     (import ../nixos-modules/server-host.nix {
-      inherit host-id flake-inputs disko-proper system;
+      inherit host-id flake-inputs system;
     })
     ../nixos-modules/steam-gaming.nix
   ];

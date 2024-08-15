@@ -60,7 +60,7 @@ in {
     # })
     # "${nixpkgs}/nixos/modules/installer/sd-card/sd-image-aarch64.nix"
     (import ../nixos-modules/server-host.nix {
-      inherit disko-proper flake-inputs host-id system;
+      inherit flake-inputs host-id system;
     })
     (import ../nixos-modules/ldap-server.nix { inherit host-id; })
     ../nixos-modules/raspberry-pi-disk.nix

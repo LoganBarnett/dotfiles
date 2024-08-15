@@ -15,7 +15,7 @@ in {
     # We don't want builds going over the tunnel to this host.
     # ../nixos-modules/nix-builder-provide.nix
     (import ../nixos-modules/server-host.nix {
-      inherit disko-proper flake-inputs host-id system;
+      inherit flake-inputs host-id system;
     })
     # (import ../nixos-modules/wireguard-client.nix {
     #   inherit host-id;
