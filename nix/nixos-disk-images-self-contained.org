@@ -1,0 +1,221 @@
+#+title:     NixOS disk images - self contained
+#+author:    Logan Barnett
+#+email:     logustus@gmail.com
+#+date:      <2024-08-12 Mon>
+#+language:  en
+#+file_tags:
+#+tags:
+
+This document covers notes around making self contained NixOS disk images.
+
+Nix is capable of emitting an entire disk image with NixOS in the desired
+configuration state.  This works great for Raspberry Pis.  However this doesn't
+work for non-Raspberry Pi installations.  The existing documentation and to a
+great extent the code itself all points to using a NixOS installer.
+
+* Problems with the Installer
+
+The installer may not recognize all hardware and thus getting NixOS to install a
+particular disk not work.
+
+The installer is rife with manual, error prone steps that are contrary to Nix's
+overall philosophy.  For example, the NixOS installer workflow involves manually
+making a bunch of changes to the destination disks.  So one would need to create
+one's own partitions by hand (even though said partitions _must_ be included in
+the NixOS configuration), and then perform NixOS operations to copy the OS to
+the destination (requiring an Internet connection or substitutors configured via
+a local network).
+
+Furthermore, the steps to do this don't seem entirely clear.
+
+* Use Case
+
+I have an external hard drive enclosure.  Essentially it is a USB to disk
+converter.  From this I can put in disks (using 3.5in or 2.5 in size) and they
+are presented as detachable disks to the OS.  This is basically the same thing
+as the SD card slot in my laptop, but for PC disks instead.
+
+I wish to emit an entire NixOS image to this disk that is the entirety of the
+host I wish to support.  I should be able to take this disk and install it on
+the physical host, boot the host, and see a ready-to-use host.
+
+* Problems
+
+** The Installer
+
+The installer gets in the way here quite a bit.  All of the image emitting tools
+are under the =installer= directory and either =sd-card= or =cd-dvd=.  These
+both have some steep assumptions in them.  The =sd-card= actually assumes
+Raspberry Pi, and =cd-dvd= assumes bootable media that is separate from the
+disks with which NixOS is to be installed to.
+
+=sd-card= comes really close but I would need to remove the Raspberry Pi bits
+from there.
+
+The =cd-dvd= section is known to work for PCs, so I might need to start there
+and dial back from the installer.
+
+Likely I will have use a bit of both systems.
+
+I will make a =bootable-nixos.nix= to cover this.  Perhaps there is better
+naming, but I believe this is better naming than what exists right now.
+
+** Image type
+
+We want =raw= since =isoImage= assumes an optical disk in a lot of ways.  While
+it is technically possible to have a disk be ISO and boot to it, it's painful
+I'm finding.  One particular issue I ran into is that the main partition was
+supposed to be =ext4= but it was =iso= instead, but I have no idea how that
+conversion took place or if I even have any control over that.
+
+=raw= seems to work fine better in some ways because I get what I ask for.  I
+haven't gotten anything working yet, so that's not a full vote of confidence.
+
+** Boot loader
+
+I think if at all possible going for something like =systemd-boot= would be
+preferable over something like =grub=.  As I understand, it can all work, though
+I think =grub= requires we boot into a legacy mode in most firmwares.
+=systemd-boot= assumes UEFI.
+
+I'm still experimenting with this part.
+
+** Checking if it can boot without having to use sneaker net
+
+=diskutil list= can show the partitions even when unmounted.
+
+#+begin_example
+$ diskutil list
+...
+
+/dev/disk6 (external, physical):
+   #:                       TYPE NAME                    SIZE       IDENTIFIER
+   0:      GUID_partition_scheme                        *2.0 TB     disk6
+   1:                        EFI ESP                     96.5 MB    disk6s1
+   2: BC13C2FF-59E6-4262-A352-B275FD6F7172               151.0 MB   disk6s2
+   3:           Linux Filesystem                         4.4 GB     disk6s3
+                    (free space)                         2.0 TB     -
+
+#+end_example
+
+Is this correct?  Can we check other things?
+
+In order to be EFI bootable, the following must be observed:
+
+... eh I wasn't able to get a finite list yet.
+
+This is interesting:
+
+#+begin_example
+$ sudo  /run/current-system/sw/bin/fdisk --list /dev/disk6
+GPT PMBR size mismatch (9093119 != 3907029167) will be corrected by write.
+The backup GPT table is not on the end of the device.
+Disk /dev/disk6: 1.82 TiB, 2000398934016 bytes, 3907029168 sectors
+Units: sectors of 1 * 512 = 512 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+Disklabel type: gpt
+Disk identifier: 97FD5997-F390-0B4A-A3F8-D106C1723AEA
+
+Device        Start     End Sectors  Size Type
+/dev/disk6p1  16384  499711  483328  236M EFI System
+/dev/disk6p2 499712 9091071 8591360  4.1G Linux filesystem
+#+end_example
+
+Note the "mismatch ... will be corrected by write".
+
+
+** helpful tools
+
+=bootctl= provides some very helpful information if, from a USB stick boot, one
+can mount the partitions.  Recommended to make and mount =/efi= using the boot
+partition.
+
+=efibootmgr -v= spits out what the NVRAM has.  While it would be nice to just
+slap in a drive and boot it up, I guess UEFI can prevent that because it needs
+to be told to see the value for a brand new boot entry.  I don't know how people
+are expected to troubleshoot machines this way, but oh well.  You can run
+=efibootmgr --create= and it will do the needful.
+
+
+=efibootmgr= doesn't document this well, but it has an identifier parameter that
+is used in conjunction with an operator parameter.  So if one wants to delete an
+entry, it's this:
+
+#+begin_src sh :exports code
+efibootmgr --bootnum 0004 --delete
+#+end_src
+
+The exact parameters might need to be updated, but you get the gist.
+
+You cannot update the label or make any real modifications to an entry.  Delete
+and recreate.  No, the "modify" stuff in the documentation just means "what to
+operate upon".
+
+This is notable because the program doesn't output anything meaningful along
+these lines.
+
+** The problem
+
+After running =efibootmgr --create=, I was able to get the disk to show up with
+=efibootmgr -v= as well as seeing "Linux" in the firmware.  However the path in
+=efibootmgr -v= shows =\EFI\nixos\grub.efi= which doesn't exist!  This may be
+our smoking gun.  The actual file is =\EFI\BOOT\BOOTX64.EFI=.
+
+Removing the entry and putting it back in made it work!
+
+** Going forward
+
+So I thought I could just slap in a disk and boot up the machine, but it looks
+like that just isn't possible even if I can get really close.  This is because
+the NVRAM entries take precedence and the disk is never used until the NVRAM is
+updated.  I'm not really sure what to do here to make it so I can just slap the
+hardware in and go.  This may be why this is not a well trodden path in NixOS
+land.
+
+This [[https://search.nixos.org/options?channel=24.05&show=boot.loader.grub.efiInstallAsRemovable&from=0&size=50&sort=relevance&type=packages&query=efiInstall][documentation on efiInstallAsRemovable]] states that placing the file in the
+right location should've been enough to make things work.  It states:
+
+#+begin_quote
+If you turn this feature on, GRUB will install itself in a special location
+within efiSysMountPoint (namely EFI/boot/boot$arch.efi) which the firmwares are
+hardcoded to try first, regardless of NVRAM EFI variables.
+#+end_quote
+
+And it was indeed placed there, although the casing was a bit off.  I should
+verify that.  The ESP partition is not supposed to be case sensitive.  Indeed,
+one of the reasons this is used is because, as the same documentation states:
+
+#+begin_quote
+To summarize, turn this on if:
+...
+You simply dislike the idea of depending on NVRAM state to make your drive
+bootable
+#+end_quote
+
+That said, at some point I turned it to =false= in my workings, but it had
+plenty of opportunities to boot before that when it was =true=.
+
+It could be that in the VM where it runs, the operations it performs against the
+VM's fake EFI variables are not applicable to the system it is placed in.  This
+is something I need to research more.  The documentation does kind of state that
+too:
+
+#+begin_quote
+If you are not booted in UEFI mode at the time GRUB is being installed, the
+NVRAM will not be modified, and your system will not find GRUB at boot time.
+However, GRUB will still return success so you may miss the warning that gets
+printed (“efibootmgr: EFI variables are not supported on this system.”).
+#+end_quote
+
+So let's just assume that's the case for now.
+
+In summary, I think I need to run =efibootmgr= or some equivalent on UEFI
+systems.  This would explain why this disk wouldn't work in another machine.  It
+may be that I just need to go back to legacy booting.
+
+This has a great read on the topic:
+https://www.reddit.com/r/linuxquestions/comments/63azo4/eli5_what_exactly_is_the_problem_with_uefi_and/
+
+This is recommended:
+https://www.youtube.com/watch?v=V2aq5M3Q76U
