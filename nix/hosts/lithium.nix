@@ -35,8 +35,16 @@ in {
       inherit host-id;
       port = comfyui-port;
     })
-    # This is just to make lithium able to emit a Raspberry Pi image.
     ({ ... }: {
+      # Allow building i686-linux binaries too.  This is helpful if an
+      # x86_64-linux build needs 32bit support, which is what i686 indicates.
+      nix.settings = {
+        extra-platforms = [
+          "i686-linux"
+        ];
+      };
+      # This is just to make lithium able to emit a Raspberry Pi image.  It is
+      # not recommended since lithium is not an arm system.
       # boot.binfmt.emulatedSystems = [ "aarch64-linux" ];
       # nix.settings = {
       #   trusted-substituters = [
@@ -89,7 +97,6 @@ in {
             };
           };
         };
-        # TODO: It would be good to put a swap partition in place.
         lvm_vg = {
           pool = {
             type = "lvm_vg";

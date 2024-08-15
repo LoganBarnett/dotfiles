@@ -33,6 +33,11 @@ in {
     # "${nixpkgs}/nixos/modules/installer/cd-dvd/channel.nix"
     ../hacks/installer/cd-dvd-channel.nix
     ({ pkgs, lib, ... }: {
+      # Make it so we can read the USB device that we booted from.  Otherwise
+      # stuff just doesn't work and we get a "timed out waiting for device"
+      # error.  This seems to have no effect on the build though, and is
+      # probably included via the CD installer module.
+      boot.initrd.availableKernelModules = [ "uas" "usbcore" "usb_storage" ];
       # I don't know what else to set this to that's meaningful, but it has to
       # be set to _something_.  This is very likely something that will bite me
       # later.

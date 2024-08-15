@@ -253,6 +253,8 @@
         ];
       };
 
+      # Build this with:
+      # nix build '.#nixosConfigurations.titanium.config.system.build.image'
       nixosConfigurations.titanium = nixpkgs.lib.nixosSystem {
         modules = [
           (import ./hosts/titanium.nix {
@@ -367,8 +369,7 @@
         };
       in
         nixpkgs.lib.nixosSystem (import ./hosts/nucleus.nix {
-          buildPlatform = "aarch64-linux";
-          destinationHostname = "lithium";
+          buildPlatform = "x86_64-linux";
           destinationPlatform = "x86_64-linux";
           disko-proper = disko;
           inherit flake-inputs nixpkgs pkgs;

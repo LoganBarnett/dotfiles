@@ -34,7 +34,12 @@ in {
       inherit sshKey sshUser;
       hostName = "lithium.proton";
       # Or use systems with a list.
-      system = "x86_64-linux";
+      systems = [
+        "x86_64-linux"
+        # Allows building 32-bit binaries which are sometimes needed (like
+        # Steam).
+        "i686-linux"
+      ];
       protocol = "ssh-ng";
       # Keep this host from being bogged down by builds.
       maxJobs = 1;
