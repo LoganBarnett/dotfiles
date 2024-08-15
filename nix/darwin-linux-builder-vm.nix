@@ -101,10 +101,10 @@
   # };
 in {
   imports = [
-    # (import ./nixos-modules/user-can-admin.nix {
-    #   inherit flake-inputs;
-    #   inherit system;
-    # })
+    (import ./nixos-modules/user-can-admin.nix {
+      inherit flake-inputs;
+      inherit system;
+    })
   ];
   boot.binfmt.emulatedSystems = [
     "i686-linux"

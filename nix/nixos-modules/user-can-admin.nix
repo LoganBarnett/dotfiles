@@ -1,5 +1,5 @@
 # Global system administration tools.
-{ flake-inputs, system }: { pkgs, ... }: {
+{ flake-inputs, system }: { lib, pkgs, ... }: {
   environment.systemPackages = [
     # A grep-sed like alternative. Offers a scripting language for
     # transformations.
@@ -17,8 +17,6 @@
     # might think.  This is _not_ for storage devices (many things imply it will
     # work, but it won't).
     pkgs.cyme
-    # Use for debugging network issues such as checking full or half duplex.
-    pkgs.ethtool
     # Searches for files. Used by projectile in Emacs.  Included in
     # administrative tools because it needs to be on the remote host when using
     # Tramp.
@@ -60,13 +58,8 @@
     pkgs.ripgrep
     # Copy files recursively. Replaces BSD version on macOS.
     pkgs.rsync
-    # Gives us iostat.  Show us IO usage (such as disk reads/writes).  Useful
-    # for identifying performance bottlenecks relating to disk.
-    pkgs.sysstat
     # Watch TCP packets!
     pkgs.tcpdump
-    # Show the path that packets take.
-    pkgs.traceroute
     # Show a tree-listing of directories and files.
     pkgs.tree
     # Highly controllable terminal emulation and session management.
@@ -77,5 +70,15 @@
     pkgs.vim
     # A handy alternative to curl, best suited for downloading content.
     pkgs.wget
+  ] ++ lib.optionals pkgs.stdenv.isLinux [
+    # Use for debugging network issues such as checking full or half duplex.
+    pkgs.ethtool
+    # Partition editing.
+    pkgs.parted
+    # Gives us iostat.  Show us IO usage (such as disk reads/writes).  Useful
+    # for identifying performance bottlenecks relating to disk.
+    pkgs.sysstat
+    # Show the path that packets take.
+    pkgs.traceroute
   ];
 }
