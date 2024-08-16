@@ -56,6 +56,9 @@ in {
       # };
     })
     ({ lib, ... }: {
+      imports = [
+        disko-proper.nixosModules.disko
+      ];
       disko.devices = {
         disk.disk1 = {
           device = lib.mkDefault "/dev/sda";

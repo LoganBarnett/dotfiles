@@ -41,7 +41,10 @@
           # Ugh, we need to use this when the image is being made, but the other
           # for the machine.  I need to do some Nix gymnastics for this one.
           # device = "/dev/vda";
-          device = "/dev/disk/by-id/ata-ST2000DX001-SSHD-8GB_Z4Z5REMV";
+          # device = "/dev/disk/by-id/ata-ST2000DX001-SSHD-8GB_Z4Z5REMV";
+          # device = "/dev/disk/by-id/wwn-0x5000c50091b1805c";
+          # Use this for already-bootable machines I guess.
+          device = "nodev";
           # device = "/dev/vda";
           efiSupport = true;
           useOSProber = true;

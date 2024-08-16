@@ -1,33 +1,13 @@
 ################################################################################
 # Bootstrap a host with an SSH key.
+#
+# Presently doesn't work, and likely isn't possible with existing libraries.
 ################################################################################
 # Theft from:
 # https://github.com/oddlama/nix-config/blob/6483bd4f7edb981fbcee829fa1e455fe0b848c36/config/optional/initrd-ssh.nix#L15
-{ config, pkgs, ... }: let
+{ config, lib, pkgs, ... }: let
   host-id = config.networking.hostName;
 in {
-  age.generators.ssh-ed25519-with-pub = {
-    file,
-    lib,
-    name,
-    pkgs,
-    ...
-  }: ''
-    mkdir -p "$(dirname "${file}")"
-    (exec 3>&1;
-    ${pkgs.openssh}/bin/ssh-keygen \
-      -q \
-      -t ed25519 \
-      -N "" \
-      -C ${lib.escapeShellArg "${host-id}:${name}"} \
-      -f ${name} \
-      <<<y >/dev/null 2>&1;
-      cp "${name}.pub" "$(dirname "${file}")"
-      echo copied public key ${name}.pub to "$(dirname "${file}")" 1>&2
-      cat "${name}"
-      rm "${name}"{,.pub}
-    true)
-  '';
   age.secrets.initrd_host_ed25519_key = {
     generator.script = "ssh-ed25519-with-pub";
     # It's important to specify a rekeyFile because if it goes into our
@@ -39,13 +19,19 @@ in {
   };
   boot.initrd.network.enable = true;
   boot.initrd.network.ssh = {
-    enable = true;
+    enable = false;
+    authorizedKeyFiles = lib.mkForce ["/etc/ssh/authorized_keys.d/%u"];
     port = 4;
     hostKeys = [config.age.secrets.initrd_host_ed25519_key.path];
   };
   boot.initrd.secrets = {
     "/etc/host-key" = config.age.secrets.initrd_host_ed25519_key.path;
   };
+  # {
+  #   age.identityPaths = [
+  #     "/etc/host-key"
+  #   ];
+  # }
   # Make sure that there is always a valid initrd hostkey available that can
   # be installed into the initrd. When bootstrapping a system (or
   # re-installing), agenix cannot succeed in decrypting whatever is given,
@@ -70,7 +56,7 @@ in {
     # link called /run/agenix. Agenix should probably fail in this case, but
     # doesn't and instead puts the generation link into the existing directory.
     # TODO See https://github.com/ryantm/agenix/pull/187.
-    removeAgenixLink.text = "[[ ! -L /run/agenix ]] && [[ -d /run/agenix ]] && rm -rf /run/agenix";
-    agenixNewGeneration.deps = ["removeAgenixLink"];
+    # removeAgenixLink.text = "[[ ! -L /run/agenix ]] && [[ -d /run/agenix ]] && rm -rf /run/agenix";
+    # agenixNewGeneration.deps = ["removeAgenixLink"];
   };
 }

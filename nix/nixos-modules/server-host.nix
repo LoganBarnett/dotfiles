@@ -30,6 +30,8 @@
     ./nix-builder-provide.nix
     ./nix-flakes.nix
     ./nix-store-optimize.nix
+    # Haven't gotten this working yet.
+    # ./server-host-pub-key.nix
     ./sshd.nix
     ./tls-trust.nix
     (import ./user-can-admin.nix {
