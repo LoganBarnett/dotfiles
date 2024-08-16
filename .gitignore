@@ -33,9 +33,11 @@ fonts/
 scratch/
 
 # I need to fix these at some point, but for now just ignore them.
+# Nix symlinks to builds.
 result/
-venv/
 result
+# Python cruft.
+venv/
 
 # Ignore stuff we might just remove anyways.
 *.test-if-can-be-removed/
