@@ -62,8 +62,11 @@
     pkgs.tcpdump
     # Show a tree-listing of directories and files.
     pkgs.tree
-    # Highly controllable terminal emulation and session management.
+    # Highly controllable terminal emulation and session management.  Have
+    # persistent sessions (in case of SSH disconnection) among other things.
     pkgs.tmux
+    # Disk health monitoring and reporting tools.  Provides smartctl and smartd.
+    pkgs.smartmontools
     # We need an editor.  Even if we don't want to edit configuration files
     # because we already have Nix, it's still helpful for things that use
     # EDTIOR, such as C-x C-e in the shell.  Can we just uninstall nano?
