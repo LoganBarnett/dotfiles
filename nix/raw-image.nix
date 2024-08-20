@@ -55,6 +55,14 @@
           # canTouchEfiVariables = true;
           # efiSysMountPoint = "/boot";
         };
+        # Grub itself is not a boot loader.  That's why we must also have
+        # systemd.
+        loader.systemd-boot = {
+          enable = true;
+          # Default is true for backwards compatibility, but the recommended is
+          # to set to false.
+          editor = false;
+        };
       };
       # fileSystems."/" = {
       #   device = "/dev/disk/by-id/ata-ST2000DX001-SSHD-8GB_Z4Z5REMV";
