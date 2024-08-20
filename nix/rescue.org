@@ -1,0 +1,176 @@
+#+title:     Rescue
+#+author:    Logan Barnett
+#+email:     logustus@gmail.com
+#+date:      <2024-08-16 Fri>
+#+language:  en
+#+file_tags:
+#+tags:
+
+
+
+** PAM account management error
+
+You might see this during =nixos-rebuild= when trying to rescue a system from
+separate boot (such as bootable USB sticks):
+
+#+begin_example
+sudo: PAM account management error: Authentication service cannot retrieve authentication info
+sudo: a password is required
+#+end_example
+
+Fix:
+https://discourse.nixos.org/t/nixos-rebuild-failing-while-chrooted/40176/5
+
+This resulted from doing =sudo -i= then =nixos-enter= before trying
+=nixos-rebuild=.  The =SUDO_USER= got inherited and caused problems.  The fix is
+to do:
+
+#+begin_src shell :results none :exports code
+unset SUDO_USER
+#+end_src
+
+And try running =nixos-rebuild= again.
+
+** Set boot stuff
+
+Note this is =boot= instead of =switch=.
+
+#+begin_src shell :results none :exports code
+nixos-rebuild boot --flake ".#$host" --impure --show-trace
+#+end_src
+
+Keep in mind that files can linger in =/boot/EFI/nixos= that are not part of
+your current generation.  I don't know if this is harmful or not yet.
+
+This needs to be run too, but is different from =nixos-rebuild boot=:
+
+#+begin_src shell :results none :exports code
+NIXOS_INSTALL_BOOTLOADER=1 /nix/var/nix/profiles/system/bin/switch-to-configuration boot
+#+end_src
+
+** How long to wait?
+** Why doesn't console show up?
+** idiot proofing poor boot scenarios
+
+This effectively makes the machine reboot (or reset to a prior config and then
+reboot) if a hang is detected.  This is helpful when physical access is limited.
+
+https://www.reddit.com/r/NixOS/comments/1afrmnv/comment/korgfft/
+
+#+begin_src nix :results none
+{
+  boot.initrd.systemd = {
+    timers.timeout-reset = {
+      description = "Reset if boot takes too long";
+      wantedBy = [ "initrd.target" ];
+      timerConfig = {
+        OnActiveSec = 60 * 10; # 10 minutes
+      };
+    };
+
+    services.timeout-reset = {
+      description = "Reset if boot takes too long";
+      after = [ "dev-ttyS1.device" ];
+      requires = [ "dev-ttyS1.device" ];
+      serviceConfig.ExecStart = pkgs.pic-scripts.reset;
+    };
+  };
+}
+#+end_src
+
+#+begin_quote
+I've been running a remote system for over a year (without any kind of IPMI or console access, or physical access). It's an interesting challenge. Some things I've done that have helped:
+
+A systemd service that periodically pings over the VPN tunnel. If connectivity
+is lost for too long, the machine reboots.
+
+A systemd unit in initrd that triggers after ten minutes and resets the machine.
+The idea is that if something changes that prevents fully booting, I can get
+back to a known good boot.
+
+I'm using generationsDir, so I had to write this manually, but: A boot counting
+system so that a new config will only be booted once. Rebooting (for any reason)
+after the first attempted boot will boot into a prior, known good state. My
+custom setup does this with an initrd unit that updates some symlinks, but a
+proper boot loader will usually have features for this built in.
+
+Running nixos-rebuild test is something... but often won't catch issues.
+Rebooting often is valuable to make sure the config really works.
+
+Enable the hardware watchdog. (Most machines have one.) You can do this with
+e.g. systemd.watchdog.runtimeTime = "30s". If you have a kernel panic or
+everything just locks up, this will automatically reset the machine. This has
+saved me a lot.
+
+This machine has two drives in a ZFS mirror. But the boot partitions aren't
+mirrored, and the boot loader and NixOS config are set up to use the boot
+partition on the drive in the first physical slot. So, when making a
+particularly risky change, I copy the known good boot partition to the second
+drive, and then only update the first drive. That way, if it goes really wrong
+and the above recovery mechanisms don't work, I can ask someone who's local to
+the machine (but less technical) to swap the drives and reboot it.
+
+Each one of those things has actually saved me from losing connectivity at least
+once. But I have also needed manual intervention at times, like someone
+power-cycling the machine manually or swapping its drives. That said, I've never
+had to go to the machine myself or do anything more invasive. And it's been a
+while since any intervention was needed.
+#+end_quote
+** no logs displaying
+
+This might be because the default =/dev/ttyS0= doesn't exist and instead
+=/dev/tty0= should be used.  Note the lack of =S=.
+** broken disk
+
+Sometimes disks go bad.  You can use =smartctl= from =smartmontools= to query a
+disk for its internal health report as well as run a test for the disk.
+
+It should be noted that while the =man= page for =smartctl= indicates that
+running in captive mode =-C= is preferable for an unused disk, this isn't
+possible in Linux per [[https://www.smartmontools.org/ticket/1153][#1153]] (paraphrased in [[https://superuser.com/a/1782898][a Stack Overflow answer]]).  A
+maintainer says they don't even use captive mode.  Just don't use it.
+
+A test does not run in the foreground typically (though captive mode is supposed
+to?).
+
+Here's an example invocation:
+
+#+begin_example
+[logan@nickel:~]$ sudo smartctl --test=long /dev/sda
+smartctl 7.4 2023-08-01 r5530 [aarch64-linux-6.1.63] (local build)
+Copyright (C) 2002-23, Bruce Allen, Christian Franke, www.smartmontools.org
+
+=== START OF OFFLINE IMMEDIATE AND SELF-TEST SECTION ===
+Sending command: "Execute SMART Extended self-test routine immediately in off-line mode".
+Drive command "Execute SMART Extended self-test routine immediately in off-line mode" successful.
+Testing has begun.
+Please wait 222 minutes for test to complete.
+Test will complete after Mon Aug 19 23:28:28 2024 UTC
+Use smartctl -X to abort test.
+#+end_example
+
+Note the =Please wait 222 minutes for test for test to complete.=.  I don't know
+how accurate this timer is, assuming the OS will not be using the disk actively.
+
+One can query this ahead of time using something like =smartctl -c= which can
+give results like this:
+
+#+begin_example
+Short self-test routine
+recommended polling time:      (   1) minutes.
+Extended self-test routine
+recommended polling time:      (  48) minutes.
+#+end_example
+
+In my example, I used =sleep 222m= to sleep for that amount of time.  Make sure
+to do all of this behind =tmux= so your SSH session connection doesn't foul
+anything up.
+
+There is an "overall health" (reported at the top, search for "overall").
+Sometimes an error doesn't mean much.  Bad sectors can be written to because
+there was a power failure and do the CNC is inconsistent with the sector.
+
+I did get an =ABRT= error once, which means it was given an instruction that it
+aborted.  This could be caused by a sudden disconnect, or it could be that the
+host machine had RAM issues.  The disk itself has a log of errors that can
+persist.
