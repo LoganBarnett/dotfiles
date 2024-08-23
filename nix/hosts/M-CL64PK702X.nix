@@ -96,8 +96,28 @@ in {
       security.pki.certificateFiles = [
         "${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt"
         ../new-e-ah-certs.pem
+        # Yabba dabba do!
+        ../ach-em-ach-flintstones-ca.pem
         ../secrets/proton-ca.crt
       ];
+      # TODO: Gather up all the non-built-in certs and add them.
+      system.activationScripts.postActivation.text = ''
+        # Note that a lot of advice out there will say to use "trustAsRoot" per
+        # newer versions of macOS.  This might be correct advice in the context
+        # of the question given, but since we're running _as root_ already, we
+        # can just trustRoot. `trustAsRoot` is for non-root command line
+        # invocations.
+        sudo security add-trusted-cert \
+          -d \
+          -r trustRoot \
+          -k /Library/Keychains/System.keychain \
+          ${../ach-em-ach-flintstones-ca.pem}
+        sudo security add-trusted-cert \
+          -d \
+          -r trustRoot \
+          -k /Library/Keychains/System.keychain \
+          ${../new-e-ah-certs.pem}
+      '';
       # system.stateVersion = "23.11";
     })
   ];
