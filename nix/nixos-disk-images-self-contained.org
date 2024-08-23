@@ -286,5 +286,7 @@ ssh-keyscan $host.proton | grep -o 'ssh-ed25519.*' > secrets/$host-pub-key.pub
 agenix-rekey -a
 #+end_src
 
+I got this =agenix= related step from [[https://github.com/oddlama/nix-config?tab=readme-ov-file#add-new-machine][oddlama's configuration]].
+
 Then =remote-deploy= (again?).
 * TODO Automate Bootstrapping
