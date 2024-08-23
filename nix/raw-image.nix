@@ -14,7 +14,10 @@
           enable = true;
           # Default is true for backwards compatibility, but the recommended is
           # to set to false.
-          editor = false;
+          # But setting it to true allows editing the startup options using "e"
+          # which is very helpful for debugging.
+          editor = true;
+          memtest86.enable = true;
         };
       };
     };
@@ -37,7 +40,7 @@
         # loader.grub.device = lib.mkDefault "/dev/sda";
         # If grub continues to give us grief, switch to systemd-boot.
         loader.grub = {
-          enable = true;
+          enable = false;
           # Ugh, we need to use this when the image is being made, but the other
           # for the machine.  I need to do some Nix gymnastics for this one.
           # device = "/dev/vda";
@@ -58,10 +61,11 @@
         # Grub itself is not a boot loader.  That's why we must also have
         # systemd.
         loader.systemd-boot = {
-          enable = true;
+          enable = false;
           # Default is true for backwards compatibility, but the recommended is
           # to set to false.
           editor = false;
+          memtest86.enable = true;
         };
       };
       # fileSystems."/" = {
@@ -92,16 +96,36 @@
       # boot.tmp.useTmpfs = true;
     };
   };
-  boot-mode = "grub-efi";
+  boot-mode = "systemd-boot";
 in {
   imports = [
     boot-mode-settings.${boot-mode}
   ];
   boot = {
     growPartition = true;
-    kernelParams = ["console=ttyS0"];
+    # There is advice saying to use this, but I haven't found this to be
+    # universally applicable.  Sometimes the "S" needs to be omitted.  When this
+    # should be done, and if there is a default that can intelligently do this,
+    # I do not know.
+    # kernelParams = ["console=ttyS0"];
+    kernelParams = ["console=tty0"];
     loader.timeout = lib.mkDefault 0;
     initrd.availableKernelModules = ["uas"];
+  };
+  fileSystems = {
+    "/" = {
+      device = "/dev/disk/by-label/nixos";
+      autoResize = true;
+      fsType = "ext4";
+      options = ["noatime" "nodiratime"];
+    };
+    "/boot" = {
+      # neededForBoot = true;
+      # device = "/dev/disk/by-label/boot";
+      device = "/dev/disk/by-label/ESP";
+      fsType = "vfat";
+      options = ["noatime" "nodiratime"];
+    };
   };
   system.build.raw = import "${toString modulesPath}/../lib/make-disk-image.nix" {
     inherit lib config pkgs;

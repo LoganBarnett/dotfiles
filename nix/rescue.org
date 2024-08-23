@@ -120,6 +120,7 @@ while since any intervention was needed.
 
 This might be because the default =/dev/ttyS0= doesn't exist and instead
 =/dev/tty0= should be used.  Note the lack of =S=.
+
 ** broken disk
 
 Sometimes disks go bad.  You can use =smartctl= from =smartmontools= to query a

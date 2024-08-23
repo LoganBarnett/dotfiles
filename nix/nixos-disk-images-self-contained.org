@@ -160,7 +160,7 @@ these lines.
 After running =efibootmgr --create=, I was able to get the disk to show up with
 =efibootmgr -v= as well as seeing "Linux" in the firmware.  However the path in
 =efibootmgr -v= shows =\EFI\nixos\grub.efi= which doesn't exist!  This may be
-our smoking gun.  The actual file is =\EFI\BOOT\BOOTX64.EFI=.
+our smoking gun.  The actual file is =\EFI\BOOT\BOOTX86.EFI=.
 
 Removing the entry and putting it back in made it work!
 
@@ -219,3 +219,72 @@ https://www.reddit.com/r/linuxquestions/comments/63azo4/eli5_what_exactly_is_the
 
 This is recommended:
 https://www.youtube.com/watch?v=V2aq5M3Q76U
+* Bootstraping steps
+
+** Configure EFI
+
+Actually, consider skipping this since the [[Install Bootloader]] section seems to
+take care of this.  I can't get these manual steps working anyways - the
+=switch-to-configuration boot= invocation does something these instructions are
+missing.  Would be good to compare and note the difference.
+
+Boot into a USB drive with Nix on it.
+
+Run
+
+#+begin_src shell :results none :exports code
+sudo efibootmgr --loader '\EFI\BOOT\BOOTX86.EFI' --create
+#+end_src
+
+Ensure a "Linux HD" is added, and its boot number is in front on the
+=BootOrder=.  In my last case, it created =Boot0000= and the =BootOrder= is
+=0000,0007,0005,0006=, so this is good.
+
+
+Run the following:
+
+#+begin_src shell :results none :exports code
+sudo -i
+mkdir -p /mnt
+mount /dev/disk/by-label/nixos /mnt
+mount /dev/disk/by-label/ESP /mnt
+
+bootctl status --root /mnt
+#+end_src
+
+This will print boot information.  It should be able to find the =efi= files.
+You can also see available boot loaders - check the paths to make sure they are
+correct.  In one of my last attempts, I transposed =64= with =86= - I had
+=BOOTX64.EFI= as oppose to =BOOTX86.EFI=.  The path =\EFI\BOOT\BOOTX86.EFI= is
+the default path that all systems use according to the UEFI standard,
+supposedly, but I don't see a way in the Nix configuration to make
+=systemd-boot= use that.  =boot.efi.efiSysMountPoint= is _not_ the correct
+configuration field. Something about my build of =efibootmgr= makes it produce
+the wrong default.
+
+Also look at the options.  If nothing is showing up, the options might need to
+have =console=tty0= instead of =console=ttyS0=.  This can be changed via
+=boot.kernelParams= by adding an list item whose string is the exact value
+desired (no spaces).
+
+Remove the USB drive and reboot the system.
+
+** Install Bootloader
+
+Run this against the booted host:
+
+#+begin_src shell :results none :exports code
+NIXOS_INSTALL_BOOTLOADER=1 /nix/var/nix/profiles/system/bin/switch-to-configuration boot
+#+end_src
+
+** Encrypt Secrets Against Real Host Key
+
+Make sure to set =$host= first.  Run this against your primary workstation.
+
+#+begin_src shell :results none :exports code
+ssh-keyscan $host.proton | grep -o 'ssh-ed25519.*' > secrets/$host-pub-key.pub
+agenix-rekey -a
+#+end_src
+
+Then =remote-deploy= (again?).
+* TODO Automate Bootstrapping
