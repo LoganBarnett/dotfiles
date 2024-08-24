@@ -24,6 +24,10 @@
       url = "github:nix-systems/current-system";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    disko = {
+      url = "github:nix-community/disko";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     nix-darwin = {
       url = "github:LnL7/nix-darwin/master";
       # rev = "72dd60bfc98c128149d84213b17d1b8a68863055";
@@ -35,10 +39,6 @@
     nixos-generators = {
       # url = "github:LoganBarnett/nixos-generators?ref=add-sd-image-raspberrypi";
       url = "github:nix-community/nixos-generators/master";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-    disko = {
-      url = "github:nix-community/disko";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     # emacs-overlay = {
@@ -217,6 +217,9 @@
       # Build this with:
       # nix build '.#nixosConfigurations.germanium.config.system.build.image'
       nixosConfigurations.germanium = nixpkgs.lib.nixosSystem {
+        specialArgs = {
+          inherit flake-inputs;
+        };
         modules = [
           (import ./hosts/germanium.nix {
             disko-proper = disko;
