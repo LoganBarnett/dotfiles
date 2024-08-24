@@ -6,8 +6,6 @@
 #+file_tags:
 #+tags:
 
-
-
 ** PAM account management error
 
 You might see this during =nixos-rebuild= when trying to rescue a system from

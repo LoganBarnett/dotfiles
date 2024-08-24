@@ -290,3 +290,8 @@ I got this =agenix= related step from [[https://github.com/oddlama/nix-config?ta
 
 Then =remote-deploy= (again?).
 * TODO Automate Bootstrapping
+* Resources
+
+https://nixos.wiki/wiki/Bootloader
+https://nlewo.github.io/nixos-manual-sphinx/administration/boot-problems.xml.html
+https://tiffybelle.vivaldi.net/2023/09/27/linux-boot-failure-debugging-uefi-boot-issues/
