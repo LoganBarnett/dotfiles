@@ -294,6 +294,11 @@
   # Folks suggest installing an application from the AppStore. I'd prefer
   # to have an unattended install of the Wireguard client.
   pkgs.wireguard-tools
+  # Generate long passwords built with memorable chains of words.
+  # For some reason the executable isn't showing up on the PATH.  A quick search
+  # reveals no tickets associated with this problem.
+  # TODO: File a ticket for the missing executable.
+  pkgs.xkcdpass
   # Allow extracting and creating .xz archives.
   pkgs.xz
   # Decode QR codes from images or an onboard camera (such as a webcam).

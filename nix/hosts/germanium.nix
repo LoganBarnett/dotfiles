@@ -13,6 +13,8 @@ in { modulesPath, ... }: {
     })
     ../nixos-modules/steam-gaming.nix
     ../nixos-modules/x-desktop.nix
+    ../users/cassandra-desktop.nix
+    ../users/solomon-desktop.nix
     ({ config, lib, pkgs, ... }: {
       nixpkgs.hostPlatform = system;
       # system.build.image = import "${flake-inputs.nixpkgs}/nixos/lib/make-disk-image.nix" {
