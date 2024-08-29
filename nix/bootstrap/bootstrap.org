@@ -1,0 +1,146 @@
+#+title:     Bootstrapping
+#+author:    Logan Barnett
+#+email:     logustus@gmail.com
+#+date:      <2024-08-26 Mon>
+#+language:  en
+#+file_tags:
+#+tags:
+
+* Bootstrap PCs
+
+PCs generally have UEFI and thus require quite a lot of bootstrapping steps.  In
+addition, many newer systems are using M.2 or some variant of NVMe, which is
+bolted onto the motherboard.  While they can be removed, I don't have an NVMe to
+portable USB drive converter.  So pre-flashing the drives is not an option.
+
+Anker makes an [[https://www.anker.com/au/products/a8314?variant=49914984137007#!][NVMe enclosure]] that I should take a look at.  Unfortunately it is
+sold out as of 2024-08-27.
+
+Even with one, it's probably just going to be continually difficult to do things
+this way, and can demand a lot of disk space from my workstation in the interim.
+Just do it the more manual way for now, and try to automate the process where
+possible via other means.
+
+** bootstrap-disk.sh
+
+This is a custom tool of mine to help bootstrap the desired disk settings.  This
+is kind of something I wish =disko= would do, but it's a little too library
+oriented, I think.
+
+It has trouble if you're installing to something that isn't an =nvme= disk.
+This needs more work.
+
+The script is otherwise mature enough to run.  Once done, proceed to
+[[nixos-install]].
+
+** nixos-install
+
+Assuming =/mnt= has the disk mounted and the partition work is done, you can run
+=nixos-install=.  But first, make sure the flake code is copied over.  Use this
+from the workstation host:
+
+#+begin_src shell :results none :exports code
+remote-deploy --enter-via nucleus.proton --no-switch asdf
+#+end_src
+
+This will copy everything over to =/home/logan/proton-nix=.  ~export host='<your
+host>'~ Then run from the host we're installing against:
+
+#+begin_src shell :results none :exports code
+pushd /home/logan/proton-nix
+sudo nixos-install --root /mnt --flake ".#$host"
+#+end_src
+
+Then proceed to [[root password]].
+
+** root password
+
+This requires first doing:
+
+#+begin_src sh :results none :exports code
+sudo nixos-enter --root /mnt
+#+end_src
+
+At the end of =nixos-install= it will prompt you for a password.  You can't do
+anything to stop it, and providing a blank password will be rejected.  Just
+supply it something, and quickly run:
+
+#+begin_src shell :results none :exports code
+passwd --lock root
+#+end_src
+
+This will prevent logging in directly as the root user.  =sudo -i= should still
+work.
+
+Then proceed to [[install the boot loader]].
+
+** install the boot loader
+
+This requires first doing (if you haven't already):
+
+#+begin_src sh :results none :exports code
+sudo nixos-enter --root /mnt
+#+end_src
+
+Simply run this to install the boot loader after =nixos-install=:
+
+#+begin_src shell :results none :exports code
+sudo NIXOS_INSTALL_BOOTLOADER=1 /nix/var/nix/profiles/system/bin/switch-to-configuration boot
+#+end_src
+
+If you get this:
+
+#+begin_example
+Not booted with EFI, skipping EFI variable setup.
+#+end_example
+
+Then you're in trouble.  This is probably because you had to switch to
+BIOS/compatibility mode into order to get the USB drive to boot.
+
+** reboot the machine
+
+At this point we can reboot the machine and take out the thumb drive.
+
+Once rebooted, the machine will join the network with its desired hostname and
+will be available to SSH to.
+
+From here we can go onto the next step:  [[agenix scan and rekey bootstrap]]
+
+** agenix scan and rekey bootstrap
+
+From some point earlier we will have generated secrets for a host that doesn't
+exist yet.  These are throw-away generations and we need to make the real ones
+now.  First we start with a key scan:
+
+#+begin_src sh :results none :exports code
+ssh-keyscan $host.proton | grep -o 'ssh-ed25519.*' > secrets/$host-pub-key.pub
+agenix rekey -a
+#+end_src
+
+I got this =agenix= related step from [[https://github.com/oddlama/nix-config?tab=readme-ov-file#add-new-machine][oddlama's configuration]].
+
+Remote deploy the keys:
+
+#+begin_src sh :results none :exports code
+remote-deploy $host
+#+end_src
+
+You should see a lot of messages like this:
+
+#+begin_example
+decrypting '/nix/store/r0i46qwqr4d9nm5zli58h3fxcv8w2v0s-arsenic/f944751d1f0325943b80efd9b441efc8-arsenic-pub-key.age' to '/run/agenix.d/2/arsenic-pub-key'...
+decrypting '/nix/store/r0i46qwqr4d9nm5zli58h3fxcv8w2v0s-arsenic/9710560bd5f95f5b4c8b244d7e9cc17c-builder-key.age' to '/run/agenix.d/2/builder-key'...
+decrypting '/nix/store/r0i46qwqr4d9nm5zli58h3fxcv8w2v0s-arsenic/b88a4cff2e2d99cc5a4382b8acf8300c-tls-arsenic.key.age' to '/run/agenix.d/2/tls-arsenic.key'...
+#+end_example
+
+** completed
+
+If you made it this far, you're done.  You can do further iteration by doing a
+remote deploy after making changes:
+
+#+begin_src sh :results none :exports code
+remote-deploy $host
+#+end_src
+* Bootstrap Pis
+
+Coming soon!

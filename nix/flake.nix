@@ -228,6 +228,18 @@
         ];
       };
 
+      nixosConfigurations.arsenic = nixpkgs.lib.nixosSystem {
+        specialArgs = {
+          inherit flake-inputs;
+        };
+        modules = [
+          (import ./hosts/arsenic.nix {
+            disko-proper = disko;
+            inherit flake-inputs;
+          })
+        ];
+      };
+
       darwinConfigurations."M-CL64PK702X" =
         nix-darwin.lib.darwinSystem (import ./hosts/M-CL64PK702X.nix {
           inherit flake-inputs;

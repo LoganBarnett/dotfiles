@@ -76,8 +76,13 @@
   ] ++ lib.optionals pkgs.stdenv.isLinux [
     # Use for debugging network issues such as checking full or half duplex.
     pkgs.ethtool
+    # Use for querying available hardware.  See also pciutils which provides
+    # lspci.
+    pkgs.lshw
     # Partition editing.
     pkgs.parted
+    # Use for querying available hardware.  See also lshw.
+    pkgs.pciutils
     # Gives us iostat.  Show us IO usage (such as disk reads/writes).  Useful
     # for identifying performance bottlenecks relating to disk.
     pkgs.sysstat

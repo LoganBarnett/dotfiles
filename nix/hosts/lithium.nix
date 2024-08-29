@@ -19,8 +19,9 @@
 in {
   inherit system;
   modules = [
-    (import ../nixos-modules/server-host.nix {
-      inherit flake-inputs host-id system;
+    (import ../nixos-modules/comfyui-server.nix {
+      inherit host-id;
+      port = comfyui-port;
     })
     (import ../nixos-modules/https.nix {
       inherit host-id;
@@ -30,10 +31,18 @@ in {
     })
     (import ../nixos-modules/nvidia.nix {
       inherit flake-inputs;
+      bus-id = "PCI:1:0:0";
+      # According to https://en.wikipedia.org/wiki/Pascal_(microarchitecture)
+      # this only goes to 6.0, and this can cause build problems with
+      # magma/ptxas later.  This
+      # (https://en.wikipedia.org/wiki/CUDA#GPUs_supported) shows we can go to
+      # ... 8.0 or 6.x?  I'm not sure how to read this chart.  The actual name
+      # of the chip (from the product level that I understand it - a GTX 1060
+      # 6GB) says 6.1.
+      cudaCapabilities = [ "6.0" ];
     })
-    (import ../nixos-modules/comfyui-server.nix {
-      inherit host-id;
-      port = comfyui-port;
+    (import ../nixos-modules/server-host.nix {
+      inherit flake-inputs host-id system;
     })
     ({ ... }: {
       # Allow building i686-linux binaries too.  This is helpful if an

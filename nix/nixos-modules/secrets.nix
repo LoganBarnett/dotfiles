@@ -190,10 +190,10 @@ in {
   # file in this repository for the host in question with
   # /etc/ssh/ssh_host_ed25519_key.pub and run `agenix rekey -a` to rekey the
   # files.
-  age.secrets."${host-id}-pub-key" = {
-    generator.script = "ssh-ed25519-with-pub";
-    rekeyFile = ../secrets/${host-id}-pub-key.age;
-  };
+  # age.secrets."${host-id}-pub-key" = {
+  #   generator.script = "ssh-ed25519-with-pub";
+  #   rekeyFile = ../secrets/${host-id}-pub-key.age;
+  # };
 
   # This is a catch22.  This is needed at build time but isn't available until
   # activation time.  See bin/nix-host-new in this repository as well as

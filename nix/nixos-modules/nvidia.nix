@@ -8,9 +8,30 @@
 # Not all of the configuration here comes from that, but I am starting to
 # integrate it where I can.
 ################################################################################
-{ flake-inputs, }: { pkgs, ... }: let
+{
+  # Bus ID of the NVIDIA GPU. You can find it using lspci, either under 3D or
+  # VGA.  Examples in the wild will show "PCI:1:0:0" but that's not the actual
+  # output of lspci.  `sudo lshw display` will show a terse and closer ID to
+  # what we need.
+  bus-id,
+  # Use https://en.wikipedia.org/wiki/Pascal_(microarchitecture) and
+  # https://en.wikipedia.org/wiki/CUDA#GPUs_supported to determine the values
+  # for this.
+  cudaCapabilities,
+  flake-inputs,
+}: { lib, pkgs, ... }: let
   linux-packages = pkgs.linuxPackages_latest;
 in {
+  allowUnfreePackagePredicates = [
+    (pkg: builtins.elem (lib.getName pkg) [
+      "cuda_cccl"
+      "cuda_cudart"
+      "cuda_nvcc"
+      "libcublas"
+      "nvidia-settings"
+      "nvidia-x11"
+    ])
+  ];
   # See https://nixos.wiki/wiki/Linux_kernel for values and options.
   boot.kernelPackages = linux-packages;
   boot.kernelModules = [
@@ -82,11 +103,13 @@ in {
     flake-inputs.nixos-hardware.nixosModules.common-pc-ssd
     flake-inputs.nixos-hardware.nixosModules.common-cpu-amd-pstate
     flake-inputs.nixos-hardware.nixosModules.common-gpu-nvidia-nonprime
+    # Gives us allowUnfreePackagePredicates.
+    ./unfree-predicates.nix
   ];
-  hardware.opengl.enable = true;
+  hardware.graphics = {
+    enable = true;
+  };
   hardware.opengl.package = linux-packages.nvidiaPackages.beta;
-  hardware.opengl.driSupport = true;
-  hardware.opengl.driSupport32Bit = true;
   # Most of this can be found here:
   # https://nixos.wiki/wiki/Nvidia#Nvidia_PRIME
   hardware.nvidia = {
@@ -120,7 +143,7 @@ in {
     # or VGA.  Examples in the wild will show "PCI:1:0:0" but that's not the
     # actual output of lspci.  `sudo lshw display` will show a terse and closer
     # ID to what we need.
-    prime.nvidiaBusId = "PCI:1:0:0";
+    prime.nvidiaBusId = bus-id;
   };
   # One can arrive at compiler errors like this:
   # ...due to signal 11 (invalid memory reference)
@@ -137,34 +160,16 @@ in {
     #   "roon-server"
     #   "vscode"
     # ];
-    allowUnfree = true;
+    # allowUnfree = true;
     nvidia.acceptLicense = true;
     # cudaCapabilities = [ "8.6" ];
-    # According to https://en.wikipedia.org/wiki/Pascal_(microarchitecture) this
-    # only goes to 6.0, and this can cause build problems with magma/ptxas
-    # later.  This (https://en.wikipedia.org/wiki/CUDA#GPUs_supported) shows we
-    # can go to ... 8.0 or 6.x?  I'm not sure how to read this chart.  The
-    # actual name of the chip (from the product level that I understand it - a
-    # GTX 1060 6GB) says 6.1.
-    cudaCapabilities = [ "6.0" ];
-    # Disable until I can figure out what's causing the compilation problems.  I
-    # currently get:
-    # error: builder for '/nix/store/4q3mh591j2dn6cb817bif8l9z0jyv1bh-magma-2.7.2.drv' failed with exit code 1;
-    #  last 10 log lines:
-    #  > nvcc warning : incompatible redefinition for option 'compiler-bindir', the last value of this option was used
-    #  > nvcc error   : 'ptxas' died due to signal 11 (Invalid memory reference)
-    #  > nvcc error   : 'ptxas' core dumped
-    #  > [1286/3430] Building CUDA object CMakeFiles/magma.dir/magmablas/dgeqr2_batched_fused_reg_medium.cu.o
-    #  > nvcc warning : incompatible redefinition for option 'compiler-bindir', the last value of this option was used
-    #  > [1287/3430] Building CUDA object CMakeFiles/magma.dir/magmablas/cgeqr2_batched_fused_reg_medium.cu.o
-    #  > nvcc warning : incompatible redefinition for option 'compiler-bindir', the last value of this option was used
-    #  > [1288/3430] Building CUDA object CMakeFiles/magma.dir/magmablas/dgeqr2_batched_fused_reg_tall.cu.o
-    #  > nvcc warning : incompatible redefinition for option 'compiler-bindir', the last value of this option was used
-    #  > ninja: build stopped: subcommand failed.
-    #  For full logs, run 'nix log /nix/store/4q3mh591j2dn6cb817bif8l9z0jyv1bh-magma-2.7.2.drv'.
-    #
-    # The full log is written to ./nvidia-cuda-magma-opencv-fail.log.
-    # cudaSupport = false;
+    # Use https://en.wikipedia.org/wiki/Pascal_(microarchitecture) and
+    # https://en.wikipedia.org/wiki/CUDA#GPUs_supported to determine the values
+    # for this.
+    inherit cudaCapabilities;
+    # Compilation problems from this can arise from driver issues.  Run tools
+    # like nvidia-smi to figure out what's wrong, fix, and then enable this
+    # again.
     cudaSupport = true;
     extra-substituters = [
       "https://nix-community.cachix.org"

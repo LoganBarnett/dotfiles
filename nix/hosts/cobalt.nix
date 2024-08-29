@@ -23,12 +23,13 @@ in {
       # nixpkgs.hostPlatform = "aarch64-linux";
       # nixpkgs.hostPlatform = "aarch64-unknown-linux-gnu";
       # boot.kernelPackages = lib.mkForce pkgs.linuxKernel.packages.linux_rpi4;
-      services.openssh.hostKeys = [
-        {
-          path = config.age.secrets."${host-id}-pub-key".path;
-          type = "ed25519";
-        }
-      ];
+      # This isn't working due to a bootstrapping issue.  Do not use.
+      # services.openssh.hostKeys = [
+      #   {
+      #     path = config.age.secrets."${host-id}-pub-key".path;
+      #     type = "ed25519";
+      #   }
+      # ];
     })
     ../nixos-modules/nix-builder-provide.nix
     (import ../nixos-modules/server-host.nix {

@@ -81,6 +81,8 @@ in {
       # cross-compilation.
       nixpkgs.overlays = [
         (final: prev: {
+          # Use to setup partitions on the disk.
+          bootstrap-disk = prev.callPackage ./bootstrap/bootstrap-disk.nix;
           makeDBusConf = { suidHelper, serviceDirectories, apparmor ? "disabled" }:
             prev.callPackage ../hacks/make-dbus-conf/make-dbus-conf.nix {
               inherit suidHelper serviceDirectories apparmor;

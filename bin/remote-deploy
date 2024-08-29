@@ -31,8 +31,11 @@
 
 set -euo pipefail
 
-switch=true
+bootstrap_host=''
 build=false
+switch=true
+enter_via_host=''
+
 while true; do
   case "${1:-}" in
     -h | --help)
@@ -52,6 +55,11 @@ Usage: $0 [opts] <hostname>
   --build              Indicate we should do a `nix build` instead of `nixos
                        rebuild switch`. Default: false.
 
+  --enter-via <host>   SSH to this host instead of assuming the build machine
+                       and target machine are the same.  This will also involve
+                       a nixos-enter and mounting the disks found in
+                       fileSystems.
+
   --no-switch          Do not `nixos-rebuild switch` - just copy the files.
                        This can be helpful for running this session over tmux.
 
@@ -62,9 +70,12 @@ EOH
       exit
       ;;
     --bootstrap)
-      shift 1
-      bootstrap_host="${1:-}"
-      shift 1
+      bootstrap_host="${2:-}"
+      shift 2
+      ;;
+    --enter-via)
+      enter_via_host="${2:-}"
+      shift 2
       ;;
     --no-switch)
       switch=false
@@ -78,10 +89,13 @@ EOH
   esac
 done
 # I can't bash well enough to simplify this.
-if [[ "${bootstrap_host:-}" == "" ]]; then
-  host="${1:-}.proton"
-else
+if [[ "${bootstrap_host:-}" != "" ]]; then
   host=$bootstrap_host
+elif [[ "$enter_via_host" != '' ]]; then
+  echo "Setting host to $enter_via_host"
+  host="$enter_via_host"
+else
+  host="${1:-}.proton"
 fi
 target="${1:-}"
 shift
@@ -105,10 +119,18 @@ rsync \
 # files.
 # ssh $host 'sudo rm -rf $HOME/proton-nix'
 echo $build
-# No, you can't simplify this because $build is a boolean.
-nix_command=$([[ $build == true ]] && echo 'nix build' || echo 'nixos-rebuild switch')
-command="set -x; cd proton-nix ;
-sudo $nix_command --flake '.#$target' --show-trace --impure"
+if [[ "$enter_via_host" == '' ]]; then
+  # No, you can't simplify this because $build is a boolean.
+  nix_command=$([[ $build == true ]] && echo 'nix build' || echo 'nixos-rebuild switch')
+  command="set -x; cd proton-nix ;
+  sudo $nix_command --flake '.#$target' --show-trace --impure"
+else
+  command="set -x;
+bootstrap-disk.sh
+# 4. Run nixos-install.
+nixos-install
+"
+fi
 # This creates a bunch of noise, but as far as I can tell there's no problems
 # had.  Some of the history is probably borked, but I just need the working tree
 # to be intact, and by all observations that is the case.  I have heard about

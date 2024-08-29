@@ -6,14 +6,10 @@
   environment.systemPackages = [
     pkgs.steamcmd
   ];
-  hardware.opengl = {
-    # There can be a version mismatch
-    # https://wiki.hyprland.org/Nix/Hyprland-on-NixOS/
-    # package = pkgs-unstable.mesa.drivers;
-
-    # if you also want 32-bit support (e.g for Steam).
-    driSupport32Bit = true;
-    # package32 = pkgs-unstable.pkgsi686Linux.mesa.drivers;
+  hardware.graphics = {
+    enable = true;
+    # 32 bit support is required for Steam games.
+    # driSupport32Bit = true;
   };
   allowUnfreePackagePredicates = [
     (pkg: builtins.elem (lib.getName pkg) [
