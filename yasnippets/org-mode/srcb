@@ -3,9 +3,8 @@
 # key: srcb
 # group: org
 # --
-#+begin_src ${1: $$(yas-choose-value (append
-  '("html" "json" "xml")
-  (seq-map #'symbol-name (seq-map #'car org-babel-load-languages))
-))} :results none
+#+begin_src ${1: $$(yas-choose-value
+  (config/org-babel-languages-available)
+)} :results none :exports code
 
 #+end_src$>

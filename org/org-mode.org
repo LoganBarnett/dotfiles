@@ -648,6 +648,193 @@ keyword =AUTO_ID_PREFIX=.
    )
   )
 #+end_src
+** languages
+
+There is a snippet for source blocks in [[file:../yasnippets/org-mode/srcb]] which
+allows an auto complete of languages (major modes).  Getting that list of what
+languages are available requires some work though.  The best list we can get is
+from =auto-mode-alist=.  We should evaluate this every time since it can
+potentially change as we edit our configuration.  This function we will define
+will be used in the snippet.
+
+#+name: config/org-babel-source-block-languages-fn
+#+begin_src emacs-lisp :results none :tangle yes
+(defun auto-mode-alist-pair-to-org-babel-language (auto-mode-pair)
+  (replace-regexp-in-string
+   "-mode$"
+   ""
+   ;; Perhaps obscure.  Can be found in describe-variable which is where we
+   ;; found out the modes that auto-mode-alist uses in the first place.
+   (cl-prin1-to-string
+    (let ((auto-mode (cdr auto-mode-pair)))
+      (if (listp auto-mode)
+        ;; This is some kind of weird nested list when this happens.
+        (cdr (cdr auto-mode))
+        auto-mode
+        )
+     )
+     )
+   )
+  )
+
+(defun config/org-babel-languages-available ()
+  (-uniq
+   (-sort
+    #'string-lessp
+    (-map #'auto-mode-alist-pair-to-org-babel-language auto-mode-alist)
+    )
+   )
+  )
+#+end_src
+
+Test it!
+
+#+begin_src emacs-lisp :results value list :noweb yes
+<<config/org-babel-source-block-languages-fn>>
+
+(config/org-babel-languages-available)
+#+end_src
+
+#+RESULTS:
+- antlr
+- applescript
+- archive
+- asm
+- authinfo
+- autoconf
+- awk
+- bat
+- bibtex
+- bibtex-style
+- bovine-grammar
+- c
+- c++
+- c-or-c++
+- change-log
+- compilation
+- conf
+- conf-colon
+- conf-desktop
+- conf-javaprop
+- conf-mode-maybe
+- conf-ppd
+- conf-space
+- conf-toml
+- conf-unix
+- conf-windows
+- conf-xdefaults
+- csharp
+- css
+- dcl
+- delphi
+- diff
+- dns
+- doc-view-mode-maybe
+- dockerfile
+- doctex
+- dsssl
+- ebrowse-tree
+- editorconfig-conf
+- elisp-byte-code
+- elm
+- emacs-lisp
+- enh-ruby
+- erts
+- f90
+- feature
+- fortran
+- fundamental
+- gdb-script
+- gfm
+- git-rebase
+- gitattributes
+- gitconfig
+- gitignore
+- glsl
+- go
+- go-dot-mod
+- go-dot-work
+- graphviz-dot
+- groovy
+- hcl
+- hexl
+- icon
+- idl
+- idlwave
+- image
+- java
+- javascript
+- js
+- js-json
+- json
+- latex
+- ld-script
+- less-css
+- lisp
+- lisp-data
+- lua
+- m2
+- m4
+- mail
+- makefile-automake
+- makefile-bsdmake
+- makefile-gmake
+- makefile-imake
+- makefile-makepp
+- markdown
+- metafont
+- metapost
+- mhtml
+- mixal
+- nil
+- nix
+- nix-drv
+- nroff
+- objc
+- octave-maybe
+- org
+- pascal
+- perl
+- pike
+- plantuml
+- prolog
+- ps
+- puppet
+- python
+- rjsx
+- rst
+- ruby
+- rustic
+- scad
+- scheme
+- scribe
+- scss
+- ses
+- sgml
+- sh
+- shell-script
+- sieve
+- simula
+- skk-jisyo-edit
+- snmp
+- snmpv2
+- sql
+- srecode-template
+- tar
+- tcl
+- terraform
+- tex
+- texinfo
+- text
+- typescript
+- typescript-tsx
+- vera
+- verilog
+- vhdl
+- vimrc
+- wisent-grammar
+- xml
+- yaml
 
 
 * org-clock
