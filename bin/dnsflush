@@ -6,12 +6,12 @@ LONGVERSION=$(sw_vers -productVersion)
 MINOR=$(echo $LONGVERSION | cut -d. -f2)
 UPDATE=$(echo $LONGVERSION | cut -d. -f3)
 
-if (( $MINOR < 7 )) ; then 
+if (( $MINOR < 7 )) ; then
   FLUSH="dscacheutil -flushcache"
 elif (( $MINOR < 10 )) ; then
   FLUSH="killall -HUP mDNSResponder"
-elif (( $MINOR == 10 )) ; then
-  if (( $UPDATE < 4 )) ; then
+elif (( $MINOR => 10 )) ; then
+  if (( $MINOR == 10 && UPDATE < 4 )) ; then
     FLUSH="discoveryutil mdnsflushcache"
   else
     FLUSH="killall -HUP mDNSResponder"
@@ -25,3 +25,10 @@ fi
 echo "Flushing DNS Cache for $LONGVERSION"
 echo "$FLUSH #(งツ)ว"
 $FLUSH
+# This seems to be all the works sometimes.
+OTHER_FLUSH='killall -HUP mDNSResponder'
+if [[ "$FLUSH" != "$OTHER_FLUSH" ]]; then
+  echo "That doesn't always work so running $OTHER_FLUSH..."
+  $OTHER_FLUSH
+  echo "¯\_(ツ)_/¯"
+fi
