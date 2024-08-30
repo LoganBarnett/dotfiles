@@ -90,6 +90,8 @@ in {
       environment.systemPackages = [
         pkgs.awscli
         pkgs.saml2aws
+        pkgs.openssl
+        pkgs.mktemp
         (pkgs.callPackage ../../nix-gems/hiera-eyaml/default.nix {})
       ];
       networking.hostName = host-id;

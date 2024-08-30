@@ -1,0 +1,56 @@
+#+title:     SSL
+#+author:    Logan Barnett
+#+email:     logustus@gmail.com
+#+date:      <2024-08-20 Tue>
+#+language:  en
+#+file_tags:
+#+tags:
+
+** Troubleshooting
+
+*** New cert breaks everything
+
+Make sure any new certificate files added for the trust have a line break at the
+end, otherwise the begin/end header/footer will be joined to the same line and
+=openssl= (Nix's) won't like that.  I haven't verified if macOS's =openssl=
+isn't.  Make sure to add that line break at the end.
+
+You may have to =sudo= edit =/etc/ssl/certs/ca-certificates.crt= because the
+main trust file is broken and Nix won't be able to download from sources such as
+=github.com= anymore.
+
+Look for a line like this, which should be able to be at the bottom:
+
+#+begin_example
+-----END CERTIFICATE----------BEGIN CERTIFICATE-----
+#+end_example
+
+*** Magic command to verify if a host is trusted
+
+This doesn't work yet, but this is the idea.
+
+#+name: openssl-leaf-test
+#+begin_src shell :results none :exports code
+echo $host 1>&2
+leaf=$(mktemp)
+echo | \
+  openssl s_client \
+          -servername $host \
+          -connect $host:443 \
+          -showcerts \
+  | openssl x509 -out $leaf
+# There is a linebreak missing sometimes, so just add one.
+echo $'\n' >> $leaf
+namei -l $leaf
+# chmod 777 $leaf
+cat $leaf 1>&2
+echo "^^^^ the cert should be above where the arrows point, not on this line."
+echo $cafile 1>&2
+echo "openssl verify -CAfile $cafile -untrusted $leaf" 1>&2
+cat $leaf | openssl verify -CAfile $cafile
+rm -f $leaf
+#+end_src
+
+#+call: openssl-leaf-test(host="doc-server.prod.hmheng-infra.br.internal", cafile="ach-em-ach-flintstones-ca.pem")
+
+I still can't get this to work.
