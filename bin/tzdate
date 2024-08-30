@@ -1,0 +1,50 @@
+#!/usr/bin/env bash
+################################################################################
+# Print out a ISO-8601 time stamp corresponding to a human friendly time zone.
+#
+# Right now it just supports some time zones used in the mainland United States.
+# Its primary purpose is to allow shorthand for expressing various time zones
+# and get quick conversions.
+################################################################################
+
+set -euo pipefail
+
+timezone_input=''
+
+while true; do
+  case "${1:-}" in
+    -h | --help)
+      cat 1>&2 <<EOH
+Usage: $0 [--help] <timezone>
+EOH
+      exit
+      ;;
+    * )
+      timezone_input="${1:-}"
+      break
+      ;;
+  esac
+done
+# IANA time zone names are the ones you see with a location.  Cities and other
+# narrow locations are considered to be the most "static" geographic entities
+# for the purposes of tracking time zones (though even that has been shown to be
+# a shifting target).
+# Find more information on the topic here:
+# https://data.iana.org/time-zones/tz-link.html
+timezone_iana=''
+case "$timezone_input" in
+  CT)
+    timezone_iana='America/Chicago'
+    ;;
+  ET)
+    timezone_iana='America/New_York'
+    ;;
+  MT)
+    timezone_iana='America/Denver'
+    ;;
+  PT)
+    timezone_iana='America/Los_Angeles'
+    ;;
+esac
+
+TZ="$timezone_iana" date -Iseconds
