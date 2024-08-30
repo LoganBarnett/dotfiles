@@ -33,6 +33,11 @@ done
 # https://data.iana.org/time-zones/tz-link.html
 timezone_iana=''
 case "$timezone_input" in
+  # Arizona does not observe Daylight Savings Time, and thus has its own time
+  # zone (not Mountain Time).
+  AT)
+    timezone_iana='America/Phoenix'
+    ;;
   CT)
     timezone_iana='America/Chicago'
     ;;
