@@ -20,11 +20,12 @@ EOH
       exit
       ;;
     * )
-      timezone_input="${1:-}"
+      timezone_input="$(echo "${1:-}" | tr '[:lower:]' '[:upper:]')"
       break
       ;;
   esac
 done
+
 # IANA time zone names are the ones you see with a location.  Cities and other
 # narrow locations are considered to be the most "static" geographic entities
 # for the purposes of tracking time zones (though even that has been shown to be
