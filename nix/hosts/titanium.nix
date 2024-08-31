@@ -4,6 +4,7 @@
 in {
   imports = [
     ../nixos-modules/amd-gpu.nix
+    ../nixos-modules/discord.nix
     ../nixos-modules/lvm-uefi-disk.nix
     ../nixos-modules/steam-gaming.nix
     ../nixos-modules/uefi-systemd-boot.nix
