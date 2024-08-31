@@ -372,6 +372,27 @@ One can also set =indent-bars-spacing-override=.  The function in question is
 (setq-default standard-indent 2)
 #+end_src
 
+** guessing indentation
+
+=dtrt-indent-mode= is a minor mode which guesses indentation based on... I don't
+know.  But it looks at the buffer as part of it, and I've seen it guess wrong
+before.  It will do things like set =tab-width= and =standard-indent= to
+whatever it guesses.
+
+The mode itself has some Doom advice around it, so who knows where the bug
+resides.
+
+You can add this header to undo it - mind the mode and what tab width you
+desire:
+
+#+begin_src nix :results none :exports code
+# -*- mode: Nix; dtrt-indent-mode: 0; tab-width: 2; standard-indent: 2; -*-
+#+end_src
+
+It must go at the top, but I don't know how it works with shebangs.  I assume
+Emacs is smart enough to skip the shebang.
+
+
 * all together
 
 #+begin_src emacs-lisp :results none :noweb yes :tangle yes
