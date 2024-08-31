@@ -5,6 +5,10 @@
     EDITOR = "vim";
   };
   environment.systemPackages = [
+    # A functional lens of updating configuration values for virtually any kind.
+    # You probably want to run `augtool` but there are other `aug*` executables
+    # available.  There is no `augeas` executable.
+    pkgs.augeas
     # A grep-sed like alternative. Offers a scripting language for
     # transformations.
     pkgs.ack
