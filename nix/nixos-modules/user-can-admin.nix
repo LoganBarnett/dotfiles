@@ -1,5 +1,9 @@
 # Global system administration tools.
 { flake-inputs, system }: { lib, pkgs, ... }: {
+  environment.sessionVariables = {
+    # Why this defaults to nano is beyond me.
+    EDITOR = "vim";
+  };
   environment.systemPackages = [
     # A grep-sed like alternative. Offers a scripting language for
     # transformations.
