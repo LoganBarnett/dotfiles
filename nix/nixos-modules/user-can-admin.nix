@@ -1,13 +1,15 @@
+# -*- mode: Nix; dtrt-indent-mode: 0; tab-width: 2; standard-indent: 2; -*-
+# The Emacs file variable line above is requied because dtrt-indent-mode
 # Global system administration tools.
-{ flake-inputs, system }: { lib, pkgs, ... }: {
-  environment.sessionVariables = {
+{ flake-inputs, system }: { config, lib, pkgs, ... }: {
+  environment.variables = {
     # Why this defaults to nano is beyond me.
     EDITOR = "vim";
   };
   environment.systemPackages = [
-    # A functional lens of updating configuration values for virtually any kind.
-    # You probably want to run `augtool` but there are other `aug*` executables
-    # available.  There is no `augeas` executable.
+    # A functional lens of updating configuration values for virtually any
+    # kind.  You probably want to run `augtool` but there are other `aug*`
+    # executables available.  There is no `augeas` executable.
     pkgs.augeas
     # A grep-sed like alternative. Offers a scripting language for
     # transformations.
