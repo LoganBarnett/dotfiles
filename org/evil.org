@@ -29,7 +29,7 @@ equivalent function when that motion is provided. This bug only effects the
 first line.
 
 #+name: config/evil-comment-yanks
-#+begin_src emacs-lisp :results none :tangle yes
+#+begin_src emacs-lisp :results none :tangle no
 
 (evil-define-operator custom/evilnc-yank-and-comment-operator (begin end type register)
   "(Un)comment and yank the text from BEGIN to END."
@@ -48,7 +48,7 @@ first line.
 
 * evil-mode
   #+name: config/evil-Y-yanks-to-eol
-  #+begin_src emacs-lisp :tangle yes
+  #+begin_src emacs-lisp :tangle no
     ;; (message "nothing to do in evil-mode config")
     (setq-default evil-want-Y-yank-to-eol t)
   #+end_src
@@ -66,7 +66,7 @@ Doom uses the smart case by default. While I enjoy this with =/= I do not enjoy
 it here. The motions =evil-snipe= uses need to be precise in my mind.
 
 #+name: config/evil-snipe-smart-case-disable
-#+begin_src emacs-lisp :results none :tangle yes
+#+begin_src emacs-lisp :results none :tangle no
 (setq-default evil-snipe-smart-case nil)
 #+end_src
 ** overriding normal seek keys
@@ -75,7 +75,7 @@ it here. The motions =evil-snipe= uses need to be precise in my mind.
 counter to my vanilla vim bindings. Disable it. We can use =;= and =,= for that.
 
 #+name: config/evil-snipe-override-disable
-#+begin_src emacs-lisp :results none :tangle yes
+#+begin_src emacs-lisp :results none :tangle no
 (setq-default
  evil-snipe-override-evil-repeat-keys t
  evil-snipe-repeat-keys nil
@@ -105,7 +105,7 @@ before two words. This is recorded in [[https://github.com/hlissner/evil-snipe/i
 setting =evil-snipe-skip-leading-whitespace= to =nil=.
 
 #+name: config/evil-snipe-fix-whitespace-seek
-#+begin_src emacs-lisp :results none :tangle yes
+#+begin_src emacs-lisp :results none :tangle no
 (setq-default evil-snipe-skip-leading-whitespace nil)
 #+end_src
 
@@ -116,11 +116,12 @@ We're getting desperate.
 
 #+begin_src emacs-lisp :results none :noweb yes
 (use-package "evil-snipe"
+  :after evil
   :init
-  <<config/evil-snipe-smart-case-disable>>
-  <<config/evil-snipe-override-disable>>
-  <<config/evil-snipe-fix-whitespace-seek>>
   :config
+  <<config/evil-snipe-smart-case-disable>>
+  <<config/evil-snipe-fix-whitespace-seek>>
+  <<config/evil-snipe-override-disable>>
   <<config/evil-snipe-smart-case-disable>>
   )
 #+end_src
@@ -188,7 +189,7 @@ then =C-p=, I should see myself moving backwards through my history of any
 commands prefixed with =:e=.
 
 #+name: config/evil-command-line-history-bindings
-#+begin_src emacs-lisp :results none
+#+begin_src emacs-lisp :results none :tangle no
 (define-key evil-command-line-map "\C-p" #'previous-complete-history-element)
 (define-key evil-command-line-map "\C-n" #'next-complete-history-element)
 #+end_src
@@ -202,14 +203,14 @@ thinks there's only what's visible as possible search candidates. The total
 search results reported remains correct, however.
 https://github.com/doomemacs/doomemacs/issues/6478#issuecomment-1219582005
 
-Others reports this works, and I have witnessed this working. However I haven't
+Others report this works, and I have witnessed this working. However I haven't
 seen if it works after a fresh restart.
 
 I have a lot of permutations here, but I think it's in large part because it
 wasn't included in the [[stitch]] section.
 
 #+name: config/evil-fix-org-fold-search-doom-6578
-#+begin_src emacs-lisp :results none :tangle yes
+#+begin_src emacs-lisp :results none :tangle no
 
 ;; Unfortunately, this uses a function instead of a variable, which has a global
 ;; context. We can't selectively use different search modules for different
@@ -225,9 +226,9 @@ wasn't included in the [[stitch]] section.
   (evil-select-search-module 'evil-search-module 'isearch)
   )
 
-(after! evil
-  (evil-select-search-module 'evil-search-module 'isearch)
-  )
+;;(after! evil
+;;  (evil-select-search-module 'evil-search-module 'isearch)
+;;  )
 ;; (add-hook 'change-major-mode-hook #'config/unfix-org-fold-search)
 (add-hook 'org-mode-hook #'config/fix-org-fold-search)
 ;; (after! org
@@ -245,7 +246,7 @@ the expression. This got switched off during an upgrade, so now I set it
 manually.
 
 #+name: config/evil-global-substitute
-#+begin_src emacs-lisp :results none :tangle yes
+#+begin_src emacs-lisp :results none :tangle no
 (setq evil-ex-substitute-global t)
 #+end_src
 
@@ -255,23 +256,29 @@ It may not be apparent but =use-package= works as you'd want it to even if the
 library is already loaded.
 
 #+begin_src emacs-lisp :results none :noweb yes
-<<config/evil-fix-org-fold-search-doom-6578>>
+;; <<config/evil-fix-org-fold-search-doom-6578>>
 (use-package "evil"
-  :ensure t
+  ;; :ensure t
   :init
   (setq evil-want-integration t)
   (setq evil-want-keybinding nil)
-  (evil-collection-init)
+  (message "requiring evil-mode...")
+  (require 'evil)
+  (message "required evil-mode")
+  :config
   <<config/evil-global-substitute>>
   <<config/evil-Y-yanks-to-eol>>
   <<config/evil-command-line-history-bindings>>
-  :config
+  (require 'general)
+  (general-evil-setup)
+  ;; Provide us with `map!`.
+  (load-library "doom-crutch")
+  (evil-select-search-module 'evil-search-module 'isearch)
   <<config/evil-comment-yanks>>
   )
 
 (use-package evil-collection
   :after evil
-  :ensure t
   :config
   (evil-collection-init)
   )

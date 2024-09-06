@@ -274,163 +274,147 @@
   (message "[DIRTY INIT] INIT DONE!")
   )
 
-(defun initial-buffer-settings ()
-  "Configure the initial buffer so we can actually use it."
-  ;; Perhaps this should just go into a fundamental-mode hook?
-  (evil-mode 1)
-  (which-key-mode 1)
-  )
+;; (defun initial-buffer-settings ()
+;;   "Configure the initial buffer so we can actually use it."
+;;   ;; Perhaps this should just go into a fundamental-mode hook?
+;;   (evil-mode 1)
+;;   (which-key-mode 1)
+;;   )
 
-(defun my/init ()
-  "Do initializtion."
-  (message "[INIT] Starting init.")
-  ;; Because Nix now copies this file where it needs to be, we need to add this
-  ;; directory to the load path so my scattered .el files can be found.
-  (add-to-list 'load-path "~/dev/dotfiles/lisp/")
-  ;; (toggle-debug-on-error)
-  ;; TODO: Move to macos.org when it gets merged.
-  (set-frame-parameter nil 'fullscreen 'fullscreen)
-  (load-library "redshift-indent")
-  (load-library "auto-compile")
-  ;; Get our evil (vim) bindings working as soon as possible.
-  (load-library "evil")
-  ;; Plug some holes in Doom because we're just taking files from it a la carte.
-  (load-library "doom-plug")
-  ;; This needs to come before the Doom keybindings, but I don't want to muck
-  ;; with the original source file.  This can be bound up into a general
-  ;; "doom-theft" module later.
-  (load-library "doom-constants")
-  ;; Same as constants.
-  (load-library "doom-lib")
-  ;; Same as constants.
-  (load-library "doom-use-package")
-  (load-library "doom-keybinds")
-  ;; Gives us custom-set-faces! and perhaps more.
-  ;; (load-library "doom-lib-themes")
-  (general-evil-setup)
-  (load-library "dash")
-  (setq-default load-prefer-newer t)
-  (auto-compile-on-load-mode 1)
-  (init-org-file "emacs-config.org")
-  (init-org-file "macos.org")
-  (init-org-file "gpg.org")
-  (dirty-init)
-  (message "[INIT] Loading mu4e to fix startup issue...")
-  ;; There is a startup error whose stack ends near org-store-link and within
-  ;; that org-mu4e-store-link. org-mu4e-store-link is part of org-mu4e, which
-  ;; shouldn't have been required yet, except for maybe the mu4e layer itself. I
-  ;; still don't know why this adviced function is being invoked. For now just
-  ;; require the file that makes it work.
-  ;;
-  ;; Historically, I've been able to remove the mu4e related elpa packages and
-  ;; let Emacs reconstruct them on startup. I would have to do this on any
-  ;; change to the email.org file, but other changes may have triggered the
-  ;; issue as well.
-  (require 'mu4e)
-  (message "[INIT] mu4e load DONE")
-  (init-org-file "debug.org")
-  ;; (init-org-file "hydra.org")
-  ;; prog-mode must come before org-mode due to
-  ;; `'config/prog-mode-disable-smart-parens' needing to also be called in
-  ;; org-mode.
-  (init-org-file "prog-mode.org")
-  (init-org-file "org-mode.org")
-  (init-org-file "elisp-mode.org")
-  ;; org-contacts adds the contacts file to org-agenda-files but this fails.
-  ;; Some recent version of _something_ causes this to prompt to remove the file
-  ;; from the list.  Since this happens during startup, naturally Emacs just
-  ;; sits around with a white screen.  Disable org-contacts if the file isn't
-  ;; present.  This might be a land mine later, but at least this will prevent
-  ;; startup locks.
-  (if (file-exists-p "~/notes/contacts.org")
-    (init-org-file "org-contacts.org")
-    nil
-    )
-  (init-org-file "keybindings.org")
-  (init-org-file "modeline.org")
-  (init-org-file "ui.org")
-  (init-org-file "color.org")
-  (init-org-file "printer2d.org")
-  ;; This looks a little too much like clown barf right now. I need to fix it or
-  ;; leave it off. For now it's disabled.
-  ;; (init-org-file "rainbow-identifiers.org")
-  (init-org-file "evil.org")
-  (init-org-file "avy.org")
-  (on-spacemacs (init-org-file "helm.org"))
-  (init-org-file "flyspell.org")
-  (init-org-file "messages.org")
-  (init-org-file "flycheck.org")
-  (init-org-file "company.org")
-  ;; Themes must be loaded before macos, so we can add a hook and fix emoji
-  ;; display.
-  (init-org-file "theme.org")
-  (init-org-file "macos.org")
-  (init-org-file "json.org")
-  (init-org-file "conf-mode.org")
-  (init-org-file "private.org")
-  (init-org-file "buffer.org")
-  ;; (init-org-file "deft.org")
-  (init-org-file "whitespace.org")
-  (init-org-file "habitica.org")
-  (init-org-file "projectile.org")
-  ;;
-  ;; Begin languages. These should be sorted alphabetically.
-  ;;
-  (load-library "applescript-mode.el")
-  (init-org-file "docker.org")
-  (init-org-file "javascript.org")
-  (init-org-file "groovy.org")
-  (init-org-file "purescript.org")
-  (init-org-file "scad.org")
-  (init-org-file "svg.org")
-  (init-org-file "css.org")
-  (init-org-file "lisp.org")
-  (init-org-file "makefile.org")
-  (init-org-file "puppet.org")
-  (init-org-file "ruby.org")
-  (init-org-file "rust.org")
-  (init-org-file "shell.org")
-  (init-org-file "yaml.org")
-  ;; End languages.
-  (init-org-file "hipchat.org")
-  (init-org-file "keychain.org")
-  (init-org-file "tramp.org")
-  (init-org-file "time.org")
-  (init-org-file "diagram.org")
-  (init-org-file "yasnippet.org")
-  (init-org-file "language-server-protocol.org")
-  (init-org-file "java.org")
-  (init-org-file "graphviz-dot.org")
-  (init-org-file "html.org")
-  (init-org-file "markdown.org")
-  (init-org-file "web.org")
-  (init-org-file "web-mode.org")
-  (init-org-file "font.org")
-  (init-org-file "piper.org")
-  (init-org-file "cucumber.org")
-  (init-org-file "git.org")
-  (init-org-file "email.org")
-  ;; org-agenda must be loaded after mu4e. The file itself does not call upon
-  ;; mu4e directly, but perhaps something in org-agenda? This has been difficult
-  ;; to track down. I might need to hook up some dependency hooks with
-  ;; use-package to properly fix this.
-  (init-org-file "org-agenda.org")
-  (init-org-file "browser.org")
-  (init-org-file "transportation-circle.org")
-  (init-org-file "dnd.org")
-  (init-org-file "jira.org")
-  (config/init-org-file-private "email-private.org")
-  (config/init-org-file-private "jira-private.org")
-  (config/init-org-file-private "org-agenda-private.org")
-  (config/init-org-file-private "projectile-private.org")
-  ;; Load up any ssh-agents or gpg-agents.
-  (keychain-refresh-environment)
-  (message "[INIT] Enabling evil-mode...")
-  (evil-mode 1)
-  (message "[INIT] Init Done.")
-  )
+;; (defun my/init ()
+;;   "Do initializtion."
+;;   (message "[INIT] Starting init.")
+;;   ;; Because Nix now copies this file where it needs to be, we need to add this
+;;   ;; directory to the load path so my scattered .el files can be found.
+;;   (add-to-list 'load-path "~/dev/dotfiles/lisp/")
+;;   ;; (toggle-debug-on-error)
+;;   ;; TODO: Move to macos.org when it gets merged.
+;;   (set-frame-parameter nil 'fullscreen 'fullscreen)
+;;   (load-library "redshift-indent")
+;;   (init-org-file "emacs-config.org")
+;;   (init-org-file "macos.org")
+;;   (init-org-file "gpg.org")
+;;   (dirty-init)
+;;   (message "[INIT] Loading mu4e to fix startup issue...")
+;;   ;; There is a startup error whose stack ends near org-store-link and within
+;;   ;; that org-mu4e-store-link. org-mu4e-store-link is part of org-mu4e, which
+;;   ;; shouldn't have been required yet, except for maybe the mu4e layer itself. I
+;;   ;; still don't know why this adviced function is being invoked. For now just
+;;   ;; require the file that makes it work.
+;;   ;;
+;;   ;; Historically, I've been able to remove the mu4e related elpa packages and
+;;   ;; let Emacs reconstruct them on startup. I would have to do this on any
+;;   ;; change to the email.org file, but other changes may have triggered the
+;;   ;; issue as well.
+;;   (require 'mu4e)
+;;   (message "[INIT] mu4e load DONE")
+;;   (init-org-file "debug.org")
+;;   ;; (init-org-file "hydra.org")
+;;   ;; prog-mode must come before org-mode due to
+;;   ;; `'config/prog-mode-disable-smart-parens' needing to also be called in
+;;   ;; org-mode.
+;;   (init-org-file "prog-mode.org")
+;;   (init-org-file "org-mode.org")
+;;   (init-org-file "elisp-mode.org")
+;;   ;; org-contacts adds the contacts file to org-agenda-files but this fails.
+;;   ;; Some recent version of _something_ causes this to prompt to remove the file
+;;   ;; from the list.  Since this happens during startup, naturally Emacs just
+;;   ;; sits around with a white screen.  Disable org-contacts if the file isn't
+;;   ;; present.  This might be a land mine later, but at least this will prevent
+;;   ;; startup locks.
+;;   (if (file-exists-p "~/notes/contacts.org")
+;;     (init-org-file "org-contacts.org")
+;;     nil
+;;     )
+;;   (init-org-file "keybindings.org")
+;;   (init-org-file "modeline.org")
+;;   (init-org-file "ui.org")
+;;   (init-org-file "color.org")
+;;   (init-org-file "printer2d.org")
+;;   ;; This looks a little too much like clown barf right now. I need to fix it or
+;;   ;; leave it off. For now it's disabled.
+;;   ;; (init-org-file "rainbow-identifiers.org")
+;;   (init-org-file "evil.org")
+;;   (init-org-file "avy.org")
+;;   (on-spacemacs (init-org-file "helm.org"))
+;;   (init-org-file "flyspell.org")
+;;   (init-org-file "messages.org")
+;;   (init-org-file "flycheck.org")
+;;   (init-org-file "company.org")
+;;   ;; Themes must be loaded before macos, so we can add a hook and fix emoji
+;;   ;; display.
+;;   (init-org-file "theme.org")
+;;   (init-org-file "macos.org")
+;;   (init-org-file "json.org")
+;;   (init-org-file "conf-mode.org")
+;;   (init-org-file "private.org")
+;;   (init-org-file "buffer.org")
+;;   ;; (init-org-file "deft.org")
+;;   (init-org-file "whitespace.org")
+;;   (init-org-file "habitica.org")
+;;   (init-org-file "projectile.org")
+;;   ;;
+;;   ;; Begin languages. These should be sorted alphabetically.
+;;   ;;
+;;   (load-library "applescript-mode.el")
+;;   (init-org-file "docker.org")
+;;   (init-org-file "javascript.org")
+;;   (init-org-file "groovy.org")
+;;   (init-org-file "purescript.org")
+;;   (init-org-file "scad.org")
+;;   (init-org-file "svg.org")
+;;   (init-org-file "css.org")
+;;   (init-org-file "lisp.org")
+;;   (init-org-file "makefile.org")
+;;   (init-org-file "puppet.org")
+;;   (init-org-file "ruby.org")
+;;   (init-org-file "rust.org")
+;;   (init-org-file "shell.org")
+;;   (init-org-file "yaml.org")
+;;   ;; End languages.
+;;   (init-org-file "hipchat.org")
+;;   (init-org-file "keychain.org")
+;;   (init-org-file "tramp.org")
+;;   (init-org-file "time.org")
+;;   (init-org-file "diagram.org")
+;;   (init-org-file "yasnippet.org")
+;;   (init-org-file "language-server-protocol.org")
+;;   (init-org-file "java.org")
+;;   (init-org-file "graphviz-dot.org")
+;;   (init-org-file "html.org")
+;;   (init-org-file "markdown.org")
+;;   (init-org-file "web.org")
+;;   (init-org-file "web-mode.org")
+;;   (init-org-file "font.org")
+;;   (init-org-file "piper.org")
+;;   (init-org-file "cucumber.org")
+;;   (init-org-file "git.org")
+;;   (init-org-file "email.org")
+;;   ;; org-agenda must be loaded after mu4e. The file itself does not call upon
+;;   ;; mu4e directly, but perhaps something in org-agenda? This has been difficult
+;;   ;; to track down. I might need to hook up some dependency hooks with
+;;   ;; use-package to properly fix this.
+;;   (init-org-file "org-agenda.org")
+;;   (init-org-file "browser.org")
+;;   (init-org-file "transportation-circle.org")
+;;   (init-org-file "dnd.org")
+;;   (init-org-file "jira.org")
+;;   (config/init-org-file-private "email-private.org")
+;;   (config/init-org-file-private "jira-private.org")
+;;   (config/init-org-file-private "org-agenda-private.org")
+;;   (config/init-org-file-private "projectile-private.org")
+;;   ;; Load up any ssh-agents or gpg-agents.
+;;   (keychain-refresh-environment)
+;;   (message "[INIT] Enabling evil-mode...")
+;;   (evil-mode 1)
+;;   (message "[INIT] Init Done.")
+;;   )
 
-(my/init)
+;; Because Nix now copies this file where it needs to be, we need to add this
+;; directory to the load path so my scattered .el files can be found.
+(add-to-list 'load-path "~/dev/dotfiles/lisp/")
+(load-library "init-batteries")
+(batteries-init)
 (toggle-debug-on-quit)
 
 (provide 'my/init)

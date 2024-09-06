@@ -678,6 +678,7 @@ will be used in the snippet.
   )
 
 (defun config/org-babel-languages-available ()
+  (require 'dash)
   (-uniq
    (-sort
     #'string-lessp

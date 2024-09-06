@@ -34,7 +34,7 @@ Transportation Circle declares a series of functions for displaying itself,
 initializing its key maps, and so forth. This is brought in below.
 
 #+name: tc/main
-#+begin_src emacs-lisp :results none :noweb yes
+#+begin_src emacs-lisp :results none :noweb yes :tangle yes
 <<tc/buffer-display-fn>>
 #+end_src
 
@@ -171,7 +171,7 @@ There are a number of documents relevant to this topic.
 #+end_src
 
 #+name: tc/buffer-display-fn
-#+begin_src emacs-lisp :results none :noweb yes
+#+begin_src emacs-lisp :results none :noweb yes :tangle no
 <<tc/buffer-populate-fn>>
 (defun tc/buffer-display ()
   (interactive)
@@ -202,7 +202,7 @@ There are a number of documents relevant to this topic.
 *** buffer heading
 
 #+name: tc/buffer-heading-populate
-#+begin_src emacs-lisp :results none
+#+begin_src emacs-lisp :results none :tangle no
 (insert "Transportation Circle for ")
 (insert "D&D")
 (insert "\n\n")
@@ -211,7 +211,7 @@ There are a number of documents relevant to this topic.
 *** buffer entries
 
 #+name: tc/buffer-entries-populate-fn
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 (defun tc/buffer-entries-populate (actions)
   "Insert ACTIONS into the selected buffer."
   (message "%s" actions)
@@ -243,7 +243,9 @@ There are a number of documents relevant to this topic.
 *** summon
 =SPC m D D=
 
-#+begin_src emacs-lisp :results none
+TODO: Make this included by something else.  Do not tangle directly.  It depends
+on functions that may not exist yet!
+#+begin_src emacs-lisp :results none :tangle no
 (on-doom
   (map!
     :localleader
@@ -288,7 +290,7 @@ add bindings for =transportation-circle=.
 [[https://www.gnu.org/software/emacs/manual/html_node/elisp/Controlling-Active-Maps.html][Controlling-Active-Maps]] documents =set-transient-map= briefly.
 
 #+name: tc/transient-map-fn
-#+begin_src emacs-lisp :tangle no :noweb yes
+#+begin_src emacs-lisp :tangle no :noweb yes :tangle no
 <<tc/keymap-action-fn>>
 (defun tc/transient-map (circle)
   "Set up a transient map described by CIRCLE.
@@ -323,7 +325,7 @@ When setting up the keymap in [[transient map]], we partially apply the destinat
 to the action.
 
 #+name: tc/keymap-action-fn
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 (defun tc/keymap-action (destination)
   "Partially apply DESTINATION to action in DESTINATION."
   (-partial (cdr (assoc 'action destination)) destination)

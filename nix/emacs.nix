@@ -17,6 +17,8 @@
           # epkgs.custom
           # A library of helpful, abstract functions.
           epkgs.dash
+          # Doom has some good themes.  Let's use one!
+          epkgs.doom-themes
           # Manage keybindings sanely.
           epkgs.general
           # Load shared SSH/GPG agents from keychain.

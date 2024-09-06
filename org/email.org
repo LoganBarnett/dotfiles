@@ -60,8 +60,8 @@ globally, we use =defvar= up front to declare it.
 *** opening
 Doom doesn't bind =mu4e= that I have seen.
 
-#+name: mu4e-open
-#+begin_src emacs-lisp :results none :tangle yes
+#+name: mu4e-open-keybinding
+#+begin_src emacs-lisp :results none :tangle no
 (on-doom
  (map!
   :leader
@@ -410,7 +410,8 @@ count]] for how that is overridden/fixed.
 =mu4e= assumes that if you use =query= that =:hide-unread= should be forced. I'm
 not in agreement here, so just disable it.
 
-#+begin_src emacs-lisp :results none :tangle yes
+#+name: mu4e-unread-count-fix
+#+begin_src emacs-lisp :results none :tangle no
 (defun mu4e--start (&optional func)
   "Start mu4e.
 If `mu4e-contexts' have been defined, but we don't have a context
@@ -787,7 +788,7 @@ email accounts with =mu=. This should be smart enough to use the current
 mailbox/context.
 
 #+name: config/mu4e-mark-for-spam
-#+begin_src emacs-lisp :results none :tangle yes
+#+begin_src emacs-lisp :results none :tangle no
 (defun config/mu4e-spam (*args)
   (concat
     maildir-account-dir
@@ -916,13 +917,11 @@ https://emacs.stackexchange.com/questions/69719/fingerprint-has-changed-message-
   (message "initializing mu4e with use-package...")
   (use-package "mu4e"
     :init
-    <<mu4e-open>>
+    <<mu4e-unread-count-fix>>
     <<config/maildir-account-dir-create>>
-    <<config/mu4e-mark-for-spam>>
     <<config/email-mu4e-capture-template-add>>
     <<config/email-mu4e-link-to-message>>
     <<config/mu4e-auto-fill-comments-disable>>
-    <<config/mu4e-add-bookmarks>>
     <<config/mu4e-gmail-messages-delete>>
     <<config/mu4e-mail-directory-completion>>
     <<config/set-mu-path>>
@@ -932,6 +931,9 @@ https://emacs.stackexchange.com/questions/69719/fingerprint-has-changed-message-
     <<config/mu4e-composing>>
     :config
     (message "initializing mu4e...")
+    <<mu4e-open-keybinding>>
+    <<config/mu4e-add-bookmarks>>
+    <<config/mu4e-mark-for-spam>>
     ;; mu4e (or the Doom module) resets the value configured here, so just set
     ;; it back again.
     <<config/mu4e-tall-icons-hide>>
