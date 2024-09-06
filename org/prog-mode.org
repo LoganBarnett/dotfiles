@@ -410,10 +410,10 @@ Emacs is smart enough to skip the shebang.
   <<config/fix-multi-line-comment-continuations>>
   (add-hook 'prog-mode-hook #'config/auto-fill-comments)
   (add-hook 'prog-mode-hook #'config/disable-line-wrapping)
-  (add-hook 'prog-mode-hook #'config/disable-smartparens-pairs)
+  ;; (add-hook 'prog-mode-hook #'config/disable-smartparens-pairs)
   ;; I have found repeating this in a hook fixes the <> completion in JavaScript
   ;; modes.
-  (add-hook 'prog-mode-hook #'config/prog-mode-disable-smart-parens)
+  ;; (add-hook 'prog-mode-hook #'config/prog-mode-disable-smart-parens)
   :config
   (require 'multi-line)
   <<config/prog-multi-line-default-strategy>>

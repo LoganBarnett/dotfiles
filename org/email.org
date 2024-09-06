@@ -308,7 +308,7 @@ Setting this to ='ask= seems to work for both opening =gpg= encrypted files and
 using email.
 
 #+name: config/email-get-mail-command
-#+begin_src emacs-lisp :tangle yes :results none
+#+begin_src emacs-lisp :tangle no :results none :exports none
 (setq
  mu4e-get-mail-command (format "INSIDE_EMACS=%s mbsync -a -F" emacs-version)
  ;; `epa-pinentry-mode' is deprecated, but not mirrored by `epg-pinentry-mode',
@@ -317,6 +317,7 @@ using email.
  epa-pinentry-mode 'loopback
  epg-pinentry-mode 'loopback
  )
+(message "mu4e-get-mail-command: %s" mu4e-get-mail-command)
 #+end_src
 
 *** sending mail

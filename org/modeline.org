@@ -50,12 +50,12 @@ cruft gets added and I have to take it out.
     buffer-position
     selection-info
     vcs
-    checker
+    ;; checker
     )
   )
 (defun config/setup-custom-doom-modeline ()
    (doom-modeline-set-modeline 'modeline-min 'default))
-(add-hook 'doom-modeline-mode-hook #'config/setup-custom-doom-modeline)
+;; (add-hook 'doom-modeline-mode-hook #'config/setup-custom-doom-modeline)
 ;; Gutting this function means no more silly icons to ignore.
 ;; (defun config/doom-modeline-vcs-icon (orig-fn &rest args)
 ;;   ;; Just return the text, which is the 3rd argument.

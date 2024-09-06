@@ -16,7 +16,7 @@ hopefully head off having to explain this over and over.
 
 #+name: config/gitignore-file-template-disable
 #+begin_src emacs-lisp :results none :tangle no
-(set-file-template! 'gitignore-mode :trigger "gitignore" :mode 'gitignore-mode)
+;; (set-file-template! 'gitignore-mode :trigger "gitignore" :mode 'gitignore-mode)
 #+end_src
 
 * magit

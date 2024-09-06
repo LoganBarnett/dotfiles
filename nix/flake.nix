@@ -41,10 +41,10 @@
       url = "github:nix-community/nixos-generators/master";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    # emacs-overlay = {
-    #   url = "github:nix-community/emacs-overlay/master";
-    #   inputs.nixpkgs.follows = "nixpkgs";
-    # };
+    emacs-overlay = {
+      url = "github:nix-community/emacs-overlay/master";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     nixos-anywhere = {
       url = "github:numtide/nixos-anywhere";
       inputs = {
@@ -81,7 +81,7 @@
     agenix-rekey,
     current-system,
     disko,
-    # emacs-overlay,
+    emacs-overlay,
     nix-darwin,
     nixpkgs,
     nixos-anywhere,

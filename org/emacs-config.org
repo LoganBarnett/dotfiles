@@ -57,6 +57,7 @@ bar items, but it disables enough that this isn't a problem.
 ** encryption
    #+BEGIN_SRC emacs-lisp :results none :tangle yes
      (require 'epa-file)
+     (require 'pinentry)
      (epa-file-enable)
      (defvar epa-pinentry-mode)
      (setq

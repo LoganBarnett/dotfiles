@@ -56,12 +56,12 @@
      (show-smartparens-global-mode 1)
      )
    ;; And then just brute force disable it, which seems to sometimes work.
-   (config/disable-smartparens-pairs)
+   ;; (config/disable-smartparens-pairs)
    )
   (on-spacemacs
    ;; Spacemacs has no means of disabling smartparens as well. So we just yank out
    ;; every possible pairing.
-   (eval-after-load 'smartparens #'config/disable-smartparens-pairs)
+   ;; (eval-after-load 'smartparens #'config/disable-smartparens-pairs)
    )
   )
 
@@ -273,13 +273,42 @@
   (global-highlight-parentheses-mode)
   (message "[DIRTY INIT] INIT DONE!")
   )
+
+(defun initial-buffer-settings ()
+  "Configure the initial buffer so we can actually use it."
+  ;; Perhaps this should just go into a fundamental-mode hook?
+  (evil-mode 1)
+  (which-key-mode 1)
+  )
+
 (defun my/init ()
   "Do initializtion."
+  (message "[INIT] Starting init.")
+  ;; Because Nix now copies this file where it needs to be, we need to add this
+  ;; directory to the load path so my scattered .el files can be found.
+  (add-to-list 'load-path "~/dev/dotfiles/lisp/")
   ;; (toggle-debug-on-error)
   ;; TODO: Move to macos.org when it gets merged.
   (set-frame-parameter nil 'fullscreen 'fullscreen)
   (load-library "redshift-indent")
-  (message "[INIT] Starting init.")
+  (load-library "auto-compile")
+  ;; Get our evil (vim) bindings working as soon as possible.
+  (load-library "evil")
+  ;; Plug some holes in Doom because we're just taking files from it a la carte.
+  (load-library "doom-plug")
+  ;; This needs to come before the Doom keybindings, but I don't want to muck
+  ;; with the original source file.  This can be bound up into a general
+  ;; "doom-theft" module later.
+  (load-library "doom-constants")
+  ;; Same as constants.
+  (load-library "doom-lib")
+  ;; Same as constants.
+  (load-library "doom-use-package")
+  (load-library "doom-keybinds")
+  ;; Gives us custom-set-faces! and perhaps more.
+  ;; (load-library "doom-lib-themes")
+  (general-evil-setup)
+  (load-library "dash")
   (setq-default load-prefer-newer t)
   (auto-compile-on-load-mode 1)
   (init-org-file "emacs-config.org")
@@ -396,9 +425,12 @@
   (config/init-org-file-private "projectile-private.org")
   ;; Load up any ssh-agents or gpg-agents.
   (keychain-refresh-environment)
+  (message "[INIT] Enabling evil-mode...")
+  (evil-mode 1)
   (message "[INIT] Init Done.")
   )
 
+(my/init)
 (toggle-debug-on-quit)
 
 (provide 'my/init)

@@ -146,7 +146,7 @@ for reference.
 We can add =org-babel= support using [[https://github.com/wose/ob-scad][ob-scad]].
 
 #+name: config/org-babel-ob-scad-add
-#+begin_src emacs-lisp :results none
+#+begin_src emacs-lisp :results none :tangle no
 (org-babel-do-load-languages
  'org-babel-load-languages
  '(scad . t)
@@ -163,7 +163,7 @@ We can add =org-babel= support using [[https://github.com/wose/ob-scad][ob-scad]
   <<config/scad-keymap>>
   <<config/prog-mode-fix-c-indentation>>
   <<config/scad-indentation-fix>>
-  <<config/org-babel-ob-scad-add>>
+  ;; <<config/org-babel-ob-scad-add>>
   <<config/openscad-command>>
   <<config/scad-preview-color-scheme>>
   (add-hook 'scad-mode-hook #'config/prog-mode-c-style-set)

@@ -257,7 +257,11 @@ library is already loaded.
 #+begin_src emacs-lisp :results none :noweb yes
 <<config/evil-fix-org-fold-search-doom-6578>>
 (use-package "evil"
+  :ensure t
   :init
+  (setq evil-want-integration t)
+  (setq evil-want-keybinding nil)
+  (evil-collection-init)
   <<config/evil-global-substitute>>
   <<config/evil-Y-yanks-to-eol>>
   <<config/evil-command-line-history-bindings>>
@@ -265,4 +269,10 @@ library is already loaded.
   <<config/evil-comment-yanks>>
   )
 
+(use-package evil-collection
+  :after evil
+  :ensure t
+  :config
+  (evil-collection-init)
+  )
 #+end_src

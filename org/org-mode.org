@@ -1209,9 +1209,11 @@ This is the region of offending code, I think:
   <<config/org-babel-passthrough>>
   <<config/org-mode-hack-initial-folding>>
   <<config/org-mode-smart-parens-disable>>
-  (config/prog-mode-disable-smart-parens)
-  (add-hook 'org-mode-hook #'config/prog-mode-disable-smart-parens)
+  ;; (config/prog-mode-disable-smart-parens)
+  ;; (add-hook 'org-mode-hook #'config/prog-mode-disable-smart-parens)
   :config
+  ;; A series of helpers from Doom that we already use.
+  (load-library "doom-autoload-org")
   ;; Provide org-reveal's interactive functions.
   (require 'ox-reveal)
   <<config/markdown-export-fill-paragraph>>

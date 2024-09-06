@@ -182,8 +182,8 @@ templates]] for more details on things like the =__= files.
       <<config/yasnippet-require-file-newline-mark-safe>>
       <<config/yasnippet-snippet-dirs>>
       ;; This gets crushed by Doom.  Leave for reference.
-      (setq-default yas/snippet-dirs '("~/dev/dotfiles/yasnippets"))
-      (message "Just set yas/snippet-dirs to %s" yas/snippet-dirs)
+      (setq-default yas-snippet-dirs '("~/dev/dotfiles/yasnippets"))
+      (message "Just set yas-snippet-dirs to %s" yas-snippet-dirs)
       (config/yasnippet-fundamental-mode)
       :config
       ;; Controlling when things get loaded and dependences (together) is best

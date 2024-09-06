@@ -25,10 +25,10 @@ Set the default file template for HTML.
 
 #+name: config/html-set-file-templates
 #+begin_src emacs-lisp :results none :tangle no
-(on-doom
- (set-file-template! 'web-mode :trigger "new-html")
- (set-file-template! 'mhtml-mode :trigger "new-html")
- )
+;; (on-doom
+;;  (set-file-template! 'web-mode :trigger "new-html")
+;;  (set-file-template! 'mhtml-mode :trigger "new-html")
+;;  )
 #+end_src
 *** TODO move HTML file templates to yasnippet
 

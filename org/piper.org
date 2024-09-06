@@ -11,7 +11,7 @@
     (use-package piper
       :load-path "~/dev/emacs-piper/"
       :config
-        (on-doom
+;;        (on-doom
           (map!
            :leader
            (:desc "piper" ;; This doesn't seem to work.
@@ -26,7 +26,7 @@
             'normal
             (kbd "SPC |") '("piper-ui" . piper-user-interface)
             )
-         )
+ ;;        )
         (on-spacemacs
           (spacemacs/declare-prefix "o |" "piper")
           (spacemacs/set-leader-keys

@@ -12,10 +12,12 @@
 #
 # See: https://github.com/NixOS/nix/issues/8443
 [
+  (import ./battlescribe-update-data.nix)
   (import ./blueutil.nix)
   (import ./cacert.nix)
   # (import ./crystal.nix)
   (import ./gnupg.nix)
+  (import ./lastversion.nix)
   (import ./man-pages-fix.nix)
   (import ./maven.nix)
   (import ./nightlight.nix)

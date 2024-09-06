@@ -43,7 +43,8 @@ being a truth in my code as well as documents.
 ;;                     :bold nil
 ;;                     )
 ;; LOLWUT just having this empty seems to fix the issue...?
-(custom-set-faces!
+;; (require 'custom)
+;; (custom-set-faces!
 ;;   `(line-number-current-line ((t (:bold nil))))
-  )
+  ;; )
 #+end_src

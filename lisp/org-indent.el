@@ -20,7 +20,10 @@
 ;;; Code:
 
 (defun org-indent-mode (&rest _)
-  (message "[CONFIG] Someone attempted to use org-indent-mode, but we stopped them!")
+  (message
+   "[CONFIG] Someone attempted to use org-indent-mode, but we stopped them!  Find the culprit here: %s"
+   (backtrace)
+   )
   nil
   )
 
