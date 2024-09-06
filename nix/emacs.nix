@@ -12,6 +12,8 @@
           # Automatically compile .el files when loading.
           epkgs.auto-compile
           epkgs.browse-at-remote
+          # A collection of ivy integrations.  Ivy is a general choice selector.
+          epkgs.counsel
           # Set configuration easily at runtime/interactively.  Helpful for
           # testing out values or toggling various verbose / debug modes.
           # epkgs.custom

@@ -4,6 +4,7 @@
 
 # Ignore Emacs swap files.
 .\#*
+\#*
 
 # Ignore macOS finder metadata.
 .DS_Store

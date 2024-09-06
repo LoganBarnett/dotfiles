@@ -1,0 +1,210 @@
+
+I'll fix the heading in a bit.  Right now this is all in vim where I have
+virtually _nothing_ of _anything_.
+
+Rename this document to just be emacs.org.
+
+* Doom Emacs
+This section covers my present status with Doom Emacs.  My relationship with it
+is complicated.
+
+As of [2024-09-05] I decided to finally cut the cable with Doom Emacs.  I still
+recommend Doom to new users and think it's wonderful.  My biggest issue is that
+Doom tends to be unstable in the sense that updating packages and Doom itself
+comes at great risk to one's timelines.
+
+Typically, an upgrade breaks a single package, or introduces some quirky
+behavior, or somehow raises ~smartparens~ from the dead via necromancy I could
+never hope to aspire to.  These can be addressed in a relatively small amount of
+time (which is typically me just shutting down parts of Emacs).
+
+During my last upgrade, things broke at a very fundamental level.  It's like
+~use-package~ stopped working.  That's bad!  I need that.  Variables set in
+~:init~ or ~:config~ were ignored, or perhaps were set but were later
+overridden.  I saw no documentation or notices in Doom about this (which is
+possible I missed - Doom has a lot of documentation!).
+
+Since I've been deep-diving into Nix recently, and doing more and more inside
+Nix, I decided it was time to use Nix to manage my packages.  Doom has a lot of
+great things going for it but its package management is deeply tied to
+everything.
+
+** Moving packages to Nix
+
+This part was relatively simple using emacs-overlay (get the link).  Packages
+that were effectively just a git repository (not published anywhere) require a
+little bit of boilerplate but they aren't difficult to put together.  There's
+generators in ~emacs-overlay~ that might make this task even easier, but I'm not
+familiar with invoking them just yet.
+
+Some packages I just need to nudge them on publishing.  Others I may have to
+publish for them.
+
+I've successfully migrated all of the packages to Nix as far as I can tell.
+Since adding new packages is relatively trivial, I consider this work done and I
+can fix missing packages on an individual basis.
+
+The thought did cross my mind that maybe it would be nice to have my Emacs
+configuration run in a special mode that would print out its dependencies and
+then have something convert that to Nix expressions.
+
+** Doom Advice
+
+Doom has a lot of utility functions and advising it does.  I don't fully grok
+all of it yet, but it is commented to an exceptional degree - virtually every
+hack has a justification!  This will really help on determining whether or not I
+actually need something.
+
+I have included several Doom files just to keep my current configuration
+working.  Some of this might not be needed.  I have not done a deep dive into
+this yet.  I do know some of it is to do things like "fix" ~use-package~ (which
+Doom doesn't like).  I'm not sure if I should agree with Doom on this or not
+yet, but I don't want to use Doom's package system anymore so my inclination is
+to disagree for now.  I know ~use-package~ does some "magic" and I generally
+dislike magic in my software.
+
+** Glue - the Sleeping Dragon
+
+This is perhaps the hardest part of this entire endeavor.  Doom provides a
+monstrous amount of glue for all the packages that exist.  Stuff is just wired
+up for free.  I have lots of bindings available.  Unfortunately I haven't had a
+lot of visibility into those bindings, and that's where things have gotten messy
+for me.  I suspect I will be doing a lot of duplication here.
+
+Let's go over some really essential things in Doom I want:
+
+*** Basic Menus
+
+I don't mean ~imenu-mode~ - I mean everything under ~SPC~.  That just doesn't
+exist in my present configuration and I'll have to bring that over - probably by
+reimplementing all of it.
+
+* Replacing Doom
+
+** Reusable
+
+Part of my work here makes me wonder if this stuff could've been in a library to
+start with.  I could write this library.  The question comes to me though:  Has
+no one else put something together for this yet?
+
+There are a few starter kits out there, aside from Doom and Spacemacs:
+
+1. https://github.com/a-schaefers/spartan-emacs "opinionated" just makes me walk
+   away.  Also uses ~straight.el~, which is what Doom uses.  This would defeat
+   the purpose of my migration.
+2. https://github.com/bbatsov/prelude I'm honestly not sure what to make of it.
+   Prelude does has its own package management system, which is just out of the
+   question.
+
+I'll add more as I get around to it.  I've glanced around at some others that
+came up (like https://github.com/jamescherti/minimal-emacs.d) but I haven't seen
+something jump out at me yet.
+
+*** What would jump out at me?
+
+I suppose this is what I'd want to see for myself:
+
+1. evil-mode everywhere.
+2. Bring-your-own-package-manager (ala ~use-package~ and Nix for what I
+   personally bring).
+3. Give me things that just come in a modern editor.
+  a. Project management (via projectile).
+  b. Git integration (via magit).
+  c. Fash searching (ripgrep and consul/ivy).
+  d. Exploratory keybindings (which-key, plus keys already configured).
+  e. Modern editor etiquette - editorconfig, sane indentation.
+  f. Modern editor look/feel.
+    i. Line numbers.
+    ii. Rainbow delimiters and indent guides.
+    iii. Dark mode!
+    iv. A useful modeline.
+  h. LSP integraiton out of the box.
+4. Embrace Emacs.  I think perhaps the thing that has turned my off from the
+   current approachs I see is because everyone came up with their own, different
+   way of doing things.  It's great that Emacs lets you do that, but can we
+   honestly say the various libraries out there just don't cut it?  This is
+   where magic starts to come in, and I believe this magic is what's dangerous.
+   Everything we do here should be easy to understand and easier to inject one's
+   own things.  If we have to monkey patch ~use-package~ or some other critical
+   system, then things have gone very wrong.
+   a. To that extent, if there is something that isn't really making the cut for
+      us, we need to create a new library to handle that need.  Encorporating it
+      into the framework is what damages the design and makes our library into a
+      magical framework (which are to be avoided at all costs).
+5. Fast startup - I'd like this but it isn't as critical as other things.
+Having a fast startup is a sign of good Emacs configuration health in my
+opinion.
+
+I haven't found something that incorporates these principles.
+
+*** General design
+
+The general design always needs to be user code first.  This library is
+something included, not something that calls you.  Your ~init.el~ needs to be
+something like:
+
+#+begin_src emacs-lisp
+(load-library "batteries-included")
+(batteries-include
+  :editor
+  (evil-mode 1)
+  :major-modes
+  (init-org-file "evil.org")
+  (init-org-file "org-mode.org")
+  (init-org-file "nix.org")
+  (init-org-file "rust.org")
+  :applications
+  (init-org-file "mu.org")
+  )
+#+end_src
+
+Where ~init-org-file~ is a custom function that just uses ~org-babel~ to load
+files as literate configuration.  That is to say these could be replaced with
+~require~ or ~load-library~ and they include their own ~use-package~
+configuration.
+
+I'd need to figure out how to wire up things like ~which-key~, establish a
+leader key, and some other things.  I think it might be useful to create a sort
+of ~evil-batteries~ where this stuff is wired up automatically.  Then
+~(evil-mode 1)~ becomes ~(evil-batteries 1)~.
+
+Is there any benefit to sorting it this way?  This does add some logical
+separation of things, but I could do that via ordinary functions.  ~use-package~
+does lack a sort of dependency-graph setup which has inspired some to leave it.
+
+
+** What's needed to be done
+
+I've already done a lot, but there's more to do.
+
+1. [ ] Fuzzy searching works with Counsel.
+2. [ ] I can edit this file in Emacs.
+3. [ ] Git gutter works.
+4. [ ] Magit works.
+5. [ ] mu4e works.
+6. [ ] projectile works.
+  a. [ ] I can find files by name.
+  b. [ ] I can search for files by text content.
+  c. [ ] I can search and replace text content.
+  d. [ ] I can kill projectile buffers.
+  e. [ ] I can search for projects.
+  f. [ ] I can refresh the project list.
+7. [ ] helpful works
+  a. [ ] I can bring up help for variables.
+  b. [ ] I can bring up help for functions.
+  c. [ ] I can bring up help for the current modes.
+  d. [ ] I can bring up help for the current face.
+8. [ ] Rust works.
+9. [ ] Nix works.
+10. [ ] Ruby works.
+11. [ ] evil completely works
+  a. [x] vim bindings work with which-key.
+  b. [ ] ~:e~ completions use Counsel.
+12. [ ] Check before leaving Emacs.
+14. [ ] Holy mode has a different colored cursor.
+15. [ ] Use Doom's modeline.
+16. [ ] Relative line numbers work.
+17. [ ] The scrollbar is hidden.
+18. [ ] which-key is globally enabled.
+19. [ ] My preferred font is used.
+20. [ ] Tramp works.

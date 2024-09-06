@@ -30,7 +30,7 @@
     (load-library "text-mode")
     ;; Gives us custom-set-faces! and perhaps more.
     ;; (load-library "doom-lib-themes")
-    (general-evil-setup)
+    (load-library "config-counsel")
     (load-library "dash")
     (setq-default load-prefer-newer t)
     (auto-compile-on-load-mode 1)
@@ -65,7 +65,6 @@
     ;; This looks a little too much like clown barf right now. I need to fix it or
     ;; leave it off. For now it's disabled.
     ;; (init-org-file "rainbow-identifiers.org")
-    (init-org-file "evil.org")
     (init-org-file "avy.org")
     (on-spacemacs (init-org-file "helm.org"))
     (init-org-file "flyspell.org")

@@ -5,6 +5,28 @@
 #+language: en
 #+tags:     evil-mode emacs config
 
+* leader
+
+The leader key is the prefix to lots of stuff.  Populate Emacs distributions use
+~SPC~ and that's what I plan on using as well.
+
+#+name: config/evil-leader-set
+#+begin_src emacs-lisp :results none :tangle no
+(evil-set-leader nil (kbd "SPC"))
+#+end_src
+
+The "localleader" is the major mode's leader.  "localleader" is purely a vim
+term that's been kept in ~evil~.  While it's not very ergonimic, this is
+typically ~SPC m~ and I want to keep it there until I can come up with something
+better.
+
+#+name: config/evil-localleader-set
+#+begin_src emacs-lisp :results none :tangle no
+(evil-set-leader nil (kbd "<leader> m") t)
+#+end_src
+
+
+
 * commenting
 
 =g c= is the default comment operator. Spacemacs had =g y= for command + yank,
@@ -266,11 +288,18 @@ library is already loaded.
   (require 'evil)
   (message "required evil-mode")
   :config
+  <<config/evil-leader-set>>
+  <<config/evil-localleader-set>>
   <<config/evil-global-substitute>>
   <<config/evil-Y-yanks-to-eol>>
   <<config/evil-command-line-history-bindings>>
   (require 'general)
   (general-evil-setup)
+(general-create-definer my-leader-def
+  ;; :prefix my-leader
+  ;; or without a variable
+  :prefix "SPC"
+  )
   ;; Provide us with `map!`.
   (load-library "doom-crutch")
   (evil-select-search-module 'evil-search-module 'isearch)
