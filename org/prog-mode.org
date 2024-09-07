@@ -160,15 +160,16 @@ repairing both the current and previous lines.
 
 * line numbers
 
-Generally line numbers are automatically set, butt his appears to be on a
+Generally line numbers are automatically set, but this appears to be on a
 per-mode basis with almost all modes opting in. =applescript-mode= is a notable
 exception. I don't know why we wouldn't just default it for all =prog-mode=
 settings. If line numbers would be inappropriate, then the mode seems
 inappropriate to derive from =prog-mode=.
 
 #+name: config/prog-mode-line-numbers-enable
-#+begin_src emacs-lisp :results none :tangle yes
-(add-hook 'prog-mode-hook (lambda() (message "displaying line numbers") (display-line-numbers-mode 1)))
+#+begin_src emacs-lisp :results none :tangle no
+(add-hook 'prog-mode-hook #'display-line-numbers-mode)
+(setq display-line-numbers-type 'relative)
 #+end_src
 
 * line wrapping

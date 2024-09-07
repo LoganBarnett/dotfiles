@@ -66,4 +66,3 @@ right.
 #+begin_src emacs-lisp :results none
 (set-fringe-mode '(12 . 12))
 #+end_src
-

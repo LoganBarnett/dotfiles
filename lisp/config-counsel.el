@@ -13,9 +13,9 @@
         (counsel-describe-variable . "")
         (counsel-org-capture . "")
         (Man-completion-table . "")
-        (woman . ""))) 
-  (my-leader-def
-    :keymaps 'normal
-    "SPC" #'counsel-M-x
+        (woman . "")))
+  (map!
+    :leader
+    :desc "Execute function" :nv "SPC" #'counsel-M-x
     )
   )

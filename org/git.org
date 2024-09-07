@@ -207,6 +207,11 @@ Without this, it might be trying to open this as =vim=. I do want =vim= to be my
       <<config/gitignore-file-template-disable>>
       <<config/editor-env-emacscliet-ensure>>
       :config
+      (map!
+       :leader
+       :prefix ("g" . "git")
+       :desc "magit" :n "g" #'magit-status
+       )
       (config/connect-git-gutter-and-magit)
       )
   #+end_src

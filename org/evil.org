@@ -10,9 +10,12 @@
 The leader key is the prefix to lots of stuff.  Populate Emacs distributions use
 ~SPC~ and that's what I plan on using as well.
 
+Neither of these code blocks work - they interfere with Doom/General's
+mappings.  Just use theirs since it works.
+
 #+name: config/evil-leader-set
 #+begin_src emacs-lisp :results none :tangle no
-(evil-set-leader nil (kbd "SPC"))
+;; (evil-set-leader nil (kbd "SPC"))
 #+end_src
 
 The "localleader" is the major mode's leader.  "localleader" is purely a vim
@@ -22,7 +25,7 @@ better.
 
 #+name: config/evil-localleader-set
 #+begin_src emacs-lisp :results none :tangle no
-(evil-set-leader nil (kbd "<leader> m") t)
+;; (evil-set-leader nil (kbd "<leader> m") t)
 #+end_src
 
 
@@ -295,11 +298,6 @@ library is already loaded.
   <<config/evil-command-line-history-bindings>>
   (require 'general)
   (general-evil-setup)
-(general-create-definer my-leader-def
-  ;; :prefix my-leader
-  ;; or without a variable
-  :prefix "SPC"
-  )
   ;; Provide us with `map!`.
   (load-library "doom-crutch")
   (evil-select-search-module 'evil-search-module 'isearch)

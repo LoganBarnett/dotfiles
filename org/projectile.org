@@ -178,10 +178,21 @@ Files are returned as relative paths to DIRECTORY."
 
 #+begin_src emacs-lisp :results none :noweb yes
 (use-package projectile
+  :ensure t
   :init
   <<config/projectile-fd-turn-off-colors>>
   <<config/projectile-index-method>>
   <<config/projectile-projects-directory>>
   <<config/projectile-buffers-kill-all>>
+  (require 'counsel-projectile)
+  (counsel-projectile-mode)
+  (map!
+    :after projectile
+    :leader
+    :prefix ("p" . "projectile")
+    ;; Order is sensitive here.  See docstring of map! for details.
+    :desc "Find file by name" :n "f" #'counsel-projectile-find-file
+    :desc "Switch project" :n "p" #'counsel-projectile-switch-project
+   )
   )
 #+end_src

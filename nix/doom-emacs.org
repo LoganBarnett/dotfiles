@@ -182,14 +182,16 @@ I've already done a lot, but there's more to do.
 3. [ ] Git gutter works.
 4. [ ] Magit works.
 5. [ ] mu4e works.
-6. [ ] projectile works.
+6. [ ] projectile works _and_ is fast.
   a. [ ] I can find files by name.
+    i. This remains slow, but sometimes is fast.  First hits are slow
+       when opening a project.
   b. [ ] I can search for files by text content.
   c. [ ] I can search and replace text content.
   d. [ ] I can kill projectile buffers.
   e. [ ] I can search for projects.
   f. [ ] I can refresh the project list.
-7. [ ] helpful works
+7. [ ] helpful works with Counsel.
   a. [ ] I can bring up help for variables.
   b. [ ] I can bring up help for functions.
   c. [ ] I can bring up help for the current modes.
@@ -199,12 +201,16 @@ I've already done a lot, but there's more to do.
 10. [ ] Ruby works.
 11. [ ] evil completely works
   a. [x] vim bindings work with which-key.
-  b. [ ] ~:e~ completions use Counsel.
+  b. [ ] ~:e~ completions use Counsel and is fast.
+  c. [ ] ~;~ and ~,~ don't repeat with ~t~ / ~f~ et. al.
 12. [ ] Check before leaving Emacs.
-14. [ ] Holy mode has a different colored cursor.
-15. [ ] Use Doom's modeline.
-16. [ ] Relative line numbers work.
-17. [ ] The scrollbar is hidden.
-18. [ ] which-key is globally enabled.
-19. [ ] My preferred font is used.
-20. [ ] Tramp works.
+13. [ ] Holy mode has a different colored cursor.
+14. [ ] Use Doom's modeline.
+15. [X] Relative line numbers work.
+16. [X] The scrollbar is hidden.
+17. [X] which-key is globally enabled.
+18. [ ] My preferred font is used.
+19. [ ] Tramp works.
+20. [X] SPC SPC doesn't trigger in not-normal modes or something please fix now.
+  a. [X] See what Doom is doing here, because I'm dumb and the docs don't make
+         it obvious.  Perhaps it needs to be restricted to normal mode?

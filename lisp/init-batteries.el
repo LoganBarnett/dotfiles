@@ -15,6 +15,10 @@
     (tool-bar-mode -1)
     ;; Remove the menubar (a macOS distinguishment from other UIs).
     (menu-bar-mode -1)
+    ;; Remove scroll bars, which are useless to the initiated.
+    (when scroll-bar-mode
+      (scroll-bar-mode -1)
+    )
     (load-library "auto-compile")
     (setq-default load-prefer-newer t)
     (auto-compile-on-load-mode 1)
@@ -28,6 +32,7 @@
     ;; Get our evil (vim) bindings working as soon as possible.
     (init-org-file "evil.org")
     (load-library "text-mode")
+    (init-org-file "which-key.org")
     ;; Gives us custom-set-faces! and perhaps more.
     ;; (load-library "doom-lib-themes")
     (load-library "config-counsel")

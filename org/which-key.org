@@ -22,8 +22,10 @@
 
     (use-package "which-key"
       :ensure t
+      :init
+      ;; Enable globally.  Docs don't really say this but it's there.
+      (which-key-mode 1)
       :config
-      (config/which-key-use-frame)
       (setq
         which-key-sort-order #'which-key-key-order-alpha
         which-key-sort-uppercase-first nil
