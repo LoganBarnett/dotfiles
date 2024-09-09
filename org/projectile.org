@@ -194,5 +194,11 @@ Files are returned as relative paths to DIRECTORY."
     :desc "Find file by name" :n "f" #'counsel-projectile-find-file
     :desc "Switch project" :n "p" #'counsel-projectile-switch-project
    )
+  (map!
+   :after projectile
+   :leader
+   :prefix ("s" . "search")
+   :desc "Find text in project" :n "p" #'counsel-projectile-rg
+   )
   )
 #+end_src
