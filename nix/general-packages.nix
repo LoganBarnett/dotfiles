@@ -12,6 +12,11 @@
   pkgs.cdrkit
   # A command line based music player.
   pkgs.cmus
+  # Manages development environments.  Built atop direnv (from my perspective),
+  # activates more than just a nix-develop shell, but also can do thing like
+  # configure universal commit hooks and enable/disable services needed for
+  # development.
+  pkgs.devenv
   # (import (builtins.fetchGit {
   #   # Descriptive name to make the store path easier to identify
   #   name = "curl-8-1-0-fix-ssl";
