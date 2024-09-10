@@ -6,6 +6,14 @@
 #+file_tags:
 #+tags:
 
+* fix
+
+My fix was to set ~amd_pstate~ to ~guided~.  See
+~nixos-modules/cpu-frequency.nix~ for notes on it, and how it's
+specifically done.
+
+* journey
+
 I've encountered this problem on a beefy AMD GPU (4+GHz).  It seems to
 throttle down to around 400 MHz which is just awful.  Despite this all
 being powered by "smart" tech, it's just dumb and always sits in this
