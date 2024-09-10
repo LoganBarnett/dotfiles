@@ -31,7 +31,6 @@ in { modulesPath, ... }: {
     ({ config, lib, pkgs, ... }: {
       nixpkgs.hostPlatform = system;
       nix.channel.enable = false;
-      boot.initrd.kernelModules = [ "nvme" ];
     })
     # From nixos-generate-config:
     ({ config, lib, modulesPath, ... }: {
@@ -39,23 +38,34 @@ in { modulesPath, ... }: {
         (modulesPath + "/installer/scan/not-detected.nix")
       ];
       boot.initrd.availableKernelModules = [
-        "xhci_pci"
-        "ehci_pci"
         "ahci"
+        "ehci_pci"
+        "nvme"
+        "rtsx_usb_sdmmc"
+        "sd_mod"
         "usb_storage"
         "usbhid"
-        "sd_mod"
-        "rtsx_usb_sdmmc"
+        "xhci_pci"
       ];
       # Should really be handled elsewhere, yeah?
       networking.useDHCP = lib.mkDefault true;
-      boot.kernelModules = [];
+      boot.initrd.kernelModules = [
+        "dm-snapshot"
+        "nvme"
+      ];
+      boot.kernelModules = [
+        "kvm-amd"
+      ];
       boot.extraModulePackages = [];
-      hardware.cpu.intel.updateMicrocode =
+      # This is AMD, not Intel...
+      # hardware.cpu.intel.updateMicrocode =
+      #   lib.mkDefault config.hardware.enableRedistributableFirmware;
+      hardware.cpu.amd.updateMicrocode =
         lib.mkDefault config.hardware.enableRedistributableFirmware;
+      swapDevices = [];
     })
     {
-      hardware.opengl = {
+      hardware.graphics = {
         enable = true;
       };
     }

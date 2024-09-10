@@ -37,7 +37,13 @@
   services.xserver = {
     enable = true;
     desktopManager.gnome.enable = true;
-    displayManager.gdm.enable = true;
+    displayManager.startx.enable = true;
+    displayManager.gdm = {
+      enable = true;
+      # Don't suspend the machine from idleness.
+      autoSuspend = false;
+      wayland = false;
+    };
     windowManager = {
       qtile.enable = true;
       bspwm.enable = true;
@@ -54,10 +60,22 @@
   # Enable sound with pipewire.
   # Actually this is broken per: https://github.com/NixOS/nixpkgs/issues/319809
   # sound.enable = true;
-  hardware.pulseaudio.enable = false;
+  hardware.pulseaudio = {
+    enable = false;
+    support32Bit = false;
+  };
   # Enable RealtimeKit, which allows real time scheduling priority for user
   # processes.  This allows the PulseAudio server to do its work in real time.
   security.rtkit.enable = true;
+  # A security policy manager that should interact somehow with rtkit...
+  # TODO: This doesn't belong here, I think.  I'm not even sure what
+  # setting this accomplished.  It was part of a desperate debugging
+  # effort that is now over.
+  security.polkit.enable = true;
+  # TODO: This doesn't belong here, I think.  I'm not even sure what
+  # setting this accomplished.  It was part of a desperate debugging
+  # effort that is now over.
+  hardware.nvidia.forceFullCompositionPipeline = false;
   services.pipewire = {
     enable = true;
     alsa.enable = true;

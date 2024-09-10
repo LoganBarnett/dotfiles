@@ -45,6 +45,9 @@
     # Performance test IP connections.  Supports TCP/UDP/SCTP and both IPv4 and
     # IPv6.  It requires running a client and a server simultaneously.
     pkgs.iperf
+    # I just thought this was built-in, but I guess not.  We need to
+    # kill all processes by name sometimes!
+    pkgs.killall
     # Let us see ports and file handles held by processes.
     pkgs.lsof
     # A union of ping and traceroute - ping all hosts along a route.

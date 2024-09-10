@@ -1,0 +1,70 @@
+#+title:     AMD CPU Throttling
+#+author:    Logan Barnett
+#+email:     logustus@gmail.com
+#+date:      <2024-09-07 Sat>
+#+language:  en
+#+file_tags:
+#+tags:
+
+I've encountered this problem on a beefy AMD GPU (4+GHz).  It seems to
+throttle down to around 400 MHz which is just awful.  Despite this all
+being powered by "smart" tech, it's just dumb and always sits in this
+slow state.
+
+You can see this manifest via general sluggishness for seemingly
+simple programs.  If you have to wait a few seconds to run ~htop~
+(regardless if in the GUI terminal or over SSH), you know something
+has gone horribly wrong.
+
+You can see
+
+
+#+begin_src sh :results output :exports both :dir arsenic.proton:~
+cat /sys/devices/system/cpu/amd_pstate/status
+#+end_src
+
+This gives ~active~, but I have no idea if this is healthy.
+
+This also could factor in:
+
+#+begin_src sh :results output :exports both :dir arsenic.proton:~
+cat /sys/devices/system/cpu/amd_pstate/prefcore
+#+end_src
+
+Which comes back as ~enabled~.  But I have no idea if this serves a
+role or if this is healthy.
+
+~nixos-hardware~ has a section about this but I'm unsure if it's
+setting things to what I want.
+
+I have ~cpufrequtils~ installed and can use ~sudo cpufreq-info~ but it
+shows me either ~acpi~ (what we don't want to use) or ~no or unknown
+cpufreq driver is active on this CPU~, both of which are undesirable I
+think.
+
+I have tried both of these settings, to no avail:
+
+#+begin_src nix :results none :exports code
+powerManagement.cpuFreqGovernor = "performance";
+powerManagement.cpuFreqGovernor = null;
+#+end_src
+
+I'm pretty fed up at this point, having sunk about 8 hours into this
+almost.  I'd really like to just disable all of this throttling stuff
+and be done with it forever.  AMD still isn't doing things that
+inspire me to get their CPUs.  Perhaps this is a NixOS problem too -
+it probably is.  But duplicating NixOS expressions should be enough,
+and it's not.
+
+Solomon pointed out that his computer had a "performance" power
+setting and Kai's didn't.  He's right.  Also this can be determined
+via:
+
+#+begin_example
+[logan@arsenic:~]$ powerprofilesctl
+,* balanced:
+    PlatformDriver:	placeholder
+
+  power-saver:
+    PlatformDriver:	placeholder
+#+end_example

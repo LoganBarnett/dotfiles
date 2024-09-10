@@ -109,7 +109,7 @@ in {
   hardware.graphics = {
     enable = true;
   };
-  hardware.opengl.package = linux-packages.nvidiaPackages.beta;
+  hardware.graphics.package = linux-packages.nvidiaPackages.beta;
   # Most of this can be found here:
   # https://nixos.wiki/wiki/Nvidia#Nvidia_PRIME
   hardware.nvidia = {
