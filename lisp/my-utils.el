@@ -12,7 +12,9 @@
 
 ;; A function so we can debug better if need be.
 (defun config/disable-visual-line-mode ()
-  (visual-line-mode 0)
+  (interactive)
+  (visual-line-mode -1)
+  (global-visual-line-mode -1)
   )
 
 ;; Adapted from
