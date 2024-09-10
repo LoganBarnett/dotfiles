@@ -24,7 +24,7 @@ in {
       maxJobs = 1;
       # What's this for?
       speedFactor = 2;
-      supportedFeatures = [ "benchmark" ];
+      supportedFeatures = [ "benchmark" "big-parallel" ];
       mandatoryFeatures = [];
       # publicHostKey = toBase64
       #   (builtins.readFile ../secrets/builder-key.pub)
