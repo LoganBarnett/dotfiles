@@ -169,7 +169,7 @@ inappropriate to derive from =prog-mode=.
 #+name: config/prog-mode-line-numbers-enable
 #+begin_src emacs-lisp :results none :tangle no
 (add-hook 'prog-mode-hook #'display-line-numbers-mode)
-(setq display-line-numbers-type 'relative)
+(setq display-line-numbers-type 'visual)
 #+end_src
 
 * line wrapping
