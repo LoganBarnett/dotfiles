@@ -5,6 +5,9 @@
 # Right now it just supports some time zones used in the mainland United States.
 # Its primary purpose is to allow shorthand for expressing various time zones
 # and get quick conversions.
+#
+# Some fun things about date/time misconceptions we have:
+# https://www.creativedeletion.com/2015/01/28/falsehoods-programmers-date-time-zones.html
 ################################################################################
 
 set -euo pipefail
