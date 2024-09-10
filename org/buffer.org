@@ -54,3 +54,58 @@ function that takes care of this for me.
          )
        )
    #+end_src
+
+* operations
+** all bindings
+
+#+name: config/buffer-keybindings
+#+begin_src emacs-lisp :results none :exports code :tangle no :noweb yes
+<<config/buffer-reload-binding-fn>>
+<<config/buffer-delete-binding-fn>>
+(map!
+  :leader
+  :prefix "b"
+  :desc "Buffer list (ibuffer)"  "i" #'ibuffer
+  :desc "Buffer delete (kill)" "d" #'config/buffer-delete
+  :desc "Buffer jump" "b" #'counsel-switch-buffer
+  :desc "Buffer reload" "r" #'config/buffer-revert
+ )
+#+end_src
+
+** delete buffer
+#+name: config/buffer-delete-binding-fn
+#+begin_src emacs-lisp :results none :exports code :tangle no
+(defun config/buffer-delete ()
+  "Provide a non-interactive way to delete buffers.
+
+A separate function is needed to keep the options we need.
+"
+  (interactive)
+  (kill-buffer (current-buffer))
+  )
+#+end_src
+
+** reload buffer
+
+#+name: config/buffer-reload-binding-fn
+#+begin_src emacs-lisp :results none :exports code :tangle no
+(defun config/buffer-revert ()
+  "Provide a non-interactive way to revert buffers.
+
+A separate function is needed to keep the options we need.
+"
+  (interactive)
+  (revert-buffer :ignore-auto)
+  )
+#+end_src
+
+* stitch
+
+#+begin_src emacs-lisp :results none :exports code :tangle yes :noweb yes
+(use-package "ibuffer"
+  :ensure t
+  :init
+  :config
+  <<config/buffer-keybindings>>
+  )
+#+end_src

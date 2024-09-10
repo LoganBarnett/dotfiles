@@ -223,13 +223,14 @@ I've already done a lot, but there's more to do.
   c. [ ] Rename with ~SPC f r~.
   d. [ ] ~chmod~ with ~SPC f c~ - default to current buffer file.
 21. [ ] Buffer management.
-  a. [ ] Delete a buffer with ~SPC b d~.
-  b. [ ] Switch buffers with ~SPC b b~.
+  a. [x] Delete a buffer with ~SPC b d~.
+  b. [x] Switch buffers with ~SPC b b~.
   c. [ ] Last buffer with ~SPC b p~.
   d. [ ] Next buffer with ~SPC b n~.
-  e. [ ] Manage buffers with ~ibuffer~ using ~SPC b i~.
-  f. [ ] Reload buffer with ~SPC b r~.
+  e. [x] Manage buffers with ~ibuffer~ using ~SPC b i~.
+  f. [x] Reload buffer with ~SPC b r~.
   g. [ ] Revert (undo changes) buffer with ~SPC b R~.  See ~auto-revert-mode~.
+  h. [x] Use ~counsel~ to jump to buffers.
 22. [ ] Time management.
   a. [ ] Clock in with ~SPC m c i~.
   b. [ ] Clock out with ~SPC m c o~.
