@@ -247,6 +247,7 @@ I've already done a lot, but there's more to do.
 23. [ ] Emacs sanity.
   a. [ ] Pull in Doom's fixes to dialogs.
   b. [ ] ~g r~ does ~eval-region~.
+  c. [ ] ~magit~ commit starts in insert mode.
 24. [ ] modeline
   a. [ ] Pull in the ~doom-modeline~ package.
   b. [ ] Sane minor mode markings.
