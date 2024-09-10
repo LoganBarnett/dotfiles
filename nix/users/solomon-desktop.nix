@@ -1,4 +1,7 @@
-{ ... }: {
+{ pkgs, ... }: {
+  environment.systemPackages = [
+    pkgs.firefox
+  ];
   # Nothing to do here yet.
   # home-manager.users.solomon = {};
   users.users.solomon = {
