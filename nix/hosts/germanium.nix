@@ -62,7 +62,7 @@ in { modulesPath, ... }: {
         lib.mkDefault config.hardware.enableRedistributableFirmware;
     })
     {
-      hardware.opengl = {
+      hardware.graphics = {
         enable = true;
       };
     }
