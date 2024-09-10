@@ -19,6 +19,9 @@
     (when scroll-bar-mode
       (scroll-bar-mode -1)
     )
+    ;; Not sure where to put this, since it needs to apply globally.
+    ;; Perhaps a global.org?
+    (setq fill-column 80)
     (load-library "auto-compile")
     (setq-default load-prefer-newer t)
     (auto-compile-on-load-mode 1)
