@@ -252,3 +252,5 @@ I've already done a lot, but there's more to do.
   a. [ ] Pull in the ~doom-modeline~ package.
   b. [ ] Sane minor mode markings.
   c. [ ] Icons.
+25. [ ] General ~org-mode~.
+  a. [ ] ~C-RET~ creates a new ~org-table~ row.
