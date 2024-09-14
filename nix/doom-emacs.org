@@ -184,8 +184,8 @@ I've already done a lot, but there's more to do.
 5. [ ] mu4e works.
 6. [ ] projectile works _and_ is fast.
     a. [ ] I can find files by name.
-      #   1. [ ] This remains slow, but sometimes is fast.  First hits are slow
-      # when opening a project.
+        1. [ ] This remains slow, but sometimes is fast.  First hits are slow
+               when opening a project.
     b. [x] I can search for files by text content.
     c. [ ] I can search and replace text content.
     d. [ ] I can kill projectile buffers.
