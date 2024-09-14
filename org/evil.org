@@ -72,6 +72,9 @@ first line.
 
 
 * evil-mode
+
+** consistent yank
+
   #+name: config/evil-Y-yanks-to-eol
   #+begin_src emacs-lisp :tangle no :results none
     ;; (message "nothing to do in evil-mode config")
@@ -86,6 +89,8 @@ first line.
    a way to do this that seems to work consistently enough.
 
 ** undo
+
+Must be called after ~evil~ is loaded.
 
 #+name: config/evil-undo
 #+begin_src emacs-lisp :results none :exports code :tangle no
@@ -309,9 +314,9 @@ library is already loaded.
   <<config/evil-Y-yanks-to-eol>>
   (setq evil-want-integration t)
   (setq evil-want-keybinding nil)
-  <<config/evil-undo>>
   (message "requiring evil-mode...")
   (require 'evil)
+  <<config/evil-undo>>
   (message "required evil-mode")
   :config
   <<config/evil-leader-set>>

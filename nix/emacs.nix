@@ -22,6 +22,13 @@
           epkgs.dash
           # Doom has some good themes.  Let's use one!
           epkgs.doom-themes
+          # Add some cool evil-mode bindings to org-mode.  See
+          # https://github.com/Somelauw/evil-org-mode for some of the bindings
+          # and changes it brings about.  Of note:
+          # 1. < and > apply to headings and child headings (if collapsed for
+          #    child headings).
+          # 2. Many other things I take for granted.
+          epkgs.evil-org
           # Enhanced help/documentation for Emacs.
           epkgs.helpful
           # Manage keybindings sanely.

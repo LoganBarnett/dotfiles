@@ -31,6 +31,26 @@ first.
 #+end_src
 ** org-reveal
 
+* evil
+
+~evil-org-mode~ (~evil-org~) brings about a lot of very good key bindings.  See
+https://github.com/Somelauw/evil-org-mode for enhanced bindings and behaviors.
+I'll try to list the ones I frequently use.
+
+1. ~<~ and ~>~ demote and promote headings (and include child headings if
+   folded).
+2. Continue item on next or previous line with ~o~/~O~.
+
+#+name: config/evil-org-mode
+#+begin_src emacs-lisp :results none :exports code :tangle no
+(require 'evil-org)
+(add-hook 'org-mode-hook 'evil-org-mode)
+(evil-org-set-key-theme '(navigation insert textobjects additional calendar))
+(setq-default evil-org-special-o/O '(table-row item))
+(require 'evil-org-agenda)
+(evil-org-agenda-set-keys)
+#+end_src
+
 * images
 =org-mode= in Emacs can display images inline. This is a wonderful feature that
 doesn't get used enough, and there are tweaks needed to get it in a properly
@@ -120,6 +140,23 @@ I will start with an =org-capture= template.
 #+end_example
 
 
+* items
+
+#+name: config/org-mode-items-keybindings
+#+begin_src emacs-lisp :results none :exports code :tangle no
+;; This is how Doom does it, but it doesn't work for us.
+(map!
+ :map evil-org-mode-map
+ :ni [C-return]   #'+org/insert-item-below
+ :ni [C-S-return] #'+org/insert-item-above
+ )
+(map!
+ :map org-mode-map
+ :ni [C-return]   #'+org/insert-item-below
+ :ni [C-S-return] #'+org/insert-item-above
+ )
+#+end_src
+
 * latex
 ** executables
 To get LaTeX working, we need to ensure that =latex= is on the =PATH=. My
@@ -168,6 +205,11 @@ We want the equivalent of =\usepackage{circuitikz}=.
 (add-to-list 'org-latex-packages-alist '("" "siunitx" t))
 (add-to-list 'org-latex-packages-alist '("" "circuitikz" t))
 #+end_src
+
+* navigation
+
+Seek ~org-evil-mode~ settings in [[evil]] - it provides the ~g h~ binding and
+more.  Doom doesn't have it.
 
 * headings
 ** folding
@@ -1218,6 +1260,7 @@ This is the region of offending code, I think:
 (use-package "org"
   :init
   <<config/org-mode-insert-inactive-time-stamp-with-time-keymap>>
+  <<config/org-mode-items-keybindings>>
   <<config/org-mode-manage-initial-folding>>
   <<config/org-mode-set-paths>>
   <<config/org-todo-log-done>>
@@ -1233,6 +1276,7 @@ This is the region of offending code, I think:
   :config
   ;; A series of helpers from Doom that we already use.
   (load-library "doom-autoload-org")
+  <<config/evil-org-mode>>
   ;; Provide org-reveal's interactive functions.
   (require 'ox-reveal)
   <<config/markdown-export-fill-paragraph>>

@@ -27,7 +27,7 @@ code itself.
     (setq-default counsel-describe-command-function #'helpful-command)
     ;;(setq-default counsel-describe-face-function #'helpful-face)
     (map!
-      :prefix ("C-h". "help")
+      :prefix ("C-h" . "help")
       :desc "helpful-variable" "v" #'counsel-describe-variable
       :desc "helpful-callable" "f" #'counsel-describe-function
       :desc "describe-face" "F" #'counsel-describe-face

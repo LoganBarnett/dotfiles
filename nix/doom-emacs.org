@@ -178,19 +178,19 @@ does lack a sort of dependency-graph setup which has inspired some to leave it.
 I've already done a lot, but there's more to do.
 
 1. [ ] Fuzzy searching works with Counsel.
-2. [ ] I can edit this file in Emacs.
+2. [X] I can edit this file in Emacs.
 3. [ ] Git gutter works.
 4. [ ] Magit works.
 5. [ ] mu4e works.
 6. [ ] projectile works _and_ is fast.
-    a. [ ] I can find files by name.
-        1. [ ] This remains slow, but sometimes is fast.  First hits are slow
-               when opening a project.
-    b. [x] I can search for files by text content.
-    c. [ ] I can search and replace text content.
-    d. [ ] I can kill projectile buffers.
-    e. [ ] I can search for projects.
-    f. [ ] I can refresh the project list.
+   a. [ ] I can find files by name.
+   b. [ ] This remains slow, but sometimes is fast.  First hits are slow
+          when opening a project.
+   b. [x] I can search for files by text content.
+   c. [ ] I can search and replace text content.
+   d. [ ] I can kill projectile buffers.
+   e. [ ] I can search for projects.
+   f. [ ] I can refresh the project list.
 7. [X] helpful works with Counsel.
     a. [X] I can bring up help for variables.
     b. [X] I can bring up help for functions.
@@ -253,5 +253,5 @@ I've already done a lot, but there's more to do.
   b. [ ] Sane minor mode markings.
   c. [ ] Icons.
 27. [ ] General ~org-mode~.
-  a. [ ] ~C-RET~ creates a new ~org-table~ row.
+  a. [X] ~C-RET~ creates a new ~org-table~ row.
   b. [X] ~C-r~ works for undo again.
