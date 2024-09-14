@@ -254,3 +254,4 @@ I've already done a lot, but there's more to do.
   c. [ ] Icons.
 27. [ ] General ~org-mode~.
   a. [ ] ~C-RET~ creates a new ~org-table~ row.
+  b. [X] ~C-r~ works for undo again.

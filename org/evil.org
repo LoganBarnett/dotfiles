@@ -84,6 +84,19 @@ first line.
    getting some of the keybindings to work properly. For now I've opted to not
    use =evil-collection= and instead wire up my own bindings by hand. I've found
    a way to do this that seems to work consistently enough.
+
+** undo
+
+#+name: config/evil-undo
+#+begin_src emacs-lisp :results none :exports code :tangle no
+;; This doesn't work.  Use a bespoke function to set the value instead.
+;; (setq-default evil-undo-system 'undo-redo)
+(evil-set-undo-system 'undo-redo)
+;; In case we ever use undo-tree-mode.
+;; (global-undo-tree-mode 1)
+#+end_src
+
+
 * evil-snipe
 The =evil-snipe= package promises better/smarter searching for =f=, =F=, =t=, and
 =T=.
@@ -296,6 +309,7 @@ library is already loaded.
   <<config/evil-Y-yanks-to-eol>>
   (setq evil-want-integration t)
   (setq evil-want-keybinding nil)
+  <<config/evil-undo>>
   (message "requiring evil-mode...")
   (require 'evil)
   (message "required evil-mode")
