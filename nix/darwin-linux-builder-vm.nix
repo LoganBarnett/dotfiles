@@ -195,4 +195,14 @@ in {
     ];
     # extra-platforms = [ "aarch64-linux" ];
   };
+  # See https://nixos.org/manual/nixpkgs/stable/#sec-darwin-builder for
+  # information about configuration values here.
+  virtualisation = {
+    # Sizes here are in MB.
+    # darwin-builder = {
+    diskSize = lib.mkForce (40 * 1024);
+      # memorySize = 8 * 1024;
+    # };
+    # cores = 6;
+  };
 }

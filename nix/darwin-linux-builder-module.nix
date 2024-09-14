@@ -17,6 +17,12 @@
   # ];
   nix.distributedBuilds = true;
   nix.linux-builder = {
+    # Set this to true and re-run nix-darwin-switch if you need a setting from
+    # virtualisation (such as diskSize) to stick.  Be warned that this will wipe
+    # the filesystem and even repartition it.  The build speed for this can be
+    # pretty quick.  Afterwards, put this back to false.  State will accumulate
+    # rapidly in the store if left on, potentially.
+    ephemeral = false;
     # It is not enough to simply flip this on.  See instructions in
     # ./darwin-linux-builder-vm.nix for how to properly get this working.  This
     # can appear to be an issue if it's run on a fresh system, or the system
