@@ -205,7 +205,7 @@ I've already done a lot, but there's more to do.
 11. [ ] evil completely works
   a. [X] vim bindings work with which-key.
   b. [ ] ~:e~ completions use Counsel and is fast.
-  c. [ ] ~;~ and ~,~ don't repeat with ~t~ / ~f~ et. al.
+  c. [X] ~;~ and ~,~ don't repeat with ~t~ / ~f~ et. al.
 12. [ ] Check before leaving Emacs.
 13. [ ] Holy mode has a different colored cursor.
 14. [ ] Use Doom's modeline.

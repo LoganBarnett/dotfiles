@@ -123,6 +123,7 @@ counter to my vanilla vim bindings. Disable it. We can use =;= and =,= for that.
 (evil-global-set-key 'motion (kbd ";") #'evil-snipe-repeat)
 (evil-global-set-key 'motion (kbd ",") #'evil-snipe-repeat-reverse)
 #+end_src
+
 ** fix whitespace seeking motion
 
 =evil-snipe= has a behavior, that when switched on, won't consume or include
@@ -140,10 +141,14 @@ setting =evil-snipe-skip-leading-whitespace= to =nil=.
 
 We're getting desperate.
 
-#+begin_src emacs-lisp :results none :noweb yes
+#+begin_src emacs-lisp :results none :noweb yes :tangle yes
 (use-package "evil-snipe"
   :after evil
   :init
+  ;; This is required to activate the ; and , motions using evil-snipe.  We
+  ;; want evil-snipe doing this because it grants us a nice colored repeat and
+  ;; it can flow to new lines.
+  (evil-snipe-override-mode)
   :config
   <<config/evil-snipe-smart-case-disable>>
   <<config/evil-snipe-fix-whitespace-seek>>
@@ -151,6 +156,7 @@ We're getting desperate.
   <<config/evil-snipe-smart-case-disable>>
   )
 #+end_src
+
 * evil-iedit-state
 The [[https://github.com/syl20bnr/evil-iedit-state][evil-iedit-state]] package is something I encountered first with Spacemacs. It
 brings up a [[https://github.com/abo-abo/hydra][hydra]] interface when pressing =*= or =#=. In vim these typically
