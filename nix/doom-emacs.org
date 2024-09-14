@@ -183,27 +183,27 @@ I've already done a lot, but there's more to do.
 4. [ ] Magit works.
 5. [ ] mu4e works.
 6. [ ] projectile works _and_ is fast.
-  a. [ ] I can find files by name.
-    i. This remains slow, but sometimes is fast.  First hits are slow
-       when opening a project.
-  b. [x] I can search for files by text content.
-  c. [ ] I can search and replace text content.
-  d. [ ] I can kill projectile buffers.
-  e. [ ] I can search for projects.
-  f. [ ] I can refresh the project list.
-7. [ ] helpful works with Counsel.
-  a. [ ] I can bring up help for variables.
-  b. [ ] I can bring up help for functions.
-  c. [ ] I can bring up help for the current modes.
-  d. [ ] I can bring up help for the current face.
-  d. [ ] I can bring up help for the current character.
-  c. [ ] Use ~helpful~.
-  d. [ ] Use ~counsel~ for help.
+    a. [ ] I can find files by name.
+      #   1. [ ] This remains slow, but sometimes is fast.  First hits are slow
+      # when opening a project.
+    b. [x] I can search for files by text content.
+    c. [ ] I can search and replace text content.
+    d. [ ] I can kill projectile buffers.
+    e. [ ] I can search for projects.
+    f. [ ] I can refresh the project list.
+7. [X] helpful works with Counsel.
+    a. [X] I can bring up help for variables.
+    b. [X] I can bring up help for functions.
+    c. [X] I can bring up help for the current modes.
+    d. [X] I can bring up help for the current face.
+    d. [X] I can bring up help for the current character.
+    c. [X] Use ~helpful~.
+    d. [X] Use ~counsel~ for help.
 8. [ ] Rust works.
 9. [ ] Nix works.
 10. [ ] Ruby works.
 11. [ ] evil completely works
-  a. [x] vim bindings work with which-key.
+  a. [X] vim bindings work with which-key.
   b. [ ] ~:e~ completions use Counsel and is fast.
   c. [ ] ~;~ and ~,~ don't repeat with ~t~ / ~f~ et. al.
 12. [ ] Check before leaving Emacs.
@@ -222,16 +222,16 @@ I've already done a lot, but there's more to do.
   b. [ ] Delete with ~SPC f d~.
   c. [ ] Rename with ~SPC f r~.
   d. [ ] ~chmod~ with ~SPC f c~ - default to current buffer file.
-21. [ ] Buffer management.
-  a. [x] Delete a buffer with ~SPC b d~.
-  b. [x] Switch buffers with ~SPC b b~.
+22. [ ] Buffer management.
+  a. [X] Delete a buffer with ~SPC b d~.
+  b. [X] Switch buffers with ~SPC b b~.
   c. [ ] Last buffer with ~SPC b p~.
   d. [ ] Next buffer with ~SPC b n~.
-  e. [x] Manage buffers with ~ibuffer~ using ~SPC b i~.
-  f. [x] Reload buffer with ~SPC b r~.
+  e. [X] Manage buffers with ~ibuffer~ using ~SPC b i~.
+  f. [X] Reload buffer with ~SPC b r~.
   g. [ ] Revert (undo changes) buffer with ~SPC b R~.  See ~auto-revert-mode~.
-  h. [x] Use ~counsel~ to jump to buffers.
-22. [ ] Time management.
+  h. [X] Use ~counsel~ to jump to buffers.
+23. [ ] Time management.
   a. [ ] Clock in with ~SPC m c i~.
   b. [ ] Clock out with ~SPC m c o~.
   c. [ ] Resolve clock with ~SPC m c r~.
@@ -239,18 +239,18 @@ I've already done a lot, but there's more to do.
   e. [ ] Deadline with ~SPC m d S~.
   f. [ ] Create an inactive timestamp with ~SPC m d t~.
   g. [ ] Create an active timestamp with ~SPC m d T~.
-23. [ ] Task management.
+24. [ ] Task management.
   a. [ ] Figure out why sublists aren't working in ~org-mode~.
   b. [ ] ~C-RET~ makes a new list item (might be a sublist thing).
   c. [ ] ~C-c C-c~ on sublist item toggles done state.
   d. [ ] ~SPC m t~ brings up ~TODO~ options.
-23. [ ] Emacs sanity.
+25. [ ] Emacs sanity.
   a. [ ] Pull in Doom's fixes to dialogs.
   b. [ ] ~g r~ does ~eval-region~.
   c. [ ] ~magit~ commit starts in insert mode.
-24. [ ] modeline
+26. [ ] modeline
   a. [ ] Pull in the ~doom-modeline~ package.
   b. [ ] Sane minor mode markings.
   c. [ ] Icons.
-25. [ ] General ~org-mode~.
+27. [ ] General ~org-mode~.
   a. [ ] ~C-RET~ creates a new ~org-table~ row.

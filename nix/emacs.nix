@@ -22,6 +22,8 @@
           epkgs.dash
           # Doom has some good themes.  Let's use one!
           epkgs.doom-themes
+          # Enhanced help/documentation for Emacs.
+          epkgs.helpful
           # Manage keybindings sanely.
           epkgs.general
           # Load shared SSH/GPG agents from keychain.
