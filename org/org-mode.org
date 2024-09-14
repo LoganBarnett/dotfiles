@@ -836,7 +836,24 @@ Test it!
 - wisent-grammar
 - xml
 - yaml
+** editing
 
+*** indentation
+
+Per [[https://github.com/syl20bnr/spacemacs/issues/13255][spacemacs#13255]], ~org-src-preserve-indentation~ causes ~org-babel~ to add
+indentation upon making new lines in a code block.  The documentation for this
+function states it's for export functionality but there seems to be more to it
+than that.  Only later does the documentation state that it can be involved in
+adding indentation (and even that isn't very clear).
+~org-edit-src-content-indentation~ is the value used.  Since I want this to be a
+"self healing" value, let's set it to 0 and keep ~org-src-preserve-indentation~
+at ~nil~.
+
+#+name: config/org-babel-src-indentation
+#+begin_src emacs-lisp :results none :exports code
+(setq-default org-src-preserve-indentation nil)
+(setq-default org-edit-src-content-indentation 0)
+#+end_src
 
 * org-clock
 ** org-clock-display
@@ -1210,6 +1227,7 @@ This is the region of offending code, I think:
   <<config/org-babel-passthrough>>
   <<config/org-mode-hack-initial-folding>>
   <<config/org-mode-smart-parens-disable>>
+  <<config/org-babel-src-indentation>>
   ;; (config/prog-mode-disable-smart-parens)
   ;; (add-hook 'org-mode-hook #'config/prog-mode-disable-smart-parens)
   :config
