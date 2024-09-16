@@ -1,0 +1,36 @@
+#+title:     Fundamental Mode
+#+author:    Logan Barnett
+#+email:     logustus@gmail.com
+#+date:      <2024-09-16 Mon>
+#+language:  en
+#+file_tags:
+#+tags:
+
+There is no real ~fundamental-mode~, but Emacs kind of supports it.
+
+* line wrapping
+
+Disable line wrapping for any =prog-mode= based buffer. =truncate-lines= set
+to =t= will mean the line is simply "clipped" when it goes off the side of the
+buffer, rather than "folded" (the docs' term) or wrapped.
+
+#+name: config/prog-mode-disable-line-wrapping-fn
+#+begin_src emacs-lisp :tangle no :results none
+(defun config/disable-line-wrapping ()
+  (interactive)
+  (setq-default truncate-lines t)
+  (load-library "my-utils") ;; Needed for config/disable-visual-line-mode.
+  (config/disable-visual-line-mode)
+  )
+#+end_src
+
+* stitch
+
+#+name: config/line-wrapping-disable
+#+begin_src emacs-lisp :results none :tangle yes :noweb yes
+<<config/prog-mode-disable-line-wrapping-fn>>
+
+(add-hook 'prog-mode-hook #'config/disable-visual-line-mode)
+(add-hook 'text-mode-hook #'config/disable-visual-line-mode)
+(add-hook 'org-mode-hook #'config/disable-visual-line-mode)
+#+end_src

@@ -173,23 +173,8 @@ inappropriate to derive from =prog-mode=.
 #+end_src
 
 * line wrapping
-  Disable line wrapping for any =prog-mode= based buffer. =truncate-lines= set
-  to =t= will mean the line is simply "clipped" when it goes off the side of the
-  buffer, rather than "folded" (the docs' term) or wrapped.
 
-#+name: config/prog-mode-disable-line-wrapping-fn
-#+begin_src emacs-lisp :tangle no :results none
-(defun config/disable-line-wrapping ()
-  (interactive)
-  (setq truncate-lines t)
-  )
-#+end_src
-
-#+name: config/prog-mode-disable-visual-line-mode
-#+begin_src emacs-lisp :results none :tangle no
-(load-library "my-utils") ;; Needed for config/disable-visual-line-mode.
-(add-hook 'prog-mode-hook #'config/disable-visual-line-mode)
-#+end_src
+See [[file:./fundamental-mode.org::*line wrapping][line wrapping in fundamental-mode.org]].
 
 
 * newlines

@@ -53,6 +53,7 @@
     (init-org-file "gpg.org")
     (dirty-init)
     (init-org-file "debug.org")
+    (init-org-file "fundamental-mode.org")
     (init-org-file "prog-mode.org")
     (init-org-file "org-mode.org")
     (init-org-file "elisp-mode.org")
