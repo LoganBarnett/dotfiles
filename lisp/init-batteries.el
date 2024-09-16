@@ -32,6 +32,7 @@
     (config/scratch-init)
     ;; Plug some holes in Doom because we're just taking files from it a la
     ;; carte.
+    (load-library "doom-crutch")
     ;; Get our evil (vim) bindings working as soon as possible.
     (init-org-file "evil.org")
     (load-library "text-mode")
@@ -41,8 +42,6 @@
     ;; (load-library "doom-lib-themes")
     (load-library "config-counsel")
     (load-library "dash")
-    (setq-default load-prefer-newer t)
-    (auto-compile-on-load-mode 1)
     ;; :editor
     ;; (init-org-file "org-mode.org")
     ;; :init
