@@ -17,6 +17,7 @@
   (import ./cacert.nix)
   # (import ./crystal.nix)
   (import ./gnupg.nix)
+  (import ./hiera-eyaml.nix)
   (import ./lastversion.nix)
   (import ./man-pages-fix.nix)
   (import ./maven.nix)

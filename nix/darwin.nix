@@ -36,7 +36,7 @@
 # Much of this is shamelessly lifted from:
 # https://github.com/nmasur/dotfiles/blob/master/modules/darwin/system.nix
 
-{ emacs-overlay, nixpkgs, lib, pkgs, ... }:
+{ config, emacs-overlay, flake-inputs, nixpkgs, lib, pkgs, ... }:
 {
   # Global packages that can't be bound to a specific user, such as shells.
   environment = {
@@ -580,4 +580,11 @@
       remapCapsLockToControl = true;
     };
   };
+  nix.nixPath = [
+    "nixos-config=/etc/nixos/configuration.nix"
+  ] ++ (lib.mapAttrsToList
+    (key: value: "${key}=${value.to.path}")
+    (lib.filterAttrs (key: value: value ? to.path) config.nix.registry)
+  );
+  nix.registry.nixpkgs.flake = flake-inputs.nixpkgs;
 }

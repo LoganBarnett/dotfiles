@@ -8,6 +8,6 @@ pkgs.stdenv.mkDerivation rec {
   '';
   postPatch = ''
     substituteInPlace ${name}.sh \
-      --replace "latestversion" "${pkgs.latestversion}/bin/latestversion"
+      --replace "lastversion" "${pkgs.lastversion}/bin/lastversion"
   '';
 }

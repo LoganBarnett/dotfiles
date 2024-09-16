@@ -1,4 +1,4 @@
-{ flake-inputs }: let
+{ flake-inputs, ... }: let
   host-id = "M-CL64PK702X";
   system = "aarch64-darwin";
   username = "logan.barnett";
@@ -18,6 +18,7 @@ in {
     {
 			_module.args.emacs-overlay = flake-inputs.emacs-overlay;
       _module.args.nixpkgs = flake-inputs.nixpkgs;
+      _module.args.flake-inputs = flake-inputs;
       _module.args.git-users = [
         {
           git-email = "logan.barnett@nwea.org";
@@ -89,10 +90,10 @@ in {
       '';
       environment.systemPackages = [
         pkgs.awscli
-        pkgs.saml2aws
-        pkgs.openssl
+        pkgs.hiera-eyaml
         pkgs.mktemp
-        (pkgs.callPackage ../../nix-gems/hiera-eyaml/default.nix {})
+        pkgs.openssl
+        pkgs.saml2aws
       ];
       networking.hostName = host-id;
       security.pki.certificateFiles = [

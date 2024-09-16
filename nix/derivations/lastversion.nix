@@ -20,7 +20,7 @@ in {
   # };
   src = fetchPypi {
     inherit pname version;
-    hash = "";
+    hash = "sha256-I2Ego7fLpt+n3q9CC1CUOBk/ulA72XtAtVasrTaTW7w=";
   };
   build-system = [ python3Packages.setuptools ];
 })
