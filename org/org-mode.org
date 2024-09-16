@@ -237,6 +237,9 @@ interfering. So let's just rub some Lisp on it.
 #+end_src
 
 * links
+
+** open links in new frame
+
 =org-mode= either from Doom or by default doesn't open files in new frames. This
 should fix that. However something keeps overriding it. [[stitch]] also uses
 =add-hook= to deal with this.
@@ -245,6 +248,21 @@ should fix that. However something keeps overriding it. [[stitch]] also uses
 #+begin_src emacs-lisp :results none :tangle yes
 (add-to-list 'org-link-frame-setup '(file . find-file-other-window))
 #+end_src
+
+** follow links on enter
+
+This is yanked from Doom's org-mode evil mappings to get it such that ~RET~
+follows a link.  In addition, I believe ~org-return-follows-link~ must be set.
+
+#+name: config/org-mode-link-follow-on-enter
+#+begin_src emacs-lisp :results none :exports code :tangle no
+(setq-default org-return-follows-link t)
+(map!
+ :map org-mode-map
+ :n [return]   #'+org/dwim-at-point
+ )
+#+end_src
+
 
 * old config
 This is moved from =config-org-mode.el=. I should break this up and add prose as
@@ -1263,6 +1281,7 @@ This is the region of offending code, I think:
   <<config/org-mode-items-keybindings>>
   <<config/org-mode-manage-initial-folding>>
   <<config/org-mode-set-paths>>
+  <<config/org-mode-link-follow-on-enter>>
   <<config/org-todo-log-done>>
   <<config/org-clock-display-until-now>>
   ;; This value keeps getting overridden, so use add-hook to ensure it.
