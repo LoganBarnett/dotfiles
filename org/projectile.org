@@ -9,6 +9,27 @@
 Projectile gives Emacs project management capabilities. This includes searching,
 selecting projects, and finding them.
 
+* cache invalidation
+
+Sometimes, especially during the early creation of a project, projectile
+doesn't seem to know that it's in a project and ~projectile-acquire-root~
+forces a prompting of the current project.  This is a logic error of some
+sort.  Reloading the buffer seems to not work (or the reload isn't doing a
+complete reload).
+
+The below code is left for reference in case I need to do other things to fix
+projectile.
+
+#+name: config/projectile-invalidate-project-cache-current-project-fn
+#+begin_src emacs-lisp :results none :exports code :tangle no
+(defun config/projectile-invalidate-project-cache-current-project ()
+  "Invalidate the project cache assuming `projectile-project-name'."
+  (interactive)
+  (projectile-invalidate-cache nil)
+  )
+#+end_src
+
+
 * kill all buffers
 
 Something has set =projectile-kill-buffers-filter= to =kill-only-files= which
@@ -177,6 +198,8 @@ Files are returned as relative paths to DIRECTORY."
 * stitch
 
 #+begin_src emacs-lisp :results none :noweb yes
+<<config/projectile-invalidate-project-cache-current-project-fn>>
+
 (use-package projectile
   :ensure t
   :init
@@ -190,6 +213,9 @@ Files are returned as relative paths to DIRECTORY."
     :after projectile
     :leader
     :prefix ("p" . "projectile")
+    :desc "Discover new projects" :n "D" #'projectile-discover-projects-in-search-path
+    ;; :desc "Invalidate project cache" :n "I" #'config/projectile-invalidate-project-cache-current-project
+    :desc "Invalidate project cache" :n "I" #'projectile-invalidate-cache
     ;; Order is sensitive here.  See docstring of map! for details.
     :desc "Find file by name" :n "f" #'counsel-projectile-find-file
     :desc "Switch project" :n "p" #'counsel-projectile-switch-project
