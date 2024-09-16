@@ -55,6 +55,7 @@
     (init-org-file "fundamental-mode.org")
     (init-org-file "prog-mode.org")
     (init-org-file "org-mode.org")
+    (init-org-file "direnv.org")
     (init-org-file "elisp-mode.org")
     ;; org-contacts adds the contacts file to org-agenda-files but this fails.
     ;; Some recent version of _something_ causes this to prompt to remove the

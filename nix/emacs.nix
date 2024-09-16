@@ -20,6 +20,9 @@
           # epkgs.custom
           # A library of helpful, abstract functions.
           epkgs.dash
+          # Make use of direnv + .envrc to give us project specific tools
+          # managed by Nix.
+          epkgs.direnv
           # Doom has some good themes.  Let's use one!
           epkgs.doom-themes
           # Add some cool evil-mode bindings to org-mode.  See

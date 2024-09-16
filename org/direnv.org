@@ -1,0 +1,16 @@
+#+title:     direnv
+#+author:    Logan Barnett
+#+email:     logustus@gmail.com
+#+date:      <2024-09-16 Mon>
+#+language:  en
+#+file_tags:
+#+tags:
+
+Adds the direnv paths for ~exec-path~ and ~process-environment~ so our Emacs
+tooling can consume things such as a ~devShell~ from Nix.
+
+#+begin_src emacs-lisp :results none :exports code :tangle yes :noweb yes
+(use-package direnv
+ :config
+ (direnv-mode))
+#+end_src
