@@ -21,6 +21,7 @@
 * file templates
 
 ** Doom's file-templates
+
 File templates are templates that expand for new or blank files.  This is a
 feature introduced in Doom via the =file-templates= editor module.
 
@@ -67,6 +68,12 @@ addresses this by placing the configuration inside the template itself.
 #+name: config/auto-insert-mode-enable
 #+begin_src emacs-lisp :results none :tangle no
 (auto-insert-mode t)
+;; Setting this to nil prevents the "Perform <file> auto insertion?" prompt, but
+;; still performs the insert.
+(setq-default auto-insert-query nil)
+;; We should never see this, but if it gets set to nil somehow, we'll have to do
+;; a silly debugging session with auto-insert.
+(setq-default auto-insert-prompt "Perform %s auto-insertion?")
 #+end_src
 
 And then we need to actually pull in =yatemplate=.  I have experienced
@@ -94,12 +101,18 @@ intuitive.
   ;; (message "Done calling yatemplate-reload-all.")
   )
 
+(defun yatemplate-expand-yas-buffer ()
+  "Expand the whole buffer with `yas-expand-snippet'."
+  (message "inside yatemplate-expand-yas-buffer")
+  (yas-expand-snippet (buffer-string) (point-min) (point-max)))
+
 (use-package "yatemplate"
   :demand t
   ;; :after yasnippet
   :init
   (message "[CONFIG] Loading yatemplate settings...")
-  (setq-default yatemplate-dir "~/.emacs.d/.local/cache/templates")
+  ;; (setq-default yatemplate-dir "~/.emacs.d/.local/cache/templates")
+  (setq-default yatemplate-dir (car yas-snippet-dirs))
   <<config/auto-insert-mode-enable>>
   :config
   (add-hook 'yas-after-reload-hook #'yatemplate-reload-all-verify)

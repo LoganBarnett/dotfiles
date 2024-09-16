@@ -304,8 +304,15 @@
           epkgs.web-beautify
           epkgs.yasnippet
           # Get template files going better with yasnippet.
-# Need to pin to 0a5616216b6d8b15e50c2384f9b3fa2ff1616c80.
-          epkgs.yatemplate #.overrideAttrs {}
+          # Need to pin to 0a5616216b6d8b15e50c2384f9b3fa2ff1616c80.
+          (epkgs.yatemplate.overrideAttrs {
+            src = pkgs.fetchFromGitHub {
+              owner = "piknik";
+              repo = "yatemplate";
+              rev = "0a5616216b6d8b15e50c2384f9b3fa2ff1616c80";
+              hash = "sha256-34zv0k5DPT6kMc38gVleAr8jbTkYMZMxN3AM7EOp5ww=";
+            };
+          })
         ];
       in utility-packages
       ++ editing
