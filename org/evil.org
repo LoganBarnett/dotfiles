@@ -88,6 +88,37 @@ first line.
    use =evil-collection= and instead wire up my own bindings by hand. I've found
    a way to do this that seems to work consistently enough.
 
+** fix: backslash (\)
+
+The backslash key will trigger ~evil-execute-in-emacs-state~ which is just
+driving me crazy.  I've been seeing random ~j~ and ~k~ showing up everywhere.
+Part of the problem is I think my pinky is just hitting ~\~ as it tries to
+accommodate the addition work I'm teaching it to do.  Stop this madness.
+
+#+name: config/evil-backslash-fix
+#+begin_src emacs-lisp :results none :exports code :tangle no
+(map!
+ :map evil-motion-state-map
+ "\\" nil
+ )
+#+end_src
+
+** fix: ESC
+
+Emacs has an ~ESC ESC~ binding that invokes ~input-decode-map~ but we tend to
+hit ~ESC~ a lot with ~evil-mode~.  Fix the behavior with ~evil-esc-mode~, which
+addresses this directly.  It is included with the ~evil~ library.
+
+It does have a weird delay wherein pressing ~ESC ESC~ fast enough can trigger
+~input-decode-map~ and that kind of binding is very surprising.  Just use
+another one!
+
+#+name: config/evil-esc-fix
+#+begin_src emacs-lisp :results none :exports code :tangle no
+(add-hook 'evil-mode-hook #'evil-esc-mode)
+(setq-default evil-esc-delay 0)
+#+end_src
+
 ** undo
 
 Must be called after ~evil~ is loaded.
@@ -319,6 +350,8 @@ library is already loaded.
   <<config/evil-undo>>
   (message "required evil-mode")
   :config
+  <<config/evil-backslash-fix>>
+  <<config/evil-esc-fix>>
   <<config/evil-leader-set>>
   <<config/evil-localleader-set>>
   <<config/evil-global-substitute>>
