@@ -248,10 +248,13 @@ I've already done a lot, but there's more to do.
   a. [ ] Pull in Doom's fixes to dialogs.
   b. [ ] ~g r~ does ~eval-region~.
   c. [ ] ~magit~ commit starts in insert mode.
-26. [ ] modeline
-  a. [ ] Pull in the ~doom-modeline~ package.
-  b. [ ] Sane minor mode markings.
-  c. [ ] Icons.
+  d. [X] Fix file templates.
+  e. [ ] Fix indentation again.
+    1. [X] Fix Rust's indentation.
+26. [X] modeline
+  a. [X] Pull in the ~doom-modeline~ package.
+  b. [X] Sane minor mode markings.
+  c. [X] Icons.
 27. [ ] General ~org-mode~.
   a. [X] ~C-RET~ creates a new ~org-table~ row.
   b. [X] ~C-r~ works for undo again.

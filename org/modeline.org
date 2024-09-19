@@ -18,7 +18,7 @@ cruft gets added and I have to take it out.
 #+name: omit-modeline-cruft
 #+begin_src emacs-lisp :results none :tangle no
 (setq
- doom-modeline-major-mode-icon nil
+ ;; doom-modeline-major-mode-icon nil
  doom-modeline-minor-modes nil
  doom-modeline-enable-word-count nil
  doom-modeline-continuous-word-count-modes '()
@@ -29,15 +29,16 @@ cruft gets added and I have to take it out.
  ;; doom-modeline--vcs-icon nil
  )
 
-(remove-hook 'flycheck-mode-hook #'doom-modeline-update-flycheck-icon)
-(remove-hook 'flycheck-status-changed-functions #'doom-modeline-update-flycheck-icon)
+;; Why were we doing this?
+;; (remove-hook 'flycheck-mode-hook #'doom-modeline-update-flycheck-icon)
+;; (remove-hook 'flycheck-status-changed-functions #'doom-modeline-update-flycheck-icon)
 
 (doom-modeline-def-modeline 'modeline-min
   '(
     bar
-    ;; buffer-size
-    ;; workspace-name
-    ;; window-number
+    buffer-size
+    workspace-name
+    window-number
     matches
     buffer-info
     major-mode
@@ -50,7 +51,7 @@ cruft gets added and I have to take it out.
     buffer-position
     selection-info
     vcs
-    ;; checker
+    check
     )
   )
 (defun config/setup-custom-doom-modeline ()
@@ -76,9 +77,12 @@ cruft gets added and I have to take it out.
 * apply
 
 #+begin_src emacs-lisp :results none :noweb yes
-  (on-doom
-   (after! doom-modeline
-    (line-number-mode 1)
-    <<omit-modeline-cruft>>
-    ))
+(use-package doom-modeline
+  :ensure t
+  :hook (after-init . doom-modeline-mode)
+  :init
+  (line-number-mode 1)
+  :config
+  <<omit-modeline-cruft>>
+  )
 #+end_src

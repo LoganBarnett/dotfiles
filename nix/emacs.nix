@@ -23,6 +23,8 @@
           # Make use of direnv + .envrc to give us project specific tools
           # managed by Nix.
           epkgs.direnv
+          # The best of modelines.
+          epkgs.doom-modeline
           # Doom has some good themes.  Let's use one!
           epkgs.doom-themes
           # Add some cool evil-mode bindings to org-mode.  See
@@ -38,6 +40,9 @@
           epkgs.general
           # Load shared SSH/GPG agents from keychain.
           epkgs.keychain-environment
+          # An optional dependency for doom-modeline to get pretty icons for
+          # various things.
+          epkgs.nerd-icons
           # Some common lisp vs emacs lisp thing.
           epkgs.noflet
           # Use the pass utility (https://www.passwordstore.org/).
