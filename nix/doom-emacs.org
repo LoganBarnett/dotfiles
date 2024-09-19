@@ -186,75 +186,75 @@ I've already done a lot, but there's more to do.
    a. [ ] I can find files by name.
    b. [ ] This remains slow, but sometimes is fast.  First hits are slow
           when opening a project.
-   b. [x] I can search for files by text content.
-   c. [ ] I can search and replace text content.
-   d. [ ] I can kill projectile buffers.
-   e. [ ] I can search for projects.
-   f. [ ] I can refresh the project list.
+   c. [x] I can search for files by text content.
+   d. [ ] I can search and replace text content.
+   e. [ ] I can kill projectile buffers.
+   f. [ ] I can search for projects.
+   g. [ ] I can refresh the project list.
 7. [X] helpful works with Counsel.
-    a. [X] I can bring up help for variables.
-    b. [X] I can bring up help for functions.
-    c. [X] I can bring up help for the current modes.
-    d. [X] I can bring up help for the current face.
-    d. [X] I can bring up help for the current character.
-    c. [X] Use ~helpful~.
-    d. [X] Use ~counsel~ for help.
+   a. [X] I can bring up help for variables.
+   b. [X] I can bring up help for functions.
+   c. [X] I can bring up help for the current modes.
+   d. [X] I can bring up help for the current face.
+   e. [X] I can bring up help for the current character.
+   f. [X] Use ~helpful~.
+   g. [X] Use ~counsel~ for help.
 8. [ ] Rust works.
 9. [ ] Nix works.
 10. [ ] Ruby works.
-11. [ ] evil completely works
-  a. [X] vim bindings work with which-key.
-  b. [ ] ~:e~ completions use Counsel and is fast.
-  c. [X] ~;~ and ~,~ don't repeat with ~t~ / ~f~ et. al.
+11. [-] evil completely works
+    a. [X] vim bindings work with which-key.
+    b. [ ] ~:e~ completions use Counsel and is fast.
+    c. [X] ~;~ and ~,~ don't repeat with ~t~ / ~f~ et. al.
 12. [ ] Check before leaving Emacs.
 13. [ ] Holy mode has a different colored cursor.
-14. [ ] Use Doom's modeline.
+14. [X] Use Doom's modeline.
 15. [X] Relative line numbers work.
 16. [X] The scrollbar is hidden.
 17. [X] which-key is globally enabled.
-18. [ ] My preferred font is used.
+18. [X] My preferred font is used.
 19. [ ] Tramp works.
 20. [X] SPC SPC doesn't trigger in not-normal modes or something please fix now.
-  a. [X] See what Doom is doing here, because I'm dumb and the docs don't make
-         it obvious.  Perhaps it needs to be restricted to normal mode?
+    a. [X] See what Doom is doing here, because I'm dumb and the docs don't make
+           it obvious.  Perhaps it needs to be restricted to normal mode?
 21. [ ] File management.
-  a. [ ] ~dired~.
-  b. [ ] Delete with ~SPC f d~.
-  c. [ ] Rename with ~SPC f r~.
-  d. [ ] ~chmod~ with ~SPC f c~ - default to current buffer file.
-22. [ ] Buffer management.
-  a. [X] Delete a buffer with ~SPC b d~.
-  b. [X] Switch buffers with ~SPC b b~.
-  c. [ ] Last buffer with ~SPC b p~.
-  d. [ ] Next buffer with ~SPC b n~.
-  e. [X] Manage buffers with ~ibuffer~ using ~SPC b i~.
-  f. [X] Reload buffer with ~SPC b r~.
-  g. [ ] Revert (undo changes) buffer with ~SPC b R~.  See ~auto-revert-mode~.
-  h. [X] Use ~counsel~ to jump to buffers.
+    a. [ ] ~dired~.
+    b. [ ] Delete with ~SPC f d~.
+    c. [ ] Rename with ~SPC f r~.
+    d. [ ] ~chmod~ with ~SPC f c~ - default to current buffer file.
+22. [-] Buffer management.
+    a. [X] Delete a buffer with ~SPC b d~.
+    b. [X] Switch buffers with ~SPC b b~.
+    c. [ ] Last buffer with ~SPC b p~.
+    d. [ ] Next buffer with ~SPC b n~.
+    e. [X] Manage buffers with ~ibuffer~ using ~SPC b i~.
+    f. [X] Reload buffer with ~SPC b r~.
+    g. [ ] Revert (undo changes) buffer with ~SPC b R~.  See ~auto-revert-mode~.
+    h. [X] Use ~counsel~ to jump to buffers.
 23. [ ] Time management.
-  a. [ ] Clock in with ~SPC m c i~.
-  b. [ ] Clock out with ~SPC m c o~.
-  c. [ ] Resolve clock with ~SPC m c r~.
-  d. [ ] Schedule with ~SPC m d s~.
-  e. [ ] Deadline with ~SPC m d S~.
-  f. [ ] Create an inactive timestamp with ~SPC m d t~.
-  g. [ ] Create an active timestamp with ~SPC m d T~.
-24. [ ] Task management.
-  a. [ ] Figure out why sublists aren't working in ~org-mode~.
-  b. [ ] ~C-RET~ makes a new list item (might be a sublist thing).
-  c. [ ] ~C-c C-c~ on sublist item toggles done state.
-  d. [ ] ~SPC m t~ brings up ~TODO~ options.
-25. [ ] Emacs sanity.
-  a. [ ] Pull in Doom's fixes to dialogs.
-  b. [ ] ~g r~ does ~eval-region~.
-  c. [ ] ~magit~ commit starts in insert mode.
-  d. [X] Fix file templates.
-  e. [ ] Fix indentation again.
-    1. [X] Fix Rust's indentation.
+    a. [ ] Clock in with ~SPC m c i~.
+    b. [ ] Clock out with ~SPC m c o~.
+    c. [ ] Resolve clock with ~SPC m c r~.
+    d. [ ] Schedule with ~SPC m d s~.
+    e. [ ] Deadline with ~SPC m d S~.
+    f. [ ] Create an inactive timestamp with ~SPC m d t~.
+    g. [ ] Create an active timestamp with ~SPC m d T~.
+24. [-] Task management.
+    a. [X] Figure out why sublists aren't working in ~org-mode~.
+    b. [ ] ~C-RET~ makes a new list item (might be a sublist thing).
+    c. [X] ~C-c C-c~ on sublist item toggles done state.
+    d. [ ] ~SPC m t~ brings up ~TODO~ options.
+25. [-] Emacs sanity.
+    a. [ ] Pull in Doom's fixes to dialogs.
+    b. [ ] ~g r~ does ~eval-region~.
+    c. [ ] ~magit~ commit starts in insert mode.
+    d. [X] Fix file templates.
+    e. [ ] Fix indentation again.
+    f. [X] Fix Rust's indentation.
 26. [X] modeline
-  a. [X] Pull in the ~doom-modeline~ package.
-  b. [X] Sane minor mode markings.
-  c. [X] Icons.
-27. [ ] General ~org-mode~.
-  a. [X] ~C-RET~ creates a new ~org-table~ row.
-  b. [X] ~C-r~ works for undo again.
+    a. [X] Pull in the ~doom-modeline~ package.
+    b. [X] Sane minor mode markings.
+    c. [X] Icons.
+27. [X] General ~org-mode~.
+    a. [X] ~C-RET~ creates a new ~org-table~ row.
+    b. [X] ~C-r~ works for undo again.

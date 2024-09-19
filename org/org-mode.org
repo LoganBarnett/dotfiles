@@ -142,6 +142,7 @@ I will start with an =org-capture= template.
 
 * items
 
+** keybindings
 #+name: config/org-mode-items-keybindings
 #+begin_src emacs-lisp :results none :exports code :tangle no
 ;; This is how Doom does it, but it doesn't work for us.
@@ -156,6 +157,18 @@ I will start with an =org-capture= template.
  :ni [C-S-return] #'+org/insert-item-above
  )
 #+end_src
+
+** sub items
+
+I typically use alphabetical lists (~a.~) for sub lists in ~org-mode~.  This has
+to be turned on deliberately though - something I took for granted in Doom.
+
+#+name: config/org-mode-list-item-alphabetical
+#+begin_src emacs-lisp :results none :exports code :tangle no
+;; Recognize a), A), a., A., etc -- must be set before org is loaded.
+(setq-default org-list-allow-alphabetical t)
+#+end_src
+
 
 * latex
 ** executables
@@ -1277,6 +1290,8 @@ This is the region of offending code, I think:
 #+begin_src emacs-lisp :results none :noweb yes :tangle yes
 (use-package "org"
   :init
+  ;; Alphabetical list items must be set before `org-mode' loads.
+  <<config/org-mode-list-item-alphabetical>>
   <<config/org-mode-insert-inactive-time-stamp-with-time-keymap>>
   <<config/org-mode-items-keybindings>>
   <<config/org-mode-manage-initial-folding>>
