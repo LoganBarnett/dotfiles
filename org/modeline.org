@@ -81,7 +81,13 @@ cruft gets added and I have to take it out.
   :ensure t
   :hook (after-init . doom-modeline-mode)
   :init
+  ;; Both line and column number mean we see both in the modeline using
+  ;; `doom-modeline-position-column-line-format'.
+  (column-number-mode 1)
   (line-number-mode 1)
+  ;; The 'auto form is interesting (makes Java-like paths), but I feel this
+  ;; would be misleading.  Just show me the path and the project.
+  (setq-default doom-modeline-buffer-file-name-style 'relative-from-project)
   :config
   <<omit-modeline-cruft>>
   )
