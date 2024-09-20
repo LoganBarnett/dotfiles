@@ -1147,7 +1147,7 @@ Test that =org-get-outline-path= does what we expect.
 : clock a full day
 ** inactive timestamp with both date and time
 
-#+name: config/org-mode-insert-inactive-time-stamp-with-time
+#+name: config/org-mode-insert-inactive-time-stamp-with-time-fn
 #+begin_src emacs-lisp :results none :tangle no
 (defun config/org-mode-insert-inactive-time-stamp-with-time ()
   (interactive)
@@ -1158,7 +1158,7 @@ Test that =org-get-outline-path= does what we expect.
 Show the code works.
 
 #+begin_src emacs-lisp :results value :tangle no :noweb yes
-<<config/org-mode-insert-inactive-time-stamp-with-time>>
+<<config/org-mode-insert-inactive-time-stamp-with-time-fn>>
 (with-temp-buffer
   (config/org-mode-insert-inactive-time-stamp-with-time)
   )
@@ -1166,22 +1166,6 @@ Show the code works.
 
 #+RESULTS:
 : [2023-10-03 Tue 19:38]
-
-Wire it up to our key bindings.
-
-#+name: config/org-mode-insert-inactive-time-stamp-with-time-keymap
-#+begin_src emacs-lisp :results none :noweb yes
-<<config/org-mode-insert-inactive-time-stamp-with-time>>
-(map!
-  :after org-mode
-  :mode org-mode
-  :leader
-  :desc "Inactive timestamp + time"
-  "m d C"
-  #'config/org-mode-insert-inactive-time-stamp-with-time
-  )
-#+end_src
-
 
 * typing
 ** disable smart parens
@@ -1291,9 +1275,9 @@ This is the region of offending code, I think:
 #+begin_src emacs-lisp :results none :noweb yes :tangle yes
 (use-package "org"
   :init
+  <<config/org-mode-insert-inactive-time-stamp-with-time-fn>>
   ;; Alphabetical list items must be set before `org-mode' loads.
   <<config/org-mode-list-item-alphabetical>>
-  <<config/org-mode-insert-inactive-time-stamp-with-time-keymap>>
   <<config/org-mode-items-keybindings>>
   <<config/org-mode-manage-initial-folding>>
   <<config/org-mode-set-paths>>
@@ -1301,6 +1285,7 @@ This is the region of offending code, I think:
   <<config/org-todo-log-done>>
   <<config/org-clock-display-until-now>>
   ;; This value keeps getting overridden, so use add-hook to ensure it.
+  ;; TODO: Do not use lambdas as they are hard to remove from hooks.
   (add-hook 'org-mode-hook (lambda () <<config/open-link-in-new-window>>))
   <<config/org-babel-passthrough>>
   <<config/org-mode-hack-initial-folding>>
@@ -1326,8 +1311,9 @@ This is the region of offending code, I think:
     ;; :map org-mode-map
     :desc "schedule" "s" #'org-schedule
     :desc "deadline" "S" #'org-deadline
-    :desc "active timestamp" "t" #'org-timestamp
-    :desc "inactive timestamp" "T" #'org-timestamp-inactive
+    :desc "active datestamp" "t" #'org-timestamp
+    :desc "inactive datestamp" "T" #'org-timestamp-inactive
+    :desc "Inactive timestamp" "C" #'config/org-mode-insert-inactive-time-stamp-with-time
     )
    )
   ;; A series of helpers from Doom that we already use.
