@@ -173,24 +173,26 @@ separation of things, but I could do that via ordinary functions.  ~use-package~
 does lack a sort of dependency-graph setup which has inspired some to leave it.
 
 
-** What's needed to be done
+** What's needed to be done [44%]
 
 I've already done a lot, but there's more to do.
 
 1. [ ] Fuzzy searching works with Counsel.
+   a. [ ] Presently this doesn't work with out-of-order terms.
 2. [X] I can edit this file in Emacs.
-3. [ ] Git gutter works.
-4. [ ] Magit works.
+3. [X] Git gutter works.
+4. [X] Magit works.
+   1. [X] Enter insert mode when committing.
 5. [ ] mu4e works.
-6. [ ] projectile works _and_ is fast.
+6. [-] projectile works _and_ is fast.
    a. [ ] I can find files by name.
    b. [ ] This remains slow, but sometimes is fast.  First hits are slow
           when opening a project.
-   c. [x] I can search for files by text content.
+   c. [X] I can search for files by text content.
    d. [ ] I can search and replace text content.
-   e. [ ] I can kill projectile buffers.
-   f. [ ] I can search for projects.
-   g. [ ] I can refresh the project list.
+   e. [X] I can kill projectile buffers.
+   f. [X] I can search for projects.
+   g. [X] I can refresh the project list.
 7. [X] helpful works with Counsel.
    a. [X] I can bring up help for variables.
    b. [X] I can bring up help for functions.
@@ -219,9 +221,9 @@ I've already done a lot, but there's more to do.
            it obvious.  Perhaps it needs to be restricted to normal mode?
 21. [ ] File management.
     a. [ ] ~dired~.
-    b. [ ] Delete with ~SPC f d~.
+    b. [ ] Delete with ~SPC f D~.
     c. [ ] Rename with ~SPC f r~.
-    d. [ ] ~chmod~ with ~SPC f c~ - default to current buffer file.
+    d. [ ] ~chmod~ with ~SPC f m~ - default to current buffer file.
 22. [-] Buffer management.
     a. [X] Delete a buffer with ~SPC b d~.
     b. [X] Switch buffers with ~SPC b b~.
@@ -247,7 +249,7 @@ I've already done a lot, but there's more to do.
 25. [-] Emacs sanity.
     a. [ ] Pull in Doom's fixes to dialogs.
     b. [ ] ~g r~ does ~eval-region~.
-    c. [ ] ~magit~ commit starts in insert mode.
+    c. [X] ~magit~ commit starts in insert mode.
     d. [X] Fix file templates.
     e. [ ] Fix indentation again.
     f. [X] Fix Rust's indentation.

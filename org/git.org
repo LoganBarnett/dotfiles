@@ -5,6 +5,28 @@
 #+language:  en
 #+file_tags: git config
 
+* git-gutter-fringe
+
+** setup on any potential buffer
+
+We don't have a ~fundamental-mode-hook~ so we have to go after the two we know
+about: ~text-mode-hook~ and ~prog-mode-hook~.
+
+In addition we don't have a hook that is for a buffer bound to a file.  We'll
+have to add that ourselves.
+
+#+name: config/git-gutter-fringe-hook
+#+begin_src emacs-lisp :results none :exports code :tangle no
+;; (defun config/git-gutter-fringe-add-for-files ()
+;;   (if (buffer-file-name) (git-gutter-fringe) nil)
+;;   )
+;; (add-hook 'prog-mode-hook #'config/git-gutter-fringe-add-for-files)
+;; (add-hook 'text-mode-hook #'config/git-gutter-fringe-add-for-files)
+(global-git-gutter-mode 1)
+#+end_src
+
+
+
 * gitignore template
 
 The built-in file template for =.gitignore= files is flat out wrong.
@@ -210,18 +232,26 @@ Without this, it might be trying to open this as =vim=. I do want =vim= to be my
 (require 'use-package)
 <<config/magit-read-gpgsign-from-gitconfig>>
 
+(use-package "git-gutter-fringe"
+  :demand t
+  :init
+  :config
+  <<config/git-gutter-fringe-hook>>
+  )
+
 (use-package "magit"
+  :defer t
   :init
   (config/git-blame-output)
   <<config/gitignore-file-template-disable>>
   <<config/editor-env-emacscliet-ensure>>
-  :config
-  <<config/git-commit-message-evil-insert-state>>
   (map!
    :leader
    :prefix ("g" . "git")
    :desc "magit" :n "g" #'magit-status
    )
+  :config
+  <<config/git-commit-message-evil-insert-state>>
   (config/connect-git-gutter-and-magit)
   )
 #+end_src

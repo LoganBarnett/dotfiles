@@ -34,6 +34,9 @@
           #    child headings).
           # 2. Many other things I take for granted.
           epkgs.evil-org
+          # Put git +/- symbols in the gutter and work with line numbers all at
+          # the same time (as opposed to git-gutter).
+          epkgs.git-gutter-fringe
           # Enhanced help/documentation for Emacs.
           epkgs.helpful
           # Manage keybindings sanely.
