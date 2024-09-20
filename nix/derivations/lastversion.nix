@@ -12,12 +12,6 @@ in {
   inherit pname version;
   # But also see https://github.com/dvershinin/lastversion.  I should put this
   # in the meta.
-  # src = fetchFromGitHub {
-  #   owner = "dvershinin";
-  #   repo = pname;
-  #   rev = "v${version}";
-  #   hash = "";
-  # };
   src = fetchPypi {
     inherit pname version;
     hash = "sha256-I2Ego7fLpt+n3q9CC1CUOBk/ulA72XtAtVasrTaTW7w=";
