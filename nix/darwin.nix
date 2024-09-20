@@ -191,6 +191,13 @@
   system = {
     # Settings that don't have an option in nix-darwin.
     activationScripts.postActivation.text = ''
+      # `grep` doesn't work well with `set -o pipefail` because it returns exit
+      # code 1 if there are no matches.  We don't care about that, so make sure
+      # we zero-ize a 1.  Other errors (2+) are real errors we should pay
+      # attention to though.
+      function greppipe {
+        grep "$@" || test $? = 1;
+      }
       # Note that a lot of advice out there will say to use "trustAsRoot" per
       # newer versions of macOS.  This might be correct advice in the context of
       # the question given, but since we're running _as root_ already, we can
@@ -244,9 +251,9 @@
       # mv --verbose ~/Library/Preferences/com.apple.symbolichotkeys.plist{,.old}
       keyboards=$(
         hidutil list \
-          | grep -i keyboard \
-          | grep -v 'Apple ' \
-          | grep AppleUserHIDDevice \
+          | greppipe --ignore-case keyboard \
+          | greppipe --invert-match 'Apple ' \
+          | greppipe AppleUserHIDDevice \
           | tr -s ' ' \
           | cut -d $' ' -f 2 \
           | uniq
