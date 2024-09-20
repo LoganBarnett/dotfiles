@@ -376,7 +376,7 @@ A common form of hidden content is collapsed headings."
 
 #+name: config/org-dirty-config-run
 #+begin_src emacs-lisp :results none :tangle yes
-(load-library "my-utils") ;; Needed for config/disable-visual-line-mode.
+(require 'my-utils) ;; Needed for config/disable-visual-line-mode.
 (add-hook 'org-mode-hook #'config/disable-visual-line-mode)
 ;; set default diary location
 (setq-default

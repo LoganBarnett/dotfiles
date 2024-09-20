@@ -59,4 +59,6 @@ When there is a text selection, act on the region."
             (fill-paragraph nil)) ) )
 
       (put this-command 'stateIsCompact-p (if currentStateIsCompact nil t)) ) ) )
+
+(provide 'my-utils)
 ;;; my-utils.el ends here

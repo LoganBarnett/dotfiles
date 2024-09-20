@@ -846,6 +846,7 @@ not always be the case.  For me it is setup via =nix=.  Instead of hardcoding a
 #+begin_src emacs-lisp :results none :tangle yes
 (setq mu4e-mu-binary (executable-find "mu"))
 #+end_src
+
 *** troubleshooting
 
 **** mu4e version mismatch with mu binary
@@ -949,7 +950,7 @@ https://emacs.stackexchange.com/questions/69719/fingerprint-has-changed-message-
     (config/mu4e-indexing)
     (config/mu4e-viewing)
 
-    (load-library "my-utils")
+    (require 'my-utils)
     (require 'epg-config)
     (require 'mml-sec)
     (setq-default

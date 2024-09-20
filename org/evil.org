@@ -339,7 +339,7 @@ library is already loaded.
 #+begin_src emacs-lisp :results none :noweb yes
 ;; <<config/evil-fix-org-fold-search-doom-6578>>
 (use-package "evil"
-  ;; :ensure t
+  :ensure t
   :init
   ;; These must be set before evil is loaded.
   <<config/evil-Y-yanks-to-eol>>

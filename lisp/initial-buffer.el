@@ -1,10 +1,9 @@
 (defun config/initial-buffer ()
   (let ((buffer (get-buffer-create "*splash*")))
-    (
-      (evil-mode 1)
-      (insert "foobar")
-      (text-mode 1)
-      buffer
-      )
+    (message "Evil-mode in initial buffer...")
+    (text-mode)
+    (evil-mode 1)
+    (insert "foobar")
+    buffer
     )
   )

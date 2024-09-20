@@ -3,6 +3,4 @@
 (use-package text-mode
   :config
   (evil-mode 1)
-  (message "text-mode initialized.")
   )
-

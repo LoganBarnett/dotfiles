@@ -19,7 +19,7 @@ buffer, rather than "folded" (the docs' term) or wrapped.
 (defun config/disable-line-wrapping ()
   (interactive)
   (setq-default truncate-lines t)
-  (load-library "my-utils") ;; Needed for config/disable-visual-line-mode.
+  (require 'my-utils) ;; Needed for config/disable-visual-line-mode.
   (config/disable-visual-line-mode)
   )
 #+end_src

@@ -49,6 +49,14 @@ hopefully head off having to explain this over and over.
                   )
   )
 #+end_src
+** insert mode when committing
+
+#+name: config/git-commit-message-evil-insert-state
+#+begin_src emacs-lisp :results none :exports code :tangle no
+(add-hook 'git-commit-setup-hook #'evil-insert-state)
+#+end_src
+
+
 ** syncing git-gutter and magit
   =git-gutter= shows "fringe" indicators for adds, edits, and removals of lines
   for a given buffer. This is different than =magit= which serves as a general
@@ -197,21 +205,23 @@ Without this, it might be trying to open this as =vim=. I do want =vim= to be my
 =EDITOR= in most cases.
 
 * all together
-  #+begin_src emacs-lisp :results none :noweb yes
-    (require 'use-package)
-    <<config/magit-read-gpgsign-from-gitconfig>>
 
-    (use-package "magit"
-      :init
-      (config/git-blame-output)
-      <<config/gitignore-file-template-disable>>
-      <<config/editor-env-emacscliet-ensure>>
-      :config
-      (map!
-       :leader
-       :prefix ("g" . "git")
-       :desc "magit" :n "g" #'magit-status
-       )
-      (config/connect-git-gutter-and-magit)
-      )
-  #+end_src
+#+begin_src emacs-lisp :results none :noweb yes :tangle yes
+(require 'use-package)
+<<config/magit-read-gpgsign-from-gitconfig>>
+
+(use-package "magit"
+  :init
+  (config/git-blame-output)
+  <<config/gitignore-file-template-disable>>
+  <<config/editor-env-emacscliet-ensure>>
+  :config
+  <<config/git-commit-message-evil-insert-state>>
+  (map!
+   :leader
+   :prefix ("g" . "git")
+   :desc "magit" :n "g" #'magit-status
+   )
+  (config/connect-git-gutter-and-magit)
+  )
+#+end_src
