@@ -224,6 +224,8 @@
           epkgs.evil
           # Add evil mode to just about everything.
           epkgs.evil-collection
+          # Swap stuff?
+          epkgs.evil-exchange
           # I forgot what iedit is for.
           epkgs.evil-iedit-state
           # Comment with g c.
