@@ -12,6 +12,7 @@
 #
 # See: https://github.com/NixOS/nix/issues/8443
 [
+  (import ./test-script.nix)
   (import ./battlescribe-update-data.nix)
   (import ./blueutil.nix)
   (import ./cacert.nix)

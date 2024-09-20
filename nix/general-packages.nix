@@ -1,5 +1,8 @@
 { pkgs, ... }:
 [
+  # A test script to show we can add an arbitrary Bash script with a foreign
+  # depependency to Nix.
+  pkgs.test-script
   # My tool for directly updating BattleScribe's data from the source.
   pkgs.battlescribe-update-data
   # Write certificates out - these aren't present on macOS in a freely

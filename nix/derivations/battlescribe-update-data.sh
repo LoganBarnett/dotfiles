@@ -1,11 +1,15 @@
 #!/usr/bin/env bash
 
-dir=$(mktemp -d)
+set -euo pipefail
+
+dir=$(mktemp --directory)
 cd $dir
-latestversion download BSData/wh40k-10e
-tar -xzvf wh40k-*.tar.gz
+lastversion download https://github.com/BSData/wh40k-10e
+# -x for extract.  No long argument for it.
+tar --gunzip -x --file wh40k-*.tar.gz
 # Remove so the poor glob we have doesn't pick it up on the move.
 rm *.tar.gz
+rm -rf "$data_path.old"
 data_path="$HOME/Dropbox/Apps/BattleScribe/data/Warhammer 40,000 10th Edition"
 mv "$data_path" "$data_path.old"
 mkdir "$data_path"
