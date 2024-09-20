@@ -173,7 +173,7 @@ separation of things, but I could do that via ordinary functions.  ~use-package~
 does lack a sort of dependency-graph setup which has inspired some to leave it.
 
 
-** What's needed to be done [44%]
+** What's needed to be done [48%]
 
 I've already done a lot, but there's more to do.
 
@@ -233,14 +233,14 @@ I've already done a lot, but there's more to do.
     f. [X] Reload buffer with ~SPC b r~.
     g. [ ] Revert (undo changes) buffer with ~SPC b R~.  See ~auto-revert-mode~.
     h. [X] Use ~counsel~ to jump to buffers.
-23. [ ] Time management.
-    a. [ ] Clock in with ~SPC m c i~.
-    b. [ ] Clock out with ~SPC m c o~.
-    c. [ ] Resolve clock with ~SPC m c r~.
-    d. [ ] Schedule with ~SPC m d s~.
-    e. [ ] Deadline with ~SPC m d S~.
-    f. [ ] Create an inactive timestamp with ~SPC m d t~.
-    g. [ ] Create an active timestamp with ~SPC m d T~.
+23. [X] Time management.
+    a. [X] Clock in with ~SPC m c i~.
+    b. [X] Clock out with ~SPC m c o~.
+    c. [X] Resolve clock with ~SPC m c r~.
+    d. [X] Schedule with ~SPC m d s~.
+    e. [X] Deadline with ~SPC m d S~.
+    f. [X] Create an inactive timestamp with ~SPC m d t~.
+    g. [X] Create an active timestamp with ~SPC m d T~.
 24. [-] Task management.
     a. [X] Figure out why sublists aren't working in ~org-mode~.
     b. [ ] ~C-RET~ makes a new list item (might be a sublist thing).
