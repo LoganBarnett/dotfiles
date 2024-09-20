@@ -13,28 +13,34 @@ from my filesystem.
 #+name: config/dnd-load
 #+begin_src emacs-lisp :results none :tangle yes
 ;; Only load this if running on a personal machine.
-(if (eq (user-login-name) "logan")
-  (org-babel-load-file
-    (expand-file-name "~/dev/org-dnd/dnd.org")
-    )
+(let ((personal-user "logan"))
+   (if (string= user-login-name "logan")
+       (progn
+         (org-babel-load-file
+          (expand-file-name "~/dev/org-dnd/dnd.org")
+          )
+         (message "D&D loaded!")
+         )
+     (message "D&D load skipped because %s is not %s." user-login-name personal-user)
+     )
   )
 #+end_src
 
 * key bindings
 ** prefix keys
-  #+name: org-dnd-key-bindings
-  #+begin_src emacs-lisp :results none
-  (on-doom
-    ;; (map!
-    ;;   :localleader
-    ;;   :desc "dnd"
-    ;;   (:prefix "D"
-    ;;     :map org-mode-map
-    ;;     :ne "n" #'dnd/next-round
-    ;;    )
-    ;;  )
+
+#+name: org-dnd-key-bindings
+#+begin_src emacs-lisp :results none :tangle no
+(map!
+  :localleader
+  :desc "dnd"
+  (:prefix ("D" . "dnd-tools")
+    :map org-mode-map
+    :ne "n" #'dnd/next-round
    )
-  #+end_src
+ )
+#+end_src
+
 * music
 
   #+begin_src emacs-lisp :results none

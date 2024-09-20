@@ -64,7 +64,7 @@ function that takes care of this for me.
 <<config/buffer-delete-binding-fn>>
 (map!
   :leader
-  :prefix "b"
+  :prefix ("b" . "buffer")
   :desc "Buffer list (ibuffer)"  "i" #'ibuffer
   :desc "Buffer delete (kill)" "d" #'config/buffer-delete
   :desc "Buffer jump" "b" #'counsel-switch-buffer

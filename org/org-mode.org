@@ -1173,6 +1173,7 @@ Wire it up to our key bindings.
 #+begin_src emacs-lisp :results none :noweb yes
 <<config/org-mode-insert-inactive-time-stamp-with-time>>
 (map!
+  :after org-mode
   :mode org-mode
   :leader
   :desc "Inactive timestamp + time"
@@ -1308,7 +1309,24 @@ This is the region of offending code, I think:
   ;; (config/prog-mode-disable-smart-parens)
   ;; (add-hook 'org-mode-hook #'config/prog-mode-disable-smart-parens)
   :config
+  ;; This is very broken because evil-mode hasn't loaded yet and map!'s
+  ;; documentation states that if evil is not loaded yet, then evil-specific
+  ;; bindings are ignored.  At the moment we don't have anything for evil here
+  ;; but that could change.
+  (map!
+   ;; :after org-mode
+   :mode org-mode
+   :localleader
+   (:prefix ("d" . "date/time stamps")
+    ;; :map org-mode-map
+    :desc "schedule" "s" #'org-schedule
+    :desc "deadline" "S" #'org-deadline
+    :desc "active timestamp" "t" #'org-timestamp
+    :desc "inactive timestamp" "T" #'org-timestamp-inactive
+    )
+   )
   ;; A series of helpers from Doom that we already use.
+  ;; Can't use require because it doesn't use `provide'.
   (load-library "doom-autoload-org")
   <<config/evil-org-mode>>
   ;; Provide org-reveal's interactive functions.

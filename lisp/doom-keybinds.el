@@ -180,7 +180,10 @@ interface.
 
 See `doom-localleader-key' and `doom-localleader-alt-key' to change the
 localleader prefix."
-  (if (modulep! :editor evil)
+  ;; This is commented because we don't have the modulep! thing indicating we
+  ;; are using evil mode.
+;;  (if (modulep! :editor evil)
+  (if t
       ;; :non-normal-prefix doesn't apply to non-evil sessions (only evil's
       ;; emacs state)
       `(general-define-key
@@ -208,18 +211,26 @@ localleader prefix."
   (defun doom-init-leader-keys-h ()
     "Bind `doom-leader-key' and `doom-leader-alt-key'."
     (let ((map general-override-mode-map))
-      (if (not (featurep 'evil))
-          (progn
-            (cond ((equal doom-leader-alt-key "C-c")
-                   (set-keymap-parent doom-leader-map mode-specific-map))
-                  ((equal doom-leader-alt-key "C-x")
-                   (set-keymap-parent doom-leader-map ctl-x-map)))
-            (define-key map (kbd doom-leader-alt-key) 'doom/leader))
         (evil-define-key* doom-leader-key-states map (kbd doom-leader-key) 'doom/leader)
-        (evil-define-key* doom-leader-alt-key-states map (kbd doom-leader-alt-key) 'doom/leader))
-      (general-override-mode +1))))
-
-
+        (evil-define-key* doom-leader-alt-key-states map (kbd doom-leader-alt-key) 'doom/leader)
+        )
+      (general-override-mode +1)))
+;; This is changed because we don't have an optional evil module.
+;; original function:
+;; (add-hook! 'after-init-hook
+;;   (defun doom-init-leader-keys-h ()
+;;     "Bind `doom-leader-key' and `doom-leader-alt-key'."
+;;     (let ((map general-override-mode-map))
+;;       (if (not (featurep 'evil))
+;;           (progn
+;;             (cond ((equal doom-leader-alt-key "C-c")
+;;                    (set-keymap-parent doom-leader-map mode-specific-map))
+;;                   ((equal doom-leader-alt-key "C-x")
+;;                    (set-keymap-parent doom-leader-map ctl-x-map)))
+;;             (define-key map (kbd doom-leader-alt-key) 'doom/leader))
+;;         (evil-define-key* doom-leader-key-states map (kbd doom-leader-key) 'doom/leader)
+;;         (evil-define-key* doom-leader-alt-key-states map (kbd doom-leader-alt-key) 'doom/leader))
+;;       (general-override-mode +1))))
 ;;
 ;;; Packages
 

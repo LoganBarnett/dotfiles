@@ -15,17 +15,17 @@
           (map!
            :leader
            (:desc "piper" ;; This doesn't seem to work.
-            :prefix "o |"
+            :prefix ("|" . "piper")
               :desc "other-directory" "d" 'piper-other
               :desc "piper-locally" "l" 'piper
               :desc "piper-remotely" "r" 'piper-remote
               :desc "piper-ui" "|" 'piper-ui
               )
            )
-          (evil-global-set-key
-            'normal
-            (kbd "SPC |") '("piper-ui" . piper-user-interface)
-            )
+          ;; (evil-global-set-key
+          ;;   'normal
+          ;;   (kbd "SPC |") '("piper-ui" . piper-user-interface)
+          ;;   )
  ;;        )
         (on-spacemacs
           (spacemacs/declare-prefix "o |" "piper")

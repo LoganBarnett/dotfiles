@@ -250,9 +250,9 @@ on functions that may not exist yet!
   (map!
     :localleader
     :desc "dnd"
-    (:prefix "D"
+    (:prefix ("D" . "dnd-tools")
       :map org-mode-map
-      :ne "D" #'tc/buffer-display
+      "D" #'tc/buffer-display
       )
     )
  )
