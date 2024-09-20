@@ -218,6 +218,7 @@ Files are returned as relative paths to DIRECTORY."
     :desc "Invalidate project cache" :n "I" #'projectile-invalidate-cache
     ;; Order is sensitive here.  See docstring of map! for details.
     :desc "Find file by name" :n "f" #'counsel-projectile-find-file
+    :desc "Kill project buffers" :n "k" #'projectile-kill-buffers
     :desc "Switch project" :n "p" #'counsel-projectile-switch-project
    )
   (map!
