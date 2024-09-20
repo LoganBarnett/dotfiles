@@ -62,6 +62,16 @@ using =smart-parens=. Disable it. Always.
 (add-hook 'rustic-mode-hook #'config/rust-smartparens-disable)
 #+end_src
 
+* indentation
+
+#+name: config/rust-indentation
+#+begin_src emacs-lisp :results none :exports code :tangle no
+(setq-default
+ rust-indent-offset 2
+ rustic-indent-offset 2
+ )
+#+end_src
+
 * stitch
 
 #+begin_src emacs-lisp :results none :noweb yes
@@ -74,6 +84,7 @@ using =smart-parens=. Disable it. Always.
   (add-to-list 'exec-path (expand-file-name "~/.nix-profile/bin"))
   <<config/smartparens-disable>>
   <<config/rust-redshift>>
+  <<config/rust-indentation>>
   :config
   ;; Needed to take advantage of config/rust-multi-line-commas.
   (require 'multi-line)

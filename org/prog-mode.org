@@ -347,7 +347,8 @@ This highlights indentation, which can be helpful for large sets of indentation.
    )
 )
 #+end_src
-** standard indent
+** why is 2 spaces so hard
+*** standard indent
 
 This is used by [[highlight indentation]]'s =indent-bars= when it can't find
 indentation elsewhere.  Perhaps it should ask the buffer what indentation is
@@ -356,11 +357,18 @@ One can also set =indent-bars-spacing-override=.  The function in question is
 =indent-bars--guess-spacing=.
 
 #+name: config/standard-indent
-#+begin_src emacs-lisp :results none :tangle yes
+#+begin_src emacs-lisp :results none :tangle no
 (setq-default standard-indent 2)
 #+end_src
 
-** guessing indentation
+*** tab-width
+
+#+name: config/tab-width
+#+begin_src emacs-lisp :results none :tangle no
+(setq-default tab-width 2)
+#+end_src
+
+*** guessing indentation incorrectly
 
 =dtrt-indent-mode= is a minor mode which guesses indentation based on... I don't
 know.  But it looks at the buffer as part of it, and I've seen it guess wrong
@@ -400,6 +408,7 @@ Emacs is smart enough to skip the shebang.
   (add-hook 'prog-mode-hook #'config/auto-fill-comments)
   (add-hook 'prog-mode-hook #'config/disable-line-wrapping)
   <<config/prog-mode-disable-visual-line-mode>>
+  <<config/tab-width>>
   ;; (add-hook 'prog-mode-hook #'config/disable-smartparens-pairs)
   ;; I have found repeating this in a hook fixes the <> completion in JavaScript
   ;; modes.
