@@ -162,6 +162,8 @@
   # it seems to need qemu installed too, though how these packages know about
   # each other is not something I understand at present.
   pkgs.podman
+  # Deploy things in my network.
+  pkgs.proton-deploy
   # Query an HTML DOM from the command line.
   pkgs.pup
   # A tool for generating random passwords.  Helpful to have for generating on
