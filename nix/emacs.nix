@@ -233,6 +233,8 @@
           # Jump to a character using two characters, because one frequently
           # isn't enough.
           epkgs.evil-snipe
+          # Add a surround motion for handling matched braces, quotes, etc.
+          epkgs.evil-surround
           # Remote co-editing.  Are they still in business?
           epkgs.floobits
           # Generalized error reporting.

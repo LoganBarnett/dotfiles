@@ -133,10 +133,26 @@ Must be called after ~evil~ is loaded.
 #+end_src
 
 
-* evil-snipe
+* evil-mode add-ons
+** evil-exchange
+
+I have ~evil-exchange~ wired up in [[stitch]] but I am not liking it a lot so far.
+It uses a model where one mark text and then you mark what you want to exchange
+with it.  I think maybe that makes sense but I was hoping for something like
+~gx2w~ and it would transpose 2 ~word~ objects.  I suppose generally with vim
+that you're working on a single thing at a time, and so motions and such don't
+really make sense (like what would ~gxx~ do?).  That said, maybe it could accept
+more motions or something? You'd need to start a motion, set a mark, end a
+motion.  It would be more limited than what ~evil-exchange~ would but it also
+wouldn't have a "mouse" like feel to it.
+
+For now, I'm keeping ~evil-exchange~ because it seems like it could be helpful
+in some circumstances.
+
+** evil-snipe
 The =evil-snipe= package promises better/smarter searching for =f=, =F=, =t=, and
 =T=.
-** case sensitivity
+*** case sensitivity
 Doom uses the smart case by default. While I enjoy this with =/= I do not enjoy
 it here. The motions =evil-snipe= uses need to be precise in my mind.
 
@@ -144,7 +160,7 @@ it here. The motions =evil-snipe= uses need to be precise in my mind.
 #+begin_src emacs-lisp :results none :tangle no
 (setq-default evil-snipe-smart-case nil)
 #+end_src
-** overriding normal seek keys
+*** overriding normal seek keys
 
 =evil-snipe= will override =f/F/t/T= when sniping. I find this confusing and
 counter to my vanilla vim bindings. Disable it. We can use =;= and =,= for that.
@@ -173,7 +189,7 @@ counter to my vanilla vim bindings. Disable it. We can use =;= and =,= for that.
 (evil-global-set-key 'motion (kbd ",") #'evil-snipe-repeat-reverse)
 #+end_src
 
-** fix whitespace seeking motion
+*** fix whitespace seeking motion
 
 =evil-snipe= has a behavior, that when switched on, won't consume or include
 whitespace when seeking to whitespace. For example, use =d f SPC= or =v f SPC=
@@ -186,7 +202,7 @@ setting =evil-snipe-skip-leading-whitespace= to =nil=.
 #+end_src
 
 
-** apply
+*** apply
 
 We're getting desperate.
 
@@ -206,7 +222,7 @@ We're getting desperate.
   )
 #+end_src
 
-* evil-iedit-state
+** evil-iedit-state
 The [[https://github.com/syl20bnr/evil-iedit-state][evil-iedit-state]] package is something I encountered first with Spacemacs. It
 brings up a [[https://github.com/abo-abo/hydra][hydra]] interface when pressing =*= or =#=. In vim these typically
 select all occurrences of the word that the cursor is on, and will do a forward
@@ -255,13 +271,13 @@ allows for interactive editing, which can include refactoring identifiers.
 (define-key evil-normal-state-map (kbd "#") #'config/begin-evil-iedit-state)
 
 #+end_src
-* evil-command-line
+** evil-command-line
 
 The =evil-command-line= is the modal input that appears at the bottom of the
 editor when typing things like =:=. So =:e foo.sh= would invoke the
 =evil-command-line=.
 
-** evil-command-line command history navigation
+*** evil-command-line command history navigation
 
 According to [[https://github.com/emacs-evil/evil/blob/d28206ccff74bc07ba335b8ff77805564f6928d7/evil-maps.el#L607][the code]] this should already be set, but I have not found that to
 be the case. Essentially, pressing =C-p= and =C-n= should go to the next and
@@ -276,20 +292,16 @@ commands prefixed with =:e=.
 #+end_src
 
 
-* evil-exchange
+** evil-surround
 
-I have ~evil-exchange~ wired up in [[stitch]] but I am not liking it a lot so far.
-It uses a model where one mark text and then you mark what you want to exchange
-with it.  I think maybe that makes sense but I was hoping for something like
-~gx2w~ and it would transpose 2 ~word~ objects.  I suppose generally with vim
-that you're working on a single thing at a time, and so motions and such don't
-really make sense (like what would ~gxx~ do?).  That said, maybe it could accept
-more motions or something? You'd need to start a motion, set a mark, end a
-motion.  It would be more limited than what ~evil-exchange~ would but it also
-wouldn't have a "mouse" like feel to it.
+#+name: config/evil-surround
+#+begin_src emacs-lisp :results none :exports code :tangle no
+(use-package evil-surround
+  :ensure t
+  :config
+  (global-evil-surround-mode 1))
+#+end_src
 
-For now, I'm keeping ~evil-exchange~ because it seems like it could be helpful
-in some circumstances.
 
 * searching
 
@@ -386,4 +398,5 @@ library is already loaded.
   :config
   (evil-collection-init)
   )
+<<config/evil-surround>>
 #+end_src
