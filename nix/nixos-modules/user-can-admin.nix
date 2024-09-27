@@ -92,12 +92,16 @@
     # Use for querying available hardware.  See also pciutils which provides
     # lspci.
     pkgs.lshw
+    # Show network traffic and the associated processes.
+    pkgs.nethogs
     # Partition editing.
     pkgs.parted
     # Use for querying available hardware.  See also lshw.
     pkgs.pciutils
-    # Gives us iostat.  Show us IO usage (such as disk reads/writes).  Useful
-    # for identifying performance bottlenecks relating to disk.
+    # Gives us iostat, pidstat, and sar.  Show us IO usage (such as disk
+    # reads/writes).  Useful for identifying performance bottlenecks relating to
+    # disk.  Use `sar -A` to show CPU, memory, and IO.  The hunt continues for
+    # something also showing network traffic.
     pkgs.sysstat
     # Show the path that packets take.
     pkgs.traceroute
