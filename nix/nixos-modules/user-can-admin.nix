@@ -52,6 +52,9 @@
     pkgs.lsof
     # A union of ping and traceroute - ping all hosts along a route.
     pkgs.mtr
+    # Show greater detail from `nix build`, which is necessary for debugging
+    # sometimes.  Use "nom build" in place of "nix build".
+    pkgs.nix-output-monitor
     # Use Unix pipes and direct them to a human program.
     # Sometimes pypi just fails to look up the requisite packages.
     # pkgs.percol
