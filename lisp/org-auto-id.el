@@ -1,7 +1,7 @@
 ;;; org-auto-id --- Insert CUSTOM_ID properties into headlines.
 ;;; Commentary:
-;; Automatically insert CUSTOM_ID into org-mode headlines on save. This makes
-;; exporting headline links deterministic. Otherwise org-mode assigns a random
+;; Automatically insert CUSTOM_ID into org-mode headlines on save.  This makes
+;; exporting headline links deterministic.  Otherwise org-mode assigns a random
 ;; ID that changes on every run.
 ;;
 ;; This can be enabled by adding `#+auto_id: t' to the headers of your org-mode
@@ -14,22 +14,23 @@
 (defmacro org-auto-id/without-undo (&rest body)
   "Disable undo for BODY.
 
-org-auto-id can potentially write a lot of changes to the buffer.
-Storing each of these changes as an undo point clutters the undo
-buffer and undoing each edit is not a desired behavior."
-  `(progn
-    (buffer-disable-undo)
-    (with-demoted-errors "Error during org-auto-id: %s" ,@body)
-    (buffer-enable-undo)
-    )
+`org-auto-id' can potentially write a lot of changes to the buffer.  Storing
+each of these changes as an undo point clutters the undo buffer and undoing each
+edit is not a desired behavior."
+  ;; (let ((undo-inhibit-record-point t))
+    (undo-boundary)
+    `(progn
+      (with-demoted-errors "Error during org-auto-id: %s" ,@body)
+      )
+    (undo-boundary)
+    ;; )
   )
 
 (defun org-auto-id/id-as-extra-kebab (hierarchy-list)
   "Convert HIERARCHY-LIST to kebab-case, with extra \"-\" between headings.
 
-For example using the hierarchy foo -> bar -> baz qux with foo
-being at the top of the hierachy and baz qux being at the bottom.
-The output would be:
+For example using the hierarchy foo -> bar -> baz qux with foo being at the top
+of the hierachy and baz qux being at the bottom.  The output would be:
 
 \"foo--bar--baz-qux\""
   (org-auto-id/anchorize-headline-title (string-join hierarchy-list "--"))
@@ -38,15 +39,13 @@ The output would be:
 (defun org-auto-id/buffer-custom-id-populate ()
   "Add friendly and deterministic ids to the current buffer.
 
-IDs for HTML anchors from exported `org-mode' buffers are not
-deterministic nor human friendly. By default sets the CUSTOM_ID
-to be a derivation of the headline hierarchy. The CUSTOM_ID is
-then used during the export process to set the HTML anchor. Set
-the buffer's AUTO_ID_FN to the symbol of a function in order to
-customize the generated CUSTOM_ID value. The function must accept
-an org heading heading heirarchy from
-`org-auto-id/heading-hierarchy-list' and return the string to be
-used for the CUSTOM_ID.
+IDs for HTML anchors from exported `org-mode' buffers are not deterministic nor
+human friendly.  By default sets the CUSTOM_ID to be a derivation of the
+headline hierarchy.  The CUSTOM_ID is then used during the export process to set
+the HTML anchor.  Set the buffer's AUTO_ID_FN to the symbol of a function in
+order to customize the generated CUSTOM_ID value.  The function must accept an
+org heading heading heirarchy from `org-auto-id/heading-hierarchy-list' and
+return the string to be used for the CUSTOM_ID.
 
 See `org-auto-id/id-as-extra-kebab' for the default AUTO_ID_FN.
 The case of AUTO_ID_FN does not matter.
