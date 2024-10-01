@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# name: Make an example block.
+# key: ex
+# group: org
+# --
+#+begin_example
+$1
+#+end_example
