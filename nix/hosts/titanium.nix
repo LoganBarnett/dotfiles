@@ -44,5 +44,6 @@ in {
       # networking.interfaces.enp5s0.useDHCP = lib.mkDefault true;
       nixpkgs.hostPlatform = system;
     })
+    ../users/eric-desktop.nix
   ];
 }
