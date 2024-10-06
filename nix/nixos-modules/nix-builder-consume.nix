@@ -42,7 +42,9 @@ in {
       ];
       protocol = "ssh-ng";
       # Keep this host from being bogged down by builds.
-      maxJobs = 1;
+      # Beware setting this to 1, as it can mean no jobs are available ever
+      # (possibly due to a bug?).
+      maxJobs = 2;
       # What's this for?
       speedFactor = 2;
       supportedFeatures = [ "big-parallel" "benchmark" "kvm" ];
