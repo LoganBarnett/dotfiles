@@ -1,0 +1,173 @@
+#+title:     Linux Builder
+#+author:    Logan Barnett
+#+email:     logustus@gmail.com
+#+date:      <2024-10-01 Tue>
+#+language:  en
+#+file_tags:
+#+tags:
+
+The Linux Builder refers to a specialized VM that runs on macOS to allow it to
+build Linux binaries.  It follows the machine's architecture but simply adds a
+new OS.  So an ~aarch64-darwin~ machine gets a ~aarch64-linux~ machine.  A
+~x86_64-darwin~ machine gets a ~x86_64-linux~ machine.
+
+* Troubleshooting
+** Build stalls with "waiting for build machine"
+
+The general reproduction steps for this is to set ~nix.linux-builder.enable =
+true;~ and do a build.  It will look for a build machine, but never find one
+because it's waiting for... something?  I should have the platforms needed, so
+it's curious as to why this doesn't work.
+
+The build invocation is something like this:
+
+#+begin_src sh :results none :exports code :tangle no
+lock released on '/nix/store/jb4fv8j8bamn8s0ngrk77h9b677hh1wi-stage-2-init.sh.lock'
+building of '/nix/store/kvm0bp2vr9ciha4jxi4xn8mjy0kif6kr-unit-console-getty.service-disabled.drv^out' from .drv file: trying to build
+locking path '/nix/store/rgdpj1zqyf59gv2v4qrvlywcl86697ha-unit-console-getty.service-disabled'
+lock acquired on '/nix/store/rgdpj1zqyf59gv2v4qrvlywcl86697ha-unit-console-getty.service-disabled.lock'
+removing invalid path '/nix/store/rgdpj1zqyf59gv2v4qrvlywcl86697ha-unit-console-getty.service-disabled'
+considering building on remote machine 'ssh-ng://builder@nickel.proton'
+considering building on remote machine 'ssh-ng://builder@lithium.proton'
+hook reply is 'postpone'
+wait for a while
+lock released on '/nix/store/rgdpj1zqyf59gv2v4qrvlywcl86697ha-unit-console-getty.service-disabled.lock'
+waiting for children
+sleeping 4 seconds
+download thread waiting for 10000 ms
+waiting for children
+sleeping 1 seconds
+#+end_src
+
+The interesting thing is the ~'postpone'~ message.  Why?
+
+To debug, you need to disable builders in the build.  Per [[https://github.com/LnL7/nix-darwin/issues/1060][nix-darwin#1060]] you
+can do that thusly:
+
+#+begin_src sh :results none :exports code :tangle no
+nix-darwin-switch --option builders ''
+#+end_src
+
+You should then see something like this:
+
+#+begin_example
+error: a 'aarch64-linux' with features {} is required to build
+'/nix/store/g8371h6q7l2jz6yyngkfj9cd8njq9j28-boot.json.drv', but I am a
+'aarch64-darwin' with features {apple-virt, benchmark, big-parallel, nixos-test}
+#+end_example
+
+Okay, so why do my ~aarch64-linux~ builders not pick this up?
+
+[[https://github.com/LoganBarnett/nix-remote-builder-doctor][nix-remote-builder-doctor]] says everything is okay.  What's missing?
+
+This seems like this could be a bootstrapping issue.
+
+I can run this and the image comes up fine:
+
+#+begin_src sh :results none :exports code :tangle no
+nix run nixpkgs#darwin.linux-builder
+#+end_src
+
+https://github.com/NixOS/nix/issues/8101 suggests restarting the nix daemon.
+
+#+begin_src sh :results none :exports code :tangle no
+# -k indicates the process should terminate if it's already running.
+sudo launchctl kickstart -k system/org.nixos.nix-daemon
+#+end_src
+
+You can find that invocation via [[https://github.com/NixOS/nix/blob/96ba7f9d77d6f2fd8fd64aafc50dd8c850e8a902/scripts/install-darwin-multi-user.sh#L121][this file]].
+
+The fix: Remove the ~config~ attribute and build again.
+
+This to me confirms a bootstrapping issue - it needs to build Linux binaries but
+can't.  I don't know why it doesn't reach out to other builders though.  This is
+probably because ~darwin-rebuild~ doesn't use remote builders for its own
+packages?  The ~postpone~ issue is still odd, and probably deserves a bug
+report, but I'm not sure how to reproduce it outside of going back into my
+broken state.
+
+Well, that's not the total fix.  Now we get this error:
+
+#+begin_example
+error: creating symlink from
+'/nix/store/waim5wkplj837637rdd0sqmdj0chza04-perl-5.38.2-env/lib/perl5/5.38.2/pod~nix~case~hack~1'
+to
+'/nix/store/71dxajciymxkig3hr2wyc41nw2ypx9xg-perl-5.38.2/lib/perl5/5.38.2/pod~nix~case~hack~1':
+File exists
+#+end_example
+
+Another puzzle.
+
+A ~nix-collect-garbage -d~ does nothing to fix the issue.
+
+I haven't been able to find out where this file comes from, and it is something
+that came up when I was trying to build [[file:./linux-kernel.org]].
+
+This looks suspect when using ~-vvvvv~:
+
+#+begin_example
+building of '/nix/store/yya41i0a1qyh10nxhblnl9qvbcdfrd03-perl-5.38.2-env.drv^out' from .drv file: read 4096 bytes
+case collision between 'Pod' and 'pod'
+case collision between 'Pod' and 'pod'
+#+end_example
+** Machine is unreachable
+
+You may not be able to SSH to the host, or you see this in your build log:
+
+#+begin_example
+cannot build on 'ssh-ng://builder@linux-builder': error: failed to start SSH
+connection to 'builder@linux-builder'
+#+end_example
+
+
+First, verify that ~nix.linux-builder.enable~ is ~true~.  This can be found in
+[[file:./darwin-linux-builder-module.nix]].
+
+Second, verify the virtual machine process is running.  This is generally a
+~qemu-system-*~ process.
+
+#+begin_src sh :results output :exports code :tangle yes :cache yes
+ps aux | grep qemu | grep --invert-match grep
+#+end_src
+
+#+RESULTS[53a5165db705033374bb8b714d22a2147b259d3a]:
+: root             59361   0.0  0.0        0      0   ??  ?     5:59PM   0:00.00 (qemu-system-aarc)
+
+If this is present and the host is unreachable, use ~sudo kill $pid~ (no ~-9~
+should be necessary).  Toggle ~nix.linux-builder.enable~ to ~false~, run
+~nix-darwin-switch~, toggle back to ~true~, run again.  Now it should be up.
+
+Why does it break down?  This is not well understood at this time.
+
+Further troubleshooting against the host (such as auth failures) should be
+diagnosed with ~nix-remote-builder-doctor~.
+
+**** ~pod~nix~case~hack~1~ symlink issue (or some other file)
+
+I found [[https://github.com/NixOS/nix/issues/9319][nixpkgs#9319]] is a close ticket to what I'm experiencing.
+
+
+#+begin_example
+error: creating symlink from
+'/nix/store/i4wg601wkbs4k6wki3c2xx7wb0yycyjd-system-path/lib/perl5/5.38.2/pod~nix~case~hack~1'
+to
+'/nix/store/71dxajciymxkig3hr2wyc41nw2ypx9xg-perl-5.38.2/lib/perl5/5.38.2/pod~nix~case~hack~1':
+File exists
+#+end_example
+
+You can also see this from:
+
+#+begin_example
+error: creating symlink from
+'/nix/store/sb9kmam7ry573yckdywd5x5mbhaq48kf-system-path/share/terminfo/a~nix~case~hack~1'
+to
+'/nix/store/sy6029qwc2a379081zriyq8hly31nrvh-ncurses-6.4.20221231/share/terminfo/a~nix~case~hack~1':
+File exists
+#+end_example
+
+This does indeed exist, but why it throws an error is poorly understood.  Even
+finding reference to this in ~nixpkgs~ itself is difficult.
+
+**** other ~pod~ ~Pod~ error
+
+error: creating symlink from '/nix/store/i4wg601wkbs4k6wki3c2xx7wb0yycyjd-system-path/lib/perl5/5.38.2/pod~nix~case~hack~1' to '/nix/store/71dxajciymxkig3hr2wyc41nw2ypx9xg-perl-5.38.2/lib/perl5/5.38.2/pod~nix~case~hack~1': File exists
