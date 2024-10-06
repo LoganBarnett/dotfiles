@@ -114,7 +114,8 @@
           # A smattering of org-mode plugins.
           epkgs.org-contrib
           # Export org-mode documents to Jekyll, a static site generator.
-          epkgs.org-jekyll
+          # It's included locally, actually.  We should see about publishing it.
+          # epkgs.org-jekyll
           # Export org-mode documents to an HTML email dialect.
           epkgs.org-mime
           # Turn an org tree into a live, editable presentation!
