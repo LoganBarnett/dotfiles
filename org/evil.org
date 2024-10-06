@@ -150,8 +150,10 @@ For now, I'm keeping ~evil-exchange~ because it seems like it could be helpful
 in some circumstances.
 
 ** evil-snipe
+
 The =evil-snipe= package promises better/smarter searching for =f=, =F=, =t=, and
 =T=.
+
 *** case sensitivity
 Doom uses the smart case by default. While I enjoy this with =/= I do not enjoy
 it here. The motions =evil-snipe= uses need to be precise in my mind.
@@ -204,8 +206,6 @@ setting =evil-snipe-skip-leading-whitespace= to =nil=.
 
 *** apply
 
-We're getting desperate.
-
 #+begin_src emacs-lisp :results none :noweb yes :tangle yes
 (use-package "evil-snipe"
   :after evil
@@ -215,6 +215,11 @@ We're getting desperate.
   ;; it can flow to new lines.
   (evil-snipe-override-mode)
   :config
+  (map!
+   :desc "evil-snipe forward" :nv "s" #'evil-snipe-s
+   :desc "evil-snipe backward" :nv "S" #'evil-snipe-S
+
+   )
   <<config/evil-snipe-smart-case-disable>>
   <<config/evil-snipe-fix-whitespace-seek>>
   <<config/evil-snipe-override-disable>>
