@@ -8,43 +8,36 @@
 # This is a working Python application constructed in an overlay. In the
 # consuming nix file it is simply presented as "pkgs.speedtest-cli". I might
 # like to keep this around as an example.
-final: prev: {
-  speedtest-cli = prev.python3.pkgs.buildPythonApplication rec {
-    pname = "speedtest-cli";
-    version = "2.1.3";
-    format = "other";
+final: prev: let
+  # Speedtest specifically supports Python 3.10 as its most recent version.
+  python = prev.python310;
+  pname = "speedtest-cli";
+  version = "2.1.3";
+in {
+  speedtest-cli = python.pkgs.buildPythonApplication {
+    inherit pname version;
 
-    pythonPath = [ prev.python3.pkgs.setuptools ];
+    pyproject = true;
+
     nativeBuildInputs = [
       prev.cacert
-      prev.python3.pkgs.wrapPython
-      prev.makeWrapper
     ];
 
-    src = prev.python3.pkgs.fetchPypi {
+    src = python.pkgs.fetchPypi {
       inherit pname version;
-      sha256 = "1w4h7m0isbvfy4zx6m5j4594p5y4pjbpzsr0h4yzmdgd7hip69sy";
+      hash = "sha256-XidzIzzttfo9gSDrf5e8xJdLUiGyVNM/8W4vHUE9kPA=";
     };
-    buildPhase = ''
-      ${prev.python3.interpreter} setup.py build
-    '';
 
-    installPhase = ''
-      ${prev.python3.interpreter} setup.py install --prefix="$out"
-      for i in "$out/bin"/*; do
-      head -n 1 "$i" | grep -E '[/ ]python( |$)' && {
-        wrapProgram "$i" --prefix PYTHONPATH : "$PYTHONPATH:$out/${prev.python3.sitePackages}"
-      } || true
-      done
-    '';
+    build-system = [
+      python.pkgs.setuptools
+    ];
 
-    doCheck = false;
+    dependencies = [];
 
     meta = with prev.lib; {
-      description = "Command line interface for testing internet bandwidth using speedtest.net";
+      description = "Command line interface for testing internet bandwidth using speedtest.net.";
       homepage = "https://github.com/sivel/speedtest-cli";
-      # TODO: Change to apache 2.0.
-      license = licenses.mit;
+      license = licenses.asl20;
       platforms = prev.lib.platforms.linux ++ prev.lib.platforms.darwin;
       # What should I put here? I don't maintain this, do I?
       # maintainers = with maintainers; [ somename ];
