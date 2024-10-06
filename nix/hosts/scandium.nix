@@ -52,7 +52,10 @@ in
     ({ pkgs, ...}: {
       environment.systemPackages = (import ../personal-packages.nix {
         inherit pkgs;
-      });
+      }) ++ [
+        pkgs.prusa-slicer
+      ];
+      system.stateVersion = 5;
     })
   ];
 }
