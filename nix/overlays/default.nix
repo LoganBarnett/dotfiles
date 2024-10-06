@@ -28,7 +28,6 @@
   (import ./percol.nix)
   (import ./prusa-slicer.nix)
   # (import ./python-hatch-vcs-fix.nix)
-  (import ./speedtest-cli.nix)
   # (import ./tmux.nix)
   (import ./wine.nix)
   # Give us rust-docs.

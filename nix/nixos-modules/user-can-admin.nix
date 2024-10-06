@@ -66,7 +66,7 @@
     # The workaround can be found in ../overlays/zig.nix but it isn't working.
     pkgs.ncdu
     # Run speed tests from the command line.
-    pkgs.speedtest-cli
+    pkgs.speedtest-rs
     # A self-proclaimed better netcat.
     pkgs.socat
     # Really fast grep alternative.  Required by Emacs (which is also used via
