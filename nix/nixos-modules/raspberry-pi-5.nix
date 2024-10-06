@@ -28,15 +28,15 @@
       # See the docs at:
       # https://www.raspberrypi.com/documentation/computers/linux_kernel.html#native-build-configuration
       raspberry-pi-nix = {
-        uboot.enable = false;
+        # uboot.enable = false;
         # Required for RPi5.
         board = "bcm2712";
         # The GPIO pins.
         # i2c = false;
-        libcamera-overlay.enable = false;
-        firmware-migration-service.enable = true;
+        # libcamera-overlay.enable = false;
+        # firmware-migration-service.enable = true;
         # Also GPIO pins?
-        pin-inputs.enable = false;
+        # pin-inputs.enable = false;
       };
       hardware = {
         # bluetooth.enable = true;
