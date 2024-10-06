@@ -17,19 +17,14 @@ in {
   # inherit system;
   imports = [
     ../nixos-modules/nix-builder-provide.nix
+    ../nixos-modules/raspberry-pi-builder.nix
+    (import ../nixos-modules/server-host.nix {
+      inherit flake-inputs host-id system;
+    })
+    (import ../nixos-modules/ldap-server.nix { inherit host-id; })
+    ../nixos-modules/raspberry-pi-disk.nix
     # Pi stuff.
     ({ pkgs, ... }: {
-      nix.distributedBuilds = true;
-      boot.binfmt.emulatedSystems = [
-        "armv6l-linux"
-        "armv7l-linux"
-      ];
-      nix.settings = {
-        extra-platforms = [
-          "armv6l-linux"
-          "armv7l-linux"
-        ];
-      };
       # networking.hostId is needed by the filesystem stuffs.
       # An arbitrary ID needed for zfs so a pool isn't accidentally imported on
       # a wrong machine (I'm not even sure what that means).  See
@@ -59,10 +54,5 @@ in {
     #   inherit flake-inputs;
     # })
     # "${nixpkgs}/nixos/modules/installer/sd-card/sd-image-aarch64.nix"
-    (import ../nixos-modules/server-host.nix {
-      inherit flake-inputs host-id system;
-    })
-    (import ../nixos-modules/ldap-server.nix { inherit host-id; })
-    ../nixos-modules/raspberry-pi-disk.nix
   ];
 }
