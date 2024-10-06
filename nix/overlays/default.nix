@@ -26,6 +26,7 @@
   (import ./nightlight.nix)
   (import ./nixos-generators.nix)
   (import ./percol.nix)
+  (import ./prusa-slicer.nix)
   # (import ./python-hatch-vcs-fix.nix)
   (import ./speedtest-cli.nix)
   # (import ./tmux.nix)
