@@ -65,8 +65,7 @@
     ];
   };
   fonts = {
-    fontDir.enable = true;
-    fonts = [
+    packages = [
       pkgs.source-code-pro
     ];
   };
