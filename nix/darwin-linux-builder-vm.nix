@@ -29,37 +29,37 @@
   flake-inputs,
   lib,
   nixpkgs,
-  pkgs,
+  # pkgs,
   ...
 }: let
   system = "aarch64-linux";
-  linux-builder-pkgs = import nixpkgs {
-    system = "aarch64-linux";
-    # This seems to cause the build to be x86_64 which I don't think we want, or
-    # at least don't want as this primary packages for this system.  It needs to
-    # be broken out into a separate import nixpkgs expression.
-    # crossSystem = {
-    #   # config = "x86_64-linux";
-    #   config = "x86_64-unknown-linux-gnu";
-    #   # config = {
-    #   #   hostPlatform = "aarch64-unknown-linux-gnu";
-    #   #   buildPlatform = "x86_64-unknown-linux-gnu";
-    #   #   targetPlatform = "x86_64-unknown-linux-gnu";
-    #   # };
-    #   hostPlatform = "aarch64-unknown-linux-gnu";
-    #   buildPlatform = "x86_64-unknown-linux-gnu";
-    #   targetPlatform = "x86_64-unknown-linux-gnu";
-    #   # stdenv = linux-builder-pkgs.stdenv.override {
-    #   #   hostPlatform = "aarch64-unknown-linux-gnu";
-    #   #   buildPlatform = "x86_64-unknown-linux-gnu";
-    #   #   targetPlatform = "x86_64-unknown-linux-gnu";
-    #   # };
-    # };
+  # linux-builder-pkgs = import nixpkgs {
+  #   system = "aarch64-linux";
+  #   # This seems to cause the build to be x86_64 which I don't think we want, or
+  #   # at least don't want as this primary packages for this system.  It needs to
+  #   # be broken out into a separate import nixpkgs expression.
+  #   # crossSystem = {
+  #   #   # config = "x86_64-linux";
+  #   #   config = "x86_64-unknown-linux-gnu";
+  #   #   # config = {
+  #   #   #   hostPlatform = "aarch64-unknown-linux-gnu";
+  #   #   #   buildPlatform = "x86_64-unknown-linux-gnu";
+  #   #   #   targetPlatform = "x86_64-unknown-linux-gnu";
+  #   #   # };
+  #   #   hostPlatform = "aarch64-unknown-linux-gnu";
+  #   #   buildPlatform = "x86_64-unknown-linux-gnu";
+  #   #   targetPlatform = "x86_64-unknown-linux-gnu";
+  #   #   # stdenv = linux-builder-pkgs.stdenv.override {
+  #   #   #   hostPlatform = "aarch64-unknown-linux-gnu";
+  #   #   #   buildPlatform = "x86_64-unknown-linux-gnu";
+  #   #   #   targetPlatform = "x86_64-unknown-linux-gnu";
+  #   #   # };
+  #   # };
 
-    # hostPlatform = "aarch64-linux";
-    # buildPlatform = "x86_64-linux";
-    # targetPlatform = "x86_64-linux";
-  };
+  #   # hostPlatform = "aarch64-linux";
+  #   # buildPlatform = "x86_64-linux";
+  #   # targetPlatform = "x86_64-linux";
+  # };
   # pkgs = import <nixpkgs> { };
   # pkgsCross = import <nixpkgs> {
   #   crossSystem = { config = "x86_64-unknown-linux-gnu"; };
@@ -78,20 +78,20 @@
   #     };
   #   };
   # };
-  cross-architecture-test-pkgs = import nixpkgs {
-    system = "x86_64-linux";
-    # crossSystem = {
-    #   config = "x86_64-unknown-linux-gnu";
-    #   hostPlatform = "aarch64-unknown-linux-gnu";
-    #   buildPlatform = "x86_64-unknown-linux-gnu";
-    #   targetPlatform = "x86_64-unknown-linux-gnu";
-    # };
-    # stdenv = linux-builder-pkgs.stdenv.override {
-    #   hostPlatform = "aarch64-unknown-linux-gnu";
-    #   buildPlatform = "x86_64-unknown-linux-gnu";
-    #   targetPlatform = "x86_64-unknown-linux-gnu";
-    # };
-  };
+  # cross-architecture-test-pkgs = import nixpkgs {
+  #   system = "x86_64-linux";
+  #   # crossSystem = {
+  #   #   config = "x86_64-unknown-linux-gnu";
+  #   #   hostPlatform = "aarch64-unknown-linux-gnu";
+  #   #   buildPlatform = "x86_64-unknown-linux-gnu";
+  #   #   targetPlatform = "x86_64-unknown-linux-gnu";
+  #   # };
+  #   # stdenv = linux-builder-pkgs.stdenv.override {
+  #   #   hostPlatform = "aarch64-unknown-linux-gnu";
+  #   #   buildPlatform = "x86_64-unknown-linux-gnu";
+  #   #   targetPlatform = "x86_64-unknown-linux-gnu";
+  #   # };
+  # };
   # cross-architecture-test-pkgs = import nixpkgs {
   #   system = "aarch64-linux";
   #   crossSystem = {
@@ -101,108 +101,92 @@
   # };
 in {
   imports = [
-    (import ./nixos-modules/user-can-admin.nix {
-      inherit flake-inputs;
-      inherit system;
-    })
+    # ./users/logan-server.nix
+    # (import ./nixos-modules/user-can-admin.nix {
+    #   inherit flake-inputs;
+    #   inherit system;
+    # })
   ];
-  boot.binfmt.emulatedSystems = [
-    "i686-linux"
-    "x86_64-linux"
-    # To get the Raspberry Pi building from linux-builder.  Only two of them
-    # work here.
-    # "armv7a-darwin"
-    # "armv5tel-linux"
-    "armv6l-linux"
-    # "armv7a-linux"
-    "armv7l-linux"
-    # "armv6l-netbsd"
-    # "armv7a-netbsd"
-    # "armv7l-netbsd"
-    # "arm-none"
-    # "armv6l-none"
-  ];
-  environment.systemPackages = [
-    pkgs.lsof
-    # Allow us to do a "bootstrapped" remote deploy - see bin/remote-deploy for
-    # details on why this is needed.
-    linux-builder-pkgs.git
-    # Gives us a utility for inspecting binary meta-data.
-    linux-builder-pkgs.file
-    linux-builder-pkgs.gdb
-    linux-builder-pkgs.gnu-config
-    # A test to show we can run x86_64-linux programs on an aarch64-linux
-    # system.
-    linux-builder-pkgs.pkgsCross.gnu64.hello
-    # This provides us readelf, which is useful for getting extended information
-    # from ELF binaries.
-    linux-builder-pkgs.binutils-unwrapped
-    # Ensure I can remote-deploy to this host.
-    linux-builder-pkgs.rsync
-    # cross-architecture-test-pkgs.hello
-  ];
-  nixpkgs = {
-    # buildPlatform = { system = "aarch64-linux"; };
-  };
+  # boot.binfmt.emulatedSystems = [
+  #   # "i686-linux"
+  #   # "x86_64-linux"
+  #   # To get the Raspberry Pi building from linux-builder.  Only two of them
+  #   # work here.
+  #   # "armv7a-darwin"
+  #   # "armv5tel-linux"
+  #   "armv6l-linux"
+  #   # "armv7a-linux"
+  #   "armv7l-linux"
+  #   # "armv6l-netbsd"
+  #   # "armv7a-netbsd"
+  #   # "armv7l-netbsd"
+  #   # "arm-none"
+  #   # "armv6l-none"
+  # ];
+  # environment.systemPackages = [
+  #   pkgs.lsof
+  #   # Allow us to do a "bootstrapped" remote deploy - see bin/remote-deploy for
+  #   # details on why this is needed.
+  #   linux-builder-pkgs.git
+  #   # Gives us a utility for inspecting binary meta-data.
+  #   linux-builder-pkgs.file
+  #   linux-builder-pkgs.gdb
+  #   linux-builder-pkgs.gnu-config
+  #   # A test to show we can run x86_64-linux programs on an aarch64-linux
+  #   # system.
+  #   linux-builder-pkgs.pkgsCross.gnu64.hello
+  #   # This provides us readelf, which is useful for getting extended information
+  #   # from ELF binaries.
+  #   linux-builder-pkgs.binutils-unwrapped
+  #   # Ensure I can remote-deploy to this host.
+  #   linux-builder-pkgs.rsync
+  #   # cross-architecture-test-pkgs.hello
+  # ];
+  # nixpkgs = {
+  #   buildPlatform = { system = "aarch64-linux"; };
+  # };
   # Shows us what package an executable resides in when attempting to run an
   # missing command.  This is enabled by default but doesn't seem to work.  See
   # https://discourse.nixos.org/t/command-not-found-unable-to-open-database/3807/4
   # for some troubleshooting ideas but might not work since this is a Flake.  I
   # will use nix-index instead, and nix-index is mutually exclusive to
   # command-not-found, so I'm disabling command-not-found.
-  programs.command-not-found.enable = false;
+  # programs.command-not-found.enable = false;
   # Of course, this doesn't work because we don't have a nix-channel.
-  programs.nix-index = {
-    enable = true;
-    enableBashIntegration = true;
-  };
-  security.sudo.wheelNeedsPassword = false;
-  users.users = {
-    logan = {
-      # TODO: You can set an initial password for your user.
-      # If you do, you can skip setting a root password by passing
-      # '--no-root-passwd' to nixos-install.
-      # Be sure to change it (using passwd) after rebooting!
-      initialPassword = "correcthorsebatterystaple";
-      isNormalUser = true;
-      openssh.authorizedKeys.keys = [
-        "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQOx2dxH8oP1406bie6eO3HB6fin4NY01laNiWRqcNsrRl6/M6e80wiTnG9u0Walb3JXegyqrHKIlFgvcrn2Tg/y944akJ/XqrcLPn3vwTcCV6XGI/1hPdcN0V156pbbnTS/T9y9btO+QJvELOjT4dET6HixBeBpGhLM95cirOrJjT2C6VVBYTGdAu3eKwCeDsjQtfKOHp9Huv0c1i57Fb13iTU1u0+L2o+LMYpS8YNbcBOgzx9FyyjvA/KuEVcyt2raVpbJv6nOP9ynz7a1Ja3Y2tgQwC6XCMpgKYHDYxaJhJbWjv9cxwq4zSzBr8yrlDKooqvpp9fTdOBAWF4R2MI2wb01yaaTlqPDcATBl5+Xu+SvxYf9wBt6wFIbv0baf1WtDDE7u9d2K/MJhShK9p45AQPTbmoYw7fzeMQOLdZNdZdXIOHWd17IJi2T+WnnO9hL1x+M5uZUlFlk0jGu0NP/YmHuWjGxxL7AIO1hH2q7ZHq7tzM+8sV6tjfGePwALFXSBBSGn2czgtfKzEVRFHBQajPco0g9zFWvi5ZfmU4QAkWOrQQFLEYK4IE0e1gR9Dsnqdm5tiYkCdVlapbG9jWdIBAgOCMj2bBXn+YObCrbVHW4wNo5OR6nec+b6miCuG23ue/o5j2L64kE16n1+hGx/Bbm0Adif4vw8zXVhAmxvQ== logan@scandium"
-      ];
-      extraGroups = [
-        # Allow this user to sudo.
-        "wheel"
-      ];
-    };
-  };
-  nix.settings = {
-    extra-platforms = [
-      # This might show up or not show up in an error list, helping us
-      # identify what list is being shown.
-      "this-is-darwin-linux-builders-list"
-      "aarch64-unknown-linux-gnu"
-      "aarch64-linux"
-      "i686-linux"
-      "x86_64-linux"
-      "armv5tel-linux"
-      "armv6l-linux"
-      "armv7a-linux"
-      "armv7l-linux"
-      "armv6l-netbsd"
-      "armv7a-netbsd"
-      "armv7l-netbsd"
-      "arm-none"
-      "armv6l-none"
-    ];
-    # extra-platforms = [ "aarch64-linux" ];
-  };
+  # programs.nix-index = {
+  #   enable = true;
+  #   enableBashIntegration = true;
+  # };
+  # nix.settings = {
+  #   extra-platforms = [
+  #     # This might show up or not show up in an error list, helping us
+  #     # identify what list is being shown.
+  #     "this-is-darwin-linux-builders-list"
+  #     "aarch64-unknown-linux-gnu"
+  #     "aarch64-linux"
+  #     "i686-linux"
+  #     "x86_64-linux"
+  #     "armv5tel-linux"
+  #     "armv6l-linux"
+  #     "armv7a-linux"
+  #     "armv7l-linux"
+  #     "armv6l-netbsd"
+  #     "armv7a-netbsd"
+  #     "armv7l-netbsd"
+  #     "arm-none"
+  #     "armv6l-none"
+  #   ];
+  #   # extra-platforms = [ "aarch64-linux" ];
+  # };
   # See https://nixos.org/manual/nixpkgs/stable/#sec-darwin-builder for
   # information about configuration values here.
-  virtualisation = {
-    # Sizes here are in MB.
-    # darwin-builder = {
-    diskSize = lib.mkForce (40 * 1024);
-      # memorySize = 8 * 1024;
-    # };
-    # cores = 6;
-  };
+  # virtualisation = {
+  #   # Sizes here are in MB.
+  #   # darwin-builder = {
+  #   diskSize = lib.mkForce (40 * 1024);
+  #   # Defaults to 3 GB.  Maybe with 8 we can build the Linux kernel...
+  #   memorySize = lib.mkForce (8 * 1024);
+  #   # };
+  #   # cores = 6;
+  # };
 }

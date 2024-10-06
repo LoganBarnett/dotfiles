@@ -38,6 +38,7 @@
       inherit nixpkgs;
       inherit pkgs;
     });
+    package = pkgs.darwin.linux-builder;
     protocol = "ssh-ng";
     systems = [
       # "i686-linux"
