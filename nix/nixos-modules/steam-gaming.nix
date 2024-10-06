@@ -20,6 +20,10 @@
       "steam-run"
     ])
   ];
+  # Allows things like the Steam controller and HTC Vive.
+  hardware.steam-hardware.enable = true;
+  # Enable SteamOS's window session compositing management.
+  programs.gamescope.enable = true;
   programs.steam = {
     enable = true;
     # Enables features such as resolution upscaling and stretched aspect ratios
