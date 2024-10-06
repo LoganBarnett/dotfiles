@@ -956,3 +956,813 @@ Yes please.  This is =cobalt= I think.
 ** incremental backups
 
 Oh boy this is going to be its own project probably.
+
+* Nix
+
+** Generations
+
+*** List generations
+
+#+begin_src sh :results output drawer :exports code :tangle no
+# Alas, this isn't supported yet: https://github.com/NixOS/nix/pull/6911
+export NO_COLOR=1
+nix profile history --profile /nix/var/nix/profiles/system
+#+end_src
+
+#+RESULTS:
+:results:
+Version [1m113[0m (2024-03-04):
+  No changes.
+
+Version [1m114[0m (2024-03-07) <- 113:
+  No changes.
+
+Version [1m115[0m (2024-03-07) <- 114:
+  No changes.
+
+Version [1m116[0m (2024-03-07) <- 115:
+  No changes.
+
+Version [1m117[0m (2024-03-07) <- 116:
+  No changes.
+
+Version [1m118[0m (2024-03-20) <- 117:
+  No changes.
+
+Version [1m119[0m (2024-03-31) <- 118:
+  No changes.
+
+Version [1m120[0m (2024-03-31) <- 119:
+  No changes.
+
+Version [1m121[0m (2024-03-31) <- 120:
+  No changes.
+
+Version [1m122[0m (2024-03-31) <- 121:
+  No changes.
+
+Version [1m123[0m (2024-03-31) <- 122:
+  No changes.
+
+Version [1m124[0m (2024-04-02) <- 123:
+  No changes.
+
+Version [1m125[0m (2024-04-02) <- 124:
+  No changes.
+
+Version [1m126[0m (2024-04-05) <- 125:
+  No changes.
+
+Version [1m127[0m (2024-05-14) <- 126:
+  No changes.
+
+Version [1m128[0m (2024-05-14) <- 127:
+  No changes.
+
+Version [1m129[0m (2024-05-14) <- 128:
+  No changes.
+
+Version [1m130[0m (2024-05-15) <- 129:
+  No changes.
+
+Version [1m131[0m (2024-05-15) <- 130:
+  No changes.
+
+Version [1m132[0m (2024-05-15) <- 131:
+  No changes.
+
+Version [1m133[0m (2024-05-15) <- 132:
+  No changes.
+
+Version [1m134[0m (2024-05-15) <- 133:
+  No changes.
+
+Version [1m135[0m (2024-05-15) <- 134:
+  No changes.
+
+Version [1m136[0m (2024-05-18) <- 135:
+  No changes.
+
+Version [1m137[0m (2024-05-21) <- 136:
+  No changes.
+
+Version [1m138[0m (2024-05-21) <- 137:
+  No changes.
+
+Version [1m139[0m (2024-05-21) <- 138:
+  No changes.
+
+Version [1m140[0m (2024-05-21) <- 139:
+  No changes.
+
+Version [1m141[0m (2024-05-21) <- 140:
+  No changes.
+
+Version [1m142[0m (2024-05-21) <- 141:
+  No changes.
+
+Version [1m143[0m (2024-05-21) <- 142:
+  No changes.
+
+Version [1m144[0m (2024-05-22) <- 143:
+  No changes.
+
+Version [1m145[0m (2024-05-22) <- 144:
+  No changes.
+
+Version [1m146[0m (2024-05-22) <- 145:
+  No changes.
+
+Version [1m147[0m (2024-05-22) <- 146:
+  No changes.
+
+Version [1m148[0m (2024-05-22) <- 147:
+  No changes.
+
+Version [1m149[0m (2024-05-23) <- 148:
+  No changes.
+
+Version [1m150[0m (2024-05-23) <- 149:
+  No changes.
+
+Version [1m151[0m (2024-05-23) <- 150:
+  No changes.
+
+Version [1m152[0m (2024-05-23) <- 151:
+  No changes.
+
+Version [1m153[0m (2024-05-23) <- 152:
+  No changes.
+
+Version [1m154[0m (2024-05-23) <- 153:
+  No changes.
+
+Version [1m155[0m (2024-05-23) <- 154:
+  No changes.
+
+Version [1m156[0m (2024-05-23) <- 155:
+  No changes.
+
+Version [1m157[0m (2024-05-23) <- 156:
+  No changes.
+
+Version [1m158[0m (2024-05-23) <- 157:
+  No changes.
+
+Version [1m159[0m (2024-05-23) <- 158:
+  No changes.
+
+Version [1m160[0m (2024-05-23) <- 159:
+  No changes.
+
+Version [1m161[0m (2024-05-23) <- 160:
+  No changes.
+
+Version [1m162[0m (2024-05-26) <- 161:
+  No changes.
+
+Version [1m163[0m (2024-05-26) <- 162:
+  No changes.
+
+Version [1m164[0m (2024-05-27) <- 163:
+  No changes.
+
+Version [1m165[0m (2024-05-27) <- 164:
+  No changes.
+
+Version [1m166[0m (2024-05-27) <- 165:
+  No changes.
+
+Version [1m167[0m (2024-05-27) <- 166:
+  No changes.
+
+Version [1m168[0m (2024-05-27) <- 167:
+  No changes.
+
+Version [1m169[0m (2024-05-27) <- 168:
+  No changes.
+
+Version [1m170[0m (2024-05-27) <- 169:
+  No changes.
+
+Version [1m171[0m (2024-05-27) <- 170:
+  No changes.
+
+Version [1m172[0m (2024-05-27) <- 171:
+  No changes.
+
+Version [1m173[0m (2024-05-27) <- 172:
+  No changes.
+
+Version [1m174[0m (2024-05-27) <- 173:
+  No changes.
+
+Version [1m175[0m (2024-05-27) <- 174:
+  No changes.
+
+Version [1m176[0m (2024-05-27) <- 175:
+  No changes.
+
+Version [1m177[0m (2024-05-27) <- 176:
+  No changes.
+
+Version [1m178[0m (2024-05-27) <- 177:
+  No changes.
+
+Version [1m179[0m (2024-05-27) <- 178:
+  No changes.
+
+Version [1m180[0m (2024-05-28) <- 179:
+  No changes.
+
+Version [1m181[0m (2024-05-28) <- 180:
+  No changes.
+
+Version [1m182[0m (2024-05-28) <- 181:
+  No changes.
+
+Version [1m183[0m (2024-05-28) <- 182:
+  No changes.
+
+Version [1m184[0m (2024-05-28) <- 183:
+  No changes.
+
+Version [1m185[0m (2024-05-28) <- 184:
+  No changes.
+
+Version [1m186[0m (2024-05-28) <- 185:
+  No changes.
+
+Version [1m187[0m (2024-05-31) <- 186:
+  No changes.
+
+Version [1m188[0m (2024-05-31) <- 187:
+  No changes.
+
+Version [1m189[0m (2024-05-31) <- 188:
+  No changes.
+
+Version [1m190[0m (2024-06-02) <- 189:
+  No changes.
+
+Version [1m191[0m (2024-06-02) <- 190:
+  No changes.
+
+Version [1m192[0m (2024-06-02) <- 191:
+  No changes.
+
+Version [1m193[0m (2024-06-03) <- 192:
+  No changes.
+
+Version [1m194[0m (2024-06-03) <- 193:
+  No changes.
+
+Version [1m195[0m (2024-06-03) <- 194:
+  No changes.
+
+Version [1m196[0m (2024-06-06) <- 195:
+  No changes.
+
+Version [1m197[0m (2024-06-06) <- 196:
+  No changes.
+
+Version [1m198[0m (2024-06-06) <- 197:
+  No changes.
+
+Version [1m199[0m (2024-06-06) <- 198:
+  No changes.
+
+Version [1m200[0m (2024-06-07) <- 199:
+  No changes.
+
+Version [1m201[0m (2024-06-07) <- 200:
+  No changes.
+
+Version [1m202[0m (2024-06-07) <- 201:
+  No changes.
+
+Version [1m203[0m (2024-06-07) <- 202:
+  No changes.
+
+Version [1m204[0m (2024-06-07) <- 203:
+  No changes.
+
+Version [1m205[0m (2024-06-07) <- 204:
+  No changes.
+
+Version [1m206[0m (2024-06-10) <- 205:
+  No changes.
+
+Version [1m207[0m (2024-06-10) <- 206:
+  No changes.
+
+Version [1m208[0m (2024-06-10) <- 207:
+  No changes.
+
+Version [1m209[0m (2024-06-10) <- 208:
+  No changes.
+
+Version [1m210[0m (2024-06-11) <- 209:
+  No changes.
+
+Version [1m211[0m (2024-06-14) <- 210:
+  No changes.
+
+Version [1m212[0m (2024-06-14) <- 211:
+  No changes.
+
+Version [1m213[0m (2024-06-14) <- 212:
+  No changes.
+
+Version [1m214[0m (2024-06-18) <- 213:
+  No changes.
+
+Version [1m215[0m (2024-06-22) <- 214:
+  No changes.
+
+Version [1m216[0m (2024-06-29) <- 215:
+  No changes.
+
+Version [1m217[0m (2024-06-29) <- 216:
+  No changes.
+
+Version [1m218[0m (2024-06-29) <- 217:
+  No changes.
+
+Version [1m219[0m (2024-06-29) <- 218:
+  No changes.
+
+Version [1m220[0m (2024-06-29) <- 219:
+  No changes.
+
+Version [1m221[0m (2024-06-29) <- 220:
+  No changes.
+
+Version [1m222[0m (2024-06-29) <- 221:
+  No changes.
+
+Version [1m223[0m (2024-06-29) <- 222:
+  No changes.
+
+Version [1m224[0m (2024-06-29) <- 223:
+  No changes.
+
+Version [1m225[0m (2024-06-29) <- 224:
+  No changes.
+
+Version [1m226[0m (2024-06-29) <- 225:
+  No changes.
+
+Version [1m227[0m (2024-06-30) <- 226:
+  No changes.
+
+Version [1m228[0m (2024-07-03) <- 227:
+  No changes.
+
+Version [1m229[0m (2024-07-03) <- 228:
+  No changes.
+
+Version [1m230[0m (2024-07-03) <- 229:
+  No changes.
+
+Version [1m231[0m (2024-07-03) <- 230:
+  No changes.
+
+Version [1m232[0m (2024-07-03) <- 231:
+  No changes.
+
+Version [1m233[0m (2024-07-03) <- 232:
+  No changes.
+
+Version [1m234[0m (2024-07-04) <- 233:
+  No changes.
+
+Version [1m235[0m (2024-07-04) <- 234:
+  No changes.
+
+Version [1m236[0m (2024-07-04) <- 235:
+  No changes.
+
+Version [1m237[0m (2024-07-04) <- 236:
+  No changes.
+
+Version [1m238[0m (2024-07-04) <- 237:
+  No changes.
+
+Version [1m239[0m (2024-07-06) <- 238:
+  No changes.
+
+Version [1m240[0m (2024-07-06) <- 239:
+  No changes.
+
+Version [1m241[0m (2024-07-09) <- 240:
+  No changes.
+
+Version [1m242[0m (2024-07-09) <- 241:
+  No changes.
+
+Version [1m243[0m (2024-07-10) <- 242:
+  No changes.
+
+Version [1m244[0m (2024-07-14) <- 243:
+  No changes.
+
+Version [1m245[0m (2024-07-24) <- 244:
+  No changes.
+
+Version [1m246[0m (2024-07-24) <- 245:
+  No changes.
+
+Version [1m247[0m (2024-07-24) <- 246:
+  No changes.
+
+Version [1m248[0m (2024-07-24) <- 247:
+  No changes.
+
+Version [1m249[0m (2024-07-24) <- 248:
+  No changes.
+
+Version [1m250[0m (2024-08-09) <- 249:
+  No changes.
+
+Version [1m251[0m (2024-08-10) <- 250:
+  No changes.
+
+Version [1m252[0m (2024-08-13) <- 251:
+  No changes.
+
+Version [1m253[0m (2024-08-13) <- 252:
+  No changes.
+
+Version [1m254[0m (2024-08-21) <- 253:
+  No changes.
+
+Version [1m255[0m (2024-08-24) <- 254:
+  No changes.
+
+Version [1m256[0m (2024-08-24) <- 255:
+  No changes.
+
+Version [1m257[0m (2024-08-24) <- 256:
+  No changes.
+
+Version [1m258[0m (2024-08-28) <- 257:
+  No changes.
+
+Version [1m259[0m (2024-08-29) <- 258:
+  No changes.
+
+Version [1m260[0m (2024-08-31) <- 259:
+  No changes.
+
+Version [1m261[0m (2024-09-03) <- 260:
+  No changes.
+
+Version [1m262[0m (2024-09-03) <- 261:
+  No changes.
+
+Version [1m263[0m (2024-09-03) <- 262:
+  No changes.
+
+Version [1m264[0m (2024-09-03) <- 263:
+  No changes.
+
+Version [1m265[0m (2024-09-03) <- 264:
+  No changes.
+
+Version [1m266[0m (2024-09-03) <- 265:
+  No changes.
+
+Version [1m267[0m (2024-09-03) <- 266:
+  No changes.
+
+Version [1m268[0m (2024-09-03) <- 267:
+  No changes.
+
+Version [1m269[0m (2024-09-03) <- 268:
+  No changes.
+
+Version [1m270[0m (2024-09-03) <- 269:
+  No changes.
+
+Version [1m271[0m (2024-09-03) <- 270:
+  No changes.
+
+Version [1m272[0m (2024-09-03) <- 271:
+  No changes.
+
+Version [1m273[0m (2024-09-04) <- 272:
+  No changes.
+
+Version [1m274[0m (2024-09-05) <- 273:
+  No changes.
+
+Version [1m275[0m (2024-09-05) <- 274:
+  No changes.
+
+Version [1m276[0m (2024-09-05) <- 275:
+  No changes.
+
+Version [1m277[0m (2024-09-05) <- 276:
+  No changes.
+
+Version [1m278[0m (2024-09-05) <- 277:
+  No changes.
+
+Version [1m279[0m (2024-09-05) <- 278:
+  No changes.
+
+Version [1m280[0m (2024-09-05) <- 279:
+  No changes.
+
+Version [1m281[0m (2024-09-05) <- 280:
+  No changes.
+
+Version [1m282[0m (2024-09-05) <- 281:
+  No changes.
+
+Version [1m283[0m (2024-09-05) <- 282:
+  No changes.
+
+Version [1m284[0m (2024-09-05) <- 283:
+  No changes.
+
+Version [1m285[0m (2024-09-05) <- 284:
+  No changes.
+
+Version [1m286[0m (2024-09-05) <- 285:
+  No changes.
+
+Version [1m287[0m (2024-09-05) <- 286:
+  No changes.
+
+Version [1m288[0m (2024-09-05) <- 287:
+  No changes.
+
+Version [1m289[0m (2024-09-05) <- 288:
+  No changes.
+
+Version [1m290[0m (2024-09-05) <- 289:
+  No changes.
+
+Version [1m291[0m (2024-09-05) <- 290:
+  No changes.
+
+Version [1m292[0m (2024-09-06) <- 291:
+  No changes.
+
+Version [1m293[0m (2024-09-06) <- 292:
+  No changes.
+
+Version [1m294[0m (2024-09-06) <- 293:
+  No changes.
+
+Version [1m295[0m (2024-09-06) <- 294:
+  No changes.
+
+Version [1m296[0m (2024-09-06) <- 295:
+  No changes.
+
+Version [1m297[0m (2024-09-06) <- 296:
+  No changes.
+
+Version [1m298[0m (2024-09-06) <- 297:
+  No changes.
+
+Version [1m299[0m (2024-09-06) <- 298:
+  No changes.
+
+Version [1m300[0m (2024-09-06) <- 299:
+  No changes.
+
+Version [1m301[0m (2024-09-06) <- 300:
+  No changes.
+
+Version [1m302[0m (2024-09-06) <- 301:
+  No changes.
+
+Version [1m303[0m (2024-09-06) <- 302:
+  No changes.
+
+Version [1m304[0m (2024-09-06) <- 303:
+  No changes.
+
+Version [1m305[0m (2024-09-06) <- 304:
+  No changes.
+
+Version [1m306[0m (2024-09-06) <- 305:
+  No changes.
+
+Version [1m307[0m (2024-09-06) <- 306:
+  No changes.
+
+Version [1m308[0m (2024-09-06) <- 307:
+  No changes.
+
+Version [1m309[0m (2024-09-06) <- 308:
+  No changes.
+
+Version [1m310[0m (2024-09-06) <- 309:
+  No changes.
+
+Version [1m311[0m (2024-09-06) <- 310:
+  No changes.
+
+Version [1m312[0m (2024-09-06) <- 311:
+  No changes.
+
+Version [1m313[0m (2024-09-06) <- 312:
+  No changes.
+
+Version [1m314[0m (2024-09-06) <- 313:
+  No changes.
+
+Version [1m315[0m (2024-09-06) <- 314:
+  No changes.
+
+Version [1m316[0m (2024-09-06) <- 315:
+  No changes.
+
+Version [1m317[0m (2024-09-06) <- 316:
+  No changes.
+
+Version [1m318[0m (2024-09-06) <- 317:
+  No changes.
+
+Version [1m319[0m (2024-09-06) <- 318:
+  No changes.
+
+Version [1m320[0m (2024-09-06) <- 319:
+  No changes.
+
+Version [1m321[0m (2024-09-06) <- 320:
+  No changes.
+
+Version [1m322[0m (2024-09-06) <- 321:
+  No changes.
+
+Version [1m323[0m (2024-09-06) <- 322:
+  No changes.
+
+Version [1m324[0m (2024-09-06) <- 323:
+  No changes.
+
+Version [1m325[0m (2024-09-06) <- 324:
+  No changes.
+
+Version [1m326[0m (2024-09-06) <- 325:
+  No changes.
+
+Version [1m327[0m (2024-09-06) <- 326:
+  No changes.
+
+Version [1m328[0m (2024-09-06) <- 327:
+  No changes.
+
+Version [1m329[0m (2024-09-06) <- 328:
+  No changes.
+
+Version [1m330[0m (2024-09-06) <- 329:
+  No changes.
+
+Version [1m331[0m (2024-09-06) <- 330:
+  No changes.
+
+Version [1m332[0m (2024-09-06) <- 331:
+  No changes.
+
+Version [1m333[0m (2024-09-06) <- 332:
+  No changes.
+
+Version [1m334[0m (2024-09-06) <- 333:
+  No changes.
+
+Version [1m335[0m (2024-09-06) <- 334:
+  No changes.
+
+Version [1m336[0m (2024-09-06) <- 335:
+  No changes.
+
+Version [1m337[0m (2024-09-06) <- 336:
+  No changes.
+
+Version [1m338[0m (2024-09-06) <- 337:
+  No changes.
+
+Version [1m339[0m (2024-09-06) <- 338:
+  No changes.
+
+Version [1m340[0m (2024-09-06) <- 339:
+  No changes.
+
+Version [1m341[0m (2024-09-06) <- 340:
+  No changes.
+
+Version [1m342[0m (2024-09-13) <- 341:
+  No changes.
+
+Version [1m343[0m (2024-09-14) <- 342:
+  No changes.
+
+Version [1m344[0m (2024-09-14) <- 343:
+  No changes.
+
+Version [1m345[0m (2024-09-16) <- 344:
+  No changes.
+
+Version [1m346[0m (2024-09-16) <- 345:
+  No changes.
+
+Version [1m347[0m (2024-09-19) <- 346:
+  No changes.
+
+Version [1m348[0m (2024-09-19) <- 347:
+  No changes.
+
+Version [1m349[0m (2024-09-20) <- 348:
+  No changes.
+
+Version [1m350[0m (2024-09-20) <- 349:
+  No changes.
+
+Version [1m351[0m (2024-09-20) <- 350:
+  No changes.
+
+Version [1m352[0m (2024-09-20) <- 351:
+  No changes.
+
+Version [1m353[0m (2024-09-20) <- 352:
+  No changes.
+
+Version [1m354[0m (2024-09-20) <- 353:
+  No changes.
+
+Version [1m355[0m (2024-09-20) <- 354:
+  No changes.
+
+Version [1m356[0m (2024-09-20) <- 355:
+  No changes.
+
+Version [1m357[0m (2024-09-20) <- 356:
+  No changes.
+
+Version [1m358[0m (2024-09-20) <- 357:
+  No changes.
+
+Version [1m359[0m (2024-09-20) <- 358:
+  No changes.
+
+Version [1m360[0m (2024-09-20) <- 359:
+  No changes.
+
+Version [1m361[0m (2024-09-20) <- 360:
+  No changes.
+
+Version [1m362[0m (2024-09-20) <- 361:
+  No changes.
+
+Version [1m363[0m (2024-09-20) <- 362:
+  No changes.
+
+Version [1m364[0m (2024-09-20) <- 363:
+  No changes.
+
+Version [1m365[0m (2024-09-20) <- 364:
+  No changes.
+
+Version [1m366[0m (2024-09-20) <- 365:
+  No changes.
+
+Version [1m367[0m (2024-09-20) <- 366:
+  No changes.
+
+Version [1m368[0m (2024-09-20) <- 367:
+  No changes.
+
+Version [1m369[0m (2024-09-20) <- 368:
+  No changes.
+
+Version [1m370[0m (2024-09-20) <- 369:
+  No changes.
+
+Version [1m371[0m (2024-09-20) <- 370:
+  No changes.
+
+Version [1m372[0m (2024-09-23) <- 371:
+  No changes.
+
+Version [1m373[0m (2024-09-23) <- 372:
+  No changes.
+
+Version [1m374[0m (2024-09-23) <- 373:
+  No changes.
+
+Version [1m375[0m (2024-09-25) <- 374:
+  No changes.
+
+Version [1m376[0m (2024-09-25) <- 375:
+  No changes.
+
+Version [32;1m377[0m (2024-09-26) <- 376:
+  No changes.
+:end:
