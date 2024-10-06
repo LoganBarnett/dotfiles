@@ -71,4 +71,8 @@
     # to that effect yet.
     pkgs.openssh_hpn
   ];
+  # This seems to cause build issues with users-groups.json for reasons that are
+  # unclear.  Disable.
+  # Wipes passwords, so don't use.
+  users.mutableUsers = true;
 }
