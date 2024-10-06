@@ -11,6 +11,7 @@
 ################################################################################
 { ... }: {
   boot.loader.grub.enable = false;
+  boot.loader.systemd-boot.enable = false;
   boot.initrd.supportedFilesystems = [ "zfs" "vfat" "ext4" ];
   boot.supportedFilesystems = [ "zfs" "vfat" "ext4" ];
   # This isn't actually /boot or /-anything really.
