@@ -173,12 +173,14 @@ separation of things, but I could do that via ordinary functions.  ~use-package~
 does lack a sort of dependency-graph setup which has inspired some to leave it.
 
 
-** What's needed to be done [48%]
+** What's needed to be done [44%]
 
 I've already done a lot, but there's more to do.
 
 1. [ ] Fuzzy searching works with Counsel.
-   a. [ ] Presently this doesn't work with out-of-order terms.
+   a. [ ] Presently this doesn't work with out-of-order terms.  See
+      https://github.com/doomemacs/doomemacs/blob/8b9168de6e6a9cabf13d1c92558e2ef71aa37a72/modules/completion/ivy/config.el#L31-L32
+      for what should probably fix it.
 2. [X] I can edit this file in Emacs.
 3. [X] Git gutter works.
 4. [X] Magit works.
@@ -193,7 +195,7 @@ I've already done a lot, but there's more to do.
    e. [X] I can kill projectile buffers.
    f. [X] I can search for projects.
    g. [X] I can refresh the project list.
-7. [X] helpful works with Counsel.
+7. [-] helpful works with Counsel.
    a. [X] I can bring up help for variables.
    b. [X] I can bring up help for functions.
    c. [X] I can bring up help for the current modes.
@@ -201,6 +203,9 @@ I've already done a lot, but there's more to do.
    e. [X] I can bring up help for the current character.
    f. [X] Use ~helpful~.
    g. [X] Use ~counsel~ for help.
+   h. [ ] See if
+          https://github.com/doomemacs/doomemacs/blob/8b9168de6e6a9cabf13d1c92558e2ef71aa37a72/modules/completion/ivy/config.el#L164-L192
+          can be used for a more holistic approach.
 8. [ ] Rust works.
 9. [ ] Nix works.
 10. [ ] Ruby works.
@@ -254,6 +259,8 @@ I've already done a lot, but there's more to do.
     d. [X] Fix file templates.
     e. [ ] Fix indentation again.
     f. [X] Fix Rust's indentation.
+    g. [ ] Remove the ~file~~ backup thing.  Make sure auto save and restore
+           works.  How is Doom doing it?
 26. [X] modeline
     a. [X] Pull in the ~doom-modeline~ package.
     b. [X] Sane minor mode markings.
