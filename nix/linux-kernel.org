@@ -1,0 +1,113 @@
+#+title:     Linux Kernel
+#+author:    Logan Barnett
+#+email:     logustus@gmail.com
+#+date:      <2024-09-26 Thu>
+#+language:  en
+#+file_tags:
+#+tags:
+
+Woe betide any who choose to build their own Linux kernel.  Generally one can
+find a cached build somewhere, but building from source is more trustworthy.
+
+Building the kernel can easily take an hour but can also take hours depending on
+what's being built and the hardware it is built upon.  Troubleshooting build
+issues is incredibly painful as a result.
+
+* Troubleshooting
+
+** BTF sadness
+
+In this case we get an error like this:
+
+#+begin_example
+Skipping BTF generation for <some file> due to unavailability of vmlinux
+#+end_example
+
+This seems to break the build.  I will capture a full log and comb through it to
+ensure it is the sole error.  Otherwise it could be an error of an error.
+
+*** BTF Itself
+**** What is BTF?
+
+BTF is a debugging symbol metadata format.  It stands for BPF Type Format.  BPF
+itself stands for Berkeley Packet Filter.  From light reading it seems like BPF
+needed data types (so we got BTF), and then later these data types were extended
+to include locations in source files which could then be used to build debugging
+information.
+
++ https://docs.kernel.org/bpf/ :: Documentation on BPF.
++ https://docs.kernel.org/bpf/btf.html :: Documentation on BTF.
+
+**** Why is it needed?
+
+I've read this is used for kernel modules to exchange data with the kernel in a
+way that is safe to do and prevents kernel crashes.  The official documentation
+on Linux hasn't suggested that which I have seen so far, though.
+
+**** Can I disable it?
+
+Probably not.
+
+Disabling BTF can be done via some combination of these:
+
+#+begin_example
+CONFIG_BPF=n
+CONFIG_BPF_SYSCALL=n
+CONFIG_BPF_JIT=n
+CONFIG_BPF_JIT_ALWAYS_ON=n
+CONFIG_BPF_JIT_DEFAULT_ON=n
+CONFIG_PAHOLE_HAS_BTF_TAG=n
+CONFIG_DEBUG_INFO_BTF=n
+CONFIG_DEBUG_INFO_BTF_MODULES=n
+#+end_example
+
+I got this from: https://bbs.archlinux.org/viewtopic.php?pid=2186679#p2186679
+
+There is also mention of ~DEBUG_INFO_BTF~ being responsible for some of these
+errors.
+
+**** Why is this an error if it looks like a warning?
+
+BTF generation is skipped - so what's the big deal?  Skipping a step doesn't
+sound like an error inherently.  This makes me wonder if there's another error
+further up the log that I have not discovered yet.
+
+*** vmlinux
+
+I have found mention in multiple places that it should live in this directory:
+
+#+begin_example
+/usr/lib/modules/`uname -r`/build/
+#+end_example
+
+That doesn't really work for a Nix build, but I imagine there are other things
+that can address that.
+
+** Build Cache
+
+This [[https://www.reddit.com/r/NixOS/comments/m2hmum/nixcommunity_cachix_frequently_not_used/][post]] has many people saying that the cache is from the latest NixOS
+unstable.  I generally stay close to unstable, so I find this surprising.
+Still, I should try bumping my ~flake.lock~ and ensure the related inputs I have
+are using ~follows~ correctly.
+
+~nixpkgs~ receives commits every few minutes, I want to say.  So this likely
+doesn't have a huge cache per commit.  How can I check to see what commits have
+caches built against them?
+
+The latest version can be found here: https://status.nixos.org
+
+These tend to be about a day or two old.  Not bad!
+
+** Host shuts down
+
+I'm not entirely sure what's going on here.  On one of my Raspberry Pis, the
+host simply becomes unresponsive and requires a power cycle.  I've also noticed
+that maybe the ~builder~ user becomes removed or corrupted.  This makes me think
+that there's an attempt to build Linux kernel in a sandbox but some process is
+escaping that sandbox and corrupts the local host in some fashion.
+
+I haven't thoroughly tested with the unresponsiveness (such as plugging in a
+monitor and keyboard).  But it's unreachable via SSH and I believe it won't
+respond to pings, but that memory about pings feels weak.
+
+* COMMENT
