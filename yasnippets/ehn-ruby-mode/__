@@ -2,6 +2,7 @@
 # name: enh-ruby-mode
 # key: __
 # condition: t
+# group: yatemplate
 # --
 # `(progn
      (setq-local pkgs (split-string (string-remove-prefix (concat (doom-project-root) "lib/") (file-name-sans-extension buffer-file-name)) "/" t))
