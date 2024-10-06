@@ -316,7 +316,7 @@
           epkgs.ws-butler
           # Navigate chorded keybindings in a self-documenting way.
           epkgs.which-key
-          # Use editorconfig settings, I think. 
+          # Use editorconfig settings, I think.
           epkgs."with-editor"
           # Fix up HTML documents.
           epkgs.web-beautify
