@@ -2,6 +2,15 @@
 {
   description = "Nix configuration of logan";
 
+  nixConfig = {
+    extra-substituters = [
+      "https://nix-community.cachix.org"
+    ];
+    extra-trusted-public-keys = [
+      "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
+    ];
+  };
+
   inputs = {
     agenix = {
       url = "github:ryantm/agenix";
@@ -15,6 +24,11 @@
       # url = "git+file:///Users/logan/dev/agenix-rekey?ref=parameterize-generators";
       # There is a documented gotcha in the readme if this must change.  Review
       # agenix-rekey's README for details.
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    # Attic is a Nix cache server.
+    attic = {
+      url = "github:zhaofengli/attic";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     # Give us a tool for getting the current system.  See

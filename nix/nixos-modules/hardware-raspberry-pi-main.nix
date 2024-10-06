@@ -2,7 +2,7 @@
 # This is the required hardware settings for any Raspberry Pi device.
 # https://wiki.nixos.org/wiki/NixOS_on_ARM/Raspberry_Pi for reference.
 ################################################################################
-{ flake-inputs, version, model }: {
+{ flake-inputs, version }: {
   imports = [
     flake-inputs.nixos-hardware.nixosModules."raspberry-pi-${version}"
     # Infinite recursion happens when this is used this way.

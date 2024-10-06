@@ -15,15 +15,15 @@ in {
     (import ../nixos-modules/raspberry-pi-5.nix {
       inherit flake-inputs;
     })
-    (import ../nixos-modules/dhcp-server.nix {
-      inherit host-id;
-      interface = "eth0";
-    })
-    ../nixos-modules/nix-builder-provide.nix
-    (import ../nixos-modules/server-host.nix {
-      inherit flake-inputs host-id system;
-    })
-    ({ pkgs, ... }: {
+    # (import ../nixos-modules/dhcp-server.nix {
+    #   inherit host-id;
+    #   interface = "eth0";
+    # })
+    # ../nixos-modules/nix-builder-provide.nix
+    # (import ../nixos-modules/server-host.nix {
+    #   inherit flake-inputs host-id system;
+    # })
+    ({ lib, pkgs, ... }: {
       # networking.hostId is needed by the filesystem stuffs.
       # An arbitrary ID needed for zfs so a pool isn't accidentally imported on
       # a wrong machine (I'm not even sure what that means).  See
@@ -35,6 +35,8 @@ in {
       # head -c4 /dev/urandom | od -A none -t x4 | tr -d ' '
       networking.hostId = "f9daf086";
       nixpkgs.hostPlatform = system;
+
+      documentation.enable = lib.mkForce false;
     })
   ];
 }
