@@ -39,7 +39,7 @@ timezone_iana=''
 case "$timezone_input" in
   # Arizona does not observe Daylight Savings Time, and thus has its own time
   # zone (not Mountain Time).
-  AT)
+  AT|AZ)
     timezone_iana='America/Phoenix'
     ;;
   CT)
