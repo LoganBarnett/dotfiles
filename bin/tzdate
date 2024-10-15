@@ -54,6 +54,8 @@ case "$timezone_input" in
   PT)
     timezone_iana='America/Los_Angeles'
     ;;
+  UTC)
+    timzone_iana='Etc/UTC'
 esac
 
 TZ="$timezone_iana" date -Iseconds
