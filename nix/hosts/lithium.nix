@@ -12,22 +12,27 @@
 # before that being reusable modules (or parameterized, reusable modules).
 ################################################################################
 { disko-proper, flake-inputs }: let
-  # Default ComfyUI port.
-  comfyui-port = 8188;
   host-id = "lithium";
   system = "x86_64-linux";
 in {
   inherit system;
   modules = [
-    (import ../nixos-modules/comfyui-server.nix {
-      inherit host-id;
-      port = comfyui-port;
-    })
-    (import ../nixos-modules/https.nix {
-      inherit host-id;
-      listen-port = 443;
-      server-port = comfyui-port;
-      fqdn = "${host-id}.proton";
+    (let
+      # Default ComfyUI port.
+      comfyui-port = 8188;
+    in {
+      imports = [
+        (import ../nixos-modules/comfyui-server.nix {
+          inherit host-id;
+          port = comfyui-port;
+        })
+        (import ../nixos-modules/https.nix {
+          inherit host-id;
+          listen-port = 443;
+          server-port = comfyui-port;
+          fqdn = "${host-id}.proton";
+        })
+      ];
     })
     (import ../nixos-modules/nvidia.nix {
       inherit flake-inputs;

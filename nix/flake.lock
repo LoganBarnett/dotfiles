@@ -645,11 +645,11 @@
     },
     "nixpkgs_2": {
       "locked": {
-        "lastModified": 1728244616,
-        "narHash": "sha256-YphfBSgCE7I9K0RP7CF8ZDJLKe6dt0yKOUw3/DQjduc=",
+        "lastModified": 1729018332,
+        "narHash": "sha256-lZcE+L1vPbELYgwGg3KBxt8SbyHGZ5CiLzz+0NFz45I=",
         "owner": "LoganBarnett",
         "repo": "nixpkgs",
-        "rev": "a1c74b1377230300705f32d28eacffb88bea5176",
+        "rev": "4f460a3c27f138d8fbdbe2928c67fe15da3d79cf",
         "type": "github"
       },
       "original": {

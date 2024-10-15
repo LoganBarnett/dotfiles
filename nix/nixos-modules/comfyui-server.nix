@@ -144,7 +144,7 @@ in {
     # error: attribute 'cudaSupport' missing
     # package = pkgs.comfyui-cpu;
     # package = pkgs.callPackage ../hacks/comfyui/package.nix {};
-    package = pkgs.comfyui-cuda;
+    # package = pkgs.comfyui-cuda;
     models = if key-catch-22 then
       {}
     else

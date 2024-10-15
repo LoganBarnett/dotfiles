@@ -3,6 +3,23 @@
   system = "x86_64-linux";
 in {
   imports = [
+    (let
+      # Default ComfyUI port.
+      comfyui-port = 8188;
+    in {
+      imports = [
+        (import ../nixos-modules/comfyui-server.nix {
+          inherit host-id;
+          port = comfyui-port;
+        })
+        (import ../nixos-modules/https.nix {
+          inherit host-id;
+          listen-port = 443;
+          server-port = comfyui-port;
+          fqdn = "${host-id}.proton";
+        })
+      ];
+    })
     ../nixos-modules/amd-gpu.nix
     ../nixos-modules/discord.nix
     ../nixos-modules/lutris-gaming.nix
@@ -44,6 +61,9 @@ in {
       networking.useDHCP = lib.mkDefault true;
       # networking.interfaces.enp5s0.useDHCP = lib.mkDefault true;
       nixpkgs.hostPlatform = system;
+      # I'm not sure why this must be disabled explicitly.  Not doing this
+      # causes `config.cudaSupport` in the ComfyUI package to fail.
+      # nixpkgs.config.cudaSupport = false;
     })
     ../users/eric-desktop.nix
   ];

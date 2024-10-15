@@ -47,7 +47,45 @@
       pkgs.driversi686Linux.amdvlk
     ];
   };
+  nixpkgs.config.enableRocm = true;
   nixpkgs.config.rocmSupport = true;
+  nixpkgs.overlays = [
+    (final: prev: {
+      # https://github.com/NixOS/nixpkgs/issues/268736 suggests we can just use
+      # `torchWithRocm` to make this work, since `torch` is marked as broken
+      # when evaluated with `rocmSupport = true`.  I haven't been able to get
+      # this to work yet though.
+      pythonPackagesExtensions = [(py-final: py-prev: {
+        transformers = py-prev.transformers.override {
+          torch = py-prev.torchWithRocm;
+        };
+        safetensors = py-prev.safetensors.override {
+          torch = py-prev.torchWithRocm;
+        };
+        accelerate = py-prev.accelerate.override {
+          torch = py-prev.torchWithRocm;
+        };
+        torchaudio = py-prev.torchaudio.override {
+          torch = py-prev.torchWithRocm;
+        };
+      })];
+      # python3Packages = prev.python3Packages.override (py-final: py-prev: {
+      #   torch = py-prev.torchWithRocm;
+      # });
+      # python3 = prev.python3.override {
+      #   packageOverrides = (py-final: py-prev: {
+      #     torch = py-prev.torchWithRocm;
+      #   });
+      # };
+      # python311 = prev.python311.override {
+      #   packageOverrides = (py-final: py-prev: {
+      #     torch = py-prev.torchWithRocm;
+      #   });
+      # };
+    })
+  ];
+  services.comfyui.rocmSupport = true;
+  services.comfyui.package = pkgs.comfyui-rocm;
   services.xserver.enable = true;
   # This says the wiki is wrong:
   # https://discourse.nixos.org/t/amd-rx-7700-xt-not-being-detected-properly/33683/2
