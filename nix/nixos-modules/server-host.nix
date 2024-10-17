@@ -71,7 +71,13 @@
     # Should address potential speed concerns with scp/rsync transfers.
     # I'm not sure why this wouldn't be the default, and haven't found anything
     # to that effect yet.
-    pkgs.openssh_hpn
+    # I believe this is leading to this error I see when transferring 500GB
+    # files:
+    # ssh_dispatch_run_fatal: Connection to 192.168.254.38 port 22: message authentication code incorrect
+    # This is while using a lighter weight MAC (-o MACs=umac-64-etm@openssh.com)
+    # per: https://dentarg.blog/post/186913288147/umac-64-etm
+    # pkgs.openssh_hpn
+    pkgs.openssh
   ];
   # This seems to cause build issues with users-groups.json for reasons that are
   # unclear.  Disable.
