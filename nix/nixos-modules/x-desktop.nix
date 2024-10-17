@@ -27,21 +27,12 @@
       "vpnc"
     ])
   ];
-  # Disable the GNOME3/GDM auto-suspend feature that cannot be disabled in GUI!
-  # Without this, if no user is logged in, the machine will power down after 20
-  # minutes.
-  systemd.targets.sleep.enable = false;
-  systemd.targets.suspend.enable = false;
-  systemd.targets.hibernate.enable = false;
-  systemd.targets.hybrid-sleep.enable = false;
   services.xserver = {
     enable = true;
     desktopManager.gnome.enable = true;
     displayManager.startx.enable = true;
     displayManager.gdm = {
       enable = true;
-      # Don't suspend the machine from idleness.
-      autoSuspend = false;
       wayland = false;
     };
     windowManager = {

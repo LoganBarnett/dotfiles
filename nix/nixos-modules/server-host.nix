@@ -27,6 +27,8 @@
     (import ./tls-leaf-proton.nix {
       inherit host-id;
     })
+    # A server should never sleep/suspend unless we have a really good reason.
+    ./narcolepsy.nix
     ./nix-builder-provide.nix
     ./nix-flakes.nix
     ./nix-store-optimize.nix
