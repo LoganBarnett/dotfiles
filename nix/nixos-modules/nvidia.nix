@@ -23,11 +23,31 @@
   linux-packages = pkgs.linuxPackages_latest;
 in {
   allowUnfreePackagePredicates = [
+    # Zounds!
     (pkg: builtins.elem (lib.getName pkg) [
       "cuda_cccl"
       "cuda_cudart"
+      "cuda_cuobjdump"
+      "cuda_cupti"
+      "cuda_cuxxfilt"
+      "cuda_gdb"
+      "cuda-merged"
       "cuda_nvcc"
+      "cuda_nvdisasm"
+      "cuda_nvprune"
+      "cuda_nvml_dev"
+      "cuda_nvrtc"
+      "cuda_nvtx"
+      "cuda_profiler_api"
+      "cuda_sanitizer_api"
+      "cudnn"
       "libcublas"
+      "libcufft"
+      "libcurand"
+      "libcusolver"
+      "libcusparse"
+      "libnpp"
+      "libnvjitlink"
       "nvidia-settings"
       "nvidia-x11"
     ])
