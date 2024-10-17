@@ -1,0 +1,45 @@
+#+title:     File Management
+#+author:    Logan Barnett
+#+email:     logustus@gmail.com
+#+date:      <2024-10-05 Sat>
+#+language:  en
+#+file_tags:
+#+tags:
+
+
+* stitch
+
+#+begin_src emacs-lisp :results none :exports code :tangle yes
+(defun config/rename-current-buffer-file ()
+  (interactive)
+  ;; This isn't working yet, because I'm not prompting for the new name
+  ;; properly.  I need to see what Doom is doing, and steal it.
+  (rename-file (buffer-file-name) (find-file-noselect))
+  )
+
+(defun config/current-buffer-file-delete-vc ()
+  (interactive)
+  (vc-delete-file (buffer-file-name))
+  )
+
+(defun config/current-buffer-file-delete-no-vc ()
+  (interactive)
+  (delete-file (buffer-file-name))
+  )
+
+(eval-after-load "evil"
+  (progn
+    (map!
+     :leader
+     :prefix ("f" . "files")
+     :desc "File rename" "r" #'config/rename-current-buffer-file
+     ;; TODO: Make the original function intelligently also rename via version
+     ;; control, and provide another function which doesn't look at version
+     ;; control at all for this one.
+     ;; :desc "File rename (no-vc)" "R" #'
+     :desc "File delete" "d" #'config/current-buffer-file-delete-vc
+     :desc "File delete (no VC)" "D" #'config/current-buffer-file-delete-no-vc
+     )
+    )
+  )
+#+end_src
