@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -euo pipefail
+
 # See some quirks to this process here:
 # https://discourse.nixos.org/t/remote-nixos-rebuild-works-with-build-but-not-with-switch/34741
 
@@ -11,6 +13,7 @@
 verb="$1"
 host="$2"
 shift 2
+
 # --fast is the same as --no-build-nix which is "useful you call nixos-rebuild
 # frequently" but it also makes the difference between working and not working.
 # In this case if `--fast` is omitted, we see:
