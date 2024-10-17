@@ -217,6 +217,22 @@
         ];
       };
 
+      nixosConfigurations.test-pi = nixpkgs.lib.nixosSystem {
+        modules = [
+          {
+            imports = [
+              (import ./nixos-modules/raspberry-pi-exact-readme-module.nix {
+                inherit flake-inputs;
+              })
+            ];
+          }
+          # (import ./hosts/gallium.nix {
+          #   disko-proper = disko;
+          #   inherit flake-inputs nixpkgs;
+          # })
+        ];
+      };
+
       packages.aarch64-linux.gallium-ng = nixos-generators.nixosGenerate {
         system = "aarch64-linux";
         format = "sd-aarch64";

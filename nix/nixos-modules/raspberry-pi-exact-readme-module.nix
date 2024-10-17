@@ -37,5 +37,10 @@ in {
   imports = [
     flake-inputs.raspberry-pi-nix.nixosModules.raspberry-pi
     basic-config
+    # Extra - not in the README.
+    {
+      nixpkgs.hostPlatform = "aarch64-linux";
+      system.stateVersion = "24.11";
+    }
   ];
 }
