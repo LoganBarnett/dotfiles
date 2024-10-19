@@ -39,15 +39,17 @@ where logs are stored.
 
 * integrate
 
-  #+begin_src emacs-lisp
-    (require 'use-package)
-    (use-package "messages-buffer-mode"
-      :defer t
-      :init
-      (message "initializing messages-mode")
-      :config
-      ;; The config section doesn't seem to get invoked. DO NOT PUT CODE HERE.
-
-      (config/messages-buffer-evilify-evil-window-prefix)
-      )
-  #+end_src
+#+begin_src emacs-lisp :results none :tangle yes
+(message "Initializing messages-mode...")
+;; This provides a solid way of configuring our leader key in the `*Messages*'
+;; buffer:
+;; https://github.com/noctuid/general.el/issues/493#issuecomment-913168833
+(general-add-hook 'after-init-hook
+                  (lambda (&rest _)
+                    (when-let ((messages-buffer (get-buffer "*Messages*")))
+                      (with-current-buffer messages-buffer
+                        (evil-normalize-keymaps))))
+                  nil
+                  nil
+                  t)
+#+end_src
