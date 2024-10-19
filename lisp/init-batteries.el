@@ -19,6 +19,15 @@
     (when scroll-bar-mode
       (scroll-bar-mode -1)
     )
+    ;; Backups should not be scattered throughout the directories I'm working
+    ;; in.  Put them in a place where they will be cleaned out periodically.
+    ;; The documentation says this must be a regular expression, but an
+    ;; expression such as `.*' does not work.  So it's... not a regular
+    ;; expression?  Or some kind of dialect?  Or perhaps it's Emacs' weird
+    ;; version that has goofy things that need escaping.  Who could say for
+    ;; sure?  I postulate that no one can.
+    ;; If this screws up somehow, you can't use magit's commit, lolz.
+    (setq-default backup-directory-alist '(("." . "~/.Trash")))
     ;; Not sure where to put this, since it needs to apply globally.
     ;; Perhaps a global.org?
     (setq-default fill-column 80)
