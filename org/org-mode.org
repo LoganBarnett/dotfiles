@@ -1336,5 +1336,7 @@ This is the region of offending code, I think:
   <<config/org-auto-id>>
   <<config/org-mode-babel-show-noweb-ref-error>>
   <<config/org-mode-set-priorities>>
+  (require 'gnuplot)
+  (org-babel-do-load-languages 'org-babel-load-languages '((gnuplot . t)))
   )
 #+end_src
