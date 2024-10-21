@@ -5,6 +5,17 @@
 in {
   inherit system;
   modules = [
+    ({ lib, pkgs, ... }: {
+      imports = [
+        ../nixos-modules/unfree-predicates.nix
+      ];
+      allowUnfreePackagePredicates = [
+        (pkg: builtins.elem (lib.getName pkg) [
+          "example-unfree-package"
+          "unrar"
+        ])
+      ];
+    })
     (import ../nixos-modules/secrets.nix {
       inherit flake-inputs;
       inherit host-id;
@@ -16,7 +27,7 @@ in {
     # cross-system compiling.  I don't know that we need to use this at this
     # point, but making it all consistent has value.
     {
-			_module.args.emacs-overlay = flake-inputs.emacs-overlay;
+      _module.args.emacs-overlay = flake-inputs.emacs-overlay;
       _module.args.nixpkgs = flake-inputs.nixpkgs;
       _module.args.flake-inputs = flake-inputs;
       _module.args.git-users = [
@@ -45,7 +56,6 @@ in {
         "a"
       ];
     in {
-      nixpkgs.overlays = [];
       home-manager.users."logan.barnett" = {
         home.file.".gemrc".text = (pkgs.callPackage ../gemrc.nix {
           extra-gem-sources = [
@@ -121,7 +131,7 @@ in {
           -k /Library/Keychains/System.keychain \
           ${../new-e-ah-certs.pem}
       '';
-      # system.stateVersion = "23.11";
+      system.stateVersion = 5;
     })
   ];
 }

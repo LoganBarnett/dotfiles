@@ -14,17 +14,6 @@ let
   # openconnect-sso-src = builtins.fetchTarball "https://github.com/vlaci/openconnect-sso/archive/master.tar.gz";
 in
 {
-  nixpkgs.config = (import ./general-config.nix) {
-      lib = lib;
-      pkgs = pkgs;
-    }
-         # else (import ../../dotfiles-private/work-new-e-ah-config.nix) {
-         #   lib = lib;
-         #   pkgs = pkgs;
-         # }
-       #)
-      ;
-
   # Let Home Manager install and manage itself.
   # programs.home-manager.enable = true;
   programs.direnv.enable = true;
