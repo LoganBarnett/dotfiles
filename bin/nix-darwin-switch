@@ -4,8 +4,12 @@ set -euo pipefail
 
 # Include extra-experimental-features for fresh installs that don't have a
 # /etc/nix/nix.conf that enables the experimental stuff.
-nix run nix-darwin \
-  --extra-experimental-features nix-command \
-  --extra-experimental-features flakes \
-  -- \
-  switch --flake ~/dev/dotfiles/nix "$@"
+# --extra-experimental-features nix-command \
+# --extra-experimental-features flakes \
+# -- \
+# Nix output monitor doesn't seem to work, because the --log-format option
+# doesn't exist here.
+# --log-format internal-json \
+# |& nom
+darwin-rebuild \
+  switch --flake ~/dev/dotfiles/nix "$@" \
