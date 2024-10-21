@@ -75,6 +75,14 @@
     # nixpkgs.url = "github:nixos/nixpkgs/master";
     nixpkgs.url = "github:LoganBarnett/nixpkgs/comfyui-fetch-model-hide-rebase";
     # nixpkgs.url = "github:nixos/nixpkgs?ref=9a9960b98418f8c385f52de3b09a63f9c561427a";
+    # This is the Nix runtime itself, so be real careful about bumping this.
+    # But at least now I can bump it without having to reinstall everything.
+    nix = {
+      url = "github:nixos/nix";
+      # I don't use parts, but maybe I could?
+      # inputs.flake-parts.follows = "parts";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     # nix-doom-emacs.url = "github:nix-community/nix-doom-emacs";
     home-manager = {
       url = "github:nix-community/home-manager";
@@ -86,6 +94,10 @@
       url = "github:nix-community/raspberry-pi-nix";
       # url = "github:tstat/raspberry-pi-nix?ref=8fc9cbd3e4a53d365596c9cc4fc3cc07cd447af4";
       # url = "github:LoganBarnett/raspberry-pi-nix?ref=revert-kernel-to-6-1";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    programsdb = {
+      url = "github:wamserma/flake-programs-sqlite";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };

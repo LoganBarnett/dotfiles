@@ -30,7 +30,9 @@
     # A server should never sleep/suspend unless we have a really good reason.
     ./narcolepsy.nix
     ./nix-builder-provide.nix
-    ./nix-flakes.nix
+    (import ./nix-flake-environment.nix {
+      inherit (flake-inputs) nix nixpkgs programsdb;
+    })
     ./nix-store-optimize.nix
     # Haven't gotten this working yet.
     # ./server-host-pub-key.nix

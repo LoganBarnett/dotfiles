@@ -38,6 +38,11 @@
 
 { config, emacs-overlay, flake-inputs, nixpkgs, lib, pkgs, ... }:
 {
+  imports = [
+    (import ./nixos-modules/nix-flake-environment.nix {
+      inherit (flake-inputs) nix nixpkgs programsdb;
+    })
+  ];
   # Global packages that can't be bound to a specific user, such as shells.
   environment = {
     loginShell = pkgs.zsh;
@@ -85,9 +90,6 @@
   # nix-index) has this:
   # nix-locate --minimal --no-group --type x --type s --top-level --whole-name --at-root "/bin/$cmd"
   nix = {
-    # Lack of pluralization is intentional (package vs packages) - it refers to
-    # the package "nix", which is the base of Nix.
-    package = pkgs.nix;
     # See https://gist.github.com/jmatsushita/5c50ef14b4b96cb24ae5268dab613050
     # for an example of how to make this work across platforms.
     extraOptions = ''
@@ -107,7 +109,6 @@
       # intelligently.  Specifying this will crush what nix-darwin configures
       # and will harm bootstrapping efforts with the VM.
       # builders = [ "ssh-ng://linux-builder aarch64-linux,x86_64-linux" ];
-      experimental-features = [ "nix-command" "flakes" ];
       # extra-platforms = [ "x86_64-linux" "i686-linux" ];
       # Trust my user so we can open SSH on port 22 for using the Nix builder.
       # It cannot be overridden as of 2024-02-18.  This is demanded in
@@ -119,11 +120,7 @@
       trusted-users = [ "@admin" ];
     };
   };
-  nixpkgs.overlays = import ./overlays/default.nix ++ [
-    # Disabled until I can figure out what's going on with some Emacs packages
-    # conflicting with Doom.
-	  # emacs-overlay.overlays.default
-	];
+  nixpkgs.overlays = import ./overlays/default.nix;
   # Some packages are not "free". We need to specifically bless those.
   # I had trouble using a real function because the depended functions are
   # hard/impossible to reach from this place. It cannot exist later
