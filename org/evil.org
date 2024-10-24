@@ -350,6 +350,16 @@ wasn't included in the [[stitch]] section.
 ;; (evil-select-search-module 'evil-search-module 'isearch)
 #+end_src
 
+By default, ~evil-mode~ does not expand the search to use a ~WORD~ or some
+non-~word~ boundary.  It's far more useful to be expanded though.  ~evil-mode~
+calls this a ~symbol~.  This is used for ~*~ (star) and ~#~ searches.
+
+#+name: config/evil-mode-symbol-star-expansion
+#+begin_src emacs-lisp :results none :exports code :tangle no
+(setq-default evil-symbol-word-search t)
+#+end_src
+
+
 * search and replace
 ** global search and replace
 
@@ -383,6 +393,7 @@ library is already loaded.
   (evil-exchange-install)
   <<config/evil-undo>>
   (message "required evil-mode")
+  <<config/evil-mode-symbol-star-expansion>>
   :config
   <<config/evil-backslash-fix>>
   <<config/evil-esc-fix>>
