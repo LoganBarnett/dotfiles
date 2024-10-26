@@ -21,7 +21,8 @@ in {
     (import ../nixos-modules/server-host.nix {
       inherit flake-inputs host-id system;
     })
-    (import ../nixos-modules/ldap-server.nix { inherit host-id; })
+    # (import ../nixos-modules/ldap-server.nix { inherit host-id; })
+    (import ../nixos-modules/freeipa-server.nix { inherit host-id; })
     ../nixos-modules/raspberry-pi-disk.nix
     # Pi stuff.
     ({ pkgs, ... }: {
