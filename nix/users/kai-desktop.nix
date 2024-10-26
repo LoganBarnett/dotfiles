@@ -3,6 +3,7 @@
 in {
   allowUnfreePackagePredicates = [
     (pkg: builtins.elem (lib.getName pkg) [
+      "blender"
       "minecraft"
       "minecraft-launcher"
     ])
@@ -33,6 +34,7 @@ in {
     # alternative is prismlauncher but this one sounded more featureful from a
     # quick search.
     pkgs.atlauncher
+    pkgs.blender
     pkgs.minetest
     pkgs.firefox
   ];
