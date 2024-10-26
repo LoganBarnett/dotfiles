@@ -18,6 +18,7 @@
       "steamcmd-20180104"
       "steam-original"
       "steam-run"
+      "steam-unwrapped"
     ])
   ];
   # Allows things like the Steam controller and HTC Vive.

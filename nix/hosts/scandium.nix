@@ -49,7 +49,16 @@ in
     ../users/logan-personal.nix
     ../headed-host.nix
     ../darwin-linux-builder-module.nix
-    ({ pkgs, ...}: {
+    ({ lib, pkgs, ...}: {
+      imports = [
+        ../nixos-modules/unfree-predicates.nix
+      ];
+      allowUnfreePackagePredicates = [
+        (pkg: builtins.elem (lib.getName pkg) [
+          "ngrok"
+          "unrar"
+        ])
+      ];
       environment.systemPackages = (import ../personal-packages.nix {
         inherit pkgs;
       }) ++ [

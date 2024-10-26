@@ -27,7 +27,10 @@
       pkg: (builtins.any (p: p pkg) (
         [
           # Test out the unfree hello world package too.
-          (pkg: builtins.elem (lib.getName pkg) [ "hello-unfree" ] )
+          (pkg: builtins.elem (lib.getName pkg) [
+            "example-unfree-package"
+            "hello-unfree"
+          ])
         ] ++ config.allowUnfreePackagePredicates
       ))
     );
