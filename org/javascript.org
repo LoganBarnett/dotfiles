@@ -24,12 +24,15 @@ ultimate motivator for me.
 
 * emacs settings
 ** indentation
+
 There's a lot of JavaScript modes in Emacs. Wowza. Each will need its
 indentation fixed. Who uses 4 nowadays?
+
 *** spacing
+
 #+name: config/javascript-indentation-spacing
-#+begin_src emacs-lisp :results none :tangle yes
-(setq js-indent-level 2)
+#+begin_src emacs-lisp :results none :tangle no
+(setq-default js-indent-level 2)
 #+end_src
 
 *** alignment
@@ -410,7 +413,7 @@ minor mode in =safe-local-variable-values=.
 ** big config
 Finally, tie it all together on demand.
 
-#+begin_src emacs-lisp :noweb yes :results none
+#+begin_src emacs-lisp :noweb yes :results none :tangle yes
   (defun my/js2-disable-global-variable-highlight ()
     "Disable js2 global variable highlight.  Wait.  Am I using this?"
     (font-lock-remove-keywords 'js2-mode 'js2-external-variable)
