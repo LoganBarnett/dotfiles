@@ -124,12 +124,11 @@ the home page value but that's not as useful as linking to the file itself.
 
 (use-package "browse-at-remote"
   :init
-  (on-doom
-   ;; Unbind browse-at-remote* (not sure what the tail of this is). This allows
-   ;; us to set more specific keybindings.
-   ;;
-   (map! :after magit :leader :prefix "g" "y" nil)
-   (map!
+  ;; Unbind browse-at-remote* (not sure what the tail of this is). This allows
+  ;; us to set more specific keybindings.
+  ;;
+  (map! :after magit :leader :prefix "g" "y" nil)
+  (map!
     :after magit
     :leader
     :prefix ("g y" . "git url")
@@ -139,7 +138,6 @@ the home page value but that's not as useful as linking to the file itself.
     "h" #'+vc/browse-at-remote-homepage
     "r" #'config/git-rev-kill
     "y" #'browse-at-remote-kill
-    )
    )
   :config
   (config/init-org-file-private "git-private.org")
