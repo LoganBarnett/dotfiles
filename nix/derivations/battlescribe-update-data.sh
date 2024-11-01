@@ -9,8 +9,8 @@ lastversion download https://github.com/BSData/wh40k-10e
 tar --gunzip -x --file wh40k-*.tar.gz
 # Remove so the poor glob we have doesn't pick it up on the move.
 rm *.tar.gz
-rm -rf "$data_path.old"
 data_path="$HOME/Dropbox/Apps/BattleScribe/data/Warhammer 40,000 10th Edition"
+rm -rf "$data_path.old"
 mv "$data_path" "$data_path.old"
 mkdir "$data_path"
 mv wh40k-*/* "$data_path"
