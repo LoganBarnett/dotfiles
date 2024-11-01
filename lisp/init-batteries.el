@@ -121,6 +121,7 @@
     (init-org-file "rust.org")
     (init-org-file "shell.org")
     (init-org-file "yaml.org")
+    (init-org-file "xml-mode.org")
     ;; End languages.
     (init-org-file "hipchat.org")
     (init-org-file "keychain.org")
