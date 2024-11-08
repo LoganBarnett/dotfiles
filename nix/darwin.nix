@@ -71,6 +71,14 @@
   };
   fonts = {
     packages = [
+      # A highly recommended font for 3D printing.  See
+      # https://www.printables.com/model/71231-font-swatches-tested-ranked for
+      # testing details.
+      # osifont sounds great too, but isn't in nixpkgs yet.  I should see how
+      # this is done.  Osifont can be fond here:
+      # https://github.com/hikikomori82/osifont
+      pkgs.overpass
+      # A monospace font I really like for source code.
       pkgs.source-code-pro
     ];
   };
