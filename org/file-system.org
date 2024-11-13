@@ -32,7 +32,8 @@
     (map!
      :leader
      :prefix ("f" . "files")
-     :desc "File rename" "r" #'config/rename-current-buffer-file
+     ;; Disabled until we can get the dialog stuff from Doom emacs pulled.
+     ;; :desc "File rename" "r" #'config/rename-current-buffer-file
      ;; TODO: Make the original function intelligently also rename via version
      ;; control, and provide another function which doesn't look at version
      ;; control at all for this one.
@@ -40,6 +41,9 @@
      :desc "File delete" "d" #'config/current-buffer-file-delete-vc
      :desc "File delete (no VC)" "D" #'config/current-buffer-file-delete-no-vc
      )
+    ;; This keeps eval-after-load from calling the last thing evaluated (which
+    ;; would be the function passed to `map!').
+    nil
     )
   )
 #+end_src

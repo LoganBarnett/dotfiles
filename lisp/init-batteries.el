@@ -1,5 +1,6 @@
 (defun batteries-init ()
   "Do initializtion."
+  (toggle-debug-on-error)
   (message "[INIT] Starting init.")
   ;; Because Nix now copies this file where it needs to be, we need to add this
   ;; directory to the load path so my scattered .el files can be found.
@@ -158,6 +159,7 @@
     (keychain-refresh-environment)
     (load-library "initial-buffer")
     (setq initial-buffer-choice #'config/initial-buffer)
+    (toggle-debug-on-error)
     (message "[INIT] Done!")
   )
 
