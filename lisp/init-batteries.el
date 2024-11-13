@@ -20,6 +20,7 @@
     (when scroll-bar-mode
       (scroll-bar-mode -1)
     )
+    (load-library "ui")
     ;; Backups should not be scattered throughout the directories I'm working
     ;; in.  Put them in a place where they will be cleaned out periodically.
     ;; The documentation says this must be a regular expression, but an
