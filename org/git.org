@@ -96,54 +96,6 @@ hopefully head off having to explain this over and over.
      )
   #+end_src
 
-** linking to web mirrors
-I'm not sure if "web mirror" is the proper term, but it kind of makes sense: A
-web version of the git repository. Generally we see this when browsing source in
-GitHub, BitBucket, GitLab, etc.
-
-=magit= has =SPC g Y= bound to =+vc/browse-at-remote-kill-homepage=, which gets
-the home page value but that's not as useful as linking to the file itself.
-
-#+begin_src emacs-lisp :results none
-;; This should live elsewhere.  The SPC g prefix is for general git stuff.  I
-;; could keep the convention that the capital letter is the "remote web"
-;; version, or I could put it under something like SPC G.
-(defun config/git-branch-kill ()
-  (interactive)
-  ;; This answer (https://emacs.stackexchange.com/a/72568) suggests using
-  ;; `(vc-git--symbolic-ref (buffer-file-name))' but it is a private function.
-  ;; vc-git-branches is slower because it gets all branches, but I don't think
-  ;; that will prove to be an issue.
-  (kill-new (car (vc-git-branches)))
-  )
-
-(defun config/git-rev-kill ()
-  (interactive)
-  (kill-new (vc-git-working-revision (buffer-file-name)))
-  )
-
-(use-package "browse-at-remote"
-  :init
-  ;; Unbind browse-at-remote* (not sure what the tail of this is). This allows
-  ;; us to set more specific keybindings.
-  ;;
-  (map! :after magit :leader :prefix "g" "y" nil)
-  (map!
-    :after magit
-    :leader
-    :prefix ("g y" . "git url")
-    :n
-    "b" #'config/git-branch-kill
-    "F" #'+vc/browse-at-remote-kill
-    "h" #'+vc/browse-at-remote-homepage
-    "r" #'config/git-rev-kill
-    "y" #'browse-at-remote-kill
-   )
-  :config
-  (config/init-org-file-private "git-private.org")
-  )
-#+end_src
-
 ** magit log display
 
 Typically Magit has this bound to =$= but this is an =evil-mode= binding.
@@ -213,7 +165,7 @@ This should point to =emacsclient=:
 
 This should fix it:
 
-#+name: config/editor-env-emacscliet-ensure
+#+name: config/editor-env-emacsclient-ensure
 #+begin_src emacs-lisp :results value :tangle no
 (setf (getenv "EDITOR") "emacsclient")
 #+end_src
@@ -224,11 +176,62 @@ This should fix it:
 Without this, it might be trying to open this as =vim=. I do want =vim= to be my
 =EDITOR= in most cases.
 
+* linking to web mirrors
+I'm not sure if "web mirror" is the proper term, but it kind of makes sense: A
+web version of the git repository. Generally we see this when browsing source in
+GitHub, BitBucket, GitLab, etc.
+
+=magit= has =SPC g Y= bound to =+vc/browse-at-remote-kill-homepage=, which gets
+the home page value but that's not as useful as linking to the file itself.
+
+#+name: config/git-mirror-commands
+#+begin_src emacs-lisp :results none :tangle no
+;; This should live elsewhere.  The SPC g prefix is for general git stuff.  I
+;; could keep the convention that the capital letter is the "remote web"
+;; version, or I could put it under something like SPC G.
+(defun config/git-branch-kill ()
+  (interactive)
+  ;; This answer (https://emacs.stackexchange.com/a/72568) suggests using
+  ;; `(vc-git--symbolic-ref (buffer-file-name))' but it is a private function.
+  ;; vc-git-branches is slower because it gets all branches, but I don't think
+  ;; that will prove to be an issue.
+  (kill-new (car (vc-git-branches)))
+  )
+
+(defun config/git-rev-kill ()
+  (interactive)
+  (kill-new (vc-git-working-revision (buffer-file-name)))
+  )
+
+(use-package "browse-at-remote"
+  :demand t
+  :init
+  ;; Unbind browse-at-remote* (not sure what the tail of this is). This allows
+  ;; us to set more specific keybindings.
+  ;;
+  (map! :leader :prefix "g" "y" nil)
+  (map!
+   ;; :after magit
+   :leader
+   :prefix ("g y" . "git url")
+   :nv
+   :desc "kill git branch" "b" #'config/git-branch-kill
+   :desc "kill ...f?" "F" #'+vc/browse-at-remote-kill
+   :desc "kill git mirror homepage" "h" #'+vc/browse-at-remote-homepage
+   :desc "kill git rev" "r" #'config/git-rev-kill
+   :desc "kill git mirror lines" "y" #'browse-at-remote-kill
+   )
+  :config
+  (config/init-org-file-private "git-private.org")
+  )
+#+end_src
+
 * all together
 
 #+begin_src emacs-lisp :results none :noweb yes :tangle yes
 (require 'use-package)
 <<config/magit-read-gpgsign-from-gitconfig>>
+<<config/git-mirror-commands>>
 
 (use-package "git-gutter-fringe"
   :demand t
@@ -242,7 +245,7 @@ Without this, it might be trying to open this as =vim=. I do want =vim= to be my
   :init
   (config/git-blame-output)
   <<config/gitignore-file-template-disable>>
-  <<config/editor-env-emacscliet-ensure>>
+  <<config/editor-env-emacsclient-ensure>>
   (map!
    :leader
    :prefix ("g" . "git")
