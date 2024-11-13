@@ -20,9 +20,9 @@ in {
     #   interface = "eth0";
     # })
     # ../nixos-modules/nix-builder-provide.nix
-    # (import ../nixos-modules/server-host.nix {
-    #   inherit flake-inputs host-id system;
-    # })
+    (import ../nixos-modules/server-host.nix {
+      inherit flake-inputs host-id system;
+    })
     ({ lib, pkgs, ... }: {
       # networking.hostId is needed by the filesystem stuffs.
       # An arbitrary ID needed for zfs so a pool isn't accidentally imported on
