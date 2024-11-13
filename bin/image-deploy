@@ -70,7 +70,8 @@ fi
 
 if [ -z ${image_name+x} ]; then
   if [[ $noop == false ]]; then
-    image_name="$(./image-create.sh)"
+    image_name="$(image-create)"
+    echo "Created image '$image_name'."
   fi
 fi
 
