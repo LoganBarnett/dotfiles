@@ -13,6 +13,19 @@ trying to hack it until it works, this file will serve as my configuration. At
 some point I could put together a pull request, but I need it working for me
 first.
 
+** templates
+
+~erb~ is one of the templating languages for Ruby (there are others too).  If we
+detect that, we should at least treat it as ~text-mode~ but ideally we could
+also treat it as a mixed mode.
+
+#+name: config/ruby-templates
+#+begin_src emacs-lisp :results none :exports code :tangle no
+(require 'eruby-mode)
+(eruby-mode-auto-mode)
+#+end_src
+
+
 ** indentation
 
 See [[file:./prog-mode.org::*indent align fix]] for a description of alignment in
@@ -268,6 +281,11 @@ this was the most apparent I could find.
   <<config/ruby-rubocopy-disable>>
   <<config/ruby-multi-line-strategy-hook>>
   <<config/ruby-mode-fix-hanging-indentation>>
+  ;; Leave this disabled for now.  It grays out everything that's an ERB
+  ;; template expression!  See:
+  ;; https://github.com/petere/emacs-eruby-mode/issues/2
+  ;; One could override `eruby-standard-face' I think.
+  ;; <<config/ruby-templates>>
   :config
  )
 #+end_src

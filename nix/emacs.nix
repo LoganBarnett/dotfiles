@@ -27,6 +27,27 @@
           epkgs.doom-modeline
           # Doom has some good themes.  Let's use one!
           epkgs.doom-themes
+          # I want the branch that works with "require" per:
+          # https://github.com/restaurant-ide/emacs-eruby-mode/tree/patch-1
+          # This package should let us edit ERB templates with good color coding
+          # and such.
+          (pkgs.emacs.pkgs.trivialBuild {
+            pname = "eruby-mode";
+            ename = "eruby-mode";
+            version = "1.2015111-2016-08-12-unstable";
+            src = pkgs.fetchFromGitHub {
+              owner = "restaurant-ide";
+              repo = "emacs-eruby-mode";
+              rev = "902465d4490415ff2241204e7e3facaf7f341073";
+              hash = "sha256-SNxnLdAhY67hM3rJYEFU/rXgbpRKrtEsbAwg5cbF+T0=";
+            };
+            packageRequires = [];
+            meta = {
+              homepage = "https://github.com/petere/emacs-eruby-mode";
+              # "free" is the unspecified license.
+              license = lib.licenses.free;
+            };
+          })
           # Add some cool evil-mode bindings to org-mode.  See
           # https://github.com/Somelauw/evil-org-mode for some of the bindings
           # and changes it brings about.  Of note:
