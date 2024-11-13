@@ -173,7 +173,7 @@ separation of things, but I could do that via ordinary functions.  ~use-package~
 does lack a sort of dependency-graph setup which has inspired some to leave it.
 
 
-** What's needed to be done [44%]
+** What's needed to be done [42%]
 
 I've already done a lot, but there's more to do.
 
@@ -268,3 +268,5 @@ I've already done a lot, but there's more to do.
 27. [X] General ~org-mode~.
     a. [X] ~C-RET~ creates a new ~org-table~ row.
     b. [X] ~C-r~ works for undo again.
+28. [ ] magit
+    a. [ ] Fix some of the dialog handling.
