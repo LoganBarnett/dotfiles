@@ -15,6 +15,7 @@
     agenix = {
       url = "github:ryantm/agenix";
       inputs.darwin.follows = "nix-darwin";
+      inputs.home-manager.follows = "home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     # https://github.com/oddlama/agenix-rekey
@@ -49,6 +50,7 @@
       # otherwise will not be present.  It is not understood why, even though
       # documentation typically recommends this step.
       inputs.nixpkgs.follows = "nixpkgs";
+      inputs.home-manager.follows = "home-manager";
     };
     nixos-generators = {
       # url = "github:LoganBarnett/nixos-generators?ref=add-sd-image-raspberrypi";
@@ -87,6 +89,7 @@
     home-manager = {
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
+      inputs.agenix.follows = "agenix";
     };
     # nixpkgs-nickel.url = "github:nixos/nixpkgs?ref=9a9960b98418f8c385f52de3b09a63f9c561427a";
     raspberry-pi-nix = {
@@ -99,6 +102,60 @@
     programsdb = {
       url = "github:wamserma/flake-programs-sqlite";
       inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    # I need to keep a separate accounting of various flake inputs so I can be
+    # more careful about triggering rebuilds on machines owned by $WORK, as I
+    # suspect it triggers some foul security response.  To accomplish this, all
+    # I need to do is forcefully pin the inputs for that specific host.
+    ache-em-ache-agenix = {
+      url = "github:ryantm/agenix?rev=f6291c5935fdc4e0bef208cfc0dcab7e3f7a1c41";
+      inputs.darwin.follows = "ache-em-ache-nix-darwin";
+      inputs.home-manager.follows = "ache-em-ache-home-manager";
+      inputs.nixpkgs.follows = "ache-em-ache-nixpkgs";
+    };
+    # https://github.com/oddlama/agenix-rekey
+    # Allows re-keying and bootstrapping of secrets used by agenix.
+    ache-em-ache-agenix-rekey = {
+      url = "github:LoganBarnett/agenix-rekey?rev=0ffdb77871eaf2946b14af032ab3a33aaef6ba5a";
+      # url = "git+file:///Users/logan/dev/agenix-rekey?ref=parameterize-generators";
+      # There is a documented gotcha in the readme if this must change.  Review
+      # agenix-rekey's README for details.
+      inputs.nixpkgs.follows = "ache-em-ache-nixpkgs";
+    };
+    # Give us a tool for getting the current system.  See
+    # https://discourse.nixos.org/t/getting-the-current-system-from-the-command-line/19781/10
+    # for discussion on the matter.
+    ache-em-ache-current-system = {
+      url = "github:nix-systems/current-system?rev=9bdeb2040b68c287d7de1fc2ffda4568f811b677";
+      inputs.nixpkgs.follows = "ache-em-ache-nixpkgs";
+    };
+    ache-em-ache-nix-darwin = {
+      url = "github:LnL7/nix-darwin?rev=f61d5f2051a387a15817007220e9fb3bbead57b3";
+      # rev = "72dd60bfc98c128149d84213b17d1b8a68863055";
+      # Leaving this present breaks things and nix-darwin will not load or
+      # otherwise will not be present.  It is not understood why, even though
+      # documentation typically recommends this step.
+      inputs.nixpkgs.follows = "ache-em-ache-nixpkgs";
+      inputs.home-manager.follows = "ache-em-ache-home-manager";
+    };
+    ache-em-ache-emacs-overlay = {
+      url = "github:nix-community/emacs-overlay?rev=302264062ca73851e9306b70daeed6d9f1ae3ff9";
+      inputs.nixpkgs.follows = "ache-em-ache-nixpkgs";
+    };
+    # This is the Nix runtime itself, so be real careful about bumping this.
+    # But at least now I can bump it without having to reinstall everything.
+    ache-em-ache-nixpkgs.url = "github:LoganBarnett/nixpkgs?rev=e8d47df8762491bc4e9710d7ef2e53f3a6500622";
+    ache-em-ache-nix-ache-em-ache = {
+      url = "github:nixos/nix";
+      # I don't use parts, but maybe I could?
+      # inputs.flake-parts.follows = "parts";
+      inputs.nixpkgs.follows = "ache-em-ache-nixpkgs";
+    };
+    ache-em-ache-home-manager = {
+      url = "github:nix-community/home-manager?rev=90010df15878762ff359e4fe391355a9dcad0bcf";
+      inputs.nixpkgs.follows = "ache-em-ache-nixpkgs";
+      inputs.agenix.follows = "ache-em-ache-agenix";
     };
   };
 
@@ -115,9 +172,26 @@
     nixos-generators,
     home-manager,
     raspberry-pi-nix,
+    # Stuff for ache-em-ache.
+    ache-em-ache-agenix,
+    ache-em-ache-agenix-rekey,
+    ache-em-ache-current-system,
+    ache-em-ache-emacs-overlay,
+    ache-em-ache-nix-darwin,
+    ache-em-ache-nixpkgs,
+    ache-em-ache-home-manager,
     self,
     ...
   }@flake-inputs: let
+    ache-em-ache-flake-inputs = {
+      agenix = ache-em-ache-agenix;
+      agenix-rekey = ache-em-ache-agenix-rekey;
+      current-system = ache-em-ache-current-system;
+      emacs-overlay = ache-em-ache-emacs-overlay;
+      nix-darwin = ache-em-ache-nix-darwin;
+      nixpkgs = ache-em-ache-nixpkgs;
+      home-manager = ache-em-ache-home-manager;
+    };
     btf-disable = {
       # This is a deviation from the exact README version, following directions
       # here to customize the kernel: https://nixos.wiki/wiki/Linux_kernel This
@@ -302,7 +376,7 @@
 
       darwinConfigurations."M-CL64PK702X" =
         nix-darwin.lib.darwinSystem (import ./hosts/M-CL64PK702X.nix {
-          inherit flake-inputs;
+          flake-inputs = ache-em-ache-flake-inputs;
         });
 
       darwinConfigurations."scandium" =
