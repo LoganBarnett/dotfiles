@@ -1315,6 +1315,9 @@ This is the region of offending code, I think:
     :desc "inactive datestamp" "T" #'org-timestamp-inactive
     :desc "Inactive timestamp" "C" #'config/org-mode-insert-inactive-time-stamp-with-time
     )
+   (:prefix ("s" . "subtree/heading")
+      :desc "archive" "a" #'org-archive-subtree
+     )
    )
   ;; A series of helpers from Doom that we already use.
   ;; Can't use require because it doesn't use `provide'.
