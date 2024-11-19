@@ -242,12 +242,26 @@ the home page value but that's not as useful as linking to the file itself.
   )
 #+end_src
 
+* tramp optimization
+
+This is yanked from here:
+https://github.com/doomemacs/doomemacs/blob/master/modules/emacs/vc/config.el
+
+#+name: config/git-tramp-vc-backend-optimize
+#+begin_src emacs-lisp :results none :exports code
+;; Remove RCS, CVS, SCCS, SRC, and Bzr, because it's a lot less work for vc to
+;; check them all (especially in TRAMP buffers), and who uses any of these in
+;; 2021, amirite?
+(setq-default vc-handled-backends '(SVN Git Hg))
+#+end_src
+
 * all together
 
 #+begin_src emacs-lisp :results none :noweb yes :tangle yes
 (require 'use-package)
 <<config/magit-read-gpgsign-from-gitconfig>>
 <<config/git-mirror-commands>>
+<<config/git-tramp-vc-backend-optimize>>
 
 (use-package "git-gutter-fringe"
   :demand t
