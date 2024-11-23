@@ -1,5 +1,10 @@
 # -*- mode: snippet; require-file-newline: nil -*-
 # name: directory of current script
 # key: dir
+# The best answer I could find, but there are others in the same post:
+# https://stackoverflow.com/a/1482133
+# This does assume Bash.
 # --
-dir="$( cd -- "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
+# Assumes Bash.  See https://stackoverflow.com/a/1482133 for possible
+# alternatives, and this solution itself.
+dir="$(dirname -- "$( readlink -f -- "$0"; )")"
