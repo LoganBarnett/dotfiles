@@ -1,3 +1,9 @@
+# Use
+# https://github.com/Mic92/dotfiles/blob/main/machines/modules/openldap/default.nix
+# as a reference.  Keep in mind this only sets up "schema", and doesn't touch
+# declarativeContents.  We'll have to declare that ourselves.  See also
+# https://www.reddit.com/r/NixOS/comments/fd04jc/comment/fje9d8n
+# for getting things working using LDAP authentication.
 { host-id }: { config, pkgs, lib, ... }: {
   age.secrets.ldap-root-pass = {
     generator.script = "passphrase";
@@ -23,7 +29,7 @@
     declarativeContents = {
       # TODO: The example in the option for declarativeContents is broken.  The
       # "dn=" prefix seems to be throwing it off.  I have not seen other
-      # configurations in the wild that use it.  I should open a ticket about
+      # configurations in the wild that uses it.  I should open a ticket about
       # it.
       "dc=proton,dc=org" = ''
         dn: dc=proton,dc=org
@@ -60,14 +66,19 @@
         olcTLSProtocolMin = "3.1";
       };
       children = {
+        # TODO: Document what each of these schemas do.
         "cn=schema".includes = [
           "${pkgs.openldap}/etc/schema/core.ldif"
           "${pkgs.openldap}/etc/schema/cosine.ldif"
           "${pkgs.openldap}/etc/schema/inetorgperson.ldif"
+          "${pkgs.openldap}/etc/schema/nis.ldif"
         ];
         "olcDatabase={1}mdb" = {
           attrs = {
-            objectClass = [ "olcDatabaseConfig" "olcMdbConfig" ];
+            objectClass = [
+              "olcDatabaseConfig"
+              "olcMdbConfig"
+            ];
             olcDatabase = "{1}mdb";
             olcDbDirectory = "/var/lib/openldap/data";
             olcSuffix = "dc=proton,dc=org";
@@ -84,6 +95,22 @@
               /* allow read on anything else */
               ''{1}to *
                 by * read''
+              # Examples from Mic92.  I don't know what these do yet.
+          #     ''
+          #   {0}to attrs=userPassword
+          #                  by self write  by anonymous auth
+          #                  by dn.base="cn=dovecot,dc=mail,dc=eve" read
+          #                  by dn.base="cn=gitlab,ou=system,ou=users,dc=eve" read
+          #                  by dn.base="cn=ldapsync,ou=system,ou=users,dc=eve"
+          #                  read by * none''
+          # ''{1}to attrs=loginShell  by self write  by * read''
+          # ''
+          #   {2}to dn.subtree="ou=system,ou=users,dc=eve"
+          #                  by dn.base="cn=dovecot,dc=mail,dc=eve" read
+          #                  by dn.subtree="ou=system,ou=users,dc=eve" read
+          #                  by * none''
+          # ''{3}to dn.subtree="ou=jabber,ou=users,dc=eve"  by dn.base="cn=prosody,ou=system,ou=users,dc=eve" write  by * read''
+          # ''{4}to * by * read''
             ];
           };
 
