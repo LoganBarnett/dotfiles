@@ -324,18 +324,28 @@
         ];
       };
 
-      nixosConfigurations.test-pi = nixpkgs.lib.nixosSystem {
+      nixosConfigurations.test-pi = nixpkgs.lib.nixosSystem (let
+        host-id = "test-pi";
+      in {
         modules = [
           {
             imports = [
               (import ./nixos-modules/raspberry-pi-exact-readme-module.nix {
                 inherit flake-inputs;
               })
+              # To keep agenix-rekey happy.  It requires all nodes include
+              # agenix and agenix-rekey.
+              flake-inputs.agenix.nixosModules.default
+              flake-inputs.agenix-rekey.nixosModules.default
+              {
+                age.rekey.storageMode = "local";
+                age.rekey.localStorageDir = ./secrets/rekeyed/${host-id};
+              }
             ];
           }
           btf-disable
         ];
-      };
+      });
 
       packages.aarch64-linux.gallium-ng = nixos-generators.nixosGenerate {
         system = "aarch64-linux";
