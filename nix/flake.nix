@@ -50,7 +50,6 @@
       # otherwise will not be present.  It is not understood why, even though
       # documentation typically recommends this step.
       inputs.nixpkgs.follows = "nixpkgs";
-      inputs.home-manager.follows = "home-manager";
     };
     nixos-generators = {
       # url = "github:LoganBarnett/nixos-generators?ref=add-sd-image-raspberrypi";
@@ -89,7 +88,6 @@
     home-manager = {
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
-      inputs.agenix.follows = "agenix";
     };
     # nixpkgs-nickel.url = "github:nixos/nixpkgs?ref=9a9960b98418f8c385f52de3b09a63f9c561427a";
     raspberry-pi-nix = {
@@ -137,7 +135,6 @@
       # otherwise will not be present.  It is not understood why, even though
       # documentation typically recommends this step.
       inputs.nixpkgs.follows = "ache-em-ache-nixpkgs";
-      inputs.home-manager.follows = "ache-em-ache-home-manager";
     };
     ache-em-ache-emacs-overlay = {
       url = "github:nix-community/emacs-overlay?rev=302264062ca73851e9306b70daeed6d9f1ae3ff9";
@@ -155,7 +152,6 @@
     ache-em-ache-home-manager = {
       url = "github:nix-community/home-manager?rev=90010df15878762ff359e4fe391355a9dcad0bcf";
       inputs.nixpkgs.follows = "ache-em-ache-nixpkgs";
-      inputs.agenix.follows = "ache-em-ache-agenix";
     };
   };
 
