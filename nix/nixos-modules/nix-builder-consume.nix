@@ -18,13 +18,21 @@ in {
         "aarch64-linux"
         "armv6l-linux"
         "armv7l-linux"
+        "arm-linux"
       ];
       protocol = "ssh-ng";
       # Keep this host from being bogged down by builds.
-      maxJobs = 1;
+      # Beware setting this to 1, as it can mean no jobs are available ever
+      # (possibly due to a bug?).
+      maxJobs = 2;
       # What's this for?
       speedFactor = 2;
-      supportedFeatures = [ "benchmark" "big-parallel" ];
+      # Note: "kvm" means "Kernel-based Virtual Machine":
+      # https://en.m.wikipedia.org/wiki/Kernel-based_Virtual_Machine
+      # This is something I got from TLATER here:
+      # https://discourse.nixos.org/t/kvm-is-required-error-building-a-docker-image-using-runasroot/22923/2
+      # I seem to be unable to build other Raspberry Pi images without it.
+      supportedFeatures = [ "benchmark" "big-parallel" "kvm" ];
       mandatoryFeatures = [];
       # publicHostKey = toBase64
       #   (builtins.readFile ../secrets/builder-key.pub)
