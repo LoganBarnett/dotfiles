@@ -51,7 +51,7 @@
     (init-org-file "help.org")
     ;; Gives us custom-set-faces! and perhaps more.
     ;; (load-library "doom-lib-themes")
-    (load-library "config-counsel")
+    (load-library "config-completion")
     (load-library "dash")
     ;; :editor
     ;; (init-org-file "org-mode.org")

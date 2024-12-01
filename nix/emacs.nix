@@ -8,13 +8,55 @@
       # Use `config` above as the default init file.
       defaultInitFile = true;
       extraEmacsPackages = (epkgs: let
+        completion-packages = [
+          # In-buffer completion.  Helpful for suggesting symbols in programming
+          # languages, and words that have been used before in the same buffer
+          # or project.  I have elected to consolidate everything into vertico
+          # since, without at least major lifting, corfu and vertico seem to be
+          # mutually exclusive to each other.  Or at least I have a hard time
+          # pulling the two apart.  Doom probably does this properly with a
+          # mountain of hacks, but I don't care enough to investigate.
+          # epkgs.corfu
+          # Consult is a completing read system.  It basically comes up with
+          # contextual suggestions (like files, spellings, snippets, and more).
+          epkgs.consult
+          epkgs.consult-dir
+          epkgs.consult-flycheck
+          epkgs.consult-yasnippet
+          # Kind of a smart DWIM system in a way, and is recommended to go with
+          # Vertico and friends.
+          epkgs.embark
+          epkgs.embark-consult
+          # Give us colorful icons in auto-complete, which could help us
+          # visually identify certain kinds of completion information (such as
+          # structs vs. enums in Rust).
+          # epkgs.nerd-icons-corfu
+          # Give us colorful icons in auto-complete, which could help us
+          # visually identify certain kinds of completion information (such as
+          # structs vs. enums in Rust).
+          epkgs.nerd-icons-completion
+          # Provides context to Vertico completion results via a "margin".
+          # These are incredibly useful.  Included are things such as file
+          # permissions/size/mdate, key bindings (interactive Lisp functions),
+          # and documentation (more Lisp).
+          epkgs.marginalia
+          # Orderless is part of the sorting/filtering mechanism that is
+          # recommended to go with Vertico.  I admittedly don't know much about
+          # it more than that.
+          epkgs.orderless
+          # This is the minibuffer completion system.  It integrates with the
+          # Emacs built-in functions (contrast to company-mode).
+          epkgs.vertico
+          # Doom included this, but I haven't seen for myself if this is used,
+          # let alone something I want.
+          epkgs.vertico-posframe
+        ];
         utility-packages = [
           # Automatically compile .el files when loading.
           epkgs.auto-compile
           epkgs.browse-at-remote
-          # A collection of ivy integrations.  Ivy is a general choice selector.
-          epkgs.counsel
-          epkgs.counsel-projectile
+          epkgs.wgrep
+          # epkgs.vertico-multiform
           # Set configuration easily at runtime/interactively.  Helpful for
           # testing out values or toggling various verbose / debug modes.
           # epkgs.custom
@@ -55,6 +97,9 @@
           #    child headings).
           # 2. Many other things I take for granted.
           epkgs.evil-org
+          # Flyspell is built in, I suppose.
+          # epkgs.flyspell
+          epkgs.flyspell-correct
           # Put git +/- symbols in the gutter and work with line numbers all at
           # the same time (as opposed to git-gutter).
           epkgs.git-gutter-fringe
@@ -353,10 +398,12 @@
             };
           })
         ];
-      in utility-packages
-      ++ editing
-      ++ languages
-      ++ programs
+      in
+        completion-packages
+        ++ utility-packages
+        ++ editing
+        ++ languages
+        ++ programs
       );
     })
     # Other forms left for reference.

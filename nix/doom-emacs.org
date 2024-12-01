@@ -173,7 +173,7 @@ separation of things, but I could do that via ordinary functions.  ~use-package~
 does lack a sort of dependency-graph setup which has inspired some to leave it.
 
 
-** What's needed to be done [42%]
+** What's needed to be done [60%]
 
 I've already done a lot, but there's more to do.
 
@@ -186,16 +186,16 @@ I've already done a lot, but there's more to do.
 4. [X] Magit works.
    1. [X] Enter insert mode when committing.
 5. [ ] mu4e works.
-6. [-] projectile works _and_ is fast.
-   a. [ ] I can find files by name.
-   b. [ ] This remains slow, but sometimes is fast.  First hits are slow
+6. [X] projectile works _and_ is fast.
+   a. [X] I can find files by name.
+   b. [X] This remains slow, but sometimes is fast.  First hits are slow
           when opening a project.
    c. [X] I can search for files by text content.
-   d. [ ] I can search and replace text content.
+   d. [X] I can search and replace text content. (use ~C-.~ then ~E~ after searching).
    e. [X] I can kill projectile buffers.
    f. [X] I can search for projects.
    g. [X] I can refresh the project list.
-7. [-] helpful works with Counsel.
+7. [X] helpful works with Counsel. (nope, now ~vertico~).
    a. [X] I can bring up help for variables.
    b. [X] I can bring up help for functions.
    c. [X] I can bring up help for the current modes.
@@ -203,15 +203,15 @@ I've already done a lot, but there's more to do.
    e. [X] I can bring up help for the current character.
    f. [X] Use ~helpful~.
    g. [X] Use ~counsel~ for help.
-   h. [ ] See if
+   h. [X] See if
           https://github.com/doomemacs/doomemacs/blob/8b9168de6e6a9cabf13d1c92558e2ef71aa37a72/modules/completion/ivy/config.el#L164-L192
-          can be used for a more holistic approach.
+          can be used for a more holistic approach. (I just did it myself).
 8. [ ] Rust works.
-9. [ ] Nix works.
-10. [ ] Ruby works.
-11. [-] evil completely works
+9. [X] Nix works.
+10. [X] Ruby works.
+11. [X] evil completely works
     a. [X] vim bindings work with which-key.
-    b. [ ] ~:e~ completions use Counsel and is fast.
+    b. [X] ~:e~ completions use ~vertico~ and is fast.
     c. [X] ~;~ and ~,~ don't repeat with ~t~ / ~f~ et. al.
     d. [X] ~s~ and ~S~ use ~evil-snipe~.
 12. [ ] Check before leaving Emacs.

@@ -9,6 +9,14 @@
 Projectile gives Emacs project management capabilities. This includes searching,
 selecting projects, and finding them.
 
+I guess nowadays we just use ~project.el~.  There's a lot of vestigial stuff I
+need to go through here as I slowly work off of Projectile.  A couple of
+immediate benefits I have witnessed:  ~project.el~ has ~project-find-file~ which
+isn't as slow/chunky as ~projectile-find-file~, and this is even _not cached_?!
+The other benefit is that it integrates with things like ~Marginallia~ (and I
+assume ~vertico~ et. al.) which shows additional file information, such as
+permissions, file sizes, and modified dates.
+
 * cache invalidation
 
 Sometimes, especially during the early creation of a project, projectile
@@ -52,13 +60,26 @@ of directories under that directory.
 
 #+name: config/projectile-projects-directory
 #+begin_src emacs-lisp :results none :tangle yes
-(setq-default projectile-project-search-path
+(setq-default config/project-search-path
               '(
-                ("~/dev" . 1)
-                ("~/notes" . 0)
-                ("~/work-notes" . 0)
+                ("~/dev" . t)
+                ("~/notes" . nil)
+                ("~/work-notes" . nil)
                 )
               )
+
+;; We could probably make this faster, especially since we want to discover new
+;; projects potentially.  Projectile uses a numeric system for saying how far to
+;; descend into the tree (with 0 just being a repository available).  Otherwise
+;; this takes too long when adding a single repository.
+(defun config/project-discover-under-search-paths ()
+  (interactive)
+  (message "WARNING: config/project-discover-under-search-paths can take a very long time!")
+  (-each
+    config/project-search-path
+    (lambda (it) (project-remember-projects-under (car it) (cdr it)))
+    )
+  )
 #+end_src
 
 * search for hidden files
@@ -198,35 +219,29 @@ Files are returned as relative paths to DIRECTORY."
 * stitch
 
 #+begin_src emacs-lisp :results none :noweb yes
-<<config/projectile-invalidate-project-cache-current-project-fn>>
-
-(use-package projectile
+(use-package project
   :ensure t
   :init
-  <<config/projectile-fd-turn-off-colors>>
-  <<config/projectile-index-method>>
-  <<config/projectile-projects-directory>>
+  ;; We might want this for project.el too, but I haven't tested it yet.
   <<config/projectile-buffers-kill-all>>
-  (require 'counsel-projectile)
-  (counsel-projectile-mode)
   (map!
     :after projectile
     :leader
-    (:prefix ("p" . "projectile")
-      :desc "Discover new projects" :n "D" #'projectile-discover-projects-in-search-path
+    (:prefix ("p" . "project")
+      :desc "Discover new projects" :n "D" #'config/project-discover-under-search-paths
       ;; :desc "Invalidate project cache" :n "I" #'config/projectile-invalidate-project-cache-current-project
-      :desc "Invalidate project cache" :n "I" #'projectile-invalidate-cache
+      ;; :desc "Invalidate project cache" :n "I" #'projectile-invalidate-cache
       ;; Order is sensitive here.  See docstring of map! for details.
-      :desc "Find file by name" :n "f" #'counsel-projectile-find-file
-      :desc "Kill project buffers" :n "k" #'projectile-kill-buffers
-      :desc "Switch project" :n "p" #'counsel-projectile-switch-project
+      :desc "Find file by name" :n "f" #'project-find-file
+      :desc "Kill project buffers" :n "k" #'project-kill-buffers
+      :desc "Switch project" :n "p" #'project-switch-project
       )
    )
   (map!
-   :after projectile
+   :after project
    :leader
    :prefix ("s" . "search")
-   :desc "Find text in project" :n "p" #'counsel-projectile-rg
+   :desc "Find text in project" :n "p" #'consult-ripgrep
    )
   )
 #+end_src
