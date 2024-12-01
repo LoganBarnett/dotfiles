@@ -24,6 +24,7 @@ in { modulesPath, ... }: {
     })
     ../nixos-modules/lvm-uefi-disk.nix
     ../nixos-modules/steam-gaming.nix
+    ../nixos-modules/timezone-pacific.nix
     ../nixos-modules/uefi-systemd-boot.nix
     ../nixos-modules/x-desktop.nix
     ../users/cassandra-desktop.nix

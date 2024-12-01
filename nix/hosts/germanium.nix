@@ -12,6 +12,7 @@ in { modulesPath, ... }: {
       inherit host-id flake-inputs system;
     })
     ../nixos-modules/steam-gaming.nix
+    ../nixos-modules/timezone-pacific.nix
     ../nixos-modules/x-desktop.nix
     ../users/cassandra-desktop.nix
     ../users/solomon-desktop.nix
