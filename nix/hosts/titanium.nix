@@ -7,18 +7,19 @@ in {
       # Default ComfyUI port.
       comfyui-port = 8188;
     in {
-      imports = [
-        (import ../nixos-modules/comfyui-server.nix {
-          inherit host-id;
-          port = comfyui-port;
-        })
-        (import ../nixos-modules/https.nix {
-          inherit host-id;
-          listen-port = 443;
-          server-port = comfyui-port;
-          fqdn = "${host-id}.proton";
-        })
-      ];
+      # Turn off until we can figure out how to get ROCM and torch to play nice.
+      # imports = [
+      #   (import ../nixos-modules/comfyui-server.nix {
+      #     inherit host-id;
+      #     port = comfyui-port;
+      #   })
+      #   (import ../nixos-modules/https.nix {
+      #     inherit host-id;
+      #     listen-port = 443;
+      #     server-port = comfyui-port;
+      #     fqdn = "${host-id}.proton";
+      #   })
+      # ];
     })
     ../nixos-modules/amd-gpu.nix
     ../nixos-modules/discord.nix
