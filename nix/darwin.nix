@@ -227,25 +227,34 @@
           | uniq
       )
       echo "Keyboards found: $keyboards"
-      for keyboard in ''${keyboards[@]}; do
-        echo "Setting keyboard remaps for $keyboard..."
-        hidutil property --matching "{\"ProductID\":$keyboard}" --set '{"UserKeyMapping":
-          [
-            {
-              "HIDKeyboardModifierMappingSrc":0x7000000E3,
-              "HIDKeyboardModifierMappingDst":0x7000000E2
-            },
-            {
-              "HIDKeyboardModifierMappingSrc":0x7000000E2,
-              "HIDKeyboardModifierMappingDst":0x7000000E3
-            },
-            {
-              "HIDKeyboardModifierMappingSrc":0x700000039,
-              "HIDKeyboardModifierMappingDst":0x7000000E0
-            }
-          ]
-        }'
-      done
+      # When quoting arrays (as is done in the for loop, lest our new Bash give
+      # us an error), empty arrays still cause the for loop to execute on a
+      # first, empty element.  So just check it manually like we did in the dark
+      # ages.
+      if [[ "$keyboards" != "" ]]; then
+        for keyboard in "''${keyboards[@]}"; do
+          echo "Setting keyboard remaps for $keyboard..."
+          # Beware.  If the --matching argument is malformed (such as if
+          # $keyboard is "" here), the command will proceed and just hit the
+          # global keyboard or something.
+          hidutil property --matching "{\"ProductID\":$keyboard}" --set '{"UserKeyMapping":
+            [
+              {
+                "HIDKeyboardModifierMappingSrc":0x7000000E3,
+                "HIDKeyboardModifierMappingDst":0x7000000E2
+              },
+              {
+                "HIDKeyboardModifierMappingSrc":0x7000000E2,
+                "HIDKeyboardModifierMappingDst":0x7000000E3
+              },
+              {
+                "HIDKeyboardModifierMappingSrc":0x700000039,
+                "HIDKeyboardModifierMappingDst":0x7000000E0
+              }
+            ]
+          }'
+        done
+      fi
       echo "Do not sleep when on AC power."
       pmset -c sleep 0 # Needs testing - UI not immediately updated.
       echo "Allow apps from anywhere..."
