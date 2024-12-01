@@ -1,5 +1,7 @@
 { pkgs, ... }:
 [
+  # My tool for directly updating BattleScribe's data from the source.
+  pkgs.battlescribe-update-data
   # Manage bluetooth settings easily from the command line.
   pkgs.blueutil
   # These are a suggestion from https://stackoverflow.com/a/51161923 to get
@@ -12,6 +14,8 @@
   #
   # 3D modeling, but without the indentured servitude.
   #pkgs.blender
+  # A command line based music player.
+  pkgs.cmus
   # gem-apps
   # Compile natively to tiny devices.
   # Actually I'm not sure what to use. Arduino has no Darwin/macOS version
@@ -40,34 +44,24 @@
   pkgs.ngrok
   # Make it easy to try out Nix packages under review.
   pkgs.nixpkgs-review
+  # Experimental attempt at getting sshfs working. This is not adequate to get
+  # a functional sshfs. But this successfully builds so I wouldn't be far away
+  # from creating a darwin build for sshfs on nixpkg.  Can be manually
+  # installed from https://osxfuse.github.io/
+  # This was historically called osxfuse.
+  pkgs.macfuse-stubs
   # Can show media info for files using a codec. Similar to ffmpeg's ffprobe.
   pkgs.mediainfo
-  # A program to allow communicating over serial. Perhaps I can script it?
-  pkgs.minicom
-  # Like nmap, a tool for testing network ports. The executable is "nc".
-  # This installs the GNU version, although the OpenBSD version allows
-  # connecting to Unix sockets. For Unix sockets just use socat.
-  pkgs.netcat
-  # Connect to MongoDB for poking around the document store.
-  # Currently broken due to gperftools.
-  # mongodb
-  # Recursively walks up the file hiearchy to show permissions. Quite helpful!
-  # Currently not available as a nix package. Research on this has led to
-  # attempting unixtools and nettools. The unixtools package doesn't contain
-  # namei, and I could not confirm nettools due to an issue with openssl being
-  # out of date in that package.
-  #
-  # Currently broken on aarch64. No tickets found on it. Looks like xnu is
-  # trying to use x86_64 and breaking.
-  #pkgs.nettools
-  # A tool for mapping network ports.
-  pkgs.nmap
+  # Email indexing, viewing, etc. Needed in general because it is required by
+  # the Emacs config.  This does not install the mu4e package any longer due to
+  # this: https://github.com/NixOS/nixpkgs/pull/253438
+  # To work around this, make sure the package `emacs.pkgs.mu4e` is included.
+  # See home.nix for how emacs is configured to include mu4e, plus additional
+  # documentation on the configuration.
+  pkgs.mu
   # OBS does sweet screen recording and video composition.
   # Sadly, this does not work on Darwin, yet.
   # pkgs.obs-studio
-  # Used to do split tunneled VPN connections from the command line. You can
-  # also, you know, download it. Looking at you, AnyConnect.
-  #pkgs.openconnect
   # openconnect-sso wraps openconnect to provide SSO functionality.
   #
   # (pkgs.callPackage
@@ -93,8 +87,6 @@
   #                                               wrapQtAppsHook = pkgs.wrapQtAppsHook;
   #                                             })
   #
-  # CAD software with a programming language behind it. Declarative models!
-  # pkgs.openscad
   # I get build errors with 2021-01.
   # TODO: Report the build errors.
   #(import (builtins.fetchGit {
@@ -103,14 +95,8 @@
   #  url = https://github.com/nixos/nixpkgs/;
   #  rev = "385fc8362b8abe5aa03f50c60b9a779ce721db19";
   #}) {lib = lib;}).openscad
-  #pkgs.openscad
-
-  # See also oh-my-zsh.
-  # Experimental attempt at getting sshfs working. This is not adequate to get
-  # a functional sshfs. But this successfully builds so I wouldn't be far away
-  # from creating a darwin build for sshfs on nixpkg.  Can be manually
-  # installed from https://osxfuse.github.io/
-  pkgs.osxfuse
+  # CAD software with a programming language behind it. Declarative models!
+  # pkgs.openscad
   # For pairing. But probably not ready.
   (pkgs.callPackage ./pair-ls.nix { } )
   # Because sometimes you need something better than grep.
@@ -127,6 +113,8 @@
   # I could install this, but on macOS it's actually podman-remote. This is
   # not useful to me.
   # pkgs.podman
+  # Deploy things in my network.
+  pkgs.proton-deploy
   # (pkgs.python2.withPackages (ps: [
   # Run Windows programs (sometimes even I need this).
 

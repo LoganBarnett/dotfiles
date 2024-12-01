@@ -3,8 +3,6 @@
   # A test script to show we can add an arbitrary Bash script with a foreign
   # depependency to Nix.
   pkgs.test-script
-  # My tool for directly updating BattleScribe's data from the source.
-  pkgs.battlescribe-update-data
   # Write certificates out - these aren't present on macOS in a freely
   # available way.
   pkgs.cacert
@@ -13,8 +11,6 @@
   # Use `isoinfo -d <iso-file>` to test if bootable.  Look for an El Torito
   # (sometimes shown as Eltorito) section, whose presence indicates bootability.
   pkgs.cdrkit
-  # A command line based music player.
-  pkgs.cmus
   # Manages development environments.  Built atop direnv (from my perspective),
   # activates more than just a nix-develop shell, but also can do thing like
   # configure universal commit hooks and enable/disable services needed for
@@ -105,13 +101,6 @@
   # pkgs.libreoffice
   # Give us man pages for GNU stuff.
   pkgs.man-pages
-  # Email indexing, viewing, etc. Needed in general because it is required by
-  # the Emacs config.  This does not install the mu4e package any longer due to
-  # this: https://github.com/NixOS/nixpkgs/pull/253438
-  # To work around this, make sure the package `emacs.pkgs.mu4e` is included.
-  # See home.nix for how emacs is configured to include mu4e, plus additional
-  # documentation on the configuration.
-  pkgs.mu
   # This lets me search for parts of nix to help debug collisions.
   pkgs.nix-index
   # Provides `nixos-generate` which can be used to build ready-to-go images of
@@ -160,8 +149,6 @@
   # it seems to need qemu installed too, though how these packages know about
   # each other is not something I understand at present.
   pkgs.podman
-  # Deploy things in my network.
-  pkgs.proton-deploy
   # Query an HTML DOM from the command line.
   pkgs.pup
   # A tool for generating random passwords.  Helpful to have for generating on

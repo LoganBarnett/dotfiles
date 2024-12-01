@@ -45,29 +45,7 @@
   ];
   # Global packages that can't be bound to a specific user, such as shells.
   environment = {
-    loginShell = pkgs.zsh;
     shells = [ pkgs.zsh ];
-    # systemPackages = [
-    #   # Read EXIF metadata from images.
-    #   pkgs.exiftool
-    #   # Handy for moving files around, over SSH or locally.  I think it supports
-    #   # FTP as well.  Keep in mind that rsync needs to be installed on both
-    #   # sides, or you will get a cryptic "command not found" error.
-    #   pkgs.rsync
-    #   pkgs.zsh
-    # ] ++ (pkgs.callPackage ./general-packages.nix {});
-    systemPackages = [
-      # pkgs.nightlight
-      # I worry macOS ships with a weird version of ssh-keyscan and I've been
-      # trying to get Nix to install the GNU version.  `openssh` is the
-      # package in nixpkgs and from my poking around in the Nix code I cannot
-      # see anything that would exclude it from showing up.  In fact I can
-      # see the package in the store with bin/ssh et. al,.  However these do not
-      # appear in /run/current-system/sw/bin.  I have also tried placing the
-      # pkgs.openssh declaration in the general-packages.nix file but still no
-      # joy.
-      # pkgs.openssh
-    ];
   };
   fonts = {
     packages = [
