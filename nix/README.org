@@ -1766,3 +1766,28 @@ Version [1m376[0m (2024-09-25) <- 375:
 Version [32;1m377[0m (2024-09-26) <- 376:
   No changes.
 :end:
+
+* Troubleshooting
+** DONE ~age~ attribute missing
+CLOSED: [2024-11-29 Fri 13:45]
+
+Fixed via PR: https://github.com/oddlama/agenix-rekey/pull/56
+
+This error appears when running ~agenix rekey -a~.
+
+The exact error is:
+
+#+begin_example
+       error: attribute 'age' missing
+       at /nix/store/zy9vgszqqqh51wmk8cjj6hghx6fydwbi-source/apps/rekey.nix:41:43:
+           40|
+           41|   nodesWithDerivationStorage = filter (x: x.config.age.rekey.storageMode == "derivation") (attrValues nodes);
+             |                                           ^
+           42|
+#+end_example
+
+This means there is a host that doesn't have ~agenix~ on it as a module.  Find
+the host in your ~flake.nix~ and remove the entry, then run again.
+
+If we could somehow print the ~x~ on the error, we'd be in a great spot to find
+the issue.
