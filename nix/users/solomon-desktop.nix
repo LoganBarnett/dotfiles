@@ -1,4 +1,7 @@
 { pkgs, ... }: {
+  imports = [
+    ../nixos-modules/3d-printing-desktop.nix
+  ];
   environment.systemPackages = [
     pkgs.firefox
   ];
