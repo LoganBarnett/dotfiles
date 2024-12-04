@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: Print out mode/variables comment line for files.
+# key: filevar
+# group: fundamental
+# --
+-*- mode: `(if (boundp 'major-mode) major-mode "fundamental-mode")`; my-var: value -*-
