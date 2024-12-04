@@ -1,6 +1,4 @@
-{ config, flake-inputs, lib, pkgs, ... }: let
-  linux-packages = pkgs.linuxPackages_latest;
-in {
+{ config, flake-inputs, lib, pkgs, ... }: {
   allowUnfreePackagePredicates = [
     (pkg: builtins.elem (lib.getName pkg) [
       "blender"
@@ -44,6 +42,4 @@ in {
   # I'd like to prove it here first, then backport it for a test with
   # CUDA compute.
   hardware.nvidia.open = lib.mkForce true;
-  hardware.nvidia.package = lib.mkForce linux-packages.nvidiaPackages.stable;
-  hardware.graphics.package = lib.mkForce linux-packages.nvidiaPackages.stable;
 }
