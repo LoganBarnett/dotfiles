@@ -1,7 +1,28 @@
 # The ultimate editor.
 { lib, pkgs, emacs-overlay, ... }: {
   nixpkgs.overlays = [ emacs-overlay.overlays.default ];
-  environment.systemPackages = [
+  environment.systemPackages = let
+    ob-duckdb = (pkgs.emacs.pkgs.trivialBuild {
+      pname = "ob-duckdb";
+      ename = "ob-duckdb";
+      version = "0.0.0-2024-11-04-unstable";
+      src = pkgs.fetchFromGitHub {
+        owner = "smurp";
+        repo = "ob-duckdb";
+        rev = "3fd1123e7552a97d676be8aebd22dfbe8c6cfd0e";
+        hash = "sha256-dZWHFNIPeU1vcbIuZLRdEv6uQi6U/OmWYRmps75Ol5k=";
+      };
+      packageRequires = [];
+      meta = {
+        homepage = "https://github.com/smurp/ob-duckdb";
+        license = lib.licenses.gpl3;
+      };
+    });
+  in [
+    # For ob-duckdb support.
+    # pkgs.duckdb
+    # For ob-dsq support.
+    pkgs.dsq
     (pkgs.emacsWithPackagesFromUsePackage {
       alwaysTangle = false;
       config = ../lisp/init.el;
@@ -166,7 +187,57 @@
           epkgs.json-mode
           epkgs.lsp-mode
           epkgs.lsp-ui
-          # Org-babel for OpenSCAD.
+          # Text based diagramming.
+          epkgs.plantuml-mode
+          epkgs.puppet-mode
+          epkgs.enh-ruby-mode
+          epkgs.js2-mode
+          epkgs.lua-mode
+          epkgs.markdown-mode
+          epkgs.typescript-mode
+          epkgs.nix-mode
+          # For JSX editing.
+          epkgs.rjsx-mode
+          # epkgs.css-mode
+          epkgs.web-mode
+          # epkgs.html-mode
+          epkgs.groovy-mode
+          epkgs.rust-mode
+          epkgs.rustic
+          # I have a reference to ob-scad here:
+          # https://github.com/wose/ob-scad.git But scad-mode contains this.
+          # Perhaps it was merged?  Check the difference.
+          (epkgs.scad-mode.overrideAttrs (old: (let
+            version = "94.0";
+          in {
+            inherit version;
+            src = pkgs.fetchFromGitHub {
+              owner = "LoganBarnett";
+              repo = "emacs-scad-mode";
+              rev = "38e715440b2a2b05db3dda94a7eb56c169c45760";
+              hash = "sha256-TIyh5OfzIpcgBhbxq/1TxjXFWpH/twbLc29rkwL1IaI=";
+            };
+          })))
+          epkgs.terraform-mode
+          epkgs.yaml-mode
+          epkgs.vimrc-mode
+        ];
+        org-mode-packages = [
+          # Allow more advanced table querying / building than tblfm.  This
+          # provides a SQL dialect that can be used.  It's kind of retired, but
+          # I don't see alternatives at the moment that use something like SQL.
+          # Alternatively there is org-aggregate, which seems to try to be a
+          # better tblfm (https://github.com/tbanel/orgaggregate).  DSQ itself
+          # points to DuckDB, which is in more active development.  There is
+          # https://github.com/smurp/ob-duckdb so maybe that will be better, but
+          # it still looks very new.
+          # There is direct SQLite support in org-mode via:
+          # https://orgmode.org/worg/org-contrib/babel/languages/ob-doc-sqlite.html
+          # However, it requires an actual SQLite database on disk, which I find
+          # undesirable.
+          # ob-duckdb
+          epkgs.ob-dsq
+          # Org-babel for OpenSCAD.  This is tucked into scad-mode.
           # epkgs.ob-scad
           # The readme mentions `openscad-lsp` which could be used to enhance
           # things further.  Worth a look!
@@ -195,30 +266,11 @@
           epkgs.ox-reveal
           # Check lists for org-mode?
           # epkgs.org-checklist
-          # Text based diagramming.
-          epkgs.plantuml-mode
-          epkgs.puppet-mode
-          epkgs.enh-ruby-mode
-          epkgs.js2-mode
-          epkgs.lua-mode
-          epkgs.markdown-mode
-          epkgs.typescript-mode
-          epkgs.nix-mode
-          # For JSX editing.
-          epkgs.rjsx-mode
-          # epkgs.css-mode
-          epkgs.web-mode
-          # epkgs.html-mode
-          epkgs.groovy-mode
-          epkgs.rust-mode
-          epkgs.rustic
-          # I have a reference to ob-scad here:
-          # https://github.com/wose/ob-scad.git But scad-mode contains this.
-          # Perhaps it was merged?  Check the difference.
-          epkgs.scad-mode
-          epkgs.terraform-mode
-          epkgs.yaml-mode
-          epkgs.vimrc-mode
+          epkgs.org
+          # epkgs.org-agenda
+          # epkgs.org-capture
+          # epkgs.org-id
+          epkgs.ox-jira
         ];
         programs = [
           # Gamified task management.
@@ -239,10 +291,6 @@
               epkgs.f
               epkgs.helm
               epkgs.language-detection
-              epkgs.org
-              # epkgs.org-agenda
-              # epkgs.org-capture
-              # epkgs.org-id
               epkgs.ox-jira
               epkgs.s
               (pkgs.emacs.pkgs.trivialBuild {
@@ -400,10 +448,11 @@
         ];
       in
         completion-packages
-        ++ utility-packages
         ++ editing
         ++ languages
         ++ programs
+        ++ utility-packages
+        ++ org-mode-packages
       );
     })
     # Other forms left for reference.
