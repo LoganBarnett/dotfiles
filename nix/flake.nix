@@ -289,32 +289,11 @@
         ];
       };
 
-      packages.aarch64-linux.copper-ng = nixos-generators.nixosGenerate {
-        system = "aarch64-linux";
-        format = "sd-aarch64";
-        modules = [
-          (import ./hosts/copper.nix {
-            disko-proper = disko;
-            inherit flake-inputs nixpkgs;
-          })
-        ];
-      };
-
-      nixosModules.gallium = { ... }: {
-        imports = [
-          (import ./hosts/gallium.nix {
-            disko-proper = disko;
-            inherit flake-inputs nixpkgs;
-          })
-        ];
-        format = "sd-aarch64-raspberrypi";
-      };
-
       nixosConfigurations.gallium = nixpkgs.lib.nixosSystem {
         modules = [
           (import ./hosts/gallium.nix {
             disko-proper = disko;
-            inherit flake-inputs nixpkgs;
+            inherit flake-inputs;
           })
           btf-disable
         ];
@@ -342,17 +321,6 @@
           btf-disable
         ];
       });
-
-      packages.aarch64-linux.gallium-ng = nixos-generators.nixosGenerate {
-        system = "aarch64-linux";
-        format = "sd-aarch64";
-        modules = [
-          (import ./hosts/gallium.nix {
-            disko-proper = disko;
-            inherit flake-inputs nixpkgs;
-          })
-        ];
-      };
 
       # Build this with:
       # nix build '.#nixosConfigurations.germanium.config.system.build.image'
