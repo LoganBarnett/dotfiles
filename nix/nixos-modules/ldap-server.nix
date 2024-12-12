@@ -4,7 +4,41 @@
 # declarativeContents.  We'll have to declare that ourselves.  See also
 # https://www.reddit.com/r/NixOS/comments/fd04jc/comment/fje9d8n
 # for getting things working using LDAP authentication.
-{ host-id }: { config, pkgs, lib, ... }: {
+{ host-id }: { config, pkgs, lib, ... }: (let
+  membersOf = membership: "foobar";
+  ldapHumanUser = base-dn: {
+    username,
+    full-name,
+    email,
+    description ? "",
+    membership,
+  }: ''
+    dn: uid=${username},ou=users,${base-dn}
+    objectClass: inetOrgPerson
+    cn: ${full-name}
+    cn: ${username}
+    uid: ${username}
+    mail: ${email}
+    description: ${description}
+    membersOf: ${membersOf membership}
+  '';
+  ldapServiceUser = base-dn: {
+    username,
+    full-name,
+    email,
+    description,
+    membership,
+  }: ''
+    dn: uid=${username},ou=users,${base-dn}
+    objectClass: use something else!
+    cn: ${full-name}
+    cn: ${username}
+    uid: ${username}
+    mail: ${email}
+    description: ${description}
+    membersOf: ${membersOf membership}
+  '';
+in {
   age.secrets.ldap-root-pass = {
     generator.script = "passphrase";
     # Always specify the rekey file or it goes into a weird directory?
@@ -160,4 +194,4 @@
   #   wants = [ "acme-${your-host-name}.service" ];
   #   after = [ "acme-${your-host-name}.service" ];
   # };
-}
+})
