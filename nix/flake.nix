@@ -21,7 +21,12 @@
     # https://github.com/oddlama/agenix-rekey
     # Allows re-keying and bootstrapping of secrets used by agenix.
     agenix-rekey = {
-      url = "github:LoganBarnett/agenix-rekey/parameterize-generators";
+      # Pin to my last contribution for now because I cannot generate new
+      # secrets, nor can I rekey.  See ./README.org in the troubleshooting ->
+      # agenix section for more details.
+      url = "github:LoganBarnett/agenix-rekey?rev=3137e9b1df0724d0af8dbeb8c36f8eee4a26869a";
+      # url = "github:LoganBarnett/agenix-rekey/parameterize-generators";
+      # url = "github:LoganBarnett/agenix-rekey/parameterize-generators-master-identities-fix";
       # url = "git+file:///Users/logan/dev/agenix-rekey?ref=parameterize-generators";
       # There is a documented gotcha in the readme if this must change.  Review
       # agenix-rekey's README for details.
@@ -509,12 +514,19 @@
 
       agenix-rekey = agenix-rekey.configure {
         userFlake = self;
-        nodes = self.nixosConfigurations // self.darwinConfigurations;
+        nodes = self.nixosConfigurations
+          // self.darwinConfigurations;
+        # nixosConfigurations = self.nixosConfigurations
+        #   // self.darwinConfigurations;
+        # pkgs = import flake-inputs.nixpkgs {
+        #   system = "aarch64-darwin";
+        # };
       };
 
       packages.aarch64-linux.distributed-test = let
         pkgs = import nixpkgs {
           system = "aarch64-linux";
+          overlays = ./overlays/default.nix;
         };
       in
         pkgs.hello;

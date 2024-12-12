@@ -1791,3 +1791,545 @@ the host in your ~flake.nix~ and remove the entry, then run again.
 
 If we could somehow print the ~x~ on the error, we'd be in a great spot to find
 the issue.
+** ~agenix~ or ~agenix rekey~ throws ~expected a set but found a string:~
+
+When this happens you'll see the value is the path to an element inside of the
+~agenix.rekey.masterIdentities~ list.
+
+The full error:
+
+#+begin_example
+error:
+       … while calling the 'derivationStrict' builtin
+         at <nix/derivation-internal.nix>:34:12:
+           33|
+           34|   strict = derivationStrict drvAttrs;
+             |            ^
+           35|
+
+       … while evaluating derivation 'agenix-rekey'
+         whose name attribute is located at /nix/store/l1bdj49xb3rj3d24s7m58qmr5i3dwrb2-source/pkgs/stdenv/generic/make-derivation.nix:336:7
+
+       … while evaluating attribute 'text' of derivation 'agenix-rekey'
+         at /nix/store/l1bdj49xb3rj3d24s7m58qmr5i3dwrb2-source/pkgs/build-support/trivial-builders/default.nix:102:17:
+          101|       ({
+          102|         inherit text executable checkPhase allowSubstitutes preferLocalBuild;
+             |                 ^
+          103|         passAsFile = [ "text" ]
+
+       (stack trace truncated; use '--show-trace' to show the full, detailed trace)
+
+       error: expected a set but found a string: "/nix/store/hjxw6pyqs2f6s8xm2zr8aynciar35zsy-source/nix/secrets/agenix-master-key-3.age"
+#+end_example
+
+This happens even when running something incredibly fundamental like ~agenix
+rekey --help~.
+
+One of the only outputs we see is this:
+
+#+begin_example
+Collecting information about hosts. This may take a while...
+#+end_example
+
+I also saw warnings about not using ~nodes~ anymore and favoring
+~nixosConfigurations~ in the ~agenix-rekey.configure~ parameters.  This was a
+trivial change I affected, and made no difference in behavior.
+
+This can be traced to ~package.nix~ in ~agenix-rekey~.  The next line is where
+it runs ~nix run ... #agenix-rekey.${system}.$APP~.  It doesn't seem to matter
+what ~$APP~ resolves to.  I believe this is the Nix invocation that is failing.
+The error itself seems to be in building a derivation, which is probably this
+run script.
+
+I looked through the configuration more to verify things.  ~pkgs~ seemed to be a
+culprit of prior problems I've experienced, so I set that.  I assumed my build
+host's platform of ~aarch64-darwin~ and included my overlays, but still no
+change in behavior.
+
+The next part of this seems to point at ~./apps/${app}.nix~.
+
+The ~text~ attribute is what is complaining, but there is no mention of it in
+the ~apps/rekey.nix~ file.  None of the other files under ~apps~ have it either.
+None of the files have mention of ~masterIdentities~ either.
+
+Apparently, if one uses ~--show-trace~ in all the right places (or just
+everywhere), a more detailed stack can be found:
+
+#+begin_example
+agenix --show-trace rekey --show-trace generate --show-trace
+
+Collecting information about hosts. This may take a while...
+warning: Git tree '/Users/logan/dev/dotfiles' is dirty
+error:
+       … while calling the 'derivationStrict' builtin
+         at <nix/derivation-internal.nix>:34:12:
+           33|
+           34|   strict = derivationStrict drvAttrs;
+             |            ^
+           35|
+
+       … while evaluating derivation 'agenix-generate'
+         whose name attribute is located at /nix/store/l1bdj49xb3rj3d24s7m58qmr5i3dwrb2-source/pkgs/stdenv/generic/make-derivation.nix:336:7
+
+       … while evaluating attribute 'text' of derivation 'agenix-generate'
+         at /nix/store/l1bdj49xb3rj3d24s7m58qmr5i3dwrb2-source/pkgs/build-support/trivial-builders/default.nix:102:17:
+          101|       ({
+          102|         inherit text executable checkPhase allowSubstitutes preferLocalBuild;
+             |                 ^
+          103|         passAsFile = [ "text" ]
+
+       … while calling the 'concatStringsSep' builtin
+         at /nix/store/4jjvcww3gdkvahwcvbmd5cwn7pndbn9h-source/apps/generate.nix:246:7:
+          245|   KNOWN_SECRETS=(
+          246|     ${concatStringsSep "\n" (map (x: escapeShellArg x.sourceFile) (attrValues secretsWithContext))}
+             |       ^
+          247|   )
+
+       … while calling the 'map' builtin
+         at /nix/store/4jjvcww3gdkvahwcvbmd5cwn7pndbn9h-source/apps/generate.nix:246:30:
+          245|   KNOWN_SECRETS=(
+          246|     ${concatStringsSep "\n" (map (x: escapeShellArg x.sourceFile) (attrValues secretsWithContext))}
+             |                              ^
+          247|   )
+
+       … while calling the 'attrValues' builtin
+         at /nix/store/4jjvcww3gdkvahwcvbmd5cwn7pndbn9h-source/apps/generate.nix:246:68:
+          245|   KNOWN_SECRETS=(
+          246|     ${concatStringsSep "\n" (map (x: escapeShellArg x.sourceFile) (attrValues secretsWithContext))}
+             |                                                                    ^
+          247|   )
+
+       … while calling the 'foldl'' builtin
+         at /nix/store/4jjvcww3gdkvahwcvbmd5cwn7pndbn9h-source/apps/generate.nix:113:24:
+          112|   # Deduplicates secrets if the generator is the same, otherwise throws an error.
+          113|   secretsWithContext = foldl' (
+             |                        ^
+          114|     set: host: foldl' (addGeneratedSecretChecked host) set (attrNames nodes.${host}.config.age.secrets)
+
+       … while calling anonymous lambda
+         at /nix/store/4jjvcww3gdkvahwcvbmd5cwn7pndbn9h-source/apps/generate.nix:114:10:
+          113|   secretsWithContext = foldl' (
+          114|     set: host: foldl' (addGeneratedSecretChecked host) set (attrNames nodes.${host}.config.age.secrets)
+             |          ^
+          115|   ) { } (attrNames nodes);
+
+       … while calling the 'foldl'' builtin
+         at /nix/store/4jjvcww3gdkvahwcvbmd5cwn7pndbn9h-source/apps/generate.nix:114:16:
+          113|   secretsWithContext = foldl' (
+          114|     set: host: foldl' (addGeneratedSecretChecked host) set (attrNames nodes.${host}.config.age.secrets)
+             |                ^
+          115|   ) { } (attrNames nodes);
+
+       … while calling 'addGeneratedSecretChecked'
+         at /nix/store/4jjvcww3gdkvahwcvbmd5cwn7pndbn9h-source/apps/generate.nix:62:16:
+           61|   addGeneratedSecretChecked =
+           62|     host: set: secretName:
+             |                ^
+           63|     let
+
+       … in the condition of the assert statement
+         at /nix/store/4jjvcww3gdkvahwcvbmd5cwn7pndbn9h-source/apps/generate.nix:94:7:
+           93|       # Assert that the generator is the same if it was defined on multiple hosts
+           94|       assert assertMsg (hasAttr sourceFile set -> script == set.${sourceFile}.script)
+             |       ^
+           95|         "Generator definition of ${secretName} on ${host} differs from definitions on other hosts: ${
+
+       … from call site
+         at /nix/store/4jjvcww3gdkvahwcvbmd5cwn7pndbn9h-source/apps/generate.nix:94:14:
+           93|       # Assert that the generator is the same if it was defined on multiple hosts
+           94|       assert assertMsg (hasAttr sourceFile set -> script == set.${sourceFile}.script)
+             |              ^
+           95|         "Generator definition of ${secretName} on ${host} differs from definitions on other hosts: ${
+
+       … while calling 'assertMsg'
+         at /nix/store/l1bdj49xb3rj3d24s7m58qmr5i3dwrb2-source/lib/asserts.nix:41:5:
+           40|     pred:
+           41|     msg:
+             |     ^
+           42|     pred || builtins.throw msg;
+
+       … in the left operand of the OR (||) operator
+         at /nix/store/l1bdj49xb3rj3d24s7m58qmr5i3dwrb2-source/lib/asserts.nix:42:10:
+           41|     msg:
+           42|     pred || builtins.throw msg;
+             |          ^
+           43|
+
+       … in the right operand of the IMPL (->) operator
+         at /nix/store/4jjvcww3gdkvahwcvbmd5cwn7pndbn9h-source/apps/generate.nix:94:48:
+           93|       # Assert that the generator is the same if it was defined on multiple hosts
+           94|       assert assertMsg (hasAttr sourceFile set -> script == set.${sourceFile}.script)
+             |                                                ^
+           95|         "Generator definition of ${secretName} on ${host} differs from definitions on other hosts: ${
+
+       … from call site
+         at /nix/store/4jjvcww3gdkvahwcvbmd5cwn7pndbn9h-source/apps/generate.nix:70:16:
+           69|         relativeToFlake secret.rekeyFile;
+           70|       script = secret.generator._script {
+             |                ^
+           71|         inherit secret pkgs;
+
+       … while calling 'merge'
+         at /nix/store/l1bdj49xb3rj3d24s7m58qmr5i3dwrb2-source/lib/types.nix:773:9:
+          772|       merge = loc: defs:
+          773|         fnArgs: (mergeDefinitions (loc ++ [ "<function body>" ]) elemType (map (fn: { inherit (fn) file; value = fn.value fnArgs; }) defs)).mergedValue;
+             |         ^
+          774|       getSubOptions = prefix: elemType.getSubOptions (prefix ++ [ "<function body>" ]);
+
+       … while evaluating the attribute 'mergedValue'
+         at /nix/store/l1bdj49xb3rj3d24s7m58qmr5i3dwrb2-source/lib/modules.nix:851:5:
+          850|     # Type-check the remaining definitions, and merge them. Or throw if no definitions.
+          851|     mergedValue =
+             |     ^
+          852|       if isDefined then
+
+       … while evaluating a branch condition
+         at /nix/store/l1bdj49xb3rj3d24s7m58qmr5i3dwrb2-source/lib/modules.nix:852:7:
+          851|     mergedValue =
+          852|       if isDefined then
+             |       ^
+          853|         if all (def: type.check def.value) defsFinal then type.merge loc defsFinal
+
+       … while evaluating the attribute 'values'
+         at /nix/store/l1bdj49xb3rj3d24s7m58qmr5i3dwrb2-source/lib/modules.nix:845:9:
+          844|       in {
+          845|         values = defs''';
+             |         ^
+          846|         inherit (defs'') highestPrio;
+
+       … while evaluating a branch condition
+         at /nix/store/l1bdj49xb3rj3d24s7m58qmr5i3dwrb2-source/lib/modules.nix:841:11:
+          840|           # Avoid sorting if we don't have to.
+          841|           if any (def: def.value._type or "" == "order") defs''.values
+             |           ^
+          842|           then sortProperties defs''.values
+
+       … while calling the 'any' builtin
+         at /nix/store/l1bdj49xb3rj3d24s7m58qmr5i3dwrb2-source/lib/modules.nix:841:14:
+          840|           # Avoid sorting if we don't have to.
+          841|           if any (def: def.value._type or "" == "order") defs''.values
+             |              ^
+          842|           then sortProperties defs''.values
+
+       … while evaluating the attribute 'values'
+         at /nix/store/l1bdj49xb3rj3d24s7m58qmr5i3dwrb2-source/lib/modules.nix:944:7:
+          943|     in {
+          944|       values = concatMap (def: if getPrio def == highestPrio then [(strip def)] else []) defs;
+             |       ^
+          945|       inherit highestPrio;
+
+       … while calling the 'concatMap' builtin
+         at /nix/store/l1bdj49xb3rj3d24s7m58qmr5i3dwrb2-source/lib/modules.nix:944:16:
+          943|     in {
+          944|       values = concatMap (def: if getPrio def == highestPrio then [(strip def)] else []) defs;
+             |                ^
+          945|       inherit highestPrio;
+
+       … while calling the 'concatMap' builtin
+         at /nix/store/l1bdj49xb3rj3d24s7m58qmr5i3dwrb2-source/lib/modules.nix:831:17:
+          830|         # Process mkMerge and mkIf properties.
+          831|         defs' = concatMap (m:
+             |                 ^
+          832|           map (value: { inherit (m) file; inherit value; }) (addErrorContext "while evaluating definitions from `${m.file}':" (dischargeProperties m.value))
+
+       … while calling anonymous lambda
+         at /nix/store/l1bdj49xb3rj3d24s7m58qmr5i3dwrb2-source/lib/modules.nix:831:28:
+          830|         # Process mkMerge and mkIf properties.
+          831|         defs' = concatMap (m:
+             |                            ^
+          832|           map (value: { inherit (m) file; inherit value; }) (addErrorContext "while evaluating definitions from `${m.file}':" (dischargeProperties m.value))
+
+       … while calling the 'map' builtin
+         at /nix/store/l1bdj49xb3rj3d24s7m58qmr5i3dwrb2-source/lib/modules.nix:832:11:
+          831|         defs' = concatMap (m:
+          832|           map (value: { inherit (m) file; inherit value; }) (addErrorContext "while evaluating definitions from `${m.file}':" (dischargeProperties m.value))
+             |           ^
+          833|         ) defs;
+
+       … while evaluating definitions from `/nix/store/l1bdj49xb3rj3d24s7m58qmr5i3dwrb2-source/flake.nix':
+
+       … from call site
+         at /nix/store/l1bdj49xb3rj3d24s7m58qmr5i3dwrb2-source/lib/modules.nix:832:128:
+          831|         defs' = concatMap (m:
+          832|           map (value: { inherit (m) file; inherit value; }) (addErrorContext "while evaluating definitions from `${m.file}':" (dischargeProperties m.value))
+             |                                                                                                                                ^
+          833|         ) defs;
+
+       … while calling 'dischargeProperties'
+         at /nix/store/l1bdj49xb3rj3d24s7m58qmr5i3dwrb2-source/lib/modules.nix:903:25:
+          902|   */
+          903|   dischargeProperties = def:
+             |                         ^
+          904|     if def._type or "" == "merge" then
+
+       … while evaluating a branch condition
+         at /nix/store/l1bdj49xb3rj3d24s7m58qmr5i3dwrb2-source/lib/modules.nix:904:5:
+          903|   dischargeProperties = def:
+          904|     if def._type or "" == "merge" then
+             |     ^
+          905|       concatMap dischargeProperties def.contents
+
+       … while evaluating the attribute 'value'
+         at /nix/store/l1bdj49xb3rj3d24s7m58qmr5i3dwrb2-source/lib/types.nix:773:106:
+          772|       merge = loc: defs:
+          773|         fnArgs: (mergeDefinitions (loc ++ [ "<function body>" ]) elemType (map (fn: { inherit (fn) file; value = fn.value fnArgs; }) defs)).mergedValue;
+             |                                                                                                          ^
+          774|       getSubOptions = prefix: elemType.getSubOptions (prefix ++ [ "<function body>" ]);
+
+       … from call site
+         at /nix/store/l1bdj49xb3rj3d24s7m58qmr5i3dwrb2-source/lib/types.nix:773:114:
+          772|       merge = loc: defs:
+          773|         fnArgs: (mergeDefinitions (loc ++ [ "<function body>" ]) elemType (map (fn: { inherit (fn) file; value = fn.value fnArgs; }) defs)).mergedValue;
+             |                                                                                                                  ^
+          774|       getSubOptions = prefix: elemType.getSubOptions (prefix ++ [ "<function body>" ]);
+
+       … while calling 'tls-signed-certificate'
+         at /nix/store/nvwwcv0awllc55sjg148l28zvy7i40rk-source/nix/nixos-modules/secrets.nix:92:45:
+           91|     # won't use the same one twice.  This should be checked in.
+           92|     age.generators.tls-signed-certificate = {
+             |                                             ^
+           93|       decrypt,
+
+       … from call site
+         at /nix/store/nvwwcv0awllc55sjg148l28zvy7i40rk-source/nix/nixos-modules/secrets.nix:106:7:
+          105|     in
+          106|       throwIfNot (isAttrs settings) "Secret '${name}' must have a `settings` attrset."
+             |       ^
+          107|       throwIfNot (isString settings.fqdn) "Secret '${name}' is missing a `fqdn` string."
+
+       … while calling anonymous lambda
+         at /nix/store/l1bdj49xb3rj3d24s7m58qmr5i3dwrb2-source/lib/trivial.nix:868:40:
+          867|   */
+          868|   throwIfNot = cond: msg: if cond then x: x else throw msg;
+             |                                        ^
+          869|
+
+       … while evaluating the attribute 'ageMasterDecrypt'
+         at /nix/store/4jjvcww3gdkvahwcvbmd5cwn7pndbn9h-source/nix/lib.nix:174:3:
+          173|   ageMasterEncrypt = "${ageWrapperScript}/bin/ageWrapper encrypt";
+          174|   ageMasterDecrypt = "${ageWrapperScript}/bin/ageWrapper decrypt";
+             |   ^
+          175|   ageHostEncrypt =
+
+       … while calling the 'getAttr' builtin
+         at <nix/derivation-internal.nix>:44:19:
+           43|       value = commonAttrs // {
+           44|         outPath = builtins.getAttr outputName strict;
+             |                   ^
+           45|         drvPath = strict.drvPath;
+
+       … while calling the 'derivationStrict' builtin
+         at <nix/derivation-internal.nix>:34:12:
+           33|
+           34|   strict = derivationStrict drvAttrs;
+             |            ^
+           35|
+
+       … while evaluating derivation 'ageWrapper'
+         whose name attribute is located at /nix/store/l1bdj49xb3rj3d24s7m58qmr5i3dwrb2-source/pkgs/stdenv/generic/make-derivation.nix:336:7
+
+       … while evaluating attribute 'text' of derivation 'ageWrapper'
+         at /nix/store/l1bdj49xb3rj3d24s7m58qmr5i3dwrb2-source/pkgs/build-support/trivial-builders/default.nix:102:17:
+          101|       ({
+          102|         inherit text executable checkPhase allowSubstitutes preferLocalBuild;
+             |                 ^
+          103|         passAsFile = [ "text" ]
+
+       … while calling the 'concatStringsSep' builtin
+         at /nix/store/4jjvcww3gdkvahwcvbmd5cwn7pndbn9h-source/nix/lib.nix:60:9:
+           59|       # Master identities that have a pubkey can be added without further treatment.
+           60|       ${concatStringsSep "\n" (
+             |         ^
+           61|         map (
+
+       … while calling the 'map' builtin
+         at /nix/store/4jjvcww3gdkvahwcvbmd5cwn7pndbn9h-source/nix/lib.nix:61:9:
+           60|       ${concatStringsSep "\n" (
+           61|         map (
+             |         ^
+           62|           x:
+
+       … while calling the 'filter' builtin
+         at /nix/store/4jjvcww3gdkvahwcvbmd5cwn7pndbn9h-source/nix/lib.nix:64:12:
+           63|           ''masterIdentityMap[${escapeShellArg (removeSuffix "\n" x.pubkey)}]=${escapeShellArg x.identity}''
+           64|         ) (filter (x: x.pubkey != null) mergedMasterIdentities)
+             |            ^
+           65|       )}
+
+       … while calling anonymous lambda
+         at /nix/store/4jjvcww3gdkvahwcvbmd5cwn7pndbn9h-source/nix/lib.nix:64:20:
+           63|           ''masterIdentityMap[${escapeShellArg (removeSuffix "\n" x.pubkey)}]=${escapeShellArg x.identity}''
+           64|         ) (filter (x: x.pubkey != null) mergedMasterIdentities)
+             |                    ^
+           65|       )}
+
+       … while selecting an attribute
+         at /nix/store/4jjvcww3gdkvahwcvbmd5cwn7pndbn9h-source/nix/lib.nix:64:23:
+           63|           ''masterIdentityMap[${escapeShellArg (removeSuffix "\n" x.pubkey)}]=${escapeShellArg x.identity}''
+           64|         ) (filter (x: x.pubkey != null) mergedMasterIdentities)
+             |                       ^
+           65|       )}
+
+       error: expected a set but found a string: "/nix/store/nvwwcv0awllc55sjg148l28zvy7i40rk-source/nix/secrets/agenix-master-key-3.age"
+#+end_example
+
+With that, we're able to find the broken line:
+
+#+begin_example
+       … while calling the 'filter' builtin
+         at /nix/store/4jjvcww3gdkvahwcvbmd5cwn7pndbn9h-source/nix/lib.nix:64:12:
+           63|           ''masterIdentityMap[${escapeShellArg (removeSuffix "\n" x.pubkey)}]=${escapeShellArg x.identity}''
+           64|         ) (filter (x: x.pubkey != null) mergedMasterIdentities)
+             |            ^
+           65|       )}
+
+       … while calling anonymous lambda
+         at /nix/store/4jjvcww3gdkvahwcvbmd5cwn7pndbn9h-source/nix/lib.nix:64:20:
+           63|           ''masterIdentityMap[${escapeShellArg (removeSuffix "\n" x.pubkey)}]=${escapeShellArg x.identity}''
+           64|         ) (filter (x: x.pubkey != null) mergedMasterIdentities)
+             |                    ^
+           65|       )}
+
+       … while selecting an attribute
+         at /nix/store/4jjvcww3gdkvahwcvbmd5cwn7pndbn9h-source/nix/lib.nix:64:23:
+           63|           ''masterIdentityMap[${escapeShellArg (removeSuffix "\n" x.pubkey)}]=${escapeShellArg x.identity}''
+           64|         ) (filter (x: x.pubkey != null) mergedMasterIdentities)
+             |                       ^
+           65|       )}
+#+end_example
+
+Which is line 64 of ~agenix-rekey/nix/lib.nix~.  The expression in question is:
+
+#+begin_src nix :results none :exports code :tangle no
+(filter (x: x.pubkey != null) mergedMasterIdentities)
+#+end_src
+
+And my ~masterIdentities~ has no ~pubkey~.  That said, I did try the ~pubkey~
+and ~identity~ form and found a new error.  I am starting to think this is a bug.
+
+Here's the error when trying the attrset form:
+
+#+begin_example
+       error: A definition for option `age.rekey.masterIdentities."[definition 1-entry 1]"' is not of type `string or path convertible to it'. Definition values:
+       - In `<unknown-file>':
+           {
+             identity = /nix/store/1gd1hrr3wjvz7mk4h9rbhzss4yaqrsw2-source/nix/secrets/agenix-master-key-3.age;
+             pubkey = null;
+           }
+#+end_example
+
+Where the declaration is now this:
+
+#+begin_src nix :results none :exports code
+    masterIdentities = [
+      {
+        identity = ../secrets/agenix-master-key-3.age;
+        pubkey = null;
+      }
+    ];
+#+end_src
+
+I also tried this:
+
+#+begin_src nix :results none :exports code
+    masterIdentities = [
+      {
+        identity = ../secrets/agenix-master-key-3.age;
+      }
+    ];
+#+end_src
+
+Because I have no ~.pub~ file.  No change in behavior.
+
+For fun I even made up a value for ~pubkey~:
+
+#+begin_src nix :results none :exports code
+    masterIdentities = [
+      {
+        identity = ../secrets/agenix-master-key-3.age;
+        pubkey = "foobar";
+      }
+    ];
+#+end_src
+
+Is there a mechanism somewhere that's supposed to coerce direct file references
+into something that has a ~pubkey~ entry?
+
+I started a manual bisect on ~agenix-rekey~.  Unfortunately code formatting
+tools have made this a bit difficult.  I managed to get things working again by
+going by several months, all the way back to my last contribution.
+
+3137e9b1df0724d0af8dbeb8c36f8eee4a26869a
+
+The last time I saw it broken was d6de009fba42ac7f7e9c356142220570c6c07877,
+"allow rekeying 0 secrets".  So it might be somewhere in between those.
+
+Next iteration: The commit "fix: show an error when no recipients are set in a
+master identity file" is broken too. c071067f7d972552f5170cf8665643ed0ec19a6d
+
+Well this is unanticipated.  I narrowed down the issue to this commit:
+
+c6c1ca5b9ceaaa40fd979fb25bb7043adf4554ad
+
+fix: correctly remove apps from exposed path
+
+The error changes a little, but is ultimately the same I think:
+
+#+begin_example
+error:
+       … while calling the 'derivationStrict' builtin
+         at <nix/derivation-internal.nix>:34:12:
+           33|
+           34|   strict = derivationStrict drvAttrs;
+             |            ^
+           35|
+
+       … while evaluating derivation 'agenix-generate'
+         whose name attribute is located at /nix/store/l1bdj49xb3rj3d24s7m58qmr5i3dwrb2-source/pkgs/stdenv/generic/make-derivation.nix:336:7
+
+       … while evaluating attribute 'text' of derivation 'agenix-generate'
+         at /nix/store/l1bdj49xb3rj3d24s7m58qmr5i3dwrb2-source/pkgs/build-support/trivial-builders/default.nix:102:17:
+          101|       ({
+          102|         inherit text executable checkPhase allowSubstitutes preferLocalBuild;
+             |                 ^
+          103|         passAsFile = [ "text" ]
+
+       … while evaluating definitions from `/nix/store/l1bdj49xb3rj3d24s7m58qmr5i3dwrb2-source/flake.nix':
+
+       (stack trace truncated; use '--show-trace' to show the full, detailed trace)
+
+       error: cannot coerce a set to a string: { identity = "/nix/store/zidq8pvpbd7g3hpl5qi2v3awy0si1x8a-source/nix/secrets/agenix-master-key-3.age"; pubkey = null; }
+
+#+end_example
+
+The diff:
+
+#+begin_src diff :results none :exports code
+@@ -57,13 +57,14 @@
+         # pkgs.age and pkgs.rage.
+         agePackage ? (p: p.rage),
+       }:
+-        flake-utils.lib.eachDefaultSystem (system: {
++        (flake-utils.lib.eachDefaultSystem (system: {
+           apps = pkgs.${system}.lib.genAttrs allApps (app:
+             import ./apps/${app}.nix {
+               inherit nodes userFlake agePackage;
+               pkgs = pkgs.${system};
+             });
+-        });
++        }))
++        .apps;
+
+       # XXX: deprecated, scheduled for removal in late 2024. Use the package instead of
+       # defining apps. This is just a compatibility wrapper that defines apps with
+#+end_src
+
+And this just blows my mind.  How could that be causing the issue?!
+
+This change doesn't seem to have directly permeated back to what's at the HEAD
+of ~main~.  That said, there seems to be some refactors done that might make the
+current state less obvious that this is causing the issue.
+
+I can also see here why there would be an issue with overlays not being
+respected.  It does its own import of nixpkgs which doesn't get any overlays
+added to it.  That's a separate issue for another day.
