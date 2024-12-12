@@ -26,7 +26,7 @@ cleaning up whitespace.
       :config
       (setq-default ws-butler-keep-whitespace-before-point nil)
       (add-hook 'prog-mode-hook 'ws-butler-mode)
-      (add-hook 'org-mode-hook 'ws-butler-mode)
+      (add-hook 'text-mode-hook 'ws-butler-mode)
       (message "ws-butler configured.")
       )
   #+END_SRC
