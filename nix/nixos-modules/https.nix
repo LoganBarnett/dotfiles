@@ -1,7 +1,7 @@
 ################################################################################
 # Setup an HTTPS reverse proxy.
 ################################################################################
-{ listen-port, server-port, host-id, fqdn } : { config, ... }: {
+{ listen-port ? 443, server-port, host-id, fqdn } : { config, ... }: {
   networking.firewall.allowedTCPPorts = [ listen-port ];
   networking.firewall.allowedUDPPorts = [ listen-port ];
   services.nginx = {
