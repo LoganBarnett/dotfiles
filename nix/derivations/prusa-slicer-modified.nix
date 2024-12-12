@@ -22,6 +22,9 @@
 , hicolor-icon-theme
 , ilmbase
 , libpng
+# Recommended from a recent issue (need to find reference - it's in
+# prusa-slicer's issue tracker).  Look for macos readme or something like that.
+, m4
 , mpfr
 , nanosvg
 , nlopt
@@ -80,7 +83,7 @@ let
 in
 stdenv.mkDerivation (finalAttrs: {
   pname = "prusa-slicer";
-  version = "2.8.0";
+  version = "2.8.1";
   inherit patches;
 
   src = fetchFromGitHub {
@@ -90,19 +93,10 @@ stdenv.mkDerivation (finalAttrs: {
     rev = "version_${finalAttrs.version}";
   };
 
-  # required for GCC 14
-  postPatch = ''
-    substituteInPlace src/libslic3r/Arrange/Core/DataStoreTraits.hpp \
-      --replace-fail \
-      "WritableDataStoreTraits<ArrItem>::template set" \
-      "WritableDataStoreTraits<ArrItem>::set"
-  '';
-
   nativeBuildInputs = [
     cmake
     pkg-config
     wrapGAppsHook3
-    wxGTK-override'
   ];
 
   buildInputs = [
@@ -122,6 +116,7 @@ stdenv.mkDerivation (finalAttrs: {
     hicolor-icon-theme
     ilmbase
     libpng
+    m4
     mpfr
     nanosvg-fltk
     nlopt
@@ -141,8 +136,6 @@ stdenv.mkDerivation (finalAttrs: {
     darwin.apple_sdk_11_0.frameworks.CoreWLAN
     darwin.apple_sdk_11_0.frameworks.WebKit
   ];
-
-  strictDeps = true;
 
   separateDebugInfo = true;
 
@@ -201,6 +194,10 @@ stdenv.mkDerivation (finalAttrs: {
   preFixup = ''
     gappsWrapperArgs+=(
       --prefix LD_LIBRARY_PATH : "$out/lib"
+      # Included from https://github.com/NixOS/nixpkgs/pull/331624 which is not
+      # yet merged as of 2024-10-05.
+      # Otherwise crashes the application for many people (see #293854, #328235)
+      --unset __GLX_VENDOR_LIBRARY_NAME
     )
   '';
 
@@ -220,7 +217,7 @@ stdenv.mkDerivation (finalAttrs: {
     description = "G-code generator for 3D printer";
     homepage = "https://github.com/prusa3d/PrusaSlicer";
     license = licenses.agpl3Plus;
-    maintainers = with maintainers; [ tweber tmarkus ];
+    maintainers = with maintainers; [ moredread tweber tmarkus ];
     platforms = platforms.unix;
   } // lib.optionalAttrs (stdenv.hostPlatform.isDarwin) {
     mainProgram = "PrusaSlicer";
