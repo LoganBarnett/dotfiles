@@ -381,6 +381,16 @@
         ];
       };
 
+      nixosConfigurations.selenium = nixpkgs.lib.nixosSystem {
+        modules = [
+          (import ./hosts/selenium.nix {
+            disko-proper = disko;
+            inherit flake-inputs;
+          })
+          btf-disable
+        ];
+      };
+
       # Build this with:
       # nix build '.#nixosConfigurations.titanium.config.system.build.image'
       nixosConfigurations.titanium = nixpkgs.lib.nixosSystem {
