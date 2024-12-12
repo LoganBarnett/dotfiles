@@ -28,7 +28,11 @@
       # See the docs at:
       # https://www.raspberrypi.com/documentation/computers/linux_kernel.html#native-build-configuration
       raspberry-pi-nix = {
-        # uboot.enable = false;
+        # Leave disabled to fix boot issues per:
+        # https://github.com/nix-community/raspberry-pi-nix/issues/16
+        # There doesn't seem to be strong benefit to keeping it on anyways,
+        # since it's kind of a pain to reboot to a prior generation.
+        uboot.enable = false;
         # Required for RPi5.
         board = "bcm2712";
         # The GPIO pins.

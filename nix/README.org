@@ -2333,3 +2333,47 @@ current state less obvious that this is causing the issue.
 I can also see here why there would be an issue with overlays not being
 respected.  It does its own import of nixpkgs which doesn't get any overlays
 added to it.  That's a separate issue for another day.
+
+** Raspberry Pi startup issues
+
+When cooking a brand new host image for a Raspberry Pi (which is just a most
+impressive way to use Nix), one may notice some issues with the host on its
+first boot.
+
+I've seen only with some number of reboots later did it decide to create the
+swap file.  ~agenix~ may not lay down its secrets immediately and so services
+may fail to boot.  I think there is an issue describing this for ~agenix~.  I
+can't speak to the others.
+
+I've also noticed it has trouble with my small display sometimes.  But in the
+flicker it makes, sometimes I can make out what seems to be a very small version
+of a boot or login screen, with its telltale gray and green on black.
+
+This might be indicative of issues with the Raspberry Pi 5 settings.  I have
+seen many issues crop up in the issue trackers, but I haven't really looked into
+them since I haven't gotten that far yet.
+
+I've seen this issue when trying to move down in ~systemctl list-units~:
+
+#+begin_example
+/*** stack smashing detected ***: terminated
+#+end_example
+
+I don't know what it means yet.
+
+This ticket is indicative of trouble, and suggests turning off uboot:
+https://github.com/nix-community/raspberry-pi-nix/issues/16
+
+Another is to use the rpi4 kernel, which I guess is supposed to work just as
+well?
+
+I turned off uboot, and rebooted the pi.  The screen was blank.  I moved the
+power to the screen from the Pi to a dedicated USB power source, and then
+replugged the HDMI cable to the screen.  The screen immediately showed me a
+Linux-staged boot sequence, but it's still going and the print is far too small
+for me to read.
+
+This makes me think under-voltage caused by the screen could've been causing
+some issues, but it's hard to say which caused which.  This last experimentation
+was done on ~selenium~ but I could fall back to ~gallium~ if it's still having
+boot issues.  For now, ~gallium~ is running and seems fairly healthy.
