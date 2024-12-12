@@ -918,6 +918,10 @@ https://emacs.stackexchange.com/questions/69719/fingerprint-has-changed-message-
   (message "initializing mu4e with use-package...")
   (use-package "mu4e"
     :init
+    (map!
+     :leader
+     (:prefix ("o" . "standalone apps") :n "m" #'mu4e)
+     )
     <<mu4e-unread-count-fix>>
     <<config/maildir-account-dir-create>>
     <<config/email-mu4e-capture-template-add>>
