@@ -1,0 +1,16 @@
+#+title:     Hosts
+#+author:    Logan Barnett
+#+email:     logustus@gmail.com
+#+date:      <2024-12-08 Sun>
+#+language:  en
+#+file_tags:
+#+tags:
+
+* Naming
+
+I use elements in the periodic table for my host naming.  For groups of hosts,
+networks, etc, I use other particle names.
+
+** Next Host
+
+The last host I created was selenium, so the next element is bromine.
