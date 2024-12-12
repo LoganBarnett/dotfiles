@@ -218,7 +218,6 @@ setting =evil-snipe-skip-leading-whitespace= to =nil=.
   (map!
    :desc "evil-snipe forward" :nv "s" #'evil-snipe-s
    :desc "evil-snipe backward" :nv "S" #'evil-snipe-S
-
    )
   <<config/evil-snipe-smart-case-disable>>
   <<config/evil-snipe-fix-whitespace-seek>>
