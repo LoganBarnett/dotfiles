@@ -180,13 +180,18 @@ in {
   # };
   # See https://nixos.org/manual/nixpkgs/stable/#sec-darwin-builder for
   # information about configuration values here.
-  # virtualisation = {
-  #   # Sizes here are in MB.
-  #   # darwin-builder = {
-  #   diskSize = lib.mkForce (40 * 1024);
-  #   # Defaults to 3 GB.  Maybe with 8 we can build the Linux kernel...
-  #   memorySize = lib.mkForce (8 * 1024);
-  #   # };
-  #   # cores = 6;
-  # };
+  virtualisation = {
+    # Sizes here are in MB.
+    darwin-builder = {
+      # There might be disk space issues at play with the whole "vmlinux" BPF
+      # issue seen here:
+      # https://discourse.nixos.org/t/cannot-build-arm-linux-kernel-on-an-actual-arm-device/54218
+      diskSize = lib.mkForce (100 * 1024);
+      # Defaults to 3 GB.  Maybe with 8 we can build the Linux kernel...
+      memorySize = lib.mkForce (8 * 1024);
+    };
+    cores = 6;
+  };
+  # This keeps breaking builds.  Just disable it.
+  systemd.oomd.enable = false;
 }
