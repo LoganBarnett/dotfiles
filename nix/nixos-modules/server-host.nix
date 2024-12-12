@@ -85,4 +85,10 @@
   # unclear.  Disable.
   # Wipes passwords, so don't use.
   users.mutableUsers = true;
+  # Needed to build large dependencies, which can come from surprising places.
+  # Without this, oom-killer will still kill g++ on 32GB (29GB free) hosts.
+  swapDevices = [{
+    device = "/swapfile";
+    size = 16 * 1024; # 16GB.
+  }];
 }
