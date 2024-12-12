@@ -38,6 +38,8 @@
   # Brings in telnet. Similar to netcat - has its uses as a very bare-bones
   # network communication tool.
   pkgs.inetutils
+  # WYSIWYG SVG editing, but also can render SVGs to PNGs from the command line.
+  pkgs.inkscape
   # Email gathering and sending. Works with mu.
   pkgs.isync
   # Online service that works as proxy for quick, local sockets.
