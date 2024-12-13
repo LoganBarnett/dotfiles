@@ -23,6 +23,7 @@ in {
     })
     ../nixos-modules/amd-gpu.nix
     ../nixos-modules/discord.nix
+    ../nixos-modules/gaming-android.nix
     ../nixos-modules/lutris-gaming.nix
     ../nixos-modules/lvm-uefi-disk.nix
     ../nixos-modules/steam-gaming.nix

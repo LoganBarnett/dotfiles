@@ -4,10 +4,13 @@
 # I think it can do ROMs as well.
 ################################################################################
 { lib, pkgs, ... }: {
+
   environment.systemPackages = [
     pkgs.lutris
+    pkgs.wineWowPackages.waylandFull
   ];
   hardware.graphics = {
     enable = true;
+    # enable32Bit = true;
   };
 }
