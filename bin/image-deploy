@@ -61,7 +61,7 @@ if [ -z ${disk+x} ]; then
   disk="/dev/$(disk-detachable | head -n 1)"
 fi
 
-if [[ "$disk" == "/dev/" ]]; then
+if [[ "$disk" == "/dev/" || "$disk" == '/dev/null' ]]; then
   echo "No disk detected.  Aborting..."
   exit 1
 else
