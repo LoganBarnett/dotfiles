@@ -1767,6 +1767,40 @@ Version [32;1m377[0m (2024-09-26) <- 376:
   No changes.
 :end:
 
+** conditional values
+*** lib.mkIf
+
+=lib.mkIf= either includes the value given or an empty =attrset= depending on the
+evaluation of the condition.  In other words, this is for any =attrset=.  For
+lists, see [[lib.optionals]].
+
+#+begin_src nix :results none :exports code
+let
+  a = lib.mkIf true { foo = "bar"; } # Returns { foo = "bar"; }.
+  b = lib.mkIf false { foo = "bar"; } # Returns {}.
+  # Returns { foo = "bar"; baz = "qux";  }
+  c = { foo = "bar" } // (lib.mkIf true { baz = "qux"; })
+  # Returns { foo = "bar"; }
+  d = { foo = "bar" } // (lib.mkIf false { baz = "qux"; })
+in {}
+#+end_src
+
+*** lib.optionals
+
+=lib.optionals= includes the provided list if the condition is true.  If false,
+an empty list is given.  For an =attrset=, see [[lib.mkIf]].
+
+#+begin_src nix :results none :exports code
+let
+  a = lib.optionals true [ "foo" ] # Returns [ "foo" ].
+  b = lib.optionals false [ "foo" ] # Returns [].
+  # Returns [ "foo" "bar" ].
+  c = [ "foo" ] // (lib.optionals true [ "bar" ])
+  # Returns [ "foo" ].
+  d = [ "foo" ] // (lib.optionals false [ "bar" ])
+in {}
+#+end_src
+
 * Troubleshooting
 ** DONE ~age~ attribute missing
 CLOSED: [2024-11-29 Fri 13:45]
