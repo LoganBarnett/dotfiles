@@ -78,8 +78,11 @@
       # inputs.nixpkgs.follows = "nixpkgs";
     };
     # Specify the source of Home Manager and Nixpkgs.
+    # This is forced at the moment, because we have some heavy deltas coming
+    # into flake.lock and I want that to stabilize before I pin it here.
+    nixpkgs.url = "github:nixos/nixpkgs?ref=f9f59197478b3ec9c954b67ae0d1d5429de23124";
     # nixpkgs.url = "github:nixos/nixpkgs/master";
-    nixpkgs.url = "github:LoganBarnett/nixpkgs/comfyui-fetch-model-hide-rebase";
+    nixpkgs-comfyui.url = "github:LoganBarnett/nixpkgs/comfyui-fetch-model-hide-rebase2";
     # nixpkgs.url = "github:nixos/nixpkgs?ref=9a9960b98418f8c385f52de3b09a63f9c561427a";
     # This is the Nix runtime itself, so be real careful about bumping this.
     # But at least now I can bump it without having to reinstall everything.
@@ -168,6 +171,7 @@
     emacs-overlay,
     nix-darwin,
     nixpkgs,
+    nixpkgs-comfyui,
     nixos-anywhere,
     nixos-hardware,
     nixos-generators,
@@ -364,9 +368,11 @@
         });
 
       nixosConfigurations.lithium =
-        nixpkgs.lib.nixosSystem (import ./hosts/lithium.nix {
+        nixpkgs-comfyui.lib.nixosSystem (import ./hosts/lithium.nix {
           disko-proper = disko;
-          inherit flake-inputs;
+          flake-inputs = flake-inputs // {
+            nixpkgs = nixpkgs-comfyui;
+          };
         });
       # Unsure if we need this, but if we do, it serves as a shortcut
       # essentially.

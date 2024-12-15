@@ -1011,6 +1011,22 @@
         "type": "github"
       }
     },
+    "nixpkgs-comfyui": {
+      "locked": {
+        "lastModified": 1734245814,
+        "narHash": "sha256-vB0njU6o8Pp0YcTA6WgPk/T2RZ91lMAf/6zGoNGZEkM=",
+        "owner": "LoganBarnett",
+        "repo": "nixpkgs",
+        "rev": "58b9e355c7f6fd7e40cf037fe0c8bfe3ddcbacbe",
+        "type": "github"
+      },
+      "original": {
+        "owner": "LoganBarnett",
+        "ref": "comfyui-fetch-model-hide-rebase2",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
     "nixpkgs-lib": {
       "locked": {
         "dir": "lib",
@@ -1157,16 +1173,16 @@
     },
     "nixpkgs_3": {
       "locked": {
-        "lastModified": 1733079917,
-        "narHash": "sha256-uqFe8isE7PcquQmMiwWXL0kgvMgZIkiNqgEMZa6tgG4=",
-        "owner": "LoganBarnett",
+        "lastModified": 1733776166,
+        "narHash": "sha256-uI8yTs0nxH2jKKGdTvXjbRfx8BjAKKu7UEbeI+QRL+Q=",
+        "owner": "nixos",
         "repo": "nixpkgs",
-        "rev": "85c7cddb82b9381ed810fd7a2b8d74208fd80ff2",
+        "rev": "f9f59197478b3ec9c954b67ae0d1d5429de23124",
         "type": "github"
       },
       "original": {
-        "owner": "LoganBarnett",
-        "ref": "comfyui-fetch-model-hide-rebase",
+        "owner": "nixos",
+        "ref": "f9f59197478b3ec9c954b67ae0d1d5429de23124",
         "repo": "nixpkgs",
         "type": "github"
       }
@@ -1334,6 +1350,7 @@
         "nixos-generators": "nixos-generators",
         "nixos-hardware": "nixos-hardware",
         "nixpkgs": "nixpkgs_3",
+        "nixpkgs-comfyui": "nixpkgs-comfyui",
         "programsdb": "programsdb",
         "raspberry-pi-nix": "raspberry-pi-nix"
       }
