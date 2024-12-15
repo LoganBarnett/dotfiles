@@ -178,6 +178,10 @@ in {
   #   ];
   #   # extra-platforms = [ "aarch64-linux" ];
   # };
+
+  services.openssh.enable = true;
+  # This keeps breaking builds.  Just disable it.
+  systemd.oomd.enable = false;
   # See https://nixos.org/manual/nixpkgs/stable/#sec-darwin-builder for
   # information about configuration values here.
   virtualisation = {
@@ -192,6 +196,4 @@ in {
     };
     cores = 6;
   };
-  # This keeps breaking builds.  Just disable it.
-  systemd.oomd.enable = false;
 }
