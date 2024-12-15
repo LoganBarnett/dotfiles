@@ -14,8 +14,7 @@
 # 3. Praying to the machine god.  Offerings made according to specifications.
 #    Prayers have gone unanswered, or a long journey of discovery awaits.
 # 4. Using deploy-rs.  Same cross-build issues.
-# 5. Using nixos-anywhere.  It's nixos-nowhere as far as I can tell.  Same
-#    cross-build issues.
+# 5. Using nixos-anywhere.  Same cross-build issues.
 # 6. Using nixos-generate.  Same cross-build issues.
 #
 # The common theme seems to be cross compiling from aarch64 to x86_64, which is
