@@ -27,6 +27,26 @@
     # ./darwin-linux-builder-vm.nix for how to properly get this working.  This
     # can appear to be an issue if it's run on a fresh system, or the system
     # recently got garbage collected.
+    # Sometimes toggling this value isn't enough.  This is when one should
+    # disable the VM here at this setting, and switch to apply it, then:
+    # `sudo rm -f # /var/lib/darwin-builder/nixos.qcow2`
+    # `nix run nixpkgs#darwin.linux-builder`
+    # `shutdown now` (inside the VM)
+    # and enable this once again.
+    # These steps are also helpful when the builder is lodged somehow (such as
+    # not responding over SSH, despite holding the port open and negotiating a
+    # TCP connection).
+    # Per this comment, additional troubleshooting could be done via this
+    # configuration, which I have yet to try:
+    # https://github.com/LnL7/nix-darwin/issues/913#issuecomment-2081538333
+    # ```
+    # launchd.daemons.linux-builder = {
+    #   serviceConfig = {
+    #     StandardOutPath = "/var/log/darwin-builder.log";
+    #     StandardErrorPath = "/var/log/darwin-builder.log";
+    #   };
+    # };
+    # ```
     enable = true;
     # callPackage might seem a better use here, but I run into this error when
     # using it:
