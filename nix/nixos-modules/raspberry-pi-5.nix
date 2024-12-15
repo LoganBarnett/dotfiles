@@ -5,12 +5,12 @@
   imports = [
     flake-inputs.raspberry-pi-nix.nixosModules.raspberry-pi
     ({ lib, pkgs, ... }:
-    #   let
-    #   linux_rpi5 = pkgs.linux_rpi4.override {
-    #     rpiVersion = 5;
-    #     argsOverride.defconfig = "bcm2712_defconfig";
-    #   };
-    # in {
+      let
+      linux_rpi5 = pkgs.linux_rpi4.override {
+        rpiVersion = 5;
+        argsOverride.defconfig = "bcm2712_defconfig";
+      };
+    in
       {
         # imports = [
         #   (import ../nixos-modules/hardware-raspberry-pi-main.nix {
@@ -20,7 +20,7 @@
         # ];
         # boot.kernelParams = [ "dtb=\\bcm2712-rpi-5-b.dtb" ];
       # boot.kernelPackages = pkgs.linuxPackages_rpi5;
-      # boot.kernelPackages = lib.mkForce (pkgs.linuxPackagesFor linux_rpi5);
+      boot.kernelPackages = lib.mkForce (pkgs.linuxPackagesFor linux_rpi5);
       # Note: uboot not yet supported for pi5.  See:
       # https://github.com/tstat/raspberry-pi-nix/issues/13#issuecomment-2090601812
       # # bcm2711 for rpi 3, 3+, 4, zero 2 w

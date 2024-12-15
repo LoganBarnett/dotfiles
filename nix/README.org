@@ -15,6 +15,83 @@ This helps me close the many tabs I have open.  This is very incomplete and I
 have many more tabs to go.  I think I like this as a general "wut I do in Nix"
 scratch pad though.
 
+* creating new hosts
+** host file
+
+Look up the next element in the periodic table, and then create that under
+~nix/hosts~.
+
+*** BIOS systems
+
+Not a lot must be done here to accommodate BIOS, since a bootable partition is
+simply bootable.  There might have to be some adjustments made in the BIOS
+settings.  Despite how simple this process is, it is essentially dead already.
+New systems will use UEFI and thus see [[UEFI systems]].
+
+*** UEFI systems
+
+Unfortunately you cannot create a bootable image and simply slap it into a UEFI
+system, because that UEFI system has to be told where to boot.  I've read that
+one can simply create a boot partition and put certain files in the right place.
+Nix does this, or can be taught to do this.  In any case, I have verified the
+magic files went into the magic locations, but still no joy.
+
+Instead, boot into the system using the detachable USB drive.  The host is
+called ~nucleus.proton~ on boot.  From there, you should be able to do a remote
+deployment.  Unfortunately ~proton-deploy~ does not accommodate this activity
+yet.  You can add it, or you can use ~remote-deploy --enter-via nucleus.proton
+...~.  It is recommended to use ~proton-deploy~ though, due to security
+concerns.
+
+*** Raspberry Pi
+
+The Raspberry Pi uses its own proprietary boot system.  Sometimes it can use
+something called ~uboot~, which may or may not be proprietary.
+
+**** modules
+
+**** initial deployment steps
+
+For these, use the following invocation:
+
+#+begin_src shell-script :results none :exports code
+host='my-host'; nom build ".#nixosConfigurations.${host}.config.system.build.sdImage" --show-trace --verbose  --accept-flake-config
+#+end_src
+
+But, you know, change ~host~.
+
+Once that's complete, use ~image-deploy~ thusly, with your SD card plugged in:
+
+#+begin_src shell-script :results none :exports code
+image-deploy --image result/sd-image/*.img.zst
+#+end_src
+
+Once it's done, and the partition table looks fleshed out, remove the SD card
+(no eject/unmount needed).  Plug it into the Pi and boot the Pi.
+
+~agenix~ has some trouble with this configuration and needs some help getting
+bootstrapped.  Use ~proton-deploy~ to the image to help it lay down everything
+needed.  I though I read this needed a reboot, but I was incorrect about that -
+the reboot does nothing.
+
+Part of the problem is that the host key that was laid down differs from the one
+used in the initial build.  I haven't figured out how to get around this yet,
+and from my recollection of reading ~oddllama~'s dotfiles, it's not possible yet.
+
+So scan the host key into the right location:
+
+#+begin_src shell-script :results none :exports code
+ssh-keyscan $host.proton | grep -o 'ssh-ed25519.*' > secrets/$host-pub-key.pub
+#+end_src
+
+A quick ~git status~ will show the host pub key has changed.
+
+#+begin_src shell-script :results none :exports code
+agenix rekey -a
+#+end_src
+
+Then do another ~proton-deploy switch $host~.  This should fix everything.
+
 * projects
 
 This is all the Nix related projects I have.
