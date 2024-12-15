@@ -49,14 +49,30 @@ in {
     (import ../nixos-modules/server-host.nix {
       inherit flake-inputs host-id system;
     })
-    ({ ... }: {
-      # Allow building i686-linux binaries too.  This is helpful if an
-      # x86_64-linux build needs 32bit support, which is what i686 indicates.
+    ({ lib, pkgs, ... }: {
+      # Freaky workaround that's already fixed, but we're pinned to an older
+      # nixpkgs.  See: https://github.com/NixOS/nixpkgs/issues/261777
+      programs.fish.vendor.config.enable = false;
+      # Override the value from ../nixos-modules/nix-flake-environment.nix
+      # because we're on 23.05 for lithium to make nvidia support smoother.
+      # nix.package = lib.mkForce flake-inputs.nix.packages.${pkgs.system}.nix;
       nix.settings = {
+        # Allow building i686-linux binaries too.  This is helpful if an
+        # x86_64-linux build needs 32bit support, which is what i686 indicates.
         extra-platforms = [
           "i686-linux"
         ];
       };
+      nixpkgs.overlays = [
+        (final: prev: {
+          pythonPackagesExtensions = [(py-final: py-prev: {
+            tensorboard = py-prev.tensorboard.overrideAttrs (old: {
+              # This could be made smarter.
+              disabled = false;
+            });
+          })];
+        })
+      ];
       # This is just to make lithium able to emit a Raspberry Pi image.  It is
       # not recommended since lithium is not an arm system.
       # boot.binfmt.emulatedSystems = [ "aarch64-linux" ];
