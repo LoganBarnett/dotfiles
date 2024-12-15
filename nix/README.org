@@ -1801,6 +1801,66 @@ let
 in {}
 #+end_src
 
+*** options that may not exist
+
+While I was working on ~comfyui~ and started using different ~nixpkgs~ versions
+across hosts, I started running into problems with shared modules.  Some would
+set ~services.comfyui~ and attributes under it, and this would cause Nix
+evaluation failures for hosts that didn't know about it in their ~nixpkgs~.
+
+First, find or create your ~imports~ for the module in question.  Next, use
+~lib.mkIf~ and check for the existence of the option with ~builtins.hasAttr
+"comfyui" options.services)~.  Then, in the key, allow the key name to evaluate
+to ~null~ based on a check.
+
+#+begin_src nix :results none :exports code
+imports = [
+  (lib.mkIf (builtins.hasAttr "comfyui" options.services) {
+    # This is kind of magical.  See
+    # https://nix.dev/manual/nix/2.17/language/values.html?highlight=coerced#attribute-set
+    # but basically if the attribute name evaluates to null then the attribute
+    # won't exist.  Without this hack, we get `The option `services.comfyui'
+    # does not exist.`.  This is a special case and one cannot use null as a
+    # key name.
+    services.${
+      if (builtins.hasAttr "comfyui" options.services)
+      then "comfyui"
+      else null
+    } = {
+      package = pkgs ? comfyui-rocm;
+      rocmSupport = true;
+    };
+  })
+];
+#+end_src
+
+This is the best way to avoid ~config.modules~ and ~lib.mkMerge~ while also
+keeping things relatively simple.  I should make a helper for this though.
+
+To include a package conditionally, use this:
+
+#+begin_src nix :results none :exports code
+imports = [
+  # cyme isn't available on all versions of nixpkgs I use.
+  (lib.mkIf (builtins.hasAttr "cyme" pkgs) {
+    environment.systemPackages =
+      if (builtins.hasAttr "cyme" pkgs)
+      then [
+        # Allows us to query the status of USB devices.  This uses lsusb or
+        # systemprofile -json under the hood in a cross-platform manner.
+        # Unfortunately it does not work on non-USB devices (like SD cards)
+        # like one might think.  This is _not_ for storage devices (many
+        # things imply it will work, but it won't).
+        pkgs.cyme
+      ]
+      else []
+    ;
+  })
+];
+#+end_src
+
+
+
 * Troubleshooting
 ** DONE ~age~ attribute missing
 CLOSED: [2024-11-29 Fri 13:45]

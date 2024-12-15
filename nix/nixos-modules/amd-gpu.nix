@@ -3,7 +3,7 @@
 # Unfortunately the guide doesn't speak much as to _when_ you'd want to turn on
 # these various settings, so for which applications these settings are needed is
 # less understood.  That's an exercise left the reader.
-{ pkgs, ... }: {
+{ lib, options, pkgs, ... }: {
   boot.initrd.kernelModules = [ "amdgpu" ];
   # Some programs hard-code the path to HIP.
   systemd.tmpfiles.rules = ["L+ /opt/rocm/hip - - - - ${pkgs.rocmPackages.clr}"];
@@ -47,6 +47,24 @@
       pkgs.driversi686Linux.amdvlk
     ];
   };
+  imports = [
+    (lib.mkIf (builtins.hasAttr "comfyui" options.services) {
+      # This is kind of magical.  See
+      # https://nix.dev/manual/nix/2.17/language/values.html?highlight=coerced#attribute-set
+      # but basically if the attribute name evaluates to null then the attribute
+      # won't exist.  Without this hack, we get `The option `services.comfyui'
+      # does not exist.`.  This is a special case and one cannot use null as a
+      # key name.
+      services.${
+        if (builtins.hasAttr "comfyui" options.services)
+        then "comfyui"
+        else null
+      } = {
+        package = pkgs ? comfyui-rocm;
+        rocmSupport = true;
+      };
+    })
+  ];
   nixpkgs.config.enableRocm = true;
   nixpkgs.config.rocmSupport = true;
   nixpkgs.overlays = [
@@ -84,8 +102,6 @@
       # };
     })
   ];
-  services.comfyui.rocmSupport = true;
-  services.comfyui.package = pkgs.comfyui-rocm;
   services.xserver.enable = true;
   # This says the wiki is wrong:
   # https://discourse.nixos.org/t/amd-rx-7700-xt-not-being-detected-properly/33683/2

@@ -84,6 +84,8 @@ in {
       #     "raspberry-pi-nix.cachix.org-1:WmV2rdSangxW0rZjY/tBvBDSaNFQ3DyEQsVw8EvHn9o="
       #   ];
       # };
+      # I suspect this is killing my builds of torch.  Stop that!
+      systemd.oomd.enable = false;
     })
     ({ lib, ... }: {
       imports = [

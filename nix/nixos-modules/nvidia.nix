@@ -7,6 +7,10 @@
 # https://discourse.nixos.org/t/on-nixpkgs-and-the-ai-follow-up-to-2023-nix-developer-dialogues/37087#binary-cache-3
 # Not all of the configuration here comes from that, but I am starting to
 # integrate it where I can.
+#
+# I think maybe a new wiki has stabilized.  I need to review the new document
+# with respects to all of my comments here, which haven't accounted for this
+# wiki document yet: https://wiki.nixos.org/wiki/NVIDIA
 ################################################################################
 {
   # Bus ID of the NVIDIA GPU. You can find it using lspci, either under 3D or
@@ -19,12 +23,19 @@
   # for this.
   cudaCapabilities,
   flake-inputs,
-}: { lib, pkgs, ... }: let
-  linux-packages = pkgs.linuxPackages_latest;
+}: { config, lib, options, pkgs, ... }: let
+  # linux-packages = pkgs.linuxPackages_latest;
+  linux-packages = pkgs.linuxPackages;
 in {
   allowUnfreePackagePredicates = [
     # Zounds!
     (pkg: builtins.elem (lib.getName pkg) [
+      # Before 23.05.
+      "cudatoolkit"
+      "cudatoolkit-11-cudnn"
+      "cuda_nvprof"
+      "cudatoolkit-11.7-cutensor"
+      # After 23.05.
       "cuda_cccl"
       "cuda_cudart"
       "cuda_cuobjdump"
@@ -70,7 +81,7 @@ in {
     # installations may be.  It's not in by this package though.
     # pkgs.ldd
     # Allow us to get the PCI Bus ID for the graphics card.  This will render a
-    # litle differently than lspci, and nvidiaBusId demands a specific format
+    # little differently than lspci, and nvidiaBusId demands a specific format
     # that's closer to what lshw puts out.  There might be a flag that would fix
     # it, but I've yet to find it.
     pkgs.lshw
@@ -87,17 +98,6 @@ in {
     # Includes `lspci`.  `lspci` gets more information about the PCI bus.
     # Useful for debugging issues with the driver not picking up the hardware.
     pkgs.pciutils
-    # saxpy can is the best "doctor" tool for version mismatches.  Example
-    # output of a version mismatch:
-    # [logan@lithium:~]$ saxpy
-    # Start
-    # Runtime version: 12020
-    # Driver version: 12050
-    # Host memory initialized, copying to the device
-    # Scheduled a cudaMemcpy, calling the kernel
-    # Scheduled a kernel call
-    # Max error: 0.000000
-    pkgs.cudaPackages.saxpy
     # If encountering "RuntimeError: No CUDA GPUs are available", use this to
     # debug:
     # LD_DEBUG=libs python -c "import torch ; torch.cuda.is_available()"
@@ -125,15 +125,46 @@ in {
     flake-inputs.nixos-hardware.nixosModules.common-gpu-nvidia-nonprime
     # Gives us allowUnfreePackagePredicates.
     ./unfree-predicates.nix
+    ((lib.mkIf (builtins.hasAttr "saxpy" pkgs.cudaPackages)) {
+      environment.systemPackages = [
+        # saxpy can is the best "doctor" tool for version mismatches.  Example
+        # output of a version mismatch:
+        # [logan@lithium:~]$ saxpy
+        # Start
+        # Runtime version: 12020
+        # Driver version: 12050
+        # Host memory initialized, copying to the device
+        # Scheduled a cudaMemcpy, calling the kernel
+        # Scheduled a kernel call
+        # Max error: 0.000000
+        pkgs.cudaPackages.saxpy
+      ];
+    })
+    (lib.mkIf (builtins.hasAttr "comfyui" options.services) {
+      # This is kind of magical.  See
+      # https://nix.dev/manual/nix/2.17/language/values.html?highlight=coerced#attribute-set
+      # but basically if the attribute name evaluates to null then the attribute
+      # won't exist.  Without this hack, we get `The option `services.comfyui'
+      # does not exist.`.  This is a special case and one cannot use null as a
+      # key name.
+      services.${
+        if (builtins.hasAttr "comfyui" options.services)
+        then "comfyui"
+        else null
+      } = {
+        package = pkgs ? comfyui-cuda;
+        cudaSupport = true;
+      };
+    })
   ];
   hardware.graphics = {
     enable = true;
   };
-  hardware.graphics.package = linux-packages.nvidiaPackages.beta;
+  hardware.graphics.package = linux-packages.nvidiaPackages.stable;
   # Most of this can be found here:
   # https://nixos.wiki/wiki/Nvidia#Nvidia_PRIME
   hardware.nvidia = {
-    package = linux-packages.nvidiaPackages.beta;
+    package = linux-packages.nvidiaPackages.stable;
     # Actually this expression is broken.  The wiki is wrong?  Error:
     # error: attribute 'boot' missing
     # package = config.boot.kernelPackages.nvidiaPackages.production;
@@ -198,7 +229,5 @@ in {
       "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
     ];
   };
-  services.comfyui.cudaSupport = true;
-  services.comfyui.package = pkgs.comfyui-cuda;
   services.xserver.videoDrivers = [ "nvidia" ];
 }

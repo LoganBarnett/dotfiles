@@ -21,12 +21,6 @@
     pkgs.curl
     # Show us the current system as a double.
     flake-inputs.current-system.packages.${system}.default
-    # Allows us to query the status of USB devices.  This uses lsusb or
-    # systemprofile -json under the hood in a cross-platform manner.
-    # Unfortunately it does not work on non-USB devices (like SD cards) like one
-    # might think.  This is _not_ for storage devices (many things imply it will
-    # work, but it won't).
-    pkgs.cyme
     # Searches for files. Used by projectile in Emacs.  Included in
     # administrative tools because it needs to be on the remote host when using
     # Tramp.
@@ -108,5 +102,22 @@
     pkgs.sysstat
     # Show the path that packets take.
     pkgs.traceroute
+  ];
+  imports = [
+    # cyme isn't available on all versions of nixpkgs I use.
+    (lib.mkIf (builtins.hasAttr "cyme" pkgs) {
+      environment.systemPackages =
+        if (builtins.hasAttr "cyme" pkgs)
+        then [
+          # Allows us to query the status of USB devices.  This uses lsusb or
+          # systemprofile -json under the hood in a cross-platform manner.
+          # Unfortunately it does not work on non-USB devices (like SD cards)
+          # like one might think.  This is _not_ for storage devices (many
+          # things imply it will work, but it won't).
+          pkgs.cyme
+        ]
+        else []
+      ;
+    })
   ];
 }

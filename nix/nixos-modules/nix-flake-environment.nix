@@ -31,11 +31,13 @@ in (lib.mkMerge [
   # mkIf doesn't work for this because of how it recurses or something.
   # While this this is not in nix-darwin (yet), it would be nice to turn it on
   # when it is.  So instead of checking the platform, check the option.
-  (lib.optionalAttrs (options.programs?command-not-found) {
-    # Not in nix-darwin yet.
-    programs.command-not-found.dbPath =
-      programsdb.packages.${pkgs.system}.programs-sqlite;
-  })
+  # TODO: see new ways to set conditional values in my Nix README for how to set
+  # this intelligently.
+  # (lib.optionalAttrs (options.programs?command-not-found) {
+  #   # Not in nix-darwin yet.
+  #   programs.command-not-found.dbPath =
+  #     programsdb.packages.${pkgs.system}.programs-sqlite;
+  # })
   # So systemd in macOS.
   (lib.optionalAttrs (options?systemd) {
     systemd.tmpfiles.rules = [
@@ -51,8 +53,6 @@ in (lib.mkMerge [
         "nix-command"
         "flakes"
       ];
-      package = pkgs.nixVersions.latest;
-      # package = lib.mkDefault nix.packages.${pkgs.system}.nix;
       registry.nixpkgs.flake = nixpkgs;
       # registry.nixpkgs2105.flake = nixpkgs-2105;
       # registry.nixpkgs2111.flake = nixpkgs-2111;
@@ -62,6 +62,10 @@ in (lib.mkMerge [
         # "nixpkgs2111=${nixpkgs2111Path}"
         "/nix/var/nix/profiles/per-user/root/channels"
       ];
-    };
+    } // (lib.mkIf (config.system.nixos.release != "23.05") {
+      package = pkgs.nixVersions.latest;
+      # Old way of getting this package?  Doesn't work.
+      # package = lib.mkDefault nix.packages.${pkgs.system}.nix;
+    });
   }
 ])
