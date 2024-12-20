@@ -97,10 +97,14 @@ if [[ $noop == false ]]; then
   sudo diskutil unmountDisk force $disk
   sudo dd \
    if="$image_name" \
+   iflag=fullblock \
    of=$disk \
    bs=4M \
    status=progress \
    conv=fsync
+  # This can be faster in some circumstances, I'm told, but observations on
+  # macOS show it running 2x slower.  Unsure what the difference is.
+  # pv "$image_name" | sudo tee "$disk" >/dev/null
   echo "Unmounting again because it can get mounted again..."
   # In the new macOS version (Sonoma, 14.4), the behavior seems to have changed
   # in that the disk is either immediately mounted or it wasn't truly unmounted
