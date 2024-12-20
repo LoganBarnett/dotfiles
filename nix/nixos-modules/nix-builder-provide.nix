@@ -17,10 +17,13 @@ in {
       isNormalUser = true;
       # Create a home so we can store SSH key info privately.
       createHome = true;
-      openssh.authorizedKeys.keys = [
-        (builtins.readFile ../secrets/builder-key.pub)
-        # (builtins.readFile /etc/nix/builder_ed25519.pub)
-      ];
+      openssh = {
+        # authorizedKeysInHomeDir = true;
+        authorizedKeys.keys = [
+          (builtins.readFile ../secrets/builder-key.pub)
+          # (builtins.readFile /etc/nix/builder_ed25519.pub)
+        ];
+      };
     };
   };
 }
