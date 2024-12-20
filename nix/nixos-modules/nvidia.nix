@@ -11,6 +11,12 @@
 # I think maybe a new wiki has stabilized.  I need to review the new document
 # with respects to all of my comments here, which haven't accounted for this
 # wiki document yet: https://wiki.nixos.org/wiki/NVIDIA
+#
+# The last known working commit from nixpkgs I can find is
+# 632ef59b16567c4ed17f4ab509b51d66befa4462 but it's hard to tell what release it
+# belongs to (`git tag --contains <commit-id>` returns nothing).
+# I have not switched over this commit yet because I have a build going
+# currently.
 ################################################################################
 {
   # Bus ID of the NVIDIA GPU. You can find it using lspci, either under 3D or
@@ -140,7 +146,7 @@ in {
         pkgs.cudaPackages.saxpy
       ];
     })
-    (lib.mkIf (builtins.hasAttr "comfyui" options.services) {
+    (lib.mkIf (options.services ? comfyui) {
       # This is kind of magical.  See
       # https://nix.dev/manual/nix/2.17/language/values.html?highlight=coerced#attribute-set
       # but basically if the attribute name evaluates to null then the attribute
@@ -148,11 +154,11 @@ in {
       # does not exist.`.  This is a special case and one cannot use null as a
       # key name.
       services.${
-        if (builtins.hasAttr "comfyui" options.services)
+        if (options.services ? comfyui)
         then "comfyui"
         else null
       } = {
-        package = pkgs ? comfyui-cuda;
+        package = (if pkgs ? comfyui-cuda then pkgs.comfyui-cuda else null);
         cudaSupport = true;
       };
     })
@@ -221,12 +227,14 @@ in {
     # Compilation problems from this can arise from driver issues.  Run tools
     # like nvidia-smi to figure out what's wrong, fix, and then enable this
     # again.
+    rocmSupport = false;
     cudaSupport = true;
     extra-substituters = [
       "https://nix-community.cachix.org"
     ];
     extra-trusted-public-keys = [
       "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
+      "cuda-maintainers.cachix.org-1:0dq3bujKpuEPMCX6U4WylrUDZ9JyUG0VpVZa7CNfq5E="
     ];
   };
   services.xserver.videoDrivers = [ "nvidia" ];
