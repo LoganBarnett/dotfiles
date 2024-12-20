@@ -27,5 +27,6 @@ nixos-rebuild \
   --target-host "$host.proton" \
   --build-host "$host.proton" \
   --use-remote-sudo \
+  --accept-flake-config \
   --fast \
   "$@"
