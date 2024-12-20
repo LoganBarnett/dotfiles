@@ -81,7 +81,7 @@
     # This is forced at the moment, because we have some heavy deltas coming
     # into flake.lock and I want that to stabilize before I pin it here.
     nixpkgs.url = "github:nixos/nixpkgs?ref=f9f59197478b3ec9c954b67ae0d1d5429de23124";
-    # nixpkgs.url = "github:nixos/nixpkgs/master";
+    nixpkgs-working-rocm.url = "github:nixos/nixpkgs/master";
     nixpkgs-comfyui.url = "github:LoganBarnett/nixpkgs/comfyui-fetch-model-hide-rebase2";
     # nixpkgs.url = "github:nixos/nixpkgs?ref=9a9960b98418f8c385f52de3b09a63f9c561427a";
     # This is the Nix runtime itself, so be real careful about bumping this.
@@ -172,6 +172,7 @@
     nix-darwin,
     nixpkgs,
     nixpkgs-comfyui,
+    nixpkgs-working-rocm,
     nixos-anywhere,
     nixos-hardware,
     nixos-generators,
@@ -397,107 +398,15 @@
         ];
       };
 
-      # Build this with:
-      # nix build '.#nixosConfigurations.titanium.config.system.build.image'
-      nixosConfigurations.titanium = nixpkgs.lib.nixosSystem {
+      nixosConfigurations.titanium = nixpkgs-working-rocm.lib.nixosSystem {
         modules = [
           (import ./hosts/titanium.nix {
             disko-proper = disko;
-            inherit flake-inputs;
+            flake-inputs = flake-inputs // {
+              nixpkgs = nixpkgs-working-rocm;
+            };
           })
         ];
-      };
-
-      packages.x86_64-linux.titanium = self
-        .nixosConfigurations
-        .titanium
-        .config
-        .system
-        .build
-        .isoImage;
-
-      packages.x86_64-linux.titanium-ng = nixos-generators.nixosGenerate {
-        system = "x86_64-linux";
-        modules = [
-          (import ./hosts/titanium.nix {
-            disko-proper = disko;
-            inherit flake-inputs;
-          })
-        ];
-        format = "iso";
-      };
-
-      # nixosConfigurations.nickel = nixpkgs-nickel.lib.nixosSystem {
-      #   modules = [
-      #     raspberry-pi-nix.nixosModules.raspberry-pi (import ./hosts/nickel.nix {
-      #       disko-proper = disko;
-      #       nixpkgs = nixpkgs-nickel;
-      #       inherit flake-inputs ;
-      #     })
-      #     # (import ./hosts/nickel.nix {
-      #     #   disko-proper = disko;
-      #     #   inherit flake-inputs nixpkgs;
-      #     # })
-      #   ];
-      # };
-
-      # nixosModules.nickel = { ... }: {
-      #   imports = [
-      #     (import ./hosts/nickel.nix {
-      #       disko-proper = disko;
-      #       inherit flake-inputs nixpkgs;
-      #     })
-      #   ];
-      #   format = "sd-image-raspberrypi";
-      # };
-      # packages.aarch64-linux.nickel-image = self
-      #   .nixosConfigurations
-      #   .nickel
-      #   .config
-      #   .formats
-      #   .sdImage
-      # ;
-
-      # packages.aarch64-linux.nickel-image = self
-      #   .nixosConfigurations
-      #   .nickel
-      #   .config
-      #   .system
-      #   .build
-      #   .sdImage
-      # ;
-
-      # Thie nixos-generators approach.
-      # I've switched to raspberry-pi-nix but may return here once that is
-      # proved out.
-      # packages.aarch64-linux.nickel = nixos-generators.nixosGenerate {
-      # packages.armv6l-linux.nickel = nixos-generators.nixosGenerate {
-      packages.armv7l-linux.nickel = nixos-generators.nixosGenerate {
-      # nixosConfigurations.nickel = nixos-generators.nixosGenerate {
-        # system = "aarch64-linux";
-        # system = "armv6l-linux";
-        system = "armv7l-linux";
-        # system = "aarch64-unknown-linux-gnu";
-        modules = [
-          # ./nixos-modules/sd-image-rasbperrypi.nix
-          (import ./hosts/nickel.nix {
-            disko-proper = disko;
-            nixpkgs = nixpkgs;
-            inherit flake-inputs;
-          })
-        ];
-        # format = "sd-image-raspberrypi";
-        # format = "sdImageRaspberryPi";
-        # customFormats = {
-        #   sd-image-raspberrypi = { modulesPath, ... }: {
-        #     imports = [
-        #       "${toString modulesPath}/installer/sd-card/sd-image-raspberrypi.nix"
-        #     ];
-        #     formatAttr = "sd-image-raspberrypi";
-        #   };
-        # };
-        # Is there a point in setting this?  The command line doesn't seem to
-        # see it.
       };
 
       nixosConfigurations.nucleus-installer = (let
