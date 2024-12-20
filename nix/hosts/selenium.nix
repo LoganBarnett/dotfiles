@@ -15,8 +15,22 @@ in {
       inherit flake-inputs host-id;
     })
     {
+      disabledModules = [
+        "${flake-inputs.nixpkgs}/nixos/modules/services/misc/octoprint.nix"
+      ];
+      imports = [
+        ../nixos-modules/octo-print-nixpkgs.nix
+      ];
+    }
+    {
       services.octoprint = {
         enable = true;
+        extraConfig = {
+          accessControl = {
+            userManager = "octoprint.access.users.FilebasedUserManager";
+            autologinLocal = false;
+          };
+        };
         openFirewall = false;
         # Unfortunately plugins do not appear in the NixOS search page.  But you
         # can find them here:
@@ -26,6 +40,7 @@ in {
           pg.stlviewer
           pg.themeify
         ];
+        # users = [];
       };
     }
     (import ../nixos-modules/https.nix {
