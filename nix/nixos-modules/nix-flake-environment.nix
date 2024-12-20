@@ -48,6 +48,9 @@ in (lib.mkMerge [
   })
   {
     nix = {
+      package = pkgs.nixVersions.latest;
+      # Old way of getting this package?  Doesn't work.
+      # package = lib.mkDefault nix.packages.${pkgs.system}.nix;
       # Enable flakes and new 'nix' command.
       settings.experimental-features = [
         "nix-command"
@@ -62,10 +65,6 @@ in (lib.mkMerge [
         # "nixpkgs2111=${nixpkgs2111Path}"
         "/nix/var/nix/profiles/per-user/root/channels"
       ];
-    } // (lib.mkIf (config.system.nixos.release != "23.05") {
-      package = pkgs.nixVersions.latest;
-      # Old way of getting this package?  Doesn't work.
-      # package = lib.mkDefault nix.packages.${pkgs.system}.nix;
-    });
+    };
   }
 ])
