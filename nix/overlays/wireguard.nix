@@ -7,9 +7,9 @@ final: prev: {
   # in nixpkgs, so it's likely a less-used macOS only issue.  That checks out
   # for my understanding, because wireguard-go isn't typically used by Linux and
   # instead is for macOS and Windows.
-  wireguard-go = prev.wireguard-go.overrideAttrs (old: {
-    ldflags = old.ldflags ++ [
-      "-checklinkname=0"
-    ];
-  });
+  # wireguard-go = prev.wireguard-go.overrideAttrs (old: {
+  #   ldflags = old.ldflags ++ [
+  #     "-checklinkname=0"
+  #   ];
+  # });
 }
