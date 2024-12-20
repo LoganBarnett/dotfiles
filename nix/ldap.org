@@ -1,0 +1,86 @@
+#+title:     LDAP
+#+author:    Logan Barnett
+#+email:     logustus@gmail.com
+#+date:      <2024-12-18 Wed>
+#+language:  en
+#+file_tags:
+#+tags:
+
+* LDAP
+
+** TODO SSH Authentication
+
+This is a good article on how to add a field containing the SSH pub key and
+delegating ~sshd~ to use that upon authentication:
+
+https://afilini.com/blog/ldap-user-authentication-on-nixos-with-a-twist/
+
+I have not implemented it yet.
+
+** Declarative contents and passwords
+
+A password can be declared via ~userPassword~ in the user entity, but that does
+require some bootstrapping from ~agenix-rekey~.  This can be done but like my
+~comfyui~ setup, requires a "double run" where the first run lays down the files
+needed, and the second actually uses the values of the files.  This is kind of
+hacky, but right now I'm not sure of a better way.
+
+Even if we did it this way, any password changes would be wiped anytime the
+configuration got rebuilt or the server restarted _for any reason_.  This means
+we need to not use ~declarativeContents~ at all.  It's too bad there's no
+~additiveContents~.  Even better would be some kind of ~initial-value~ that
+could be given for ~userPassword~ but I don't know how we could express that
+short of hardcoding the field.  That's fine I guess.
+
+~additiveContents~ could be a new option whose structure is exactly the same as
+~declarativeContents~.  It would check to see if all fields were set to all
+values expected for all entities involved (by distinguished name), and ignore
+any fields in the ~additiveContentsIgnoredFields~ list.
+
+Some work would need to be done to build this tooling.
+
+** Troubleshooting
+
+*** Authentication
+
+**** Server debugging
+
+Make sure the ~acl~
+
+**** Safe warning "cannot assess the validity of the ACL scope within backend naming context"
+
+olcAccess: value #1: warning: cannot assess the validity of the ACL scope within backend naming context.
+
+https://www.openldap.org/lists/openldap-software/200608/msg00177.html
+
+#+begin_quote
+Gavin Henry wrote:
+> Hi all,
+>
+> Just playing in openldap-devel, with the next step being mirrormode, and
+> get this warning when running slapd with debug on:
+>
+>     config_back_db_open: line 0: warning: cannot assess the validity of
+> the ACL scope within backend naming context
+>
+> So is this a seperate assessment outwith the normal syntax one?
+>
+> I don't quite understand the warning.
+
+That's quite informative, and issued at a very verbose log level. Basically, the
+ACL parsing code checks whether a rule will actually be used with the scope it
+can potentially apply to. For example, if you place a rule
+
+access to dn.subtree="" by * read
+
+within a database with suffix "dc=example,dc=com", the rule might potentially
+apply to any DN, but since it's placed within a database with a non-empty
+suffix, it will only apply to dn.subtree="dc=example,dc=com". So the ACL
+designer might be fooled into believing that it will apply to any entry while it
+won't. This doesn't mean that the ACL is wrong: it will do what's intended for;
+that's why the warning is informative. In some cases, the ACL parsing code
+cannot determine the scope of a rule (for example, when regular expressions are
+involved); this causes the specific warning you see. If you understood the ACL
+syntax and you believe your ACLs are correct, you can safely ignore that
+warning.
+#+end_quote
