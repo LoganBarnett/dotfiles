@@ -25,7 +25,6 @@
   (import ./man-pages-fix.nix)
   (import ./maven.nix)
   (import ./nightlight.nix)
-  (import ./nixos-generators.nix)
   (import ./percol.nix)
   (import ./prusa-slicer.nix)
   # (import ./python-hatch-vcs-fix.nix)

@@ -5,6 +5,8 @@
 # https://www.reddit.com/r/NixOS/comments/fd04jc/comment/fje9d8n
 # for getting things working using LDAP authentication.
 { host-id }: { config, pkgs, lib, ... }: (let
+  # This is a standard LDAP port.
+  ldap-port = 636;
   membersOf = membership: "foobar";
   ldapHumanUser = base-dn: {
     username,
@@ -84,12 +86,14 @@ in {
         mail: logustus@gmail.com
         description: The reason we suffer.
         ou: Administrators
+        userPassword: foobar
       '';
     };
 
     settings = {
       attrs = {
-        olcLogLevel = "conns config";
+        # - "acl": Access control?  Authentication stuffs.
+        olcLogLevel = "acl conns config";
         # olc means Open LDAP Certificates...?
         olcTLSCACertificateFile = "${../secrets/proton-ca.crt}";
         olcTLSCertificateFile = "${../secrets/tls-${host-id}.crt}";
@@ -107,6 +111,20 @@ in {
           "${pkgs.openldap}/etc/schema/inetorgperson.ldif"
           "${pkgs.openldap}/etc/schema/nis.ldif"
         ];
+        "olcDatabase={-1}frontend" = {
+          attrs = {
+            objectClass = "olcDatabaseConfig";
+            olcDatabase = "{-1}frontend";
+            olcAccess = [ "{0}to * by dn.exact=uidNumber=0+gidNumber=0,cn=peercred,cn=external,cn=auth manage stop by * none stop" ];
+          };
+        };
+        "olcDatabase={0}config" = {
+          attrs = {
+            objectClass = "olcDatabaseConfig";
+            olcDatabase = "{0}config";
+            olcAccess = [ "{0}to * by * none break" ];
+          };
+        };
         "olcDatabase={1}mdb" = {
           attrs = {
             objectClass = [
@@ -189,6 +207,8 @@ in {
   users.users.openldap = {
     extraGroups = [ "tls-leaf" ];
   };
+  networking.firewall.allowedTCPPorts = [ ldap-port ];
+  networking.firewall.allowedUDPPorts = [ ldap-port ];
   /* ensure openldap is launched after certificates are created */
   # systemd.services.openldap = {
   #   wants = [ "acme-${your-host-name}.service" ];

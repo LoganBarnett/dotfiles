@@ -16,6 +16,9 @@
 in {
   # inherit system;
   imports = [
+    (import ../nixos-modules/raspberry-pi-4.nix {
+      inherit flake-inputs;
+    })
     ../nixos-modules/nix-builder-provide.nix
     ../nixos-modules/raspberry-pi-builder.nix
     (import ../nixos-modules/server-host.nix {
@@ -23,7 +26,6 @@ in {
     })
     (import ../nixos-modules/ldap-server.nix { inherit host-id; })
     # (import ../nixos-modules/freeipa-server.nix { inherit host-id; })
-    ../nixos-modules/raspberry-pi-disk.nix
     # Pi stuff.
     ({ pkgs, ... }: {
       # networking.hostId is needed by the filesystem stuffs.
