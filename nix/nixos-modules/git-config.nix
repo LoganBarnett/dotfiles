@@ -94,6 +94,9 @@
           rebase = {
             autoStash = true;
           };
+          tag = {
+            gpgSign = true;
+          };
           user = {
             # GitHub uses the email address to associate to the account.  Other
             # services may do this too.  See
