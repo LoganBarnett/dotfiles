@@ -106,6 +106,11 @@
             # an alias or my proper name.
             email = user.git-email;
             name = user.git-name;
+            # The signing keys set here are actually fingerprints, not a
+            # "private key", which is typically what "key" means.  GPG indeed
+            # even shows the fingerprints when using --list-secret-keys even
+            # though nothing in its output is "secret".  See
+            # https://unix.stackexchange.com/a/613909 for a decent answer on this.
             signingkey = user.git-signing-key;
           };
           # includeIf."gitdir:~/dev/nwea/" = {};
