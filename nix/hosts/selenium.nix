@@ -6,7 +6,7 @@
 #
 # Selenium provides an OctoPrint server for the Prusia 3D FFF printer.
 ################################################################################
-{ disko-proper, flake-inputs }: let
+{ disko-proper, flake-inputs }: { pkgs, ... }: let
   host-id = "selenium";
   system = "aarch64-linux";
 in {
@@ -27,8 +27,14 @@ in {
         enable = true;
         extraConfig = {
           accessControl = {
-            userManager = "octoprint.access.users.FilebasedUserManager";
+            userManager = "octoprint.access.users.LDAPUserManager";
             autologinLocal = false;
+          };
+          plugins = {
+            auth_ldap = {
+              auth_user = "";
+              auth_password = "";
+            };
           };
         };
         openFirewall = false;
@@ -39,6 +45,26 @@ in {
           pg.prusaslicerthumbnails
           pg.stlviewer
           pg.themeify
+          (pg.buildPlugin (let
+            version = "2022-11-10-unstable";
+          in {
+            pname = "authldap";
+            inherit version;
+            src = pkgs.fetchFromGitHub {
+              owner = "gillg";
+              repo = "OctoPrint-LDAP";
+              rev = "473cf955309b8ba427d4c6b5f50b4d7b58c56477";
+              hash = "sha256-6b5IXCIOxLlyKLo17y9gh30gQF7S0OEJVhTF6U2hrz0=";
+            };
+            propagatedBuildInputs = [
+              pkgs.python3Packages.python-ldap
+            ];
+            meta = {
+              description = "Bring LDAP authentication to OctoPrint.";
+              homepage = "https://github.com/gillg/OctoPrint-LDAP";
+              # maintainers = with lib.maintainers; [ logan-barnett ];
+            };
+          }))
         ];
         # users = [];
       };

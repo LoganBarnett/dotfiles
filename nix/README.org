@@ -2548,3 +2548,98 @@ This makes me think under-voltage caused by the screen could've been causing
 some issues, but it's hard to say which caused which.  This last experimentation
 was done on ~selenium~ but I could fall back to ~gallium~ if it's still having
 boot issues.  For now, ~gallium~ is running and seems fairly healthy.
+
+** signature by a trusted key error
+
+The general error is of the form:
+copying path <nix-drv-path> to <host> error: cannot add path <nix-drv-path>
+because it lacks a signature by a trusted key.
+
+#+begin_example
+copying path '/nix/store/rp3ac35r3pfb3fqh3rdqzlzsq67jpnws-source' to 'ssh://gallium.proton'error: cannot add path '/nix/store/rp3ac35r3pfb3fqh3rdqzlzsq67jpnws-source' because it lacks a signature by a trusted key
+#+end_example
+
+** building painful things
+*** torch
+**** opencv2
+
+These builds take forever and I'm not sure if it's always dying in the same place.
+
+#+begin_example
+[ 63%] Building NVCC (Device) object modules/cudaimgproc/CMakeFiles/cuda_compile_1.dir/src/cuda/cuda_compile_1_generated_hough_segments.cu.o
+[ 63%] Building CXX object modules/dnn/CMakeFiles/opencv_test_dnn.dir/test/test_main.cpp.o
+during RTL pass: dse1
+In file included from /build/source/modules/ts/include/opencv2/ts.hpp:126,
+                 from /build/source/modules/features2d/test/test_precomp.hpp:7,
+                 from /build/source/modules/features2d/test/test_drawing.cpp:7:
+/build/source/modules/ts/include/opencv2/ts/ts_gtest.h: In member function 'void testing::internal::ParameterizedTestCaseInfo<TestCase>::RegisterTests() [with TestCase = testing::TestWithParam<std::tuple<perf::Mat>
+/build/source/modules/ts/include/opencv2/ts/ts_gtest.h:12117:3: internal compiler error: Segmentation fault
+12117 |   }  // RegisterTests
+      |   ^
+0x17b29be diagnostic_impl(rich_location*, diagnostic_metadata const*, int, char const*, __va_list_tag (*) [1], diagnostic_t)
+        ???:0
+0x17b2d97 internal_error(char const*, ...)
+        ???:0
+0xd20acf crash_signal(int)
+        ???:0
+0x96adcd df_note_compute(bitmap_head*)
+        ???:0
+0x965831 df_analyze_problem(dataflow*, bitmap_head*, int*, int)
+        ???:0
+0x965929 df_analyze_1()
+        ???:0
+0x161f432 (anonymous namespace)::pass_rtl_dse1::execute(function*)
+        ???:0
+Please submit a full bug report,
+with preprocessed source if appropriate.
+Please include the complete backtrace with any bug report.
+See <https://gcc.gnu.org/bugs/> for instructions.
+make[2]: *** [modules/features2d/CMakeFiles/opencv_test_features2d.dir/build.make:230: modules/features2d/CMakeFiles/opencv_test_features2d.dir/test/test_drawing.cpp.o] Error 1
+make[1]: *** [CMakeFiles/Makefile2:4866: modules/features2d/CMakeFiles/opencv_test_features2d.dir/all] Error 2
+make[1]: *** Waiting for unfinished jobs....
+#+end_example
+
+I noticed that ~oomd~ is running.  I've turned it off and am trying again.
+Furthermore, I have forced this to be off for future generations of ~lithium~.
+
+After that:
+
+#+begin_example
+nvcc error   : 'cudafe++' died due to signal 11 (Invalid memory reference)
+nvcc error   : 'cudafe++' core dumped
+CMake Error at cuda_compile_1_generated_reduce.cu.o.Release.cmake:280 (message):
+  Error generating file
+  /build/source/build/modules/cudaarithm/CMakeFiles/cuda_compile_1.dir/src/cuda/./cuda_compile_1_generated_reduce.cu.o
+#+end_example
+
+I confirmed ~oomd~ is disabled.
+
+This is exhausting.  Can I just use ~torch-bin~?
+
+Another attempt:
+
+#+begin_example
+[  9%] Building CXX object modules/imgproc/CMakeFiles/opencv_imgproc.dir/src/emd.cpp.o
+[  9%] Building CXX object modules/imgproc/CMakeFiles/opencv_imgproc.dir/src/featureselect.cpp.o
+[  9%] Building NVCC (Device) object modules/cudaarithm/CMakeFiles/cuda_compile_1.dir/src/cuda/cuda_compile_1_generated_div_mat.cu.o
+[  9%] Building NVCC (Device) object modules/cudaarithm/CMakeFiles/cuda_compile_1.dir/src/cuda/cuda_compile_1_generated_div_scalar.cu.o
+during GIMPLE pass: dom
+/build/source/modules/imgproc/src/drawing.cpp: In function 'void cv::polylines(cv::InputOutputArray, cv::InputArrayOfArrays, bool, const Scalar&, int, int, int)':
+/build/source/modules/imgproc/src/drawing.cpp:2409:6: internal compiler error: Segmentation fault
+ 2409 | void cv::polylines(InputOutputArray img, InputArrayOfArrays pts,
+      |      ^~
+0x17b29be diagnostic_impl(rich_location*, diagnostic_metadata const*, int, char const*, __va_list_tag (*) [1], diagnostic_t)
+        ???:0
+0x17b2d97 internal_error(char const*, ...)
+        ???:0
+0xd20acf crash_signal(int)
+        ???:0
+0xeb3110 expr_hash_elt::~expr_hash_elt()
+        ???:0
+0xe13271 (anonymous namespace)::pass_dominator::execute(function*)
+        ???:0
+Please submit a full bug report,
+with preprocessed source if appropriate.
+Please include the complete backtrace with any bug report.
+See <https://gcc.gnu.org/bugs/> for instructions.
+#+end_example

@@ -49,6 +49,10 @@
       url = "github:nix-community/disko";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    emacs-overlay = {
+      url = "github:nix-community/emacs-overlay/master";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     nix-darwin = {
       url = "github:LnL7/nix-darwin/master";
       # rev = "72dd60bfc98c128149d84213b17d1b8a68863055";
@@ -60,10 +64,6 @@
     nixos-generators = {
       # url = "github:LoganBarnett/nixos-generators?ref=add-sd-image-raspberrypi";
       url = "github:nix-community/nixos-generators/master";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-    emacs-overlay = {
-      url = "github:nix-community/emacs-overlay/master";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     nixos-anywhere = {
@@ -83,12 +83,16 @@
     # into flake.lock and I want that to stabilize before I pin it here.
     nixpkgs.url = "github:nixos/nixpkgs?ref=f9f59197478b3ec9c954b67ae0d1d5429de23124";
     nixpkgs-working-rocm.url = "github:nixos/nixpkgs/master";
-    nixpkgs-comfyui.url = "github:LoganBarnett/nixpkgs/comfyui-fetch-model-hide-rebase2";
+    nixpkgs-comfyui.url = "github:LoganBarnett/nixpkgs/comfyui-fetch-model-hide-rebase";
+    # I've run into a host of issues with Raspberry Pi 5s after a successful
+    # build is made.  I'd like to move nixpkgs around to see if we can skip over
+    # some issues somehow.
+    nixpkgs-rpi.url = "github:nixos/nixpkgs/master";
     # nixpkgs.url = "github:nixos/nixpkgs?ref=9a9960b98418f8c385f52de3b09a63f9c561427a";
     # This is the Nix runtime itself, so be real careful about bumping this.
     # But at least now I can bump it without having to reinstall everything.
     nix = {
-      url = "github:nixos/nix";
+      url = "github:nixos/nix?ref=2.24.11";
       # I don't use parts, but maybe I could?
       # inputs.flake-parts.follows = "parts";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -174,6 +178,7 @@
     nixpkgs,
     nixpkgs-comfyui,
     nixpkgs-working-rocm,
+    nixpkgs-rpi,
     nixos-anywhere,
     nixos-hardware,
     nixos-generators,
@@ -389,11 +394,13 @@
         ];
       };
 
-      nixosConfigurations.selenium = nixpkgs.lib.nixosSystem {
+      nixosConfigurations.selenium = nixpkgs-rpi.lib.nixosSystem {
         modules = [
           (import ./hosts/selenium.nix {
             disko-proper = disko;
-            inherit flake-inputs;
+            flake-inputs = flake-inputs // {
+              nixpkgs = nixpkgs-rpi;
+            };
           })
           btf-disable
         ];

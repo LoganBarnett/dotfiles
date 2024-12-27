@@ -811,15 +811,16 @@
         "nixpkgs-regression": "nixpkgs-regression_2"
       },
       "locked": {
-        "lastModified": 1733765379,
-        "narHash": "sha256-kT7itAsgVlN9DGk7kRh0gS2hSAMX6mjqtTGcjmp65M8=",
+        "lastModified": 1733805448,
+        "narHash": "sha256-ZizmbJM+DbhkaizxbjKg9fNfMrxh3PfAZ6jApQrazks=",
         "owner": "nixos",
         "repo": "nix",
-        "rev": "b6250dc6bde47a796fade74026b076c7926c6d6d",
+        "rev": "a4f978bd9b872f0d51aff95b83054358767ef193",
         "type": "github"
       },
       "original": {
         "owner": "nixos",
+        "ref": "2.24.11",
         "repo": "nix",
         "type": "github"
       }
@@ -1013,16 +1014,16 @@
     },
     "nixpkgs-comfyui": {
       "locked": {
-        "lastModified": 1734245814,
-        "narHash": "sha256-vB0njU6o8Pp0YcTA6WgPk/T2RZ91lMAf/6zGoNGZEkM=",
+        "lastModified": 1735089958,
+        "narHash": "sha256-uOVyZuDiqjq65TkQrrR3F6OENiEaflDiE5hV/2X9Tko=",
         "owner": "LoganBarnett",
         "repo": "nixpkgs",
-        "rev": "58b9e355c7f6fd7e40cf037fe0c8bfe3ddcbacbe",
+        "rev": "ed447f4a5b5fd165d99faca861e69cccb5151fe4",
         "type": "github"
       },
       "original": {
         "owner": "LoganBarnett",
-        "ref": "comfyui-fetch-model-hide-rebase2",
+        "ref": "comfyui-fetch-model-hide-rebase",
         "repo": "nixpkgs",
         "type": "github"
       }
@@ -1074,6 +1075,22 @@
         "owner": "NixOS",
         "repo": "nixpkgs",
         "rev": "215d4d0fd80ca5163643b03a33fde804a29cc1e2",
+        "type": "github"
+      }
+    },
+    "nixpkgs-rpi": {
+      "locked": {
+        "lastModified": 1735268880,
+        "narHash": "sha256-7QEFnKkzD13SPxs+UFR5bUFN2fRw+GlL0am72ZjNre4=",
+        "owner": "nixos",
+        "repo": "nixpkgs",
+        "rev": "7cc0bff31a3a705d3ac4fdceb030a17239412210",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nixos",
+        "ref": "master",
+        "repo": "nixpkgs",
         "type": "github"
       }
     },
@@ -1367,6 +1384,7 @@
         "nixos-hardware": "nixos-hardware",
         "nixpkgs": "nixpkgs_3",
         "nixpkgs-comfyui": "nixpkgs-comfyui",
+        "nixpkgs-rpi": "nixpkgs-rpi",
         "nixpkgs-working-rocm": "nixpkgs-working-rocm",
         "programsdb": "programsdb",
         "raspberry-pi-nix": "raspberry-pi-nix"
