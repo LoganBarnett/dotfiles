@@ -8456,3 +8456,255 @@ Though this is not the same problem.
        Storage: none
        Message: Process 13504 (nix) of user 0 terminated abnormally without generating a coredump.
 #+end_example
+
+I've done some reading around and found nothing solid, but I suspect this
+relates to ~openssl~ not being available.  It might be that the slimmed down
+~sdImage~ is _too_ slimmed down.  Though this has got me thinking that I should
+open an issue with ~raspberry-pi-nix~ if I can't get much further.  I could also
+try slimming down the configuration, perhaps even creating a ~selenium-sd-image~
+to build.
+
+I have bumped ~raspberry-pi-nix~ and added the module
+~flake-inputs.raspberry-pi-nix.nixosModules.sd-image~ which I have read is
+important in the latest version to allow building the SD image.
+
+The image has built successfully.  Now I need to re-image the SD card and reboot
+to observe any potential changes.
+
+Another thing I might attempt next as well is using ~remote-deploy~ to start
+with instead of ~proton-deploy~.
+
+My next ~remote-deploy~ ended in a surprising sadness:
+
+#+begin_example
++ sudo nixos-rebuild switch --accept-flake-config --flake .#selenium --show-trace --impure
+warning: Git tree '/home/logan/proton-nix' is dirty
+error:
+       … from call site
+         at /nix/store/hg1s4gllar1v4nz9g8g48kp2zr5n5s1z-source/flake.nix:397:38:
+          396|
+          397|       nixosConfigurations.selenium = nixpkgs-rpi.lib.nixosSystem {
+             |                                      ^
+          398|         modules = [
+
+       … while calling anonymous lambda
+         at «nix-internal»/call-flake.nix:61:25:
+           60|           inputs = builtins.mapAttrs
+           61|             (inputName: inputSpec: allNodes.${resolveInput inputSpec})
+             |                         ^
+           62|             (node.inputs or {});
+
+       … from call site
+         at «nix-internal»/call-flake.nix:61:36:
+           60|           inputs = builtins.mapAttrs
+           61|             (inputName: inputSpec: allNodes.${resolveInput inputSpec})
+             |                                    ^
+           62|             (node.inputs or {});
+
+       … while calling anonymous lambda
+         at «nix-internal»/call-flake.nix:42:13:
+           41|     builtins.mapAttrs
+           42|       (key: node:
+             |             ^
+           43|         let
+
+       … in the condition of the assert statement
+         at «nix-internal»/call-flake.nix:83:13:
+           82|           if node.flake or true then
+           83|             assert builtins.isFunction flake.outputs;
+             |             ^
+           84|             result
+
+       … while calling the 'isFunction' builtin
+         at «nix-internal»/call-flake.nix:83:20:
+           82|           if node.flake or true then
+           83|             assert builtins.isFunction flake.outputs;
+             |                    ^
+           84|             result
+
+       … while calling the 'import' builtin
+         at «nix-internal»/call-flake.nix:58:19:
+           57|
+           58|           flake = import (outPath + "/flake.nix");
+             |                   ^
+           59|
+
+       … while realising the context of a path
+
+       … while calling the 'fetchFinalTree' builtin
+         at «nix-internal»/call-flake.nix:52:15:
+           51|               # Note: lock file entries are always final.
+           52|               fetchTreeFinal (node.info or {} // removeAttrs node.locked ["dir"]);
+             |               ^
+           53|
+
+       … while fetching the input 'github:nixos/nixpkgs/7cc0bff31a3a705d3ac4fdceb030a17239412210?narHash=sha256-7QEFnKkzD13SPxs%2BUFR5bUFN2fRw%2BGlL0am72ZjNre4%3D'
+
+       error: mismatch in field 'narHash' of input '{"__final":true,"lastModified":1735268880,"narHash":"sha256-7QEFnKkzD13SPxs+UFR5bUFN2fRw+GlL0am72ZjNre4=","owner":"nixos","repo":"nixpkgs","rev":"7cc0bff31a3a705d3ac4fdceb030a17239412210","type":"github"}', got '{"__final":true,"lastModified":1735268880,"narHash":"sha256-VhdlKGQjW43qkvTknUZdOEpP1ZSq3KXHatX1DbMOjaA=","owner":"nixos","repo":"nixpkgs","rev":"7cc0bff31a3a705d3ac4fdceb030a17239412210","type":"github"}'
+#+end_example
+
+My ~nixpkgs-rpi~ input is indeed pinned to
+~7cc0bff31a3a705d3ac4fdceb030a17239412210~.  So I'm not sure what's up with
+that.  Back to ~proton-deploy~, which uses ~nixos-rebuild~ with the remote build
+host arguments.  This went into the big build where some 5700+ packages must be
+built/downloaded.  I'm still waiting on it.
+
+The end result looks promising, even if it failed:
+
+#+begin_example
+$ proton-deploy test selenium
+building the system configuration...
+warning: Git tree '/Users/logan/dev/dotfiles' is dirty
+warning: The interpretation of store paths arguments ending in `.drv` recently changed. If this command is now failing try again with '/nix/store/xjbfqhvr71ydmjlkr61cpm8mf8w02x0m-nixos-system-selenium-25.05.20241227.7cc0bff.drv^*'
+warning: you did not specify '--add-root'; the result might be removed by the garbage collector
+Shared connection to selenium.proton closed.
+activating the configuration...
+[agenix] creating new generation in /run/agenix.d/2
+[agenix] decrypting secrets...
+decrypting '/nix/store/77iqn935svmq44andgzlbk2f33zbirrp-selenium/4b5ea37a65aa48922bb51e526ac2cf9f-builder-key.age' to '/run/agenix.d/2/builder-key'...
+age: error: no identity matched any of the recipients
+age: report unexpected or unhelpful errors at https://filippo.io/age/report
+chmod: cannot access '/run/agenix.d/2/builder-key.tmp': No such file or directory
+mv: cannot stat '/run/agenix.d/2/builder-key.tmp': No such file or directory
+decrypting '/nix/store/77iqn935svmq44andgzlbk2f33zbirrp-selenium/23b1ffea4af0d332a08bb57d54d0f187-proton-ca.age' to '/run/agenix.d/2/proton-ca'...
+age: error: no identity matched any of the recipients
+age: report unexpected or unhelpful errors at https://filippo.io/age/report
+chmod: cannot access '/run/agenix.d/2/proton-ca.tmp': No such file or directory
+mv: cannot stat '/run/agenix.d/2/proton-ca.tmp': No such file or directory
+decrypting '/nix/store/77iqn935svmq44andgzlbk2f33zbirrp-selenium/68997c19617e7cc8844a181923b0a28f-selenium-pub-key.age' to '/run/agenix.d/2/selenium-pub-key'...
+age: error: no identity matched any of the recipients
+age: report unexpected or unhelpful errors at https://filippo.io/age/report
+chmod: cannot access '/run/agenix.d/2/selenium-pub-key.tmp': No such file or directory
+mv: cannot stat '/run/agenix.d/2/selenium-pub-key.tmp': No such file or directory
+decrypting '/nix/store/77iqn935svmq44andgzlbk2f33zbirrp-selenium/b3ad30b347491229f7f9df146cac6541-tls-selenium.key.age' to '/run/agenix.d/2/tls-selenium.key'...
+age: error: no identity matched any of the recipients
+age: report unexpected or unhelpful errors at https://filippo.io/age/report
+chmod: cannot access '/run/agenix.d/2/tls-selenium.key.tmp': No such file or directory
+mv: cannot stat '/run/agenix.d/2/tls-selenium.key.tmp': No such file or directory
+[agenix] symlinking new secrets to /run/agenix (generation 2)...
+[agenix] removing old secrets (generation 1)...
+Activation script snippet 'agenixInstall' failed (1)
+[agenix] chowning...
+chown: cannot access '/run/agenix.d/2/builder-key': No such file or directory
+chown: cannot access '/run/agenix.d/2/proton-ca': No such file or directory
+chown: cannot access '/run/agenix.d/2/selenium-pub-key': No such file or directory
+chown: cannot access '/run/agenix.d/2/tls-selenium.key': No such file or directory
+Activation script snippet 'agenixChown' failed (1)
+setting up /etc...
+Failed to run activate script
+reloading user units for logan...
+restarting sysinit-reactivation.target
+the following new units were started: run-credentials-systemd\x2dtmpfiles\x2dresetup.service.mount, sysinit-reactivation.target, systemd-tmpfiles-resetup.service
+Shared connection to selenium.proton closed.
+warning: error(s) occurred while switching to the new configuration
+#+end_example
+
+I believe this is promising because all I see is the ~agenix~ failure, and
+~agenix~ failure is expected on the first real generation of the host.
+
+A second run fails with the same errors though.  Now I'm into my familiar
+territory.  I must do a keyscan of the host, then rekey.
+
+#+begin_example
+host=selenium; ssh-keyscan $host.proton | grep -o 'ssh-ed25519.*' > secrets/$host-pub-key.pub
+agenix rekey -a
+#+end_example
+
+This makes the next run successful!
+
+#+begin_example
+@ proton-deploy test selenium
+building the system configuration...
+warning: Git tree '/Users/logan/dev/dotfiles' is dirty
+warning: The interpretation of store paths arguments ending in `.drv` recently changed. If this command is now failing try again with '/nix/store/0i5kjsfw5bzqd1d5p2fn1w3cvgc29b98-nixos-system-selenium-25.05.20241227.7cc0bff.drv^*'
+these 6 derivations will be built:
+  /nix/store/0vxsgd7rxb9xh05hqarn205sk6b0ibhj-check-sshd-config.drv
+  /nix/store/g6brm3a6jb4xfh3fm8jlxw2ivh1pgrd2-builder.pl.drv
+  /nix/store/53k2kcy300akgdmn78zqihp31sddd8ny-perl-5.40.0-env.drv
+  /nix/store/c4dyva0sg75v66wdmgpz8qjjpjpj21zw-stage-2-init.sh.drv
+  /nix/store/pdp8k1ig4yvg2sixw8ys9sl1g910mb14-boot.json.drv
+  /nix/store/0i5kjsfw5bzqd1d5p2fn1w3cvgc29b98-nixos-system-selenium-25.05.20241227.7cc0bff.drv
+these 24 paths will be fetched (58.40 MiB download, 291.90 MiB unpacked):
+  /nix/store/z91k46jmcm1lz2c3xl6ffaic887r6w3h-binutils-2.43.1
+  /nix/store/k31i707zkwb945vpnq9ycbyadiws9cmq-binutils-2.43.1-lib
+  /nix/store/zy69cdp2ymkv7kzc9z7cw2nsqmkcmpva-binutils-wrapper-2.43.1
+  /nix/store/a75inn704wmvldmapnz0npmqvq9vyfm6-die-hook
+  /nix/store/dx0kbqxh9q2z93dfrdyk8fzqk784hjsc-ensure-all-wrappers-paths-exist
+  /nix/store/zxknig0fa24mk364607g30vyp6xkidgi-expand-response-params
+  /nix/store/p9gby0c4i2l5jwnfrfz4r36fvfikigd3-file-5.46
+  /nix/store/qbvp2h1f5a03nwmw0nwqimnk4kjhzv19-gcc-14-20241116
+  /nix/store/lypi8vf0lra99nx7nx2by1jyx5nhj9x0-gcc-wrapper-14-20241116
+  /nix/store/d9w1msymf7rmqdljh86bfr2zgb3r0zma-glibc-2.40-36-dev
+  /nix/store/3lv246cq8krns1ckwbb6f1vsj9i38wfs-gmp-6.3.0
+  /nix/store/fmgdbszd3l9vrswx6md8q6zivfd4xzvy-gnu-config-2024-01-01
+  /nix/store/nn96xcid49f2zm850y7nnx5p8w05mg6a-gnumake-4.4.1
+  /nix/store/32f0fhxgjy0ipl6akwmgidz36fx4l6dg-isl-0.20
+  /nix/store/nv9hicrp31l04xv5jqkz8wy6ah6ch6zy-libmpc-1.3.1
+  /nix/store/9i17l2ysdy6k4qb89kz6l72s6xw09jaw-linux-headers-6.12
+  /nix/store/1y8lzc0yhryw62z8gvzsj754iasl2s0z-make-binary-wrapper-hook
+  /nix/store/5n4crfin4v19rcbyryfjs1j9kp5iry8d-make-shell-wrapper-hook
+  /nix/store/0b2vw2cixv0awwxsj4536ivv6gp3ngcv-mpfr-4.2.1
+  /nix/store/d705jhh27wwbx1g5hvk1q5502qljqzp1-patchelf-0.15.0
+  /nix/store/msvccvwbfpd3qz31a9cszdzzpy64pgwr-perl5.40.0-Config-IniFiles-3.000003
+  /nix/store/6cxis9pldw2f8s5w469yxv1j20x5l632-perl5.40.0-IO-Stringy-2.113
+  /nix/store/ldlc13rkg4bd8iy75pn4crhyy7q0hd9w-stdenv-linux
+  /nix/store/y2mz6jlycravn7y1nkpnzcsh0c8f79lz-update-autotools-gnu-config-scripts-hook
+copying path '/nix/store/dx0kbqxh9q2z93dfrdyk8fzqk784hjsc-ensure-all-wrappers-paths-exist' from 'https://cache.nixos.org'...
+copying path '/nix/store/a75inn704wmvldmapnz0npmqvq9vyfm6-die-hook' from 'https://cache.nixos.org'...
+copying path '/nix/store/6cxis9pldw2f8s5w469yxv1j20x5l632-perl5.40.0-IO-Stringy-2.113' from 'https://cache.nixos.org'...
+copying path '/nix/store/fmgdbszd3l9vrswx6md8q6zivfd4xzvy-gnu-config-2024-01-01' from 'https://cache.nixos.org'...
+copying path '/nix/store/zxknig0fa24mk364607g30vyp6xkidgi-expand-response-params' from 'https://cache.nixos.org'...
+copying path '/nix/store/p9gby0c4i2l5jwnfrfz4r36fvfikigd3-file-5.46' from 'https://cache.nixos.org'...
+copying path '/nix/store/nn96xcid49f2zm850y7nnx5p8w05mg6a-gnumake-4.4.1' from 'https://cache.nixos.org'...
+copying path '/nix/store/k31i707zkwb945vpnq9ycbyadiws9cmq-binutils-2.43.1-lib' from 'https://cache.nixos.org'...
+copying path '/nix/store/3lv246cq8krns1ckwbb6f1vsj9i38wfs-gmp-6.3.0' from 'https://cache.nixos.org'...
+copying path '/nix/store/9i17l2ysdy6k4qb89kz6l72s6xw09jaw-linux-headers-6.12' from 'https://cache.nixos.org'...
+copying path '/nix/store/d705jhh27wwbx1g5hvk1q5502qljqzp1-patchelf-0.15.0' from 'https://cache.nixos.org'...
+copying path '/nix/store/y2mz6jlycravn7y1nkpnzcsh0c8f79lz-update-autotools-gnu-config-scripts-hook' from 'https://cache.nixos.org'...
+copying path '/nix/store/5n4crfin4v19rcbyryfjs1j9kp5iry8d-make-shell-wrapper-hook' from 'https://cache.nixos.org'...
+copying path '/nix/store/msvccvwbfpd3qz31a9cszdzzpy64pgwr-perl5.40.0-Config-IniFiles-3.000003' from 'https://cache.nixos.org'...
+copying path '/nix/store/32f0fhxgjy0ipl6akwmgidz36fx4l6dg-isl-0.20' from 'https://cache.nixos.org'...
+copying path '/nix/store/0b2vw2cixv0awwxsj4536ivv6gp3ngcv-mpfr-4.2.1' from 'https://cache.nixos.org'...
+copying path '/nix/store/ldlc13rkg4bd8iy75pn4crhyy7q0hd9w-stdenv-linux' from 'https://cache.nixos.org'...
+building '/nix/store/pdp8k1ig4yvg2sixw8ys9sl1g910mb14-boot.json.drv'...
+building '/nix/store/g6brm3a6jb4xfh3fm8jlxw2ivh1pgrd2-builder.pl.drv'...
+building '/nix/store/0vxsgd7rxb9xh05hqarn205sk6b0ibhj-check-sshd-config.drv'...
+building '/nix/store/c4dyva0sg75v66wdmgpz8qjjpjpj21zw-stage-2-init.sh.drv'...
+copying path '/nix/store/z91k46jmcm1lz2c3xl6ffaic887r6w3h-binutils-2.43.1' from 'https://cache.nixos.org'...
+copying path '/nix/store/nv9hicrp31l04xv5jqkz8wy6ah6ch6zy-libmpc-1.3.1' from 'https://cache.nixos.org'...
+copying path '/nix/store/d9w1msymf7rmqdljh86bfr2zgb3r0zma-glibc-2.40-36-dev' from 'https://cache.nixos.org'...
+copying path '/nix/store/qbvp2h1f5a03nwmw0nwqimnk4kjhzv19-gcc-14-20241116' from 'https://cache.nixos.org'...
+copying path '/nix/store/zy69cdp2ymkv7kzc9z7cw2nsqmkcmpva-binutils-wrapper-2.43.1' from 'https://cache.nixos.org'...
+copying path '/nix/store/lypi8vf0lra99nx7nx2by1jyx5nhj9x0-gcc-wrapper-14-20241116' from 'https://cache.nixos.org'...
+copying path '/nix/store/1y8lzc0yhryw62z8gvzsj754iasl2s0z-make-binary-wrapper-hook' from 'https://cache.nixos.org'...
+building '/nix/store/53k2kcy300akgdmn78zqihp31sddd8ny-perl-5.40.0-env.drv'...
+created 183 symlinks in user environment
+building '/nix/store/0i5kjsfw5bzqd1d5p2fn1w3cvgc29b98-nixos-system-selenium-25.05.20241227.7cc0bff.drv'...
+warning: you did not specify '--add-root'; the result might be removed by the garbage collector
+Shared connection to selenium.proton closed.
+activating the configuration...
+[agenix] creating new generation in /run/agenix.d/4
+[agenix] decrypting secrets...
+decrypting '/nix/store/png3wa38c86iad5isim1l80ckqlwkh0g-selenium/20bd7d1818d9baf7895bc83f190893c3-builder-key.age' to '/run/agenix.d/4/builder-key'...
+decrypting '/nix/store/png3wa38c86iad5isim1l80ckqlwkh0g-selenium/185d26de00992c1a5e33863b6abd0964-proton-ca.age' to '/run/agenix.d/4/proton-ca'...
+decrypting '/nix/store/png3wa38c86iad5isim1l80ckqlwkh0g-selenium/e0317bf7ab1814d710ed8066c07c59df-selenium-pub-key.age' to '/run/agenix.d/4/selenium-pub-key'...
+decrypting '/nix/store/png3wa38c86iad5isim1l80ckqlwkh0g-selenium/20be663ecd923a0a1ba78c3f70c68f1d-tls-selenium.key.age' to '/run/agenix.d/4/tls-selenium.key'...
+[agenix] symlinking new secrets to /run/agenix (generation 4)...
+[agenix] removing old secrets (generation 3)...
+[agenix] chowning...
+setting up /etc...
+reloading user units for logan...
+restarting sysinit-reactivation.target
+Shared connection to selenium.proton closed.
+#+end_example
+
+In conclusion, I believe part of what was happening here is I was on an old
+commit for ~raspberry-pi-nix~ and it had some kind of bug pertaining to this
+startup.  I also shied away from doing rebuilds that were large, but have since
+learned they are fine and even expected, since ~sdImage~ doesn't actually lay
+down a fully ready-to-go or even almost-ready-to-go image - it needs another
+run.  Even if ~agenix~ weren't in the picture, it would be needed.
+
+I did comment out the ~extra-substitutors~ and ~extra-trusted-public-keys~ and
+that may have had an impact.  I'm going to put it back and the next pi will give
+us a chance to put that to the test.

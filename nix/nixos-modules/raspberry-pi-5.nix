@@ -4,6 +4,7 @@
 { flake-inputs }: { ... }: {
   imports = [
     flake-inputs.raspberry-pi-nix.nixosModules.raspberry-pi
+    flake-inputs.raspberry-pi-nix.nixosModules.sd-image
     ({ lib, pkgs, ... }:
       let
       linux_rpi5 = pkgs.linux_rpi4.override {
