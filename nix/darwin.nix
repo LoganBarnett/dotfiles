@@ -159,13 +159,6 @@
   system = {
     # Settings that don't have an option in nix-darwin.
     activationScripts.postActivation.text = ''
-      # `grep` doesn't work well with `set -o pipefail` because it returns exit
-      # code 1 if there are no matches.  We don't care about that, so make sure
-      # we zero-ize a 1.  Other errors (2+) are real errors we should pay
-      # attention to though.
-      function greppipe {
-        grep "$@" || test $? = 1;
-      }
       # Note that a lot of advice out there will say to use "trustAsRoot" per
       # newer versions of macOS.  This might be correct advice in the context of
       # the question given, but since we're running _as root_ already, we can
@@ -189,72 +182,8 @@
       defaults write com.apple.screensaver askForPassword -int 1
       defaults write com.apple.screensaver askForPasswordDelay -int 0
       echo "Swapping Option + Command keys on external keyboard..."
-      # TODO: Move this to its own shell script for easier testing and
-      # portability.
-      # This will need to be reapplied on a restart.  See about integrating this
-      # with the built-in system for nix-darwin, because it likely handles all
-      # of that.  See
-      # https://apple.stackexchange.com/questions/329085/tilde-and-plus-minus-±-in-wrong-place-on-keyboard/353941#353941
-      # for an example of a startup-level setting.  However this means the
-      # system needs to login or finish a clean boot first.  Having a global
-      # setting is probably better than having a watch-dog process.
-      #
-      # When remapping for a specific device, that device loses the global
-      # mappings.  So we have to reapply them manually.  We use a global setting
-      # for for caps->control.  Swapping option and command is desirable for
-      # external keyboards (unless they are Apple keyboards).  `hidutil property
-      # --help` has a lot of useful information on how to go about this.
-      # Warning:  If the device indicated with --matching isn't present, the
-      # hidutil will apply the configuration globally and we don't want that.
-      # This will cause the command and option keys to be inverted on the
-      # onboard laptop keyboard - undesirable.  We must first detect if our
-      # keyboard is present, and then proceed to provide mappings if we so
-      # choose.  In fact, we should invert for all non-Apple keyboards.  Per
-      # https://www.usb.org/sites/default/files/documents/hut1_12v2.pdf
-      # keyboards are page ID 07.  I've tried this and 0x07 but they do not
-      # work.
-      # keyboards=$(hidutil list --matching '{"PrimaryUsagePage":7}')
-      # Use `hidutil property --set '{"UserKeyMapping": []}'` to set.
-      # echo "Move old key map file out of the way to fix non-save error in hidutil."
-      # mv --verbose ~/Library/Preferences/com.apple.symbolichotkeys.plist{,.old}
-      keyboards=$(
-        hidutil list \
-          | greppipe --ignore-case keyboard \
-          | greppipe --invert-match 'Apple ' \
-          | greppipe AppleUserHIDDevice \
-          | tr -s ' ' \
-          | cut -d $' ' -f 2 \
-          | uniq
-      )
-      echo "Keyboards found: $keyboards"
-      # When quoting arrays (as is done in the for loop, lest our new Bash give
-      # us an error), empty arrays still cause the for loop to execute on a
-      # first, empty element.  So just check it manually like we did in the dark
-      # ages.
-      if [[ "$keyboards" != "" ]]; then
-        for keyboard in "''${keyboards[@]}"; do
-          echo "Setting keyboard remaps for $keyboard..."
-          # Beware.  If the --matching argument is malformed (such as if
-          # $keyboard is "" here), the command will proceed and just hit the
-          # global keyboard or something.
-          hidutil property --matching "{\"ProductID\":$keyboard}" --set '{"UserKeyMapping":
-            [
-              {
-                "HIDKeyboardModifierMappingSrc":0x7000000E3,
-                "HIDKeyboardModifierMappingDst":0x7000000E2
-              },
-              {
-                "HIDKeyboardModifierMappingSrc":0x7000000E2,
-                "HIDKeyboardModifierMappingDst":0x7000000E3
-              },
-              {
-                "HIDKeyboardModifierMappingSrc":0x700000039,
-                "HIDKeyboardModifierMappingDst":0x7000000E0
-              }
-            ]
-          }'
-        done
-      fi
+      # This is a custom tool found in this repo's /bin directory.
+      macos-keyboard-remap
       echo "Do not sleep when on AC power."
       pmset -c sleep 0 # Needs testing - UI not immediately updated.
       echo "Allow apps from anywhere..."
