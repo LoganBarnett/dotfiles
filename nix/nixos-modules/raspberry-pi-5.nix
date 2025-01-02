@@ -4,6 +4,7 @@
 { flake-inputs }: { ... }: {
   imports = [
     flake-inputs.raspberry-pi-nix.nixosModules.raspberry-pi
+    # Required to bring in fileSystems and other things.
     flake-inputs.raspberry-pi-nix.nixosModules.sd-image
     ({ lib, pkgs, ... }:
       let
