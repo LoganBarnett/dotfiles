@@ -5,8 +5,15 @@
 # https://www.reddit.com/r/NixOS/comments/fd04jc/comment/fje9d8n
 # for getting things working using LDAP authentication.
 { host-id }: { config, pkgs, lib, ... }: (let
+  # I have not observed that the database is dropped when using
+  # declarativeContents.  Instead we must do a run with declarativeContents = {}
+  # to flush the values out, and then run again with our desired values.
+  # Toggling this allows us to set that without making big comments (which I've
+  # noticed don't cleanly get uncommented by Emacs' commenter).
+  flush-settings = false;
   # This is a standard LDAP port.
   ldap-port = 636;
+  base-dn = "dc=proton,dc=org";
   membersOf = membership: "foobar";
   ldapHumanUser = base-dn: {
     username,
@@ -15,31 +22,53 @@
     description ? "",
     membership,
   }: ''
+
     dn: uid=${username},ou=users,${base-dn}
     objectClass: inetOrgPerson
     cn: ${full-name}
     cn: ${username}
     uid: ${username}
+    ou: users
     mail: ${email}
     description: ${description}
     membersOf: ${membersOf membership}
+
   '';
-  ldapServiceUser = base-dn: {
+  ldap-service-user = base-dn: {
     username,
-    full-name,
-    email,
     description,
-    membership,
+    # membership,
   }: ''
-    dn: uid=${username},ou=users,${base-dn}
-    objectClass: use something else!
-    cn: ${full-name}
+
+    dn: cn=${username},ou=users,${base-dn}
+    objectClass: top
+    objectClass: person
+    objectClass: organizationalPerson
+    sn: ServiceAccount
     cn: ${username}
-    uid: ${username}
-    mail: ${email}
     description: ${description}
-    membersOf: ${membersOf membership}
+    userPassword: no one would use one two three for five four their password
+
+  ''
+    # sAMAccountName: ${username}
+  # + membersOf: ${membersOf membership}
+  ;
+  ldap-group = base-dn: {
+    name,
+    members,
+  }: ''
+
+    dn: cn=${name},ou=groups,${base-dn}
+    objectClass: groupOfNames
+    cn: ${name}
+    ou: ${name}
+    ${lib.strings.concatStrings (lib.strings.intersperse
+      "\n"
+      (builtins.map (user: "member: uid=${user},ou=users,${base-dn}") members)
+    )}
+
   '';
+
 in {
   age.secrets.ldap-root-pass = {
     generator.script = "passphrase";
@@ -62,23 +91,24 @@ in {
     # dn: Distinguished Name - A unique name to the entry.
     # This has some very good information on the topic:
     # https://www.zytrax.com/books/ldap/ch2/index.html#history
-    declarativeContents = {
+    declarativeContents = if flush-settings then {} else {
       # TODO: The example in the option for declarativeContents is broken.  The
       # "dn=" prefix seems to be throwing it off.  I have not seen other
       # configurations in the wild that uses it.  I should open a ticket about
       # it.
-      "dc=proton,dc=org" = ''
-        dn: dc=proton,dc=org
+      ${base-dn} = ''
+        dn: ${base-dn}
         objectClass: domain
         dc: proton
 
-        dn: ou=users,dc=proton,dc=org
+        dn: ou=users,${base-dn}
         objectClass: organizationalUnit
         ou: users
         description: Users in the proton network.
 
-        dn: uid=logan,ou=users,dc=proton,dc=org
+        dn: uid=logan,ou=users,${base-dn}
         objectClass: inetOrgPerson
+        objectClass: person
         cn: Logan Barnett
         cn: Logan
         sn: logan
@@ -86,9 +116,24 @@ in {
         mail: logustus@gmail.com
         description: The reason we suffer.
         ou: Administrators
+        ou: users
         userPassword: foobar
-      '';
-    };
+
+        dn: ou=groups,${base-dn}
+        objectClass: top
+        objectClass: organizationalUnit
+        ou: groups
+
+      ''
+      + (ldap-service-user base-dn {
+        description = "Octoprint on Selenium.";
+        username = "selenium-octoprint-service";
+      })
+      + (ldap-group base-dn { name = "3d-printers"; members = [ "logan" ]; })
+      ;
+    }
+    ;
+    # declarativeContents = {};
 
     settings = {
       attrs = {
@@ -110,12 +155,29 @@ in {
           "${pkgs.openldap}/etc/schema/cosine.ldif"
           "${pkgs.openldap}/etc/schema/inetorgperson.ldif"
           "${pkgs.openldap}/etc/schema/nis.ldif"
+          # Add Kerberos support.
+          # "${pkgs.ldap-extra-schemas}/kerberos.ldif"
         ];
+        "cn=module{0}" = {
+          attrs = {
+            objectClass = [ "olcModuleList" ];
+            cn = "module{0}";
+            olcModuleLoad = [
+              # "{0}dynlist"
+              # "{1}back_monitor"
+              "{2}ppolicy"
+              "{3}memberof"
+              "{4}refint"
+            ];
+          };
+        };
         "olcDatabase={-1}frontend" = {
           attrs = {
             objectClass = "olcDatabaseConfig";
             olcDatabase = "{-1}frontend";
-            olcAccess = [ "{0}to * by dn.exact=uidNumber=0+gidNumber=0,cn=peercred,cn=external,cn=auth manage stop by * none stop" ];
+            olcAccess = [
+              "{0}to * by dn.exact=uidNumber=0+gidNumber=0,cn=peercred,cn=external,cn=auth manage stop by * none stop"
+            ];
           };
         };
         "olcDatabase={0}config" = {
@@ -133,9 +195,19 @@ in {
             ];
             olcDatabase = "{1}mdb";
             olcDbDirectory = "/var/lib/openldap/data";
-            olcSuffix = "dc=proton,dc=org";
+            olcDbIndex = [
+              # Add the index for the Kerberos authentication name field.
+              # Kerberos doesn't work for me at the moment.  I need to figure
+              # out how to properly import the base image.
+              # "krbPrincipalName eq,pres,sub"
+              "objectClass eq"
+              "cn pres,eq"
+              "uid pres,eq"
+              "sn pres,eq,subany"
+            ];
+            olcSuffix = base-dn;
             /* your admin account, do not use writeText on a production system */
-            olcRootDN = "cn=admin,dc=proton,dc=org";
+            olcRootDN = "cn=admin,${base-dn}";
             # Untested.  Should work but no run done yet.
             olcRootPW.path = config.age.secrets.ldap-root-pass.path;
             olcAccess = [

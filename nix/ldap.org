@@ -39,6 +39,19 @@ any fields in the ~additiveContentsIgnoredFields~ list.
 
 Some work would need to be done to build this tooling.
 
+** Actual ~declarativeContents~ behavior
+
+The best I can tell is that this is a modify operation, not a clear and add.  I
+came across this because I was having trouble with ~memberof~ queries.  I found
+some mention that ~memberof~ only works if the ~memberof~ overlay is installed
+before the groups are created.  I tried reconstructing everything by removing
+~declarativeContents~ (although I didn't set it to ~{}~ in fairness).  I also
+restarted the server after changing my password on the account.
+
+That said, I did strip the quotes from the temporary service password I'm using,
+and observed that working.  So maybe it does work, but not setting the value
+isn't the same as removing everything...
+
 ** Troubleshooting
 
 *** Authentication
@@ -84,3 +97,45 @@ involved); this causes the specific warning you see. If you understood the ACL
 syntax and you believe your ACLs are correct, you can safely ignore that
 warning.
 #+end_quote
+
+**** memberOf not working
+
+My main symptom I noticed is that ~memberof~ queries don't work.  I looked into
+a bit, and found out that there's some kind of referential integrity going on
+(and even there's a module/plugin called ~refint~ that handles this).
+
+When I add a ~member~ to a group, ~memberOf~ should be populated in the
+corresponding user.  However that doesn't seem to be the case.  Furthermore,
+looking up the group's members yields zero results, and looking up the user's
+memberships of anything also yields zero results.
+
+I am told there are two possible reasons for this:
+1. The plugin is misconfigured.  While this might still be the case, I've
+   confirmed that the fields to map are good:
+   #+begin_src nix :results none :exports code
+   "olcOverlay={3}memberof".attrs = {
+     objectClass = [ "olcOverlayConfig" "olcMemberOf" "top" ];
+     olcOverlay = "{3}memberof";
+     olcMemberOfRefInt = "TRUE";
+     olcMemberOfDangling = "ignore";
+     olcMemberOfGroupOC = "groupOfNames";
+     olcMemberOfMemberAD = "member";
+     olcMemberOfMemberOfAD = "memberOf";
+   };
+   #+end_src
+   The plugin may be misconfigured in other ways.  I haven't been able to find
+   anything via ~olcOverlayConfig~ nor ~olcModuleList~.  I'm not sure what else
+   can be used.  It's possible the Nix configuration isn't doing what I'm
+   expecting.  I'm unsure how to go about debugging this on the Nix side.
+   I think files are emitted somewhere, and I might be able to get paths to
+   them.  I should check the ~openldap~ ~systemd~ unit file for paths.
+2. The groups are added _before_ the overlays are added.  The overlays don't
+   retroactively add things.  Since I don't have any view into how Nix adds
+   these things, I'm not in a position to rule this out.
+
+I have found many others' configurations that seem to be materially the same as
+mine, but that's probably because they aren't materially the same and I haven't
+identified the difference yet.
+
+I have created [[file:./alerts/ldap-group-test.sh]] to help me exercise various
+functionalities that might prove or disprove certain things.

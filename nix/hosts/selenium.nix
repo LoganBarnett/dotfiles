@@ -32,9 +32,18 @@ in {
           };
           plugins = {
             auth_ldap = {
-              auth_user = "";
-              auth_password = "";
+              uri = "ldaps://nickel.proton";
+              auth_user = "cn=selenium-octoprint-service,ou=users,dc=proton,dc=org";
+              auth_password = "no one would use one two three for five four their password";
+              search_base = "dc=proton,dc=org";
+              ou_filter = "cn=%s";
+              ou = "3d-printers";
             };
+          };
+          server = {
+            # Prevent us from entering the wizard which won't work because the
+            # settings are fixed... at least they should be.
+            firstRun = false;
           };
         };
         openFirewall = false;
@@ -45,6 +54,24 @@ in {
           pg.prusaslicerthumbnails
           pg.stlviewer
           pg.themeify
+          (pg.buildPlugin (let
+            version = "2024-05-29-unstable";
+          in {
+            pname = "authldap";
+            inherit version;
+            src = pkgs.fetchFromGitHub {
+              owner = "jneilliii";
+              repo = "OctoPrint-BGCode";
+              rev = "2e01626731213f362e450f3b175b64d5a1c434c2";
+              hash = "sha256-J2jvNJJMrD5uRpSDxO+oujfphELwNlYoTFS5VvMBuB8=";
+            };
+            propagatedBuildInputs = [];
+            meta = {
+              description = "Bring BGCode support to OctoPrint.";
+              homepage = "https://github.com/jneilliii/OctoPrint-BGCode";
+              # maintainers = with lib.maintainers; [ logan-barnett ];
+            };
+          }))
           (pg.buildPlugin (let
             version = "2022-11-10-unstable";
           in {
