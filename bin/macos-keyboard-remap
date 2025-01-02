@@ -45,6 +45,14 @@ keyboards=$(
     | uniq
          )
 echo "Keyboards found: $keyboards"
+echo "Current mappings: $(hidutil property --get UserKeyMapping)"
+echo "Clearing..."
+# This might seem counterintuitive because we have some other places where
+# keymappings are done, and those would be cleared.  However those don't seem to
+# step on anything we have in the UI or done to the base keyboard.  Something
+# isn't understood here.
+hidutil property --set '{"UserKeyMapping": []}'
+echo "Cleared!"
 # When quoting arrays (as is done in the for loop, lest our new Bash give
 # us an error), empty arrays still cause the for loop to execute on a
 # first, empty element.  So just check it manually like we did in the dark
@@ -55,7 +63,9 @@ if [[ "$keyboards" != "" ]]; then
     # Beware.  If the --matching argument is malformed (such as if
     # $keyboard is "" here), the command will proceed and just hit the
     # global keyboard or something.
-    hidutil property --matching "{\"ProductID\":$keyboard}" --set '{"UserKeyMapping":
+    hidutil property \
+            --matching "{\"ProductID\":$keyboard}" \
+            --set '{"UserKeyMapping":
             [
               {
                 "HIDKeyboardModifierMappingSrc":0x7000000E3,
@@ -72,4 +82,6 @@ if [[ "$keyboards" != "" ]]; then
             ]
           }'
   done
+else
+  echo "No Keyboards found.  Nothing to do."
 fi
