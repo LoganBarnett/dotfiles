@@ -102,6 +102,10 @@ in {
         pkgs.awscli
         pkgs.hiera-eyaml
         pkgs.mktemp
+        # Gives us tools like ldapsearch, ldapadd, and ldapmodify which is
+        # sometimes used for searching users and figuring out who the managers
+        # are of employees.
+        pkgs.openldap
         pkgs.openssl
         pkgs.saml2aws
       ];
