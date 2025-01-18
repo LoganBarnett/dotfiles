@@ -924,7 +924,9 @@ https://emacs.stackexchange.com/questions/69719/fingerprint-has-changed-message-
      )
     <<mu4e-unread-count-fix>>
     <<config/maildir-account-dir-create>>
-    <<config/email-mu4e-capture-template-add>>
+    (after! 'org
+      <<config/email-mu4e-capture-template-add>>
+      )
     <<config/email-mu4e-link-to-message>>
     <<config/mu4e-auto-fill-comments-disable>>
     <<config/mu4e-gmail-messages-delete>>
