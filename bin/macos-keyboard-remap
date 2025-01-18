@@ -11,6 +11,25 @@
 # This also has to be run during a restart.
 ################################################################################
 set -euo pipefail
+
+
+# See this for a series of key mapping values:
+# https://github.com/apple-oss-distributions/IOHIDFamily/blob/3f62fef86e2938e0f362e70eede0a914222c3e27/IOHIDFamily/IOHIDUsageTables.h
+# These must be logically ORed with 0x700000000.
+key_offset=0x700000000
+key_option_left=0xE2 # The docs refer to this as "Alt".
+key_command_left=0xE3 # The docs refer to this as "GUI".
+key_control_left=0xE0
+key_capslock=0x39
+function keycode {
+  key="$1"
+  echo -n $(( "$key_offset" | "$key"))
+}
+function keycode_debug {
+  key="$1"
+  echo $(( "$key_offset" | "$key"))
+}
+keycode_debug $key_option_left
 # See about integrating this with the built-in system for nix-darwin, because it
 # likely handles all of that.  See
 # https://apple.stackexchange.com/questions/329085/tilde-and-plus-minus-±-in-wrong-place-on-keyboard/353941#353941
@@ -52,6 +71,9 @@ echo "Clearing..."
 # step on anything we have in the UI or done to the base keyboard.  Something
 # isn't understood here.
 hidutil property --set '{"UserKeyMapping": []}'
+# This might have been some kind of user error on my part.  Keep an eye on this.
+hidutil property --matching "{\"ProductID\":0x1}" --set '{"UserKeyMapping": []}'
+hidutil property --matching "{\"ProductID\":0x200}" --set '{"UserKeyMapping": []}'
 echo "Cleared!"
 # When quoting arrays (as is done in the for loop, lest our new Bash give
 # us an error), empty arrays still cause the for loop to execute on a
@@ -59,6 +81,18 @@ echo "Cleared!"
 # ages.
 if [[ "$external_keyboards" != "" ]]; then
   for keyboard in "${external_keyboards[@]}"; do
+    match="{\"ProductID\":$keyboard}"
+    friendly_name="$(
+      hidutil list --ndjson --matching "$match" \
+        | jq --raw-output '.Product' \
+        | uniq
+      )"
+    echo "Keyboard '$keyboard' is '$friendly_name'."
+    vendor_id="0x1b1c"
+    echo "Clearing keyboard remaps for $keyboard..."
+    hidutil property \
+            --matching "$match" \
+            --set '{"UserKeyMapping": []}'
     echo "Setting keyboard remaps for $keyboard..."
     # Beware.  If the --matching argument is malformed (such as if
     # $keyboard is "" here), the command will proceed and just hit the
@@ -66,16 +100,16 @@ if [[ "$external_keyboards" != "" ]]; then
     # We might be duplicating the capslock->control binding, since we set a
     # global one later, but there shouldn't be any harm in it.
     hidutil property \
-            --matching "{\"ProductID\":$keyboard}" \
+            --matching "$match" \
             --set '{"UserKeyMapping":
             [
               {
-                "HIDKeyboardModifierMappingSrc":0x7000000E3,
-                "HIDKeyboardModifierMappingDst":0x7000000E2
+                "HIDKeyboardModifierMappingSrc":'"$(keycode $key_command_left)"',
+                "HIDKeyboardModifierMappingDst":'"$(keycode $key_option_left)"'
               },
               {
-                "HIDKeyboardModifierMappingSrc":0x7000000E2,
-                "HIDKeyboardModifierMappingDst":0x7000000E3
+                "HIDKeyboardModifierMappingSrc":'"$(keycode $key_option_left)"',
+                "HIDKeyboardModifierMappingDst":'"$(keycode $key_command_left)"'
               },
               {
                 "HIDKeyboardModifierMappingSrc":0x700000039,
@@ -88,16 +122,18 @@ else
   echo "No external keyboards found.  Nothing to do."
 fi
 
-echo 'Remapping capslock to control globally...'
+# echo 'Remapping capslock to control globally...'
+# Don't actually run globals of any kind.  In order to completely fix this, I
+# need to find the internal keyboard and also remap that separately.
 # Global - all keyboards should get this.
-hidutil \
-  property \
-  --set '{"UserKeyMapping":
-    [
-      {
-        "HIDKeyboardModifierMappingSrc":0x700000039,
-        "HIDKeyboardModifierMappingDst":0x7000000E0
-      }
-    ]
-  }'
+# hidutil \
+#   property \
+#   --set '{"UserKeyMapping":
+#     [
+#       {
+#         "HIDKeyboardModifierMappingSrc":0x700000039,
+#         "HIDKeyboardModifierMappingDst":0x7000000E0
+#       }
+#     ]
+#   }'
 echo 'Done!'

@@ -125,17 +125,19 @@ else
   echo "No external keyboards found.  Nothing to do."
 fi
 
-echo 'Remapping capslock to control globally...'
+# echo 'Remapping capslock to control globally...'
+# Don't actually run globals of any kind.  In order to completely fix this, I
+# need to find the internal keyboard and also remap that separately.
 # Global - all keyboards should get this.
-hidutil \
-  property \
-  --set '{"UserKeyMapping":
-    [
-      {
-        "HIDKeyboardModifierMappingSrc":0x700000039,
-        "HIDKeyboardModifierMappingDst":0x7000000E0
-      }
-    ]
-  }'
+# hidutil \
+#   property \
+#   --set '{"UserKeyMapping":
+#     [
+#       {
+#         "HIDKeyboardModifierMappingSrc":0x700000039,
+#         "HIDKeyboardModifierMappingDst":0x7000000E0
+#       }
+#     ]
+#   }'
 echo 'Done!'
 
