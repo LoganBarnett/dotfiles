@@ -12,14 +12,6 @@
       networking.hostName = host-id;
       nixpkgs.overlays = (import ../overlays/default.nix);
       system.stateVersion = "23.11";
-      nix = {
-        nixPath = [ "/etc/nix/path" ];
-        # Make sure we have a local copy of nixpkgs but it can also be updated
-        # online.  See
-        # https://discourse.nixos.org/t/problems-after-switching-to-flake-system/24093/7
-        # for more details.
-        registry.nixpkgs.flake = flake-inputs.nixpkgs;
-      };
     }
     (import ./secrets.nix {
       inherit flake-inputs host-id;

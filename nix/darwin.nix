@@ -183,7 +183,7 @@
       defaults write com.apple.screensaver askForPasswordDelay -int 0
       echo "Swapping Option + Command keys on external keyboard..."
       # This is a custom tool found in this repo's /bin directory.
-      macos-keyboard-remap
+      ${./darwin/macos-keyboard-remap}
       echo "Do not sleep when on AC power."
       pmset -c sleep 0 # Needs testing - UI not immediately updated.
       echo "Allow apps from anywhere..."
@@ -493,11 +493,4 @@
       remapCapsLockToControl = true;
     };
   };
-  nix.nixPath = [
-    "nixos-config=/etc/nixos/configuration.nix"
-  ] ++ (lib.mapAttrsToList
-    (key: value: "${key}=${value.to.path}")
-    (lib.filterAttrs (key: value: value ? to.path) config.nix.registry)
-  );
-  nix.registry.nixpkgs.flake = flake-inputs.nixpkgs;
 }

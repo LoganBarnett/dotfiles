@@ -93,8 +93,6 @@
     # But at least now I can bump it without having to reinstall everything.
     nix = {
       url = "github:nixos/nix?ref=2.24.11";
-      # I don't use parts, but maybe I could?
-      # inputs.flake-parts.follows = "parts";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     # nix-doom-emacs.url = "github:nix-community/nix-doom-emacs";
@@ -138,11 +136,11 @@
     # https://discourse.nixos.org/t/getting-the-current-system-from-the-command-line/19781/10
     # for discussion on the matter.
     ache-em-ache-current-system = {
-      url = "github:nix-systems/current-system?rev=9bdeb2040b68c287d7de1fc2ffda4568f811b677";
+      url = "github:nix-systems/current-system";
       inputs.nixpkgs.follows = "ache-em-ache-nixpkgs";
     };
     ache-em-ache-nix-darwin = {
-      url = "github:LnL7/nix-darwin?rev=f61d5f2051a387a15817007220e9fb3bbead57b3";
+      url = "github:LnL7/nix-darwin";
       # rev = "72dd60bfc98c128149d84213b17d1b8a68863055";
       # Leaving this present breaks things and nix-darwin will not load or
       # otherwise will not be present.  It is not understood why, even though
@@ -158,12 +156,10 @@
     ache-em-ache-nixpkgs.url = "github:LoganBarnett/nixpkgs?rev=e8d47df8762491bc4e9710d7ef2e53f3a6500622";
     ache-em-ache-nix-ache-em-ache = {
       url = "github:nixos/nix";
-      # I don't use parts, but maybe I could?
-      # inputs.flake-parts.follows = "parts";
       inputs.nixpkgs.follows = "ache-em-ache-nixpkgs";
     };
     ache-em-ache-home-manager = {
-      url = "github:nix-community/home-manager?rev=90010df15878762ff359e4fe391355a9dcad0bcf";
+      url = "github:nix-community/home-manager?rev=c1fee8d4a60b89cae12b288ba9dbc608ff298163";
       inputs.nixpkgs.follows = "ache-em-ache-nixpkgs";
     };
   };
@@ -174,6 +170,7 @@
     current-system,
     disko,
     emacs-overlay,
+    nix,
     nix-darwin,
     nixpkgs,
     nixpkgs-comfyui,
@@ -189,6 +186,7 @@
     ache-em-ache-agenix-rekey,
     ache-em-ache-current-system,
     ache-em-ache-emacs-overlay,
+    ache-em-ache-nix-ache-em-ache,
     ache-em-ache-nix-darwin,
     ache-em-ache-nixpkgs,
     ache-em-ache-home-manager,
@@ -200,6 +198,7 @@
       agenix-rekey = ache-em-ache-agenix-rekey;
       current-system = ache-em-ache-current-system;
       emacs-overlay = ache-em-ache-emacs-overlay;
+      nix = ache-em-ache-nix-ache-em-ache;
       nix-darwin = ache-em-ache-nix-darwin;
       nixpkgs = ache-em-ache-nixpkgs;
       home-manager = ache-em-ache-home-manager;
@@ -366,7 +365,8 @@
 
       darwinConfigurations."M-CL64PK702X" =
         nix-darwin.lib.darwinSystem (import ./hosts/M-CL64PK702X.nix {
-          flake-inputs = ache-em-ache-flake-inputs;
+          inherit flake-inputs;
+          # flake-inputs = ache-em-ache-flake-inputs;
         });
 
       darwinConfigurations."scandium" =
