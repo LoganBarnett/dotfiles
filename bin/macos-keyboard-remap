@@ -75,52 +75,77 @@ hidutil property --set '{"UserKeyMapping": []}'
 hidutil property --matching "{\"ProductID\":0x1}" --set '{"UserKeyMapping": []}'
 hidutil property --matching "{\"ProductID\":0x200}" --set '{"UserKeyMapping": []}'
 echo "Cleared!"
-# When quoting arrays (as is done in the for loop, lest our new Bash give
-# us an error), empty arrays still cause the for loop to execute on a
-# first, empty element.  So just check it manually like we did in the dark
-# ages.
-if [[ "$external_keyboards" != "" ]]; then
-  for keyboard in "${external_keyboards[@]}"; do
-    match="{\"ProductID\":$keyboard}"
-    friendly_name="$(
+
+function key_remap {
+  keyboards="$1"
+  type="$2"
+  key_maps="$3"
+  # When quoting arrays (as is done in the for loop, lest our new Bash give us
+  # an error), empty arrays still cause the for loop to execute on a first,
+  # empty element.  So just check it manually like we did in the dark ages.
+  if [[ "$keyboards" != "" ]]; then
+    for keyboard in "${keyboards[@]}"; do
+      match="{\"ProductID\":$keyboard}"
+      friendly_name="$(
       hidutil list --ndjson --matching "$match" \
         | jq --raw-output '.Product' \
         | uniq
       )"
-    echo "Keyboard '$keyboard' is '$friendly_name'."
-    vendor_id="0x1b1c"
-    echo "Clearing keyboard remaps for $keyboard..."
-    hidutil property \
-            --matching "$match" \
-            --set '{"UserKeyMapping": []}'
-    echo "Setting keyboard remaps for $keyboard..."
-    # Beware.  If the --matching argument is malformed (such as if
-    # $keyboard is "" here), the command will proceed and just hit the
-    # global keyboard or something.
-    # We might be duplicating the capslock->control binding, since we set a
-    # global one later, but there shouldn't be any harm in it.
-    hidutil property \
-            --matching "$match" \
-            --set '{"UserKeyMapping":
-            [
-              {
-                "HIDKeyboardModifierMappingSrc":'"$(keycode $key_command_left)"',
-                "HIDKeyboardModifierMappingDst":'"$(keycode $key_option_left)"'
-              },
-              {
-                "HIDKeyboardModifierMappingSrc":'"$(keycode $key_option_left)"',
-                "HIDKeyboardModifierMappingDst":'"$(keycode $key_command_left)"'
-              },
-              {
-                "HIDKeyboardModifierMappingSrc":0x700000039,
-                "HIDKeyboardModifierMappingDst":0x7000000E0
-              }
-            ]
-          }'
-  done
-else
-  echo "No external keyboards found.  Nothing to do."
-fi
+      echo "Keyboard '$keyboard' is '$friendly_name'."
+      vendor_id="0x1b1c"
+      echo "Clearing keyboard remaps for $keyboard..."
+      hidutil property \
+              --matching "$match" \
+              --set '{"UserKeyMapping": []}'
+      echo "Setting keyboard remaps for $keyboard..."
+      # Beware.  If the --matching argument is malformed (such as if
+      # $keyboard is "" here), the command will proceed and just hit the
+      # global keyboard or something.
+      # We might be duplicating the capslock->control binding, since we set a
+      # global one later, but there shouldn't be any harm in it.
+      hidutil property \
+              --matching "$match" \
+              --set '{"UserKeyMapping": '"$3"' }'
+    done
+  else
+    echo "No $type keyboards found.  Nothing to do."
+  fi
+}
+
+key_remap "$external_keyboards" 'external' '
+  [
+    {
+      "HIDKeyboardModifierMappingSrc":'"$(keycode $key_command_left)"',
+      "HIDKeyboardModifierMappingDst":'"$(keycode $key_option_left)"'
+    },
+    {
+      "HIDKeyboardModifierMappingSrc":'"$(keycode $key_option_left)"',
+      "HIDKeyboardModifierMappingDst":'"$(keycode $key_command_left)"'
+    },
+    {
+      "HIDKeyboardModifierMappingSrc":0x700000039,
+      "HIDKeyboardModifierMappingDst":0x7000000E0
+    }
+  ]
+'
+
+internal_keyboards=$(
+  hidutil list \
+    | greppipe --ignore-case keyboard \
+    | greppipe 'Apple ' \
+    | greppipe AppleHIDKeyboardEventDriverV2 \
+    | tr -s ' ' \
+    | cut -d $' ' -f 2 \
+    | uniq
+)
+key_remap "$internal_keyboards" 'internal' '
+  [
+    {
+      "HIDKeyboardModifierMappingSrc":0x700000039,
+      "HIDKeyboardModifierMappingDst":0x7000000E0
+    }
+  ]
+'
 
 # echo 'Remapping capslock to control globally...'
 # Don't actually run globals of any kind.  In order to completely fix this, I
