@@ -15,8 +15,7 @@
   host-id = "lithium";
   system = "x86_64-linux";
 in {
-  inherit system;
-  modules = [
+  imports = [
     (let
       # Default ComfyUI port.
       comfyui-port = 8188;
@@ -63,6 +62,7 @@ in {
           "i686-linux"
         ];
       };
+      nixpkgs.hostPlatform = system;
       nixpkgs.overlays = [
         (final: prev: {
           pythonPackagesExtensions = [(py-final: py-prev: {

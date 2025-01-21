@@ -42,6 +42,18 @@ set -x
 
 echo "Zeroth, check if the overlays are even loaded."
 
+# This causes a crash, but I don't know why.
+# ldapsearch \
+#   -H "ldaps://$host:$port" \
+#   -b "cn=module,cn=config" \
+#   -D "$bind_dn" \
+#   -w "$bind_password" \
+#   -s base \
+#   -x \
+#   -v \
+#   '*'
+
+# exit
 ldapsearch \
   -H "ldaps://$host:$port" \
   -b "" \
@@ -62,6 +74,16 @@ ldapsearch \
   -v \
   'objectClass=olcModuleList' \
   'olcModuleLoad' || true
+
+ldapsearch \
+  -H "ldaps://$host:$port" \
+  -b 'cn=config' \
+  -D "$bind_dn" \
+  -w "$bind_password" \
+  -x \
+  -v \
+  '*' || true
+# exit
 
 echo "First, find the group: '$group_to_find'"
 ldapsearch \
@@ -98,12 +120,12 @@ echo "Next, see if we can list a user's ($user_to_find) group membership."
 
 ldapsearch \
   -H "ldaps://$host:$port" \
-  -b "$base_dn" \
+  -b "uid=$user_to_find,ou=users,$base_dn" \
   -D "$bind_dn" \
   -w "$bind_password" \
   -x \
   -v \
-  uid=$user_to_find memberOf
+  memberOf
 
 echo "Finally, find a specific member ($user_to_find) in the group: '$group_to_find'"
 

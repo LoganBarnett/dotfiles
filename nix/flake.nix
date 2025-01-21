@@ -223,6 +223,7 @@
         }
       ];
     };
+    facts = import ./nixos-modules/facts.nix;
   in  {
 
       nixosConfigurations.cobalt = nixpkgs.lib.nixosSystem
@@ -231,15 +232,6 @@
           disko-proper = disko;
           inherit flake-inputs nixpkgs;
         })
-      ;
-      packages.aarch64-linux.cobalt-nixpkgs =
-        self
-          .nixosConfigurations
-          .cobalt
-          .config
-          .system
-          .build
-          .sdImage
       ;
 
       nixosConfigurations.cobalt-pi = nixpkgs.lib.nixosSystem
@@ -250,32 +242,10 @@
         })
       ;
 
-      packages.aarch64-linux.cobalt-nixos-generate =
-        nixos-generators.nixosGenerate  (import ./hosts/cobalt.nix {
-          disko-proper = disko;
-          build-system = "nixos-generators";
-          inherit flake-inputs nixpkgs;
-        });
-
-      packages.aarch64-linux.cobalt-image = self
-        .nixosConfigurations
-        .cobalt
-        .config
-        .system
-        .build
-        .sdImage
-      ;
-
-      packages.armv7l-linux.cobalt-image = self
-        .nixosConfigurations
-        .cobalt
-        .config
-        .system
-        .build
-        .sdImage
-      ;
-
       nixosModules.cobalt = { ... }: {
+        specialArgs = {
+          inherit facts flake-inputs;
+        };
         imports = [
           (import ./hosts/cobalt.nix {
             disko-proper = disko;
@@ -286,6 +256,9 @@
       };
 
       nixosModules.copper = { ... }: {
+        specialArgs = {
+          inherit facts flake-inputs;
+        };
         imports = [
           (import ./hosts/copper.nix {
             disko-proper = disko;
@@ -296,6 +269,9 @@
       };
 
       nixosConfigurations.copper = nixpkgs.lib.nixosSystem {
+        specialArgs = {
+          inherit facts flake-inputs;
+        };
         modules = [
           (import ./hosts/copper.nix {
             disko-proper = disko;
@@ -305,6 +281,9 @@
       };
 
       nixosConfigurations.gallium = nixpkgs.lib.nixosSystem {
+        specialArgs = {
+          inherit facts flake-inputs;
+        };
         modules = [
           (import ./hosts/gallium.nix {
             disko-proper = disko;
@@ -341,7 +320,7 @@
       # nix build '.#nixosConfigurations.germanium.config.system.build.image'
       nixosConfigurations.germanium = nixpkgs.lib.nixosSystem {
         specialArgs = {
-          inherit flake-inputs;
+          inherit facts flake-inputs;
         };
         modules = [
           (import ./hosts/germanium.nix {
@@ -353,7 +332,7 @@
 
       nixosConfigurations.arsenic = nixpkgs.lib.nixosSystem {
         specialArgs = {
-          inherit flake-inputs;
+          inherit facts flake-inputs;
         };
         modules = [
           (import ./hosts/arsenic.nix {
@@ -370,22 +349,38 @@
         });
 
       darwinConfigurations."scandium" =
-        nix-darwin.lib.darwinSystem (import ./hosts/scandium.nix {
-          inherit flake-inputs;
-        });
-
-      nixosConfigurations.lithium =
-        nixpkgs-comfyui.lib.nixosSystem (import ./hosts/lithium.nix {
-          disko-proper = disko;
-          flake-inputs = flake-inputs // {
-            nixpkgs = nixpkgs-comfyui;
+        nix-darwin.lib.darwinSystem {
+          specialArgs = {
+            inherit facts;
           };
-        });
+          modules = [
+            (import ./hosts/scandium.nix {
+              inherit flake-inputs;
+            })
+          ];
+        };
+
+      nixosConfigurations.lithium = nixpkgs-comfyui.lib.nixosSystem {
+        specialArgs = {
+          inherit facts;
+        };
+        modules = [
+          (import ./hosts/lithium.nix {
+            disko-proper = disko;
+            flake-inputs = flake-inputs // {
+              nixpkgs = nixpkgs-comfyui;
+            };
+          })
+        ];
+      };
       # Unsure if we need this, but if we do, it serves as a shortcut
       # essentially.
       packages.x86_64-linux.lithium = self.nixosConfigurations.lithium;
 
       nixosConfigurations.nickel = nixpkgs.lib.nixosSystem {
+        specialArgs = {
+          inherit facts;
+        };
         modules = [
           (import ./hosts/nickel.nix {
             disko-proper = disko;
@@ -395,6 +390,9 @@
       };
 
       nixosConfigurations.selenium = nixpkgs-rpi.lib.nixosSystem {
+        specialArgs = {
+          inherit facts;
+        };
         modules = [
           (import ./hosts/selenium.nix {
             disko-proper = disko;
@@ -407,6 +405,9 @@
       };
 
       nixosConfigurations.titanium = nixpkgs-working-rocm.lib.nixosSystem {
+        specialArgs = {
+          inherit facts;
+        };
         modules = [
           (import ./hosts/titanium.nix {
             disko-proper = disko;

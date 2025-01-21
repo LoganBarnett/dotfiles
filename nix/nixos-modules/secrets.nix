@@ -142,6 +142,38 @@ in {
       ''
     ;
 
+  # Note that SSHA is the default - a _seeded_ SHA.  This doesn't work across
+  # systems though, which defeats the use as we see it in agenix-rekey.  So just
+  # fall back to SHA.  This means that the server needs ` olcPasswordHash =
+  # "{SHA}";' configured.  I can't seem to even get SHA working across systems,
+  # so I've fallen back to CLEARTEXT until I can figure out what's happening.
+  # It might be impossible though, since I have no real inputs besides the type
+  # and the password itself.
+  #
+  # I need to do some more reserach but I'm supposed to use decrypt to decrypt
+  # the actual values, which I wasn't doing with any of the hashes, so that
+  # might also present an issue I was experiencing.
+  age.generators.slapd-hashed = {
+      decrypt,
+      deps,
+      file,
+      name,
+      pkgs,
+      secret,
+      ...
+  }:
+    # slappasswd doesn't do {CLEARTEXT}, but I think the prefix is still needed.
+    # It's vitally important that the newline is stripped!!!  Otherwise that
+    # gets added to the base64 encoded value (which you can spot with a Cg or
+    # Cg== (equals are padding in base64, so you might see more, less, or none).
+    "${decrypt} ${(lib.escapeShellArg (builtins.elemAt deps 0).file)}"
+  #   ''
+  #   ${pkgs.openldap}/bin/slappasswd \
+  #     -h '{CLEARTEXT}' \
+  #     -s "$(cat ${(builtins.elemAt deps 0).file})"
+  # ''
+    ;
+
   age.rekey = {
     # TODO:  This is the host key, and we should call it that instead of the pub
     # key.  The .pub is the pub key, but we also have a private key and having

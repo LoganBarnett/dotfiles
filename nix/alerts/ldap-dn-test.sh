@@ -12,7 +12,7 @@ base_dn='dc=proton,dc=org'
 # it uses LDAP itself to query the object that grants the permissions needed.
 # TODO: Create an alert service account for this purpose and use that.
 # bind_dn='cn=admin,dc=proton,dc=org'
-bind_dn='uid=logan,ou=users,dc=proton,dc=org'
+bind_dn="uid=$1,ou=users,dc=proton,dc=org"
 # bind_dn='admin@proton.org'
 user_to_find='logan'
 

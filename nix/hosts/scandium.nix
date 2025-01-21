@@ -4,8 +4,7 @@ let
   username = "logan";
 in
 { flake-inputs }: {
-  inherit system;
-  modules = [
+  imports = [
     ../nixos-modules/nix-builder-consume.nix
     (import ../nixos-modules/sd-image-raspberrypi.nix {
       inherit flake-inputs;
@@ -37,7 +36,8 @@ in
       _module.args.flake-inputs = flake-inputs;
     }
     {
-      config.networking.hostName = host-id;
+      nixpkgs.hostPlatform = system;
+      networking.hostName = host-id;
     }
     ../nixos-modules/tls-trust.nix
     (import ../nixos-modules/user-can-admin.nix {
