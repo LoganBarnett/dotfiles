@@ -104,7 +104,7 @@ ldapsearch \
   -w "$bind_password" \
   -x \
   -v \
-  "memberOf=cn=$group_to_find"
+  "memberOf=cn=$group_to_find,ou=groups,$base_dn"
 
 echo "Next, see if we can find the user itself ($user_to_find)."
 ldapsearch \
@@ -136,8 +136,19 @@ ldapsearch \
   -w "$bind_password" \
   -x \
   -v \
-  "(&(uid=$user_to_find)(memberOf=cn=$group_to_find))"
+  "(&(uid=$user_to_find)(memberOf=cn=$group_to_find,ou=groups,$base_dn))"
   # "(&(uid=$user_to_find)(memberOf=cn=$group_to_find,ou=users,dc=proton,dc=org))"
   # "(&(ou=$group_to_find)(memberof=uid=$user_to_find,ou=users,dc=proton,dc=org))"
   # "(memberOf=cn=$group_to_find)"
   # "(&(objectClass=inetOrgPerson)(uid=$user_to_find)(memberof=cn=$group_to_find,ou=groups,dc=proton.dc=org))"
+
+echo "Perform the membership search how OctoPrint's LDAP plugin handles it."
+
+ldapsearch \
+  -H "ldaps://$host:$port" \
+  -b "ou=groups,$base_dn" \
+  -D "$bind_dn" \
+  -w "$bind_password" \
+  -x \
+  -v \
+  "(&(cn=3d-printers)(member=uid=logan,ou=users,dc=proton,dc=org))"
