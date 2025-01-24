@@ -1,0 +1,23 @@
+diff --git a/octoprint_auth_ldap/ldap.py b/octoprint_auth_ldap/ldap.py
+index 067cae7..643a2b9 100644
+--- a/octoprint_auth_ldap/ldap.py
++++ b/octoprint_auth_ldap/ldap.py
+@@ -49,17 +49,15 @@ class LDAPConnection(DependentOnSettingsPlugin):
+         try:
+             client = self.get_client()
+             if client is not None:
+-                # self.logger.debug("Searching LDAP, base: %s and filter: %s" % (base, ldap_filter))
++                self.logger.debug("Searching LDAP, base: %s and filter: %s" % (base, ldap_filter))
+                 result = client.search_s(base, scope, ldap_filter)
+                 client.unbind_s()
+                 if result:
+                     dn, data = result[0]
+-                    """
+                     # Dump LDAP search query results to logger
+                     self.logger.debug("dn: %s" % dn)
+                     for key, value in data.items():
+                         self.logger.debug("%s: %s" % (key, value))
+-                    """
+                     return dict(dn=dn, data=data)
+         except ldap.LDAPError as e:
+             self.logger.error(json.dumps(e))
