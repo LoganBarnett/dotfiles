@@ -44,6 +44,9 @@ from my filesystem.
 * music
 
   #+begin_src emacs-lisp :results none
+
+  (setq-default dnd/profile-path (expand-file-name "~/notes/dnd5e.org"))
+
     (defun config/dnd-row-to-track (row)
       (message "got row %s" row)
       (let ((name (org-table-get row dnd/name-column)))
@@ -83,10 +86,46 @@ from my filesystem.
         )
       )
 
+  (defun config/dnd-row-to-arrow-count (row)
+    (message "got row %s" row)
+    (let ((name (org-table-get row dnd/name-column)))
+      (message "name %s" name)
+      (-
+       (or
+        (cdr (assoc
+              name
+              '(
+                ("Maia" . 6)
+                ("Ella" . 6)
+                ("Erich" . 5)
+                ("Gary" . 6)
+                ("other" . 6)
+                )
+              ))
+        6
+        )
+       1
+       )
+       )
+      )
+
+    (defun config/dnd-trigger-necrodancer (row)
+      (request
+        (format
+         "http://localhost:8080/directions?direction_count=%s"
+         (config/dnd-row-to-arrow-count row)
+         )
+        :headers '(("Content-Type" . "application/json"))
+        :type "POST"
+        )
+      )
+
     (defun config/dnd-hook-personalized-music ()
-      (add-hook 'dnd/turn-functions #'config/dnd-trigger-personalized-music)
+      ;; (add-hook 'dnd/turn-functions #'config/dnd-trigger-personalized-music)
+      (add-hook 'dnd/turn-functions #'config/dnd-trigger-necrodancer)
       )
   #+end_src
+
 * utilities
 ** equipment weight
 #+name: org-dnd-equipment-weight

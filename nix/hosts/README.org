@@ -14,3 +14,46 @@ networks, etc, I use other particle names.
 ** Next Host
 
 The last host I created was selenium, so the next element is bromine.
+
+
+
+* Hosts
+
+** cobalt
+
+Git collab server (think gitlab, github, et. al).  Specifically it's running
+~gitea~.
+
+** zinc
+
+VPN tunnel from Japan to the US.
+
+** copper
+
+The wireguard "server".
+
+** nickel
+
+The LDAP server via ~openldap~.
+
+** arsenic
+
+Kai's gaming computer.
+
+** calcium
+
+A Nix cache using Attic.
+
+** gallium
+
+Network stuffs.  Probably going to change this one.  It's a Raspberry Pi with
+128 GB SD card.  This will probably become ~nextcloud~.
+
+** lithium
+
+NVidia based LLM compute machine.  Intel.  Runs ~ComfyUI~.
+
+** silicon
+
+The old ~nextcloud~ machine.  It is to be supplanted by [[gallium]] and then
+recycled.  It's not even running.
