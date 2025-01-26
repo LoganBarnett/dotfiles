@@ -125,6 +125,9 @@
     (init-org-file "yaml.org")
     (init-org-file "xml-mode.org")
     ;; End languages.
+    ;; Programming Support.
+    (load-library "lsp.el")
+    ;; End Programming Support.
     (init-org-file "hipchat.org")
     (init-org-file "keychain.org")
     (init-org-file "tramp.org")
