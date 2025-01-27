@@ -95,7 +95,7 @@ intuitive.
            (assoc "flake.nix" auto-insert-alist)
            )
   (message "auto-insert-alist (after hook): *.org %s"
-           (assoc "*.org" auto-insert-alist)
+           (assoc "*\\.org" auto-insert-alist)
            )
   (message "auto-insert-alist (after hook): %s" auto-insert-alist)
   ;; (message "Done calling yatemplate-reload-all.")

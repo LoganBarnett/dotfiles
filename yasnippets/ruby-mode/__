@@ -1,6 +1,10 @@
 # -*- mode: snippet; require-file-newline: nil -*-
-# name: ruby-mode
-# key: __
+# name: Ruby file template.
+# key: ruby-mode
 # condition: t
+# group: yatemplate
 # --
-bye
+# frozen_string_literal: true
+################################################################################
+# $1
+################################################################################
