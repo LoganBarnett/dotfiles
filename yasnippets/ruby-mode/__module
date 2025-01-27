@@ -2,9 +2,9 @@
 # name: ruby-module
 # key: __module
 # condition: t
-# comment: This snippet overrides the "__module" snippet, which Doom uses for
-# Ruby newly created files that live under ./lib in a given project. I have
-# found these snippets to be distracting. I was able to find this code from
+# This snippet overrides the "__module" snippet, which Doom uses for Ruby newly
+# created files that live under ./lib in a given project. I have found these
+# snippets to be distracting. I was able to find this code from
 # `doom-snippets-dir' which in turn was found under `yas-snippets-dir'. The code
 # below is a copy with some parts removed - namely the `progn' return and the
 # actual template below. The code is still desired because it identifies the

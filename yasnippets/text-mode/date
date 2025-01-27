@@ -1,7 +1,7 @@
 # -*- mode: snippet; require-file-newline: nil -*-
 # name: Give us a date stamp using the easily sortable YYYY-MM-DD format.
-# description: This # will prompt you for a date if you want to pick something
-#              besides today, otherwise just hit RET.
+#       This will prompt you for a date if you want to pick something
+#       besides today, otherwise just hit RET.
 # key: date
 # group: date
 # condition: t
