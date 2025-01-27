@@ -239,7 +239,7 @@ this was the most apparent I could find.
       (shell-command-to-string
         (concat
            "/run/current-system/sw/bin/zsh -c '"
-           "eval \"$(/nix/store/1nslf9a1isrmxh3hxvwkrbxy6ssr116s-direnv-2.34.0/bin/direnv hook zsh)\" > /dev/null; "
+           "eval \"$(direnv hook zsh)\" > /dev/null; "
            "cd " (projectile-project-root) " 2> /dev/null; "
            "which ruby;"
            "' | tr -d '\\n'"
