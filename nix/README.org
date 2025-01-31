@@ -81,7 +81,7 @@ and from my recollection of reading ~oddllama~'s dotfiles, it's not possible yet
 So scan the host key into the right location:
 
 #+begin_src shell-script :results none :exports code
-ssh-keyscan $host.proton | grep -o 'ssh-ed25519.*' > secrets/$host-pub-key.pub
+host='host'; ssh-keyscan $host.proton | grep -o 'ssh-ed25519.*' > secrets/$host-pub-key.pub
 #+end_src
 
 A quick ~git status~ will show the host pub key has changed.

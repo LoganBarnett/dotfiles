@@ -224,7 +224,23 @@
       ];
     };
     facts = import ./nixos-modules/facts.nix;
+    host = { nixpkgs, host-id, flake-inputs, ... }@args:
+      nixpkgs.lib.nixosSystem {
+        specialArgs = {
+          inherit facts flake-inputs host-id;
+          disko-proper = args.disko;
+        };
+        modules = [
+          (import ./hosts/${host-id}.nix)
+        ];
+      }
+    ;
   in  {
+
+    nixosConfigurations.argon = host {
+      inherit disko flake-inputs nixpkgs;
+      host-id = "argon";
+    };
 
       nixosConfigurations.cobalt = nixpkgs.lib.nixosSystem
         (import ./hosts/cobalt.nix {

@@ -22,6 +22,11 @@ in {
   imports = (builtins.map wireguard-client-peer peers) ++ [
     ./wireguard-agenix-rekey-generator.nix
   ];
+  environment.systemPackages = [
+    # Allow us to run Wireguard commands to show configuration and diagnose
+    # issues.
+    pkgs.wireguard-tools
+  ];
   networking = {
     firewall = {
       allowedUDPPorts = [ wireguard-port ];
@@ -31,7 +36,8 @@ in {
   systemd.network = {
     enable = true;
     netdevs = {
-      # What is the relevance of the number?
+      # What is the relevance of the number?  I believe it is to control load
+      # order.
       "50-wg" = {
         netdevConfig = {
           Kind = "wireguard";
@@ -39,14 +45,12 @@ in {
           # Magic value?  Why this?
           MTUBytes = "1300";
         };
-        # netdevConfig = {
-        #   Kind = "wireguard";
-        #   Name = "wg0";
-        #   MTUBytes = "1300";
-        # };
         wireguardConfig = {
           PrivateKeyFile = config.age.secrets."${host-id}-wireguard-server".path;
           ListenPort = wireguard-port;
+          # wg-quick creates routing entries automatically but we must use use
+          # this option in systemd.
+          RouteTable = "main";
         };
       };
     };
@@ -56,13 +60,14 @@ in {
       networkConfig = {
         # Uh, what?  Doesn't this need to just route?
         IPMasquerade = "ipv4";
-        IPForward = true;
+        IPv4Forwarding = true;
+        IPv6Forwarding = true;
       };
     };
   };
   # TODO: Remove?
   # networking.nat.enable = true;
-  # networking.nat.externalInterface = "eth0";
+  # networking.nat.externalInterface = "enu1u1";
   # networking.nat.internalInterfaces = [ "wg0" ];
   # networking.wireguard.interfaces = let
   #   lan-subnet = "192.168.254.1/24";
