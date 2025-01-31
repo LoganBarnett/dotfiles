@@ -1,7 +1,15 @@
 ################################################################################
 # Setup an HTTPS reverse proxy.
 ################################################################################
-{ listen-port ? 443, server-port, host-id, fqdn } : { config, ... }: {
+{
+  listen-port ? 443,
+  # Typically we want this on, but we want this off for PHP apps where, in
+  # essence, PHP is running on nginx already.
+  redirect ? true,
+  server-port ? null,
+  host-id,
+  fqdn
+}: { config, ... }: {
   networking.firewall.allowedTCPPorts = [ listen-port ];
   networking.firewall.allowedUDPPorts = [ listen-port ];
   services.nginx = {
@@ -38,7 +46,7 @@
 
     virtualHosts.${fqdn} = {
       forceSSL = true;
-      locations."/" = {
+      locations."/" = if redirect then {
         extraConfig =
           # required when the target is also TLS server with multiple hosts
           "proxy_ssl_server_name on;" +
@@ -47,7 +55,7 @@
           ;
         proxyPass = "http://127.0.0.1:${toString server-port}";
         proxyWebsockets = true; # needed if you need to use WebSocket
-      };
+      } else {};
       sslCertificateKey = config.age.secrets."tls-${host-id}.key".path;
       sslCertificate = ../secrets/tls-${host-id}.crt;
     };

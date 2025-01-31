@@ -23,6 +23,9 @@ in {
     (import ../nixos-modules/server-host.nix {
       inherit flake-inputs host-id system;
     })
+    (import ../nixos-modules/nextcloud.nix {
+      inherit host-id;
+    })
     ({ lib, pkgs, ... }: {
       # networking.hostId is needed by the filesystem stuffs.
       # An arbitrary ID needed for zfs so a pool isn't accidentally imported on
