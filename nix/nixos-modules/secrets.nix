@@ -57,7 +57,7 @@ in {
   # TODO: Help document pre-existing generators listed here:
   # https://github.com/oddlama/agenix-rekey/blob/85df729446fca1b9f22097b03e0ae2427c3246e2/modules/agenix-rekey.nix#L557
   age.generators.long-passphrase = {pkgs, ...}:
-    "${pkgs.xkcdpass}/bin/xkcdpass --numwords=10 delimiter=' '"
+    "${pkgs.xkcdpass}/bin/xkcdpass --numwords=10 --delimiter=' '"
   ;
 
   # TODO: TLS has a means of allowing certain features as well as how they
