@@ -213,7 +213,7 @@ I've already done a lot, but there's more to do.
     a. [X] vim bindings work with which-key.
     b. [X] ~:e~ completions use ~vertico~ and is fast.
     c. [X] ~;~ and ~,~ don't repeat with ~t~ / ~f~ et. al.
-    d. [X] ~s~ and ~S~ use ~evil-snipe~.
+    d. [X] ~s~ and ~S~ use ~evil-snipe~.  Somehow this got reverted.
 12. [ ] Check before leaving Emacs.
 13. [ ] Holy mode has a different colored cursor.
 14. [X] Use Doom's modeline.

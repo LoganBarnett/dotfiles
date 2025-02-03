@@ -206,14 +206,13 @@ setting =evil-snipe-skip-leading-whitespace= to =nil=.
 
 *** apply
 
-#+begin_src emacs-lisp :results none :noweb yes :tangle yes
-(use-package "evil-snipe"
-  :after evil
+#+name: config/evil-snipe-mode
+#+begin_src emacs-lisp :results none :noweb yes :tangle no :exports code
+(use-package evil-snipe
   :init
-  ;; This is required to activate the ; and , motions using evil-snipe.  We
-  ;; want evil-snipe doing this because it grants us a nice colored repeat and
-  ;; it can flow to new lines.
   (evil-snipe-override-mode)
+  ;; This turns on evil-snipe globally (`evil-snipe-local-mode', specifically).
+  (evil-snipe-mode 1)
   :config
   (map!
    :desc "evil-snipe forward" :nv "s" #'evil-snipe-s
@@ -413,5 +412,8 @@ library is already loaded.
   :config
   (evil-collection-init)
   )
+
 <<config/evil-surround>>
+
+<<config/evil-snipe-mode>>
 #+end_src
