@@ -14,14 +14,7 @@ in {
     (import ../nixos-modules/raspberry-pi-host.nix {
       inherit flake-inputs host-id;
     })
-    {
-      disabledModules = [
-        "${flake-inputs.nixpkgs}/nixos/modules/services/misc/octoprint.nix"
-      ];
-      imports = [
-        ../nixos-modules/octo-print-nixpkgs.nix
-      ];
-    }
+    ../nixos-modules/octoprint-shim.nix
     {
       services.octoprint = {
         enable = true;
@@ -75,7 +68,7 @@ in {
           (pg.buildPlugin (let
             version = "2022-11-10-unstable";
           in {
-            pname = "authldap";
+            pname = "octoprint-plugin-authldap";
             inherit version;
             src = pkgs.fetchFromGitHub {
               owner = "gillg";
@@ -83,6 +76,9 @@ in {
               rev = "473cf955309b8ba427d4c6b5f50b4d7b58c56477";
               hash = "sha256-6b5IXCIOxLlyKLo17y9gh30gQF7S0OEJVhTF6U2hrz0=";
             };
+            patches = [
+              ../nixos-modules/octoprint-auth-ldap-extra-logging.patch
+            ];
             propagatedBuildInputs = [
               pkgs.python3Packages.python-ldap
             ];
