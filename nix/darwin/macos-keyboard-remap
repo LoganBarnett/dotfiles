@@ -12,6 +12,9 @@
 ################################################################################
 set -euo pipefail
 
+function greppipe() {
+  grep "$@" || test $? = 1;
+}
 
 # See this for a series of key mapping values:
 # https://github.com/apple-oss-distributions/IOHIDFamily/blob/3f62fef86e2938e0f362e70eede0a914222c3e27/IOHIDFamily/IOHIDUsageTables.h
