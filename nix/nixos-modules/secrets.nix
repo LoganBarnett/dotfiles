@@ -13,10 +13,7 @@
 # prompted for the master password's key (which is the 3rd one I've create, "-3"
 # as a suffix).  I don't know if the .pub file matters or not.
 ################################################################################
-{
-  flake-inputs,
-  host-id,
-}: { config, pkgs, lib, ... }: let
+{ config, flake-inputs, host-id, lib, pkgs, ... }: let
   subject-string = subject:
     ''/C=${subject.country}\
 /ST=${subject.state}\

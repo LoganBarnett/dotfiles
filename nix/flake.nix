@@ -25,7 +25,7 @@
       # Pin to my last contribution for now because I cannot generate new
       # secrets, nor can I rekey.  See ./README.org in the troubleshooting ->
       # agenix section for more details.
-      url = "github:LoganBarnett/agenix-rekey?rev=3137e9b1df0724d0af8dbeb8c36f8eee4a26869a";
+      url = "github:LoganBarnett/agenix-rekey/generators-new-line-optional";
       # url = "github:LoganBarnett/agenix-rekey/parameterize-generators";
       # url = "github:LoganBarnett/agenix-rekey/parameterize-generators-master-identities-fix";
       # url = "git+file:///Users/logan/dev/agenix-rekey?ref=parameterize-generators";
@@ -113,6 +113,12 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    # sytter = {
+    #   url = "file:///Users/logan/dev/sytter";
+    #   inputs.nixpkgs.follows = "nixpkgs";
+    #   inputs.nix-darwin.follows = "nix-darwin";
+    # };
+
     # I need to keep a separate accounting of various flake inputs so I can be
     # more careful about triggering rebuilds on machines owned by $WORK, as I
     # suspect it triggers some foul security response.  To accomplish this, all
@@ -164,7 +170,7 @@
     };
   };
 
-  outputs = {
+  outputs = flake-inputs@{
     agenix,
     agenix-rekey,
     current-system,
@@ -190,9 +196,10 @@
     ache-em-ache-nix-darwin,
     ache-em-ache-nixpkgs,
     ache-em-ache-home-manager,
+    # sytter,
     self,
     ...
-  }@flake-inputs: let
+  }: let
     ache-em-ache-flake-inputs = {
       agenix = ache-em-ache-agenix;
       agenix-rekey = ache-em-ache-agenix-rekey;
@@ -224,20 +231,31 @@
       ];
     };
     facts = import ./nixos-modules/facts.nix;
-    host = { nixpkgs, host-id, flake-inputs, ... }@args:
-      nixpkgs.lib.nixosSystem {
+    nix-host = args@{ host-id, flake-inputs, system, ... }:
+      flake-inputs.nixpkgs.lib.nixosSystem {
         specialArgs = {
-          inherit facts flake-inputs host-id;
+          inherit facts flake-inputs host-id system;
           disko-proper = args.disko;
         };
         modules = [
-          (import ./hosts/${host-id}.nix)
+          ./hosts/${host-id}.nix
+        ];
+      }
+    ;
+    darwin-host = args@{ host-id, flake-inputs, system, ... }:
+      nix-darwin.lib.darwinSystem {
+        specialArgs = {
+          inherit facts flake-inputs host-id system;
+          disko-proper = args.disko;
+        };
+        modules = [
+          ./hosts/${host-id}.nix
         ];
       }
     ;
   in  {
 
-    nixosConfigurations.argon = host {
+    nixosConfigurations.argon = nix-host {
       inherit disko flake-inputs nixpkgs;
       host-id = "argon";
     };
@@ -364,17 +382,11 @@
           # flake-inputs = ache-em-ache-flake-inputs;
         });
 
-      darwinConfigurations."scandium" =
-        nix-darwin.lib.darwinSystem {
-          specialArgs = {
-            inherit facts;
-          };
-          modules = [
-            (import ./hosts/scandium.nix {
-              inherit flake-inputs;
-            })
-          ];
-        };
+      darwinConfigurations."scandium" = darwin-host {
+        inherit facts flake-inputs;
+        host-id = "scandium";
+        system = "aarch64-darwin";
+      };
 
       nixosConfigurations.lithium = nixpkgs-comfyui.lib.nixosSystem {
         specialArgs = {

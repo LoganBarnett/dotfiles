@@ -1,6 +1,6 @@
 # The ultimate editor.
-{ lib, pkgs, emacs-overlay, ... }: {
-  nixpkgs.overlays = [ emacs-overlay.overlays.default ];
+{ flake-inputs, lib, pkgs, ... }: {
+  nixpkgs.overlays = [ flake-inputs.emacs-overlay.overlays.default ];
   environment.systemPackages = let
     ob-duckdb = (pkgs.emacs.pkgs.trivialBuild {
       pname = "ob-duckdb";

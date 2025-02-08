@@ -1,6 +1,6 @@
 # This needs to be renamed.  This is for _building_ a Raspberry Pi image, not
 # _being_ one.
-{ flake-inputs }: { lib, ... }: let
+{ flake-inputs, lib, ... }: let
   format = attr: lib.traceVal ({ modulesPath, ... }: {
     imports = [
       "${toString modulesPath}/installer/sd-card/sd-image-raspberrypi.nix"

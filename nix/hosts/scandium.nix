@@ -3,16 +3,11 @@ let
   system = "aarch64-darwin";
   username = "logan";
 in
-{ flake-inputs }: {
+{ flake-inputs, ... }: {
   imports = [
     ../nixos-modules/nix-builder-consume.nix
-    (import ../nixos-modules/sd-image-raspberrypi.nix {
-      inherit flake-inputs;
-    })
-    (import ../nixos-modules/secrets.nix {
-      inherit flake-inputs;
-      inherit host-id;
-    })
+    ../nixos-modules/sd-image-raspberrypi.nix
+    ../nixos-modules/secrets.nix
     ../nixos-modules/software-engineering-networking.nix
     flake-inputs.home-manager.darwinModules.home-manager
     # Before I was using a curried function to pass these things in, but
@@ -23,8 +18,6 @@ in
     # need to use this at this point, but making it all consistent has
     # value.
     {
-      _module.args.emacs-overlay = flake-inputs.emacs-overlay;
-      _module.args.nixpkgs = flake-inputs.nixpkgs;
       _module.args.git-users = [
         {
           git-email = "logustus@gmail.com";
@@ -33,16 +26,13 @@ in
           host-username = username;
         }
       ];
-      _module.args.flake-inputs = flake-inputs;
     }
     {
       nixpkgs.hostPlatform = system;
       networking.hostName = host-id;
     }
     ../nixos-modules/tls-trust.nix
-    (import ../nixos-modules/user-can-admin.nix {
-      inherit flake-inputs system;
-    })
+    ../nixos-modules/user-can-admin.nix
     (import ../nixos-modules/user-can-develop.nix {
       inherit username;
     })
