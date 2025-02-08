@@ -10,11 +10,20 @@
 * stitch
 
 #+begin_src emacs-lisp :results none :exports code :tangle yes
-(defun config/rename-current-buffer-file ()
+(defun config/rename-current-buffer-file-vc ()
   (interactive)
-  ;; This isn't working yet, because I'm not prompting for the new name
-  ;; properly.  I need to see what Doom is doing, and steal it.
-  (rename-file (buffer-file-name) (find-file-noselect))
+  (vc-rename-file
+   (buffer-file-name)
+   (counsel-find-file (buffer-file-name) default-directory)
+   )
+  )
+
+(defun config/rename-current-buffer-file-no-vc ()
+  (interactive)
+  (rename-file
+   (buffer-file-name)
+   (counsel-find-file (buffer-file-name) default-directory)
+   )
   )
 
 (defun config/current-buffer-file-delete-vc ()
@@ -32,12 +41,8 @@
     (map!
      :leader
      :prefix ("f" . "files")
-     ;; Disabled until we can get the dialog stuff from Doom emacs pulled.
-     ;; :desc "File rename" "r" #'config/rename-current-buffer-file
-     ;; TODO: Make the original function intelligently also rename via version
-     ;; control, and provide another function which doesn't look at version
-     ;; control at all for this one.
-     ;; :desc "File rename (no-vc)" "R" #'
+     :desc "File rename" "r" #'config/rename-current-buffer-file-vc
+     :desc "File rename (no-vc)" "R" #'config/rename-current-buffer-file-no-vc
      :desc "File delete" "d" #'config/current-buffer-file-delete-vc
      :desc "File delete (no VC)" "D" #'config/current-buffer-file-delete-no-vc
      )
