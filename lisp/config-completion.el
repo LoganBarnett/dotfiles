@@ -195,8 +195,23 @@
    ("C-;" . embark-dwim)        ;; good alternative: M-.
    ("C-h B" . embark-bindings)) ;; alternative for `describe-bindings'
   :init
-  ;; Optionally replace the key help with a completing-read interface
-  (setq prefix-help-command #'embark-prefix-help-command)
+  (setq-default
+   ;; Optionally replace the key help with a completing-read interface.
+   prefix-help-command #'embark-prefix-help-command
+   ;; Prevent closing of the embark minibuffer.  This might need to be set
+   ;; conditionally.  There is an example in the docs found in
+   ;; https://github.com/oantolin/embark?tab=readme-ov-file#quitting-the-minibuffer-after-an-action
+   ;; which could easily be adapted for doing this contextually (such as only
+   ;; when searching files).
+   ;; See also https://github.com/oantolin/embark/issues/713 which suggests that
+   ;; there's a bug or perhaps the documentation about this is inconsistent.
+   embark-quit-after-action '(
+                              (consult-grep . nil)
+                              (consult-ripgrep . nil)
+                              (embark-consult-goto-grep . nil)
+                              (t . nil)
+                              )
+   )
 
   )
 
