@@ -21,6 +21,19 @@ The path must be expanded before being set.
 (setq-default scad-command (file-truename "~/bin/openscad"))
 #+end_src
 
+** local files in preview
+
+No longer needed due to my PR.
+
+#+name: config/scad-preview-current-directory
+#+begin_src emacs-lisp :results none :exports code :tangle no
+(defun config/scad-preview-current-directory ()
+  "Add the current directory to OPENSCADPATH per
+  https://github.com/openscad/emacs-scad-mode/pull/3."
+  (setenv "OPENSCADPATH" default-directory)
+  )
+(advice-add 'scad-preview :before #'config/scad-preview-current-directory)
+#+end_src
 
 ** key maps
 
@@ -157,8 +170,19 @@ We can add =org-babel= support using [[https://github.com/wose/ob-scad][ob-scad]
 * stitch
 
 #+begin_src emacs-lisp :results none :noweb yes
+(defun list-of-stringp (xs)
+  (--all-p xs #'stringp)
+  )
+(defun list-of-integerp (xs)
+  (--all-p #'integerp xs)
+  )
+
 (use-package "scad-mode"
   :init
+  ;; I'm not sure which of these work, and `safe-local-variable' isn't even
+  ;; documented, but there are suggestions to use it.
+  (add-to-list 'safe-local-variable-values '(scad-preview-camera . #'list-of-integerp))
+  (put 'scad-preview-camera 'safe-local-variable #'list-of-integerp)
   <<config/scad-preview-keymap>>
   <<config/scad-keymap>>
   <<config/prog-mode-fix-c-indentation>>
@@ -167,5 +191,7 @@ We can add =org-babel= support using [[https://github.com/wose/ob-scad][ob-scad]
   <<config/openscad-command>>
   <<config/scad-preview-color-scheme>>
   (add-hook 'scad-mode-hook #'config/prog-mode-c-style-set)
+  ;;:config
+  ;;<<config/scad-preview-current-directory>>
   )
 #+end_src
