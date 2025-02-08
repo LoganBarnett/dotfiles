@@ -30,9 +30,7 @@ in {
     ../nixos-modules/timezone-pacific.nix
     ../nixos-modules/uefi-systemd-boot.nix
     ../nixos-modules/x-desktop.nix
-    (import ../nixos-modules/server-host.nix {
-      inherit host-id flake-inputs system;
-    })
+    ../nixos-modules/server-host.nix
     ({ config, lib, pkgs, ... }: {
       imports = [
         (modulesPath + "/installer/scan/not-detected.nix")

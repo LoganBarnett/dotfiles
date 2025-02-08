@@ -7,9 +7,7 @@
 # mercury, due to its low melting point.  It also is a critical element needed
 # for making violet and blue LEDs.  Gallium can be 3D printed.
 ################################################################################
-{ disko-proper, flake-inputs }: { ... }: let
-  host-id = "gallium";
-  system = "aarch64-linux";
+{ flake-inputs, host-id, system, ... }: let
 in {
   imports = [
     (import ../nixos-modules/raspberry-pi-5.nix {
@@ -20,9 +18,7 @@ in {
     #   interface = "eth0";
     # })
     ../nixos-modules/nix-builder-provide.nix
-    (import ../nixos-modules/server-host.nix {
-      inherit flake-inputs host-id system;
-    })
+    ../nixos-modules/server-host.nix
     (import ../nixos-modules/nextcloud.nix {
       inherit host-id;
     })

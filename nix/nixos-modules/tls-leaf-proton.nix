@@ -2,7 +2,7 @@
 # Ensure this host has a TLS certificate available which is tied to the internal
 # CA.
 ################################################################################
-{ host-id }: { config, pkgs, ... }: {
+{ config, host-id, pkgs, ... }: {
 
   age.secrets."tls-${host-id}.key" = {
     generator = {

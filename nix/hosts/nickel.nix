@@ -6,24 +6,15 @@
 # Use this to build:
 # nix build '.#nixosConfigurations.nickel.config.system.build.sdImage' --show-trace
 ################################################################################
-{ disko-proper, flake-inputs, nixpkgs }: let
-  host-id = "nickel";
-  # Isn't it actually one of these though?  It identifies as aarch64-darwin when
-  # running.
-  # system = "armv6l-linux";
-  # system = "armv7l-linux";
-  system = "aarch64-linux";
+{ flake-inputs, host-id, system, ... }: let
 in {
-  # inherit system;
   imports = [
     (import ../nixos-modules/raspberry-pi-4.nix {
       inherit flake-inputs;
     })
     ../nixos-modules/nix-builder-provide.nix
     ../nixos-modules/raspberry-pi-builder.nix
-    (import ../nixos-modules/server-host.nix {
-      inherit flake-inputs host-id system;
-    })
+    ../nixos-modules/server-host.nix
     (import ../nixos-modules/ldap-server.nix { inherit host-id; })
     # (import ../nixos-modules/freeipa-server.nix { inherit host-id; })
     # Pi stuff.

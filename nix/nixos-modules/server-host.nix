@@ -1,11 +1,7 @@
 ################################################################################
 # Configuration common to all hosts that are servers.
 ################################################################################
-{
-  flake-inputs,
-  host-id,
-  system,
-}: { pkgs, ... }: {
+{ flake-inputs, host-id, pkgs, system, ... }: {
   imports = [
     {
       # Hostname is not an FQDN.
@@ -13,12 +9,8 @@
       nixpkgs.overlays = (import ../overlays/default.nix);
       system.stateVersion = "23.11";
     }
-    (import ./secrets.nix {
-      inherit flake-inputs host-id;
-    })
-    (import ./tls-leaf-proton.nix {
-      inherit host-id;
-    })
+    ./secrets.nix
+    ./tls-leaf-proton.nix
     # A server should never sleep/suspend unless we have a really good reason.
     ./narcolepsy.nix
     ./nix-builder-provide.nix
@@ -30,9 +22,7 @@
     # ./server-host-pub-key.nix
     ./sshd.nix
     ./tls-trust.nix
-    (import ./user-can-admin.nix {
-      inherit flake-inputs system;
-    })
+    ./user-can-admin.nix
     ../users/logan-server.nix
   ];
   # This is just blindly copied from somewhere, but I don't know where.  I

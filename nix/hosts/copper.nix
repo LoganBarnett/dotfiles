@@ -4,16 +4,12 @@
 # Copper runs Wireguard.
 # nix build '.#nixosConfigurations.copper.config.system.build.sdImage' --show-trace
 ################################################################################
-{ disko-proper, flake-inputs, nixpkgs }: let
-  host-id = "copper";
-  system = "aarch64-linux";
+{ flake-inputs, host-id, system, ... }: let
   wireguard-port = 51820;
 in {
   imports = [
     ../nixos-modules/nix-builder-provide.nix
-    (import ../nixos-modules/server-host.nix {
-      inherit flake-inputs host-id system;
-    })
+    ../nixos-modules/server-host.nix
     # TODO: Right now agenix-rekey wants to build wireguard to do the
     # generation.  This fails due to a problem with macOS building wireguard-go
     # (documented in the overlay in this repository).  It is not understood why
@@ -22,9 +18,9 @@ in {
     # ../nixos-modules/nix-flake-environment.nix.  I'm at a loss here.  This
     # probably warrants a ticket and I'll get to that sometime.  I have
     # confirmed that commenting this out (at least temporarily) fixes the issue.
-    (import ../nixos-modules/wireguard-server.nix {
-      inherit host-id;
-    })
+    # (import ../nixos-modules/wireguard-server.nix {
+    #   inherit host-id;
+    # })
     ({ pkgs, ... }: {
       # networking.hostId is needed by the filesystem stuffs.
       # An arbitrary ID needed for zfs so a pool isn't accidentally imported on

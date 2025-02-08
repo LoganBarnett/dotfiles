@@ -55,7 +55,7 @@
       (xs: lib.strings.concatStrings (lib.strings.intersperse sep xs))
     );
     join-lines = join "\n";
-    augeasLensInvocation = opt: (lib.traceVal ''
+    augeasLensInvocation = opt: (''
       stat ${lib.escapeShellArg opt.filePath}
       ${pkgs.augeas}/bin/augtool \
         --autosave \

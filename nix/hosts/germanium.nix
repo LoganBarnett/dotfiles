@@ -1,16 +1,11 @@
 ##
 # Germanium is Solomon's gaming computer.
 ##
-{ disko-proper, flake-inputs }: let
-  host-id = "germanium";
-  system = "x86_64-linux";
-in { modulesPath, ... }: {
-  nixpkgs.hostPlatform = system;
+{ flake-inputs, host-id, system, ... }: let
+in {
   imports = [
     ../raw-image.nix
-    (import ../nixos-modules/server-host.nix {
-      inherit host-id flake-inputs system;
-    })
+    ../nixos-modules/server-host.nix
     ../nixos-modules/steam-gaming.nix
     ../nixos-modules/timezone-pacific.nix
     ../nixos-modules/x-desktop.nix

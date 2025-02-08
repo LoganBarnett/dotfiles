@@ -10,6 +10,9 @@
   vpn-subnet-prefix = "192.168.102";
   network-interface = "enu1u1";
   peers = [
+    { host-id = "scandium"; ip = "20"; }
+    # Unsure how to force these - I think I'd just generate them manually in the
+    # case of a non-Nix managed device (like a phone).
     { host-id = "manganese"; ip = "22"; }
     # agenix-rekey's generators always put in a newline that fouls up the
     # generation here.  I could trim the newlines like is done in the
@@ -18,7 +21,6 @@
     # cleanly for me.  I'm up against the most recent working commit (the next
     # commit breaks things for me).  For now I'm leaving these hosts commented
     # out and focusing on the one I manually edited.
-    # { host-id = "scandium"; ip = "21"; }
     # { host-id = "zinc"; ip = "23"; }
   ];
   wireguard-client-peer = { host-id, ip }: {

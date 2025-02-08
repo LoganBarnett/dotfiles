@@ -10,22 +10,15 @@
 # disko to create our partitions for us.
 ################################################################################
 {
-  buildPlatform,
-  destinationPlatform,
-  disko-proper,
   flake-inputs,
-  nixpkgs,
+  host-id,
+  system,
   ...
 } : let
-  host-id = "nucleus";
-  system = destinationPlatform;
 in {
-  inherit system;
-  modules = [
+  imports = [
     ../hacks/installer/installation-cd-minimal.nix
-    (import ../nixos-modules/server-host.nix {
-      inherit flake-inputs host-id system;
-    })
+    ../nixos-modules/server-host.nix
     # "${nixpkgs}/nixos/modules/installer/cd-dvd/installation-cd-minimal.nix"
     # Per the NixOS documentation:
     # Provide an initial copy of the NixOS channel so that the user doesn't need
@@ -75,6 +68,7 @@ in {
       # virtualisation.graphics = false;
       # Hostname is not an FQDN.
       networking.hostName = "nucleus";
+      nixpkgs.hostPlatform = system;
       # I verified that setting overlays in the pkgs creation in flake.nix
       # does not work for making the overlays stick.  This does, however.
       # Probably because this module is getting a different pkgs due to

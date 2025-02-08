@@ -125,7 +125,7 @@
   # accounts, this is the password they use.  Some smarts need to be added to
   # account for this.
   ldap-passwords = users:
-    lib.traceVal (lib.lists.foldl
+    (lib.lists.foldl
       (a: b: a // b)
       # foldl's documentation is incorrect - it needs a third argument.
       {}

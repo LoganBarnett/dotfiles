@@ -1,10 +1,7 @@
-{ flake-inputs, ... }: let
-  host-id = "M-CL64PK702X";
-  system = "aarch64-darwin";
+{ host-id, flake-inputs, system, ... }: let
   username = "logan.barnett";
 in {
-  inherit system;
-  modules = [
+  imports = [
     ({ lib, pkgs, ... }: {
       imports = [
         ../nixos-modules/unfree-predicates.nix
@@ -16,10 +13,7 @@ in {
         ])
       ];
     })
-    (import ../nixos-modules/secrets.nix {
-      inherit flake-inputs;
-      inherit host-id;
-    })
+    ../nixos-modules/secrets.nix
     flake-inputs.home-manager.darwinModules.home-manager
     # the _module.args idiom is how I can ensure these values get passed via the
     # internal callPackage mechanism for darwinSystem on these modules.  We want
@@ -27,9 +21,6 @@ in {
     # cross-system compiling.  I don't know that we need to use this at this
     # point, but making it all consistent has value.
     {
-      _module.args.emacs-overlay = flake-inputs.emacs-overlay;
-      _module.args.nixpkgs = flake-inputs.nixpkgs;
-      _module.args.flake-inputs = flake-inputs;
       _module.args.git-users = [
         {
           git-email = "logan.barnett@nwea.org";
@@ -41,9 +32,7 @@ in {
     }
     ../darwin.nix
     ../users/logan-new-e-ah.nix
-    (import ../nixos-modules/user-can-admin.nix {
-      inherit flake-inputs system;
-    })
+    ../nixos-modules/user-can-admin.nix
     (import ../nixos-modules/user-can-develop.nix {
       inherit username;
     })
@@ -110,6 +99,7 @@ in {
         pkgs.saml2aws
       ];
       networking.hostName = host-id;
+      nixpkgs.hostPlatform = system;
       security.pki.certificateFiles = [
         "${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt"
         ../new-e-ah-certs.pem

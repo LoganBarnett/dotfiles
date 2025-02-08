@@ -210,43 +210,23 @@
       nixpkgs = ache-em-ache-nixpkgs;
       home-manager = ache-em-ache-home-manager;
     };
-    btf-disable = {
-      # This is a deviation from the exact README version, following directions
-      # here to customize the kernel: https://nixos.wiki/wiki/Linux_kernel This
-      # is done to address the vmlinux/BPF build issues as stated here:
-      # https://discourse.nixos.org/t/cannot-build-arm-linux-kernel-on-an-actual-arm-device/54218/3
-      boot.kernelPatches = [
-        {
-          name = "disable-bpf";
-          patch = null;
-          # https://discourse.nixos.org/t/cannot-build-arm-linux-kernel-on-an-actual-arm-device/54218/3
-          # Says to disable CONFIG_DEBUG_INFO_BTF (with no hints as to how), and
-          # https://github.com/NixOS/nixpkgs/blob/ae725bafb39b7e96c39e9769f32600d0081e1361/pkgs/os-specific/linux/kernel/common-config.nix#L56
-          # has DEBUG_INFO_BTF.  Just set both to "n" which should be false.
-          extraConfig = ''
-            DEBUG_INFO_BTF n
-            CONFIG_DEBUG_INFO_BTF n
-          '';
-        }
-      ];
-    };
     facts = import ./nixos-modules/facts.nix;
-    nix-host = args@{ host-id, flake-inputs, system, ... }:
+    nix-host = args@{ host-id, flake-inputs, system }:
       flake-inputs.nixpkgs.lib.nixosSystem {
         specialArgs = {
           inherit facts flake-inputs host-id system;
-          disko-proper = args.disko;
+          disko-proper = flake-inputs.disko;
         };
         modules = [
           ./hosts/${host-id}.nix
         ];
       }
     ;
-    darwin-host = args@{ host-id, flake-inputs, system, ... }:
+    darwin-host = args@{ host-id, flake-inputs, system }:
       nix-darwin.lib.darwinSystem {
         specialArgs = {
           inherit facts flake-inputs host-id system;
-          disko-proper = args.disko;
+          disko-proper = flake-inputs.disko;
         };
         modules = [
           ./hosts/${host-id}.nix
@@ -256,243 +236,140 @@
   in  {
 
     nixosConfigurations.argon = nix-host {
-      inherit disko flake-inputs nixpkgs;
+      inherit flake-inputs;
       host-id = "argon";
+      system = "aarch64-linux";
     };
 
-      nixosConfigurations.cobalt = nixpkgs.lib.nixosSystem
-        (import ./hosts/cobalt.nix {
-          build-system = "nixpkgs";
-          disko-proper = disko;
-          inherit flake-inputs nixpkgs;
-        })
-      ;
-
-      nixosConfigurations.cobalt-pi = nixpkgs.lib.nixosSystem
-        (import ./hosts/cobalt.nix {
-          build-system = "raspberry-pi-nix";
-          disko-proper = disko;
-          inherit flake-inputs nixpkgs;
-        })
-      ;
-
-      nixosModules.cobalt = { ... }: {
-        specialArgs = {
-          inherit facts flake-inputs;
-        };
-        imports = [
-          (import ./hosts/cobalt.nix {
-            disko-proper = disko;
-            inherit flake-inputs nixpkgs;
-          })
-        ];
-        format = "sd-aarch64";
-      };
-
-      nixosModules.copper = { ... }: {
-        specialArgs = {
-          inherit facts flake-inputs;
-        };
-        imports = [
-          (import ./hosts/copper.nix {
-            disko-proper = disko;
-            inherit flake-inputs nixpkgs;
-          })
-        ];
-        format = "sd-aarch64";
-      };
-
-      nixosConfigurations.copper = nixpkgs.lib.nixosSystem {
-        specialArgs = {
-          inherit facts flake-inputs;
-        };
-        modules = [
-          (import ./hosts/copper.nix {
-            disko-proper = disko;
-            inherit flake-inputs nixpkgs;
-          })
-        ];
-      };
-
-      nixosConfigurations.gallium = nixpkgs.lib.nixosSystem {
-        specialArgs = {
-          inherit facts flake-inputs;
-        };
-        modules = [
-          (import ./hosts/gallium.nix {
-            disko-proper = disko;
-            inherit flake-inputs;
-          })
-          btf-disable
-        ];
-      };
-
-      nixosConfigurations.test-pi = nixpkgs.lib.nixosSystem (let
-        host-id = "test-pi";
-      in {
-        modules = [
-          {
-            imports = [
-              (import ./nixos-modules/raspberry-pi-exact-readme-module.nix {
-                inherit flake-inputs;
-              })
-              # To keep agenix-rekey happy.  It requires all nodes include
-              # agenix and agenix-rekey.
-              flake-inputs.agenix.nixosModules.default
-              flake-inputs.agenix-rekey.nixosModules.default
-              {
-                age.rekey.storageMode = "local";
-                age.rekey.localStorageDir = ./secrets/rekeyed/${host-id};
-              }
-            ];
-          }
-          btf-disable
-        ];
-      });
-
-      # Build this with:
-      # nix build '.#nixosConfigurations.germanium.config.system.build.image'
-      nixosConfigurations.germanium = nixpkgs.lib.nixosSystem {
-        specialArgs = {
-          inherit facts flake-inputs;
-        };
-        modules = [
-          (import ./hosts/germanium.nix {
-            disko-proper = disko;
-            inherit flake-inputs;
-          })
-        ];
-      };
-
-      nixosConfigurations.arsenic = nixpkgs.lib.nixosSystem {
-        specialArgs = {
-          inherit facts flake-inputs;
-        };
-        modules = [
-          (import ./hosts/arsenic.nix {
-            disko-proper = disko;
-            inherit flake-inputs;
-          })
-        ];
-      };
-
-      darwinConfigurations."M-CL64PK702X" =
-        nix-darwin.lib.darwinSystem (import ./hosts/M-CL64PK702X.nix {
-          inherit flake-inputs;
-          # flake-inputs = ache-em-ache-flake-inputs;
-        });
-
-      darwinConfigurations."scandium" = darwin-host {
-        inherit facts flake-inputs;
-        host-id = "scandium";
-        system = "aarch64-darwin";
-      };
-
-      nixosConfigurations.lithium = nixpkgs-comfyui.lib.nixosSystem {
-        specialArgs = {
-          inherit facts;
-        };
-        modules = [
-          (import ./hosts/lithium.nix {
-            disko-proper = disko;
-            flake-inputs = flake-inputs // {
-              nixpkgs = nixpkgs-comfyui;
-            };
-          })
-        ];
-      };
-      # Unsure if we need this, but if we do, it serves as a shortcut
-      # essentially.
-      packages.x86_64-linux.lithium = self.nixosConfigurations.lithium;
-
-      nixosConfigurations.nickel = nixpkgs.lib.nixosSystem {
-        specialArgs = {
-          inherit facts;
-        };
-        modules = [
-          (import ./hosts/nickel.nix {
-            disko-proper = disko;
-            inherit flake-inputs nixpkgs;
-          })
-        ];
-      };
-
-      nixosConfigurations.selenium = nixpkgs-rpi.lib.nixosSystem {
-        specialArgs = {
-          inherit facts;
-        };
-        modules = [
-          (import ./hosts/selenium.nix {
-            disko-proper = disko;
-            flake-inputs = flake-inputs // {
-              nixpkgs = nixpkgs-rpi;
-            };
-          })
-          btf-disable
-        ];
-      };
-
-      nixosConfigurations.titanium = nixpkgs-working-rocm.lib.nixosSystem {
-        specialArgs = {
-          inherit facts;
-        };
-        modules = [
-          (import ./hosts/titanium.nix {
-            disko-proper = disko;
-            flake-inputs = flake-inputs // {
-              nixpkgs = nixpkgs-working-rocm;
-            };
-          })
-        ];
-      };
-
-      nixosConfigurations.nucleus-installer = (let
-        pkgs = import nixpkgs {
-          system = "x86_64-linux";
-          # _module.args is an idiom for populating the arguments available to
-          # callPackge, but I don't understand its nuances so it's repeated
-          # below.
-          _module.args = {
-            buildPlatform = "aarch64-linux";
-            destinationPlatform = "x86_64-linux";
-          };
-        };
-      in
-        nixpkgs.lib.nixosSystem (import ./hosts/nucleus.nix {
-          buildPlatform = "x86_64-linux";
-          destinationPlatform = "x86_64-linux";
-          disko-proper = disko;
-          inherit flake-inputs nixpkgs pkgs;
-        }));
-
-      packages.aarch64-darwin.nucleus-installer = self
-        .nixosConfigurations
-        .nucleus-installer
-        .config
-        .system
-        .build
-        .isoImage
-      ;
-
-      agenix-rekey = agenix-rekey.configure {
-        userFlake = self;
-        nodes = self.nixosConfigurations
-          // self.darwinConfigurations;
-        # nixosConfigurations = self.nixosConfigurations
-        #   // self.darwinConfigurations;
-        # pkgs = import flake-inputs.nixpkgs {
-        #   system = "aarch64-darwin";
-        # };
-      };
-
-      packages.aarch64-linux.distributed-test = let
-        pkgs = import nixpkgs {
-          system = "aarch64-linux";
-          overlays = ./overlays/default.nix;
-        };
-      in
-        pkgs.hello;
-
+    nixosConfigurations.cobalt = nix-host {
+      inherit flake-inputs;
+      host-id = "cobalt";
+      system = "aarch64-linux";
     };
+
+    nixosConfigurations.copper = nix-host {
+      inherit flake-inputs;
+      host-id = "copper";
+      system = "aarch64-linux";
+    };
+
+    nixosConfigurations.gallium = nix-host {
+      inherit flake-inputs;
+      host-id = "gallium";
+      system = "aarch64-linux";
+    };
+
+    nixosConfigurations.germanium = nix-host {
+      inherit flake-inputs;
+      host-id = "germanium";
+      system = "x86_64-linux";
+    };
+
+    nixosConfigurations.arsenic = nix-host {
+      inherit flake-inputs;
+      host-id = "arsenic";
+      system = "aarch64-linux";
+    };
+
+    darwinConfigurations."M-CL64PK702X" = darwin-host {
+      inherit flake-inputs;
+      host-id = "M-CL64PK702X";
+      system = "aarch64-darwin";
+    };
+
+    darwinConfigurations."scandium" = darwin-host {
+      inherit flake-inputs;
+      host-id = "scandium";
+      system = "aarch64-darwin";
+    };
+
+    nixosConfigurations.lithium = nix-host {
+      flake-inputs = flake-inputs // {
+        nixpkgs = nixpkgs-comfyui;
+      };
+      host-id = "lithium";
+      system = "x86_64-linux";
+    };
+
+    nixosConfigurations.nickel = nix-host {
+      inherit flake-inputs;
+      host-id = "nickel";
+      system = "aarch64-linux";
+    };
+
+    nixosConfigurations.selenium = nix-host {
+      flake-inputs = flake-inputs // {
+        nixpkgs = nixpkgs-rpi;
+      };
+      host-id = "selenium";
+      system = "aarch64-linux";
+    };
+
+    nixosConfigurations.titanium = nix-host {
+      flake-inputs = flake-inputs // {
+        nixpkgs = flake-inputs.nixpkgs-working-rocm;
+      };
+      host-id = "selenium";
+      system = "aarch64-linux";
+    };
+
+    nixosConfigurations.nucleus = nix-host {
+      inherit flake-inputs;
+      host-id = "nucleus";
+      system = "x86_64-linux";
+    };
+
+    packages.aarch64-darwin.nucleus = self
+      .nixosConfigurations
+      .nucleus-installer
+      .config
+      .system
+      .build
+      .isoImage
+    ;
+
+    agenix-rekey = agenix-rekey.configure {
+      userFlake = self;
+      # nodes = self.nixosConfigurations
+      #         // self.darwinConfigurations;
+      nixosConfigurations = self.nixosConfigurations
+        // self.darwinConfigurations;
+      # pkgs = import flake-inputs.nixpkgs {
+      #   system = "aarch64-darwin";
+      # };
+    };
+
+    packages.aarch64-linux.distributed-test = let
+      pkgs = import nixpkgs {
+        system = "aarch64-linux";
+        overlays = ./overlays/default.nix;
+      };
+    in
+      pkgs.hello;
+
+    nixosConfigurations.test-pi = flake-inputs.nixpkgs.lib.nixosSystem (let
+      host-id = "test-pi";
+    in {
+      modules = [
+        {
+          imports = [
+            (import ./nixos-modules/raspberry-pi-exact-readme-module.nix {
+              inherit flake-inputs;
+            })
+            # To keep agenix-rekey happy.  It requires all nodes include
+            # agenix and agenix-rekey.
+            flake-inputs.agenix.nixosModules.default
+            flake-inputs.agenix-rekey.nixosModules.default
+            {
+              age.rekey.storageMode = "local";
+              age.rekey.localStorageDir = ./secrets/rekeyed/${host-id};
+            }
+            ./nixos-modules/btf-disable.nix
+          ];
+        }
+      ];
+    });
+
+  };
 
 }

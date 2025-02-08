@@ -1,10 +1,7 @@
 ##
 # arsenic is Kai's gaming computer.
 ##
-{ disko-proper, flake-inputs }: let
-  host-id = "arsenic";
-  system = "x86_64-linux";
-in { modulesPath, ... }: {
+{ flake-inputs, host-id, modulesPath, system, ... }: {
   nixpkgs.hostPlatform = system;
   imports = [
     (import ../nixos-modules/nvidia.nix {
@@ -19,9 +16,7 @@ in { modulesPath, ... }: {
       # 6GB) says 6.1.
       cudaCapabilities = [ "8.6" ];
     })
-    (import ../nixos-modules/server-host.nix {
-      inherit host-id flake-inputs system;
-    })
+    ../nixos-modules/server-host.nix
     ../nixos-modules/lvm-uefi-disk.nix
     ../nixos-modules/steam-gaming.nix
     ../nixos-modules/timezone-pacific.nix

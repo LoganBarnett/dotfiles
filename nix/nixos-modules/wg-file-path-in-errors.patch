@@ -1,0 +1,91 @@
+---
+ src/config.c  |  8 ++++----
+ src/setconf.c | 11 +++++++----
+ 2 files changed, 11 insertions(+), 8 deletions(-)
+
+diff --git src/config.c src/config.c
+index 81ccb47..9f15477 100644
+--- src/config.c
++++ src/config.c
+@@ -123,7 +123,7 @@ static bool parse_keyfile(uint8_t key[static WG_KEY_LEN], const char *path)
+
+ 	f = fopen(path, "r");
+ 	if (!f) {
+-		perror("fopen");
++		fprintf(stderr, "open %s: %s", path, strerror(errno));
+ 		return false;
+ 	}
+
+@@ -135,19 +135,19 @@ static bool parse_keyfile(uint8_t key[static WG_KEY_LEN], const char *path)
+ 			goto out;
+ 		}
+
+-		fprintf(stderr, "Invalid length key in key file\n");
++		fprintf(stderr, "Invalid length key in %s\n", path);
+ 		goto out;
+ 	}
+ 	dst[WG_KEY_LEN_BASE64 - 1] = '\0';
+
+ 	while ((c = getc(f)) != EOF) {
+ 		if (!char_is_space(c)) {
+-			fprintf(stderr, "Found trailing character in key file: `%c'\n", c);
++			fprintf(stderr, "Found trailing character `%c' in %s\n", c, path);
+ 			goto out;
+ 		}
+ 	}
+ 	if (ferror(f) && errno) {
+-		perror("getc");
++		fprintf(stderr, "read %s: %s", path, strerror(errno));
+ 		goto out;
+ 	}
+ 	ret = parse_key(key, dst);
+diff --git src/setconf.c src/setconf.c
+index 1c5b138..414785d 100644
+--- src/setconf.c
++++ src/setconf.c
+@@ -3,6 +3,7 @@
+  * Copyright (C) 2015-2020 Jason A. Donenfeld <Jason at zx2c4.com>. All Rights Reserved.
+  */
+
++#include <errno.h>
+ #include <stddef.h>
+ #include <stdio.h>
+ #include <stdlib.h>
+@@ -102,6 +103,7 @@ int setconf_main(int argc, const char *argv[])
+ {
+ 	struct wgdevice *device = NULL;
+ 	struct config_ctx ctx;
++	const char *path = NULL;
+ 	FILE *config_input = NULL;
+ 	char *config_buffer = NULL;
+ 	size_t config_buffer_len = 0;
+@@ -112,9 +114,10 @@ int setconf_main(int argc, const char *argv[])
+ 		return 1;
+ 	}
+
+-	config_input = fopen(argv[2], "r");
++	path = argv[2];
++	config_input = fopen(path, "r");
+ 	if (!config_input) {
+-		perror("fopen");
++		fprintf(stderr, "open %s: %s", path, strerror(errno));
+ 		return 1;
+ 	}
+ 	if (!config_read_init(&ctx, !strcmp(argv[0], "addconf"))) {
+@@ -123,13 +126,13 @@ int setconf_main(int argc, const char *argv[])
+ 	}
+ 	while (getline(&config_buffer, &config_buffer_len, config_input) >= 0) {
+ 		if (!config_read_line(&ctx, config_buffer)) {
+-			fprintf(stderr, "Configuration parsing error\n");
++			fprintf(stderr, "Configuration parsing error in %s\n", path);
+ 			goto cleanup;
+ 		}
+ 	}
+ 	device = config_read_finish(&ctx);
+ 	if (!device) {
+-		fprintf(stderr, "Invalid configuration\n");
++		fprintf(stderr, "Invalid configuration in %s\n", path);
+ 		goto cleanup;
+ 	}
+ 	strncpy(device->name, argv[1], IFNAMSIZ - 1);
+-- 

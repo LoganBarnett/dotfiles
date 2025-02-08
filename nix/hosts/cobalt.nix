@@ -4,23 +4,15 @@
 # The cobalt host is currently tasked as a git collaboration server.  This is
 # like a self-hosted GitHub or Bitbucket.
 ################################################################################
-{ disko-proper, flake-inputs, build-system, nixpkgs }: let
+{ flake-inputs, system, nixpkgs, ... }: let
   gitea-port = 3000;
   host-id = "cobalt";
   system = "aarch64-linux";
 in {
-  inherit system;
-  specialArgs = {
-    inherit flake-inputs;
-  };
-  modules = [
-    # ../nixos-modules/raspberry-pi-disk.nix
-    # flake-inputs.nixos-generators.nixosModules.all-formats
-    # "${nixpkgs}/nixos/modules/installer/sd-card/sd-image-raspberrypi.nix"
-    # "${nixpkgs}/nixos/modules/installer/sd-card/sd-image.nix"
-    "${nixpkgs}/nixos/modules/installer/sd-card/sd-image-aarch64.nix"
+  imports = [
+    ../nixos-modules/raspberry-pi-5.nix
     ({ config, lib, pkgs, ... }: {
-      # nixpkgs.hostPlatform = "aarch64-linux";
+      nixpkgs.hostPlatform = system;
       # nixpkgs.hostPlatform = "aarch64-unknown-linux-gnu";
       # boot.kernelPackages = lib.mkForce pkgs.linuxKernel.packages.linux_rpi4;
       # This isn't working due to a bootstrapping issue.  Do not use.
@@ -32,9 +24,7 @@ in {
       # ];
     })
     ../nixos-modules/nix-builder-provide.nix
-    (import ../nixos-modules/server-host.nix {
-      inherit flake-inputs host-id system;
-    })
+    ../nixos-modules/server-host.nix
     (import ../nixos-modules/https.nix {
       inherit host-id;
       listen-port = 443;
@@ -42,10 +32,5 @@ in {
       fqdn = "${host-id}.proton";
     })
     ../nixos-modules/gitea-server.nix
-  ]
-  ++ (if build-system == "raspberry-pi-nix" then [
-    flake-inputs.raspberry-pi-nix.nixosModules.raspberry-pi
-  ] else [])
-  ;
-} // (if build-system == "raspberry-pi-nix" then {
-} else {})
+  ];
+}

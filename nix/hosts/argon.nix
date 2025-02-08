@@ -9,13 +9,9 @@ in {
     (import ../nixos-modules/raspberry-pi-4.nix {
       inherit flake-inputs;
     })
-    (import ../nixos-modules/raspberry-pi-host.nix {
-      inherit flake-inputs host-id;
-    })
+    ../nixos-modules/raspberry-pi-host.nix
     ../nixos-modules/nix-builder-provide.nix
-    (import ../nixos-modules/server-host.nix {
-      inherit flake-inputs host-id system;
-    })
+    ../nixos-modules/server-host.nix
     ../nixos-modules/wireguard-server-standard.nix
   ];
   # networking.hostId is needed by the filesystem stuffs.

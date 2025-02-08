@@ -9,6 +9,7 @@ in
     ../nixos-modules/sd-image-raspberrypi.nix
     ../nixos-modules/secrets.nix
     ../nixos-modules/software-engineering-networking.nix
+    ../nixos-modules/wireguard-client-standard.nix
     flake-inputs.home-manager.darwinModules.home-manager
     # Before I was using a curried function to pass these things in, but
     # the _module.args idiom is how I can ensure these values get passed

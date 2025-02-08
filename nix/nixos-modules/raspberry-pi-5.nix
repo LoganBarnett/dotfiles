@@ -1,8 +1,9 @@
 ##
 # Provides settings needed to build a Raspberry Pi 5 bootable image.
 ##
-{ flake-inputs }: { ... }: {
+{ flake-inputs, ... }: {
   imports = [
+    ./btf-disable.nix
     flake-inputs.raspberry-pi-nix.nixosModules.raspberry-pi
     # Required to bring in fileSystems and other things.
     flake-inputs.raspberry-pi-nix.nixosModules.sd-image

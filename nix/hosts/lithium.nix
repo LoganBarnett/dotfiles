@@ -11,9 +11,7 @@
 # The final NixOS module is the server specific configuration, with everything
 # before that being reusable modules (or parameterized, reusable modules).
 ################################################################################
-{ disko-proper, flake-inputs }: let
-  host-id = "lithium";
-  system = "x86_64-linux";
+{ disko-proper, flake-inputs, host-id, system, ... }: let
 in {
   imports = [
     (let
@@ -45,9 +43,7 @@ in {
       # 6GB) says 6.1.
       cudaCapabilities = [ "6.0" ];
     })
-    (import ../nixos-modules/server-host.nix {
-      inherit flake-inputs host-id system;
-    })
+    ../nixos-modules/server-host.nix
     ({ lib, pkgs, ... }: {
       # Freaky workaround that's already fixed, but we're pinned to an older
       # nixpkgs.  See: https://github.com/NixOS/nixpkgs/issues/261777

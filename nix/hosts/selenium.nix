@@ -6,14 +6,12 @@
 #
 # Selenium provides an OctoPrint server for the Prusia 3D FFF printer.
 ################################################################################
-{ disko-proper, flake-inputs }: { pkgs, ... }: let
+{ flake-inputs, pkgs, ... }: let
   host-id = "selenium";
   system = "aarch64-linux";
 in {
   imports = [
-    (import ../nixos-modules/raspberry-pi-host.nix {
-      inherit flake-inputs host-id;
-    })
+    ../nixos-modules/raspberry-pi-host.nix
     ../nixos-modules/octoprint-shim.nix
     {
       services.octoprint = {
@@ -101,9 +99,7 @@ in {
       inherit flake-inputs;
     })
     ../nixos-modules/nix-builder-provide.nix
-    (import ../nixos-modules/server-host.nix {
-      inherit flake-inputs host-id system;
-    })
+    ../nixos-modules/server-host.nix
     # ../nixos-modules/raspberry-pi-disk.nix
     {
       # networking.hostId is needed by the filesystem stuffs.
