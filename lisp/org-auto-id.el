@@ -1,8 +1,9 @@
-;;; org-auto-id --- Insert CUSTOM_ID properties into headlines.
+;;; org-auto-id --- Insert deterministic, human friendly IDs for Org headlines. -*- lexical-binding: t; -*-
+;;
 ;;; Commentary:
 ;; Automatically insert CUSTOM_ID into org-mode headlines on save.  This makes
-;; exporting headline links deterministic.  Otherwise org-mode assigns a random
-;; ID that changes on every run.
+;; exporting headline links deterministic and human readable.  Otherwise
+;; org-mode assigns a random ID that changes on every run.
 ;;
 ;; This can be enabled by adding `#+auto_id: t' to the headers of your org-mode
 ;; file.
@@ -17,23 +18,35 @@
 `org-auto-id' can potentially write a lot of changes to the buffer.  Storing
 each of these changes as an undo point clutters the undo buffer and undoing each
 edit is not a desired behavior."
-  ;; (let ((undo-inhibit-record-point t))
-    (undo-boundary)
+    ;; This seems to cause an error that can't be seen and the body is never
+    ;; executed.
+    ;; (undo-boundary)
     `(progn
-      (with-demoted-errors "Error during org-auto-id: %s" ,@body)
+       (setq undo-inhibit-record-point t)
+       (with-demoted-errors "Error during org-auto-id: %s" ,@body)
+       (setq undo-inhibit-record-point nil)
       )
-    (undo-boundary)
-    ;; )
+    ;; This seems to cause an error that can't be seen and the body is never
+    ;; executed, even though it comes after the body.
+    ;; (undo-boundary)
   )
 
 (defun org-auto-id/id-as-extra-kebab (hierarchy-list)
   "Convert HIERARCHY-LIST to kebab-case, with extra \"-\" between headings.
 
 For example using the hierarchy foo -> bar -> baz qux with foo being at the top
-of the hierachy and baz qux being at the bottom.  The output would be:
+of the hierarchy and baz qux being at the bottom.  The output would be:
 
 \"foo--bar--baz-qux\""
   (org-auto-id/anchorize-headline-title (string-join hierarchy-list "--"))
+  )
+
+(defun org-auto-id/id-generate (id-fn title el)
+  "Generate the CUSTOM_ID using ID-FN and TITLE from Org headline element EL."
+  (funcall
+   id-fn
+   (org-auto-id/heading-hierarchy-list el (list title))
+   )
   )
 
 (defun org-auto-id/buffer-custom-id-populate ()
@@ -58,6 +71,7 @@ To override AUTO_ID_FN put this at the top of your buffer:
 If CUSTOM_ID is already set for a given heading then it will be overwritten."
   (interactive)
   (require 'org-id)
+  (require 'org-element-ast)
   (setq-local org-id-link-to-org-use-id 'create-if-interactive-and-no-custom-id)
   (message "disabling undo")
   (org-auto-id/without-undo
@@ -66,38 +80,40 @@ If CUSTOM_ID is already set for a given heading then it will be overwritten."
      (widen)
      ;; (beginning-of-buffer)
      (goto-char (point-min))
-
      (let ((format-to-id (or (intern-soft
                               (org-auto-id/get-org-keyword "AUTO_ID_FN"))
                              'org-auto-id/id-as-extra-kebab
                              )))
-       (message "format-to-id %s" format-to-id)
+       ;; (message "format-to-id %s" format-to-id)
        (org-element-map
            (org-element-parse-buffer 'headline)
            'headline
          (lambda (el)
            (let ((id (org-element-property :raw-value el)))
              (outline-next-heading)
-             (org-entry-put (point) "CUSTOM_ID"
-                            (funcall format-to-id
-                                     (org-auto-id/heading-hierarchy-list
-                                      el
-                                      (list id)))
-                            )
+             (let ((custom-id (org-auto-id/id-generate format-to-id id el)))
+               (if (not (eq custom-id (org-entry-get (point) "CUSTOM_ID")))
+                   (org-entry-put (point) "CUSTOM_ID" custom-id)
+                 nil
+                 )
+               )
              )
            )
-       )))))
+         )
+       )
+     )
+   )
+  )
 
 (defun org-auto-id/heading-hierarchy-list (child hierarchy)
   "Recurse from CHILD to build a parent-first HIERARCHY list of headline titles."
   (let* ((parent (org-element-property :parent child))
         (parent-title (org-element-property :raw-value parent)))
     (if (and parent parent-title)
-        (org-auto-id/heading-hierarchy-list parent
-                                (add-to-list 'hierarchy
-                                             parent-title
-                                             )
-                                )
+        (org-auto-id/heading-hierarchy-list
+           parent
+           (push parent-title hierarchy)
+           )
       hierarchy
       )
     )
@@ -139,27 +155,27 @@ Will yield:
   (cdr (assoc keyword (org-auto-id/get-org-keywords)))
   )
 
+(defun org-auto-id/save-auto-id ()
+  "Save CUSTOM_IDs for Org headlines if AUTO_ID is non-nil."
+  (when
+    (and (eq major-mode 'org-mode)
+         (eq buffer-read-only nil)
+         (not (eq (org-auto-id/get-org-keyword "AUTO_ID") nil))
+         )
+    (message "Adding auto ids to org buffer \"%s\"" (buffer-name))
+    (org-auto-id/buffer-custom-id-populate)
+    )
+  )
+
 (defun org-auto-id/on-save-auto-id ()
   "When saving an `org-mode' buffer, add CUSTOM_IDs to all headlines.
 
 See `org-auto-id/buffer-custom-id-populate' for details and
 customization options."
   (interactive)
-  (add-hook 'before-save-hook
-            (lambda ()
-              (when (and (eq major-mode 'org-mode)
-                         (eq buffer-read-only nil)
-                         ;; This isn't working properly and should probably
-                         ;; check for "nil" (string) as well.
-                         (not (eq (org-auto-id/get-org-keyword "AUTO_ID") nil))
-                         )
-                (message "Adding auto ids to org buffer \"%s\"" (buffer-name))
-
-                (org-auto-id/buffer-custom-id-populate)
-                ))
-            )
+  (add-hook 'before-save-hook #'org-auto-id/save-auto-id)
   )
 
 (provide 'org-auto-id)
 
-;;; org-auto-id ends here
+;;; org-auto-id.el ends here
