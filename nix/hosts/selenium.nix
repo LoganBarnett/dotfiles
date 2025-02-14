@@ -6,7 +6,7 @@
 #
 # Selenium provides an OctoPrint server for the Prusia 3D FFF printer.
 ################################################################################
-{ flake-inputs, pkgs, ... }: let
+{ config, flake-inputs, pkgs, ... }: let
   host-id = "selenium";
   system = "aarch64-linux";
 in {
@@ -30,6 +30,8 @@ in {
               auth_user = "uid=selenium-octoprint-service,ou=users,dc=proton,dc=org";
               # TODO: Cycle this out once this is securely referenced.
               # TODO: Use a password file - might need to make a PR for it.
+              auth_password_file =
+                config.secrets.selenium-octoprint-service-ldap-password.path;
               search_base = "dc=proton,dc=org";
               # (&(ou_filter)(ou_member_filter))
               # (&(cn=%s,ou=groups,dc=proton,dc=org)(member=uid=%s,ou=users,dc=proton,dc=org))
@@ -85,7 +87,8 @@ in {
               hash = "sha256-6b5IXCIOxLlyKLo17y9gh30gQF7S0OEJVhTF6U2hrz0=";
             };
             patches = [
-              ../nixos-modules/octoprint-auth-ldap-extra-logging.patch
+              # ../nixos-modules/octoprint-auth-ldap-extra-logging.patch
+              ../nixos-modules/octoprint-auth-ldap-password-file.patch
             ];
             propagatedBuildInputs = [
               pkgs.python3Packages.python-ldap
