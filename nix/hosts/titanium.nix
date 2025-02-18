@@ -1,4 +1,4 @@
-{ disko-proper, flake-inputs }: { modulesPath, ... }: let
+{ modulesPath, ... }: let
   host-id = "titanium";
   system = "x86_64-linux";
 in {

@@ -309,8 +309,8 @@
       flake-inputs = flake-inputs // {
         nixpkgs = flake-inputs.nixpkgs-working-rocm;
       };
-      host-id = "selenium";
-      system = "aarch64-linux";
+      host-id = "titanium";
+      system = "x86_64-linux";
     };
 
     nixosConfigurations.nucleus = nix-host {

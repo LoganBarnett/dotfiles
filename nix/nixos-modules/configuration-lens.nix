@@ -55,18 +55,27 @@
       (xs: lib.strings.concatStrings (lib.strings.intersperse sep xs))
     );
     join-lines = join "\n";
-    augeasLensInvocation = opt: (''
+    augeasLensInvocation = opt: let
+      command = ''
+        ${pkgs.augeas}/bin/augtool \
+          --autosave \
+          --include ${pkgs.augeas}/share/augeas/lenses/dist \
+          ${if opt.transform == null then
+            ""
+          else
+            "--transform" +
+            " '${lib.escapeShellArg opt.transform}" +
+            " incl" +
+            " ${lib.escapeShellArg opt.filePath}'"
+          } \
+          ${lib.escapeShellArg opt.operation} \
+          '/files${opt.filePath}${opt.documentPath}' \
+          ${lib.escapeShellArg opt.value} \
+      '';
+    in (''
       stat ${lib.escapeShellArg opt.filePath}
-      ${pkgs.augeas}/bin/augtool \
-        --autosave \
-        ${if opt.transform == null then
-          ""
-        else
-          "--transform ${lib.escapeShellArg opt.transform} incl ${lib.escapeShellArg opt.filePath}"
-        } \
-        ${lib.escapeShellArg opt.operation} \
-        /files/${lib.escapeShellArg opt.filePath}${lib.escapeShellArg opt.documentPath} \
-        ${lib.escapeShellArg opt.value}
+       echo "Running: ${command}"
+       ${command}
     '');
     lensInvocation = opt: (
       # We expect there to be more lens transformation tools available.
