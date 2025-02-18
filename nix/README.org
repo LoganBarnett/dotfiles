@@ -1939,6 +1939,82 @@ imports = [
 
 
 * Troubleshooting
+** General Build Troubleshooting Tips
+
+Since Nix can run arbitrary build scripts, the area for things can be quite
+infinite.  But still there's some things we can check on.
+
+*** Is the Build Issue Consistent?
+
+This might sound obvious, but what happens if the same build is run again?
+
+Sometimes this happens because ~oomkiller~ struck at a bad time for a big source
+build.  Other times it could be some issue with networking.  While some of these
+issues "shouldn't" happen with Nix, it doesn't mean there aren't lingering ways
+in which a build can fail inconsistently.
+
+Although in all likelihood, if you have an intermittent build issue, it could be
+resulting from something about the system itself, rather than something with the
+build.
+
+*** Upgrading ~nixpkgs~
+
+While you can upgrade ~nixpkgs~ (and other things as well), this is kind of a
+scorched earth operation.  Since we follow unstable, this generally means
+exchanging one problem for another, or just getting new problems.  You might
+think you've moved on from the problem because it got fixed, only to find
+something _earlier_ in the build chain now fails instead.  Once that's fixed,
+you're back to square one.
+
+That said, sometimes it does actually fix things.
+
+Try to setup a new Flake input so other machines needn't join you on this risky
+journey.  It's a bit tedious, and there's perhaps something we could do better
+to address that.  It will make our ~flake.nix~ look rather ugly though, I bet.
+
+*** Remove Hacks
+
+Oftentimes there are things sitting in [[file:./overlays/default.nix]] which cause
+issues against the current version of ~nixpkgs~ or some other input.  We pinned
+something to an older version, and now the build with that older version no
+longer works.
+
+Be mindful that backing out an overlay for one system might break another one.
+Making some conditional overlays is a good idea.  The generic overlays are
+rather harmful in this way, and going forward we should bind an overlay either
+to a host or a ~nixos-module~ so the overlay is both local to the problem it's
+trying to solve.  This makes it discoverable and also only gets applied if the
+module or host in question is involved.
+
+*** Finding Issues in ~nixpkgs~
+
+Sometimes finding issues out there using the parts of the error message you see
+can be helpful.  If doing [[Upgrading ~nixpkgs~]], this could be helpful in knowing
+which commit to advance to.  Just be sure that it's a future commit.
+
+*** Pin to an older, working version
+
+Knowing what the older, working version is can be a challenge, but the first
+step in finding out is just trying the prior version (check the git commit
+history).  Oftentimes to do this without stepping all of ~nixpkgs~ back in time
+(and thus screwing up other things), I'll create an overlay that replaces the
+derivation with a hard copy of the old derivation.  This also lets me try things
+out if I want to try debugging the old derivation itself.
+
+It would be nice if we had a Flake input based ~git bisect~.  I've thought about
+making a program to help with this, since there doesn't seem to be anything out
+there already.  Then we could easily create issues in ~nixpkgs~ as well as flip
+to an old version.
+
+*** File a ticket
+
+This might seem like the first thing most people do, but for me this is the last
+thing.  Maybe that's not great in some ways, but I like to keep my issues I file
+very complete.  Sometimes creating these kinds of things in isolation can be
+difficult.  I know not everyone needs that level of detail, but I like to give
+it, and following the other steps usually solves the issue for me, or through
+[[Finding Issues in ~nixpkgs~]] I find the issue already exists.
+
 ** DONE ~age~ attribute missing
 CLOSED: [2024-11-29 Fri 13:45]
 
@@ -2643,3 +2719,50 @@ with preprocessed source if appropriate.
 Please include the complete backtrace with any bug report.
 See <https://gcc.gnu.org/bugs/> for instructions.
 #+end_example
+
+Months later, even more:
+
+#+begin_example
+error: builder for '/nix/store/6di1ra9djnk7fa5sbv2yyy2q0q52cs8r-opencv-4.9.0.drv' failed with exit code 2;
+       last 25 log lines:
+       >       |                             ^~~
+       > /build/source/modules/core/include/opencv2/core/cvstd.inl.hpp: In function 'std::ostream& cv::operator<<(std::ostream&, const std::vector<Point_<_Tp> >&)':
+       > /build/source/modules/core/include/opencv2/core/cvstd.inl.hpp:107:29: error: 'get' is not a member of 'Formatter'
+       >   107 |     return out << Formatter::get()->format(Mat(vec));
+       >       |                             ^~~
+       > /build/source/modules/core/include/opencv2/core/cvstd.inl.hpp: In function 'std::ostream& cv::operator<<(std::ostream&, const std::vector<Point3_<_Tp> >&)':
+       > /build/source/modules/core/include/opencv2/core/cvstd.inl.hpp:114:29: error: 'get' is not a member of 'Formatter'
+       >   114 |     return out << Formatter::get()->format(Mat(vec));
+       >       |                             ^~~
+       > /build/source/modules/core/include/opencv2/core/cvstd.inl.hpp: In function 'std::ostream& cv::operator<<(std::ostream&, const Matx<_Tp, m, n>&)':
+       > /build/source/modules/core/include/opencv2/core/cvstd.inl.hpp:121:29: error: 'get' is not a member of 'Formatter'
+       >   121 |     return out << Formatter::get()->format(Mat(matx));
+       >       |                             ^~~
+       > CMake Error at cuda_compile_1_generated_gpu_mat_nd.cu.o.Release.cmake:280 (message):
+       >   Error generating file
+       >   /build/source/build/modules/core/CMakeFiles/cuda_compile_1.dir/src/cuda/./cuda_compile_1_generated_gpu_mat_nd.cu.o
+       >
+       >
+       > make[2]: *** [modules/core/CMakeFiles/opencv_core.dir/build.make:84: modules/core/CMakeFiles/cuda_compile_1.dir/src/cuda/cuda_compile_1_generated_gpu_mat_nd.cu.o] Error 1
+       > make[2]: *** Waiting for unfinished jobs....
+       > [  0%] Building CXX object CMakeFiles/ade.dir/3rdparty/ade/ade-0.1.2d/sources/ade/source/topological_sort.cpp.o
+       > [  0%] Linking CXX static library 3rdparty/lib/libade.a
+       > [  0%] Built target ade
+       > make[1]: *** [CMakeFiles/Makefile2:3727: modules/core/CMakeFiles/opencv_core.dir/all] Error 2
+       > make: *** [Makefile:166: all] Error 2
+       For full logs, run 'nix log /nix/store/6di1ra9djnk7fa5sbv2yyy2q0q52cs8r-opencv-4.9.0.drv'.
+#+end_example
+
+** ~switch~ or ~test~ is stalled
+
+If you can ~ssh~ to the host, there might be some other issues.  You could try
+restarting the ~nix-daemon~, but make sure it actually stops (as in you see no
+processes for it) before starting it back up.  If it gets lodged, you'll have to
+reboot.  I don't know what can be done to bring it back up without rebooting
+when it reaches this state.
+
+Even after the reboot, you might also try using ~remote-deploy~ instead of
+~proton-deploy~.  While ~proton-deploy~ should be preferred for security
+reasons, ~remote-deploy~ seems to involve less "fancy" that can break in a way
+that stalls the system.  Even just doing it once can sometimes dislodge whatever
+was going on.  I suspect there's some bugs with it, or ~nix copy~.
