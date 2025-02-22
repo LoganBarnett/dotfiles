@@ -15,6 +15,7 @@
   # };
   # Disable swap devices for these.  They have little SD cards with abysmal
   # write speeds.  Perhaps if we have a permanently connected disk with some
-  # speed to it, we can change this up.
+  # speed to it, we can change this up.  We can also destroy the SD cards
+  # quickly with a swap device.
   swapDevices = lib.mkForce [];
 }

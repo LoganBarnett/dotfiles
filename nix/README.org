@@ -2766,3 +2766,30 @@ Even after the reboot, you might also try using ~remote-deploy~ instead of
 reasons, ~remote-deploy~ seems to involve less "fancy" that can break in a way
 that stalls the system.  Even just doing it once can sometimes dislodge whatever
 was going on.  I suspect there's some bugs with it, or ~nix copy~.
+
+* Toil Log
+
+I keep this log as a way of trying to remember what I worked on.  Not all fixes
+will be apparent from commit history, and it can be helpful to have a timeline
+of fixes.
+
+** DONE [2025-02-18 Tue] argon no longer boots
+CLOSED: [2025-02-21 Fri 16:47]
+
+While I was out and about I was able to use the VPN (which ~argon~ hosts) but I
+was unable to SSH to the host.  Today I rebooted it, but it didn't come back up.
+
+I'm running ~fsck.ext4~ on it now.
+
+It's unable to write to the superblock.  From what I've read, this is just how
+SD cards die a natural death.  They detect something is wrong, and then they
+just flip their read-only bit to true and forever lock the brakes on the device.
+This is an older card, I think, so I suppose this should be expected.
+
+It sits in the USB reader rather loosely, so it could also be that's the issue.
+
+-----
+
+I've given up on the SD card, and instead used another one from a
+non-operational Pi.  It was remarkably fast to get a new ~argon~ Pi up and
+running again.

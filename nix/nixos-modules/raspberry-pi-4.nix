@@ -1,11 +1,12 @@
 ##
 # Provides settings needed to build a Raspberry Pi 4444otable image.
 ##
-{ flake-inputs }: { ... }: {
+{ flake-inputs, ... }: {
   imports = [
     flake-inputs.raspberry-pi-nix.nixosModules.raspberry-pi
     # Required to bring in fileSystems and other things.
     flake-inputs.raspberry-pi-nix.nixosModules.sd-image
+    ./raspberry-pi-host.nix
     ({ lib, pkgs, ... }:
       let
       # linux_rpi5 = pkgs.linux_rpi4.override {

@@ -6,9 +6,7 @@
   system = "aarch64-linux";
 in {
   imports = [
-    (import ../nixos-modules/raspberry-pi-4.nix {
-      inherit flake-inputs;
-    })
+    ../nixos-modules/raspberry-pi-4.nix
     ../nixos-modules/raspberry-pi-host.nix
     ../nixos-modules/nix-builder-provide.nix
     ../nixos-modules/server-host.nix
