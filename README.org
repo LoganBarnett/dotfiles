@@ -5,6 +5,7 @@
 #+language:  en
 #+file_tags:
 #+tags:
+#+auto_id:   t
 
 This is my system configuration. It's a continual work in progress. It also
 relies upon less public configuration in another repository. My end goal is to
@@ -12,6 +13,9 @@ transform this into a fully [[https://www.alexeyshmalko.com/2020/literate-config
 reasonable. At some point I need to [[https://en.wikipedia.org/wiki/Bootstrapping#Software_development][bootstrap]] the configuration, of course.
 
 * Privacy
+:PROPERTIES:
+:CUSTOM_ID: privacy
+:END:
 
 Some configuration here is private and cannot reasonably shared with the
 community at large. These exist as separate repositories whose permissions are
@@ -21,11 +25,17 @@ the name. It is recommended that you stub these out if you're not me, but if
 you're in a rush you can just comment/remove these references to get you going.
 
 * If Installing From an Existing Configuration
+:PROPERTIES:
+:CUSTOM_ID: if-installing-from-an-existing-configuration
+:END:
 
 You will want to backup your =~/.zshrc= and perhaps other shell configuration
 files.
 
 * Installation
+:PROPERTIES:
+:CUSTOM_ID: installation
+:END:
 
 Run =./install.sh=.
 
@@ -35,6 +45,9 @@ installers are slowly being removed in favor of Nix.  See the [[Nix]] section fo
 details on its preferred layout.
 
 * Nix
+:PROPERTIES:
+:CUSTOM_ID: nix
+:END:
 
 This repository uses [[https://nixos.org][Nix]] extensively. Nix is used in conjunction with
 [[https://github.com/nix-community/home-manager][home-manager]] to manage a user's configuration. [[https://github.com/LnL7/nix-darwin][nix-darwin]] is used for macOS
@@ -46,6 +59,9 @@ Nix installation can be run by itself via =./nix-install.sh=.
 I have in-progress work and notes in [[./nix/README.org]].
 
 ** Updating Nix packages
+:PROPERTIES:
+:CUSTOM_ID: nix--updating-nix-packages
+:END:
 
 This is done via:
 
@@ -54,6 +70,9 @@ nix-channel --update
 #+end_src
 
 ** Switching
+:PROPERTIES:
+:CUSTOM_ID: nix--switching
+:END:
 
 Use this to apply changes on macOS:
 
@@ -64,6 +83,9 @@ nix-darwin-switch
 This wraps the normal invocation.
 
 ** Home Manager
+:PROPERTIES:
+:CUSTOM_ID: nix--home-manager
+:END:
 
 Home Manager manages the configuration of a user.
 
@@ -93,6 +115,9 @@ version of Node.js you're running), and instead push those to specific
 repositories.
 
 ** With Direnv and shell.nix Files
+:PROPERTIES:
+:CUSTOM_ID: nix--with-direnv-and-shell.nix-files
+:END:
 
 Old - needs updating since we now use =flake.nix= instead of =shell.nix= but
 much of this still applies.
@@ -110,6 +135,9 @@ Use =nix-direnv-add-envrc= to lay down the necessary =direnv= files and also
 =allow= the setup immediately.
 
 ** Global Packages from VMs
+:PROPERTIES:
+:CUSTOM_ID: nix--global-packages-from-vms
+:END:
 
 Some languages that require runtimes (Ruby, Python, Node.js) all have packages
 that can be installed globally and communities tend to author tools which
