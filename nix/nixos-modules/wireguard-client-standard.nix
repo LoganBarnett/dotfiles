@@ -1,4 +1,7 @@
 { config, host-id, ... }: {
+  imports = [
+    ./wireguard-agenix-rekey-generator.nix
+  ];
   age.secrets."${host-id}-wireguard-client" = {
     generator.script = "wireguard-priv";
     rekeyFile = ../secrets/${host-id}-wireguard-client.age;
