@@ -225,10 +225,14 @@ I've already done a lot, but there's more to do.
 20. [X] SPC SPC doesn't trigger in not-normal modes or something please fix now.
     a. [X] See what Doom is doing here, because I'm dumb and the docs don't make
            it obvious.  Perhaps it needs to be restricted to normal mode?
-21. [ ] File management.
+21. [-] File management.
     a. [ ] ~dired~.
-    b. [ ] Delete with ~SPC f D~.
-    c. [ ] Rename with ~SPC f r~.
+    b. [ ] Delete with ~SPC f D~ - This has progress but requires more work.  It
+       works for the case of ~SPC f d~ for the VCS version.
+    c. [X] Rename with ~SPC f r~ - This mostly works but if the file starts with
+       the same information as the desired name, the rename cannot be done.
+       This is due to how the auto complete works.  I need to see what Doom is
+       doing and steal it.
     d. [ ] ~chmod~ with ~SPC f m~ - default to current buffer file.
 22. [-] Buffer management.
     a. [X] Delete a buffer with ~SPC b d~.
