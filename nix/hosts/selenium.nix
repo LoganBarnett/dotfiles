@@ -11,9 +11,16 @@
   system = "aarch64-linux";
 in {
   imports = [
-    ../nixos-modules/raspberry-pi-host.nix
     ../nixos-modules/octoprint-shim.nix
+    ../nixos-modules/raspberry-pi-5.nix
+    ../nixos-modules/nix-builder-provide.nix
+    ../nixos-modules/server-host.nix
+    ../nixos-modules/facts-secrets.nix
     {
+      age.secrets = config.lib.ldap.ldap-password
+        "octoprint"
+        "selenium-octoprint-service"
+      ;
       services.octoprint = {
         enable = true;
         extraConfig = {
@@ -30,8 +37,12 @@ in {
               auth_user = "uid=selenium-octoprint-service,ou=users,dc=proton,dc=org";
               # TODO: Cycle this out once this is securely referenced.
               # TODO: Use a password file - might need to make a PR for it.
-              auth_password_file =
-                config.secrets.selenium-octoprint-service-ldap-password.path;
+              auth_password_file = config
+                .age
+                .secrets
+                .selenium-octoprint-service-ldap-password
+                .path
+              ;
               search_base = "dc=proton,dc=org";
               # (&(ou_filter)(ou_member_filter))
               # (&(cn=%s,ou=groups,dc=proton,dc=org)(member=uid=%s,ou=users,dc=proton,dc=org))
@@ -108,12 +119,6 @@ in {
       fqdn = "${host-id}.proton";
       server-port = 5000;
     })
-    (import ../nixos-modules/raspberry-pi-5.nix {
-      inherit flake-inputs;
-    })
-    ../nixos-modules/nix-builder-provide.nix
-    ../nixos-modules/server-host.nix
-    # ../nixos-modules/raspberry-pi-disk.nix
     {
       # networking.hostId is needed by the filesystem stuffs.
       # An arbitrary ID needed for zfs so a pool isn't accidentally imported on

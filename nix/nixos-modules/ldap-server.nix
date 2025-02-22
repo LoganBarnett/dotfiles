@@ -120,43 +120,6 @@
     )}
   '';
 
-  # We want passwords generated for each user in the LDAP system.  For human
-  # users, this can be thought of as the initial password.  For service
-  # accounts, this is the password they use.  Some smarts need to be added to
-  # account for this.
-  ldap-passwords = users:
-    (lib.lists.foldl
-      (a: b: a // b)
-      # foldl's documentation is incorrect - it needs a third argument.
-      {}
-      (builtins.map
-        (user:
-          {
-            "${user.name}-ldap-password" = {
-              generator.script = "passphrase";
-              # Always specify the rekey file or it goes into a weird directory?
-              rekeyFile = ../secrets/${user.name}-ldap-password.age;
-              group = "openldap";
-              mode = "0440";
-            };
-            "${user.name}-ldap-password-hashed" = {
-              generator = {
-                script = "slapd-hashed";
-                dependencies = [
-                  config.age.secrets."${user.name}-ldap-password"
-                ];
-              };
-              # Always specify the rekey file or it goes into a weird directory?
-              rekeyFile = ../secrets/${user.name}-ldap-password-hashed.age;
-              group = "openldap";
-              mode = "0440";
-            };
-          }
-        )
-        (nameds users)
-      )
-    )
-  ;
 
 in {
   # imports = [
@@ -182,7 +145,7 @@ in {
       group = "openldap";
       mode = "0440";
     };
-  } // (ldap-passwords facts.network.users);
+  } // (config.lib.ldap.ldap-passwords "openldap" facts.network.users);
 
   services.openldap = {
     enable = true;

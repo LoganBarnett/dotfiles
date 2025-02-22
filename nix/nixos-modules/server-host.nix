@@ -10,6 +10,7 @@
       system.stateVersion = "23.11";
     }
     ./secrets.nix
+    ./facts-secrets.nix
     ./tls-leaf-proton.nix
     # A server should never sleep/suspend unless we have a really good reason.
     ./narcolepsy.nix
