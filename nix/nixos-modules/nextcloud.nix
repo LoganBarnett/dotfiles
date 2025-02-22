@@ -7,8 +7,12 @@
 # See
 # https://nixos.org/manual/nixos/stable/index.html#module-services-nextcloud-basic-usage
 # for the official documentation (though it isn't much of a reference).
-{ host-id }: {
+#
+# Use `nextcloud-occ` for the `occ` command.  Here's an exmaple:
+# sudo -u nextcloud nextcloud-occ ldap:show-config
+{
   config,
+  host-id,
   lib,
   pkgs,
   ...
@@ -21,18 +25,22 @@ in {
       redirect = false;
     })
   ];
-  age.secrets = if config.services.nextcloud.enable then {
+  age.secrets = if config.services.nextcloud.enable then ({
     nextcloud-admin-password = {
       # See secrets.nix for where this is declared.
       generator.script = "long-passphrase";
       # Due to startup ordering issues, this might need to be done manually with
-      # chgrp.  That being said, some systemd unit dependency declaration ("wants
-      # agenix" perhaps?) could fix this.
+      # chgrp.  That being said, some systemd unit dependency declaration
+      # ("wants agenix" perhaps?) could fix this.
       group = "nextcloud";
       mode = "0440";
       rekeyFile = ../secrets/nextcloud-admin-pass.age;
     };
-  } else {};
+  } // (
+    config.lib.ldap.ldap-password
+      "nextcloud"
+      "gallium-nextcloud-service"
+  )) else {};
   services.nextcloud = {
     enable = true;
     # Be mindful that Nextcloud doesn't support upgrades over multiple versions,
@@ -59,6 +67,8 @@ in {
       # "admin".
       # adminuser = "root";
     };
+    # See `nextcloud-custom-config` in this document for how some other built-in
+    # apps are "installed".
     extraApps = {
       inherit (config.services.nextcloud.package.packages.apps)
         calendar
@@ -68,8 +78,11 @@ in {
         tasks
         ;
     };
-    # https = true;
+    # Enables the extra-apps above.
     extraAppsEnable = true;
+    # This might get us into trouble but at least it'll let me look around at
+    # things more, I hope.
+    appstoreEnable = true;
     # I can't seem to find the LDAP app per
     # https://docs.nextcloud.com/server/latest/admin_manual/configuration_user/user_auth_ldap.html
     # in the app store listing, but there is mention of it here:
@@ -102,6 +115,26 @@ in {
     phpfpm-nextcloud = {
     # Make it so Nextcloud can always find its admin password.
     after = [ "run-agenix.d.mount" ];
+    };
+    # To do "dynamic" configuration like we do here, see:
+    # https://wiki.nixos.org/wiki/Nextcloud#Dynamic_configuration
+    # This is required because we don't have another way to enable user_ldap.
+    # The pkgs/servers/nextcloud/packages/generate.sh script does not generate
+    # `user_ldap`.  `user_ldap` exists in Nextcloud proper as seen here:
+    # https://github.com/nextcloud/server/tree/master/apps/user_ldap
+    # or if you need a specific commit:
+    # https://github.com/nextcloud/server/tree/8886f367e433277cf7aa0c01b93a9d4348db47a8/apps/user_ldap
+    # TODO: Use services.nextcloud.settings to configure this plugin.  I should
+    # be able to copy the values.
+    nextcloud-custom-config = {
+      path = [
+        config.services.nextcloud.occ
+      ];
+      script = ''
+        nextcloud-occ app:enable user_ldap
+      '';
+      after = [ "nextcloud-setup.service" ];
+      wantedBy = [ "multi-user.target" ];
     };
   } else {};
 }

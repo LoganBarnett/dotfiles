@@ -4,7 +4,7 @@
 # declarativeContents.  We'll have to declare that ourselves.  See also
 # https://www.reddit.com/r/NixOS/comments/fd04jc/comment/fje9d8n
 # for getting things working using LDAP authentication.
-{ host-id }: { config, facts, pkgs, lib, ... }: (let
+{ config, facts, host-id, pkgs, lib, ... }: (let
   join-lines = lines:
     lib.strings.concatStrings
       (lib.strings.intersperse "\n" lines)

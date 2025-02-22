@@ -15,6 +15,12 @@
         type = "person";
         full-name = "Logan Barnett";
       };
+      gallium-nextcloud-service = {
+        email = "gallium-nextcloud-service@proton";
+        type = "service";
+        description = "Nextcloud on Gallium.";
+        full-name = "gallium-nextcloud-service";
+      };
       selenium-octoprint-service = {
         email = "selenium-octoprint-service@proton";
         type = "service";
@@ -25,6 +31,12 @@
     groups = {
       "3d-printers" = {
         description = "People who can use 3D printers.";
+        members = [
+          "logan"
+        ];
+      };
+      "nextcloud-users" = {
+        description = "People who can use Nextcloud.";
         members = [
           "logan"
         ];

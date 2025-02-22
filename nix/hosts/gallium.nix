@@ -1,7 +1,7 @@
 ################################################################################
-# Gallium provides some basic network functionality via DHCP as well as some
-# tooling to help with network detection and testing.  For example, it hosts an
-# nginx instance with both an HTTP and HTTPS endpoints that can be tested.
+# Gallium hosts our NextCloud server - essentially an all-in-one service for
+# file sharing, calendar support, and a number of other features that are nice
+# to have in one place.  This is called a "groupware" I think.
 #
 # Trivia: Gallium is used for non-toxic thermometers as an alternative to
 # mercury, due to its low melting point.  It also is a critical element needed
@@ -10,18 +10,14 @@
 { flake-inputs, host-id, system, ... }: let
 in {
   imports = [
-    (import ../nixos-modules/raspberry-pi-5.nix {
-      inherit flake-inputs;
-    })
+    ../nixos-modules/raspberry-pi-5.nix
+    ../nixos-modules/nix-builder-provide.nix
+    ../nixos-modules/server-host.nix
+    ../nixos-modules/nextcloud.nix
     # (import ../nixos-modules/dhcp-server.nix {
     #   inherit host-id;
     #   interface = "eth0";
     # })
-    ../nixos-modules/nix-builder-provide.nix
-    ../nixos-modules/server-host.nix
-    (import ../nixos-modules/nextcloud.nix {
-      inherit host-id;
-    })
     ({ lib, pkgs, ... }: {
       # networking.hostId is needed by the filesystem stuffs.
       # An arbitrary ID needed for zfs so a pool isn't accidentally imported on

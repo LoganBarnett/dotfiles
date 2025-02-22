@@ -15,7 +15,7 @@ in {
     ../nixos-modules/nix-builder-provide.nix
     ../nixos-modules/raspberry-pi-builder.nix
     ../nixos-modules/server-host.nix
-    (import ../nixos-modules/ldap-server.nix { inherit host-id; })
+    ../nixos-modules/ldap-server.nix
     # (import ../nixos-modules/freeipa-server.nix { inherit host-id; })
     # Pi stuff.
     ({ pkgs, ... }: {
