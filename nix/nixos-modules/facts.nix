@@ -35,6 +35,12 @@
           "logan"
         ];
       };
+      "nextcloud-admins" = {
+        description = "People who can administer Nextcloud.";
+        members = [
+          "logan"
+        ];
+      };
       "nextcloud-users" = {
         description = "People who can use Nextcloud.";
         members = [

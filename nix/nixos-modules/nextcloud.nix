@@ -1,15 +1,34 @@
-##
+################################################################################
 # NextCloud is a fork of OwnCloud - an open source self-hosted "cloud" suite.
 # It offers calendar, email, task management, video calls, file storage, and a
 # number of other features (typically via apps).
 #
-# See https://nixos.wiki/wiki/Nextcloud for getting started.
+# Some Nextcloud + NixOS resources:
+# - https://nixos.wiki/wiki/Nextcloud
+# - https://nixos.org/manual/nixos/stable/#module-services-nextcloud
+# - https://github.com/NixOS/nixpkgs/blob/master/pkgs/servers/nextcloud/packages/README.md
 # See
 # https://nixos.org/manual/nixos/stable/index.html#module-services-nextcloud-basic-usage
 # for the official documentation (though it isn't much of a reference).
 #
 # Use `nextcloud-occ` for the `occ` command.  Here's an exmaple:
 # sudo -u nextcloud nextcloud-occ ldap:show-config
+#
+# See
+# https://github.com/NixOS/nixpkgs/blob/master/pkgs/servers/nextcloud/packages/README.md
+# can be used to emit new packages from the app store.  It uses
+# https://github.com/helsinki-systems/nc4nix to do the conversion.  Why not just
+# do them all?  In any case, it needs a fix.  It works fine on macOS.  I should
+# submit a pull request to nixpkgs to fix that.  Adding "user_ldap" to the JSON
+# file didn't work - nothing new got emitted.  Might require some debugging.
+# The "user_ldap" app is somewhat special because it lives in Nextcloud itself:
+# https://github.com/nextcloud/server/tree/master/apps/user_ldap
+# The official Nextcloud LDAP docs are here:
+# https://docs.nextcloud.com/server/latest/admin_manual/configuration_user/user_auth_ldap.html
+#
+# You can see a listing of apps on https://apps.nextcloud.com or locally via
+# https://gallium.proton/settings/apps.
+################################################################################
 {
   config,
   host-id,
