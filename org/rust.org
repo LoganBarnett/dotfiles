@@ -57,9 +57,15 @@ using =smart-parens=. Disable it. Always.
 #+name: config/smartparens-disable
 #+begin_src emacs-lisp :results none :tangle no
 (defun config/rust-smartparens-disable ()
-  (smartparens-global-mode 0)
+  (if (boundp 'smart-parens-global-mode)
+      (smartparens-global-mode 0)
+    nil
+    )
   )
 (add-hook 'rustic-mode-hook #'config/rust-smartparens-disable)
+;; It's unclear if this inserts the characters or just handles logical syntax
+;; matching.
+;; (setq-default rustic-match-angle-brackets nil)
 #+end_src
 
 * indentation
