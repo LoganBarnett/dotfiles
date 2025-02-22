@@ -6,11 +6,22 @@
 { lib, pkgs, ... }: {
 
   environment.systemPackages = [
+    # Provide DirectX libraries... emulation?
+    pkgs.dxvk
+    pkgs.dxvk_2
     pkgs.lutris
-    pkgs.wineWowPackages.waylandFull
+    # pkgs.wineWowPackages.waylandFull
+    pkgs.wineWowPackages.stable
+    pkgs.winetricks
+    pkgs.protonup-qt
+    # pkgs.vkd3d
+    pkgs.vulkan-tools
+    pkgs.vulkan-loader
+    pkgs.vulkan-validation-layers
   ];
   hardware.graphics = {
     enable = true;
-    # enable32Bit = true;
+    enable32Bit = true;
   };
+  # programs.lutris.enable = true;
 }

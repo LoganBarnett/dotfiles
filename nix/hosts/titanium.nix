@@ -1,4 +1,4 @@
-{ modulesPath, ... }: let
+{ flake-inputs, modulesPath, ... }: let
   host-id = "titanium";
   system = "x86_64-linux";
 in {
@@ -21,6 +21,8 @@ in {
       #   })
       # ];
     })
+    flake-inputs.home-manager.nixosModules.home-manager
+    ../users/logan-desktop.nix
     ../nixos-modules/amd-gpu.nix
     ../nixos-modules/discord.nix
     ../nixos-modules/gaming-android.nix
