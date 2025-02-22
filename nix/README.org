@@ -1937,6 +1937,81 @@ imports = [
 #+end_src
 
 
+* Making Things Nix
+
+Nix is an imperfect system.  While it manages to do a ton of great work to
+establish hermetic, deterministic builds, it also sometimes gets sloppy in some
+places.  I've listed some culprits, but it's in a lot of places so don't think
+I'm just picking on a handful of things.
+
+Still, the community tries to move forward with these things and sometimes we
+have to decide if we're going to be the champion to fix it that day.
+
+My hope is to document these so I don't go scratching my head when restoring a
+system and it isn't all there, as well as give myself tips on how to manage
+these pieces of software.  Maybe it'll even help someone else.
+
+** Octoprint
+
+The ~octoprint~ config seems to merge with the last config, making it impossible
+to delete keys without manual intervention.
+
+There isn't really a way to declare upfront a printer configuration in
+~octoprint~, so you're left to go through the wizard yourself and stand it up by
+hand.
+
+** wine
+
+With ~wine~, it's almost useless without setting up a bunch of runtime stuff via
+~winetricks~.  These are downloads from Microsoft, and who knows how well
+that'll stand up.  Figuring out how to cache and unpack these would be great,
+but very hacky.  Good excuse or not, it's not totally declarative.
+
+There is a [[https://github.com/lucasew/nixcfg/blob/fd523e15ccd7ec2fd86a3c9bc4611b78f4e51608/packages/wrapWine.nix][wrapWine]] function.  One could use ~lutris~ and have it emit a shell
+script to see what the values are (see [[lutris]]).
+
+Using ~winetricks~, one can install all of the ~vcrun~ stuff, DirectX itself
+(which must be installed since it doesn't ship with ~wine~'s base layer of
+Windows), and dotNet.  There's different versions of these, and you might need
+some or all of them.  These are downloaded in serial and require manual
+interaction (you have to click agree to terms and agreements).
+
+There is also ~winecfg~ which might be needed for some things - I have used it
+before but need to dig up the history for it.
+
+There is also [[https://github.com/emmanuelrosa/erosanix/tree/master/pkgs/mkwindowsapp][mkwindowsapp]].  It also has some decent documentation on the topic
+in general.
+
+There is [[https://discourse.nixos.org/t/what-is-your-approach-to-packaging-wine-applications-with-nix-derivations/12799/2][discussion]] about managing Wine state much better, but there's a lot of
+hurdles.  For example, Wine needs the user to own the ~WINEPREFIX~ stuff (its
+big copy of Windows), as well as it needing to be writable.  That being said,
+Nix can emit things in certain directories I think, but it might not like that
+much.  This might be better for home-manager which has activation scripts to
+help out.
+
+Another example of making things for wine:
+https://github.com/reckenrode/nixos-configs/blob/95586b76ddef23f9ee57f0fe51e7fe492dd42e11/pkgs/ffxiv/default.nix
+And the discussion about it:
+https://www.reddit.com/r/NixOS/comments/y0ubic/setting_up_dxvk_on_nixos/
+
+There is also this [[https://github.com/fufexan/nix-gaming/][nix-gaming]] repository (ex:
+https://github.com/Lugarun/biome/blob/1ee50e49c22b5a7860fecea34f45ffd346021409/overlays/rl.nix#L10)
+but it lacks documentation on basic use.  Be aware that the ~legendary~ thing in
+there is some 3rd party SaS thing.
+
+** lutris
+
+~lutris~ has a number of programs that must be stood up manually.  Having these
+saved somewhere would be nice.
+
+That said, there are alternatives to ~lutris~ that's basically the same thing,
+sans a GUI.  The GUI is helpful when you just want to get rolling with
+something, but it's hard to make totally declaratively.
+
+~lutris~ can also emit a shell script with ~lutris -b game.sh <game-id>~ (I need
+to check if the arguments are correct).  From there you can manipulate with a
+text editor.
+
 
 * Troubleshooting
 ** General Build Troubleshooting Tips
