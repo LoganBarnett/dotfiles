@@ -36,7 +36,8 @@ in {
               uri = "ldaps://nickel.proton";
               auth_user = "uid=selenium-octoprint-service,ou=users,dc=proton,dc=org";
               # TODO: Cycle this out once this is securely referenced.
-              # TODO: Use a password file - might need to make a PR for it.
+              # This is supported via my open (as of [2025-02-22]) pull request:
+              # https://github.com/gillg/OctoPrint-LDAP/pull/28
               auth_password_file = config
                 .age
                 .secrets
