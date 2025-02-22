@@ -14,21 +14,22 @@
 { disko-proper, flake-inputs, host-id, system, ... }: let
 in {
   imports = [
+    ../users/solomon-desktop.nix
     (let
       # Default ComfyUI port.
       comfyui-port = 8188;
     in {
       imports = [
-        (import ../nixos-modules/comfyui-server.nix {
-          inherit host-id;
-          port = comfyui-port;
-        })
-        (import ../nixos-modules/https.nix {
-          inherit host-id;
-          listen-port = 443;
-          server-port = comfyui-port;
-          fqdn = "${host-id}.proton";
-        })
+        # (import ../nixos-modules/comfyui-server.nix {
+        #   inherit host-id;
+        #   port = comfyui-port;
+        # })
+        # (import ../nixos-modules/https.nix {
+        #   inherit host-id;
+        #   listen-port = 443;
+        #   server-port = comfyui-port;
+        #   fqdn = "${host-id}.proton";
+        # })
       ];
     })
     (import ../nixos-modules/nvidia.nix {
@@ -61,12 +62,12 @@ in {
       nixpkgs.hostPlatform = system;
       nixpkgs.overlays = [
         (final: prev: {
-          pythonPackagesExtensions = [(py-final: py-prev: {
-            tensorboard = py-prev.tensorboard.overrideAttrs (old: {
-              # This could be made smarter.
-              disabled = false;
-            });
-          })];
+          # pythonPackagesExtensions = [(py-final: py-prev: {
+          #   tensorboard = py-prev.tensorboard.overrideAttrs (old: {
+          #     # This could be made smarter.
+          #     disabled = false;
+          #   });
+          # })];
         })
       ];
       # This is just to make lithium able to emit a Raspberry Pi image.  It is
