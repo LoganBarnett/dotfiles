@@ -2,6 +2,11 @@
 # Synchronizes my notes (a plain text git repository) to a WebDAV directory.
 # This allows mobile clients that support WebDAV to consume the notes, and
 # eliminates the need for a third party hosting provider that can see my notes.
+#
+# Changes coming from these scripts aren't picked up automatically.  There is a
+# periodic process that scans files, but I haven't seen it work (circa
+# [2025-02-25].  One can force it with:
+# sudo -u nextcloud nextcloud-occ files:scan --all
 ################################################################################
 { config, pkgs, ... }: {
   age.secrets.notes-sync-ssh = {
