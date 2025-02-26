@@ -14,10 +14,7 @@ in {
     ../nixos-modules/nix-builder-provide.nix
     ../nixos-modules/server-host.nix
     ../nixos-modules/nextcloud.nix
-    # (import ../nixos-modules/dhcp-server.nix {
-    #   inherit host-id;
-    #   interface = "eth0";
-    # })
+    ../nixos-modules/notes-sync.nix
     ({ lib, pkgs, ... }: {
       # networking.hostId is needed by the filesystem stuffs.
       # An arbitrary ID needed for zfs so a pool isn't accidentally imported on
