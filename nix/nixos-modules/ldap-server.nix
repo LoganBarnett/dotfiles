@@ -363,7 +363,7 @@ in {
   networking.firewall.allowedUDPPorts = [ ldap-port ];
   # Run a dummy service that can repair these files.
   systemd.services.openldap-pre-fix-secrets = {
-    enable = true;
+    enable = false;
     after = [ "network.target" ];
     before = [ "openldap.service" ];
     serviceConfig = {
