@@ -11,6 +11,7 @@ in {
     ../nixos-modules/nix-builder-provide.nix
     ../nixos-modules/server-host.nix
     ../nixos-modules/wireguard-server-standard.nix
+    # ../nixos-modules/dns-dynamic-ip-home.nix
   ];
   # networking.hostId is needed by the filesystem stuffs.
   # An arbitrary ID needed for zfs so a pool isn't accidentally imported on
