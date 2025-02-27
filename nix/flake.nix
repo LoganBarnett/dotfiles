@@ -321,7 +321,7 @@
 
     packages.aarch64-darwin.nucleus = self
       .nixosConfigurations
-      .nucleus-installer
+      .nucleus
       .config
       .system
       .build
