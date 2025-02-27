@@ -39,6 +39,7 @@ in {
     ../headed-host.nix
     ({ lib, pkgs, ...}: let
       work-alias = lib.concatStrings [
+        # I'm the Riddler.
         "n"
         "w"
         "e"
@@ -89,6 +90,10 @@ in {
       '';
       environment.systemPackages = [
         pkgs.awscli
+        # Stop using the cursed GlobalProtect VPN GUI client and use something
+        # we can better automate instead.
+        pkgs.gpclient
+        # Used for encrypting sensitive information in Hiera.
         pkgs.hiera-eyaml
         pkgs.mktemp
         # Gives us tools like ldapsearch, ldapadd, and ldapmodify which is
@@ -96,10 +101,84 @@ in {
         # are of employees.
         pkgs.openldap
         pkgs.openssl
+        # Needed for our flavor of Hiera EYAML usage.  See `hiera-eyaml` for
+        # more info.
         pkgs.saml2aws
       ];
       networking.hostName = host-id;
       nixpkgs.hostPlatform = system;
+      nixpkgs.overlays = [
+        (final: prev: let
+          # Hackety hack.  See
+          # https://discourse.nixos.org/t/is-it-possible-to-override-cargosha256-in-buildrustpackage/4393/20
+          # but basically overrideAttrs works on mkDerivtaion but what's being
+          # used is buildRustPackage which later hands things to mkDerivation.
+          # Also see the in depth explanation here:
+          # https://sldr.se/posts/2024/12/overriding-for-fun-and-profit/#yo-dawg-i-heard-you-like-overriding
+          rustOverrideAttrs = pkg: attrs: pkg.override {
+            rustPlatform = prev.rustPlatform // {
+              buildRustPackage = original-args:
+                prev.rustPlatform.buildRustPackage (
+                  original-args // attrs
+                );
+            };
+          };
+        in {
+          gpauth = (
+            rustOverrideAttrs
+            prev.gpauth
+            rec {
+              version = "2.4.4";
+              cargoHash = "sha256-TZiA/aD5X5E68mU0seikcdGgXVjxaG/+n6/yhxZbpD0=";
+              src = prev.fetchFromGitHub {
+                owner = "yuezk";
+                repo = "GlobalProtect-openconnect";
+                rev = "v${version}";
+                hash = "sha256-fXOjQv/Tt2gIV/CGF9q0BSx2W+EAOBmRFxbRixAfvaQ=";
+              };
+            }
+          )
+            .overrideAttrs (old: {
+            meta.platforms = old.meta.platforms ++ [ "aarch64-darwin" ];
+            buildInputs = [
+              pkgs.cairo
+              pkgs.gtk3
+              pkgs.gdk-pixbuf
+              pkgs.libsoup_2_4
+              pkgs.openssl
+              pkgs.pango
+            ];
+          });
+          gpclient = (
+            rustOverrideAttrs prev.gpclient rec {
+              version = "2.4.4";
+              cargoHash = "sha256-Fh9XAk9H6k62mYwgeS9RzvQT/AWDVEegBY9QU/ombGs=";
+              src = prev.fetchFromGitHub {
+                owner = "yuezk";
+                repo = "GlobalProtect-openconnect";
+                rev = "v${version}";
+                hash = "sha256-fXOjQv/Tt2gIV/CGF9q0BSx2W+EAOBmRFxbRixAfvaQ=";
+              };
+            }
+          ).overrideAttrs (old: {
+            buildInputs = old.buildInputs ++ [ pkgs.openssl ];
+            # This may not be important.
+            OPENSSL_DEV = pkgs.openssl.dev;
+            # This may not be important.
+            OPENSSL_INCLUDE_DIR = (
+              lib.makeSearchPathOutput "dev" "include" [ pkgs.openssl.dev ]
+            ) + "/openssl";
+            # This is important.  Not sure why it isn't automatically sorted
+            # out.
+            OPENSSL_LIB_DIR = (
+              lib.makeSearchPathOutput "dev" "lib" [ pkgs.openssl.dev ]
+            ) + "/pkgconfig";
+            # This may not be important.
+            OPENSSL_STATIC = "0";
+            meta.platforms = old.meta.platforms ++ [ "aarch64-darwin" ];
+          });
+        })
+      ];
       security.pki.certificateFiles = [
         "${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt"
         ../new-e-ah-certs.pem
