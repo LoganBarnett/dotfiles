@@ -21,6 +21,9 @@ in {
         "octoprint"
         "selenium-octoprint-service"
       ;
+      services.nginx = {
+        clientMaxBodySize = "1g";
+      };
       services.octoprint = {
         enable = true;
         printerProfiles = {
