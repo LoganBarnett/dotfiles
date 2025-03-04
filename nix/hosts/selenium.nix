@@ -103,7 +103,7 @@ in {
               # (&(cn=3d-printers,ou=groups,dc=proton,dc=org)(member=uid=logan,ou=users,dc=proton,dc=org))
               ou_filter = "cn=%s";
               ou_member_filter = "member=%s";
-              ou = "3d-printers";
+              ou = "3d-printer-printers, 3d-printer-admins";
             };
           };
           serial = {

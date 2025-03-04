@@ -29,7 +29,13 @@
       };
     };
     groups = {
-      "3d-printers" = {
+      "3d-printer-admins" = {
+        description = "People who can administer Octoprint.";
+        members = [
+          "logan"
+        ];
+      };
+      "3d-printer-printers" = {
         description = "People who can use 3D printers.";
         members = [
           "logan"
