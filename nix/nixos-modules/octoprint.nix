@@ -19,15 +19,16 @@ let
 
   baseConfig = {
     plugins.curalegacy.cura_engine = "${pkgs.curaengine_stable}/bin/CuraEngine";
+    printerProfiles = builtins.mapAttrs (name: value: name) cfg.printerProfiles;
     server.port = cfg.port;
     webcam.ffmpeg = "${pkgs.ffmpeg.bin}/bin/ffmpeg";
   } // lib.optionalAttrs (cfg.host != null) { server.host = cfg.host; };
 
   fullConfig = lib.recursiveUpdate cfg.extraConfig baseConfig;
 
-  cfgUpdate = pkgs.writeText "octoprint-config.yaml" (builtins.toJSON fullConfig);
+  cfgUpdate = pkgs.writeText "config.yaml" (builtins.toJSON fullConfig);
 
-  loggingConfig = pkgs.writeText "octoprint-logging.yaml" (builtins.toJSON {
+  loggingConfig = pkgs.writeText "logging.yaml" (builtins.toJSON {
     loggers = {
       # octoprint = {
       #   level = "DEBUG";
@@ -37,6 +38,13 @@ let
       };
     };
   });
+
+  printerProfilesConfig = (lib.mapAttrs (name: value:
+    pkgs.writeText
+      "printerProfiles/${name}.profile"
+      (builtins.toJSON ({ id = name; } // value)))
+    cfg.printerProfiles
+  );
 
   pluginsEnv = package.python.withPackages (ps: [ ps.octoprint ] ++ (cfg.plugins ps));
 
@@ -98,6 +106,12 @@ in
         defaultText = lib.literalExpression "plugins: []";
         example = lib.literalExpression "plugins: with plugins; [ themeify stlviewer ]";
         description = "Additional plugins to be used. Available plugins are passed through the plugins input.";
+      };
+
+      printerProfiles = lib.mkOption {
+        type = lib.types.attrs;
+        default = { };
+        description = "Settings for printers.";
       };
 
       extraConfig = lib.mkOption {
@@ -208,16 +222,24 @@ in
       after = [ "network.target" ];
       path = [ pluginsEnv ];
 
-      preStart = ''
-        if [ -e "${cfg.stateDir}/config.yaml" ]; then
-          ${pkgs.yaml-merge}/bin/yaml-merge "${cfg.stateDir}/config.yaml" "${cfgUpdate}" > "${cfg.stateDir}/config.yaml.tmp"
-          mv "${cfg.stateDir}/config.yaml.tmp" "${cfg.stateDir}/config.yaml"
-        else
-          cp "${cfgUpdate}" "${cfg.stateDir}/config.yaml"
-          chmod 600 "${cfg.stateDir}/config.yaml"
-        fi
-        rm -f "${cfg.stateDir}/logging.yaml"
+      # TODO: It would be way better to just have a declarative configuration.
+      preStart = let
+        join-lines = lines:
+          lib.strings.concatStrings
+            (lib.strings.intersperse "\n" lines)
+        ;
+      in ''
+        cp "${cfgUpdate}" "${cfg.stateDir}/config.yaml"
+        chmod 600 "${cfg.stateDir}/config.yaml"
+        rm --force "${cfg.stateDir}/logging.yaml"
         cp "${loggingConfig}" "${cfg.stateDir}/logging.yaml"
+        rm -rf ${cfg.stateDir}/printerProfiles
+        mkdir --parents ${cfg.stateDir}/printerProfiles
+        ${join-lines (
+          lib.mapAttrsToList (name: printerConfig:
+            "cp ${printerConfig} ${cfg.stateDir}/printerProfiles/${name}.profile"
+          ) printerProfilesConfig
+        )}
       '';
 
       serviceConfig = {

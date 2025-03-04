@@ -23,6 +23,51 @@ in {
       ;
       services.octoprint = {
         enable = true;
+        printerProfiles = {
+          _default = {
+            axes = {
+              e = {
+                inverted = false;
+                speed = 300;
+              };
+              x = {
+                inverted = false;
+                speed = 6000;
+              };
+              y = {
+                inverted = false;
+                speed = 6000;
+              };
+              z = {
+                inverted = false;
+                speed = 200;
+              };
+            };
+            color = "default";
+            extruder = {
+              count = 2;
+              defaultExtrusionLength = 5;
+              nozzleDiameter = 0.4;
+              offsets = [
+                [ 0.0 0.0 ]
+                [ 0.0 0.0 ]
+              ];
+              sharedNozzle = false;
+            };
+            heatedBed = true;
+            heatedChamber = false;
+            model = "Prusa XL";
+            name = "prusa-xl";
+            volume = {
+              custom_box = false;
+              depth = 360.0;
+              formFactor = "rectangular";
+              height = 360.0;
+              origin = "lowerLeft";
+              width = 360.0;
+            };
+          };
+        };
         extraConfig = {
           accessControl = {
             userManager = "octoprint.access.users.LDAPUserManager";
