@@ -73,8 +73,13 @@ in {
         };
         extraConfig = {
           accessControl = {
-            userManager = "octoprint.access.users.LDAPUserManager";
             autologinLocal = false;
+            userManager = "octoprint.access.users.LDAPUserManager";
+          };
+          commands = {
+            # This should disable some of the errors spewed due to constant
+            # checks.
+            localPipCommand = "None";
           };
           plugins = {
             # Per https://github.com/gillg/OctoPrint-LDAP/issues/5 the log level
@@ -101,10 +106,33 @@ in {
               ou = "3d-printers";
             };
           };
+          serial = {
+            autoconnect = true;
+          };
           server = {
             # Prevent us from entering the wizard which won't work because the
             # settings are fixed... at least they should be.
             firstRun = false;
+            seenWizards = {
+              backup = "null";
+              classicwebcam = 1;
+              corewizard = 4;
+              tracking = "null";
+            };
+          };
+          temperature = {
+            profiles = [
+              {
+                bed = 100;
+                chamber = "null";
+                name = "ABS";
+              }
+              {
+                bed = 60;
+                chamber = "null";
+                name = "PLA";
+              }
+            ];
           };
         };
         openFirewall = false;
