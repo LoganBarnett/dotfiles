@@ -467,5 +467,10 @@
     #   ]
     # ))
     # pkgs.emacs
-  ];
+    # We need pinentry to interact with GPG.
+  ] ++ [(
+    if pkgs.stdenv.isDarwin
+    then pkgs.pinentry_mac
+    else pkgs.pinentry
+  )];
 }
