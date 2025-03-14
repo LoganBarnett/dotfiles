@@ -181,6 +181,21 @@
       echo "Require password immediately after sleep or screen saver begins..."
       defaults write com.apple.screensaver askForPassword -int 1
       defaults write com.apple.screensaver askForPasswordDelay -int 0
+      echo "Setting menu bar padding and spacing..."
+      # Spacing for menu bar items.  See also NSStatusItemSelectionPadding.  I
+      # got this from here:
+      # https://www.jessesquires.com/blog/2023/12/16/macbook-notch-and-menu-bar-fixes/
+      defaults write -globalDomain NSStatusItemSpacing -int 3
+      # sudo -u logan.barnett defaults write -globalDomain NSStatusItemSpacing -int 3
+      # Spacing for menu bar items.  See also NSStatusItemSpacing.  I got this
+      # from here:
+      # https://www.jessesquires.com/blog/2023/12/16/macbook-notch-and-menu-bar-fixes/
+      defaults write -globalDomain NSStatusItemSelectionPadding -int 3
+      # sudo -u logan.barnett defaults write -globalDomain NSStatusItemSelectionPadding -int 8
+      killall SystemUIServer
+      defaults read -globalDomain NSStatusItemSpacing
+      defaults read -globalDomain NSStatusItemSelectionPadding
+      echo "$USER"
       echo "Swapping Option + Command keys on external keyboard..."
       # This is a custom tool found in this repo's /bin directory.
       ${./darwin/macos-keyboard-remap}
