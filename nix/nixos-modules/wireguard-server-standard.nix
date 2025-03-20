@@ -14,6 +14,7 @@
     # Unsure how to force these - I think I'd just generate them manually in the
     # case of a non-Nix managed device (like a phone).
     { host-id = "manganese"; ip = "22"; }
+    { host-id = "selena-laptop"; ip = "23"; }
     # agenix-rekey's generators always put in a newline that fouls up the
     # generation here.  I could trim the newlines like is done in the
     # ./ldap-server.nix module, or I could just fix the problem at its source.
