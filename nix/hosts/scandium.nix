@@ -69,6 +69,8 @@ in
         # A 3D printer slicer I really like.  It might work for resin printers
         # but I know it best for its FFF/FDM support.
         pkgs.prusa-slicer
+        # Allow generating Nextcloud plugins as a Nix expression.
+        pkgs.nc4nix
         # Yet another chat app.  I guess it's supposed to be secure, but I
         # assume anything going to the Internet is fundamentally insecure to
         # whomever receives it, and everyone in between.
