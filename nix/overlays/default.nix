@@ -39,4 +39,10 @@
   # (import "${builtins.fetchTarball https://github.com/vlaci/openconnect-sso/archive/master.tar.gz}/overlay.nix")
   (import ./wireguard.nix)
   (import ./zig.nix)
+  # Needed until https://github.com/NixOS/nixpkgs/pull/391654 is merged.
+  (final: prev: {
+    nc4nix = prev.nc4nix.overrideAttrs (old: {
+      meta.platforms = old.meta.platforms ++ final.lib.platforms.darwin;
+    });
+  })
 ]
