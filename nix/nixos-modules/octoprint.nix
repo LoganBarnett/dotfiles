@@ -19,7 +19,13 @@ let
 
   baseConfig = {
     plugins.curalegacy.cura_engine = "${pkgs.curaengine_stable}/bin/CuraEngine";
-    printerProfiles = builtins.mapAttrs (name: value: name) cfg.printerProfiles;
+    # printerProfiles = builtins.mapAttrs (name: value: name) cfg.printerProfiles;
+    # printerProfiles = (lib.attrsets.mapAttrs'
+    #   (name: value: lib.attrsets.nameValuePair "${name}Profile" value)
+    #   cfg.printerProfiles) // { default = cfg.defaultPrinterProfile; };
+    printerProfiles = {
+      default = cfg.defaultPrinterProfile;
+    };
     server.port = cfg.port;
     webcam.ffmpeg = "${pkgs.ffmpeg.bin}/bin/ffmpeg";
   } // lib.optionalAttrs (cfg.host != null) { server.host = cfg.host; };
@@ -106,6 +112,12 @@ in
         defaultText = lib.literalExpression "plugins: []";
         example = lib.literalExpression "plugins: with plugins; [ themeify stlviewer ]";
         description = "Additional plugins to be used. Available plugins are passed through the plugins input.";
+      };
+
+      defaultPrinterProfile = lib.mkOption {
+        type = lib.types.string;
+        default = "_default";
+        description = "Name of the default printer profile to use.";
       };
 
       printerProfiles = lib.mkOption {
@@ -228,22 +240,32 @@ in
           lib.strings.concatStrings
             (lib.strings.intersperse "\n" lines)
         ;
+        # There is a --config option to point to a configuration file, but
+        # Octoprint will fail to start if the config file is not writable.
       in ''
-        cp "${cfgUpdate}" "${cfg.stateDir}/config.yaml"
+        cp --force "${cfgUpdate}" "${cfg.stateDir}/config.yaml"
         chmod 600 "${cfg.stateDir}/config.yaml"
         rm --force "${cfg.stateDir}/logging.yaml"
         cp "${loggingConfig}" "${cfg.stateDir}/logging.yaml"
         rm -rf ${cfg.stateDir}/printerProfiles
-        mkdir --parents ${cfg.stateDir}/printerProfiles
+        mkdir --parents --mode 775 "${cfg.stateDir}/printerProfiles"
         ${join-lines (
-          lib.mapAttrsToList (name: printerConfig:
-            "cp ${printerConfig} ${cfg.stateDir}/printerProfiles/${name}.profile"
-          ) printerProfilesConfig
-        )}
+           lib.mapAttrsToList (name: printerConfig:
+             let
+               dest = "${cfg.stateDir}/printerProfiles/${name}.profile";
+             in ''
+              cp ${printerConfig} "${dest}"
+              chmod 660 "${dest}"
+             ''
+           ) printerProfilesConfig
+         )}
       '';
 
       serviceConfig = {
-        ExecStart = "${pluginsEnv}/bin/octoprint serve -b ${cfg.stateDir}";
+        ExecStart = ''
+          ${pluginsEnv}/bin/octoprint serve \
+            --basedir ${cfg.stateDir}
+        '';
         User = cfg.user;
         Group = cfg.group;
         SupplementaryGroups = [

@@ -26,8 +26,9 @@ in {
       };
       services.octoprint = {
         enable = true;
+        defaultPrinterProfile = "prusa-xl";
         printerProfiles = {
-          _default = {
+          prusa-xl = {
             axes = {
               e = {
                 inverted = false;
@@ -66,7 +67,7 @@ in {
               depth = 360.0;
               formFactor = "rectangular";
               height = 360.0;
-              origin = "lowerLeft";
+              origin = "lowerleft";
               width = 360.0;
             };
           };
@@ -140,9 +141,14 @@ in {
         # can find them here:
         # https://github.com/NixOS/nixpkgs/blob/master/pkgs/by-name/oc/octoprint/plugins.nix
         plugins = pg: [
+          # Show progress on the printer's display.
+          pg.displayprogress
+          # Show progress via the M117 command - better somehow?
+          # pg.displaylayerprogress
           # pg.prusaslicerthumbnails
           # pg.stlviewer
-          # pg.themeify
+          # Save our eyes by letting us load a dark mode theme.
+          pg.themeify
           # (pg.buildPlugin (let
           #   version = "2024-05-29-unstable";
           # in {
