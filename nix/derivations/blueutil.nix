@@ -12,8 +12,6 @@ pkgs.stdenv.mkDerivation {
 
   buildInputs = [] ++ (
     lib.optionals pkgs.stdenv.isDarwin [
-      # We need cf-private because blueutil brings in private symbols.
-      pkgs.darwin.cf-private
       pkgs.darwin.apple_sdk_11_0.frameworks.IOBluetooth
     ]
   );

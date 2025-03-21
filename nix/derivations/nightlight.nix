@@ -13,9 +13,6 @@ in {
   cargoHash = "sha256-mdpeo00pvT84ccbTqm2a5Hf8b85l7TajdzKYhkd5Mjg=";
   buildInputs = [] ++ (
     lib.optionals pkgs.stdenv.isDarwin [
-      # We need cf-private because nightlight brings in private symbols per its
-      # build.rs file.
-      pkgs.darwin.cf-private
       # Are we sure we want to be using 11?
       # pkgs.darwin.apple_sdk_11_0.frameworks.CoreFoundation
       # Documentation indicates that it is more compatible for x86-darwin, but
