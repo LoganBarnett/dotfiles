@@ -12,10 +12,18 @@
       # magma/ptxas later.  This
       # (https://en.wikipedia.org/wiki/CUDA#GPUs_supported) shows we can go to
       # ... 8.0 or 6.x?  I'm not sure how to read this chart.  The actual name
-      # of the chip (from the product level that I understand it - a GTX 1060
-      # 6GB) says 6.1.
+      # of the chip (from the product level that I understand it - an RTX 3070
+      # 8GB) says 8.6.
+      # GeForce RTX 3070
       cudaCapabilities = [ "8.6" ];
     })
+    (import ../nixos-modules/https.nix {
+      inherit host-id;
+      listen-port = 443;
+      server-port = 8080;
+      fqdn = "${host-id}.proton";
+    })
+    ../nixos-modules/ollama.nix
     ../nixos-modules/server-host.nix
     ../nixos-modules/lvm-uefi-disk.nix
     ../nixos-modules/steam-gaming.nix
