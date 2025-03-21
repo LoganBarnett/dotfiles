@@ -9,9 +9,12 @@
     extra-trusted-public-keys = [
       # For torch, I think.
       "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
+      "cuda-maintainers.cachix.org-1:0dq3bujKpuEPMCX6U4WylrUDZ9JyUG0VpVZa7CNfq5E="
     ];
   };
 
+  # See https://nixos-and-flakes.thiscute.world/other-usage-of-flakes/inputs for
+  # various URL notations.
   inputs = {
     agenix = {
       url = "github:ryantm/agenix";
@@ -22,9 +25,6 @@
     # https://github.com/oddlama/agenix-rekey
     # Allows re-keying and bootstrapping of secrets used by agenix.
     agenix-rekey = {
-      # Pin to my last contribution for now because I cannot generate new
-      # secrets, nor can I rekey.  See ./README.org in the troubleshooting ->
-      # agenix section for more details.
       url = "github:LoganBarnett/agenix-rekey/generators-new-line-optional";
       # url = "github:LoganBarnett/agenix-rekey/parameterize-generators";
       # url = "github:LoganBarnett/agenix-rekey/parameterize-generators-master-identities-fix";
@@ -78,12 +78,14 @@
       # nixos-hardware doesn't actually use nixpkgs.
       # inputs.nixpkgs.follows = "nixpkgs";
     };
-    # Specify the source of Home Manager and Nixpkgs.
     # This is forced at the moment, because we have some heavy deltas coming
     # into flake.lock and I want that to stabilize before I pin it here.
-    nixpkgs.url = "github:nixos/nixpkgs?ref=f9f59197478b3ec9c954b67ae0d1d5429de23124";
+    # nixpkgs.url = "github:nixos/nixpkgs?ref=f9f59197478b3ec9c954b67ae0d1d5429de23124";
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-24.11";
     nixpkgs-working-rocm.url = "github:nixos/nixpkgs/master";
-    nixpkgs-comfyui.url = "github:LoganBarnett/nixpkgs/comfyui-fetch-model-hide-rebase";
+    nixpkgs-cuda.url = "github:nixos/nixpkgs/nixos-24.11";
+    comfyui-pr.url = "github:LoganBarnett/nixpkgs?ref=comfyui-fetch-model-hide-rebase";
+    prusa-slicer-pr-390476.url = "github:nixos/nixpkgs?ref=pull/390476/head";
     # I've run into a host of issues with Raspberry Pi 5s after a successful
     # build is made.  I'd like to move nixpkgs around to see if we can skip over
     # some issues somehow.
@@ -97,7 +99,7 @@
     };
     # nix-doom-emacs.url = "github:nix-community/nix-doom-emacs";
     home-manager = {
-      url = "github:nix-community/home-manager";
+      url = "github:nix-community/home-manager/release-24.11";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     # nixpkgs-nickel.url = "github:nixos/nixpkgs?ref=9a9960b98418f8c385f52de3b09a63f9c561427a";
@@ -173,19 +175,21 @@
   outputs = flake-inputs@{
     agenix,
     agenix-rekey,
+    comfyui-pr,
     current-system,
     disko,
     emacs-overlay,
     nix,
     nix-darwin,
     nixpkgs,
-    nixpkgs-comfyui,
+    nixpkgs-cuda,
     nixpkgs-working-rocm,
     nixpkgs-rpi,
     nixos-anywhere,
     nixos-hardware,
     nixos-generators,
     home-manager,
+    prusa-slicer-pr-390476,
     raspberry-pi-nix,
     # Stuff for ache-em-ache.
     ache-em-ache-agenix,
@@ -229,6 +233,18 @@
           disko-proper = flake-inputs.disko;
         };
         modules = [
+          {
+            nixpkgs.overlays = [
+              (final: prev: {
+                prusa-slicer-pr-390476 = flake-inputs
+                  .prusa-slicer-pr-390476
+                  .outputs
+                  .legacyPackages
+                  .${system}
+                ;
+              })
+            ];
+          }
           ./hosts/${host-id}.nix
         ];
       }
@@ -266,9 +282,11 @@
     };
 
     nixosConfigurations.arsenic = nix-host {
-      inherit flake-inputs;
+      flake-inputs = flake-inputs // {
+        nixpkgs = nixpkgs-cuda;
+      };
       host-id = "arsenic";
-      system = "aarch64-linux";
+      system = "x86_64-linux";
     };
 
     darwinConfigurations."M-CL64PK702X" = darwin-host {
@@ -285,7 +303,7 @@
 
     nixosConfigurations.lithium = nix-host {
       flake-inputs = flake-inputs // {
-        nixpkgs = nixpkgs-comfyui;
+        nixpkgs = nixpkgs-cuda;
       };
       host-id = "lithium";
       system = "x86_64-linux";
@@ -338,14 +356,6 @@
       #   system = "aarch64-darwin";
       # };
     };
-
-    packages.aarch64-linux.distributed-test = let
-      pkgs = import nixpkgs {
-        system = "aarch64-linux";
-        overlays = ./overlays/default.nix;
-      };
-    in
-      pkgs.hello;
 
     nixosConfigurations.test-pi = flake-inputs.nixpkgs.lib.nixosSystem (let
       host-id = "test-pi";
