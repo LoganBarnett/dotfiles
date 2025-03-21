@@ -203,7 +203,11 @@
           # epkgs.html-mode
           epkgs.groovy-mode
           epkgs.rust-mode
-          epkgs.rustic
+          # TODO: This probably needs to be contributed back to rustic itself or
+          # perhaps the nix package.
+          (epkgs.rustic.overrideAttrs (old: {
+            buildInputs = (old.buildInputs or []) ++ [ epkgs.flycheck ];
+          }))
           # I have a reference to ob-scad here:
           # https://github.com/wose/ob-scad.git But scad-mode contains this.
           # Perhaps it was merged?  Check the difference.
