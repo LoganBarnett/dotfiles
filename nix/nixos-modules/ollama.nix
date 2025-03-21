@@ -1,4 +1,7 @@
 { config, ... }: {
+  imports = [
+    ./pytorch-bin.nix
+  ];
   services.ollama = {
     enable = true;
     acceleration =
