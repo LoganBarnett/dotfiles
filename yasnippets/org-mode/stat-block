@@ -1,0 +1,48 @@
+# -*- mode: snippet -*-
+# name: Make a D&D monster stat block.
+# key: stat-block
+# group: org
+# --
+
+:PROPERTIES:
+:book: mm
+:pg:
+:habitat: Any
+:treasure:
+:END:
+
++ Type :: Medium Humanoid
++ Alignment :: Neutral
++ Gear :: ...
++ Senses :: ... (put passive perception in table below instead of here)
++ Languages :: Common
++ CR :: 1/2 (XP 100; PB +2)
+
+|            | Fixed | Roll   | Avg |
+|------------+-------+--------+-----|
+| AC         |    12 |        |     |
+| HP         |       | 5d8+10 | 32  |
+| Initiative | +1    |        | 11  |
+| Speed      | 30 ft |        |     |
+| Perception |       |        | 10  |
+
+| Ability Score | Score | Mod | Save |
+|---------------+-------+-----+------|
+| Strength      |    15 |  +2 |   +2 |
+| Dexterity     |    12 |  +1 |   +1 |
+| Constitution  |    14 |  +2 |   +2 |
+| Intelligence  |    10 |  +0 |   +0 |
+| Wisdom        |    10 |  +0 |   +0 |
+| Charisma      |    11 |  +0 |   +0 |
+
++ Pact Tactics :: The tough has Advantage on an attack roll against a creature
+  if at least one of the tough's allies is within 5 feet of the creature and the
+  ally doesn't have the Incapacitated condition.
+
+| Attacks        | Type   | Hit | Range     | Dmg roll | Dmg avg | Dmg type    |
+|----------------+--------+-----+-----------+----------+---------+-------------|
+| Mace           | Melee  |  +4 | 5ft       |    1d6+2 |       5 | Bludgeoning |
+| Heavy Crossbow | Ranged |  +3 | 100/400ft |   1d10+1 |       6 | Piercing    |
+
++ Actions
+  + ...
