@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# name: Make an properties drawer.
+# key: prop
+# group: org
+# --
+:PROPERTIES:
+$1
+:END:
