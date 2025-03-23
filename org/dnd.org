@@ -45,7 +45,7 @@ from my filesystem.
 
   #+begin_src emacs-lisp :results none
 
-  (setq-default dnd/profile-path (expand-file-name "~/notes/dnd5e.org"))
+  (setq-default dnd/profile-path (expand-file-name "~/notes/dnd2024.org"))
 
     (defun config/dnd-row-to-track (row)
       (message "got row %s" row)
