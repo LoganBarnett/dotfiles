@@ -8,12 +8,6 @@
   ];
   imports = [
     ../nixos-modules/unfree-predicates.nix
-    ../nixos-modules/cpu-frequency.nix
-    # pstate is wrong for me here.  Not sure if this means I should
-    # open a ticket.  Perhaps I can open+close one?  See
-    # ../nixos-modules/cpu-frequency.nix for more details on this.
-    # flake-inputs.nixos-hardware.nixosModules.common-cpu-amd-pstate
-    flake-inputs.nixos-hardware.nixosModules.common-cpu-amd
   ];
   # Nothing to do here yet.
   # home-manager.users.kai = {};

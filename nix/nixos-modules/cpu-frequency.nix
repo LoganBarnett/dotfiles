@@ -24,25 +24,40 @@
 ################################################################################
 { config, pkgs, ... } : {
   boot.kernelParams = [
-    "initcall_blacklist=acpi_cpufreq_init"
+    # "initcall_blacklist=acpi_cpufreq_init"
     # Not sure what this does, but I found some advice suggesting to set this.
     # It had no noticeable effect.
     # "amd_pstate.shared_mem=1"
-    "amd_pstate=guided"
+    "amd_pstate=passive"
+    # "amd_pstate=disable"
+    # According to https://github.com/NixOS/nixos-hardware/issues/1205 there can
+    # be as much as a 20-40% performance increase by disabling retbleed
+    # protection (something we shouldn't worry about for desktops).  I'd like to
+    # learn more, but I wanted to give it a shot.  See
+    # https://unix.stackexchange.com/a/554922 for how to disable specific
+    # mitigations.  Use this to see vulnerabilities status:
+    # grep . /sys/devices/system/cpu/vulnerabilities/*
+    # All that said, my simple performance tests haven't shown any perceptible
+    # differences.
+    # "retbleed=off"
+  ];
+  boot.kernelModules = [
+    "amd_pstate_ut"
+    "platform_profile"
   ];
   environment.systemPackages = [
     pkgs.cpufrequtils
     # This doesn't exist under pkgs.
     config.boot.kernelPackages.cpupower
   ];
-  powerManagement.enable = false;
-  # powerManagement.cpuFreqGovernor = "performance";
-  powerManagement.cpuFreqGovernor = null;
+  powerManagement.enable = true;
+  powerManagement.cpuFreqGovernor = "performance";
   powerManagement.cpufreq.max = null;
   powerManagement.cpufreq.min = null;
   hardware.nvidia.powerManagement.enable = false;
   hardware.nvidia.powerManagement.finegrained = false;
-  # services.cpufreq.enable = false;
+  # Disabled by default.
   # services.auto-cpufreq.enable = false;
+  # services.auto-epp.enable = true;
   # services.tlp.enable = false;
 }

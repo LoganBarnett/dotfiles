@@ -127,7 +127,9 @@ in {
   imports = [
     flake-inputs.nixos-hardware.nixosModules.common-pc
     flake-inputs.nixos-hardware.nixosModules.common-pc-ssd
-    flake-inputs.nixos-hardware.nixosModules.common-cpu-amd-pstate
+    # We actually really don't want this, because this enables throttling and
+    # things just don't work out as we expect.
+    # flake-inputs.nixos-hardware.nixosModules.common-cpu-amd-pstate
     flake-inputs.nixos-hardware.nixosModules.common-gpu-nvidia-nonprime
     # Gives us allowUnfreePackagePredicates.
     ./unfree-predicates.nix

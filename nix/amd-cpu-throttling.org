@@ -6,11 +6,65 @@
 #+file_tags:
 #+tags:
 
-* fix
+* fix v1
 
 My fix was to set ~amd_pstate~ to ~guided~.  See
 ~nixos-modules/cpu-frequency.nix~ for notes on it, and how it's
 specifically done.
+
+* fix v2
+
+I ran into this again after an update on [2025-03-21 Fri].
+
+This gave away the issue:
+
+#+begin_src sh :results output :exports both :dir /ssh:arsenic.proton:~
+cat /proc/cmdline
+#+end_src
+
+#+RESULTS:
+: initrd=\EFI\nixos\nr6hwb1fqi6r4rqswp27mkjjb68vsqfb-initrd-linux-6.6.83-initrd.efi init=/nix/store/zaxyiqi08p64x0j9pkwjnb6943szdl40-nixos-system-arsenic-24.11.20250319.b75693f/init amd_pstate=active initcall_blacklist=acpi_cpufreq_init amd_pstate=guided loglevel=4 nvidia-drm.modeset=1 nvidia-drm.fbdev=1 nvidia.NVreg_OpenRmEnableUnsupportedGpus=1
+
+Note that ~amd_pstate~ is in there twice, with the first value as ~active~ and
+the second as ~guided~.  I believe the ~active~ is winning.
+
+Somehow ~boot.kernelParams~ is not handling collisions well.
+
+#+begin_src sh :results output :exports both :dir /ssh:arsenic.proton:~
+cat /proc/cmdline
+cat /sys/devices/system/cpu/amd_pstate/status
+#+end_src
+
+#+RESULTS:
+: initrd=\EFI\nixos\nr6hwb1fqi6r4rqswp27mkjjb68vsqfb-initrd-linux-6.6.83-initrd.efi init=/nix/store/8m20k80l3llkp361ns65rv0vcm7xq428-nixos-system-arsenic-24.11.20250319.b75693f/init initcall_blacklist=acpi_cpufreq_init amd_pstate=guided loglevel=4 nvidia-drm.modeset=1 nvidia-drm.fbdev=1 nvidia.NVreg_OpenRmEnableUnsupportedGpus=1
+: guided
+
+* symptoms
+
+You can see this manifest via general sluggishness for seemingly
+simple programs.  If you have to wait a few seconds to run ~htop~
+(regardless if in the GUI terminal or over SSH), you know something
+has gone horribly wrong.
+
+More concretely, you can see not only does the machine seem slow, but processes
+that should not occupy a lot of CPU will occupy a great amount.  One example is
+seeing ~htop~ occupy 20% or more of a single core.
+
+* observe the fix
+
+This can be a little hard, since things are subjectively "slow" or "fast", and
+there's a lot in the middle since this is a somewhat analog throttling
+mechanism.
+
+One way is to run ~sudo htop~ and observe that ~htop~ itself is < 10% of a
+single core.  The other is to go to
+https://webglsamples.org/aquarium/aquarium.html and crank the number of fish up
+to 20,000 and observe that you get a frame rate of 30+ FPS.  My Macbook Pro can
+handle this number on a crowded Safari browser, mostly full screen, at just
+above 30 FPS, so a dedicated desktop system should do much better on Firefox.
+
+On ~arsenic~, I can run 25,000 and even 30,000 at just 30 FPS with my best
+knowledge of a fix.
 
 * journey
 
@@ -19,25 +73,26 @@ throttle down to around 400 MHz which is just awful.  Despite this all
 being powered by "smart" tech, it's just dumb and always sits in this
 slow state.
 
-You can see this manifest via general sluggishness for seemingly
-simple programs.  If you have to wait a few seconds to run ~htop~
-(regardless if in the GUI terminal or over SSH), you know something
-has gone horribly wrong.
-
-You can see
-
-
-#+begin_src sh :results output :exports both :dir arsenic.proton:~
+#+begin_src sh :results output :exports both :dir /ssh:arsenic.proton:~
 cat /sys/devices/system/cpu/amd_pstate/status
 #+end_src
 
-This gives ~active~, but I have no idea if this is healthy.
+This gives ~active~.  In my later studies I have found this is not what we want.
+The kernel module for ~amd-pstate~ is here:
+https://docs.kernel.org/admin-guide/pm/amd-pstate.html
+
+It shows that ~active~ means the firmware controls the throttling.  I don't
+think this is desirable in part because I can't declaratively control the
+firmware.
 
 This also could factor in:
 
-#+begin_src sh :results output :exports both :dir arsenic.proton:~
+#+begin_src sh :results output :exports both :dir /ssh:arsenic.proton:~
 cat /sys/devices/system/cpu/amd_pstate/prefcore
 #+end_src
+
+#+RESULTS:
+: enabled
 
 Which comes back as ~enabled~.  But I have no idea if this serves a
 role or if this is healthy.
@@ -68,11 +123,373 @@ Solomon pointed out that his computer had a "performance" power
 setting and Kai's didn't.  He's right.  Also this can be determined
 via:
 
+#+begin_src sh :results output :exports both :dir /ssh:arsenic.proton:~
+sudo powerprofilesctl
+#+end_src
+
+#+RESULTS:
+: * balanced:
+:     PlatformDriver:	placeholder
+:
+:   power-saver:
+:     PlatformDriver:	placeholder
+
+I learned some of this is managed via ~power-profiles-daemon~
+(https://github.com/Rongronggg9/power-profiles-daemon) - this is what
+~powerprofilesctl~ is coming from.  It also has an excellent README filled with
+information about both Intel and AMD versions of ~pstate~.  It talks a bit about
+why ~performance~ might not show up.
+
+I also learned that ~auto-epp~ is a NixOS option:
+https://github.com/jothi-prasath/auto-epp
+
+The ~power-profiles-daemon~ README talks a bit about ~amd_pstate~ drivers.  I
+don't know if these drivers are even used, let alone how I'd go about finding
+that out.  The driver is called ~platform_profile~.
+
+I found a listing of ~linuxPackages~ in
+https://github.com/NixOS/nixpkgs/blob/e0fcd272a1d3fe95a510040b5560b5ac833e3d2c/pkgs/top-level/linux-kernels.nix#L458
+but it doesn't have anything that looks like ~platform_profile~ or even
+~pstate~.  So I guess I just set ~boot.kernelModules~ to include
+~"platform_profile"~ in its list?
+
+Okay well after that I ran:
+
+#+begin_src sh :results output :exports both :dir /ssh:arsenic.proton:~
+sudo lsmod | grep platform
+#+end_src
+
+#+RESULTS:
+: platform_profile       12288  0
+
+That ~0~ is from the ~Used by~ column.  From this
+[[https://unix.stackexchange.com/a/13440][SO answer]], it looks like the number is what's actively being used.  So for all I
+know, the module (driver?) is being used but it's not in use _right this
+second_.  Still, this lists not extant modules but loaded modules.  So I now
+know this is loaded.
+
+From the README again:
+#+begin_quote
+If the AMD P-State scaling driver is not loaded or is not in active mode, then
+the placeholder driver will be used, and there won't be a performance mode.
+#+end_quote
+
+I moved this to ~guided~, but maybe we really do need ~active~.  Let's try it
+out.
+
+Here's what we got afterwards:
+
+#+begin_src sh :results output :exports both :dir /ssh:arsenic.proton:~
+sudo powerprofilesctl
+cat /sys/devices/system/cpu/amd_pstate/status
+cat /sys/devices/system/cpu/amd_pstate/prefcore
+#+end_src
+
+#+RESULTS:
+: * balanced:
+:     PlatformDriver:	placeholder
+:
+:   power-saver:
+:     PlatformDriver:	placeholder
+: active
+: enabled
+
+And no, the fishes are worse.  Let's put it back.
+
+I found more information on this topic here:
+https://github.com/Hekel1989/amdpstate-configuration
+
+While watching it boot, I saw:
+
 #+begin_example
-[logan@arsenic:~]$ powerprofilesctl
+Mar 21 11:59:17 arsenic kernel: cpufreq: cpufreq_online: Failed to initialize policy for cpu: 0 (-19)
+Mar 21 11:59:17 arsenic kernel: cpufreq: cpufreq_online: Failed to initialize policy for cpu: 1 (-19)
+Mar 21 11:59:17 arsenic kernel: cpufreq: cpufreq_online: Failed to initialize policy for cpu: 2 (-19)
+Mar 21 11:59:17 arsenic kernel: cpufreq: cpufreq_online: Failed to initialize policy for cpu: 3 (-19)
+Mar 21 11:59:17 arsenic kernel: cpufreq: cpufreq_online: Failed to initialize policy for cpu: 4 (-19)
+Mar 21 11:59:17 arsenic kernel: cpufreq: cpufreq_online: Failed to initialize policy for cpu: 5 (-19)
+Mar 21 11:59:17 arsenic kernel: cpufreq: cpufreq_online: Failed to initialize policy for cpu: 6 (-19)
+Mar 21 11:59:17 arsenic kernel: cpufreq: cpufreq_online: Failed to initialize policy for cpu: 7 (-19)
+Mar 21 11:59:17 arsenic kernel: cpufreq: cpufreq_online: Failed to initialize policy for cpu: 8 (-19)
+Mar 21 11:59:17 arsenic kernel: cpufreq: cpufreq_online: Failed to initialize policy for cpu: 9 (-19)
+Mar 21 11:59:17 arsenic kernel: cpufreq: cpufreq_online: Failed to initialize policy for cpu: 10 (-19)
+Mar 21 11:59:17 arsenic kernel: cpufreq: cpufreq_online: Failed to initialize policy for cpu: 11 (-19)
+Mar 21 11:59:17 arsenic kernel: cpufreq: cpufreq_online: Failed to initialize policy for cpu: 12 (-19)
+Mar 21 11:59:17 arsenic kernel: cpufreq: cpufreq_online: Failed to initialize policy for cpu: 13 (-19)
+Mar 21 11:59:17 arsenic kernel: cpufreq: cpufreq_online: Failed to initialize policy for cpu: 14 (-19)
+Mar 21 11:59:17 arsenic kernel: cpufreq: cpufreq_online: Failed to initialize policy for cpu: 15 (-19)
+Mar 21 11:59:17 arsenic kernel: cpufreq: cpufreq_online: Failed to initialize policy for cpu: 16 (-19)
+Mar 21 11:59:17 arsenic kernel: cpufreq: cpufreq_online: Failed to initialize policy for cpu: 17 (-19)
+Mar 21 11:59:17 arsenic kernel: cpufreq: cpufreq_online: Failed to initialize policy for cpu: 18 (-19)
+Mar 21 11:59:17 arsenic kernel: cpufreq: cpufreq_online: Failed to initialize policy for cpu: 19 (-19)
+Mar 21 11:59:17 arsenic kernel: cpufreq: cpufreq_online: Failed to initialize policy for cpu: 20 (-19)
+Mar 21 11:59:17 arsenic kernel: cpufreq: cpufreq_online: Failed to initialize policy for cpu: 21 (-19)
+Mar 21 11:59:17 arsenic kernel: cpufreq: cpufreq_online: Failed to initialize policy for cpu: 22 (-19)
+Mar 21 11:59:17 arsenic kernel: cpufreq: cpufreq_online: Failed to initialize policy for cpu: 23 (-19)
+Mar 21 11:59:17 arsenic kernel: amd_pstate: failed to register with return -19
+#+end_example
+
+This can be found with ~journalctl --boot=0~ and I searched for ~pstate~.
+
+For this run I'd changed to ~guided~ (I think), and enabled ~auto-epp~.  Note
+that this can no longer find the driver now, even though it's generally showing
+~amd-pstate~ as the driver.
+
+#+begin_src sh :results output :exports both :dir /ssh:arsenic.proton:~
+sudo cpupower frequency-info
+#+end_src
+
+#+RESULTS:
+#+begin_example
+analyzing CPU 6:
+  no or unknown cpufreq driver is active on this CPU
+  CPUs which run at the same hardware frequency: Not Available
+  CPUs which need to have their frequency coordinated by software: Not Available
+  maximum transition latency:  Cannot determine or is not supported.
+Not Available
+  available cpufreq governors: Not Available
+  Unable to determine current policy
+  current CPU frequency: Unable to call hardware
+  current CPU frequency:  Unable to call to kernel
+  boost state support:
+    Supported: yes
+    Active: yes
+    Boost States: 0
+    Total States: 3
+    Pstate-P0:  3800MHz
+    Pstate-P1:  2800MHz
+    Pstate-P2:  2200MHz
+#+end_example
+
+Ah, now I see the kernel module load failures:
+
+#+begin_example
+Mar 21 12:05:33 arsenic systemd-modules-load[879]: Failed to find module 'amd-pstate'
+Mar 21 12:05:33 arsenic systemd-modules-load[879]: Failed to find module 'amd_pstate'
+Mar 21 12:05:33 arsenic systemd-modules-load[879]: Failed to find module 'amd_pstate_epp'
+#+end_example
+
+Which probably just means I shouldn't include them in ~boot.kernelModules~.
+This isn't terribly surprising since the ~amd-pstate~ stuff shows up even
+without me ever having indicated a ~pstate~ module to load.  I've seen some
+posts indicating that this support is "compiled into the kernel" and thus not
+something we'd load.  It also supports my lack of finding these entries with
+~modprobe~. 
+
+This is the complete check I've been using:
+
+#+begin_src sh :results output :exports both :dir /ssh:arsenic.proton:~
+sudo powerprofilesctl
+cat /sys/devices/system/cpu/amd_pstate/status
+cat /sys/devices/system/cpu/amd_pstate/prefcore
+lsmod | grep pstate || echo 'pstate driver missing'
+lsmod | grep platform_profile || echo 'platform_profile driver missing'
+cat /proc/cmdline | sed -E 's/.*amd_pstate=([^[:space:]]+).*/amd_pstate=\1/'
+# Note that which CPU is analyzed will rotate between runs.
+sudo cpupower frequency-info
+#+end_src
+
+#+RESULTS:
+#+begin_example
 ,* balanced:
     PlatformDriver:	placeholder
 
   power-saver:
     PlatformDriver:	placeholder
+guided
+enabled
+pstate driver missing
+platform_profile       12288  0
+amd_pstate=guided
+analyzing CPU 13:
+  driver: amd-pstate
+  CPUs which run at the same hardware frequency: 13
+  CPUs which need to have their frequency coordinated by software: 13
+  maximum transition latency: 20.0 us
+Not Available
+  available cpufreq governors: performance schedutil
+  Unable to determine current policy
+  current CPU frequency: Unable to call hardware
+  current CPU frequency: 4.30 GHz (asserted by call to kernel)
+  boost state support:
+    Supported: yes
+    Active: no
+    AMD PSTATE Highest Performance: 166. Maximum Frequency: .
+    AMD PSTATE Nominal Performance: 135. Nominal Frequency: .
+    AMD PSTATE Lowest Non-linear Performance: 79. Lowest Non-linear Frequency: .
+    AMD PSTATE Lowest Performance: 20. Lowest Frequency: .
+#+end_example
+
+Now time to try it with ~passive~ since I've seen some folks suggest that.
+
+#+begin_src sh :results output :exports both :dir /ssh:arsenic.proton:~
+sudo powerprofilesctl
+cat /sys/devices/system/cpu/amd_pstate/status
+cat /sys/devices/system/cpu/amd_pstate/prefcore
+lsmod | grep pstate || echo 'pstate driver missing'
+lsmod | grep platform_profile || echo 'platform_profile driver missing'
+cat /proc/cmdline | sed -E 's/.*amd_pstate=([^[:space:]]+).*/amd_pstate=\1/'
+# Note that which CPU is analyzed will rotate between runs.
+sudo cpupower frequency-info
+#+end_src
+
+#+RESULTS:
+#+begin_example
+,* balanced:
+    PlatformDriver:	placeholder
+
+  power-saver:
+    PlatformDriver:	placeholder
+passive
+enabled
+amd_pstate_ut          12288  0
+platform_profile       12288  0
+amd_pstate=passive
+analyzing CPU 11:
+  driver: amd-pstate
+  CPUs which run at the same hardware frequency: 11
+  CPUs which need to have their frequency coordinated by software: 11
+  maximum transition latency: 20.0 us
+Not Available
+  available cpufreq governors: performance schedutil
+  Unable to determine current policy
+  current CPU frequency: Unable to call hardware
+  current CPU frequency: 4.28 GHz (asserted by call to kernel)
+  boost state support:
+    Supported: yes
+    Active: no
+    AMD PSTATE Highest Performance: 166. Maximum Frequency: .
+    AMD PSTATE Nominal Performance: 135. Nominal Frequency: .
+    AMD PSTATE Lowest Non-linear Performance: 79. Lowest Non-linear Frequency: .
+    AMD PSTATE Lowest Performance: 20. Lowest Frequency: .
+#+end_example
+
+Now there's a ~amd_pstate_ut~ module.  Although from additional testing, I
+believe this is because I ran ~modprobe~.  So I guess ~modprobe~ loads the
+module.
+
+I also see this in the journal:
+
+#+begin_example
+Mar 21 12:11:03 arsenic kernel: amd_pstate_ut: 1    amd_pstate_ut_acpi_cpc_valid         success!
+Mar 21 12:11:03 arsenic kernel: amd_pstate_ut: 2    amd_pstate_ut_check_enabled         success!
+Mar 21 12:11:03 arsenic kernel: amd_pstate_ut: amd_pstate_ut_check_perf cpu0 highest=216 166 nominal=135 135 lowest_nonlinear=79 79 lowest=20 20, they should be equal!
+Mar 21 12:11:03 arsenic kernel: amd_pstate_ut: 3    amd_pstate_ut_check_perf         fail!
+Mar 21 12:11:03 arsenic kernel: amd_pstate_ut: amd_pstate_ut_check_freq cpu0 max=0 >= nominal=0 > lowest_nonlinear=0 > min=0 > 0, the formula is incorrect!
+Mar 21 12:11:03 arsenic kernel: amd_pstate_ut: 4    amd_pstate_ut_check_freq         fail!
+#+end_example
+
+I suspect I might just have to go to the firmware.  Unfortunately I can't seem
+to get it to go there in time before the auto-boot takes place.  So I can use
+this:
+
+#+begin_src sh :results output :exports code :dir /ssh:arsenic.proton:~
+sudo systemctl reboot --firmware-setup
+#+end_src
+
+I did find a PCC adjustment setting, which is missing from the firmware's
+manual.  But everything I've found suggests that P0 is the preferred performance
+setting, and increasing numbers (P1, P2) are increased power savings (thus
+slower).
+
+Ugh.  Okay so after all that I found
+https://wiki.archlinux.org/title/CPU_frequency_scaling#amd_pstate and also found
+that I can just set ~amd_pstate=disable~ in ~boot.kernelParams~.
+
+#+begin_src sh :results output :exports both :dir /ssh:arsenic.proton:~
+sudo powerprofilesctl
+cat /sys/devices/system/cpu/amd_pstate/status 2>&1
+cat /sys/devices/system/cpu/amd_pstate/prefcore 2>&1
+lsmod | grep pstate || echo 'pstate driver missing'
+lsmod | grep platform_profile || echo 'platform_profile driver missing'
+cat /proc/cmdline | sed -E 's/.*amd_pstate=([^[:space:]]+).*/amd_pstate=\1/'
+# Note that which CPU is analyzed will rotate between runs.
+sudo cpupower frequency-info
+#+end_src
+
+#+RESULTS:
+#+begin_example
+,* balanced:
+    PlatformDriver:	placeholder
+
+  power-saver:
+    PlatformDriver:	placeholder
+cat: /sys/devices/system/cpu/amd_pstate/status: No such file or directory
+cat: /sys/devices/system/cpu/amd_pstate/prefcore: No such file or directory
+amd_pstate_ut          12288  0
+platform_profile       12288  0
+amd_pstate=disable
+analyzing CPU 7:
+  no or unknown cpufreq driver is active on this CPU
+  CPUs which run at the same hardware frequency: Not Available
+  CPUs which need to have their frequency coordinated by software: Not Available
+  maximum transition latency:  Cannot determine or is not supported.
+Not Available
+  available cpufreq governors: Not Available
+  Unable to determine current policy
+  current CPU frequency: Unable to call hardware
+  current CPU frequency:  Unable to call to kernel
+  boost state support:
+    Supported: yes
+    Active: yes
+    Boost States: 0
+    Total States: 3
+    Pstate-P0:  3800MHz
+    Pstate-P1:  2800MHz
+    Pstate-P2:  2200MHz
+#+end_example
+
+And with this I seem to observe 35 FPS (up from 30ish?) with 25,000 fish, but
+30,000 fish is still 30 FPS.  This might be the best I can do.
+
+I will note that I can see from the output above that we now have the
+~Pstate-P0~ stuff, with the values coming in at 38000 MHz for the fastest.  But
+other reports have shown faster is possible, such as this from an earlier run:
+
+Also ~boost state support~ now shows ~active~ to be ~yes~.
+
+#+begin_example
+  current CPU frequency: 4.28 GHz (asserted by call to kernel)
+#+end_example
+
+#+begin_src sh :results output :exports both :dir /ssh:arsenic.proton:~
+sudo powerprofilesctl
+cat /sys/devices/system/cpu/amd_pstate/status 2>&1
+cat /sys/devices/system/cpu/amd_pstate/prefcore 2>&1
+lsmod | grep pstate || echo 'pstate driver missing'
+lsmod | grep platform_profile || echo 'platform_profile driver missing'
+cat /proc/cmdline | sed -E 's/.*amd_pstate=([^[:space:]]+).*/amd_pstate=\1/'
+# Note that which CPU is analyzed will rotate between runs.
+sudo cpupower frequency-info
+#+end_src
+
+#+RESULTS:
+#+begin_example
+,* balanced:
+    PlatformDriver:	placeholder
+
+  power-saver:
+    PlatformDriver:	placeholder
+passive
+enabled
+amd_pstate_ut          12288  0
+platform_profile       12288  0
+amd_pstate=passive
+analyzing CPU 6:
+  driver: amd-pstate
+  CPUs which run at the same hardware frequency: 6
+  CPUs which need to have their frequency coordinated by software: 6
+  maximum transition latency: 20.0 us
+Not Available
+  available cpufreq governors: performance schedutil
+  Unable to determine current policy
+  current CPU frequency: Unable to call hardware
+  current CPU frequency: 4.27 GHz (asserted by call to kernel)
+  boost state support:
+    Supported: yes
+    Active: no
+    AMD PSTATE Highest Performance: 166. Maximum Frequency: .
+    AMD PSTATE Nominal Performance: 135. Nominal Frequency: .
+    AMD PSTATE Lowest Non-linear Performance: 79. Lowest Non-linear Frequency: .
+    AMD PSTATE Lowest Performance: 20. Lowest Frequency: .
 #+end_example

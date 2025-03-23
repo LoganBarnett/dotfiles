@@ -4,6 +4,7 @@
 { flake-inputs, host-id, modulesPath, system, ... }: {
   nixpkgs.hostPlatform = system;
   imports = [
+    ../nixos-modules/cpu-frequency.nix
     (import ../nixos-modules/nvidia.nix {
       inherit flake-inputs;
       bus-id = "PCI:c:0.0";
