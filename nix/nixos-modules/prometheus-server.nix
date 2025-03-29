@@ -1,0 +1,68 @@
+################################################################################
+# Provides a Prometheus server.
+#
+# Prometheus aggregates information across hosts via "exporters" that provide
+# data sources for it.  The server is a central place where this data is
+# collected and presented.
+#
+# Additional packages of interest include promtool - a CLI for Prometheus.
+#
+# See https://wiki.nixos.org/wiki/Prometheus for a writeup on how to get started
+# with Prometheus in NixOS.
+#
+# Configuring this module:
+# The server must know about what exporters are available.  The convention used
+# in this module is to search for amongst the facts metadata to determine what
+# clients are out there and what exporters they use.
+#
+# While there may be many Prometheus exporters line up 1:1 with the monitor
+# names used in the facts, they aren't necessarily going to match fully - this
+# is to keep the nomenclature more about monitoring and less specifically about
+# Prometheus.  The facts should specify the intent and this module translates
+# that to Prometheus configuration.
+################################################################################
+{ config, facts, lib, ... }: {
+  services.prometheus = {
+    enable = true;
+    # "1m" is another valid value.
+    globalConfig.scrape_interval = "10s";
+    scrapeConfigs = let
+      monitors = (lib.lists.unique (lib.lists.flatten
+        (lib.attrsets.mapAttrsToList
+          (host: settings: settings.monitors)
+          facts.network.hosts
+        )
+      ));
+    in lib.lists.map
+      (monitor: {
+        job_name = monitor;
+        static_configs = [{
+          targets = lib.attrsets.mapAttrsToList
+            (host: settings:
+              "${host}:${
+                toString config.services.prometheus.exporters.${monitor}.port
+              }"
+            )
+            (lib.attrsets.filterAttrs (host: settings:
+              settings.controlledHost
+                && (lib.lists.any (m: m == monitor) settings.monitors)
+            ) facts.network.hosts);
+        }];
+      })
+      monitors;
+      # [
+      # {
+      #   job_name = "node";
+      #   static_configs = [{
+      #     targets = builtins.map
+      #       (host: settings:
+      #         "${host}:${toString config.services.prometheus.exporters.node.port}"
+      #       )
+      #       (builtins.filter (host: settings:
+      #         settings.controlledHost && (lib.lists.any (m: m == monitor) settings.monitors)
+      #       ) facts.network.hosts);
+      #   }];
+      # }
+    # ];
+  };
+}

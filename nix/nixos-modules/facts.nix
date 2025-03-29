@@ -8,6 +8,49 @@
 ################################################################################
 {
   network = {
+    # See https://stackoverflow.com/a/70106730 for how to setup Prometheus for
+    # monitoring remote / uncontrolled systems (remote_read vs. remote_write).
+    hosts = {
+      argon = {
+        controlledHost = true;
+        monitors = [
+          "node"
+          "wireguard"
+        ];
+      };
+      arsenic = {
+        controlledHost = true;
+        monitors = [
+          "node"
+        ];
+      };
+      germanium = {
+        controlledHost = true;
+        monitors = [
+          "node"
+        ];
+      };
+      lithium = {
+        controlledHost = true;
+        monitors = [
+          "node"
+        ];
+      };
+      nickel = {
+        controlledHost = true;
+        monitors = [
+          # "openldap"
+          "node"
+        ];
+      };
+      selenium = {
+        controlledHost = true;
+        monitors = [
+          # "octoprint"
+          "node"
+        ];
+      };
+    };
     users = {
       logan = {
         description = "The reason we suffer.";

@@ -16,6 +16,12 @@ in {
     ../nixos-modules/raspberry-pi-builder.nix
     ../nixos-modules/server-host.nix
     ../nixos-modules/ldap-server.nix
+    ../nixos-modules/prometheus-server.nix
+    (import ../nixos-modules/https.nix {
+      server-port = 9090;
+      inherit host-id;
+      fqdn = "${host-id}.proton";
+    })
     # (import ../nixos-modules/freeipa-server.nix { inherit host-id; })
     # Pi stuff.
     ({ pkgs, ... }: {
