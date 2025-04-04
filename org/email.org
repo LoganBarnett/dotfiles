@@ -915,12 +915,17 @@ https://emacs.stackexchange.com/questions/69719/fingerprint-has-changed-message-
 It looks like there was a problem in a recent update of ~evil-collection~ where
 new key bindings conflicted with old ones.  This provides a fix:
 
+This has been fixed in PR 860 but [[https://github.com/emacs-evil/evil-collection/pull/862][evil-collection#862]] wants to keep going in
+that direction.  That's fine by me, but this is a good hint that I should just
+capture the settings I want, and then I'm future proof against further changes
+to default behaviors.
+
 #+name config/evil-collection-mu4e-pr-860-fix-key-conflict
 #+begin_src emacs-lisp :results none :exports code :tangle no
 
   ;; Workaround until https://github.com/emacs-evil/evil-collection/pull/860 is
   ;; merged.
-  (defvar evil-collection-mu4e-mode-normal-map-bindings
+  (setq-default evil-collection-mu4e-mode-normal-map-bindings
    `((mu4e-main-mode-map
       "J" mu4e~headers-jump-to-maildir
       "j" next-line
@@ -940,7 +945,7 @@ new key bindings conflicted with old ones.  This provides a fix:
       "m" mu4e--main-toggle-mail-sending-mode
       "s" mu4e-search
       "q" mu4e-quit
-      ;; "c" mu4e-search-query
+      "Q" mu4e-search-query
       )
 
      (mu4e-headers-mode-map
@@ -1000,7 +1005,7 @@ new key bindings conflicted with old ones.  This provides a fix:
       "gl" mu4e-show-log
       "gv" mu4e-select-other-view
       "T"  evil-collection-mu4e-mark-thread-as-read
-      ;; "c" mu4e-search-query
+      "Q" mu4e-search-query
       )
 
      (mu4e-compose-mode-map
