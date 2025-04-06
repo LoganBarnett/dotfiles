@@ -14,6 +14,7 @@
       argon = {
         controlledHost = true;
         monitors = [
+          "blackbox-ping"
           "node"
           "wireguard"
         ];
@@ -21,6 +22,14 @@
       arsenic = {
         controlledHost = true;
         monitors = [
+          "blackbox-ping"
+          "node"
+        ];
+      };
+      gallium = {
+        controlledHost = true;
+        monitors = [
+          "blackbox-ping"
           "node"
         ];
       };
@@ -33,12 +42,14 @@
       lithium = {
         controlledHost = true;
         monitors = [
+          "blackbox-ping"
           "node"
         ];
       };
       nickel = {
         controlledHost = true;
         monitors = [
+          "blackbox-ping"
           # "openldap"
           "node"
         ];
@@ -46,6 +57,7 @@
       selenium = {
         controlledHost = true;
         monitors = [
+          "blackbox-ping"
           # "octoprint"
           "node"
         ];

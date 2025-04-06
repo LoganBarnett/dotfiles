@@ -21,7 +21,7 @@
 # Prometheus.  The facts should specify the intent and this module translates
 # that to Prometheus configuration.
 ################################################################################
-{ config, facts, lib, ... }: {
+{ config, facts, lib, pkgs, ... }: {
   services.prometheus = {
     enable = true;
     # "1m" is another valid value.
@@ -33,36 +33,52 @@
           facts.network.hosts
         )
       ));
+      host-targets = monitor: lib.attrsets.mapAttrsToList
+        (host: settings:
+          "${host}:${
+            toString config
+              .services
+              .prometheus
+              .exporters
+              .${pkgs.lib.custom.monitor-to-exporter-name monitor}
+              .port
+          }"
+        )
+        (lib.attrsets.filterAttrs (host: settings:
+          settings.controlledHost
+          && (lib.lists.any (m: m == monitor) settings.monitors)
+        ) facts.network.hosts)
+      ;
     in lib.lists.map
-      (monitor: {
-        job_name = monitor;
-        static_configs = [{
-          targets = lib.attrsets.mapAttrsToList
-            (host: settings:
-              "${host}:${
-                toString config.services.prometheus.exporters.${monitor}.port
-              }"
-            )
-            (lib.attrsets.filterAttrs (host: settings:
-              settings.controlledHost
-                && (lib.lists.any (m: m == monitor) settings.monitors)
-            ) facts.network.hosts);
-        }];
-      })
+      (monitor:
+        (
+          { job_name = monitor; }
+          // ({
+            node = {
+              job_name = monitor;
+              static_configs = [{
+                targets = host-targets monitor;
+              }];
+            };
+            blackbox-ping = {
+              # metrics_path = "/probe/blackbox-ping";
+              # scrape_interval = "10s";
+              params = {
+                modules = [ "icmp" ];
+              };
+              static_configs = [{
+                targets = host-targets monitor;
+              }];
+              # relabel_configs = [
+              #   {
+              #     source_labels = [ "target" ];
+              #     target_label = "__param_target";
+              #   }
+              # ];
+            };
+          }.${monitor} or { job_name = monitor; })
+        )
+      )
       monitors;
-      # [
-      # {
-      #   job_name = "node";
-      #   static_configs = [{
-      #     targets = builtins.map
-      #       (host: settings:
-      #         "${host}:${toString config.services.prometheus.exporters.node.port}"
-      #       )
-      #       (builtins.filter (host: settings:
-      #         settings.controlledHost && (lib.lists.any (m: m == monitor) settings.monitors)
-      #       ) facts.network.hosts);
-      #   }];
-      # }
-    # ];
   };
 }

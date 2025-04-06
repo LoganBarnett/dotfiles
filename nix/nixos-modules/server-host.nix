@@ -9,6 +9,7 @@
       nixpkgs.overlays = (import ../overlays/default.nix);
       system.stateVersion = "23.11";
     }
+    ./lib-custom.nix
     ./secrets.nix
     ./facts-secrets.nix
     ./tls-leaf-proton.nix

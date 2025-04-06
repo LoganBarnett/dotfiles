@@ -3,14 +3,13 @@
 # server.  Whether the client pushes this data or the server polls for it is
 # both something configurable and not something I know the default of.
 ################################################################################
-{ config, lib, facts, host-id, ... }: let
+{ config, lib, facts, host-id, pkgs, ... }: let
   # monitors = lib.attrsets.mapAttrsToList
   #   (settings: settings.monitors )
   #   facts.network.hosts
   # ;
-  monitor-to-exporter-name = monitor: {}.${monitor} or monitor;
   monitor-to-exporter = monitor: {
-    ${monitor-to-exporter-name monitor} = {
+    ${pkgs.lib.custom.monitor-to-exporter-name monitor} = {
       enable = true;
       openFirewall = true;
     } // ({
@@ -31,6 +30,22 @@
         # don't exist for the involved tool.  This was yanked directly from the
         # docs, which could possibly use expansion.
         # firewallFilter = "-i br0 -p tcp -m tcp --dport ${port}";
+      };
+      blackbox-ping = {
+        configFile = pkgs.writeTextFile {
+          name = "blackbox-ping.yaml";
+          text = (builtins.toJSON {
+            modules = {
+              icmp = {
+                prober = "icmp";
+                timeout = "10s";
+                icmp = {
+                  preferred_ip_protocol = "ip4";
+                };
+              };
+            };
+          });
+        };
       };
     }.${monitor} or {});
   };
