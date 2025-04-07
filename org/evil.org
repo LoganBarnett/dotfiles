@@ -371,6 +371,152 @@ manually.
 (setq evil-ex-substitute-global t)
 #+end_src
 
+* toggles
+** big fonts
+
+I just straight up stole Doom's ~fonts.el~ to get the ~doom-big-font-mode~
+enabled.  We need some key bindings to be able to toggle them.
+
+#+name: config/evil-toggle-keymaps
+#+begin_src emacs-lisp :results none :exports code :tangle no
+(load-library "doom-fonts.el")
+;; Required for doom-big-font-mode.
+(setq doom-font (font-spec :family "Source Code Pro" :size 12))
+(defun doom-init-fonts-h (&optional reload)
+  "Loads `doom-font', `doom-serif-font', and `doom-variable-pitch-font'."
+  (let ((initialized-frames (unless reload (get 'doom-font 'initialized-frames))))
+    (dolist (frame (if reload (frame-list) (list (selected-frame))))
+      (unless (member frame initialized-frames)
+        (dolist (map `((default . ,doom-font)
+                       (fixed-pitch . ,doom-font)
+                       (fixed-pitch-serif . ,doom-serif-font)
+                       (variable-pitch . ,doom-variable-pitch-font)))
+          (condition-case e
+              (when-let* ((face (car map))
+                          (font (cdr map)))
+                (when (display-multi-font-p frame)
+                  (set-face-attribute face frame
+                                      :width 'normal :weight 'normal
+                                      :slant 'normal :font font))
+                (custom-push-theme
+                 'theme-face face 'user 'set
+                 (let* ((base-specs (cadr (assq 'user (get face 'theme-face))))
+                        (base-specs (or base-specs '((t nil))))
+                        (attrs '(:family :foundry :slant :weight :height :width))
+                        (new-specs nil))
+                   (dolist (spec base-specs)
+                     (let ((display (car spec))
+                           (plist (copy-tree (nth 1 spec))))
+                       (when (or (memq display '(t default))
+                                 (face-spec-set-match-display display frame))
+                         (dolist (attr attrs)
+                           (setq plist (plist-put plist attr (face-attribute face attr)))))
+                       (push (list display plist) new-specs)))
+                   (nreverse new-specs)))
+                (put face 'face-modified nil))
+            ('error
+             (if (string-prefix-p "Font not available" (error-message-string e))
+                 (signal 'doom-font-error (list (font-get (cdr map) :family)))
+               (signal (car e) (cdr e))))))
+        (put 'doom-font 'initialized-frames
+             (cons frame (cl-delete-if-not #'frame-live-p initialized-frames))))))
+  ;; Only do this once per session (or on `doom/reload-fonts'); superfluous
+  ;; `set-fontset-font' calls may segfault in some contexts.
+  (when (or reload (not (get 'doom-font 'initialized)))
+    (when (fboundp 'set-fontset-font)  ; unavailable in emacs-nox
+      (let* ((fn (doom-rpartial #'member (font-family-list)))
+             (symbol-font (or doom-symbol-font
+                              (cl-find-if fn doom-symbol-fallback-font-families)))
+             (emoji-font (or doom-emoji-font
+                             (cl-find-if fn doom-emoji-fallback-font-families))))
+        (when symbol-font
+          (dolist (script '(symbol mathematical))
+            (set-fontset-font t script symbol-font)))
+        (when emoji-font
+          ;; DEPRECATED: make unconditional when we drop 27 support
+          (when (version<= "28.1" emacs-version)
+            (set-fontset-font t 'emoji emoji-font))
+          ;; some characters in the Emacs symbol script are often covered by
+          ;; emoji fonts
+          (set-fontset-font t 'symbol emoji-font nil 'append)))
+      ;; Nerd Fonts use these Private Use Areas
+      (dolist (range '((#xe000 . #xf8ff) (#xf0000 . #xfffff)))
+        (set-fontset-font t range "Symbols Nerd Font Mono")))
+    (run-hooks 'after-setting-font-hook))
+  (put 'doom-font 'initialized t))
+
+(defun doom-init-theme-h (&rest _)
+  "Load the theme specified by `doom-theme' in FRAME."
+  (dolist (th (ensure-list doom-theme))
+    (unless (custom-theme-enabled-p th)
+      (if (custom-theme-p th)
+          (enable-theme th)
+        (load-theme th t)))))
+
+(defadvice! doom--detect-colorscheme-a (theme)
+  "Add :kind \\='color-scheme to THEME if it doesn't already have one.
+
+Themes wouldn't call `provide-theme' unless they were a color-scheme, so treat
+them as such. Also intended as a helper for `doom--theme-is-colorscheme-p'."
+  :after #'provide-theme
+  (or (plist-get (get theme 'theme-properties) :kind)
+      (cl-callf plist-put (get theme 'theme-properties) :kind
+                'color-scheme)))
+(defcustom doom-variable-pitch-font nil
+  "The default font to use for variable-pitch text.
+Must be a `font-spec', a font object, an XFT font string, or an XLFD string. See
+`doom-font' for examples.
+
+An omitted font size means to inherit `doom-font''s size.")
+(defcustom doom-serif-font nil
+  "The default font to use for the `fixed-pitch-serif' face.
+Must be a `font-spec', a font object, an XFT font string, or an XLFD string. See
+`doom-font' for examples.
+
+An omitted font size means to inherit `doom-font''s size.")
+(defcustom doom-symbol-font nil
+  "Fallback font for symbols.
+Must be a `font-spec', a font object, an XFT font string, or an XLFD string. See
+`doom-font' for examples. Emacs defaults to Symbola.
+
+WARNING: if you specify a size for this font it will hard-lock any usage of this
+font to that size. It's rarely a good idea to do so!")
+
+(define-obsolete-variable-alias 'doom-unicode-font 'doom-symbol-font "3.0.0")
+
+(defcustom doom-emoji-font nil
+  "Fallback font for emoji.
+Must be a `font-spec', a font object, an XFT font string, or an XLFD string. See
+`doom-font' for examples.
+
+WARNING: if you specify a size for this font it will hard-lock any usage of this
+font to that size. It's rarely a good idea to do so!")
+
+(defconst doom-emoji-fallback-font-families
+  '("Apple Color Emoji"
+    "Segoe UI Emoji"
+    "Noto Color Emoji"
+    "Noto Emoji")
+  "A list of fallback font families to use for emojis.
+These are platform-specific fallbacks for internal use. If you
+want to change your emoji font, use `doom-emoji-font'.")
+
+(defconst doom-symbol-fallback-font-families
+  '("Segoe UI Symbol"
+    "Apple Symbols")
+  "A list of fallback font families for general symbol glyphs.
+These are platform-specific fallbacks for internal use. If you
+want to change your symbol font, use `doom-symbol-font'.")
+
+
+(map!
+ :leader
+ :desc "toggle"
+ (:prefix ("t" . "toggle")
+          :desc "big-fonts" "b" #'doom-big-font-mode
+          )
+ )
+#+end_src
 * stitch
 
 It may not be apparent but =use-package= works as you'd want it to even if the
@@ -393,6 +539,7 @@ library is already loaded.
   (message "required evil-mode")
   <<config/evil-mode-symbol-star-expansion>>
   :config
+  <<config/evil-toggle-keymaps>>
   <<config/evil-backslash-fix>>
   <<config/evil-esc-fix>>
   <<config/evil-leader-set>>
