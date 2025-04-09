@@ -333,6 +333,7 @@ This highlights indentation, which can be helpful for large sets of indentation.
   :hook
   ((prog-mode) . indent-bars-mode)
   :init
+  ;; Look out for this - it's possible it's not being loaded somehow.
   <<config/standard-indent>>
   (setq-default
    ;; This is the default value, but for some reason Emacs isn't seeing
@@ -341,6 +342,11 @@ This highlights indentation, which can be helpful for large sets of indentation.
    ;; indent-bars is running in the buffer).  When it gets defined, Emacs sees
    ;; the variable definition.
    indent-bars-color '(highlight :face-bg t :blend 0.5)
+   ;; Stipple support doesn't exist yet in macOS's Emacs and is slated for a
+   ;; possible release in v30, but as of writing we are on v29.  For now just
+   ;; use a character.  See
+   ;; https://github.com/jdtsmith/indent-bars?tab=readme-ov-file#compatibility
+   ;; for details.
    indent-bars-prefer-character t
    ;; Pump up the BG blend on the cursor's indentation.
    indent-bars-highlight-current-depth '(:blend 0.75)
@@ -370,6 +376,11 @@ One can also set =indent-bars-spacing-override=.  The function in question is
 
 *** guessing indentation incorrectly
 
+**** dtrt-indent-mode
+
+As of moving off of Doom, ~dtrt-indent-mode~ is no longer in my Lisp packages,
+so I can no longer blame it for indentation issues.
+
 =dtrt-indent-mode= is a minor mode which guesses indentation based on... I don't
 know.  But it looks at the buffer as part of it, and I've seen it guess wrong
 before.  It will do things like set =tab-width= and =standard-indent= to
@@ -388,6 +399,15 @@ desire:
 It must go at the top, but I don't know how it works with shebangs.  I assume
 Emacs is smart enough to skip the shebang.
 
+[[https://github.com/jscheid/dtrt-indent/issues/29][dtrt-indent#29]] shows you can adjust the ~dtrt-indent-max-merge-deviation~ value
+to something like ~9.00~ to help it.  The variable itself includes a lot of
+documentation as to how the heuristic works.
+
+**** other culprits
+
+~indent-bars~ is the only thing I can think of, but I can't see it doing
+anything.  It might also be that ~standard-indent~ isn't being set.  Ugh, why
+are there so many ways to configure indentation?!
 
 * all together
 
