@@ -4,6 +4,7 @@
 { flake-inputs, host-id, modulesPath, system, ... }: {
   nixpkgs.hostPlatform = system;
   imports = [
+    ../nixos-modules/bedtime-for-screen-addicts.nix
     ../nixos-modules/cpu-frequency.nix
     (import ../nixos-modules/nvidia.nix {
       inherit flake-inputs;

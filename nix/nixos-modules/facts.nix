@@ -108,6 +108,16 @@
           "logan"
         ];
       };
+      screen-addicts = {
+        description = ''
+          Users who are addicted to screens and require help with \
+          self-regulation.
+        '';
+        members = [
+          "kai"
+          "solomon"
+        ];
+      };
     };
   };
 }
