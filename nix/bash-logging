@@ -4,7 +4,7 @@
 # It prints the name of the script in a decorative means, and as a bonus prints
 # the log to stderr. This helps reserve stdout for parseable output.
 function slog {
-  printf "\e[93m[\e[96m$(basename $0)\e[93m]\e[0m " 1>&2
+  printf "\e[93m[\e[96m%s\e[93m]\e[0m " "$(basename "$0")" 1>&2
   echo -e "$*" 1>&2
 }
 # zsh does not like this kind of exporting.
