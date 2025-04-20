@@ -9,6 +9,11 @@
     facts.network.groups.screen-addicts.members
   ;
   users-string = lib.strings.concatStringsSep " " users;
+  users-quoted-string = lib.strings.concatStringsSep " " (
+    builtins.map
+      (u: "'${u}'")
+      users
+  );
 in {
   systemd.timers.bedtime-logout = {
     wantedBy = [ "timers.target" ];
@@ -53,12 +58,18 @@ in {
   systemd.services.daytime-enable = {
     enable = true;
     serviceConfig = {
-      ExecStart = ''
-        users=(${users-string})
-        for user in "''${users[@]}"; do
-          ${pkgs.shadow}/bin/usermod --expiredate -1 $user
-        done
-      '';
+      ExecStart = let
+        script = pkgs.writeShellApplication {
+          name = "user-login-enable";
+          text = builtins.readFile ../scripts/user-login-enable.sh;
+          runtimeInputs = [
+            # For `usermod`.
+            pkgs.shadow
+          ];
+        };
+      in ''
+        ${script}/bin/user-login-enable ${users-quoted-string}
+       '';
       # This needs to kill other users' processes, which is basically just a
       # root thing.
       User = "root";
