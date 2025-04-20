@@ -1,5 +1,7 @@
 { pkgs, ... }: {
   environment.systemPackages = [
+    # Scan and populate the ARP table.
+    pkgs.arp-scan
     # A program to allow communicating over serial. Perhaps I can script it?
     pkgs.minicom
     # Connect to MongoDB for poking around the document store.
