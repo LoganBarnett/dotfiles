@@ -11,7 +11,7 @@
 # Hopefully we one day find out what is causing this.
 #
 # See: https://github.com/NixOS/nix/issues/8443
-[
+{ flake-inputs, system, ... }: [
   (import ./test-script.nix)
   (import ./amdvlk-348903-fix.nix)
   (import ./battlescribe-update-data.nix)
@@ -32,6 +32,7 @@
   (import ./wine.nix)
   # Give us rust-docs.
   (import ./rust.nix)
+  (import ./signal-desktop.nix { inherit flake-inputs system; } )
   # (import (builtins.fetchTarball
   #   "https://github.com/oxalica/rust-overlay/archive/master.tar.gz"))
   # (import ./openconnect-sso.nix)
@@ -42,7 +43,7 @@
   # Needed until https://github.com/NixOS/nixpkgs/pull/391654 is merged.
   (final: prev: {
     nc4nix = prev.nc4nix.overrideAttrs (old: {
-      meta.platforms = old.meta.platforms ++ final.lib.platforms.darwin;
+      meta.platforms = final.lib.platforms.unix;
     });
   })
 ]

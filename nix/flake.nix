@@ -84,6 +84,11 @@
     nixpkgs.url = "github:nixos/nixpkgs/nixos-24.11";
     nixpkgs-working-rocm.url = "github:nixos/nixpkgs/master";
     nixpkgs-cuda.url = "github:nixos/nixpkgs/nixos-24.11";
+    # We need a version of nixpkgs for things that want to constantly
+    # auto-update themselves in a forceful (yet asinine) manner.  Culprits
+    # include Signal Desktop, but I should add more to the shame list as I find
+    # them.
+    nixpkgs-latest.url = "github:nixos/nixpkgs/master";
     comfyui-pr.url = "github:LoganBarnett/nixpkgs?ref=comfyui-fetch-model-hide-rebase";
     prusa-slicer-pr-390476.url = "github:nixos/nixpkgs?ref=pull/390476/head";
     # I've run into a host of issues with Raspberry Pi 5s after a successful
@@ -183,6 +188,7 @@
     nix-darwin,
     nixpkgs,
     nixpkgs-cuda,
+    nixpkgs-latest,
     nixpkgs-working-rocm,
     nixpkgs-rpi,
     nixos-anywhere,

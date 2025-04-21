@@ -49,16 +49,6 @@ in
         (pkg: builtins.elem (lib.getName pkg) [
           "ngrok"
           "unrar"
-          # It's secure!
-          # Can I look at the source to be sure?
-          # No!  You just have to trust us.
-          # To be honest, I'm not sure why it's unfree when AGPL is listed as
-          # the license:
-          # https://github.com/signalapp/Signal-Desktop/blob/main/LICENSE
-          # It's because it uses Apple's non-redistributable emoji package,
-          # which is kind of funny because isn't this redistribution?  See:
-          # https://github.com/NixOS/nixpkgs/blob/b5d21ab69d341ff8d06498d3b39b38160533293f/pkgs/by-name/si/signal-desktop/signal-desktop-darwin.nix#L49
-          "signal-desktop"
         ])
       ];
       environment.systemPackages = (import ../personal-packages.nix {
@@ -77,7 +67,12 @@ in
         # There's some other signal packages worth looking at if I get into it
         # enough:
         # https://search.nixos.org/packages?channel=24.11&from=0&size=50&sort=relevance&type=packages&query=signal
-        pkgs.signal-desktop
+        # I'd love to build from source, but the signal-desktop package isn't
+        # configured well for overriding.  Presently it is set to be Linux only,
+        # and imports a couple of packages using callPackage in a let binding.
+        # I tried overriding them where they are used (via passthru), but still
+        # no joy.
+        pkgs.signal-desktop-bin
       ];
       system.stateVersion = 5;
     })

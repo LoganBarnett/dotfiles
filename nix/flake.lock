@@ -1047,6 +1047,22 @@
         "type": "github"
       }
     },
+    "nixpkgs-latest": {
+      "locked": {
+        "lastModified": 1745169998,
+        "narHash": "sha256-HbwlDylNezS96H4LBMrNDslgKhW84iG1p105HnN/dNw=",
+        "owner": "nixos",
+        "repo": "nixpkgs",
+        "rev": "edca0d2397d8065c17beaf71f89007b2d3c59b21",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nixos",
+        "ref": "master",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
     "nixpkgs-lib": {
       "locked": {
         "lastModified": 1735774519,
@@ -1415,6 +1431,7 @@
         "nixos-hardware": "nixos-hardware",
         "nixpkgs": "nixpkgs_3",
         "nixpkgs-cuda": "nixpkgs-cuda",
+        "nixpkgs-latest": "nixpkgs-latest",
         "nixpkgs-rpi": "nixpkgs-rpi",
         "nixpkgs-working-rocm": "nixpkgs-working-rocm",
         "programsdb": "programsdb",

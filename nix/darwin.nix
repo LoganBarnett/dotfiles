@@ -36,7 +36,7 @@
 # Much of this is shamelessly lifted from:
 # https://github.com/nmasur/dotfiles/blob/master/modules/darwin/system.nix
 
-{ config, emacs-overlay, flake-inputs, nixpkgs, lib, pkgs, ... }:
+{ config, emacs-overlay, flake-inputs, nixpkgs, lib, pkgs, system, ... }:
 {
   imports = [
     (import ./nixos-modules/nix-flake-environment.nix {
@@ -106,7 +106,9 @@
       trusted-users = [ "@admin" ];
     };
   };
-  nixpkgs.overlays = import ./overlays/default.nix;
+  nixpkgs.overlays = (import ./overlays/default.nix {
+    inherit flake-inputs system;
+  });
   # This has been needed to individually bless some older packages, such
   # as packages depending upon an older OpenSSL.
   nixpkgs.config.permittedInsecurePackages = [];
