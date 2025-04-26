@@ -115,14 +115,22 @@ in {
       );
       # We need our own copy, because macOS' security tool only accepts a file
       # with a single certificate, and isn't strictly supporting the PEM format.
-      certs = lib.lists.imap0 (i: cert: pkgs.writeTextFile {
+      certs = lib.lists.imap0 (i: cert: pkgs.writeTextFile (let
+        # Sometimes (or always?) a linebreak winds up a the bottom of the cert,
+        # and breaks formatting.  Just make sure we never have one to keep
+        # things consistent.
+        trimLastLinebreak = s:
+          if lib.strings.hasSuffix "\n" s
+          then builtins.substring 0 (builtins.stringLength s - 1) s
+          else s;
+      in {
         name = "nix-darwin-keychain-certificate-${toString i}.pem";
         text = ''
           -----BEGIN CERTIFICATE-----
-          ${cert}
+          ${trimLastLinebreak cert}
           -----END CERTIFICATE-----
         '';
-      }) certFiles;
+      })) certFiles;
       # Even though this is a flat string value, Nix's module system will join
       # this with other collisions of the same setting and separating them using
       # line breaks.  lib.mkBefore is just lib.mkOrder with a specific value
@@ -155,12 +163,22 @@ in {
           ${lib.strings.concatStringsSep " " certFiles}
       '';
     in lib.mkBefore (lib.strings.concatLines (builtins.map (certFile: let
-      command = ''
-      security add-trusted-cert \
-        -d \
-        -r trustRoot \
-        -k /Library/Keychains/System.keychain \
-        ${certFile}
+      command = lib.traceVal ''
+      certHash="$(${pkgs.openssl}/bin/openssl x509 -outform der -in ${certFile} \
+        | ${pkgs.openssl}/bin/openssl dgst -sha256
+      )"
+      echo "Checking for trust of $certHash found in ${certFile}..."
+      if sudo security find-certificate -a -Z /Library/Keychains/System.keychain \
+        | grep --invert-match --quiet "$certHash" ; then
+        echo "Trusting certificate with SHA-256 fingerprint '$certHash'..."
+        security add-trusted-cert \
+          -d \
+          -r trustRoot \
+          -k /Library/Keychains/System.keychain \
+          ${certFile}
+      else
+        echo "Certificate with SHA-256 fingerprint '$certHash' already trusted."
+      fi
       '';
     in ''
       # Note that a lot of advice out there will say to use "trustAsRoot" per
