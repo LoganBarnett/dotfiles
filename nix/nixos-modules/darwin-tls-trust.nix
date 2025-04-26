@@ -1,5 +1,26 @@
 ################################################################################
+# Provide a means of having the macOS Keychain trust certificates found in
+# security.pki.certificateFiles.
 #
+# This is very much a work in progress.  To enable this behavior, use
+# `security.pki.keychain.trustNixTlsCertificates`.
+#
+# Known issues:
+# - It's noisy.  Things are still being debugged.
+# - It's very slow.  This is partly because most of the work is done in Nix code
+#   itself, and should likely be delegated to better, dedicated tools.
+# - A password prompt will be required from macOS for every new certificate
+#   found.  This can be prohibitive if many certificates are to be trusted.
+#   There's no getting around this short of an MDM profile.  Other work has been
+#   done in this repository to support emitting a .mobileconfig file, but
+#   `profiles install` no longer allows trusting a certificate.  Perhaps the MDM
+#    profile needs the configuration profile (.mobileconfig).  This can be found
+#   in ../packages/darwin-tls-certificate-configuration-profile.nix and also
+#   some bits in this file.
+# - This is purely additive, not declarative.  If you change the certificate
+#   list in any way, the only different outcome you can get is that more
+#   certificates are trusted.  Old trusts will not be removed.  We need some way
+#   of clearing these out.
 ################################################################################
 { callPackage, config, lib, pkgs, ... }: let
   cfg = config.security.pki.keychain;
