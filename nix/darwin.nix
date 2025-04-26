@@ -42,6 +42,7 @@
     (import ./nixos-modules/nix-flake-environment.nix {
       inherit (flake-inputs) nix nixpkgs programsdb;
     })
+    ./nixos-modules/darwin-tls-trust.nix
   ];
   # Global packages that can't be bound to a specific user, such as shells.
   environment = {
@@ -156,20 +157,12 @@
   # };
   programs.nix-index.enable = true;
   security.pam.enableSudoTouchIdAuth = true;
+  security.pki.keychain.trustNixTlsCertificates = true;
   # Without this, nothing works.
   services.nix-daemon.enable = true;
   system = {
     # Settings that don't have an option in nix-darwin.
     activationScripts.postActivation.text = ''
-      # Note that a lot of advice out there will say to use "trustAsRoot" per
-      # newer versions of macOS.  This might be correct advice in the context of
-      # the question given, but since we're running _as root_ already, we can
-      # just trustRoot. `trustAsRoot` is for non-root command line invocations.
-      security add-trusted-cert \
-        -d \
-        -r trustRoot \
-        -k /Library/Keychains/System.keychain \
-        ${./secrets/proton-ca.crt}
       echo "Set disk image verification..."
       # I don't know what I want these set to, or what the defaults are, so
       # skipping for now.
