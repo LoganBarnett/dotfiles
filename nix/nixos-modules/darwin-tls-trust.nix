@@ -48,9 +48,16 @@ in {
           security.pki.certificateFiles.
         '';
       };
+      certificateFiles = lib.mkOption {
+        type = lib.types.listOf lib.types.path;
+        default = [];
+        description = ''
+          Certificates to trust in the System Keychain.
+        '';
+      };
     };
   };
-  config = lib.mkIf (lib.traceVal cfg.trustNixTlsCertificates) {
+  config = {
     system.activationScripts.postActivation.text = let
       # sanitizeCertPath =
       santizedCertName = cert-path:
@@ -105,13 +112,13 @@ in {
                 # ;
                 value = real-cert-path;
               })
-              config.security.pki.certificateFiles
+              cfg.certificateFiles
             )
           ;
         };
       certFiles = lib.lists.flatten (builtins.map
         (path: pemToCertificates (builtins.readFile path))
-        config.security.pki.certificateFiles
+        cfg.certificateFiles
       );
       # We need our own copy, because macOS' security tool only accepts a file
       # with a single certificate, and isn't strictly supporting the PEM format.
@@ -162,30 +169,55 @@ in {
           -k /Library/Keychains/System.keychain \
           ${lib.strings.concatStringsSep " " certFiles}
       '';
-    in lib.mkBefore (lib.strings.concatLines (builtins.map (certFile: let
-      command = lib.traceVal ''
-      certHash="$(${pkgs.openssl}/bin/openssl x509 -outform der -in ${certFile} \
-        | ${pkgs.openssl}/bin/openssl dgst -sha256
+      openssl = "${pkgs.openssl}/bin/openssl";
+    in lib.mkBefore (''
+      keychainTrustedCerts="$(sudo security find-certificate -a -Z \
+        /Library/Keychains/System.keychain
       )"
-      echo "Checking for trust of $certHash found in ${certFile}..."
-      if sudo security find-certificate -a -Z /Library/Keychains/System.keychain \
-        | grep --invert-match --quiet "$certHash" ; then
-        echo "Trusting certificate with SHA-256 fingerprint '$certHash'..."
-        security add-trusted-cert \
-          -d \
-          -r trustRoot \
-          -k /Library/Keychains/System.keychain \
-          ${certFile}
-      else
-        echo "Certificate with SHA-256 fingerprint '$certHash' already trusted."
-      fi
-      '';
-    in ''
       # Note that a lot of advice out there will say to use "trustAsRoot" per
       # newer versions of macOS.  This might be correct advice in the context of
       # the question given, but since we're running _as root_ already, we can
       # just trustRoot. `trustAsRoot` is for non-root command line invocations.
-      ${command}
-    '') certs));
+      function trustCert() {
+        certFile="$1"
+        certHash="$(${openssl} x509 -outform der -in "$certFile" \
+          | ${openssl} dgst -sha256 \
+          | awk '{print $2}'
+        )"
+        certDomain="$( \
+          ${openssl} x509 -noout -ext subjectAltName -in "$certFile" 2>&1 \
+            | grep --invert-match 'X509v3 Subject Alternative Name:' \
+            | sed 's/DNS://g'
+        )"
+        if [[ "$certDomain" == "" \
+           || "$certDomain" == 'No extensions in certificate' ]];
+        then
+          certDomain="$(${openssl} x509 -noout -subject -in "$certFile" \
+            | sed 's/.*CN *= *//p'
+          )"
+         fi
+        printf "Checking for trust of %s for domain '%s' found in %s... " \
+          "$certHash" \
+          "$certDomain" \
+          "$certFile"
+        if printf '%s' "$keychainTrustedCerts" \
+          | grep --quiet --ignore-case "$certHash" ;
+        then
+          printf "\033[33mAlready Trusted.\033[0m\n"
+        else
+          security add-trusted-cert \
+            -d \
+            -r trustRoot \
+            -k /Library/Keychains/System.keychain \
+            "$certFile"
+          printf "\033[32mTrusted!\033[0m\n"
+        fi
+      }
+    ''
+    + (lib.strings.concatLines (builtins.map (certFile: let
+      in ''
+        trustCert ${certFile}
+      '') certs))
+    );
   };
 }

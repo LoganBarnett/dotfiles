@@ -158,6 +158,9 @@
   programs.nix-index.enable = true;
   security.pam.enableSudoTouchIdAuth = true;
   security.pki.keychain.trustNixTlsCertificates = true;
+  security.pki.keychain.certificateFiles = [
+    ./secrets/proton-ca.crt
+  ];
   # Without this, nothing works.
   services.nix-daemon.enable = true;
   system = {
