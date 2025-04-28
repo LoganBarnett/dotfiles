@@ -45,6 +45,17 @@ in {
       # boot.kernelPackages = pkgs.rpi-kernels.v6_1_63.kernel;
       # raspberry-pix-nix.pin-kernel = false;
     })
+    # {
+    #   containers.grafana = {
+    #     autoStart = true;
+    #     privateNetwork = false;
+    #     specialArgs = {
+    #       inherit facts flake-inputs nodes system;
+    #       host-id = "grafana";
+    #     };
+    #     config = import ./grafana.nix;
+    #   };
+    # }
     # (import ../nixos-modules/sd-image-raspberrypi.nix {
     #   inherit flake-inputs;
     # })

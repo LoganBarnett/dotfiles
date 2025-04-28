@@ -46,6 +46,10 @@
           "node"
         ];
       };
+      grafana = {
+        controlledHost = true;
+        monitors = [];
+      };
       lithium = {
         controlledHost = true;
         monitors = [

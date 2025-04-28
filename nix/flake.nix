@@ -221,10 +221,30 @@
       home-manager = ache-em-ache-home-manager;
     };
     facts = import ./nixos-modules/facts.nix;
+    nodes =
+      self.containerGuestHosts
+      // self.nixosConfigurations
+      // self.darwinConfigurations
+    ;
+    container-guest-host = args@{ host-id, flake-inputs, system }: nix-host args;
+      # autoStart = true;
+      # privateNetwork = false;
+      # # This is a critical gotcha with containers in NixOS.  Set `specialArgs`
+      # # to be the typical flake-input-to-module stuff that you would set on a
+      # # normal host (e.g. `nixosSystem`).  Without this, you blunder into
+      # # unhelpful infinite recursion issues.  See
+      # # https://discourse.nixos.org/t/infinite-recursion-caused-by-flake-input-in-a-container-in-nixops/39590/4
+      # # for a detailed explanation.
+      # specialArgs = {
+      #   inherit facts flake-inputs host-id nodes system;
+      #   host-id = "grafana";
+      # };
+      # config = import ./hosts/${host-id}.nix;
+    # };
     nix-host = args@{ host-id, flake-inputs, system }:
       flake-inputs.nixpkgs.lib.nixosSystem {
         specialArgs = {
-          inherit facts flake-inputs host-id system;
+          inherit facts flake-inputs host-id nodes system;
           disko-proper = flake-inputs.disko;
         };
         modules = [
@@ -235,7 +255,7 @@
     darwin-host = args@{ host-id, flake-inputs, system }:
       nix-darwin.lib.darwinSystem {
         specialArgs = {
-          inherit facts flake-inputs host-id system;
+          inherit facts flake-inputs host-id nodes system;
           disko-proper = flake-inputs.disko;
         };
         modules = [
@@ -292,6 +312,13 @@
       host-id = "germanium";
       system = "x86_64-linux";
     };
+
+    containerGuestHosts = {};
+    # containerGuestHosts.grafana = container-guest-host {
+    #   inherit flake-inputs;
+    #   host-id = "grafana";
+    #   system = "aarch64-linux";
+    # };
 
     nixosConfigurations.arsenic = nix-host {
       flake-inputs = flake-inputs // {
@@ -362,8 +389,11 @@
       userFlake = self;
       # nodes = self.nixosConfigurations
       #         // self.darwinConfigurations;
-      nixosConfigurations = self.nixosConfigurations
-        // self.darwinConfigurations;
+      nixosConfigurations =
+        self.nixosConfigurations
+          // self.darwinConfigurations
+          // self.containerGuestHosts
+      ;
       # pkgs = import flake-inputs.nixpkgs {
       #   system = "aarch64-darwin";
       # };

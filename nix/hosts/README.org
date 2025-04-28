@@ -16,8 +16,127 @@ networks, etc, I use other particle names.
 The last host I created was selenium, so the next element is bromine.
 
 
+* Data Center Approach
 
-* Hosts
+Most Raspberry Pis are more than capable of hosting the services needed to run
+here, and could take on other services easily.
+
+** How to Compound Services on the Same Host
+*** The Problem of Direct Hardware Hosting
+
+I have a few problems that share a strong relation:
+1. As I add more hosts to my network, it becomes increasingly more difficult to
+   remember what the host's purpose based on its host name.  While this is by
+   design, it requires an additional solution as scaling occurs.
+2. I would like to get the most out of my hardware.  Many services out there
+   require miniscule amounts of resources.  I can easily place multiple services
+   on the same host, even for little Raspberry Pis.
+3. Moving services around to balance things out better requires a lot of
+   renaming.
+4. Many services contend for the same port (primarily HTTPS).  This means custom
+   ports are required or virtual hosting.
+5. Services can also contend for secrets.  For example, if I run anything
+   alongside ~openldap~, then the ~group~ setting for LDAP password secrets on
+   that host will conflict between ~openldap~ and the other given service.  One
+   wants ~openldap~ to be the group, and the other wants the service name as the
+   group.
+
+*** Solution Candidate: Use Containers
+
+NixOS makes using LXC (a Linux user space container system) pretty trivial.  The
+only concerns would be that the kernel must be shared like it is in
+Docker/Podman.  That said, most of the services I need to run don't require a
+bleeding edge or specialized kernel.
+
+While security is always on the mind, the benefits for using LXC are that I can
+step away from physical hosts and instead focus on purpose-built hosts.  From
+what can be seen in [[Host List]], the names of the host are very arbitrary and have
+no relation to what they actually do.  What they do changes quite a bit
+sometimes as I build out more of the network.  Using LXC enables me to use
+purpose host names (so ~git.proton~ instead of ~molybdenum.proton~) and I can
+also have multiple services (especially web services, which all contend for the
+same port) work out via virtual hosts.  So not only would ~molybdenum.proton~
+host a ~git.proton~ but it could also host a ~nextcloud.proton~.
+
+Moving containers around between hosts would be fairly trivial, and the biggest
+delay would be waiting on the DNS update.
+
+*** Solution Candidate: Use Strictly Virtual Servers
+
+In many ways, just using virtual hosts to separate out HTTPS ports is probably
+the simplest way to go.  While virtual hosting is limited only to HTTP(S), it
+might be completely sufficient for my needs.  Containers in LXC land may have
+similar difficulties that I have experienced before using Docker/Podman, or may
+have their own unique difficulties.
+
+I do think using LXC is probably the way to go in the long run, but virtual
+hosting would be a good first step without inflicting the entirety of having to
+have used LXC in anger.
+
+*** Conclusion
+
+Let's go with pure virtual hosting for now.  We can add in LXC later.
+** How to Spread Resources
+
+Different servers have much different demands on resources.  This can help us
+select the best hardware for the job, as well as know where we can best allocate
+a given service alongside other services, if that's even possible at all.
+
+Let's use a rating of 0-5.
++ 0 :: The resource is not used at all.  This should be pretty rare, but is
+  important for some very restricted resources, such as GPU.
++ 1 :: This resource is used but only in the most minimal sense.  For example, a
+  DNS server does require network access but the traffic is both occasional and
+  the amount of data sent is perhaps a few kilobytes a day in our setting.
++ 2 :: This resource is used minimally, but enough that it could be disruptive
+  to other resources.
++ 3 :: This resource is used moderately.
++ 4 :: This resource is used intensely.
++ 5 :: This resource is used exclusively and should never be shared with other
+  services without some kind of work sharing between them.
+
+Maybe 0-4 would be appropriate too.
+
+Configuration files should not be considered for disk usage unless something
+weird is going on where they are frequently accessed or written to, or are
+somehow excessively large.
+
+Resource categories should include IO separate from capacity.  A service could
+need a lot of disk capacity but not a lot of disk IO, for example.
+
+It should be noted that we need to consider the worst case scenario of a
+service's usage.  For example, ~octoprint~ might be fine sharing space with
+other services, but a CPU spike during a garbage collection of a Python service
+(~octoprint~ is a Python service) could cause delays that could ruin a 3D print.
+So ~octoprint~ should have ratings of 5 in CPU and RAM to prevent sharing with
+services that could potentially cause problems.  If ~octoprint~ were a C or Rust
+service, it might only get a 3 for those resources.  This is something service
+authors should consider when selecting tools to build their services.
+
+** Allocating Services to a Host
+
+Assume a host has a series of resources available using the mirrored rating we
+established for service resource consumption (0-5).  This is our resource
+budget, and services allocated to that host must live within the budget.
+
+** Service Resource Chart
+
+#+name: service-resource-chart
+| Service       | CPU | RAM | Disk Cap | Disk IO | Net Cap | Net IO | GPU |
+|---------------+-----+-----+----------+---------+---------+--------+-----|
+| openldap      |   1 |   1 |        1 |       1 |       1 |      1 |   0 |
+| prometheus    |     |     |          |         |         |        |     |
+| grafana       |     |     |          |         |         |        |     |
+| alert-manager |     |     |          |         |         |        |     |
+| octoprint     |   5 |   5 |        2 |       2 |       3 |      2 |   0 |
+| wireguard     |   2 |   1 |        0 |       0 |       5 |      5 |   0 |
+
+
+** Host Resource Chart
+
+** Service Allocations
+
+* Host List
 
 ** cobalt
 
