@@ -19,6 +19,8 @@
     # curl does http requests. Comes with MacOS but no reason to use a dated
     # version.
     pkgs.curl
+    # DNS troubleshooting / lookup.
+    pkgs.dig
     # Show us the current system as a double.
     flake-inputs.current-system.packages.${system}.default
     # Searches for files. Used by projectile in Emacs.  Included in
@@ -49,6 +51,10 @@
     pkgs.lsof
     # A union of ping and traceroute - ping all hosts along a route.
     pkgs.mtr
+    # Provides a series of networking tools, including arp.  On macOS this can
+    # be essential because we want tools like ssh (from Nix) to use the same ARP
+    # table.
+    pkgs.nettools
     # Show greater detail from `nix build`, which is necessary for debugging
     # sometimes.  Use "nom build" in place of "nix build".
     pkgs.nix-output-monitor
@@ -64,6 +70,8 @@
     pkgs.ncdu
     # Run speed tests from the command line.
     pkgs.speedtest-rs
+    # Disk health monitoring and reporting tools.  Provides smartctl and smartd.
+    pkgs.smartmontools
     # A self-proclaimed better netcat.
     pkgs.socat
     # Really fast grep alternative.  Required by Emacs (which is also used via
@@ -78,8 +86,6 @@
     # Highly controllable terminal emulation and session management.  Have
     # persistent sessions (in case of SSH disconnection) among other things.
     pkgs.tmux
-    # Disk health monitoring and reporting tools.  Provides smartctl and smartd.
-    pkgs.smartmontools
     # We need an editor.  Even if we don't want to edit configuration files
     # because we already have Nix, it's still helpful for things that use
     # EDTIOR, such as C-x C-e in the shell.  Can we just uninstall nano?

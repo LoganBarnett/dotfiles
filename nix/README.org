@@ -2842,6 +2842,95 @@ reasons, ~remote-deploy~ seems to involve less "fancy" that can break in a way
 that stalls the system.  Even just doing it once can sometimes dislodge whatever
 was going on.  I suspect there's some bugs with it, or ~nix copy~.
 
+** ~dig~ and ~nslookup~ resolve, but ~curl~, ~ping~, and ~ssh~ fail to resolve
+
+You might see something like this:
+
+#+begin_example
+$ dig bromine.proton
+
+; <<>> DiG 9.18.33 <<>> bromine.proton
+;; global options: +cmd
+;; Got answer:
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 48355
+;; flags: qr aa rd ra; QUERY: 1, ANSWER: 1, AUTHORITY: 0, ADDITIONAL: 1
+
+;; OPT PSEUDOSECTION:
+; EDNS: version: 0, flags:; udp: 4096
+;; QUESTION SECTION:
+;bromine.proton.			IN	A
+
+;; ANSWER SECTION:
+bromine.proton.		0	IN	A	192.168.254.178
+
+;; Query time: 8 msec
+;; SERVER: 192.168.254.254#53(192.168.254.254) (UDP)
+;; WHEN: Tue Apr 22 16:01:20 PDT 2025
+;; MSG SIZE  rcvd: 59
+#+end_example
+
+Or similarly:
+
+#+begin_example
+$ nslookup bromine.proton
+Server:		192.168.254.254
+Address:	192.168.254.254#53
+
+Name:	bromine.proton
+Address: 192.168.254.178
+#+end_example
+
+Success!  Right?  Except you see this:
+
+#+begin_example
+$ ssh bromine.proton
+ssh: Could not resolve hostname bromine.proton: nodename nor servname provided, or not known
+#+end_example
+
+And:
+
+#+begin_example
+$ ping bromine.proton
+ping: unknown host
+#+end_example
+
+And:
+
+#+begin_example
+$ curl bromine.proton
+curl: (6) Could not resolve host: bromine.proton
+#+end_example
+
+You can make sure all of the tools involved are using the Nix variety, in hopes
+that maybe the share the same ARP table or local cache.
+#+begin_src sh :results output :exports code
+which dig
+which nslookup
+which ping
+which curl
+which ssh
+#+end_src
+
+#+RESULTS:
+: /run/current-system/sw/bin/dig
+: /run/current-system/sw/bin/nslookup
+: /run/current-system/sw/bin/ping
+: /run/current-system/sw/bin/curl
+: /run/current-system/sw/bin/ssh
+
+Solution?
+
+Just wait :\
+
+#+begin_quote
+Welcome to DNS.
+
+-Matt Buckley
+#+end_quote
+
+This could be an issue with macOS's DNS cache.  I did use ~~/bin/dnsflush~ to no
+avail.  But not with ~sudo~ so who knows.
+
 * Toil Log
 
 I keep this log as a way of trying to remember what I worked on.  Not all fixes
