@@ -41,7 +41,7 @@
     description = "Adds flavor of interactive selection to the traditional pipe concept on UNIX";
     homepage = "https://github.com/mooz/percol/";
     license = lib.licenses.mit;
-    platforms = lib.platforms.linux ++ lib.platforms.darwin;
+    platforms = lib.platforms.unix;
     maintainers = with lib.maintainers; [ logan-barnett ];
   };
 }
