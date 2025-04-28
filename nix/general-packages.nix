@@ -37,6 +37,8 @@
   pkgs.dnsmasq
   # Detect character encoding of files.
   pkgs.enca
+  # I think this was to make macfuse work.  Unknown if it did anything.
+  pkgs.e2fsprogs
   # This is a binary apparently. Universal editor settings. Kind of like a
   # pre-prettier. I don't know the nix pacakge though, if it exists.
   #pkgs.editorconfig
@@ -65,7 +67,8 @@
   # }) {
   #   inherit system;
   # }).fuse-ext2
-  pkgs.e2fsprogs
+  # Download content from some sites.
+  pkgs.gallery-dl
   # macOS doesn't ship with free.
   # pkgs.unixtools.free
   pkgs.utillinux
@@ -298,6 +301,8 @@
   pkgs.xkcdpass
   # Allow extracting and creating .xz archives.
   pkgs.xz
+  # Download videos from YouTube but also many other sites.
+  pkgs.yt-dlp
   # Decode QR codes from images or an onboard camera (such as a webcam).
   # Example of using zbar to tie in auth with pass-otp:
   # zbarimg -q --raw qrcode.png | pass otp insert totp-secret
