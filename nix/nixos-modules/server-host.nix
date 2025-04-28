@@ -6,10 +6,21 @@
     {
       # Hostname is not an FQDN.
       networking.hostName = host-id;
-      nixpkgs.overlays = (import ../overlays/default.nix);
+      nixpkgs.overlays = (import ../overlays/default.nix {
+        inherit flake-inputs system;
+      });
       system.stateVersion = "23.11";
     }
     ./lib-custom.nix
+    # TODO: Test this - I think I put this in to solve remote build issues, but
+    # I don't know if it actually did anything.
+    # {
+    #   nix = {
+    #     settings = {
+    #       extra-trusted-users = [ "logan" ];
+    #     };
+    #   };
+    # }
     ./secrets.nix
     ./facts-secrets.nix
     ./tls-leaf-proton.nix

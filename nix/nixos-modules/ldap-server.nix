@@ -361,6 +361,9 @@ in {
   };
   networking.firewall.allowedTCPPorts = [ ldap-port ];
   networking.firewall.allowedUDPPorts = [ ldap-port ];
+  systemd.services.openldap = {
+    wants = [ "run-agenix.d.mount" ];
+  };
   # Run a dummy service that can repair these files.
   systemd.services.openldap-pre-fix-secrets = {
     enable = false;

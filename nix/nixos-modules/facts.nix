@@ -26,6 +26,13 @@
           "node"
         ];
       };
+      bromine = {
+        controlledHost = true;
+        monitors = [
+          "blackbox-ping"
+          "node"
+        ];
+      };
       gallium = {
         controlledHost = true;
         monitors = [
@@ -70,12 +77,24 @@
         type = "person";
         full-name = "Logan Barnett";
       };
+      bromine-grafana-service = {
+        email = "bromine-grafana-service@proton";
+        type = "service";
+        description = "Grafana on Bromine.";
+        full-name = "bromine-grafana-service";
+      };
       gallium-nextcloud-service = {
         email = "gallium-nextcloud-service@proton";
         type = "service";
         description = "Nextcloud on Gallium.";
         full-name = "gallium-nextcloud-service";
       };
+      # monitor-grafana-service = {
+      #   email = "monitor-grafana-service@proton";
+      #   type = "service";
+      #   description = "Grafana on Monitor.";
+      #   full-name = "monitor-grafana-service";
+      # };
       selenium-octoprint-service = {
         email = "selenium-octoprint-service@proton";
         type = "service";
@@ -96,6 +115,18 @@
           "logan"
         ];
       };
+      "grafana-admins" = {
+        description = "People who can administer Grafana.";
+        members = [
+          "logan"
+        ];
+      };
+      "grafana-viewers" = {
+        description = "People who can view dashboards in Grafana.";
+        members = [
+          "logan"
+        ];
+      };
       "nextcloud-admins" = {
         description = "People who can administer Nextcloud.";
         members = [
@@ -109,10 +140,10 @@
         ];
       };
       screen-addicts = {
-        description = ''
-          Users who are addicted to screens and require help with \
-          self-regulation.
-        '';
+        description =
+          "Users who are addicted to screens and require help with "
+          + "self-regulation."
+        ;
         members = [
           "kai"
           "solomon"

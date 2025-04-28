@@ -263,6 +263,12 @@
       system = "aarch64-linux";
     };
 
+    nixosConfigurations.bromine = nix-host {
+      inherit flake-inputs;
+      host-id = "bromine";
+      system = "aarch64-linux";
+    };
+
     nixosConfigurations.cobalt = nix-host {
       inherit flake-inputs;
       host-id = "cobalt";

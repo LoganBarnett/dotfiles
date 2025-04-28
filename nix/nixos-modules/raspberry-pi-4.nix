@@ -1,5 +1,5 @@
 ##
-# Provides settings needed to build a Raspberry Pi 4444otable image.
+# Provides settings needed to build a Raspberry Pi 4 image.
 ##
 { flake-inputs, ... }: {
   imports = [
