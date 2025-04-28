@@ -42,6 +42,9 @@
     # I just thought this was built-in, but I guess not.  We need to
     # kill all processes by name sometimes!
     pkgs.killall
+    # Give us uuid and uuid-config.  This can be used to making deterministic
+    # (typically v3) UUIDs.
+    pkgs.libossp_uuid
     # Let us see ports and file handles held by processes.
     pkgs.lsof
     # A union of ping and traceroute - ping all hosts along a route.
