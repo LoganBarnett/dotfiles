@@ -45,4 +45,5 @@ ldapsearch \
   -w "$bind_password" \
   -x \
   -v \
-  "uid=$user_to_find"
+  "uid=$user_to_find" \
+  memberOf

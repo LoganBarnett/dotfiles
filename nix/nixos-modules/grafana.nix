@@ -18,13 +18,62 @@ in {
       "grafana"
       "${service-user-prefix}-grafana-service"
   ) else {};
+  environment.etc."grafana/dashboards/uptime.json".text = builtins.toJSON {
+    # dashboard = {
+      id = null;
+      uid = "uptime";
+      schemaVersion = 16;
+      title = "Uptime";
+      panels = [
+        {
+          type = "timeseries";
+          title = "Host Uptime";
+          datasource = "Prometheus";
+          targets = [
+            {
+              expr = "up";
+              format = "time_series";
+              legendFormat = "{{instance}}";
+            }
+          ];
+          gridPos = {
+            h = 9;
+            w = 24;
+            x = 0;
+            y = 0;
+          };
+          options = {
+            legend = {
+              show = true;
+              displayMode = "table";
+              # displayMode = "list";
+            };
+          };
+        }
+      ];
+    # };
+  };
   services.grafana = {
     enable = true;
     declarativePlugins = with pkgs.grafanaPlugins; [];
+    provision.dashboards.settings.providers = [
+      {
+        name = "Uptime Dashboard";
+        editable = false;
+        folder = "Provisioned";
+        options.path = "/etc/grafana/dashboards";
+      }
+    ];
+    provision.datasources.settings.datasources = [
+      {
+        name = "Prometheus";
+        type = "prometheus";
+        url = "https://nickel.proton";
+        access = "proxy";
+        isDefault = true;
+      }
+    ];
     settings = {
-      log = {
-        filters = "ldap:debug";
-      };
       "auth.ldap" = {
         enabled = true;
         config_file = (toString ((pkgs.formats.toml {}).generate "ldap.toml" {
@@ -53,29 +102,29 @@ in {
               timeout = 10;
               search_filter = "(uid=%s)";
               search_base_dns = ["dc=proton,dc=org"];
-              group_search_filter = "(member=%s)";
-              group_search_filter_user_attribute = "cn=%s";
+              # Deliberately left out to disable.
+              # group_search_filter = "";
+              # Deliberately left out to disable.
+              # group_search_filter_user_attribute = "";
               group_search_filter_base_dns = [
-                "ou=grafana-admins"
-                "ou=grafana-viewers"
+                "ou=groups,dc=proton,dc=org"
               ];
               attributes = {
-                member_of = "member";
                 email = "mail";
+                member_of = "memberOf";
                 username = "uid";
               };
-              group_mappigs = [
+              group_mappings = [
                 {
-                  group_dn = "cn=grafana-admins,dc=proton,dc=org";
+                  group_dn = "cn=grafana-admins,ou=groups,dc=proton,dc=org";
                   org_role = "Admin";
                   grafana_admin = true;
                 }
                 {
-                  group_dn = "cn=grafana-viewers,dc=proton,dc=org";
+                  group_dn = "cn=grafana-viewers,ou=groups,dc=proton,dc=org";
                   org_role = "Viewer";
                 }
               ];
-              verbose_logging = true;
             }
           ];
           # Undocumented?  But talked about here:
@@ -94,6 +143,9 @@ in {
         # Prevent synchronizing ldap users organization roles.
         # skip_org_role_sync = true;
         skip_org_role_sync = false;
+      };
+      log = {
+        filters = "ldap:debug";
       };
     };
     # TODO: Connect to Prometheus.
