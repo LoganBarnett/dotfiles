@@ -55,7 +55,7 @@ something called ~uboot~, which may or may not be proprietary.
 For these, use the following invocation:
 
 #+begin_src shell-script :results none :exports code
-host='my-host'; nom build ".#nixosConfigurations.${host}.config.system.build.sdImage" --show-trace --verbose  --accept-flake-config
+rpi-host-new host
 #+end_src
 
 But, you know, change ~host~.
@@ -91,6 +91,28 @@ agenix rekey -a
 #+end_src
 
 Then do another ~proton-deploy switch $host~.  This should fix everything.
+
+I don't think this works actually.  I get:
+
+#+begin_example
+$ proton-deploy switch bromine
+
+building the system configuration...
+warning: Git tree '/Users/logan/dev/dotfiles' is dirty
+[1/0/3063 copied (1.1/9.4 MiB)] copying path '/nix/store/rp3ac35r3pfb3fqh3rdqzlzsq67jpnws-source' to 'ssh://bromine.proton'error: cannot add path '/nix/store/rp3ac35r3pfb3fqh3rdqzlzsq67jpnws-source' because it lacks a signature by a trusted key
+error (ignored): error: writing to file: Broken pipe
+error (ignored): error: writing to file: Broken pipe
+error: unexpected end-of-file
+#+end_example
+
+But using ~remote-deploy $host~ works fine.
+
+*** Container Guests
+
+#+begin_src sh :results none :exports code
+host='my-host'; ssh-keygen -t ed25519 -N "" -f secrets/$host-pub-key
+#+end_src
+
 
 * projects
 

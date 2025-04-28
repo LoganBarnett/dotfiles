@@ -6,12 +6,10 @@
 # Use this to build:
 # nix build '.#nixosConfigurations.nickel.config.system.build.sdImage' --show-trace
 ################################################################################
-{ flake-inputs, host-id, system, ... }: let
+{ facts, flake-inputs, host-id, nodes, system, ... }: let
 in {
   imports = [
-    (import ../nixos-modules/raspberry-pi-4.nix {
-      inherit flake-inputs;
-    })
+    ../nixos-modules/raspberry-pi-4.nix
     ../nixos-modules/nix-builder-provide.nix
     ../nixos-modules/raspberry-pi-builder.nix
     ../nixos-modules/server-host.nix
