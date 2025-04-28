@@ -14,7 +14,7 @@ base_dn='dc=proton,dc=org'
 # bind_dn='cn=admin,dc=proton,dc=org'
 bind_dn="uid=$1,ou=users,dc=proton,dc=org"
 # bind_dn='admin@proton.org'
-user_to_find='logan'
+user_to_find="$2"
 
 if [[ "${bind_password:-}" == '' ]]; then
   echo 'Error: bind_password environment variable must be set for non-interactive use.'
