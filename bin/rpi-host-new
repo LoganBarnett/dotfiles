@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+host="$1"
+# -t indicates the type of cipher to use.
+# -N indicates an empty passphrase.
+# -f indicates the path of the file to write to.
+ssh-keygen -t ed25519 -N "" -f "secrets/$host-pub-key"
+# We don't need the private key at all, let alone now.  Remove it to avoid
+# confusion.  We must allow the image builder to create its own image.  One day
+# we might be able to provide our own, but it isn't possible yet.
+rm "secrets/$host-pub-key"
+git add "secrets/$host-pub-key.pub"
+agenix rekey generate -a
+agenix rekey -a
+# Ah but not everything that is generated is added.  Add the TLS certificate
+# manually if it exists.
+git add "secrets/tls-$host.crt"
+nom build \
+    ".#nixosConfigurations.${host}.config.system.build.sdImage" \
+    --show-trace \
+    --verbose \
+    --accept-flake-config
