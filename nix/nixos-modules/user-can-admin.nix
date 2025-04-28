@@ -41,6 +41,10 @@
     # Performance test IP connections.  Supports TCP/UDP/SCTP and both IPv4 and
     # IPv6.  It requires running a client and a server simultaneously.
     pkgs.iperf
+    # Lots of configurations or API calls use JSON payloads without whitespace.
+    # While jq can do a lot more, in the admin context this can help us print
+    # these things.
+    pkgs.jq
     # I just thought this was built-in, but I guess not.  We need to
     # kill all processes by name sometimes!
     pkgs.killall
