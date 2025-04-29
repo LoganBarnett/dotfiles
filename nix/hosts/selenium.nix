@@ -144,9 +144,11 @@ in {
           # Show progress on the printer's display.
           pg.displayprogress
           # Show progress via the M117 command - better somehow?
-          # pg.displaylayerprogress
-          # pg.prusaslicerthumbnails
-          # pg.stlviewer
+          pg.displaylayerprogress
+          # View slicer thumbnails in the file list.
+          pg.prusaslicerthumbnails
+          # Allow viewing the (equivalent?) STL while printing.
+          pg.stlviewer
           # Save our eyes by letting us load a dark mode theme.
           pg.themeify
           # (pg.buildPlugin (let
