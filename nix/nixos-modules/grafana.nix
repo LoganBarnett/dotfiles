@@ -26,6 +26,9 @@
     without-socket-port = query:
       ''label_replace(${query}, "instance", "$1", "instance", "^(.*):[0-9]+$")''
     ;
+    # In all honesty, I vibe coded these.  I believe there is a mix of Grafana
+    # versions in here.  It's probably worth learning the structure more
+    # tightly, and making sure all of this confirms to latest.
   in {
     system-monitoring = {
       id = null;
@@ -147,19 +150,22 @@
         }
       ];
     };
-    uptime = {
+    # Both the stat and timeseries versions of this are helpful because the
+    # former gives us an glanceable dashboard to tell us what hosts are down or
+    # up.  The latter shows us history.
+    uptime-timeseries = {
       id = null;
-      uid = "uptime";
+      uid = "uptime-timeseries";
       schemaVersion = 16;
-      title = "Uptime";
+      title = "Uptime (Timeseries)";
       panels = [
         {
-          type = "timeseries";
+          type = "stat";
           title = "Host Uptime";
           datasource = "Prometheus";
           targets = [
             {
-              expr = without-socket-port "up";
+              expr = without-socket-port ''up{job="node"}'';
               format = "time_series";
               legendFormat = "{{instance}}";
             }
@@ -176,6 +182,61 @@
               displayMode = "table";
               # displayMode = "list";
             };
+          };
+        }
+      ];
+    };
+    uptime-stat = {
+      id = null;
+      uid = "uptime-stat";
+      schemaVersion = 38;
+      title = "Uptime (Stat)";
+      panels = [
+        {
+          type = "stat";
+          title = "Host Uptime";
+          datasource = "Prometheus";
+          targets = [
+            {
+              expr = without-socket-port ''up{job="node"}'';
+              # expr = "up";
+              refId = "A";
+            }
+          ];
+          fieldConfig = {
+            defaults = {
+              thresholds = {
+                mode = "absolute";
+                steps = [
+                  { color = "red"; value = null; }
+                  { color = "green"; value = 1; }
+                ];
+              };
+              mappings = {
+                type = "value";
+                options = [
+                  { value = 0; text = "DOWN"; }
+                  { value = 1; text = "UP"; }
+                ];
+              };
+            };
+            overrides = [];
+          };
+          gridPos = {
+            h = 4;
+            w = 4;
+            x = 0;
+            y = 0;
+          };
+          options = {
+            reduceOptions = {
+              values = false;
+              calcs = [ "last" ];
+              fields = "";
+            };
+            orientation = "auto";
+            textMode = "value";
+            colorMode = "value";
           };
         }
       ];
