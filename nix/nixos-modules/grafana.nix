@@ -22,7 +22,11 @@
   # use some systemd trickery to pull it off.
   #
   # Names must be valid POSIX file names.
-  dashboards = {
+  dashboards = let
+    without-socket-port = query:
+      ''label_replace(${query}, "instance", "$1", "instance", "^(.*):[0-9]+$")''
+    ;
+  in {
     system-monitoring = {
       id = null;
       uid = "system-monitoring";
@@ -35,7 +39,15 @@
           datasource = "Prometheus";
           targets = [
             {
-              expr = "(1 - avg by (instance) (rate(node_cpu_seconds_total{mode=\"idle\"}[5m]))) * 100";
+              expr =
+                ''
+                  (1 -
+                    avg by (instance) (${
+                     without-socket-port
+                       ''(rate(node_cpu_seconds_total{mode="idle"}[5m]))''
+                   })
+                  ) * 100
+                '';
               legendFormat = "{{instance}}";
               format = "time_series";
             }
@@ -48,7 +60,11 @@
           datasource = "Prometheus";
           targets = [
             {
-              expr = "(1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100";
+              expr = without-socket-port ''
+               (1 -
+                 (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)
+               ) * 100
+              '';
               legendFormat = "{{instance}}";
               format = "time_series";
             }
@@ -61,7 +77,15 @@
           datasource = "Prometheus";
           targets = [
             {
-              expr = "(1 - (node_filesystem_avail_bytes{fstype!=\"tmpfs\",fstype!=\"devtmpfs\"} / node_filesystem_size_bytes{fstype!=\"tmpfs\",fstype!=\"devtmpfs\"})) * 100";
+              expr = without-socket-port ''
+                (1 - (
+                  node_filesystem_avail_bytes {
+                    fstype!="tmpfs",fstype!="devtmpfs"
+                  } /
+                    node_filesystem_size_bytes {
+                      fstype!="tmpfs",fstype!="devtmpfs"
+                    }
+                )) * 100'';
               legendFormat = "{{instance}} - {{mountpoint}}";
               format = "time_series";
             }
@@ -74,20 +98,24 @@
           datasource = "Prometheus";
           targets = [
             {
-              expr = ''
-              sum by (instance) (
-                rate(node_network_receive_bytes_total{device!~"lo|docker.*|veth.*"}[5m])
-              )
-            '';
+              expr = without-socket-port ''
+                sum by (instance) (
+                  rate(node_network_receive_bytes_total {
+                    device!~"lo|docker.*|veth.*"
+                  }[5m])
+                )
+              '';
               legendFormat = "{{instance}} RX";
               format = "time_series";
             }
             {
-              expr = ''
-              sum by (instance) (
-                rate(node_network_transmit_bytes_total{device!~"lo|docker.*|veth.*"}[5m])
-              )
-            '';
+              expr = without-socket-port ''
+                sum by (instance) (
+                  rate(node_network_transmit_bytes_total {
+                    device!~"lo|docker.*|veth.*"
+                  }[5m])
+                )
+              '';
               legendFormat = "{{instance}} TX";
               format = "time_series";
             }
@@ -110,7 +138,7 @@
           datasource = "Prometheus";
           targets = [
             {
-              expr = "node_load1";
+              expr = without-socket-port "node_load1";
               legendFormat = "{{instance}}";
               format = "time_series";
             }
@@ -131,7 +159,7 @@
           datasource = "Prometheus";
           targets = [
             {
-              expr = "up";
+              expr = without-socket-port "up";
               format = "time_series";
               legendFormat = "{{instance}}";
             }
