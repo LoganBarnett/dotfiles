@@ -74,38 +74,60 @@
         ];
       };
     };
-    users = {
-      logan = {
-        description = "The reason we suffer.";
-        email = "logustus@proton";
-        type = "person";
-        full-name = "Logan Barnett";
+    users =
+      # Interactive / human users.
+      {
+        logan = {
+          description = "The reason we suffer.";
+          email = "logustus@proton";
+          type = "person";
+          full-name = "Logan Barnett";
+          devices = [
+            { host-id = "scandium"; ip = "20"; vpn = true; }
+            { host-id = "manganese"; ip = "22"; vpn = true; }
+          ];
+        };
+        selena = {
+          description = "";
+          email = "selena@proton";
+          type = "person";
+          full-name = "Selena";
+          devices = [
+            { host-id = "selena-laptop"; ip = "23"; vpn = true; }
+          ];
+        };
+      }
+      # Service / non-interactive users.
+      // {
+        bromine-grafana-service = {
+          email = "bromine-grafana-service@proton";
+          type = "service";
+          description = "Grafana on Bromine.";
+          full-name = "bromine-grafana-service";
+          devices = [];
+        };
+        gallium-nextcloud-service = {
+          email = "gallium-nextcloud-service@proton";
+          type = "service";
+          description = "Nextcloud on Gallium.";
+          full-name = "gallium-nextcloud-service";
+          devices = [];
+        };
+        # monitor-grafana-service = {
+        #   email = "monitor-grafana-service@proton";
+        #   type = "service";
+        #   description = "Grafana on Monitor.";
+        #   full-name = "monitor-grafana-service";
+        #   devices = [];
+        # };
+        selenium-octoprint-service = {
+          email = "selenium-octoprint-service@proton";
+          type = "service";
+          description = "Octoprint on Selenium.";
+          full-name = "selenium-octoprint-service";
+          devices = [];
+        };
       };
-      bromine-grafana-service = {
-        email = "bromine-grafana-service@proton";
-        type = "service";
-        description = "Grafana on Bromine.";
-        full-name = "bromine-grafana-service";
-      };
-      gallium-nextcloud-service = {
-        email = "gallium-nextcloud-service@proton";
-        type = "service";
-        description = "Nextcloud on Gallium.";
-        full-name = "gallium-nextcloud-service";
-      };
-      # monitor-grafana-service = {
-      #   email = "monitor-grafana-service@proton";
-      #   type = "service";
-      #   description = "Grafana on Monitor.";
-      #   full-name = "monitor-grafana-service";
-      # };
-      selenium-octoprint-service = {
-        email = "selenium-octoprint-service@proton";
-        type = "service";
-        description = "Octoprint on Selenium.";
-        full-name = "selenium-octoprint-service";
-      };
-    };
     groups = {
       "3d-printer-admins" = {
         description = "People who can administer Octoprint.";

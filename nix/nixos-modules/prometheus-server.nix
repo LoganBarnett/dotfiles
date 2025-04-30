@@ -63,7 +63,6 @@
           { job_name = monitor; }
           // ({
             node = {
-              job_name = monitor;
               static_configs = [{
                 targets = host-targets monitor;
               }];
@@ -83,6 +82,13 @@
               #     target_label = "__param_target";
               #   }
               # ];
+            };
+            wireguard = {
+              static_configs = [
+                {
+                  targets = host-targets monitor;
+                }
+              ];
             };
           }.${monitor} or { job_name = monitor; })
         )

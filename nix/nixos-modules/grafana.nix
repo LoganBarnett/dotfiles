@@ -10,7 +10,7 @@
 #
 #
 ################################################################################
-{ config, host-id, lib, pkgs, ... }: let
+{ config, facts, host-id, lib, pkgs, ... }: let
   service-user-prefix = host-id;
   # How these get wired up is tricky.  We need to be able to delete them as
   # Grafana starts up, or it won't pick up changes.  So we need to safely emit
@@ -241,6 +241,161 @@
         }
       ];
     };
+    wireguard = {
+      uid = "wireguard";
+      title = "WireGuard Status, Bandwidth, etc.";
+      tags = [ "wireguard" ];
+      timezone = "browser";
+      # editable = true;
+      refresh = "10s";
+      schemaVersion = 36;
+      # version = 1;
+      panels = let
+        # We just get back public_key as a display name by default.  The
+        # exporter does support a friendly name mapping, but it requires a
+        # comment in the Wireguard configuration file, which the exporter
+        # parses.  Since we emit the configuration file via a Nix
+        # expression, we can't include comments.  But that's okay, because
+        # our facts definition has all of the information we need.  Here we
+        # convert that into a static "mapping" via overrides.
+        #
+        # Each value comes in as "$public_key $type" (e.g. "foobarkey RX").
+        # One for RX and one for TX.  We have to match the exact strings of
+        # both to provide overrides.
+        peer-overrides-with-transmission = lib.pipe facts.network.users [
+          (lib.attrsets.mapAttrsToList (name: user: user.devices))
+          lib.lists.flatten
+          (lib.lists.filter (d: d.vpn))
+          (lib.lists.map (d: d // {
+            public-key = lib.strings.trim (builtins.readFile
+              ../secrets/${d.host-id}-wireguard-client.pub
+            );
+          }))
+          (lib.lists.map (d:
+            lib.lists.map (x: {
+              matcher = {
+                id = "byName";
+                options = "${d.public-key} ${x}";
+              };
+              properties = [
+                { id = "displayName"; value = "${d.host-id} ${x}"; }
+              ];
+            }) [ "RX" "TX"]
+          ))
+          lib.lists.flatten
+        ];
+        # Ugh this could use a lot of de-duplication.
+        peer-overrides = lib.pipe facts.network.users [
+          (lib.attrsets.mapAttrsToList (name: user: user.devices))
+          lib.lists.flatten
+          (lib.lists.filter (d: d.vpn))
+          (lib.lists.map (d: d // {
+            public-key = lib.strings.trim (builtins.readFile
+              ../secrets/${d.host-id}-wireguard-client.pub
+            );
+          }))
+          (lib.lists.map (d: {
+            matcher = {
+              id = "byName";
+              options = "${d.public-key}";
+            };
+            properties = [
+              { id = "displayName"; value = "${d.host-id}"; }
+            ];
+          }))
+          lib.lists.flatten
+        ];
+      in [
+        {
+          title = "WireGuard Bandwidth per Peer";
+          type = "timeseries";
+          datasource = "Prometheus";
+          targets = [
+            {
+              expr = "rate(wireguard_received_bytes_total[5m])";
+              legendFormat = "{{public_key}} RX";
+              refId = "A";
+            }
+            {
+              expr = "rate(wireguard_sent_bytes_total[5m])";
+              legendFormat = "{{public_key}} TX";
+              refId = "B";
+            }
+          ];
+          fieldConfig = {
+            defaults = {
+              unit = "Bps";
+              decimals = 2;
+            };
+            overrides = peer-overrides-with-transmission;
+          };
+          gridPos = { x = 0; y = 0; w = 12; h = 9; };
+        }
+        {
+          title = "WireGuard Bandwidth per Interface";
+          type = "timeseries";
+          datasource = "Prometheus";
+          targets = [
+            {
+              expr = "sum by (interface) (rate(wireguard_received_bytes_total[5m]))";
+              legendFormat = "{{interface}} RX";
+              refId = "A";
+            }
+            {
+              expr = "sum by (interface) (rate(wireguard_sent_bytes_total[5m]))";
+              legendFormat = "{{interface}} TX";
+              refId = "B";
+            }
+          ];
+          fieldConfig = {
+            defaults = {
+              unit = "bps";
+              decimals = 2;
+            };
+          };
+          gridPos = { x = 12; y = 0; w = 12; h = 9; };
+        }
+        {
+          title = "Peer Last Handshake (Seconds Ago)";
+          type = "bargauge";
+          datasource = "Prometheus";
+          targets = [
+            {
+              expr = "time() - wireguard_latest_handshake_seconds";
+              legendFormat = "{{public_key}}";
+              refId = "A";
+            }
+          ];
+          fieldConfig = {
+            defaults = {
+              unit = "s";
+              min = 0;
+              max = 600;
+              thresholds = {
+                mode = "absolute";
+                steps = [
+                  { color = "green"; value = null; }
+                  { color = "yellow"; value = 30; }
+                  { color = "red"; value = 300; }
+                ];
+              };
+            };
+            overrides = peer-overrides;
+          };
+          options = {
+            displayMode = "gradient"; # Or "lcd" or "basic"
+            orientation = "horizontal"; # Optional
+            showUnfilled = true;
+          };
+          gridPos = {
+            h = 9;
+            w = 24;
+            x = 0;
+            y = 9;
+          };
+        }
+      ];
+    };
   };
   # TODO: See comment in clean-grafana-dashboards about this path.  Ah but
   # there's this magic "static" subdirectory things really get moved to.
@@ -282,6 +437,13 @@ in {
       ];
     };
     settings = {
+      # Enable anonymous access to the dashboards.  Everything is exposed
+      # publicly via Prometheus exporters anyways.
+      # auth.anonymous = {
+      #   enabled = true;
+      #   # org_name = "Main Org.";
+      #   org_role = "Viewer";
+      # };
       "auth.ldap" = {
         enabled = true;
         config_file = (toString ((pkgs.formats.toml {}).generate "ldap.toml" {

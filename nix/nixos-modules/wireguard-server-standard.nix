@@ -5,24 +5,15 @@
 # networkd.  I tried getting networkd working, but I can't even get Wireguard to
 # show me its configuration.
 ################################################################################
-{ config, host-id, lib, pkgs, ... }: let
+{ config, facts, host-id, lib, pkgs, ... }: let
   wireguard-port = 51820;
   vpn-subnet-prefix = "192.168.102";
   network-interface = "enu1u1";
-  peers = [
-    { host-id = "scandium"; ip = "20"; }
-    # Unsure how to force these - I think I'd just generate them manually in the
-    # case of a non-Nix managed device (like a phone).
-    { host-id = "manganese"; ip = "22"; }
-    { host-id = "selena-laptop"; ip = "23"; }
-    # agenix-rekey's generators always put in a newline that fouls up the
-    # generation here.  I could trim the newlines like is done in the
-    # ./ldap-server.nix module, or I could just fix the problem at its source.
-    # This requires some rebasing and updating of agenix-rekey, which doesn't go
-    # cleanly for me.  I'm up against the most recent working commit (the next
-    # commit breaks things for me).  For now I'm leaving these hosts commented
-    # out and focusing on the one I manually edited.
-    # { host-id = "zinc"; ip = "23"; }
+  peers = lib.pipe facts.network.users [
+    (lib.attrsets.mapAttrsToList (name: user: user.devices))
+    lib.lists.flatten
+    (lib.lists.filter (d: d.vpn))
+    (lib.lists.map (d: { inherit (d) host-id ip; }))
   ];
   wireguard-client-peer = { host-id, ip }: {
     # This demands the actual key and not a path.  Use the ./. idiom to get the
