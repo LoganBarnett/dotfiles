@@ -40,12 +40,12 @@
           "node"
         ];
       };
-      germanium = {
-        controlledHost = true;
-        monitors = [
-          "node"
-        ];
-      };
+      # germanium = {
+      #   controlledHost = true;
+      #   monitors = [
+      #     "node"
+      #   ];
+      # };
       grafana = {
         controlledHost = true;
         monitors = [];
