@@ -439,11 +439,13 @@ in {
     settings = {
       # Enable anonymous access to the dashboards.  Everything is exposed
       # publicly via Prometheus exporters anyways.
-      # auth.anonymous = {
-      #   enabled = true;
-      #   # org_name = "Main Org.";
-      #   org_role = "Viewer";
-      # };
+      "auth.anonymous" = {
+        enabled = true;
+        # org_name = "Main Org.";
+        org_role = "Viewer";
+        hide_version = false;
+        # device_limit = 1;
+      };
       "auth.ldap" = {
         enabled = true;
         config_file = (toString ((pkgs.formats.toml {}).generate "ldap.toml" {
