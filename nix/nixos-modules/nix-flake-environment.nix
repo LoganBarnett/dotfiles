@@ -56,7 +56,8 @@ in (lib.mkMerge [
         "nix-command"
         "flakes"
       ];
-      registry.nixpkgs.flake = nixpkgs;
+      # TODO: Determine if this is automatic now or not.
+      # registry.nixpkgs.flake = nixpkgs;
       # registry.nixpkgs2105.flake = nixpkgs-2105;
       # registry.nixpkgs2111.flake = nixpkgs-2111;
       nixPath = [

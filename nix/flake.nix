@@ -329,13 +329,19 @@
     };
 
     darwinConfigurations."M-CL64PK702X" = darwin-host {
-      inherit flake-inputs;
+      # inherit flake-inputs;
+      flake-inputs = flake-inputs // {
+        nixpkgs = nixpkgs-latest;
+      };
       host-id = "M-CL64PK702X";
       system = "aarch64-darwin";
     };
 
     darwinConfigurations."scandium" = darwin-host {
-      inherit flake-inputs;
+      # inherit flake-inputs;
+      flake-inputs = flake-inputs // {
+        nixpkgs = nixpkgs-latest;
+      };
       host-id = "scandium";
       system = "aarch64-darwin";
     };
