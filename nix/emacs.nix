@@ -19,6 +19,7 @@
       };
     });
   in [
+    # (pkgs.callPackage ./packages/uniteai.nix {})
     # For ob-duckdb support.
     # pkgs.duckdb
     # For ob-dsq support.
@@ -135,6 +136,71 @@
           epkgs.nerd-icons
           # Some common lisp vs emacs lisp thing.
           epkgs.noflet
+          # Aborted because of ChatGPT's requirement for a separate subscription
+          # for API access.
+          # epkgs.org-ai
+          # Provide an interactive interface to ChatGPT.  It isn't ELPA (it's on
+          # JCS-ELPA), so just clone it for now.
+          # (pkgs.emacs.pkgs.trivialBuild (let
+          #   name = "chatgpt";
+          # in {
+          #   pname = name;
+          #   ename = name;
+          #   version = "0.1.0-2025-04-22";
+          #   src = pkgs.fetchFromGitHub {
+          #     owner = "emacs-openai";
+          #     repo = "chatgpt";
+          #     rev = "05957238635b1b9087ca3486761f9e3f534cea37";
+          #     hash = "sha256-Q9BDN7z8m85GTJakds/lXWzSNcjj3TKX3rSBg9ypjKU=";
+          #   };
+          #   packageRequires = [
+          #     epkgs.cl-lib
+          #     epkgs.let-alist
+          #     # Built in.
+          #     # epkgs.subr-x
+          #     epkgs.ht
+          #     epkgs.lv
+          #     epkgs.markdown-mode
+          #     epkgs.spinner
+          #     (pkgs.emacs.pkgs.trivialBuild (let
+          #       name = "openai";
+          #     in {
+          #       pname = name;
+          #       ename = name;
+          #       version = "0.1.0-2025-04-22";
+          #       src = pkgs.fetchFromGitHub {
+          #         owner = "emacs-openai";
+          #         repo = "openai";
+          #         rev = "91115cd20781b2db9febadadc4ae89c35a9a6df5";
+          #         hash = "sha256-EMPCxMo9K/2PP3ZYWQGX53wM7oOYynL6QUc///ZShgQ=";
+          #       };
+          #       packageRequires = [
+          #         # Built in.
+          #         # epkgs.auth-source
+          #         epkgs.cl-lib
+          #         epkgs.let-alist
+          #         # Built in.
+          #         # epkgs.pcase
+          #         # Built in.
+          #         # epkgs.pp
+          #         # Built in.
+          #         # epkgs.json
+          #         epkgs.request
+          #         epkgs.tblui
+          #       ];
+          #       meta = {
+          #         homepage = "https://github.com/emacs-openai/chatgpt";
+          #         # "free" is the unspecified license.
+          #         license = lib.licenses.gpl3;
+          #       };
+          #     }))
+          #   ];
+          #   meta = {
+          #     homepage = "https://github.com/emacs-openai/chatgpt";
+          #     # "free" is the unspecified license.
+          #     license = lib.licenses.gpl3;
+          #   };
+          # }))
           # Use the pass utility (https://www.passwordstore.org/).
           epkgs.password-store
           # Enter passwords for secrets.

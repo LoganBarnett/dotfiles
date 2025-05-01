@@ -156,6 +156,17 @@
     (init-org-file "dnd.org")
     (init-org-file "jira.org")
     (load-library "doom-fonts.el")
+    ;; Abandon hope due to my encountering setup problems the same as this:
+    ;; https://github.com/freckletonj/uniteai/issues/30
+    ;; (load-library "lsp-uniteai.el")
+    ;; Another abandoned attempt.  It doesn't seem to have kept up with
+    ;; ChatGPT's API changes.
+    ;; (load-library "openai-config.el")
+    ;; And finally I found something that can communicate with the API, but I
+    ;; learned that a separate subscription is required for API access.  That's
+    ;; turned me off to the whole thing, and now I'm shelving this work
+    ;; entirely.
+    ;; (load-library "org-ai-config.el")
     (config/init-org-file-private "email-private.org")
     (config/init-org-file-private "jira-private.org")
     (config/init-org-file-private "org-agenda-private.org")

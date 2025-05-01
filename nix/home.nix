@@ -85,6 +85,10 @@ in
   # will not use great defaults).
   home.file.".jsbeautifyrc".source = ./jsbeautifyrc;
 
+  # Disabled due to ChatGPT's separate subscription required for API keys, if I
+  # even want to use this library in the first place.
+  # home.file.".uniteai.yml".source = ./uniteai.yaml;
+
   # This puts the file in the store and links it, but we don't want that because
   # we write to this file quite a bit to update entries. A true symlink to the
   # source is desired. Instead this is handled via home-manager's activation
