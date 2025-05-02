@@ -1,4 +1,4 @@
-{ config, host-id, ... }: {
+{ config, facts, host-id, lib, ... }: {
   imports = [
     ./wireguard-agenix-rekey-generator.nix
   ];
@@ -6,6 +6,9 @@
     generator.script = "wireguard-priv";
     rekeyFile = ../secrets/${host-id}-wireguard-client.age;
   };
+  # At least one host needs to make an accounting for the non-NixOS / nix-darwin
+  # hosts that will join the VPN.  This should become a dynamic list, but that
+  # will require some legerdemain for another day.
   age.secrets."manganese-wireguard-client" = {
     generator.script = "wireguard-priv";
     rekeyFile = ../secrets/manganese-wireguard-client.age;
@@ -27,45 +30,64 @@
   # https://github.com/LnL7/nix-darwin/blob/ae406c04577ff9a64087018c79b4fdc02468c87c/modules/services/wg-quick.nix#L43
   # which is for nix-darwin.  I should look to see if this interface matches
   # that of the NixOS module, assuming it even exists.
-  networking.wg-quick = {
+  networking.wg-quick = let
+    vpn-host-ip = (lib.pipe facts.network.users [
+      (lib.mapAttrsToList (name: u: u.devices))
+      lib.lists.flatten
+      (lib.lists.findFirst (d: d.host-id == host-id) null)
+      # TODO: Do something like `or throwError "Could not find ${host-id} in
+      # devices."` for better error handling.
+    ]).ip;
+  in {
     interfaces = {
-      proton-only = {
+      proton = {
         autostart = false;
         address = [
-          # Fix!!!  This is for manganese.
-          "192.168.102.22"
+          "192.168.102.${vpn-host-ip}"
         ];
         dns = [ "192.168.254.254" ];
         listenPort = 51820;
         # null means automatic for MTU settings.
         mtu = null;
-        # I think there's a bug.  PostUp is what is used to setup the private
-        # key, but how can that be the case when the interface would have to
-        # already be up using said private key?
-        # preUp = ''
-        #   wg set \
-        #    proton-only \
-        #    private-key \
-        #    ${config.networking.wg-quick.interfaces.proton-only.privateKeyFile}
-        # '';
+        peers = [
+          {
+            allowedIPs = [
+              "192.168.254.0/24"
+              "192.168.102.0/24"
+            ];
+            endpoint = "50.39.141.240:51820";
+            persistentKeepalive = null;
+            presharedKeyFile = null;
+            publicKey = builtins.readFile ../secrets/argon-wireguard-server.pub;
+          }
+        ];
+        privateKeyFile = config.age.secrets."${host-id}-wireguard-client".path;
+      };
+      proton-only = {
+        autostart = false;
+        address = [
+          "192.168.102.${vpn-host-ip}"
+        ];
+        dns = [ "192.168.254.254" ];
+        listenPort = 51820;
+        # null means automatic for MTU settings.
+        mtu = null;
         peers = [
           {
             allowedIPs = [
               "192.168.254.0/24"
               "192.168.102.0/24"
               # To pass everything through.
-              # "0.0.0.0/0"
+              "0.0.0.0/0"
             ];
-            endpoint = "50.39.134.127:51820";
+            # TODO: Use vpn.logustus.com once the transfer completes.
+            endpoint = "50.39.141.240:51820";
             persistentKeepalive = null;
             presharedKeyFile = null;
             publicKey = builtins.readFile ../secrets/argon-wireguard-server.pub;
           }
         ];
-        # Work around the fact that iOS doesn't feed tethering data through the
-        # VPN routing until I can get a direct setup for this host working.
-        privateKeyFile = config.age.secrets."manganese-wireguard-client".path;
-        # privateKeyFile = config.age.secrets."${host-id}-wireguard-client".path;
+        privateKeyFile = config.age.secrets."${host-id}-wireguard-client".path;
       };
     };
   };
