@@ -28,6 +28,7 @@
     })
     ../nixos-modules/ollama.nix
     ../nixos-modules/server-host.nix
+    ../nixos-modules/shutdown-halt.nix
     ../nixos-modules/lvm-uefi-disk.nix
     ../nixos-modules/steam-gaming.nix
     ../nixos-modules/timezone-pacific.nix

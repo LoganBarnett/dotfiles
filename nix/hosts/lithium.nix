@@ -46,6 +46,7 @@ in {
       cudaCapabilities = [ "6.0" ];
     })
     ../nixos-modules/server-host.nix
+    ../nixos-modules/shutdown-halt.nix
     ({ lib, pkgs, ... }: {
       # Freaky workaround that's already fixed, but we're pinned to an older
       # nixpkgs.  See: https://github.com/NixOS/nixpkgs/issues/261777
