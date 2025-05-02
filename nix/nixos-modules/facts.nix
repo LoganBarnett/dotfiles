@@ -24,6 +24,7 @@
         monitors = [
           "blackbox-ping"
           "node"
+          "nvidia-gpu"
         ];
       };
       bromine = {
@@ -55,6 +56,7 @@
         monitors = [
           "blackbox-ping"
           "node"
+          "nvidia-gpu"
         ];
       };
       nickel = {

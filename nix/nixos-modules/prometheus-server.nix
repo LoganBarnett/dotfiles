@@ -59,39 +59,43 @@
       ;
     in lib.lists.map
       (monitor:
-        (
-          { job_name = monitor; }
-          // ({
-            node = {
-              static_configs = [{
+        ({
+          job_name = monitor;
+          static_configs = [
+            {
+              targets = host-targets monitor;
+            }
+          ];
+        } // ({
+          node = {
+            static_configs = [{
+              targets = host-targets monitor;
+            }];
+          };
+          blackbox-ping = {
+            # metrics_path = "/probe/blackbox-ping";
+            # scrape_interval = "10s";
+            params = {
+              modules = [ "icmp" ];
+            };
+            static_configs = [{
+              targets = host-targets monitor;
+            }];
+            # relabel_configs = [
+            #   {
+            #     source_labels = [ "target" ];
+            #     target_label = "__param_target";
+            #   }
+            # ];
+          };
+          wireguard = {
+            static_configs = [
+              {
                 targets = host-targets monitor;
-              }];
-            };
-            blackbox-ping = {
-              # metrics_path = "/probe/blackbox-ping";
-              # scrape_interval = "10s";
-              params = {
-                modules = [ "icmp" ];
-              };
-              static_configs = [{
-                targets = host-targets monitor;
-              }];
-              # relabel_configs = [
-              #   {
-              #     source_labels = [ "target" ];
-              #     target_label = "__param_target";
-              #   }
-              # ];
-            };
-            wireguard = {
-              static_configs = [
-                {
-                  targets = host-targets monitor;
-                }
-              ];
-            };
-          }.${monitor} or { job_name = monitor; })
-        )
+              }
+            ];
+          };
+        }.${monitor} or { }))
       )
       monitors;
   };

@@ -83,7 +83,7 @@
     # nixpkgs.url = "github:nixos/nixpkgs?ref=f9f59197478b3ec9c954b67ae0d1d5429de23124";
     nixpkgs.url = "github:nixos/nixpkgs/nixos-24.11";
     nixpkgs-working-rocm.url = "github:nixos/nixpkgs/master";
-    nixpkgs-cuda.url = "github:nixos/nixpkgs/nixos-24.11";
+    nixpkgs-cuda.url = "github:nixos/nixpkgs/master";
     # We need a version of nixpkgs for things that want to constantly
     # auto-update themselves in a forceful (yet asinine) manner.  Culprits
     # include Signal Desktop, but I should add more to the shame list as I find
@@ -355,7 +355,10 @@
     };
 
     nixosConfigurations.nickel = nix-host {
-      inherit flake-inputs;
+      flake-inputs = flake-inputs // {
+        # Give Prometheus the ability to see the nvidia-gpu exporter.
+        nixpkgs = nixpkgs-cuda;
+      };
       host-id = "nickel";
       system = "aarch64-linux";
     };
