@@ -30,6 +30,62 @@
     # versions in here.  It's probably worth learning the structure more
     # tightly, and making sure all of this confirms to latest.
   in {
+    nvidia-gpu = let
+      # This assumes a single GPU on the host.  Perhaps should use a chopped up
+      # version of the PCI ID to help tell them apart?
+      mkGpuPanel = { title, expr, unit ? "percent", y ? 0, h ? 8 }:
+        {
+          title = title;
+          type = "timeseries";
+          datasource = "Prometheus";
+          targets = [{
+            expr = without-socket-port expr;
+            legendFormat = "{{instance}}";
+            format = "time_series";
+          }];
+          gridPos = { x = 0; y = y; w = 24; h = h; };
+          fieldConfig.defaults.unit = unit;
+        };
+    in
+      {
+        title = "NVIDIA GPU Metrics";
+        uid = "nvidia-gpu-dashboard";
+        schemaVersion = 37;
+        version = 1;
+        refresh = "10s";
+        panels = [
+          (mkGpuPanel {
+            title = "GPU Utilization";
+            expr = "nvidia_smi_utilization_gpu_ratio";
+            unit = "percent";
+            y = 0;
+          })
+          (mkGpuPanel {
+            title = "Memory Utilization";
+            expr = "nvidia_smi_memory_free_bytes / nvidia_smi_memory_total_bytes";
+            unit = "percent";
+            y = 9;
+          })
+          (mkGpuPanel {
+            title = "Memory Used";
+            expr = "nvidia_smi_memory_used_bytes";
+            unit = "mibytes";
+            y = 18;
+          })
+          (mkGpuPanel {
+            title = "Temperature";
+            expr = "nvidia_smi_temperature_gpu";
+            unit = "celsius";
+            y = 27;
+          })
+          (mkGpuPanel {
+            title = "Power Draw (Watts)";
+            expr = "nvidia_smi_power_draw_watts";
+            unit = "watts";
+            y = 36;
+          })
+        ];
+      };
     system-monitoring = {
       id = null;
       uid = "system-monitoring";
