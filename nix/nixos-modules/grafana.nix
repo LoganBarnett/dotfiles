@@ -593,7 +593,7 @@ in {
   # Surprise on which ones!  Nah, just delete them all and rebuild them.  Nix is
   # your master now.
   systemd.services.clean-grafana-dashboards = {
-    description = "Clean out Grafana dashboards before startup";
+    description = "Clean out Grafana dashboards before startup.";
     before = [ "grafana.service" ];
     wantedBy = [ "grafana.service" ];
     requiredBy = [ "grafana.service" ];
@@ -606,6 +606,10 @@ in {
         dashboardsDir = "/etc/grafana/dashboards";
       in [
         # Safely wipe only .json files.
+        # TODO: Let's emit the JSON files with a prefix such as
+        # "__nix-provisioned-${name}".  Then we can find `__nix-provisioned-*`
+        # and only delete those, and leave dynamically created ones intact.
+        # This might be a worthy submission to add.
         "/run/current-system/sw/bin/find ${dashboardsDir} -type f -name '*.json' -delete"
       ];
       User = "grafana";
