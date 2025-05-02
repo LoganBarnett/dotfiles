@@ -1207,11 +1207,11 @@
     },
     "nixpkgs-working-rocm": {
       "locked": {
-        "lastModified": 1742483666,
-        "narHash": "sha256-W1EuSk+UA0ZjA2tdZmXNSWb2ueNpkhX7USHoIHEbBZw=",
+        "lastModified": 1734298405,
+        "narHash": "sha256-IWIVFqx5FxZiPTfqpkfFC+OBq0YU3kvnPxyNKWEmYSc=",
         "owner": "nixos",
         "repo": "nixpkgs",
-        "rev": "845be085d84b2d74822f83d58a09406057284a5f",
+        "rev": "8893464d45794958e4832647040f130e517f76f4",
         "type": "github"
       },
       "original": {
