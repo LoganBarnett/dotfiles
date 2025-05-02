@@ -33,19 +33,26 @@
     nvidia-gpu = let
       # This assumes a single GPU on the host.  Perhaps should use a chopped up
       # version of the PCI ID to help tell them apart?
-      mkGpuPanel = { title, expr, unit ? "percent", y ? 0, h ? 8 }:
-        {
-          title = title;
-          type = "timeseries";
-          datasource = "Prometheus";
-          targets = [{
-            expr = without-socket-port expr;
-            legendFormat = "{{instance}}";
-            format = "time_series";
-          }];
-          gridPos = { x = 0; y = y; w = 24; h = h; };
-          fieldConfig.defaults.unit = unit;
-        };
+      mkGpuPanel = {
+        title,
+          expr,
+          unit ? "percent",
+          decimals ? 2,
+          y ? 0,
+          h ? 8
+      }: {
+        title = title;
+        type = "timeseries";
+        datasource = "Prometheus";
+        targets = [{
+          expr = without-socket-port expr;
+          legendFormat = "{{instance}}";
+          format = "time_series";
+        }];
+        gridPos = { x = 0; y = y; w = 24; h = h; };
+        fieldConfig.defaults.unit = unit;
+        fieldConfig.defaults.decimals = decimals;
+      };
     in
       {
         title = "NVIDIA GPU Metrics";
@@ -69,7 +76,7 @@
           (mkGpuPanel {
             title = "Memory Used";
             expr = "nvidia_smi_memory_used_bytes";
-            unit = "mibytes";
+            unit = "bytes";
             y = 18;
           })
           (mkGpuPanel {
