@@ -67,6 +67,8 @@
     "xfs"
   ];
   environment.systemPackages = [
+
+    (pkgs.callPackage ../packages/ethernet-restart.nix {})
     # Should address potential speed concerns with scp/rsync transfers.
     # I'm not sure why this wouldn't be the default, and haven't found anything
     # to that effect yet.
