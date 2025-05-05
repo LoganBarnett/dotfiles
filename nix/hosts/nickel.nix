@@ -9,6 +9,7 @@
 { facts, flake-inputs, host-id, nodes, system, ... }: let
 in {
   imports = [
+    ../nixos-modules/dns-server.nix
     ../nixos-modules/raspberry-pi-4.nix
     ../nixos-modules/nix-builder-provide.nix
     ../nixos-modules/raspberry-pi-builder.nix
