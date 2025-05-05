@@ -144,7 +144,7 @@ in {
               pkgs.cairo
               pkgs.gtk3
               pkgs.gdk-pixbuf
-              pkgs.libsoup_2_4
+              pkgs.libsoup
               pkgs.openssl
               pkgs.pango
             ];
