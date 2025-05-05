@@ -275,116 +275,41 @@
         ];
       }
     ;
+    lib = nixpkgs.lib;
+    host-config = name: hostFacts: {
+      flake-inputs = flake-inputs // (
+        lib.attrsets.mapAttrs
+          (name: input-name: flake-inputs."${input-name}")
+          (hostFacts.flake-input-overrides or {})
+      );
+      host-id = name;
+      system = hostFacts.system;
+    };
+    # Only give us converted hosts for given OS (platform?).  This way we can
+    # pick which hosts go to which `*Configurations` attribute
+    # (e.g. nixosConfigurations vs darwinConfigurations).
+    host-configs-for-os = f: os: hostsFacts: lib.pipe hostsFacts [
+      (lib.attrsets.filterAttrs (name: hostFacts:
+        # Perhaps dangerous - we need a better way of parsing these things since
+        # they are known to be inconsistent, and sometimes we're dealing with a
+        # double while other times it might be a triple.
+        hostFacts ? system
+        && (
+          builtins.elemAt (lib.strings.splitString "-" hostFacts.system) 1
+        ) == os
+      ))
+      (lib.attrsets.mapAttrs host-config)
+      (lib.attrsets.mapAttrs (n: f))
+    ];
   in  {
-
-    nixosConfigurations.argon = nix-host {
-      inherit flake-inputs;
-      host-id = "argon";
-      system = "aarch64-linux";
-    };
-
-    nixosConfigurations.bromine = nix-host {
-      inherit flake-inputs;
-      host-id = "bromine";
-      system = "aarch64-linux";
-    };
-
-    nixosConfigurations.cobalt = nix-host {
-      inherit flake-inputs;
-      host-id = "cobalt";
-      system = "aarch64-linux";
-    };
-
-    nixosConfigurations.copper = nix-host {
-      inherit flake-inputs;
-      host-id = "copper";
-      system = "aarch64-linux";
-    };
-
-    nixosConfigurations.gallium = nix-host {
-      inherit flake-inputs;
-      host-id = "gallium";
-      system = "aarch64-linux";
-    };
-
-    nixosConfigurations.germanium = nix-host {
-      inherit flake-inputs;
-      host-id = "germanium";
-      system = "x86_64-linux";
-    };
-
+    darwinConfigurations = host-configs-for-os darwin-host "darwin" facts.network.hosts;
+    nixosConfigurations = host-configs-for-os nix-host "linux" facts.network.hosts;
     containerGuestHosts = {};
     # containerGuestHosts.grafana = container-guest-host {
     #   inherit flake-inputs;
     #   host-id = "grafana";
     #   system = "aarch64-linux";
     # };
-
-    nixosConfigurations.arsenic = nix-host {
-      flake-inputs = flake-inputs // {
-        nixpkgs = nixpkgs-cuda;
-      };
-      host-id = "arsenic";
-      system = "x86_64-linux";
-    };
-
-    darwinConfigurations."M-CL64PK702X" = darwin-host {
-      # inherit flake-inputs;
-      flake-inputs = flake-inputs // {
-        nixpkgs = nixpkgs-latest;
-      };
-      host-id = "M-CL64PK702X";
-      system = "aarch64-darwin";
-    };
-
-    darwinConfigurations."scandium" = darwin-host {
-      # inherit flake-inputs;
-      flake-inputs = flake-inputs // {
-        nixpkgs = nixpkgs-latest;
-      };
-      host-id = "scandium";
-      system = "aarch64-darwin";
-    };
-
-    nixosConfigurations.lithium = nix-host {
-      flake-inputs = flake-inputs // {
-        nixpkgs = nixpkgs-cuda;
-      };
-      host-id = "lithium";
-      system = "x86_64-linux";
-    };
-
-    nixosConfigurations.nickel = nix-host {
-      flake-inputs = flake-inputs // {
-        # Give Prometheus the ability to see the nvidia-gpu exporter.
-        nixpkgs = nixpkgs-cuda;
-      };
-      host-id = "nickel";
-      system = "aarch64-linux";
-    };
-
-    nixosConfigurations.selenium = nix-host {
-      flake-inputs = flake-inputs // {
-        nixpkgs = nixpkgs-rpi;
-      };
-      host-id = "selenium";
-      system = "aarch64-linux";
-    };
-
-    nixosConfigurations.titanium = nix-host {
-      flake-inputs = flake-inputs // {
-        nixpkgs = flake-inputs.nixpkgs-working-rocm;
-      };
-      host-id = "titanium";
-      system = "x86_64-linux";
-    };
-
-    nixosConfigurations.nucleus = nix-host {
-      inherit flake-inputs;
-      host-id = "nucleus";
-      system = "x86_64-linux";
-    };
-
     packages.aarch64-darwin.nucleus = self
       .nixosConfigurations
       .nucleus
@@ -408,28 +333,28 @@
       # };
     };
 
-    nixosConfigurations.test-pi = flake-inputs.nixpkgs.lib.nixosSystem (let
-      host-id = "test-pi";
-    in {
-      modules = [
-        {
-          imports = [
-            (import ./nixos-modules/raspberry-pi-exact-readme-module.nix {
-              inherit flake-inputs;
-            })
-            # To keep agenix-rekey happy.  It requires all nodes include
-            # agenix and agenix-rekey.
-            flake-inputs.agenix.nixosModules.default
-            flake-inputs.agenix-rekey.nixosModules.default
-            {
-              age.rekey.storageMode = "local";
-              age.rekey.localStorageDir = ./secrets/rekeyed/${host-id};
-            }
-            ./nixos-modules/btf-disable.nix
-          ];
-        }
-      ];
-    });
+    # nixosConfigurations.test-pi = flake-inputs.nixpkgs.lib.nixosSystem (let
+    #   host-id = "test-pi";
+    # in {
+    #   modules = [
+    #     {
+    #       imports = [
+    #         (import ./nixos-modules/raspberry-pi-exact-readme-module.nix {
+    #           inherit flake-inputs;
+    #         })
+    #         # To keep agenix-rekey happy.  It requires all nodes include
+    #         # agenix and agenix-rekey.
+    #         flake-inputs.agenix.nixosModules.default
+    #         flake-inputs.agenix-rekey.nixosModules.default
+    #         {
+    #           age.rekey.storageMode = "local";
+    #           age.rekey.localStorageDir = ./secrets/rekeyed/${host-id};
+    #         }
+    #         ./nixos-modules/btf-disable.nix
+    #       ];
+    #     }
+    #   ];
+    # });
 
   };
 
