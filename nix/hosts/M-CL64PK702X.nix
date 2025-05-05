@@ -83,7 +83,7 @@ in {
 
         [realms]
           IPA.${lib.toUpper work-alias}COLO.PVT = {
-            kdc = ipa01.mgmt.${work-alias}colo.pvt
+            kdc = idm01.mgmt.${work-alias}colo.pvt
           }
           AMERICAS.${lib.toUpper work-alias}.PVT = {
           }
