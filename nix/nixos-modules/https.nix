@@ -8,7 +8,9 @@
   redirect ? true,
   server-port ? null,
   host-id,
-  fqdn
+  # TODO: look up from facts.  This can be moved to the dependency injection and
+  # then we won't parameterize it anymore.
+  fqdn ? "${host-id}.proton"
 }: { config, ... }: {
   networking.firewall.allowedTCPPorts = [ listen-port ];
   networking.firewall.allowedUDPPorts = [ listen-port ];
