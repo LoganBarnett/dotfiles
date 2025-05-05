@@ -181,6 +181,9 @@ in {
       ];
       security.pki.certificateFiles = [
         "${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt"
+        ../new-e-ah-certs.pem
+        # Yabba dabba do!
+        ../ach-em-ach-flintstones-ca.pem
       ];
       security.pki.keychain.certificateFiles = [
         ../new-e-ah-certs.pem
