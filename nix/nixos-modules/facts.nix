@@ -8,74 +8,198 @@
 ################################################################################
 {
   network = {
+    # I have a naming theme of periodic elements and particles.
+    domain = "proton";
+    # These are just stringly prefixes for IP addresses.  At some point I should
+    # turn these into real subnets with masks.
+    subnets = {
+      # The main network, whose atypical subnet is a vestigial dictation by the
+      # consumer router.
+      barnett-main = "192.168.254";
+    };
+    ##
+    # The hosts here have the following structure:
+    # ${hostname} = {
+    #  controlledHost = boolean;
+    #  flake-input-overrides = {
+    #    nixpkgs = "nixpkgs-working-rocm";
+    #  };
+    #  ipv4 = 123;
+    #  monitors = [
+    #    "node"
+    #  ];
+    #  roaming = boolean;
+    #  system = "aarch64-linux";
+    # };
+    # - The hostname is the hostname portion of the host's FQDN.
+    # - controlledHost indicates this is a host that is controlled completely by
+    #   our configuration here.  This can have many implications.  A
+    #   non-controlled host being monitored will be the target of a ping, for
+    #   example.
+    # - flake-input-overrides (optional) allows remapping one of the flake
+    #   inputs to override another.  A common case for this is to override
+    #   nixpkgs, but could be used for any combination of inputs.  The key is
+    #   the name if the input to override, and the value is a String that
+    #   matches the key from flake-inputs to substitute.
+    # - ipv4 The host portion of this host's IP address.  This will be fixed in
+    #   the DNS.  Leaving this out means the host uses DHCP.  Alternatively it
+    #   means we're talking about a container.
+    # - monitors A list of monitors to use for this host.
+    # - roaming (optional, default false) Whether or not this host roams on and
+    #   off this network.  This is generally intended for personal laptops that
+    #   will frequently be offline, and thus should not trigger alerts when
+    #   offline.
+    # - system The architecture-platform "double" suitable for the hostPlatform
+    #   setting.
     # See https://stackoverflow.com/a/70106730 for how to setup Prometheus for
     # monitoring remote / uncontrolled systems (remote_read vs. remote_write).
+    # There's a lot of silly work I do to fix this stuff.  I should write some
+    # validators for this.
     hosts = {
       argon = {
         controlledHost = true;
+        ipv4 = 2;
         monitors = [
           "blackbox-ping"
           "node"
           "wireguard"
         ];
+        system = "aarch64-linux";
       };
       arsenic = {
         controlledHost = true;
+        flake-input-overrides = {
+          nixpkgs = "nixpkgs-cuda";
+        };
+        ipv4 = 7;
         monitors = [
           "blackbox-ping"
           "node"
           "nvidia-gpu"
         ];
+        system = "x86_64-linux";
       };
       bromine = {
         controlledHost = true;
+        ipv4 = 3;
         monitors = [
           "blackbox-ping"
           "node"
         ];
+        system = "aarch64-linux";
       };
       gallium = {
         controlledHost = true;
+        ipv4 = 4;
         monitors = [
           "blackbox-ping"
           "node"
         ];
+        system = "aarch64-linux";
       };
       # germanium = {
       #   controlledHost = true;
       #   monitors = [
       #     "node"
       #   ];
+      #   system = "x86_64-linux";
       # };
+      gateway = {
+        controlledHost = false;
+        ipv4 = 254;
+        monitors = [];
+      };
       grafana = {
         controlledHost = true;
         monitors = [];
       };
       lithium = {
         controlledHost = true;
+        flake-input-overrides = {
+          nixpkgs = "nixpkgs-cuda";
+        };
+        ipv4 = 8;
         monitors = [
           "blackbox-ping"
           "node"
           "nvidia-gpu"
         ];
+        system = "x86_64-linux";
+      };
+      "M-CL64PK702X" = {
+        controlledHost = true;
+        flake-input-overrides = {
+          nixpkgs = "nixpkgs-latest";
+        };
+        monitors = [];
+        roaming = true;
+        system = "aarch64-darwin";
       };
       nickel = {
         controlledHost = true;
+        flake-input-overrides = {
+          # Give Prometheus the ability to see the nvidia-gpu exporter.
+          nixpkgs = "nixpkgs-cuda";
+        };
+        ipv4 = 1;
         monitors = [
           "blackbox-ping"
           # "openldap"
           "node"
         ];
+        system = "aarch64-linux";
+      };
+      nucleus = {
+        controlledHost = false;
+        monitors = [];
+        system = "x86_64-linux";
+      };
+      scandium = {
+        controlledHost = true;
+        flake-input-overrides = {
+          nixpkgs = "nixpkgs-latest";
+        };
+        monitors = [];
+        roaming = true;
+        system = "aarch64-darwin";
       };
       selenium = {
         controlledHost = true;
+        flake-input-overrides = {
+          nixpkgs = "nixpkgs-rpi";
+        };
+        ipv4 = 5;
         monitors = [
           "blackbox-ping"
           # "octoprint"
           "node"
         ];
+        system = "aarch64-linux";
+      };
+      titanium = {
+        controlledHost = true;
+        flake-input-overrides = {
+          nixpkgs = "nixpkgs-working-rocm";
+        };
+        ipv4 = 6;
+        monitors = [
+          "blackbox-ping"
+          "node"
+        ];
+        system = "x86_64-linux";
       };
     };
+    ##
+    # A user has the following structure:
+    # ${username} = {
+    #  description = "Description of user.";
+    #  email = "email@domain";
+    #  type = "person";
+    #  full-name = "First Last";
+    #  devices = [
+    #    { host-id = "hostname"; ip = "20"; vpn = true; }
+    #  ];
+    # };
     users =
       # Interactive / human users.
       {
