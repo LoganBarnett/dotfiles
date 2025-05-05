@@ -35,14 +35,18 @@
     # "1m" is another valid value.
     globalConfig.scrape_interval = "10s";
     scrapeConfigs = let
-      monitors = (lib.lists.unique (lib.lists.flatten
-        (lib.attrsets.mapAttrsToList
-          (host: settings: settings.monitors)
-          facts.network.hosts
-        )
-      ));
-      host-targets = monitor: lib.attrsets.mapAttrsToList
-        (host: settings:
+      monitors = lib.pipe facts.network.hosts [
+        (lib.attrsets.mapAttrsToList (host: settings: settings.monitors))
+        lib.lists.flatten
+        lib.lists.unique
+      ];
+      host-targets = monitor: lib.pipe facts.network.hosts [
+        (lib.attrsets.filterAttrs (host: settings:
+          settings.controlledHost
+          && (settings.roaming or false)
+          && (lib.lists.any (m: m == monitor) settings.monitors)
+        ))
+        (lib.attrsets.mapAttrsToList (host: settings:
           "${host}:${
             toString config
               .services
@@ -51,11 +55,8 @@
               .${pkgs.lib.custom.monitor-to-exporter-name monitor}
               .port
           }"
-        )
-        (lib.attrsets.filterAttrs (host: settings:
-          settings.controlledHost
-          && (lib.lists.any (m: m == monitor) settings.monitors)
-        ) facts.network.hosts)
+        ))
+      ]
       ;
     in lib.lists.map
       (monitor:
