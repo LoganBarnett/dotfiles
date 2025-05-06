@@ -97,6 +97,8 @@
     # A handy alternative to curl, best suited for downloading content.
     pkgs.wget
   ] ++ lib.optionals pkgs.stdenv.isLinux [
+    # Handy DNS lookup tool.
+    pkgs.dig
     # Use for debugging network issues such as checking full or half duplex.
     pkgs.ethtool
     # Use for querying available hardware.  See also pciutils which provides
