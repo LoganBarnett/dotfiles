@@ -50,7 +50,7 @@
       host-targets = monitor: lib.pipe facts.network.hosts [
         (lib.attrsets.filterAttrs (host: settings:
           settings.controlledHost
-          && (settings.roaming or false)
+          && (!settings.roaming or false)
           && (lib.lists.any (m: m == monitor) settings.monitors)
         ))
         (lib.attrsets.mapAttrsToList (host: settings:
