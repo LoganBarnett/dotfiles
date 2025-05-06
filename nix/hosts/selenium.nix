@@ -6,7 +6,7 @@
 #
 # Selenium provides an OctoPrint server for the Prusia 3D FFF printer.
 ################################################################################
-{ config, flake-inputs, pkgs, ... }: let
+{ config, flake-inputs, host-id, pkgs, ... }: let
   host-id = "selenium";
   system = "aarch64-linux";
 in {
@@ -18,6 +18,7 @@ in {
     ../nixos-modules/facts-secrets.nix
     {
       age.secrets = config.lib.ldap.ldap-password
+        host-id
         "octoprint"
         "selenium-octoprint-service"
       ;

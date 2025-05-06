@@ -468,8 +468,9 @@
 in {
   age.secrets = if config.services.grafana.enable then (
     config.lib.ldap.ldap-password
+      service-user-prefix
       "grafana"
-      "${service-user-prefix}-grafana-service"
+      "grafana-service"
   ) else {};
   environment.etc = lib.attrsets.mapAttrs' (name: value: {
     name = "grafana/dashboards/${name}.json";

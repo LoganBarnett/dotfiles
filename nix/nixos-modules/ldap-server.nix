@@ -68,7 +68,9 @@
   ldap-user-password = username:
     # Test with a bogus value.  Space added because this isn't a file.
     # " foobar"
-    "< file://${config.age.secrets."${username}-ldap-password-hashed".path}"
+    "< file://${
+      config.age.secrets."${host-id}-${username}-ldap-password-hashed".path
+    }"
   ;
   # Anything rammed up against the colon is potentially a file.
   ldap-user = base-dn: groups: username: user: let
@@ -145,7 +147,7 @@ in {
       group = "openldap";
       mode = "0440";
     };
-  } // (config.lib.ldap.ldap-passwords "openldap" facts.network.users);
+  } // (config.lib.ldap.ldap-passwords host-id "openldap" facts.network.users);
 
   services.openldap = {
     enable = true;

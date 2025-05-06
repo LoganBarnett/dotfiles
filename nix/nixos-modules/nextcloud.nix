@@ -57,6 +57,7 @@ in {
     };
   } // (
     config.lib.ldap.ldap-password
+      host-id
       "nextcloud"
       "gallium-nextcloud-service"
   )) else {};
