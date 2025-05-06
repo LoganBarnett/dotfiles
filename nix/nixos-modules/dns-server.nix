@@ -62,8 +62,15 @@ in {
   services.dnsmasq = {
     enable = true;
     settings = {
+      # Private addresses that don't resolve anything should return NXDOMAIN
+      # lest we get record pollution elsewhere, I guess?
+      bogus-priv = true;
       domain = facts.network.domain;
       local = "/${facts.network.domain}/";
+      # Prevent dnsmasq from reading /etc/hosts.  We don't want this file read,
+      # because it often contains a localhost entry (such as 127.0.0.2) - or at
+      # least that's how NixOS sets it up.
+      no-hosts = true;
       expand-hosts = true;
       dhcp-range = "192.168.254.100,192.168.254.200,12h";
       dhcp-host = lib.pipe facts.network.hosts [
