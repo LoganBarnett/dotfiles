@@ -69,7 +69,7 @@
     # Test with a bogus value.  Space added because this isn't a file.
     # " foobar"
     "< file://${
-      config.age.secrets."${host-id}-${username}-ldap-password-hashed".path
+      config.age.secrets."${username}-ldap-password-hashed".path
     }"
   ;
   # Anything rammed up against the colon is potentially a file.
@@ -147,8 +147,7 @@ in {
       group = "openldap";
       mode = "0440";
     };
-  } // (config.lib.ldap.ldap-passwords host-id "openldap" facts.network.users);
-
+  } // (config.lib.ldap.ldap-passwords "openldap" facts.network.users);
   services.openldap = {
     enable = true;
     urlList = [
@@ -359,8 +358,18 @@ in {
     };
   };
   users.users.openldap = {
-    extraGroups = [ "tls-leaf" ];
+    extraGroups =
+      [ "tls-leaf" ]
+      ++ (lib.attrsets.mapAttrsToList
+        (name: _: (lib.traceVal "openldap-${name}"))
+        facts.network.users
+      )
+    ;
   };
+  users.groups = lib.attrsets.mapAttrs'
+    (name: v: lib.attrsets.nameValuePair "openldap-${name}" {} )
+    facts.network.users
+    ;
   networking.firewall.allowedTCPPorts = [ ldap-port ];
   networking.firewall.allowedUDPPorts = [ ldap-port ];
   systemd.services.openldap = {

@@ -229,11 +229,11 @@
       }
       # Service / non-interactive users.
       // {
-        bromine-grafana-service = {
-          email = "bromine-grafana-service@proton";
+        nickel-grafana-service = {
+          email = "nickel-grafana-service@proton";
           type = "service";
-          description = "Grafana on Bromine.";
-          full-name = "bromine-grafana-service";
+          description = "Grafana on Nickel.";
+          full-name = "nickel-grafana-service";
           devices = [];
         };
         gallium-nextcloud-service = {

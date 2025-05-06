@@ -6,10 +6,7 @@
 #
 # Selenium provides an OctoPrint server for the Prusia 3D FFF printer.
 ################################################################################
-{ config, flake-inputs, host-id, pkgs, ... }: let
-  host-id = "selenium";
-  system = "aarch64-linux";
-in {
+{ config, flake-inputs, host-id, pkgs, system, ... }: {
   imports = [
     ../nixos-modules/octoprint-shim.nix
     ../nixos-modules/raspberry-pi-5.nix
@@ -18,10 +15,13 @@ in {
     ../nixos-modules/facts-secrets.nix
     {
       age.secrets = config.lib.ldap.ldap-password
-        host-id
         "octoprint"
-        "selenium-octoprint-service"
+        "${host-id}-octoprint-service"
       ;
+      users.users.octoprint.extraGroups = [
+        "openldap-${host-id}-octoprint-service"
+      ];
+      users.groups."openldap-${host-id}-octoprint-service" = {};
       services.nginx = {
         clientMaxBodySize = "1g";
       };
@@ -89,14 +89,14 @@ in {
             # errors.  Right now I see nothing.
             auth_ldap = {
               uri = "ldaps://nickel.proton";
-              auth_user = "uid=selenium-octoprint-service,ou=users,dc=proton,dc=org";
+              auth_user = "uid=${host-id}-octoprint-service,ou=users,dc=proton,dc=org";
               # TODO: Cycle this out once this is securely referenced.
               # This is supported via my open (as of [2025-02-22]) pull request:
               # https://github.com/gillg/OctoPrint-LDAP/pull/28
               auth_password_file = config
                 .age
                 .secrets
-                .selenium-octoprint-service-ldap-password
+                ."${host-id}-octoprint-service-ldap-password"
                 .path
               ;
               search_base = "dc=proton,dc=org";

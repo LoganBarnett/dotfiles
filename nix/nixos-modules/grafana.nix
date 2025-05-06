@@ -475,14 +475,15 @@ in {
   ];
   age.secrets = if config.services.grafana.enable then (
     config.lib.ldap.ldap-password
-      service-user-prefix
-      "grafana"
+      "openldap-${host-id}-grafana-service"
       "grafana-service"
   ) else {};
   environment.etc = lib.attrsets.mapAttrs' (name: value: {
     name = "grafana/dashboards/${name}.json";
     value = { text = builtins.toJSON value; };
   }) dashboards;
+  networking.firewall.allowedTCPPorts = [ 3000 ];
+  networking.firewall.allowedUDPPorts = [ 3000 ];
   services.grafana = {
     enable = true;
     declarativePlugins = with pkgs.grafanaPlugins; [];
@@ -539,7 +540,7 @@ in {
                 config
                   .age
                   .secrets
-                  ."${service-user-prefix}-grafana-service-ldap-password"
+                  ."grafana-service-ldap-password"
                   .path
               }}";
               timeout = 10;
@@ -631,6 +632,6 @@ in {
       Group = "grafana";
     };
   };
-  networking.firewall.allowedTCPPorts = [ 3000 ];
-  networking.firewall.allowedUDPPorts = [ 3000 ];
+  users.users.grafana.extraGroups = [ "openldap-${host-id}-grafana-service" ];
+  users.groups."openldap-${host-id}-grafana-service" = {};
 }

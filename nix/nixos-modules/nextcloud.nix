@@ -57,9 +57,8 @@ in {
     };
   } // (
     config.lib.ldap.ldap-password
-      host-id
-      "nextcloud"
-      "gallium-nextcloud-service"
+      "openldap-${host-id}-nextcloud-service"
+      "${host-id}-nextcloud-service"
   )) else {};
   services.nextcloud = {
     enable = true;
@@ -133,8 +132,8 @@ in {
   };
   systemd.services = if config.services.nextcloud.enable then {
     phpfpm-nextcloud = {
-    # Make it so Nextcloud can always find its admin password.
-    after = [ "run-agenix.d.mount" ];
+      # Make it so Nextcloud can always find its admin password.
+      after = [ "run-agenix.d.mount" ];
     };
     # To do "dynamic" configuration like we do here, see:
     # https://wiki.nixos.org/wiki/Nextcloud#Dynamic_configuration
@@ -157,4 +156,8 @@ in {
       wantedBy = [ "multi-user.target" ];
     };
   } else {};
+  users.users.nextcloud.extraGroups = [
+    "openldap-${host-id}-nextcloud-service"
+  ];
+  users.groups."openldap-${host-id}-nextcloud-service" = {};
 }

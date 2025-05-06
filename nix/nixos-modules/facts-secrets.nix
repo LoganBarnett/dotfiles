@@ -27,36 +27,37 @@
   # users, this can be thought of as the initial password.  For service
   # accounts, this is the password they use.  Some smarts need to be added to
   # account for this.
-  ldap-password = prefix: group: username: {
-    "${prefix}-${username}-ldap-password" = {
+  ldap-password = group: username: {
+    "${username}-ldap-password" = {
       generator.script = "passphrase";
       inherit group;
       # Always specify the rekey file or it goes into a weird directory?
-      rekeyFile = ../secrets/${prefix}-${username}-ldap-password.age;
+      rekeyFile = ../secrets/${username}-ldap-password.age;
       mode = "0440";
     };
-    "${prefix}-${username}-ldap-password-hashed" = {
+    "${username}-ldap-password-hashed" = {
       inherit group;
       generator = {
         script = "slapd-hashed";
         dependencies = [
-          config.age.secrets."${prefix}-${username}-ldap-password"
+          config.age.secrets."${username}-ldap-password"
         ];
       };
       # Always specify the rekey file or it goes into a weird directory?
-      rekeyFile = ../secrets/${prefix}-${username}-ldap-password-hashed.age;
+      rekeyFile = ../secrets/${username}-ldap-password-hashed.age;
       mode = "0440";
     };
   };
 
   # Emits an attrset of LDAP password secrets for each user, bound to the group
   # provided.
-  ldap-passwords = prefix: group: users:
+  ldap-passwords = group: users:
     (lib.lists.foldl
       (a: b: a // b)
       # foldl's documentation is incorrect - it needs a third argument.
       {}
-      (builtins.map (u: ldap-password prefix group u.name) (nameds users))
+      # Use a computed group to share ownership of this secret.
+      (builtins.map (u: ldap-password "${group}-${u.name}" u.name) (nameds users))
     )
   ;
 
