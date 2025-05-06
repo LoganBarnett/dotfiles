@@ -36,7 +36,7 @@
   pkgs,
   ...
 }: let
-  fqdn = "${host-id}.proton";
+  fqdn = "nextcloud.proton";
 in {
   imports = [
     (import ../nixos-modules/https.nix {

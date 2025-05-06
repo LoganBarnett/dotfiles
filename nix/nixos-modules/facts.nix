@@ -89,6 +89,9 @@
         system = "aarch64-linux";
       };
       gallium = {
+        aliases = [
+          "nextcloud"
+        ];
         controlledHost = true;
         ipv4 = 4;
         monitors = [
