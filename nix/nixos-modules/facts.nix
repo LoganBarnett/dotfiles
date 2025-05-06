@@ -136,6 +136,10 @@
         system = "aarch64-darwin";
       };
       nickel = {
+        aliases = [
+          "grafana"
+          "prometheus"
+        ];
         controlledHost = true;
         flake-input-overrides = {
           # Give Prometheus the ability to see the nvidia-gpu exporter.

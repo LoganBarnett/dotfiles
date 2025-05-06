@@ -8,10 +8,34 @@
   redirect ? true,
   server-port ? null,
   host-id,
-  # TODO: look up from facts.  This can be moved to the dependency injection and
-  # then we won't parameterize it anymore.
   fqdn ? "${host-id}.proton"
 }: { config, ... }: {
+  age.secrets."tls-${fqdn}.key" = {
+    generator = {
+      dependencies = [
+        config.age.secrets.proton-ca
+      ];
+      script = "tls-signed-certificate";
+    };
+    group = "tls-leaf";
+    mode = "0440";
+    settings = {
+      root-certificate = config.age.secrets.proton-ca;
+      inherit fqdn;
+    };
+    rekeyFile = ../secrets/tls-${fqdn}.key.age;
+  };
+
+  users.groups = {
+    nginx = {};
+    tls-leaf = {};
+  };
+
+  users.users.nginx = {
+    extraGroups = [ "tls-leaf" ];
+    group = "nginx";
+    isSystemUser = true;
+  };
   networking.firewall.allowedTCPPorts = [ listen-port ];
   networking.firewall.allowedUDPPorts = [ listen-port ];
   services.nginx = {
@@ -58,8 +82,8 @@
         proxyPass = "http://127.0.0.1:${toString server-port}";
         proxyWebsockets = true; # needed if you need to use WebSocket
       } else {};
-      sslCertificateKey = config.age.secrets."tls-${host-id}.key".path;
-      sslCertificate = ../secrets/tls-${host-id}.crt;
+      sslCertificateKey = config.age.secrets."tls-${fqdn}.key".path;
+      sslCertificate = ../secrets/tls-${fqdn}.crt;
     };
   };
 }

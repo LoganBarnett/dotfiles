@@ -29,7 +29,14 @@
 # module translates that to Prometheus configuration.  Also we might have a
 # monitor differ in name but share the same exporter.
 ################################################################################
-{ config, facts, lib, pkgs, ... }: {
+{ config, facts, host-id, lib, pkgs, ... }: {
+  imports = [
+    (import ../nixos-modules/https.nix {
+      server-port = 9090;
+      inherit host-id;
+      fqdn = "prometheus.proton";
+    })
+  ];
   services.prometheus = {
     enable = true;
     # "1m" is another valid value.

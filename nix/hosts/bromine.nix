@@ -10,7 +10,6 @@
     # This seems to fail with the generated key.
     # ../nixos-modules/raspberry-pi-builder.nix
     ../nixos-modules/server-host.nix
-    ../nixos-modules/grafana.nix
     {
       networking.hostId = "37fab2ca";
       nixpkgs.hostPlatform = system;

@@ -466,6 +466,13 @@
     "/etc/static/grafana/dashboards/${name}.json"
   ) dashboards;
 in {
+  imports = [
+    (import ../nixos-modules/https.nix {
+      server-port = 3000;
+      inherit host-id;
+      fqdn = "grafana.proton";
+    })
+  ];
   age.secrets = if config.services.grafana.enable then (
     config.lib.ldap.ldap-password
       service-user-prefix
@@ -494,7 +501,7 @@ in {
         {
           name = "Prometheus";
           type = "prometheus";
-          url = "https://nickel.proton";
+          url = "https://prometheus.proton";
           access = "proxy";
           isDefault = true;
         }

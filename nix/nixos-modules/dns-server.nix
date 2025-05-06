@@ -12,6 +12,7 @@
 # simply allow the facts structure to dictate what we need.
 ################################################################################
 { lib, facts, host-id, ... }: let
+  domain = facts.network.domain;
   # TODO: Make this a dynamic value on the host.
   subnet = facts.network.subnets.barnett-main;
   host-ip = hostname: host: "${subnet}.${toString host.ipv4}";
@@ -72,6 +73,18 @@ in {
         (lib.attrsets.mapAttrsToList (hostname: host:
           "${hostname},${host-ip hostname host}"
         ))
+      ];
+      # We need a manual entry for this host so it does not use the loopback IP.
+      host-record = [
+        "${host-id}.${domain},${my-ip}"
+      ];
+      cname = lib.pipe facts.network.hosts [
+        (lib.attrsets.mapAttrsToList (hostname: host:
+          builtins.map
+            (alias: "${alias}.${domain},${hostname}.${domain}")
+            (host.aliases or [])
+        ))
+        lib.lists.flatten
       ];
       # dhcp-host = [
       #   # Examples - make these dynamic.
