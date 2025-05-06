@@ -15,7 +15,6 @@
     # package = pkgs.ollama-cuda;
     loadModels = [
       "gemma"
-      "gpt-4o"
       "llama2-uncensored"
       # Are they good?  Let's see.
       "llama3.3"
