@@ -238,6 +238,10 @@ in {
         # 10:00 UTC is 03:00 PT.
         startAt = "10:00";
       };
+      systemd.tmpfiles.rules = [
+        "d /tank/data/gitea 0770 root borg -"
+        "d /tank/data/nextcloud 0770 root borg -"
+      ];
       # This can help bootstrap a fresh system which won't have the borg group
       # yet.
       users.groups.borg = {};

@@ -38,6 +38,8 @@
 }: let
   fqdn = "nextcloud.proton";
   data-dir = "/mnt/nextcloud-data";
+  nfs-physical-hostname = "silicon.proton";
+  nfs-vpn-hostname = "silicon-nas.proton";
 in {
   imports = [
     (import ../nixos-modules/https.nix {
@@ -69,24 +71,44 @@ in {
       "${host-id}-nextcloud-service"
   )) else {};
   fileSystems."${data-dir}" = {
-    device = "silicon.proton:/tank/data/nextcloud";
+    device = "${nfs-vpn-hostname}:/tank/data/nextcloud";
     fsType = "nfs";
     options = [
       "defaults"
       "noatime"
-      "x-systemd.after=wireguard-wg0.service"
-      "x-systemd.requires=wireguard-wg0.service"
+      "x-systemd.requires=network-online.target"
+      "x-systemd.after=network-online.target"
+      "_netdev"
+      # "x-systemd.after=wireguard-wg0.service"
+      # "x-systemd.requires=wireguard-wg0.service"
     ];
-    # Important! Don't block boot if it's unavailable.
+    # Important!  Don't block boot if it's unavailable.
     neededForBoot = false;
   };
+  systemd.automounts = [
+    {
+      where = "mnt-nextcloud-data";
+      wantedBy = [ "nextcloud.service" ];
+      automountConfig.TimeoutIdleSec = "600";
+    }
+  ];
+  systemd.mounts = [
+    {
+      what = "${nfs-vpn-hostname}:/tank/data/nextcloud";
+      type = "nfs";
+      where = "/mnt/nextcloud-data";
+      options = "defaults,noatime,_netdev,x-systemd.requires=network-online.target,x-systemd.after=network-online.target";
+    }
+  ];
+  systemd.network.wait-online.enable = true;
+  networking.wireguard.enable = true;
   networking.wireguard.interfaces.wg0 = {
     ips = [ "10.100.0.3/24" ];
     privateKeyFile = config.age.secrets.nextcloud-nfs-wireguard-key.path;
     peers = [
       {
         publicKey = builtins.readFile ../secrets/silicon-nfs-wireguard-key.pub;
-        endpoint = "silicon.proton:51820";
+        endpoint = "${nfs-physical-hostname}:51820";
         allowedIPs = [ "10.100.0.1/32" ];
         persistentKeepalive = 25;
       }
@@ -196,4 +218,9 @@ in {
     "openldap-${host-id}-nextcloud-service"
   ];
   users.groups."openldap-${host-id}-nextcloud-service" = {};
+  networking.hosts = {
+    # Give us a fake hostname so we can ensure traffic flows through the VPN,
+    # otherwise the NFS IP protection will drop the traffic.
+    "10.100.0.1" = [ nfs-vpn-hostname ];
+  };
 }
