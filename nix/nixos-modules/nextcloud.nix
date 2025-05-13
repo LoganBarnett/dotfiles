@@ -37,14 +37,22 @@
   ...
 }: let
   fqdn = "nextcloud.proton";
+  data-dir = "/mnt/nextcloud-data";
 in {
   imports = [
     (import ../nixos-modules/https.nix {
       inherit fqdn host-id;
       redirect = false;
     })
+    ../nixos-modules/wireguard-agenix-rekey-generator.nix
   ];
   age.secrets = if config.services.nextcloud.enable then ({
+    nextcloud-nfs-wireguard-key = {
+      generator.script = "wireguard-priv";
+      group = "nextcloud";
+      mode = "0440";
+      rekeyFile = ../secrets/nextcloud-nfs-wireguard-key.age;
+    };
     nextcloud-admin-password = {
       # See secrets.nix for where this is declared.
       generator.script = "long-passphrase";
@@ -60,6 +68,30 @@ in {
       "openldap-${host-id}-nextcloud-service"
       "${host-id}-nextcloud-service"
   )) else {};
+  fileSystems."${data-dir}" = {
+    device = "silicon.proton:/tank/data/nextcloud";
+    fsType = "nfs";
+    options = [
+      "defaults"
+      "noatime"
+      "x-systemd.after=wireguard-wg0.service"
+      "x-systemd.requires=wireguard-wg0.service"
+    ];
+    # Important! Don't block boot if it's unavailable.
+    neededForBoot = false;
+  };
+  networking.wireguard.interfaces.wg0 = {
+    ips = [ "10.100.0.3/24" ];
+    privateKeyFile = config.age.secrets.nextcloud-nfs-wireguard-key.path;
+    peers = [
+      {
+        publicKey = builtins.readFile ../secrets/silicon-nfs-wireguard-key.pub;
+        endpoint = "silicon.proton:51820";
+        allowedIPs = [ "10.100.0.1/32" ];
+        persistentKeepalive = 25;
+      }
+    ];
+  };
   services.nextcloud = {
     enable = true;
     # Be mindful that Nextcloud doesn't support upgrades over multiple versions,
@@ -75,6 +107,7 @@ in {
     # error: 1 dependencies of derivation '/nix/store/ddd9xzy4clnq9hvxwvl9yap3silk467a-nix-apps.drv' failed to build
     # error: 1 dependencies of derivation '/nix/store/p1vf696xgb4z39gf62sx0a76n3hd3yj2-nextcloud-30.0.2-with-apps.drv' failed to build
     package = pkgs.nextcloud30;
+    datadir = data-dir;
     hostName = fqdn;
     # This needs to be set in conjunction with the https custom module I have.
     # This is because PHP runs on nginx, so instead of reverse proxying to a
@@ -156,6 +189,9 @@ in {
       wantedBy = [ "multi-user.target" ];
     };
   } else {};
+  systemd.tmpfiles.rules = [
+    "d ${data-dir} 0770 nextcloud nextcloud -"
+  ];
   users.users.nextcloud.extraGroups = [
     "openldap-${host-id}-nextcloud-service"
   ];
