@@ -8,6 +8,7 @@
 { config, facts, host-id, lib, pkgs, ... }: let
   wireguard-port = 51820;
   vpn-subnet-prefix = "192.168.102";
+  # Beware - this only works on argon due to how the network port got named.
   network-interface = "enu1u1";
   peers = lib.pipe facts.network.users [
     (lib.attrsets.mapAttrsToList (name: user: user.devices))

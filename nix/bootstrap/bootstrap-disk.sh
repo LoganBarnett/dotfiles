@@ -23,12 +23,12 @@ function greppipe {
 export -f slog
 
 # 0. Unmount anything we might have mounted at /mnt and /mnt/boot.
-sudo umount /mnt/boot || true
-sudo umount /mnt || true
+sudo umount /mnt/boot 2>/dev/null || true
+sudo umount /mnt 2>/dev/null || true
 # 1. See if we can find the disk.
 # We need a far more robust way of detecting drives.
 disk=$(\
-       ls /dev/nvme* \
+       find /dev \( -name 'nvme*' -o -name 'sd*' \) \
          | greppipe --invert-match 'loop' \
          | greppipe --invert-match --extended-regexp 'p[0-9]' \
          | greppipe --extended-regexp 'n[0-9]')

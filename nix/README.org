@@ -16,10 +16,15 @@ have many more tabs to go.  I think I like this as a general "wut I do in Nix"
 scratch pad though.
 
 * creating new hosts
-** host file
+** create Nix host file
 
 Look up the next element in the periodic table, and then create that under
 ~nix/hosts~.
+
+** by machine type
+
+Instructions across various kinds of machines are not consistent due to
+bootstrapping.
 
 *** BIOS systems
 
@@ -39,9 +44,12 @@ magic files went into the magic locations, but still no joy.
 Instead, boot into the system using the detachable USB drive.  The host is
 called ~nucleus.proton~ on boot.  From there, you should be able to do a remote
 deployment.  Unfortunately ~proton-deploy~ does not accommodate this activity
-yet.  You can add it, or you can use ~remote-deploy --enter-via nucleus.proton
-...~.  It is recommended to use ~proton-deploy~ though, due to security
-concerns.
+yet.  Until that feature is supported, you can use ~remote-deploy --enter-via
+nucleus.proton ...~.  It would be desirable to use ~proton-deploy~ though, due
+to security concerns.
+
+Once the machine state has been written, remove the USB drive and reboot the
+system.
 
 *** Raspberry Pi
 
@@ -113,6 +121,19 @@ But using ~remote-deploy $host~ works fine.
 host='my-host'; ssh-keygen -t ed25519 -N "" -f secrets/$host-pub-key
 #+end_src
 
+** public key
+
+You'll need a public key to do rekeying of secrets.  Unfortunately due to
+bootstrapping, you'll need to generate a dummy key.
+
+#+begin_src shell-script :results none :exports code
+host='host'; ssh-keygen -t ed25519 -N "" -f secrets/$host-pub-key
+git add secrets/$host-pub-key*
+#+end_src
+
+#+begin_src shell-script :results none :exports code
+host='host'; ssh-keyscan $host.proton | grep -o 'ssh-ed25519.*' > secrets/$host-pub-key.pub
+#+end_src
 
 * projects
 

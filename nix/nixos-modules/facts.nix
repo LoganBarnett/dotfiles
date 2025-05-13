@@ -183,6 +183,16 @@
         ];
         system = "aarch64-linux";
       };
+      silicon = {
+        controlledHost = true;
+        flake-input-overrides = {};
+        ipv4 = 9;
+        monitors = [
+          "blackbox-ping"
+          "node"
+        ];
+        system = "x86_64-linux";
+      };
       titanium = {
         controlledHost = true;
         flake-input-overrides = {

@@ -48,6 +48,8 @@
     # I just thought this was built-in, but I guess not.  We need to
     # kill all processes by name sometimes!
     pkgs.killall
+    # Allow creation, expansion, and inspection of ISO-9660 images.
+    pkgs.libisoburn
     # Give us uuid and uuid-config.  This can be used to making deterministic
     # (typically v3) UUIDs.
     pkgs.libossp_uuid
@@ -117,6 +119,11 @@
     pkgs.sysstat
     # Show the path that packets take.
     pkgs.traceroute
+    # Adds a whole lot of tools, but I mostly just need lsblk.  This seems to be
+    # implicitly installed on Linux hosts, but this will give it to us on macOS
+    # too.  But it doesn't seem to install that for macOS.  Good to have it
+    # explicitly defined anyways.
+    pkgs.util-linux
   ];
   imports = [
     # cyme isn't available on all versions of nixpkgs I use.

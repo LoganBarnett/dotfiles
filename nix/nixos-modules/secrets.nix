@@ -56,6 +56,18 @@ in {
   age.generators.long-passphrase = {pkgs, ...}:
     "${pkgs.xkcdpass}/bin/xkcdpass --numwords=10 --delimiter=' '"
   ;
+  age.generators.long-passphrase-hashed = {
+    decrypt,
+    deps,
+    file,
+    name,
+    pkgs,
+    secret,
+    ...
+  }: ''
+    ${decrypt} ${(lib.escapeShellArg (builtins.elemAt deps 0).file)} | \
+       ${pkgs.openssl}/bin/openssl passwd -6 -stdin
+    '';
 
   # TODO: TLS has a means of allowing certain features as well as how they
   # propagate.  Allow this to be indicated and document how this is done.  For

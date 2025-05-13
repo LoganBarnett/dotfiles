@@ -17,14 +17,15 @@
 } : let
 in {
   imports = [
-    ../hacks/installer/installation-cd-minimal.nix
-    ../nixos-modules/server-host.nix
-    # "${nixpkgs}/nixos/modules/installer/cd-dvd/installation-cd-minimal.nix"
+    # (import "${flake-inputs.nixpkgs}/nixos/modules/installer/cd-dvd/installation-cd-minimal.nix")
     # Per the NixOS documentation:
     # Provide an initial copy of the NixOS channel so that the user doesn't need
     # to run "nix-channel --update" first.
-    # "${nixpkgs}/nixos/modules/installer/cd-dvd/channel.nix"
-    ../hacks/installer/cd-dvd-channel.nix
+    # (import "${flake-inputs.nixpkgs}/nixos/modules/installer/cd-dvd/installer-cd-dvd-channel.nix")
+    # (import "${flake-inputs.nixpkgs}/nixos/modules/installer/cd-dvd/channel.nix")
+    ../hacks/installer/installation-cd-minimal.nix
+    # ../hacks/installer/cd-dvd-channel.nix
+    ../nixos-modules/server-host.nix
     ({ pkgs, lib, ... }: {
       # Make it so we can read the USB device that we booted from.  Otherwise
       # stuff just doesn't work and we get a "timed out waiting for device"
@@ -43,6 +44,8 @@ in {
       # iso-image.nix handles the grub menu I guess.
       # boot.loader.grub.enable = true;
       environment.systemPackages = [
+        # Use to setup partitions on the disk.
+        # (pkgs.callPackage ./bootstrap/bootstrap-disk.nix)
         # This gives us nixos-config, which is needed if we want to make changes
         # to the installer after we have flashed it somewhere.  Otherwise we
         # cannot run `nixos-rebuild switch`.
@@ -63,8 +66,35 @@ in {
       documentation.info.enable = lib.mkForce false;
       # New changes - need to be tested to see if they help with the boot
       # problem.
-      isoImage.makeBiosBootable = true;
-      isoImage.squashfsCompression = "xz -Xdict-size 100% -Xbcj x86";
+      # Two modules are fighting over this value.  We want the boot loader, so
+      # just force it.
+      # - /nixos/modules/system/boot/loader/generic-extlinux-compatible/default.nix
+      # - /nixos/modules/system/boot/loader/systemd-boot/systemd-boot.nix
+      # system.build.installBootLoader = lib.mkForce true;
+      boot.loader.systemd-boot.enable = true;
+      boot.loader.efi.canTouchEfiVariables = false;
+      boot.loader.grub.efiInstallAsRemovable = true;
+      # fileSystems."/" = {
+      #   device = "/dev/disk/by-label/NIXOS_SD";
+      #   fsType = "ext4";
+      # };
+      # fileSystems."/boot" = {
+      #   device = "/dev/disk/by-label/ESP";
+      #   fsType = "vfat";
+      # };
+      # Force it to be FAT32 to help make this work against recalcitrant UEFI
+      # implementations.
+      # fileSystems."/boot".format = lib.mkForce "FAT32";
+      # fileSystems."/boot" = lib.mkForce {
+      #   device = "/dev/disk/by-label/ESP";
+      #   fsType = "vfat";
+      #   options = [ "shortname=winnt" "utf8" ];
+      # };
+      # isoImage.efiBootPartitionSize = 100;
+      isoImage.makeUsbBootable = lib.mkForce true;
+      isoImage.makeBiosBootable = lib.mkForce true;
+      isoImage.makeEfiBootable = lib.mkForce true;
+      # isoImage.squashfsCompression = "xz -Xdict-size 100% -Xbcj x86";
       # virtualisation.graphics = false;
       # Hostname is not an FQDN.
       networking.hostName = "nucleus";
@@ -75,22 +105,20 @@ in {
       # cross-compilation.
       nixpkgs.overlays = [
         (final: prev: {
-          # Use to setup partitions on the disk.
-          bootstrap-disk = prev.callPackage ./bootstrap/bootstrap-disk.nix;
-          makeDBusConf = { suidHelper, serviceDirectories, apparmor ? "disabled" }:
-            prev.callPackage ../hacks/make-dbus-conf/make-dbus-conf.nix {
-              inherit suidHelper serviceDirectories apparmor;
-            };
-          nixos-configuration-reference-manpage =
-            abort builtins.traceVerbose "nucleus-configuration overlay for nixos-configuration-reference-manpage"
-              prev.stdenv.mkDerivation {
-                name = "nixos-configuration-reference-manpage";
-              };
-          documentation =
-            builtins.traceVerbose "nucleus-configuration overlay for documentation"
-              prev.documentation.overrideAttrs {
-                baseOptionsJSON = null;
-              };
+          # makeDBusConf = { suidHelper, serviceDirectories, apparmor ? "disabled" }:
+          #   prev.callPackage ../hacks/make-dbus-conf/make-dbus-conf.nix {
+          #     inherit suidHelper serviceDirectories apparmor;
+          #   };
+          # nixos-configuration-reference-manpage =
+          #   abort builtins.traceVerbose "nucleus-configuration overlay for nixos-configuration-reference-manpage"
+          #     prev.stdenv.mkDerivation {
+          #       name = "nixos-configuration-reference-manpage";
+          #     };
+          # documentation =
+          #   builtins.traceVerbose "nucleus-configuration overlay for documentation"
+          #     prev.documentation.overrideAttrs {
+          #       baseOptionsJSON = null;
+          #     };
         })
       ];
       services.openssh.settings.PasswordAuthentication = lib.mkOverride 50 true;

@@ -319,6 +319,22 @@
       .isoImage
     ;
 
+    packages.aarch64-darwin.nucleus-ng = let
+      system = "x86_64-linux";
+      host-id = "nucleus";
+    in nixos-generators.nixosGenerate {
+      inherit system;
+      format = "install-iso";
+      specialArgs = {
+        inherit facts flake-inputs host-id nodes system;
+        disko-proper = flake-inputs.disko;
+      };
+      modules = [
+        ./hosts/nucleus.nix
+      ];
+    };
+
+
     agenix-rekey = agenix-rekey.configure {
       userFlake = self;
       # nodes = self.nixosConfigurations

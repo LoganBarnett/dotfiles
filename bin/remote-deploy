@@ -106,6 +106,9 @@ echo "Deploying $target to $host..."
 # and this creates a .git directory.  This will prevent rsync from deleting the
 # .git directory and then subsequently our script recreates it.  The process is
 # very slow and we're going to update the staged state anyways.
+# Don't copy symlinks.  I rarely desire to treat symlinks differently, but in
+# this case we wind up copying iso files over and the like.  But I haven't found
+# an argument to do that yet.
 rsync \
   --archive \
   --verbose \
@@ -127,10 +130,27 @@ if [[ "$enter_via_host" == '' ]]; then
   command="set -x; cd proton-nix ;
   sudo $nix_command --flake '.#$target' --show-trace --impure"
 else
-  command="set -x;
-bootstrap-disk.sh
-# 4. Run nixos-install.
-nixos-install
+  command="set -x; set -euo pipefail;
+cd proton-nix
+# bootstrap/bootstrap-disk.sh
+# disko-install
+# Ugh, we can't just declare what the main disk is and let disko handle it.  So
+# we need to either parameterize this or perhaps extend disko.
+# Perhaps we can query the disko configuration and build this command.
+# This argument should be conditionally enabled for EFI enabled machines:
+# --write-efi-boot-entries
+# --yes-wipe-all-disks \
+#
+sudo nix run 'github:nix-community/disko/latest' -- --help
+sudo nix run 'github:nix-community/disko/latest' -- \
+  --flake '.#$target' \
+  --mode destroy,format,mount \
+  --show-trace \
+  ;
+# 4. Run nixos-install.  Disko 'could' do this, but --no-bootloader disables it.
+# We need to run this separately because (at time of writing), Disko isn't smart
+# enough to use configured boot disks in the host config.
+sudo nixos-install --flake '.#silicon'
 "
 fi
 # This creates a bunch of noise, but as far as I can tell there's no problems
