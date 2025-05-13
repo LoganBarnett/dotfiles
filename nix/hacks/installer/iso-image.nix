@@ -501,7 +501,12 @@ let
         image_size=$(( ($usage_size * 110) / 100 ))
         # Make the image fit blocks of 1M
         block_size=$((1024*1024))
-        image_size=$(( 1000 * $block_size ))
+        # This is the Logan modification to put it at 100MB and thus force
+        # FAT32.  Some UEFI implementations silently fail with FAT12.
+        # A contributable change would be to make the minimum size 100MB, or
+        # somehow configurable with a minimum size, and overflow to a greater
+        # size using the 110% algorithm as it had before.
+        image_size=$(( 100 * $block_size ))
         echo "Usage size: $usage_size"
         echo "Image size: $image_size"
         truncate --size=$image_size "$out"
