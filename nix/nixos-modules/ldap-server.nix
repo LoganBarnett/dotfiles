@@ -361,7 +361,7 @@ in {
     extraGroups =
       [ "tls-leaf" ]
       ++ (lib.attrsets.mapAttrsToList
-        (name: _: (lib.traceVal "openldap-${name}"))
+        (name: _: "openldap-${name}")
         facts.network.users
       )
     ;
@@ -375,50 +375,4 @@ in {
   systemd.services.openldap = {
     wants = [ "run-agenix.d.mount" ];
   };
-  # Run a dummy service that can repair these files.
-  systemd.services.openldap-pre-fix-secrets = {
-    enable = false;
-    after = [ "network.target" ];
-    before = [ "openldap.service" ];
-    serviceConfig = {
-      Type = "oneshot";
-      # Remember to use a string form so we get the path and thus copied to the
-      # Nix store.  I had some head scratching when this was without quotes, and
-      # the path was built but the file never laid down in the store remotely.
-      ExecStart = let
-        script = pkgs.writeShellScriptBin
-          "ldap-password-cleanup"
-          (builtins.readFile
-            ./ldap-password-cleanup.sh
-          );
-        users = lib.strings.concatStrings (
-          lib.strings.intersperse
-            " "
-            (lib.attrsets.attrNames facts.network.users)
-        );
-        # Note the lack of .sh - not my choice but whatever.
-      in "${script}/bin/ldap-password-cleanup ${users}";
-      # Keeps service as 'active' after it finishes.
-      RemainAfterExit = true;
-      StandardOutput = "journal";
-      StandardError = "journal";
-      # Run as the openldap user to get access to the secrets.
-      User = "root";
-      Group = "root";
-    };
-  };
-
-  # This approach doesn't work because of infinite recursion.
-  # systemd.services.openldap.service.ExecStartPre = [
-  #   ''
-  #   ls /run/agenix/*-ldap-password-hashed | xargs -I{} sed -i {} -E 's/$//'
-  #   ''
-  # ]
-  #   ++ config.systemd.services.openldap.service.ExecStartPre
-  #   ;
-  /* ensure openldap is launched after certificates are created */
-  # systemd.services.openldap = {
-  #   wants = [ "acme-${your-host-name}.service" ];
-  #   after = [ "acme-${your-host-name}.service" ];
-  # };
 })

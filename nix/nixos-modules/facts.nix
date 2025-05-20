@@ -256,13 +256,6 @@
           full-name = "gallium-nextcloud-service";
           devices = [];
         };
-        # monitor-grafana-service = {
-        #   email = "monitor-grafana-service@proton";
-        #   type = "service";
-        #   description = "Grafana on Monitor.";
-        #   full-name = "monitor-grafana-service";
-        #   devices = [];
-        # };
         selenium-octoprint-service = {
           email = "selenium-octoprint-service@proton";
           type = "service";
