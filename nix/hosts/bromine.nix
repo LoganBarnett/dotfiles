@@ -10,10 +10,6 @@
     # This seems to fail with the generated key.
     # ../nixos-modules/raspberry-pi-builder.nix
     ../nixos-modules/server-host.nix
-    (import ../nixos-modules/kiosk-url.nix {
-      url = "https://grafana.proton/d/system-monitoring/system-monitoring?orgId=1&from=now-6h&to=now&timezone=America/Los_Angeles&kiosk=fullscreen&refresh=5s";
-      browser = "chromium";
-    })
     {
       networking.hostId = "37fab2ca";
       nixpkgs.hostPlatform = system;
