@@ -460,11 +460,6 @@
       ];
     };
   };
-  # TODO: See comment in clean-grafana-dashboards about this path.  Ah but
-  # there's this magic "static" subdirectory things really get moved to.
-  dashboardPaths = lib.attrsets.mapAttrsToList (name: value:
-    "/etc/static/grafana/dashboards/${name}.json"
-  ) dashboards;
 in {
   imports = [
     (import ../nixos-modules/https.nix {
@@ -473,8 +468,14 @@ in {
       fqdn = "grafana.proton";
     })
   ];
+  environment.systemPackages = [
+    # Include sqlite because it's what Grafana uses in the default NixOS setup.
+    # This can allow us to chase down database issues if the API isn't
+    # forthcoming to us.
+    pkgs.sqlite
+  ];
   environment.etc = lib.attrsets.mapAttrs' (name: value: {
-    name = "grafana/dashboards/${name}.json";
+    name = "grafana/dashboards/provisioned/${name}.json";
     value = { text = builtins.toJSON value; };
   }) dashboards;
   networking.firewall.allowedTCPPorts = [ 3000 ];
@@ -484,15 +485,17 @@ in {
     declarativePlugins = with pkgs.grafanaPlugins; [];
     provision = {
       enable = true;
-      dashboards.settings.providers = lib.attrsets.mapAttrsToList (name: value: {
-        inherit name;
-        folder = "Provisioned";
-        file = "/etc/grafana/dashboards/${name}.json";
-        options.path = "/etc/grafana/dashboards";
-        # type = "file";
-        editable = false;
-        disableDeletion = false;
-      }) dashboards;
+      # A provider in this context is a dashboard provider.  It's not quite a
+      # "folder" but it is close to that.
+      dashboards.settings.providers = [
+        {
+          name = "provisioned-dashboards";
+          options.path = "/etc/grafana/dashboards/provisioned";
+          folder = "Provisioned";
+          disableDeletion = false;
+          updateIntervalSeconds = 60;
+        }
+      ];
       datasources.settings.datasources = [
         {
           name = "Prometheus";
@@ -603,6 +606,9 @@ in {
   # additive.  Some changes will be affected automatically, but others will not.
   # Surprise on which ones!  Nah, just delete them all and rebuild them.  Nix is
   # your master now.
+  #
+  # TODO: Test this out now that we've fixed the issue with "duplicate
+  # dashboards".
   systemd.services.clean-grafana-dashboards = {
     description = "Clean out Grafana dashboards before startup.";
     before = [ "grafana.service" ];
