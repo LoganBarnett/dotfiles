@@ -7,6 +7,13 @@
     # Required to bring in fileSystems and other things.
     flake-inputs.raspberry-pi-nix.nixosModules.sd-image
     ./raspberry-pi-host.nix
+    # This section grants us the vcgencmd command and the ability to query the
+    # voltage state (as well as checking for under voltage throttling).  This
+    # only exists in RPi4 and earlier.  It also gives us access to the Pi's GPU.
+    ({ lib, pkgs, ... }: {
+      boot.kernelModules = [ "vchiq" ];
+      environment.systemPackages = [ pkgs.libraspberrypi ];
+    })
     ({ lib, pkgs, ... }:
       let
       # linux_rpi5 = pkgs.linux_rpi4.override {
@@ -22,7 +29,6 @@
         #   })
         # ];
         # boot.kernelParams = [ "dtb=\\bcm2712-rpi-5-b.dtb" ];
-      # boot.kernelPackages = pkgs.linuxPackages_rpi5;
       boot.kernelPackages = lib.mkForce (pkgs.linuxPackagesFor pkgs.linux_rpi4);
       # Note: uboot not yet supported for pi5.  See:
       # https://github.com/tstat/raspberry-pi-nix/issues/13#issuecomment-2090601812
