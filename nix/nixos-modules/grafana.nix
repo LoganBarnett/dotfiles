@@ -473,11 +473,6 @@ in {
       fqdn = "grafana.proton";
     })
   ];
-  age.secrets = if config.services.grafana.enable then (
-    config.lib.ldap.ldap-password
-      "openldap-${host-id}-grafana-service"
-      "grafana-service"
-  ) else {};
   environment.etc = lib.attrsets.mapAttrs' (name: value: {
     name = "grafana/dashboards/${name}.json";
     value = { text = builtins.toJSON value; };
@@ -540,7 +535,7 @@ in {
                 config
                   .age
                   .secrets
-                  ."grafana-service-ldap-password"
+                  ."${service-user-prefix}-grafana-service-ldap-password"
                   .path
               }}";
               timeout = 10;
