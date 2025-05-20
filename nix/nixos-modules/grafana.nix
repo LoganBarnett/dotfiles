@@ -26,6 +26,9 @@
     without-socket-port = query:
       ''label_replace(${query}, "instance", "$1", "instance", "^(.*):[0-9]+$")''
     ;
+    height = 9;
+    # This is half a row.
+    width = 12;
     # In all honesty, I vibe coded these.  I believe there is a mix of Grafana
     # versions in here.  It's probably worth learning the structure more
     # tightly, and making sure all of this confirms to latest.
@@ -119,10 +122,10 @@
             }
           ];
           gridPos = {
-            h = 9;
-            w = 12;
-            x = 0 * 12;
-            y = 0 * 12;
+            h = 1 * height;
+            w = 1 * width;
+            x = 0 * width;
+            y = 0 * height;
           };
         }
         {
@@ -141,10 +144,10 @@
             }
           ];
           gridPos = {
-            h = 9;
-            w = 12;
-            x = 1 * 12;
-            y = 0 * 12;
+            h = 1 * height;
+            w = 1 * width;
+            x = 1 * width;
+            y = 0 * height;
           };
         }
         {
@@ -167,10 +170,10 @@
             }
           ];
           gridPos = {
-            h = 9;
-            w = 12;
-            x = 1 * 12;
-            y = 1 * 12;
+            h = 1 * height;
+            w = 1 * width;
+            x = 1 * width;
+            y = 1 * height;
           };
         }
         {
@@ -202,10 +205,10 @@
             }
           ];
           gridPos = {
-            h = 9;
-            w = 12;
-            x = 0 * 12;
-            y = 2 * 12;
+            h = 1 * height;
+            w = 1 * width;
+            x = 0 * width;
+            y = 2 * height;
           };
           fieldConfig = {
             defaults = {
@@ -230,10 +233,35 @@
             }
           ];
           gridPos = {
-            h = 9;
-            w = 24;
-            x = 0 * 12;
-            y = 3 * 12;
+            h = 1 * height;
+            w = 2 * width;
+            x = 0 * width;
+            y = 3 * height;
+          };
+        }
+        {
+          type = "stat";
+          title = "Host Uptime";
+          datasource = "Prometheus";
+          targets = [
+            {
+              expr = without-socket-port ''up{job="node"}'';
+              format = "time_series";
+              legendFormat = "{{instance}}";
+            }
+          ];
+          gridPos = {
+            h = 1 * height;
+            w = 1 * width;
+            x = 1 * width;
+            y = 2 * height;
+          };
+          options = {
+            legend = {
+              show = true;
+              displayMode = "table";
+              # displayMode = "list";
+            };
           };
         }
       ];
