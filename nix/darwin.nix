@@ -47,6 +47,11 @@
   # Global packages that can't be bound to a specific user, such as shells.
   environment = {
     shells = [ pkgs.zsh ];
+    systemPackages = [
+      # Give us the caffeinate command to run long running processes while
+      # ensuring the machine stays awake.
+      pkgs.darwin.PowerManagement
+    ];
   };
   fonts = {
     packages = [
