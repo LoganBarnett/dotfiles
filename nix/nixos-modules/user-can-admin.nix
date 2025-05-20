@@ -112,6 +112,9 @@
     pkgs.parted
     # Use for querying available hardware.  See also lshw.
     pkgs.pciutils
+    # Allow saved sessions and fancy terminal prestidigitation.  Even without
+    # magic tricks, very useful for unstable transitions.
+    pkgs.screen
     # Gives us iostat, pidstat, and sar.  Show us IO usage (such as disk
     # reads/writes).  Useful for identifying performance bottlenecks relating to
     # disk.  Use `sar -A` to show CPU, memory, and IO.  The hunt continues for
