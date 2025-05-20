@@ -3,7 +3,21 @@ let
   system = "aarch64-darwin";
   username = "logan";
 in
-{ flake-inputs, ... }: {
+{ flake-inputs, lib, system, ... }: let
+  pkgs-latest = import flake-inputs.nixpkgs-latest {
+    inherit system;
+    # TODO: Constrain to signal-desktop-bin to make this precise.  This is
+    # needed to be done separately because each pkgs gets its own unfree
+    # configuration.
+    config.allowUnfree = true;
+    # Test it!
+    config.allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) [
+      "signal-desktop-bin"
+    ];
+
+  };
+
+in {
   imports = [
     ../nixos-modules/nix-builder-consume.nix
     ../nixos-modules/sd-image-raspberrypi.nix
@@ -72,7 +86,7 @@ in
         # and imports a couple of packages using callPackage in a let binding.
         # I tried overriding them where they are used (via passthru), but still
         # no joy.
-        pkgs.signal-desktop-bin
+        pkgs-latest.signal-desktop-bin
       ];
       system.stateVersion = 5;
     })
