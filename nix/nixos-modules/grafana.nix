@@ -118,7 +118,12 @@
               format = "time_series";
             }
           ];
-          gridPos = { h = 9; w = 24; x = 0; y = 0; };
+          gridPos = {
+            h = 9;
+            w = 12;
+            x = 0 * 12;
+            y = 0 * 12;
+          };
         }
         {
           title = "Memory Usage %";
@@ -135,7 +140,12 @@
               format = "time_series";
             }
           ];
-          gridPos = { h = 9; w = 24; x = 0; y = 9; };
+          gridPos = {
+            h = 9;
+            w = 12;
+            x = 1 * 12;
+            y = 0 * 12;
+          };
         }
         {
           title = "Disk Usage %";
@@ -156,7 +166,12 @@
               format = "time_series";
             }
           ];
-          gridPos = { h = 9; w = 24; x = 0; y = 18; };
+          gridPos = {
+            h = 9;
+            w = 12;
+            x = 1 * 12;
+            y = 1 * 12;
+          };
         }
         {
           title = "Network Traffic (TX + RX)";
@@ -186,7 +201,12 @@
               format = "time_series";
             }
           ];
-          gridPos = { h = 9; w = 24; x = 0; y = 27; };
+          gridPos = {
+            h = 9;
+            w = 12;
+            x = 0 * 12;
+            y = 2 * 12;
+          };
           fieldConfig = {
             defaults = {
               # This tells Grafana to auto-format bytes/sec.
@@ -209,7 +229,12 @@
               format = "time_series";
             }
           ];
-          gridPos = { h = 9; w = 24; x = 0; y = 36; };
+          gridPos = {
+            h = 9;
+            w = 24;
+            x = 0 * 12;
+            y = 3 * 12;
+          };
         }
       ];
     };
