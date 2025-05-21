@@ -12,7 +12,26 @@ in {
     ../nixos-modules/server-host.nix
     ../nixos-modules/wireguard-server-standard.nix
     ../nixos-modules/prometheus-client.nix
-    # ../nixos-modules/dns-dynamic-ip-home.nix
+    ../nixos-modules/dns-dynamic-ip-home.nix
+  ];
+  nixpkgs.overlays = [
+    (final: prev: {
+      # This is a heavy build for a little Pi.  Reduce the jobs to prevent
+      # memory thrashing.
+      dness = prev.dness.overrideAttrs (old: {
+        CARGO_BUILD_JOBS = "1";
+        buildPhase = ''
+          runHook preBuild
+          cargo build --profile release --frozen --offline --jobs 1 --target aarch64-unknown-linux-gnu
+          runHook postBuild
+        '';
+        checkPhase = ''
+          runHook preCheck
+          cargo test --jobs 1 --profile release --target aarch64-unknown-linux-gnu --offline -- --test-threads=1
+          runHook postCheck
+        '';
+      });
+    })
   ];
   # networking.hostId is needed by the filesystem stuffs.
   # An arbitrary ID needed for zfs so a pool isn't accidentally imported on
