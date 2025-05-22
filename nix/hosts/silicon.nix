@@ -6,10 +6,7 @@ in {
   imports = [
     ../nixos-modules/nix-builder-provide.nix
     ../nixos-modules/server-host.nix
-    (import ../nixos-modules/kiosk-url.nix {
-      url = "https://grafana.proton/d/system-monitoring/system-monitoring?orgId=1&from=now-6h&to=now&timezone=America/Los_Angeles&kiosk=fullscreen&refresh=5s";
-      browser = "chromium";
-    })
+    ../nixos-configs/grafana-kiosk-overview.nix
     # TODO: Right now agenix-rekey wants to build wireguard to do the
     # generation.  This fails due to a problem with macOS building wireguard-go
     # (documented in the overlay in this repository).  It is not understood why
