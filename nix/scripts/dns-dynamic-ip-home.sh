@@ -78,7 +78,7 @@ if [[ \
 --config-file:   $config_file_missing
 --api-key-file:  $api_key_file_missing
 --secret-file:   $secret_file_missing
-"
+" >&2
   exit 1
 fi
 

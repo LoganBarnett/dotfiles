@@ -65,5 +65,4 @@ in {
   lib.ldap = {
     inherit ldap-password ldap-passwords;
   };
-  # age.secrets = (ldap-passwords facts.network.users);
 }

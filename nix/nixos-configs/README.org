@@ -1,0 +1,15 @@
+#+title:     NixOS configurations
+#+author:    Logan Barnett
+#+email:     logustus@gmail.com
+#+date:      <2025-05-20 Tue>
+#+language:  en
+#+file_tags:
+#+tags:
+
+These are "configurations" for NixOS.  They are technically modules too, but
+specifically these encode selections already made.  They are not heavily
+designed for parameterization or re-use, and they certainly have no place in
+~nixpkgs~.  As such you'll see a lot of settings hard coded here.
+
+My system did not start this way, so I will be slowly migrating over my
+configurations to this directory.

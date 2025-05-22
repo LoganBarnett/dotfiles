@@ -17,6 +17,7 @@ in {
     ../nixos-modules/ldap-server.nix
     ../nixos-modules/prometheus-server.nix
     ../nixos-modules/grafana.nix
+    ../nixos-configs/alertmanager.nix
     # (import ../nixos-modules/freeipa-server.nix { inherit host-id; })
     # Pi stuff.
     ({ pkgs, ... }: {

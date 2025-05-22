@@ -80,6 +80,9 @@
         system = "x86_64-linux";
       };
       bromine = {
+        aliases = [
+          "matrix"
+        ];
         controlledHost = true;
         ipv4 = 3;
         monitors = [
@@ -140,6 +143,7 @@
       };
       nickel = {
         aliases = [
+          "alertmanager"
           "grafana"
           "prometheus"
         ];
@@ -242,6 +246,20 @@
       }
       # Service / non-interactive users.
       // {
+        bromine-matrix-service = {
+          email = "bromine-matrix-service@proton";
+          type = "service";
+          description = "Matrix on Bromine.";
+          full-name = "bromine-matrix-service";
+          devices = [];
+        };
+        nickel-alertmanager-service = {
+          email = "nickel-alertmanager-service@proton";
+          type = "service";
+          description = "AlertManager on Nickel.  Primarily for posting alerts.";
+          full-name = "nickel-alertmanager-service";
+          devices = [];
+        };
         nickel-grafana-service = {
           email = "nickel-grafana-service@proton";
           type = "service";
@@ -287,6 +305,19 @@
         description = "People who can view dashboards in Grafana.";
         members = [
           "logan"
+        ];
+      };
+      "matrix-admins" = {
+        description = "People who can administer Matrix.";
+        members = [
+          "logan"
+        ];
+      };
+      "matrix-users" = {
+        description = "People who can use Matrix.";
+        members = [
+          "logan"
+          "nickel-alertmanager-service"
         ];
       };
       "nextcloud-admins" = {
