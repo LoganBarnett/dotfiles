@@ -74,11 +74,15 @@ in {
               url = "http://${host-id}.proton:3001/alerts";
               send_resolved = true;
               http_config = {
-                bearer_token_file = config
-                  .age
-                  .secrets
-                  .matrix-alertmanager-secret
-                  .path;
+                basic_auth = {
+                  # This seems to be hardcoded into matrix-alertmanager.
+                  username = "alertmanager";
+                  password_file = config
+                    .age
+                    .secrets
+                    .matrix-alertmanager-secret
+                    .path;
+                };
               };
             }
           ];
