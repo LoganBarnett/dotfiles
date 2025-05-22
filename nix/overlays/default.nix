@@ -46,4 +46,7 @@
       meta.platforms = final.lib.platforms.unix;
     });
   })
+  (final: prev: {
+    dness = final.callPackage ../derivations/dness.nix {};
+  })
 ]
