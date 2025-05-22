@@ -25,76 +25,93 @@ in {
       ];
     })
   ];
-  services.prometheus.rules = [
-    (builtins.toJSON {
-      groups = [
-        {
-          name = "node_alerts";
-          rules = [
-            {
-              alert = "node_down";
-              expr = "up == 0";
-              for = "5m";
-              labels = {
-                severity = "page";
-              };
-              annotations = {
-                summary = "{{ $labels.alias }}: Node is down.";
-                description = "{{ $labels.alias }} has been down for more than 5 minutes.";
-              };
-            }
-          ];
-        }
-      ];
-    })
-    # ''
-    #   ALERT node_down
-    #   IF up == 0
-    #   FOR 5m
-    #   LABELS {
-    #     severity="page"
-    #   }
-    #   ANNOTATIONS {
-    #     summary = "{{$labels.alias}}: Node is down.",
-    #     description = "{{$labels.alias}} has been down for more than 5 minutes."
-    #   }
-    # ''
-  ];
-  services.prometheus.alertmanager = {
-    enable = true;
-    openFirewall = true;
-    configuration = {
-      receivers = [
-        {
-          name = "team-admins";
-          webhook_configs = [
-            {
-              # Default webhook path is /alerts per:
-              # https://github.com/jaywink/matrix-alertmanager
-              url = "http://${host-id}.proton:3001/alerts";
-              send_resolved = true;
-              http_config = {
-                basic_auth = {
-                  # This seems to be hardcoded into matrix-alertmanager.
-                  username = "alertmanager";
-                  password_file = config
-                    .age
-                    .secrets
-                    .matrix-alertmanager-secret
-                    .path;
+  services.prometheus = {
+    alertmanagers = [
+      {
+        scheme = "http";
+        static_configs = [{ targets = [ "localhost:9093" ]; }];
+      }
+    ];
+    rules = [
+      (builtins.toJSON {
+        groups = [
+          {
+            name = "node_alerts";
+            rules = [
+              {
+                alert = "node_down";
+                expr = ''up{job="node"} == 0'';
+                for = "5m";
+                labels = {
+                  severity = "page";
                 };
-              };
-            }
-          ];
-        }
-      ];
-      route = {
-        group_by = [ "alertname" "alias" ];
-        group_wait = "30s";
-        group_interval = "2m";
-        repeat_interval = "4h";
-        receiver = "team-admins";
+                annotations = {
+                  summary = "{{ $labels.alias }}: Node is down.";
+                  description = ''
+                    {{ $labels.alias }} has been down for more than 5 minutes.
+                  '';
+                };
+              }
+            ];
+          }
+        ];
+      })
+    ];
+    alertmanager = {
+      enable = true;
+      openFirewall = true;
+      configuration = {
+        receivers = [
+          {
+            name = "team-admins";
+            webhook_configs = [
+              {
+                # Default webhook path is /alerts per:
+                # https://github.com/jaywink/matrix-alertmanager
+                url = "http://${host-id}.proton:3001/alerts";
+                send_resolved = true;
+                http_config = {
+                  basic_auth = {
+                    # This seems to be hardcoded into matrix-alertmanager.
+                    username = "alertmanager";
+                    password_file = "/run/credentials/alertmanager.service/matrix-alertmanager-secret";
+                  };
+                };
+              }
+            ];
+          }
+        ];
+        route = {
+          group_by = [ "alertname" "alias" ];
+          group_wait = "30s";
+          group_interval = "2m";
+          repeat_interval = "4h";
+          receiver = "team-admins";
+        };
       };
+    };
+  };
+  # This is what the old promql stuff looked like, I think.
+  # ''
+  #   ALERT node_down
+  #   IF up == 0
+  #   FOR 5m
+  #   LABELS {
+  #     severity="page"
+  #   }
+  #   ANNOTATIONS {
+  #     summary = "{{$labels.alias}}: Node is down.",
+  #     description = "{{$labels.alias}} has been down for more than 5 minutes."
+  #   }
+  # ''
+  systemd.services.alertmanager = {
+    serviceConfig = {
+      LoadCredential = [
+        # If we do it this way, we don't run into permission issues accessing
+        # the secret.  This is basically required because the NixOS module for
+        # alertmanager configures the systemd service to use DynamicUser.
+        "matrix-alertmanager-secret:${config.age.secrets.matrix-alertmanager-secret.path}"
+      ];
     };
   };
   services.matrix-alertmanager = {
