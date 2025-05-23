@@ -128,7 +128,7 @@ in {
     # error: 1 dependencies of derivation '/nix/store/3lk2jrxjzvgk07xdqzacxbj0ql37g6y8-nextcloud-app-contacts-6.1.1.drv' failed to build
     # error: 1 dependencies of derivation '/nix/store/ddd9xzy4clnq9hvxwvl9yap3silk467a-nix-apps.drv' failed to build
     # error: 1 dependencies of derivation '/nix/store/p1vf696xgb4z39gf62sx0a76n3hd3yj2-nextcloud-30.0.2-with-apps.drv' failed to build
-    package = pkgs.nextcloud30;
+    package = pkgs.nextcloud31;
     datadir = data-dir;
     hostName = fqdn;
     # This needs to be set in conjunction with the https custom module I have.
@@ -137,9 +137,19 @@ in {
     https = true;
     config = {
       adminpassFile = config.age.secrets.nextcloud-admin-password.path;
+      dbtype = "sqlite";
       # This defaults to root.  It's pretty much documented everywhere as
       # "admin".
       # adminuser = "root";
+    };
+    phpOptions = {
+      "opcache.enable" = "1";
+      "opcache.enable_cli" = "1";
+      "opcache.memory_consumption" = "128";
+      "opcache.interned_strings_buffer" = "16";
+      "opcache.max_accelerated_files" = "10000";
+      "opcache.validate_timestamps" = "1";
+      "opcache.revalidate_freq" = "60";
     };
     # See `nextcloud-custom-config` in this document for how some other built-in
     # apps are "installed".
@@ -204,8 +214,61 @@ in {
       path = [
         config.services.nextcloud.occ
       ];
+      serviceConfig = {
+        LoadCredential = [
+          "nextcloud-service-ldap-password:${
+            config.age.secrets."${host-id}-nextcloud-service-ldap-password".path
+          }"
+        ];
+      };
+      # Most of this is set from doing "nextcloud-occ ldap:show-config" after
+      # having clicked around in the UI.
       script = ''
+        set="nextcloud-occ ldap:set-config s01"
         nextcloud-occ app:enable user_ldap
+        nextcloud-occ ldap:create-empty-config
+        $set ldapHost "ldaps://nickel.proton"
+        $set ldapPort "636"
+        $set ldapBase "dc=proton,dc=org"
+        $set ldapBaseGroups "dc=proton,dc=org"
+        $set ldapBaseUsers "dc=proton,dc=org"
+        $set ldapAgentName "uid=${host-id}-nextcloud-service,ou=users,dc=proton,dc=org"
+        $set ldapAgentPassword "$(cat /run/credentials/nextcloud-custom-config.service/nextcloud-service-ldap-password)"
+        $set ldapLoginFilter "(&(&(|(objectclass=inetOrgPerson))(|(memberof=cn=nextcloud-users,ou=groups,dc=proton,dc=org)))(uid=%uid))"
+        $set ldapLoginFilterEmail "0"
+        $set ldapLoginFilterMode "0"
+        $set ldapLoginFilterUsername "1"
+        # We probably want to revisit this at some point.
+        $set ldapNestedGroups "0"
+        $set ldapPagingSize "500"
+        $set ldapAdminGroup "nextcloud-admins"
+        $set ldapUserFilter "(&(|(objectclass=inetOrgPerson))(|(memberof=cn=nextcloud-admins,ou=groups,dc=proton,dc=org)(memberof=cn=nextcloud-users,ou=groups,dc=proton,dc=org))"
+        $set ldapUserFilterGroups "nextcloud-admins;nextcloud-users"
+        $set ldapUserFilterMode "0"
+        $set ldapUserFilterObjectClass "inetOrgPerson"
+        $set ldapUserAvatarRule "default"
+        $set ldapUserDisplayName "cn"
+        $set ldapUuidGroupAttribute "auto"
+        $set ldapUuidUserAttribute "auto"
+        $set markRemnantsAsDisabled "0"
+        $set turnOnPasswordChange "0"
+        $set useMemberOfToDetectMembership "0"
+        $set lastJpegPhotoLookup "0"
+        $set hasMemberOfFilterSupport "1"
+        $set ldapGroupFilter "(&(|(objectclass=groupOfNames))(|(cn=nextcloud-admins)(cn=nextcloud-users)))"
+        $set ldapGroupFilterGroups "nextcloud-admins;nextcloud-users"
+        $set ldapGroupFilterMode "0"
+        $set ldapGroupFilterObjectClass "groupOfNames"
+        $set ldapGroupMemberAssocAttr "member"
+        $set ldapGroupDisplayName "cn"
+        $set ldapCacheTTL "600"
+        $set ldapGidNumber "gidnumber"
+        $set turnOffCertCheck "0"
+        $set ldapExperiencedAdmin "0"
+        $set ldapConnectionTimeout "15"
+        $set ldapConfigurationActive "1"
+        nextcloud-occ ldap:test-config s01
+        nextcloud-occ ldap:show-config s01
       '';
       after = [ "nextcloud-setup.service" ];
       wantedBy = [ "multi-user.target" ];

@@ -84,6 +84,7 @@
     nixpkgs.url = "github:nixos/nixpkgs/nixos-24.11";
     nixpkgs-working-rocm.url = "github:nixos/nixpkgs/master";
     nixpkgs-cuda.url = "github:nixos/nixpkgs/master";
+    nixpkgs-25.url = "github:nixos/nixpkgs/25.11-pre";
     # We need a version of nixpkgs for things that want to constantly
     # auto-update themselves in a forceful (yet asinine) manner.  Culprits
     # include Signal Desktop, but I should add more to the shame list as I find

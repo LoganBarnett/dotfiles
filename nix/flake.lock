@@ -1031,6 +1031,22 @@
         "type": "github"
       }
     },
+    "nixpkgs-25": {
+      "locked": {
+        "lastModified": 1747416115,
+        "narHash": "sha256-s91lYvU4XdUGD7P1hAmo9/cHBIoWmJr1ezi4q8aFjuQ=",
+        "owner": "nixos",
+        "repo": "nixpkgs",
+        "rev": "e56e0beed4312a89b60fe312ee2241f7a1627f76",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nixos",
+        "ref": "25.11-pre",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
     "nixpkgs-cuda": {
       "locked": {
         "lastModified": 1746152631,
@@ -1430,6 +1446,7 @@
         "nixos-generators": "nixos-generators",
         "nixos-hardware": "nixos-hardware",
         "nixpkgs": "nixpkgs_3",
+        "nixpkgs-25": "nixpkgs-25",
         "nixpkgs-cuda": "nixpkgs-cuda",
         "nixpkgs-latest": "nixpkgs-latest",
         "nixpkgs-rpi": "nixpkgs-rpi",

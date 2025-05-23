@@ -100,6 +100,9 @@
           "nextcloud"
         ];
         controlledHost = true;
+        flake-input-overrides = {
+          nixpkgs = "nixpkgs-25";
+        };
         ipv4 = 4;
         monitors = [
           "blackbox-ping"
