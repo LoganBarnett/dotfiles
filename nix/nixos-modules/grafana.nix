@@ -159,13 +159,19 @@
             {
               expr = without-socket-port ''
                 (1 - (
-                  node_filesystem_avail_bytes {
-                    fstype!="tmpfs",fstype!="devtmpfs"
-                  } /
-                    node_filesystem_size_bytes {
-                      fstype!="tmpfs",fstype!="devtmpfs"
-                    }
-                )) * 100'';
+                  sum(node_filesystem_avail_bytes{
+                    fstype!~"tmpfs|proc|sysfs|devtmpfs|overlay|squashfs",
+                    device!~"^loop\\d+$|none|ramfs",
+                    mountpoint!~"/nix/store.*|.*boot.*"
+                  }) by (instance, mountpoint)
+                  /
+                  sum(node_filesystem_size_bytes{
+                    fstype!~"tmpfs|proc|sysfs|devtmpfs|overlay|squashfs",
+                    device!~"^loop\\d+$|none|ramfs",
+                    mountpoint!~"/nix/store.*|.*boot.*"
+                  }) by (instance, mountpoint)
+                )) * 100
+              '';
               legendFormat = "{{instance}} - {{mountpoint}}";
               format = "time_series";
             }
