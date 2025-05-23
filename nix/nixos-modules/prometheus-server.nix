@@ -96,6 +96,7 @@
             #   }
             # ];
           };
+          systemd = {};
           wireguard = {
             static_configs = [
               {

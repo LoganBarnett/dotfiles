@@ -27,6 +27,7 @@
     #  ipv4 = 123;
     #  monitors = [
     #    "node"
+    #    "systemd"
     #  ];
     #  roaming = boolean;
     #  system = "aarch64-linux";
@@ -62,6 +63,7 @@
         monitors = [
           "blackbox-ping"
           "node"
+          "systemd"
           "wireguard"
         ];
         system = "aarch64-linux";
@@ -76,6 +78,7 @@
           "blackbox-ping"
           "node"
           "nvidia-gpu"
+          "systemd"
         ];
         system = "x86_64-linux";
       };
@@ -88,6 +91,7 @@
         monitors = [
           "blackbox-ping"
           "node"
+          "systemd"
         ];
         system = "aarch64-linux";
       };
@@ -100,6 +104,7 @@
         monitors = [
           "blackbox-ping"
           "node"
+          "systemd"
         ];
         system = "aarch64-linux";
       };
@@ -107,6 +112,7 @@
       #   controlledHost = true;
       #   monitors = [
       #     "node"
+      #     "systemd"
       #   ];
       #   system = "x86_64-linux";
       # };
@@ -129,6 +135,7 @@
           "blackbox-ping"
           "node"
           "nvidia-gpu"
+          "systemd"
         ];
         system = "x86_64-linux";
       };
@@ -157,6 +164,7 @@
           "blackbox-ping"
           # "openldap"
           "node"
+          "systemd"
         ];
         system = "aarch64-linux";
       };
@@ -184,6 +192,7 @@
           "blackbox-ping"
           # "octoprint"
           "node"
+          "systemd"
         ];
         system = "aarch64-linux";
       };
@@ -194,6 +203,7 @@
         monitors = [
           "blackbox-ping"
           "node"
+          "systemd"
         ];
         system = "x86_64-linux";
       };
@@ -206,6 +216,7 @@
         monitors = [
           "blackbox-ping"
           "node"
+          "systemd"
         ];
         system = "x86_64-linux";
       };

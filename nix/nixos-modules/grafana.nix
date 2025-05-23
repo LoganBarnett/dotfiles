@@ -26,9 +26,6 @@
     without-socket-port = query:
       ''label_replace(${query}, "instance", "$1", "instance", "^(.*):[0-9]+$")''
     ;
-    height = 9;
-    # This is half a row.
-    width = 12;
     # In all honesty, I vibe coded these.  I believe there is a mix of Grafana
     # versions in here.  It's probably worth learning the structure more
     # tightly, and making sure all of this confirms to latest.
@@ -96,7 +93,11 @@
           })
         ];
       };
-    system-monitoring = {
+    system-monitoring = let
+      height = 9;
+      # This is one third of a row.
+      width = 8;
+    in {
       id = null;
       uid = "system-monitoring";
       schemaVersion = 16;
@@ -172,8 +173,8 @@
           gridPos = {
             h = 1 * height;
             w = 1 * width;
-            x = 1 * width;
-            y = 1 * height;
+            x = 2 * width;
+            y = 0 * height;
           };
         }
         {
@@ -208,7 +209,7 @@
             h = 1 * height;
             w = 1 * width;
             x = 0 * width;
-            y = 2 * height;
+            y = 1 * height;
           };
           fieldConfig = {
             defaults = {
@@ -234,9 +235,45 @@
           ];
           gridPos = {
             h = 1 * height;
-            w = 2 * width;
+            w = 1 * width;
             x = 0 * width;
-            y = 3 * height;
+            y = 2 * height;
+          };
+        }
+        {
+          type = "stat";
+          title = "Failed Services";
+          gridPos = {
+            h = 1 * height;
+            w = 1 * width;
+            x = 1 * width;
+            y = 1 * height;
+          };
+          targets = [
+            {
+              expr = without-socket-port ''
+                count(
+                 systemd_unit_state{
+                   state="failed"
+                 } == 1
+                ) by (instance) or
+                  (up{job="systemd"} * 0)
+              '';
+              format = "time_series";
+              legendFormat = "{{instance}}";
+            }
+          ];
+          fieldConfig = {
+            defaults = {
+              thresholds = {
+                mode = "absolute";
+                steps = [
+                  { color = "green"; value = 0; }
+                  { color = "red"; value = 1; }
+                ];
+              };
+            };
+            overrides = [];
           };
         }
         {
@@ -253,8 +290,8 @@
           gridPos = {
             h = 1 * height;
             w = 1 * width;
-            x = 1 * width;
-            y = 2 * height;
+            x = 2 * width;
+            y = 1 * height;
           };
           options = {
             legend = {
