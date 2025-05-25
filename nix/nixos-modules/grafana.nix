@@ -248,7 +248,7 @@
         }
         {
           type = "stat";
-          title = "Failed Services";
+          title = "Failed Service Count";
           gridPos = {
             h = 1 * height;
             w = 1 * width;
@@ -258,15 +258,127 @@
           targets = [
             {
               expr = without-socket-port ''
-                count(
-                 systemd_unit_state{
-                   state="failed"
-                 } == 1
-                ) by (instance) or
-                  (up{job="systemd"} * 0)
+                sum by (instance) (
+                  max_over_time(systemd_unit_state{state="failed"}[1m])
+                )
+                or
+                on(instance) systemd_unit_state{
+                  name="basic.target",
+                  state="active"
+                } * 0
               '';
               format = "time_series";
               legendFormat = "{{instance}}";
+            }
+          ];
+          fieldConfig = {
+            defaults = {
+              thresholds = {
+                mode = "absolute";
+                steps = [
+                  { color = "green"; value = 0; }
+                  { color = "red"; value = 1; }
+                ];
+              };
+            };
+            overrides = [];
+          };
+        }
+        {
+          type = "table";
+          title = "Failed Service List";
+          gridPos = {
+            h = 1 * height;
+            w = 1 * width;
+            x = 1 * width;
+            y = 2 * height;
+          };
+          targets = [
+            {
+              expr = without-socket-port ''
+                (systemd_unit_state{
+                  state="failed"
+                } == 1)
+                or
+                (systemd_unit_state{
+                  name="basic.target",
+                  state="active"
+                } == 1)
+              '';
+              format = "time_series";
+              # Required for the transformations, I guess.
+              refId = "A";
+              # legendFormat = "{{instance}}";
+              instant = true;
+            }
+          ];
+          transformations = [
+            # {
+            #   id = "seriesToRows";
+            #   options = {
+            #     byField = "Value";
+            #   };
+            # }
+            {
+              id = "labelsToFields";
+              options = {
+                mode = "columns";
+                keepLabels = [
+                  "instance"
+                  "name"
+                ];
+              };
+            }
+            {
+              id = "filterFieldsByName";
+              options = {
+                filters = [
+                  { id = ""; value = "instance"; }
+                  { id = ""; value = "name"; }
+                ];
+                include.names = [
+                  "instance"
+                  "name"
+                ];
+              };
+            }
+            # This allows us to have a table that is empty, instead of just "No
+            # Data" which kind of makes me feel like there was an error (and
+            # there often is).
+            {
+              id = "filterByValue";
+              options = {
+                filters = [
+                  {
+                    fieldName = "name";
+                    config = {
+                      id = "equal";
+                      options = {
+                        value = "basic.target";
+                      };
+                    };
+                  }
+                ];
+                match = "any";
+                type = "exclude";
+              };
+            }
+            {
+              id = "organize";
+              options = {
+                excludeByName = true;
+                indexByName = false;
+                renameByName = {
+                  "instance" = "Host";
+                  "name" = "Service";
+                  # "Value" = "Status";
+                };
+                fields = [
+                  { name = "Host"; }
+                  { name = "Service"; }
+                  # { name = "Status"; }
+                ];
+              };
             }
           ];
           fieldConfig = {
