@@ -52,10 +52,17 @@ in (lib.mkMerge [
       # Old way of getting this package?  Doesn't work.
       # package = lib.mkDefault nix.packages.${pkgs.system}.nix;
       # Enable flakes and new 'nix' command.
-      settings.experimental-features = [
-        "nix-command"
-        "flakes"
-      ];
+      settings = {
+        # This apparently defaults to true, but when doing flake evaluation,
+        # this can allow derivations to cheat and do some weird stuff that won't
+        # fly in things like nixpkgs.  One such example is not requiring
+        # `cargoHash` to be set.
+        allow-import-from-derivation = false;
+        experimental-features = [
+          "nix-command"
+          "flakes"
+        ];
+      };
       # TODO: Determine if this is automatic now or not.
       # registry.nixpkgs.flake = nixpkgs;
       # registry.nixpkgs2105.flake = nixpkgs-2105;

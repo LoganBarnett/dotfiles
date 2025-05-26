@@ -97,6 +97,9 @@
     # but it doesn't exist.  Perhaps I need to bump nix-darwin?  The date is
     # _very_ recent.
     settings = {
+      # Unfortunately this has to be enabled, which lowers the hermetic-ness of
+      # Nix builds.  It is required to run activation scripts from nix-darwin.
+      allow-import-from-derivation = lib.mkForce true;
       # Do not add this, as nix-darwin sets this up for us, and more
       # intelligently.  Specifying this will crush what nix-darwin configures
       # and will harm bootstrapping efforts with the VM.
