@@ -69,6 +69,8 @@ in {
         inherit pkgs;
       }) ++ [
         (pkgs.callPackage ../derivations/dice-roller.nix {})
+        # Let us communicate with the Matrix chat protocol.
+        pkgs.element-desktop
         # Note: This might be unusable on nix-darwin, or with flakes.
         pkgs.nixos-option
         # A 3D printer slicer I really like.  It might work for resin printers
