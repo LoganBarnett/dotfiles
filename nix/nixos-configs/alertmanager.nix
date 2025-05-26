@@ -52,6 +52,20 @@ in {
                   '';
                 };
               }
+              {
+                alert = "systemd_unit_down";
+                expr = ''systemd_unit_state{state="failed"} == 1'';
+                for = "5m";
+                labels = {
+                  severity = "page";
+                };
+                annotations = {
+                  summary = "{{ $labels.alias }}: Systemd unit is down.";
+                  description = ''
+                    {{ $labels.alias }} has been down for more than 5 minutes.
+                  '';
+                };
+              }
             ];
           }
         ];
