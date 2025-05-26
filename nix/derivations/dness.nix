@@ -1,3 +1,6 @@
+# Submitted as https://github.com/NixOS/nixpkgs/pull/411007 - feel free to
+# remove once the host using it (presently argon) moves onto to the merged
+# commit, when the pull request is merged.
 {
   fetchFromGitHub,
   lib,
@@ -5,32 +8,36 @@
   pkg-config,
   rustPlatform,
   ...
-}: rustPlatform.buildRustPackage (let
-  inherit (lib) licenses maintainers;
-  name = "dness";
-  version = "v0.5.7";
-  src = fetchFromGitHub {
-    owner = "nickbabcock";
-    repo = "dness";
-    rev = version;
-    hash = "sha256-Vty4ec6aoUh3p2b9vLkNeS5R4pJWzjwYrC5DtVVyhT8=";
-  };
-in {
-  pname = name;
-  inherit src version;
-  nativeBuildInputs = [
-    pkg-config
-  ];
-  PKG_CONFIG_PATH = "${openssl.dev}/lib/pkgconfig";
-  cargoLock = {
-    lockFile = "${src}/Cargo.lock";
-  };
-  # Many tests require network access.
-  doCheck = false;
-  meta = {
-    description = "A dynamic DNS updating tool supporting a variety of providers.";
-    homepage = "https://github.com/nickbabcock/dness";
-    maintainers = with maintainers; [ logan-barnett ];
-    license = licenses.mit;
-  };
-})
+}:
+rustPlatform.buildRustPackage (
+  let
+    inherit (lib) licenses maintainers platforms;
+    name = "dness";
+    version = "v0.5.7";
+    src = fetchFromGitHub {
+      owner = "nickbabcock";
+      repo = "dness";
+      rev = version;
+      hash = "sha256-Vty4ec6aoUh3p2b9vLkNeS5R4pJWzjwYrC5DtVVyhT8=";
+    };
+  in
+  {
+    pname = name;
+    inherit src version;
+    nativeBuildInputs = [
+      pkg-config
+    ];
+    PKG_CONFIG_PATH = "${openssl.dev}/lib/pkgconfig";
+    cargoHash = "sha256-VyjntXsb1FUNguJFEmaZmjeCUHPMHMDICTTMDwExNBI=";
+    checkPhase = ''
+      echo "Skipping cargo tests due to needing network access..."
+    '';
+    meta = {
+      description = "A dynamic DNS updating tool supporting a variety of providers.";
+      homepage = "https://github.com/nickbabcock/dness";
+      maintainers = with maintainers; [ logan-barnett ];
+      platforms = platforms.unix;
+      license = licenses.mit;
+    };
+  }
+)
