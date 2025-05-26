@@ -1,0 +1,42 @@
+#+title:     Nix Derivations
+#+author:    Logan Barnett
+#+email:     logustus@gmail.com
+#+date:      <2025-05-26 Mon>
+#+language:  en
+#+file_tags:
+#+tags:
+
+This is where I can put Nix derivations all by themselves.  These derivations
+needn't concern themselves with configurations, overlays, or other NixOS module
+(unless they really need to).  This is in essence where the packages go.
+
+My intention is to write these derivations in such a way that they conform to
+~nixpkgs~ contributing guidelines and formatting requirements.  Any additional
+build requirements should also be satisfied here too.  In this way, it serves as
+a simpler proving grounds for new packages that I could submit to ~nixpkgs~.
+
+* Gotchas
+** Rust applications
+
+Use ~cargoHash~ instead of ~cargoLock~.  This will fix ~OutPath~ build issues
+with ~nixpkgs~.  I've reproduced these issues in the past, but I've lost the
+invocation for them.  Either ~nix build~ or ~nix instantiate~ with some special
+arguments passed.
+
+An important factor to help address this is to use ~allow-import-from-derivation
+= false;~ under ~nix.settings~.  This should help detect such issues locally
+before they wind up on a public facing ~nixpkgs~ pull request.  However, I
+haven't actually witnessed this helping just yet.
+
+* Automated Formatting
+
+~nixpkgs~ will run automated formatting over the code to check to see if it's
+formatted properly.  They use ~treefmt~ for it.
+
+** ~treefmt~
+
+I don't have any ~editorconfig~ or the like setup for this yet, but it would be
+good to do so.  I could even use ~dirlocals.el~ or something like that.  This is
+a place where my Emacs configuration is very lacking.  In any case, you can run
+this over the files in question, and it will reformat them to be pleasing to
+~nixpkgs~.
