@@ -68,6 +68,12 @@ in {
       # causes `config.cudaSupport` in the ComfyUI package to fail.
       # nixpkgs.config.cudaSupport = false;
     })
-    ../users/eric-desktop.nix
+    # ../users/eric-desktop.nix
+  ];
+  environment.systemPackages = [
+    # Let's be able to consume media.
+    pkgs.ffmpeg
+    # Let's be able to consume media.
+    pkgs.vlc
   ];
 }
