@@ -99,6 +99,9 @@
     # A handy alternative to curl, best suited for downloading content.
     pkgs.wget
   ] ++ lib.optionals pkgs.stdenv.isLinux [
+    # Allow normal, mortal user sessions to look at disks - it's crazy how hard
+    # this is to do.
+    pkgs.bindfs
     # Handy DNS lookup tool.
     pkgs.dig
     # Use for debugging network issues such as checking full or half duplex.
