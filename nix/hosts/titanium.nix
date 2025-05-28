@@ -1,4 +1,4 @@
-{ flake-inputs, modulesPath, ... }: let
+{ flake-inputs, modulesPath, pkgs, ... }: let
   host-id = "titanium";
   system = "x86_64-linux";
 in {
@@ -75,5 +75,7 @@ in {
     pkgs.ffmpeg
     # Let's be able to consume media.
     pkgs.vlc
+    # The built in browser is a little lacking.
+    pkgs.firefox
   ];
 }
