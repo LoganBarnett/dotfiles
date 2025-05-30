@@ -122,55 +122,12 @@
   # as packages depending upon an older OpenSSL.
   nixpkgs.config.permittedInsecurePackages = [];
   # nixpkgs.legacyPackages.${system};
-  # I haven't fully tested this, but it doesn't lay down
-  # ~/.nix-profile/share/emacs/site-lisp, let alone ~/nix-profile/share/emacs
-  # (or the same for the /nix/.../currentsystem/ side).  This means we can't
-  # refer to mu4e, or perhaps even built-in packages.  From what I can gather,
-  # this just means to refer to mu4e via the load-path that Nix sets up.  From
-  # there, mu4e can be found. It _must not_ be listed in packages.el under
-  # Doom's package list with straight.el.  This will cause a problem.
-  # programs.emacs = {
-  #   enable = true;
-  #   # package = pkgs.emacs-unstable; # Emacs 29.2.
-  #   package = ((pkgs.emacsPackagesFor pkgs.emacs-unstable).emacsWithPackages (
-  #   # package = ((pkgs.emacsPackagesFor pkgs.emacs).emacsWithPackages (
-  #     epkgs: [
-  #       epkgs.mu4e
-  #     ]
-  #   ));
-  #   # package = pkgs.emacs;
-  #   # package = pkgs.emacs-unstable.pkgs.withPackages (epkgs: [
-  #   #   epkgs.melpaPackages.mu4e
-  #   # ]);
-  #   # extraPackages = let
-  #   #   emacsPackages = (pkgs.emacsPackagesNgGen pkgs.emacs).override (final: prev: {
-  #   #     mu4e = prev.melpaPackages.mu4e;
-  #   #   });
-  #   #   in
-  #   #     emacsPackages.emacsWithPackages (epkgs: [
-  #   #       epkgs.mu4e
-  #   #     ])
-  #   #     ;
-  #   # extraPackages = epkgs: [
-  #   #   # Use `melpaPackages` to get the latest version.  Without any attribute
-  #   #   # (just `epkgs`), it implies melpa-stable.  See
-  #   #   # https://github.com/NixOS/nixpkgs/issues/27083 for more context.
-  #   #   # Don't use the supplied `epkgs`, because it doesn't include
-  #   #   # `melpaPackages`.
-  #   #   pkgs.emacsPackages.melpaPackages.mu4e
-  #   # ];
-  #   # extraPackages = epkgs: [
-  #   #   epkgs.mu4e
-  #   # ];
-  # };
   programs.nix-index.enable = true;
-  security.pam.enableSudoTouchIdAuth = true;
+  security.pam.services.sudo_local.touchIdAuth = true;
   security.pki.keychain.trustNixTlsCertificates = true;
   security.pki.keychain.certificateFiles = [
     ./secrets/proton-ca.crt
   ];
-  # Without this, nothing works.
-  services.nix-daemon.enable = true;
   system = {
     # Settings that don't have an option in nix-darwin.
     activationScripts.postActivation.text = ''
@@ -220,15 +177,36 @@
       echo "Invoking activateSettings to make changes stick..."
       /System/Library/PrivateFrameworks/SystemAdministration.framework/Resources/activateSettings -u
       echo "activateSettings finished with $?."
-'';
-    # User-level settings
-    activationScripts.postUserActivation.text = ''
-      echo "Show the ~/Library folder..."
-      chflags nohidden ~/Library
+      # User-level settings
+# TODO: Move this to its own script.
+# Detect which users are real, interactive users.
+# TODO: Make a user activation module probably.
+users=$(dscl . list /Users | while read -r user; do
+  home_dir=$(dscl . -read /Users/"$user" NFSHomeDirectory 2>/dev/null | awk '{print $2}')
+  shell=$(dscl . -read /Users/"$user" UserShell 2>/dev/null | awk '{print $2}')
+  if [[ -d "$home_dir" && "$home_dir" != '/var/empty' && "$shell" != '/usr/sbin/uucico' && "$shell" != "/usr/bin/false" && "$shell" != "/usr/bin/nologin" ]]; then
+    echo "$user"
+  fi
+done)
+for user in $users; do
+  echo "Activating for user '$user'..."
+  if [[ "$user" == 'root' ]]; then
+    echo "Skipping root..."
+    continue
+  fi
+  home_dir=$(
+    dscl . -read /Users/"$user" NFSHomeDirectory 2>/dev/null \
+      | awk '{print $2}'
+  )
+      doas() {
+        sudo -u "$user" "$@"
+      }
+      echo "Show the $home_dir/Library folder..."
+      doas chflags nohidden "$home_dir/Library"
       echo "Set dock magnification..."
-      defaults write com.apple.dock magnification -bool false
+      doas defaults write com.apple.dock magnification -bool false
       echo "Set dock magnification size..."
-      defaults write com.apple.dock largesize -int 48
+      doas defaults write com.apple.dock largesize -int 48
       echo "Define dock icon function..."
       __dock_item() {
         printf \
@@ -240,13 +218,13 @@
            "</dict></dict></dict>"
       }
       echo "Choose and order dock icons"
-      defaults write com.apple.dock persistent-apps -array \
+      doas defaults write com.apple.dock persistent-apps -array \
           "$(__dock_item /System/Applications/Utilities/Terminal.app)" \
           "$(__dock_item /System/Applications/System\ Settings.app)"
       echo "Fixing dictation spam..."
       # Example invocation can be found at:
       # https://zameermanji.com/blog/2021/6/8/applying-com-apple-symbolichotkeys-changes-instantaneously/
-      defaults write com.apple.symbolichotkeys.plist AppleSymbolicHotKeys -dict-add 164 "
+      doas defaults write com.apple.symbolichotkeys.plist AppleSymbolicHotKeys -dict-add 164 "
         <dict>
           <key>enabled</key><false/>
           <key>value</key><dict>
@@ -262,14 +240,15 @@
       "
       # The -int part of this command is critical, or the value won't be
       # respected.
-      defaults write com.apple.HIToolbox.plist AppleDictationAutoEnable -int 0
+      doas defaults write com.apple.HIToolbox.plist AppleDictationAutoEnable -int 0
 
       # Example of writing using something from Nix itself:
       # "$(__dock_item \$\{pkgs.slack}/Applications/Slack.app)"
 
       # Yes this is duplicated, just to be sure.  It completes sub-second
       # anyways.
-      /System/Library/PrivateFrameworks/SystemAdministration.framework/Resources/activateSettings -u
+      doas /System/Library/PrivateFrameworks/SystemAdministration.framework/Resources/activateSettings -u
+done
 '';
     defaults = {
       NSGlobalDomain = {
@@ -423,7 +402,7 @@
         # Sets the speed of the Mission Control animations.
         expose-animation-duration = 1.0;
         # Whether to group windows by application in Mission Control’s Exposé.
-        expose-group-by-app = true;
+        expose-group-apps = true;
         # Magnified icon size on hover.  Number is between 16 and 128 (both
         # inclusive).
         largesize = 16;

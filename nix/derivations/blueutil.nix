@@ -10,12 +10,6 @@ pkgs.stdenv.mkDerivation {
     sha256 = "sha256-x2khx8Y0PolpMiyrBatT2aHHyacrQVU/02Z4Dz9fBtI=";
   };
 
-  buildInputs = [] ++ (
-    lib.optionals pkgs.stdenv.isDarwin [
-      pkgs.darwin.apple_sdk_11_0.frameworks.IOBluetooth
-    ]
-  );
-
   # Not sure how to get this tied in.
   # makeFlags = [
   #   "CFLAGS=-Wall -Wextra -Werror -mmacosx-version-min=10.9 -framework Foundation -framework IOBluetooth"

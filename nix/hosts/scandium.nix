@@ -18,6 +18,7 @@ in
   };
 
 in {
+  system.primaryUser = username;
   imports = [
     ../nixos-modules/nix-builder-consume.nix
     ../nixos-modules/sd-image-raspberrypi.nix
@@ -75,7 +76,7 @@ in {
         pkgs.nixos-option
         # A 3D printer slicer I really like.  It might work for resin printers
         # but I know it best for its FFF/FDM support.
-        pkgs.prusa-slicer
+        (pkgs.prusa-slicer.override { boost = pkgs.boost179; })
         # Allow generating Nextcloud plugins as a Nix expression.
         pkgs.nc4nix
         # Yet another chat app.  I guess it's supposed to be secure, but I

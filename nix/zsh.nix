@@ -24,12 +24,12 @@
     theme = "robbyrussell";
   };
   loginExtra = ''
-      source ~/.zshenv-customized
-    '';
-  initExtra = ''
-      source ${pkgs.zsh-git-prompt}/share/zsh-git-prompt/zshrc.sh
-      source ~/.zshrc-customized
-    '';
+    source ~/.zshenv-customized
+  '';
+  initContent = ''
+    source ${pkgs.zsh-git-prompt}/share/zsh-git-prompt/zshrc.sh
+    source ~/.zshrc-customized
+  '';
   shellAliases = {
     # -G is BSD, but with Nix we use --color now.
     ls="ls -aG --color=auto";

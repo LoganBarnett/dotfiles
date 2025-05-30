@@ -1,6 +1,7 @@
 { host-id, flake-inputs, system, ... }: let
   username = "logan.barnett";
 in {
+  system.primaryUser = username;
   imports = [
     ({ lib, pkgs, ... }: {
       imports = [

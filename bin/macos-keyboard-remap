@@ -12,6 +12,9 @@
 ################################################################################
 set -euo pipefail
 
+function greppipe() {
+  grep "$@" || test $? = 1;
+}
 
 # See this for a series of key mapping values:
 # https://github.com/apple-oss-distributions/IOHIDFamily/blob/3f62fef86e2938e0f362e70eede0a914222c3e27/IOHIDFamily/IOHIDUsageTables.h
@@ -23,11 +26,11 @@ key_control_left=0xE0
 key_capslock=0x39
 function keycode {
   key="$1"
-  echo -n $(( "$key_offset" | "$key"))
+  echo -n $(( $key_offset | $key))
 }
 function keycode_debug {
   key="$1"
-  echo $(( "$key_offset" | "$key"))
+  echo $(( $key_offset | $key))
 }
 keycode_debug $key_option_left
 # See about integrating this with the built-in system for nix-darwin, because it

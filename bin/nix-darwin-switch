@@ -11,5 +11,8 @@ set -euo pipefail
 # doesn't exist here.
 # --log-format internal-json \
 # |& nom
+# Strangely, even though this needs sudo, we can't use sudo here and must use it
+# from the invocation.  I'm not really sure why this is.  The requirement is a
+# recent change in nix-darwin.
 darwin-rebuild \
   switch --flake ~/dev/dotfiles/nix "$@" \

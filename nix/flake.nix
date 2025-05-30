@@ -53,6 +53,13 @@
       url = "github:nix-community/emacs-overlay/master";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    nextcloud-desktop = {
+      # What's on master doesn't build with the current settings.  It looks like
+      # they've moved onto qt6 but Nix has many components that don't work on
+      # qt6 on darwin.  So pin it to the last known working state.
+      url = "github:nextcloud/desktop?dir=admin/nix&rev=19a2f8cc7da52f62b6e7f4ca3b68ba7056b46f4e";
+      # inputs.nixpkgs.follows = "nixpkgs";
+    };
     nix-darwin = {
       url = "github:LnL7/nix-darwin/master";
       # rev = "72dd60bfc98c128149d84213b17d1b8a68863055";
@@ -81,7 +88,7 @@
     # This is forced at the moment, because we have some heavy deltas coming
     # into flake.lock and I want that to stabilize before I pin it here.
     # nixpkgs.url = "github:nixos/nixpkgs?ref=f9f59197478b3ec9c954b67ae0d1d5429de23124";
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-24.11";
+    nixpkgs.url = "github:nixos/nixpkgs/25.11-pre";
     nixpkgs-working-rocm.url = "github:nixos/nixpkgs/master";
     nixpkgs-cuda.url = "github:nixos/nixpkgs/master";
     nixpkgs-25.url = "github:nixos/nixpkgs/25.11-pre";
@@ -92,6 +99,7 @@
     nixpkgs-latest.url = "github:nixos/nixpkgs/master";
     comfyui-pr.url = "github:LoganBarnett/nixpkgs?ref=comfyui-fetch-model-hide-rebase";
     prusa-slicer-pr-390476.url = "github:nixos/nixpkgs?ref=pull/390476/head";
+    nixos-option-pr-369151.url = "github:nixos/nixpkgs?ref=pull/369151/head";
     # I've run into a host of issues with Raspberry Pi 5s after a successful
     # build is made.  I'd like to move nixpkgs around to see if we can skip over
     # some issues somehow.
@@ -105,7 +113,7 @@
     };
     # nix-doom-emacs.url = "github:nix-community/nix-doom-emacs";
     home-manager = {
-      url = "github:nix-community/home-manager/release-24.11";
+      url = "github:nix-community/home-manager/release-25.05";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     # nixpkgs-nickel.url = "github:nixos/nixpkgs?ref=9a9960b98418f8c385f52de3b09a63f9c561427a";
@@ -185,6 +193,7 @@
     current-system,
     disko,
     emacs-overlay,
+    nextcloud-desktop,
     nix,
     nix-darwin,
     nixpkgs,
@@ -268,6 +277,13 @@
                   .outputs
                   .legacyPackages
                   .${system}
+                ;
+                nixos-option = flake-inputs
+                  .nixos-option-pr-369151
+                  .outputs
+                  .legacyPackages
+                  .${system}
+                  .nixos-option
                 ;
               })
             ];
