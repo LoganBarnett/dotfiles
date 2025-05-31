@@ -281,7 +281,7 @@ https://github.com/doomemacs/doomemacs/blob/master/modules/emacs/vc/config.el
    :prefix ("g" . "git")
    :desc "magit" :n "g" #'magit-status
    :desc "buffer log" :nv "l" #'magit-log-buffer-file
-   :desc "git-add file" :nv "a" #'magit-stage-buffer-file
+   :desc "git-add file" :nv "a" #'magit-file-stage
    )
   :config
   <<config/git-commit-message-evil-insert-state>>
