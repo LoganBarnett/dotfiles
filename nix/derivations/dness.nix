@@ -29,9 +29,19 @@ rustPlatform.buildRustPackage (
     ];
     PKG_CONFIG_PATH = "${openssl.dev}/lib/pkgconfig";
     cargoHash = "sha256-VyjntXsb1FUNguJFEmaZmjeCUHPMHMDICTTMDwExNBI=";
-    checkPhase = ''
-      echo "Skipping cargo tests due to needing network access..."
-    '';
+    # For some reason the checkFlags call doesn't filter tests on this host, but
+    # it works fine for nixpkgs tests.  It may be a difference between nixpkgs
+    # on master and 24.11 which I think this Pi is using.
+    doCheck = false;
+    # checkFlags = [
+    #   # The following tests require network access.
+    #   "--skip=dns::tests::cloudflare_test"
+    #   "--skip=dns::tests::opendns_lookup_ip_test"
+    #   "--skip=dynu::tests::test_dynu_update"
+    #   "--skip=he::tests::test_he_update"
+    #   "--skip=namecheap::tests::test_namecheap_update"
+    #   "--skip=noip::tests::test_noip_update"
+    # ];
     meta = {
       description = "A dynamic DNS updating tool supporting a variety of providers.";
       homepage = "https://github.com/nickbabcock/dness";
