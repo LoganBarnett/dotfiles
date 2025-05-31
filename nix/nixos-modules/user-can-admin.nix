@@ -131,6 +131,10 @@
     # explicitly defined anyways.
     pkgs.util-linux
   ];
+  # Make suggestions for a failed command.  Similar to "thefuck", but in Rust
+  # instead of Python, so it's really zippy.  It defaults to being aliased to
+  # "f".
+  programs.pay-respects.enable = true;
   imports = [
     # cyme isn't available on all versions of nixpkgs I use.
     (lib.mkIf (builtins.hasAttr "cyme" pkgs) {

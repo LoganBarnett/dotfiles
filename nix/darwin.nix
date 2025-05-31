@@ -43,6 +43,9 @@
       inherit (flake-inputs) nix nixpkgs programsdb;
     })
     ./nixos-modules/darwin-tls-trust.nix
+    # NixOS has this built in, but this is our copy for Darwin.  It's needed for
+    # ./nixos-modules/user-can-admin.nix.
+    ./nixos-modules/pay-respects.nix
   ];
   # Global packages that can't be bound to a specific user, such as shells.
   environment = {
@@ -121,7 +124,6 @@
   # This has been needed to individually bless some older packages, such
   # as packages depending upon an older OpenSSL.
   nixpkgs.config.permittedInsecurePackages = [];
-  # nixpkgs.legacyPackages.${system};
   programs.nix-index.enable = true;
   security.pam.services.sudo_local.touchIdAuth = true;
   security.pki.keychain.trustNixTlsCertificates = true;
