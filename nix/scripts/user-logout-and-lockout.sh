@@ -20,20 +20,21 @@ for user in "$@" ; do
   # Regardless on whether or not the login false, we should also still lock the
   # user.
   usermod --expiredate 1 "$user"
-  timeout 60s pkill --euid "$user"
-  rc="$?"
-  # 124 is if the process timed out.
-  if [ "$?" -eq 124 ]; then
-    slog "Logging out of $user timed out.  Forcing logout of $user..."
-    pkill --euid "$user"
+  if ! timeout 60s pkill --euid "$user" ; then
     rc="$?"
-    if [ "$rc" -gt 0 ]; then
-      slog "Force logout of $user failed!"
+    # 124 is if the process timed out.
+    if [ "$?" -eq 124 ]; then
+      slog "Logging out of $user timed out.  Forcing logout of $user..."
+      pkill --euid "$user"
+      rc="$?"
+      if [ "$rc" -gt 0 ]; then
+        slog "Force logout of $user failed!"
+        failed=true
+      fi
+    elif [ "$rc" -gt 0 ]; then
+        slog "Logout of $user failed!"
       failed=true
     fi
-  elif [ "$rc" -gt 0 ]; then
-      slog "Logout of $user failed!"
-    failed=true
   fi
 done
 
