@@ -188,7 +188,7 @@ stdenv.mkDerivation (finalAttrs: {
   ];
 
   postInstall = ''
-    ln -s "$out/bin/prusa-slicer" "$out/bin/prusa-gcodeviewer"
+    ln -s "$out/bin/PrusaSlicer" "$out/bin/prusa-gcodeviewer"
 
     mkdir -p "$out/lib"
     mv -v $out/bin/*.* $out/lib/
