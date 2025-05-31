@@ -3,7 +3,27 @@ let
   system = "aarch64-darwin";
   username = "logan";
 in
-{ flake-inputs, lib, system, ... }: let
+{ flake-inputs, lib, system, pkgs, ... }: let
+  nextcloud = (flake-inputs.nextcloud-desktop.packages.${system}.default.overrideAttrs (old: {
+    # Inkscape dies with SIGTRAP and we see no other useful information.
+    # Sounds like a project unto itself.  However as of
+    # https://github.com/nextcloud/desktop/pull/3719, we can use
+    # rsvg-convert instead, which should express less desktop-isms that
+    # are probably causing Inkscape to die here.
+    nativeBuildInputs = (
+      lib.lists.filter
+        (p: !(lib.traceVal (lib.strings.hasPrefix "inkscape" p.name)))
+        old.nativeBuildInputs
+    ) ++ [ pkgs.librsvg ]
+      # Give us xcodebuild, or some equivalent.
+    ++ [ pkgs.xcbuild pkgs.apple-sdk ]
+    ;
+    buildInputs = old.buildInputs ++ [ pkgs.xcbuild pkgs.apple-sdk ];
+    # cmakeFlags = [
+    #   "-DCMAKE_OSX_SYSROOT=$(xcrun --sdk macosx --show-sdk-path)"
+    # ];
+  #   buildInputs = old.buildInputs ++ [ pkgs.libp11 pkgs.libsForQt5 ];
+  }));
   pkgs-latest = import flake-inputs.nixpkgs-latest {
     inherit system;
     # TODO: Constrain to signal-desktop-bin to make this precise.  This is
@@ -79,6 +99,7 @@ in {
         (pkgs.prusa-slicer.override { boost = pkgs.boost179; })
         # Allow generating Nextcloud plugins as a Nix expression.
         pkgs.nc4nix
+        # nextcloud
         # Yet another chat app.  I guess it's supposed to be secure, but I
         # assume anything going to the Internet is fundamentally insecure to
         # whomever receives it, and everyone in between.
