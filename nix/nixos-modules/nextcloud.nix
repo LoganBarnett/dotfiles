@@ -167,38 +167,57 @@ in {
     # This might get us into trouble but at least it'll let me look around at
     # things more, I hope.
     appstoreEnable = true;
-    # I can't seem to find the LDAP app per
-    # https://docs.nextcloud.com/server/latest/admin_manual/configuration_user/user_auth_ldap.html
-    # in the app store listing, but there is mention of it here:
-    # https://github.com/nextcloud/server/tree/dd66231a90873c750665343b46d3fb6f96826616/apps/user_ldap
-    # Since it's not technically an app from the store, I'm not sure how to
-    # install it in Nix, but there are built-ins I think, and this may be one of
-    # them as well.  For now I've decided to just make the app work and I'll see
-    # if the instructions prove useful in finding a built-in app already
-    # installed.
-    # extraApps = {
-    #   user_ldap =
-    # };
-    # HEIC must be explicitly supported, so we need the original list plus HEIC.
-    # TODO: Determine how to query the default, and simply add to it.
-    settings.enabledPreviewProviders = [
-      "OC\\Preview\\BMP"
-      "OC\\Preview\\GIF"
-      "OC\\Preview\\JPEG"
-      "OC\\Preview\\Krita"
-      "OC\\Preview\\MarkDown"
-      "OC\\Preview\\MP3"
-      "OC\\Preview\\OpenDocument"
-      "OC\\Preview\\PNG"
-      "OC\\Preview\\TXT"
-      "OC\\Preview\\XBitmap"
-      "OC\\Preview\\HEIC"
-    ];
+    settings = {
+      # Unfortunately setting this to true will break the pre-start service.
+      # Setting it to false will make other, internal machinations in Nextcloud
+      # break because it wants this to be set to true if the file is read-only
+      # (which Nix will make read-only).
+      # config_is_read_only = true;
+      # I can't seem to find the LDAP app per
+      # https://docs.nextcloud.com/server/latest/admin_manual/configuration_user/user_auth_ldap.html
+      # in the app store listing, but there is mention of it here:
+      # https://github.com/nextcloud/server/tree/dd66231a90873c750665343b46d3fb6f96826616/apps/user_ldap
+      # Since it's not technically an app from the store, I'm not sure how to
+      # install it in Nix, but there are built-ins I think, and this may be one
+      # of them as well.  For now I've decided to just make the app work and
+      # I'll see if the instructions prove useful in finding a built-in app
+      # already installed.
+      # extraApps = {
+      #   user_ldap =
+      # };
+      # HEIC must be explicitly supported, so we need the original list plus
+      # HEIC.
+      # TODO: Determine how to query the default, and simply add to it.
+      enabledPreviewProviders = [
+        "OC\\Preview\\BMP"
+        "OC\\Preview\\GIF"
+        "OC\\Preview\\JPEG"
+        "OC\\Preview\\Krita"
+        "OC\\Preview\\MarkDown"
+        "OC\\Preview\\MP3"
+        "OC\\Preview\\OpenDocument"
+        "OC\\Preview\\PNG"
+        "OC\\Preview\\TXT"
+        "OC\\Preview\\XBitmap"
+        "OC\\Preview\\HEIC"
+      ];
+      # I've seen snippets of this, but it hasn't worked.  Perhaps I had the
+      # structure wrong?  See the nextcloud-custom-config service in this file
+      # for the real configuration.
+      # user_ldap = {};
+    };
   };
-  systemd.services = if config.services.nextcloud.enable then {
+  systemd.services = {
     phpfpm-nextcloud = {
       # Make it so Nextcloud can always find its admin password.
       after = [ "run-agenix.d.mount" ];
+      serviceConfig = {
+        LoadCredential = [
+          "nextcloud-service-ldap-password:${
+            config.age.secrets."${host-id}-nextcloud-service-ldap-password".path
+          }"
+        ];
+      };
     };
     # To do "dynamic" configuration like we do here, see:
     # https://wiki.nixos.org/wiki/Nextcloud#Dynamic_configuration
@@ -226,7 +245,11 @@ in {
       script = ''
         set="nextcloud-occ ldap:set-config s01"
         nextcloud-occ app:enable user_ldap
-        nextcloud-occ ldap:create-empty-config
+        # I originally had a call to ldap:create-empty-config but it seemed to
+        # always create a new configuration regardless.  No surprises there, but
+        # undesirable.  Unsure if it's even needed if I know what I want the
+        # exact config to be, as is below.  If not, I'll have to re-add it with
+        # a guard so this service can be ephemeral.
         $set ldapHost "ldaps://nickel.proton"
         $set ldapPort "636"
         $set ldapBase "dc=proton,dc=org"
@@ -234,17 +257,19 @@ in {
         $set ldapBaseUsers "dc=proton,dc=org"
         $set ldapAgentName "uid=${host-id}-nextcloud-service,ou=users,dc=proton,dc=org"
         $set ldapAgentPassword "$(cat /run/credentials/nextcloud-custom-config.service/nextcloud-service-ldap-password)"
+        $set ldapAttributesForUserSearch "uid"
+        $set ldapExpertUsernameAttr "uid"
         $set ldapLoginFilter "(&(&(|(objectclass=inetOrgPerson))(|(memberof=cn=nextcloud-users,ou=groups,dc=proton,dc=org)))(uid=%uid))"
         $set ldapLoginFilterEmail "0"
-        $set ldapLoginFilterMode "0"
+        $set ldapLoginFilterMode "1"
         $set ldapLoginFilterUsername "1"
         # We probably want to revisit this at some point.
         $set ldapNestedGroups "0"
         $set ldapPagingSize "500"
         $set ldapAdminGroup "nextcloud-admins"
-        $set ldapUserFilter "(&(|(objectclass=inetOrgPerson))(|(memberof=cn=nextcloud-admins,ou=groups,dc=proton,dc=org)(memberof=cn=nextcloud-users,ou=groups,dc=proton,dc=org))"
+        $set ldapUserFilter "(&(|(objectclass=inetOrgPerson))(|(memberof=cn=nextcloud-admins,ou=groups,dc=proton,dc=org)(memberof=cn=nextcloud-users,ou=groups,dc=proton,dc=org)))"
         $set ldapUserFilterGroups "nextcloud-admins;nextcloud-users"
-        $set ldapUserFilterMode "0"
+        $set ldapUserFilterMode "1"
         $set ldapUserFilterObjectClass "inetOrgPerson"
         $set ldapUserAvatarRule "default"
         $set ldapUserDisplayName "cn"
@@ -257,7 +282,7 @@ in {
         $set hasMemberOfFilterSupport "1"
         $set ldapGroupFilter "(&(|(objectclass=groupOfNames))(|(cn=nextcloud-admins)(cn=nextcloud-users)))"
         $set ldapGroupFilterGroups "nextcloud-admins;nextcloud-users"
-        $set ldapGroupFilterMode "0"
+        $set ldapGroupFilterMode "1"
         $set ldapGroupFilterObjectClass "groupOfNames"
         $set ldapGroupMemberAssocAttr "member"
         $set ldapGroupDisplayName "cn"
@@ -270,10 +295,10 @@ in {
         nextcloud-occ ldap:test-config s01
         nextcloud-occ ldap:show-config s01
       '';
-      after = [ "nextcloud-setup.service" ];
+      before = [ "phpfpm-nextcloud.service" ];
       wantedBy = [ "multi-user.target" ];
     };
-  } else {};
+  };
   systemd.tmpfiles.rules = [
     "d ${data-dir} 0770 nextcloud nextcloud -"
   ];
