@@ -12,7 +12,7 @@
 ################################################################################
 set -euo pipefail
 
-function greppipe() {
+greppipe() {
   grep "$@" || test $? = 1;
 }
 
@@ -22,15 +22,16 @@ function greppipe() {
 key_offset=0x700000000
 key_option_left=0xE2 # The docs refer to this as "Alt".
 key_command_left=0xE3 # The docs refer to this as "GUI".
-key_control_left=0xE0
-key_capslock=0x39
-function keycode {
+# Kept for reference.
+# key_capslock=0x39
+# key_control_left=0xE0
+keycode() {
   key="$1"
-  echo -n $(( $key_offset | $key))
+  echo -n $(( key_offset | key))
 }
-function keycode_debug {
+keycode_debug() {
   key="$1"
-  echo $(( $key_offset | $key))
+  echo $(( key_offset | key))
 }
 keycode_debug $key_option_left
 # See about integrating this with the built-in system for nix-darwin, because it
@@ -79,7 +80,7 @@ hidutil property --matching "{\"ProductID\":0x1}" --set '{"UserKeyMapping": []}'
 hidutil property --matching "{\"ProductID\":0x200}" --set '{"UserKeyMapping": []}'
 echo "Cleared!"
 
-function key_remap {
+key_remap() {
   keyboards="$1"
   type="$2"
   key_maps="$3"
@@ -95,7 +96,6 @@ function key_remap {
         | uniq
       )"
       echo "Keyboard '$keyboard' is '$friendly_name'."
-      vendor_id="0x1b1c"
       echo "Clearing keyboard remaps for $keyboard..."
       hidutil property \
               --matching "$match" \
@@ -108,7 +108,7 @@ function key_remap {
       # global one later, but there shouldn't be any harm in it.
       hidutil property \
               --matching "$match" \
-              --set '{"UserKeyMapping": '"$3"' }'
+              --set '{"UserKeyMapping": '"$key_maps"' }'
     done
   else
     echo "No $type keyboards found.  Nothing to do."

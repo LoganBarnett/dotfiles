@@ -36,8 +36,9 @@
 # Much of this is shamelessly lifted from:
 # https://github.com/nmasur/dotfiles/blob/master/modules/darwin/system.nix
 
-{ config, emacs-overlay, flake-inputs, nixpkgs, lib, pkgs, system, ... }:
-{
+{ config, emacs-overlay, flake-inputs, nixpkgs, lib, pkgs, system, ... }: let
+  macos-keyboard-remap = pkgs.callPackage ./packages/macos-keyboard-remap.nix {};
+in {
   imports = [
     (import ./nixos-modules/nix-flake-environment.nix {
       inherit (flake-inputs) nix nixpkgs programsdb;
@@ -56,6 +57,7 @@
       # Give us the caffeinate command to run long running processes while
       # ensuring the machine stays awake.
       pkgs.darwin.PowerManagement
+      macos-keyboard-remap
     ];
   };
   fonts = {
@@ -165,7 +167,7 @@
       echo "$USER"
       echo "Swapping Option + Command keys on external keyboard..."
       # This is a custom tool found in this repo's /bin directory.
-      ${./darwin/macos-keyboard-remap}
+      ${macos-keyboard-remap}/bin/macos-keyboard-remap
       echo "Do not sleep when on AC power."
       pmset -c sleep 0 # Needs testing - UI not immediately updated.
       echo "Allow apps from anywhere..."
