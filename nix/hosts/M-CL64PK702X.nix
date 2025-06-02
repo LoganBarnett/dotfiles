@@ -125,43 +125,18 @@ in {
             };
           };
         in {
-          gpauth = (
-            rustOverrideAttrs
-            prev.gpauth
-            rec {
-              version = "2.4.4";
-              cargoHash = "sha256-TZiA/aD5X5E68mU0seikcdGgXVjxaG/+n6/yhxZbpD0=";
-              src = prev.fetchFromGitHub {
-                owner = "yuezk";
-                repo = "GlobalProtect-openconnect";
-                rev = "v${version}";
-                hash = "sha256-fXOjQv/Tt2gIV/CGF9q0BSx2W+EAOBmRFxbRixAfvaQ=";
-              };
-            }
-          )
-            .overrideAttrs (old: {
+          gpauth = prev.gpauth.overrideAttrs (old: {
             meta.platforms = old.meta.platforms ++ [ "aarch64-darwin" ];
             buildInputs = [
               pkgs.cairo
               pkgs.gtk3
               pkgs.gdk-pixbuf
-              pkgs.libsoup
+              pkgs.libsoup_2_4
               pkgs.openssl
               pkgs.pango
             ];
           });
-          gpclient = (
-            rustOverrideAttrs prev.gpclient rec {
-              version = "2.4.4";
-              cargoHash = "sha256-Fh9XAk9H6k62mYwgeS9RzvQT/AWDVEegBY9QU/ombGs=";
-              src = prev.fetchFromGitHub {
-                owner = "yuezk";
-                repo = "GlobalProtect-openconnect";
-                rev = "v${version}";
-                hash = "sha256-fXOjQv/Tt2gIV/CGF9q0BSx2W+EAOBmRFxbRixAfvaQ=";
-              };
-            }
-          ).overrideAttrs (old: {
+          gpclient = prev.gpclient.overrideAttrs (old: {
             buildInputs = old.buildInputs ++ [ pkgs.openssl ];
             # This may not be important.
             OPENSSL_DEV = pkgs.openssl.dev;

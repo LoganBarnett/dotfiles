@@ -48,6 +48,11 @@ in
   # specifically what it was.  nix-darwin manages fonts now.
   # fonts.fontconfig.enable = true;
 
+  home.enableNixpkgsReleaseCheck = (!(
+    config.home.version.full == "25.05"
+    && (lib.strings.hasPrefix "25.11" lib.version)
+  ));
+
   home.activation = {
     # Is there a better way to handle the directory? Relative dir does not work.
     ispell-config = ''
