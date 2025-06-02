@@ -10,11 +10,15 @@
 {
   config,
   lib,
+  # TODO: Use this when we get a proper callPackage thing going on here.  It
+  # doesn't work this way with my shim, and causes infinite recursion when used
+  # with callPackage in ./octoprint-shim.nix.
+  # libraspberrypi,
   pkgs,
   ...
 }:
 let
-
+  inherit (pkgs) libraspberrypi;
   cfg = config.services.octoprint;
 
   baseConfig = {
@@ -52,9 +56,7 @@ let
     cfg.printerProfiles
   );
 
-  pluginsEnv = package.python.withPackages (ps: [ ps.octoprint ] ++ (cfg.plugins ps));
-
-  package = pkgs.octoprint;
+  pluginsEnv = package: package.python.withPackages (ps: [ ps.octoprint ] ++ (cfg.plugins ps));
 
 in
 {
@@ -106,6 +108,12 @@ in
         description = "State directory of the daemon.";
       };
 
+      package = lib.mkOption {
+        type = lib.types.package;
+        default = pkgs.octoprint;
+        description = "The Octoprint package to use.";
+      };
+
       plugins = lib.mkOption {
         type = lib.types.functionTo (lib.types.listOf lib.types.package);
         default = plugins: [ ];
@@ -115,7 +123,7 @@ in
       };
 
       defaultPrinterProfile = lib.mkOption {
-        type = lib.types.string;
+        type = lib.types.str;
         default = "_default";
         description = "Name of the default printer profile to use.";
       };
@@ -202,6 +210,12 @@ in
         # TODO: Provide an example.
       };
 
+      raspberryPiVoltageThrottlingCheck = lib.mkOption {
+        type = lib.types.bool;
+        default = false;
+        description = "Check for low voltage throttling via vcgencmd.";
+      };
+
     };
 
   };
@@ -209,6 +223,14 @@ in
   ##### implementation
 
   config = lib.mkIf cfg.enable {
+
+    environment.systemPackages =
+      lib.optionals cfg.raspberryPiVoltageThrottlingCheck [
+        # We are specifically looking for the vcgencmd here.
+        # Unfortunately this isn't enough to get the service to restart if it
+        # gets added.
+        libraspberrypi
+      ];
 
     users.users = lib.optionalAttrs (cfg.user == "octoprint") {
       octoprint = {
@@ -223,6 +245,7 @@ in
 
     systemd.tmpfiles.rules = [
       "d '${cfg.stateDir}' - ${cfg.user} ${cfg.group} - -"
+    ] ++ lib.optionals cfg.raspberryPiVoltageThrottlingCheck [
       # this will allow octoprint access to raspberry specific hardware to check for throttling
       # read-only will not work: "VCHI initialization failed" error
       "a /dev/vchiq - - - - u:octoprint:rw"
@@ -232,7 +255,15 @@ in
       description = "OctoPrint, web interface for 3D printers";
       wantedBy = [ "multi-user.target" ];
       after = [ "network.target" ];
-      path = [ pluginsEnv ];
+      path = [ (pluginsEnv cfg.package) ];
+      # Use a handy trick seen in
+      # https://blog.withsam.org/blog/nixos-path-restart-trigger/ to promote
+      # restarts.  Spoiler alert: `restartTriggers` doesn't work seamlessly, but
+      # it works fine if we serialize and hash our inputs.
+      restartTriggers =  [
+        # Look at what you made me do.
+        (builtins.hashString "sha256" (builtins.toJSON libraspberrypi))
+      ];
 
       # TODO: It would be way better to just have a declarative configuration.
       preStart = let
@@ -263,7 +294,7 @@ in
 
       serviceConfig = {
         ExecStart = ''
-          ${pluginsEnv}/bin/octoprint serve \
+          ${pluginsEnv cfg.package}/bin/octoprint serve \
             --basedir ${cfg.stateDir}
         '';
         User = cfg.user;

@@ -6,7 +6,7 @@
 #
 # Selenium provides an OctoPrint server for the Prusia 3D FFF printer.
 ################################################################################
-{ config, flake-inputs, host-id, pkgs, system, ... }: {
+{ config, flake-inputs, host-id, lib, pkgs, system, ... }: {
   imports = [
     ../nixos-modules/octoprint-shim.nix
     ../nixos-modules/raspberry-pi-5.nix
@@ -18,7 +18,11 @@
         "octoprint"
         "${host-id}-octoprint-service"
       ;
+      # Used in conjunction with the libraspberrypi library (which provides the
+      # vcgencmd command), we should be able to see under-voltage reports in
+      # OctoPrint.
       users.users.octoprint.extraGroups = [
+        "video"
         "openldap-${host-id}-octoprint-service"
       ];
       users.groups."openldap-${host-id}-octoprint-service" = {};
@@ -28,6 +32,31 @@
       services.octoprint = {
         enable = true;
         defaultPrinterProfile = "prusa-xl";
+        package = pkgs.octoprint.override {
+          packageOverrides = lib.foldr lib.composeExtensions (self: super: {}) ([
+            (self: super: {
+              octoprint-pisupport = self.buildPythonPackage rec {
+                pname = "OctoPrint-PiSupport";
+                version = "2023.10.10";
+                format = "setuptools";
+
+                src = pkgs.fetchFromGitHub {
+                  owner = "OctoPrint";
+                  repo = "OctoPrint-PiSupport";
+                  rev = version;
+                  hash = "sha256-VSzDoFq4Yn6KOn+RNi1uVJHzH44973kd/VoMjqzyBRA=";
+                };
+
+                # Requires octoprint itself during tests.
+                doCheck = false;
+                postPatch = ''
+                  substituteInPlace octoprint_pi_support/__init__.py \
+                    --replace /usr/bin/vcgencmd ${self.pkgs.libraspberrypi}/bin/vcgencmd
+                '';
+              };
+            })
+        ]);
+        };
         printerProfiles = {
           prusa-xl = {
             axes = {
@@ -153,6 +182,23 @@
           # Save our eyes by letting us load a dark mode theme.
           pg.themeify
           # (pg.buildPlugin (let
+          #   version = "2023.10.10";
+          # in {
+          #   pname = "octoprint-plugin-pi-support";
+          #   inherit version;
+          #   src = pkgs.fetchFromGitHub {
+          #     owner = "OctoPrint";
+          #     repo = "OctoPrint-PiSupport";
+          #     rev = "2023.10.10";
+          #     hash = "sha256-VSzDoFq4Yn6KOn+RNi1uVJHzH44973kd/VoMjqzyBRA=";
+          #   };
+          #   meta = {
+          #     description = "OctoPrint plugin that provides additional information about your Pi in the UI.";
+          #     homepage = "https://github.com/OctoPrint/OctoPrint-PiSupport";
+          #     # maintainers = with lib.maintainers; [ logan-barnett ];
+          #   };
+          # }))
+          # (pg.buildPlugin (let
           #   version = "2024-05-29-unstable";
           # in {
           #   pname = "octoprint-plugin-bgcode";
@@ -197,6 +243,7 @@
             };
           }))
         ];
+        raspberryPiVoltageThrottlingCheck = true;
         # users = [];
       };
     }
