@@ -27,8 +27,6 @@ in {
       # head -c4 /dev/urandom | od -A none -t x4 | tr -d ' '
       networking.hostId = "f9daf086";
       nixpkgs.hostPlatform = system;
-
-      documentation.enable = lib.mkForce false;
     })
   ];
 }

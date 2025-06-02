@@ -1,7 +1,7 @@
 ################################################################################
 # Configuration common to all hosts that are servers.
 ################################################################################
-{ flake-inputs, host-id, pkgs, system, ... }: {
+{ flake-inputs, host-id, lib, pkgs, system, ... }: {
   imports = [
     {
       # Hostname is not an FQDN.
@@ -10,6 +10,7 @@
         inherit flake-inputs system;
       });
       system.stateVersion = "23.11";
+      documentation.enable = lib.mkForce false;
     }
     ./lib-custom.nix
     # TODO: Test this - I think I put this in to solve remote build issues, but
