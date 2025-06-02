@@ -203,7 +203,13 @@ in {
         ];
       };
     }
-    {
+    # Backup of /tank.
+    ({ pkgs, ... }: let
+      # We use a btrfs snapshot to prevent write locks from fouling up the
+      # backup.  This is the real path we want, which used to go into `paths`.
+      realPath = "/tank/data";
+      snapshot-dir = "${realPath}/snapshots";
+    in {
       # This goes on the client host (such as ../nixos-modules/nextcloud.nix).
       # age.secrets.nextcloud-wireguard-key = {
       #   generator.script = "wireguard-priv";
@@ -220,8 +226,21 @@ in {
         mode = "0440";
         rekeyFile = ../secrets/${host-id}-borg-encryption-passphrase.age;
       };
-      services.borgbackup.jobs.dataBackup = {
-        paths = [ "/tank/data" ];
+      # fileSystems."${snapshot-dir}" = {
+      #   device = "/tank/snapshots";
+      #   fsType = "none";
+      #   options = [ "bind" ];
+      # };
+      services.borgbackup.jobs.dataBackup = let
+        btrfs-bin = "${pkgs.btrfs-progs}/bin/btrfs";
+      in {
+        paths = [ "${snapshot-dir}/data" ];
+        # The jobs are disabled from writing anywhere but a select few
+        # directories.  Since we need to create a snapshot, let's bless the
+        # snapshot directory.
+        readWritePaths = [
+          snapshot-dir
+        ];
         repo = "/mnt/backup/backup-repo";
         encryption.mode = "repokey-blake2";
         encryption.passCommand = "cat /run/agenix/borg-passphrase";
@@ -234,7 +253,32 @@ in {
         # Daily by default.
         # 10:00 UTC is 03:00 PT.
         startAt = "10:00";
+        preHook = ''
+          set -euo pipefail
+          set -x
+          whoami
+          SNAP_NAME="data-$(date +%Y%m%d-%H%M%S)"
+          SNAP_PATH="${snapshot-dir}/$SNAP_NAME"
+          mkdir --parents "$SNAP_PATH"
+          # -r is for read-only, but there is no long argument form.
+          # Supposedly upstream has a fix!  But not as of 6.14.
+          ${btrfs-bin} subvolume snapshot -r ${realPath} "$SNAP_PATH"
+          ln -sfn "$SNAP_PATH" ${snapshot-dir}/data
+        '';
+        postHook = ''
+          set -euo pipefail
+          rm -f ${snapshot-dir}/data
+          # I'm not sure why this needs to be include /data as a subdirectory
+          # but it's what btrfs sees for its snapshots.
+          ${btrfs-bin} subvolume delete "$SNAP_PATH"/data
+        '';
       };
+
+      system.activationScripts.snapshotsOwnership.text = ''
+        mkdir --parents ${snapshot-dir}
+        # chown borg:borg ${snapshot-dir}
+        # chmod 750 ${snapshot-dir}
+      '';
       systemd.tmpfiles.rules = [
         "d /tank/data/gitea 0770 root borg -"
         "d /tank/data/nextcloud 0770 root borg -"
@@ -242,6 +286,6 @@ in {
       # This can help bootstrap a fresh system which won't have the borg group
       # yet.
       users.groups.borg = {};
-    }
+    })
   ];
 }
