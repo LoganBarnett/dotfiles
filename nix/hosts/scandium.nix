@@ -39,6 +39,10 @@ in
 
 in {
   system.primaryUser = username;
+  # Something required for every macOS host after a nix-darwin migration.  This
+  # value will be different per host.  Perhaps hosts stood up after that point
+  # won't need it.
+  ids.gids.nixbld = 350;
   imports = [
     ../nixos-modules/nix-builder-consume.nix
     ../nixos-modules/sd-image-raspberrypi.nix

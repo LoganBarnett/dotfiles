@@ -48,8 +48,6 @@ in {
     # ./nixos-modules/user-can-admin.nix.
     ./nixos-modules/pay-respects.nix
   ];
-  # Some sort of migration fix I guess.
-  ids.gids.nixbld = 30000;
   # Global packages that can't be bound to a specific user, such as shells.
   environment = {
     shells = [ pkgs.zsh ];
