@@ -5,9 +5,13 @@
   # Hint to Electron apps to use Wayland.
   environment.sessionVariables.NIXOS_OZONE_WL = "1";
   environment.systemPackages = [
+    # Full screen, hardware accelerated screenshots.  Works for Wayland.
+    pkgs.grim
     pkgs.i3status
     pkgs.i3blocks
     pkgs.i3lock-color
+    # Full screen, hardware accelerated screenshots.  Works for X11.
+    pkgs.scrot
     pkgs.wmctrl
     pkgs.wmname
   ];

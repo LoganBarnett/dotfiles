@@ -767,6 +767,27 @@
         "type": "github"
       }
     },
+    "home-manager-working-rocm": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs-working-rocm"
+        ]
+      },
+      "locked": {
+        "lastModified": 1747688870,
+        "narHash": "sha256-ypL9WAZfmJr5V70jEVzqGjjQzF0uCkz+AFQF7n9NmNc=",
+        "owner": "nix-community",
+        "repo": "home-manager",
+        "rev": "d5f1f641b289553927b3801580598d200a501863",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nix-community",
+        "ref": "release-24.11",
+        "repo": "home-manager",
+        "type": "github"
+      }
+    },
     "libcamera-src": {
       "flake": false,
       "locked": {
@@ -1512,6 +1533,7 @@
         "disko": "disko",
         "emacs-overlay": "emacs-overlay",
         "home-manager": "home-manager",
+        "home-manager-working-rocm": "home-manager-working-rocm",
         "nextcloud-desktop": "nextcloud-desktop",
         "nix": "nix",
         "nix-darwin": "nix-darwin",

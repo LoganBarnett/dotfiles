@@ -213,6 +213,7 @@
       titanium = {
         controlledHost = true;
         flake-input-overrides = {
+          home-manager = "home-manager-working-rocm";
           nixpkgs = "nixpkgs-working-rocm";
         };
         ipv4 = 6;

@@ -53,6 +53,10 @@
       url = "github:nix-community/emacs-overlay/master";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    home-manager-working-rocm = {
+      url = "github:nix-community/home-manager/release-24.11";
+      inputs.nixpkgs.follows = "nixpkgs-working-rocm";
+    };
     nextcloud-desktop = {
       # What's on master doesn't build with the current settings.  It looks like
       # they've moved onto qt6 but Nix has many components that don't work on
