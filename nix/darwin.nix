@@ -176,6 +176,16 @@ in {
         sudo spctl --master-disable
         echo "Disabled master assessments."
       fi
+      # Turn off the text suggestions, since they trigger aggressively (such
+      # as hitting space).
+      echo "Turning of text suggestions..."
+      defaults write -globalDomain InlinePredictionEnabled -bool false
+      # Or this.  Who knows.  ChatGPT just guesses and this stuff isn't readily
+      # documented in a place where a search engine can find it.  Or the
+      # Internet is just a wasteland.
+      defaults write com.apple.TextInput "ShowInlinePredictiveText" -bool false
+      # To make it apply immediately.
+      killall cfprefsd
       # This doesn't necessarily make all changes appear, but it'll get a lot of
       # them.
       echo "Invoking activateSettings to make changes stick..."
@@ -370,6 +380,9 @@ done
         # Use a long key repeat, to make it agonizing use pedestrian key
         # bindings.
         KeyRepeat = 100;
+        # Turn off the text suggestions, since they trigger aggressively (such
+        # as hitting space).
+        # UITextSuggestionsEnabled = false;
       };
       # Automatically install Mac OS software updates.
       SoftwareUpdate.AutomaticallyInstallMacOSUpdates = false;
