@@ -178,12 +178,6 @@ in {
       fi
       # Turn off the text suggestions, since they trigger aggressively (such
       # as hitting space).
-      echo "Turning of text suggestions..."
-      defaults write -globalDomain InlinePredictionEnabled -bool false
-      # Or this.  Who knows.  ChatGPT just guesses and this stuff isn't readily
-      # documented in a place where a search engine can find it.  Or the
-      # Internet is just a wasteland.
-      defaults write com.apple.TextInput "ShowInlinePredictiveText" -bool false
       # To make it apply immediately.
       killall cfprefsd
       # This doesn't necessarily make all changes appear, but it'll get a lot of
@@ -217,6 +211,17 @@ for user in $users; do
       }
       echo "Show the $home_dir/Library folder..."
       doas chflags nohidden "$home_dir/Library"
+      echo "Disabling text predictions..."
+      # Disable inline text predictions, since they are disruptive to typing.  This is undocumented, and took some searching.  I used this to find the string:
+      # find ~/Library -type f -name "*.plist" -exec grep -aH "InlinePrediction" {} +
+      # And this to find the file it was in:
+      # find ~/Library -type f -name "*.plist" | while read -r file; do
+      #  if strings "$file" | grep -q "InlinePrediction"; then
+      #    echo "$file"
+      #  fi
+      # done
+      # This could probably be done all at once but I'm exhausted from this.
+      defaults write -globalDomain NSAutomaticInlinePredictionEnabled -bool false
       echo "Set dock magnification..."
       doas defaults write com.apple.dock magnification -bool false
       echo "Set dock magnification size..."
