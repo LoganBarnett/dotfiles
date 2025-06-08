@@ -79,10 +79,10 @@ Then proceed to [[install the boot loader]].
 This requires first doing (if you haven't already):
 
 #+begin_src sh :results none :exports code
-sudo nixos-enter --root /mnt
+sudo nixos-enter
 #+end_src
 
-Simply run this to install the boot loader after =nixos-install=:
+Simply run this to install the boot loader after =nixos-enter=:
 
 #+begin_src shell :results none :exports code
 sudo NIXOS_INSTALL_BOOTLOADER=1 /nix/var/nix/profiles/system/bin/switch-to-configuration boot

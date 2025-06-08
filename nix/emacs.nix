@@ -332,6 +332,11 @@
           # epkgs.ox-dnd
           # Export org-mode documents to GitHub Flavored Markdown.
           epkgs.ox-gfm
+          # Manage a blog or other static site via Hugo.  ox-hugo doesn't
+          # require a weird #+BEGIN_HTML section to embed front-matter - it's
+          # just metadata on the org-mode document.  Compare to org-jekyll which
+          # does require this front-matter.
+          epkgs.ox-hugo
           # Export org-mode documents to Reveal.js slide decks.
           epkgs.ox-reveal
           # Check lists for org-mode?

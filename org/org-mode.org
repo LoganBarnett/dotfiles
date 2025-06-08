@@ -29,6 +29,33 @@ first.
   )
 
 #+end_src
+** Hugo
+
+The Hugo package promises to be a better Jekyll.  Unlike Jekyll, I needn't embed
+the front-matter in HTML blocks - I can just use ~org-mode~ metadata instead.
+
+#+name: config/ox-hugo
+#+begin_src emacs-lisp :results none :exports code :tangle no
+(use-package ox-hugo
+  :after ox
+  :commands (org-hugo-export-to-md org-hugo-auto-export-mode)
+  :config
+  ;; (add-to-list 'safe-local-eval-forms '(org-hugo-auto-export-mode . 1))
+  )
+
+#+end_src
+
+
+#+begin_src emacs-lisp :results none :exports code :tangle yes
+(advice-add 'check-unsafe-local-variable :after
+  (lambda (var val result)
+    (message "[check-unsafe-local-variable] %s = %S → %s" var val result)))
+(advice-add 'risky-local-variable-p :after
+  (lambda (var result)
+    (message "[risky-local-variable-p] %s → %s" var result)))
+#+end_src
+
+
 ** org-reveal
 
 * evil
@@ -1397,4 +1424,6 @@ This is the region of offending code, I think:
   (require 'gnuplot)
   (org-babel-do-load-languages 'org-babel-load-languages '((gnuplot . t)))
   )
+
+<<config/ox-hugo>>
 #+end_src
