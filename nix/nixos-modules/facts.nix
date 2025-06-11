@@ -95,10 +95,24 @@
         ];
         system = "aarch64-linux";
       };
-      gallium = {
+      copper = {
         aliases = [
           "nextcloud"
         ];
+        controlledHost = true;
+        flake-input-overrides = {
+          nixpkgs = "nixpkgs-25";
+        };
+        ipv4 = 10;
+        monitors = [
+          "blackbox-ping"
+          "node"
+          "systemd"
+        ];
+        system = "x86_64-linux";
+      };
+      gallium = {
+        aliases = [];
         controlledHost = true;
         flake-input-overrides = {
           nixpkgs = "nixpkgs-25";

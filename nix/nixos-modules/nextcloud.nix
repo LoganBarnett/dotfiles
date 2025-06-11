@@ -47,6 +47,7 @@ in {
       redirect = false;
     })
     ../nixos-modules/wireguard-agenix-rekey-generator.nix
+    ./bindfs.nix
   ];
   age.secrets = if config.services.nextcloud.enable then ({
     nextcloud-nfs-wireguard-key = {
@@ -70,7 +71,20 @@ in {
       "openldap-${host-id}-nextcloud-service"
       "${host-id}-nextcloud-service"
   )) else {};
-  fileSystems."${data-dir}" = {
+  bindfs-mappings.nextcloud = {
+    source = "${data-dir}-raw";
+    target = data-dir;
+    uid = {
+      source = 994;
+      destination = 998;
+    };
+    gid = {
+      source = 994;
+      destination = 998;
+    };
+    extraOptions = [ "--create-for-user=nextcloud" ];
+  };
+  fileSystems."${data-dir}-raw" = {
     device = "${nfs-vpn-hostname}:/tank/data/nextcloud";
     fsType = "nfs";
     options = [
@@ -212,6 +226,7 @@ in {
       # Make it so Nextcloud can always find its admin password.
       after = [ "run-agenix.d.mount" ];
       serviceConfig = {
+        BindPaths = data-dir;
         LoadCredential = [
           "nextcloud-service-ldap-password:${
             config.age.secrets."${host-id}-nextcloud-service-ldap-password".path
@@ -298,10 +313,11 @@ in {
       before = [ "phpfpm-nextcloud.service" ];
       wantedBy = [ "multi-user.target" ];
     };
+    bindfs-nextcloud.after = [ "mnt-nextcloud-data.mount" ];
   };
-  systemd.tmpfiles.rules = [
-    "d ${data-dir} 0770 nextcloud nextcloud -"
-  ];
+  # systemd.tmpfiles.rules = [
+  #   "d ${data-dir} 0770 nextcloud nextcloud -"
+  # ];
   users.users.nextcloud.extraGroups = [
     "openldap-${host-id}-nextcloud-service"
   ];
