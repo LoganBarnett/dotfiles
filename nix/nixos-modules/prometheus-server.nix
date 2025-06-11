@@ -96,7 +96,11 @@
             #   }
             # ];
           };
-          systemd = {};
+          systemd = {
+            # Reduce frequency for systemd because it can cause a dbus clog.  It
+            # doesn't need to be that fast anyways.
+            scrape_interval = "60s";
+          };
           wireguard = {
             static_configs = [
               {
