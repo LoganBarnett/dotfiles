@@ -32,6 +32,7 @@ set -euo pipefail
 
 bootstrap_host=''
 build=false
+efi=false
 switch=true
 enter_via_host=''
 
@@ -62,6 +63,8 @@ Usage: $0 [opts] <hostname>
   --no-switch          Do not `nixos-rebuild switch` - just copy the files.
                        This can be helpful for running this session over tmux.
 
+  --efi                Write EFI boot entries when formatting with disko.
+
 Copies nix files to a host via rsync over SSH, and attempts to do a
 `nixos-rebuild switch`.
 
@@ -71,6 +74,10 @@ EOH
     --bootstrap)
       bootstrap_host="${2:-}"
       shift 2
+      ;;
+    --efi)
+      efi=true
+      shift 1
       ;;
     --enter-via)
       enter_via_host="${2:-}"
@@ -130,6 +137,11 @@ if [[ "$enter_via_host" == '' ]]; then
   command="set -x; cd proton-nix ;
   sudo $nix_command --flake '.#$target' --show-trace --impure"
 else
+  efiBooted="$(bootctl | grep 'Not booted with EFI' ; echo [[ "$?" != '0' ]])"
+  if [[ "$efi" == true && "$efiBooted" != true ]]; then
+     echo "Did not boot with EFI, but --efi supplied.  This will result in error.  Exiting."
+     exit 1
+  fi
   command="set -x; set -euo pipefail;
 cd proton-nix
 # bootstrap/bootstrap-disk.sh
@@ -145,13 +157,21 @@ sudo nix run 'github:nix-community/disko/latest' -- --help
 sudo nix run 'github:nix-community/disko/latest' -- \
   --flake '.#$target' \
   --mode destroy,format,mount \
+  $( [[ "$efi" == true ]] && echo '--write-efi-boot-entries' || echo '' ) \
   --show-trace \
   ;
 # 4. Run nixos-install.  Disko 'could' do this, but --no-bootloader disables it.
 # We need to run this separately because (at time of writing), Disko isn't smart
 # enough to use configured boot disks in the host config.
-sudo nixos-install --flake '.#silicon'
+sudo nixos-install --flake '.#$target'
 "
+  echo 'The boot seed warning above (if present) can be worked around with the following setting:
+
+  fileSystems."/boot".options = [ "umask=0077" "defaults" ];
+
+And this should be present on any of your hosts.  The copper host has a sample
+configuration if you need it.  Some day I should unify the UEFI host settings.
+'
 fi
 # This creates a bunch of noise, but as far as I can tell there's no problems
 # had.  Some of the history is probably borked, but I just need the working tree
