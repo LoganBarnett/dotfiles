@@ -1343,6 +1343,20 @@ This is the region of offending code, I think:
 	    nil)
 #+end_example
 
+* web sites
+** capturing
+
+#+name: config/org-capture-web-sites
+#+begin_src emacs-lisp :results none :exports code :tangle no
+(add-to-list
+ 'org-capture-templates
+ '(("w" "Web snippet" entry
+    (file+headline "~/org/notes.org" "Web Clippings")
+    "* %:description\nURL: %:link\n\n%:initial"))
+ )
+#+end_src
+
+
 * stitch
 
 #+begin_src emacs-lisp :results none :noweb yes :tangle yes
@@ -1375,6 +1389,7 @@ This is the region of offending code, I think:
   ;; :hook
   ;; ('org-load-hook . +org-init-appearance-h)
   :config
+  <<config/org-capture-web-sites>>
   ;; This is very broken because evil-mode hasn't loaded yet and map!'s
   ;; documentation states that if evil is not loaded yet, then evil-specific
   ;; bindings are ignored.  At the moment we don't have anything for evil here
