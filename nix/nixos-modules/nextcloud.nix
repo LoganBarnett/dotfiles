@@ -245,9 +245,7 @@ in {
     # TODO: Use services.nextcloud.settings to configure this plugin.  I should
     # be able to copy the values.
     nextcloud-custom-config = {
-      path = [
-        config.services.nextcloud.occ
-      ];
+      path = [];
       serviceConfig = {
         LoadCredential = [
           "nextcloud-service-ldap-password:${
@@ -257,58 +255,79 @@ in {
       };
       # Most of this is set from doing "nextcloud-occ ldap:show-config" after
       # having clicked around in the UI.
-      script = ''
-        set="nextcloud-occ ldap:set-config s01"
-        nextcloud-occ app:enable user_ldap
-        # I originally had a call to ldap:create-empty-config but it seemed to
-        # always create a new configuration regardless.  No surprises there, but
-        # undesirable.  Unsure if it's even needed if I know what I want the
-        # exact config to be, as is below.  If not, I'll have to re-add it with
-        # a guard so this service can be ephemeral.
-        $set ldapHost "ldaps://nickel.proton"
-        $set ldapPort "636"
-        $set ldapBase "dc=proton,dc=org"
-        $set ldapBaseGroups "dc=proton,dc=org"
-        $set ldapBaseUsers "dc=proton,dc=org"
-        $set ldapAgentName "uid=${host-id}-nextcloud-service,ou=users,dc=proton,dc=org"
-        $set ldapAgentPassword "$(cat /run/credentials/nextcloud-custom-config.service/nextcloud-service-ldap-password)"
-        $set ldapAttributesForUserSearch "uid"
-        $set ldapExpertUsernameAttr "uid"
-        $set ldapLoginFilter "(&(&(|(objectclass=inetOrgPerson))(|(memberof=cn=nextcloud-users,ou=groups,dc=proton,dc=org)))(uid=%uid))"
-        $set ldapLoginFilterEmail "0"
-        $set ldapLoginFilterMode "1"
-        $set ldapLoginFilterUsername "1"
-        # We probably want to revisit this at some point.
-        $set ldapNestedGroups "0"
-        $set ldapPagingSize "500"
-        $set ldapAdminGroup "nextcloud-admins"
-        $set ldapUserFilter "(&(|(objectclass=inetOrgPerson))(|(memberof=cn=nextcloud-admins,ou=groups,dc=proton,dc=org)(memberof=cn=nextcloud-users,ou=groups,dc=proton,dc=org)))"
-        $set ldapUserFilterGroups "nextcloud-admins;nextcloud-users"
-        $set ldapUserFilterMode "1"
-        $set ldapUserFilterObjectClass "inetOrgPerson"
-        $set ldapUserAvatarRule "default"
-        $set ldapUserDisplayName "cn"
-        $set ldapUuidGroupAttribute "auto"
-        $set ldapUuidUserAttribute "auto"
-        $set markRemnantsAsDisabled "0"
-        $set turnOnPasswordChange "0"
-        $set useMemberOfToDetectMembership "0"
-        $set lastJpegPhotoLookup "0"
-        $set hasMemberOfFilterSupport "1"
-        $set ldapGroupFilter "(&(|(objectclass=groupOfNames))(|(cn=nextcloud-admins)(cn=nextcloud-users)))"
-        $set ldapGroupFilterGroups "nextcloud-admins;nextcloud-users"
-        $set ldapGroupFilterMode "1"
-        $set ldapGroupFilterObjectClass "groupOfNames"
-        $set ldapGroupMemberAssocAttr "member"
-        $set ldapGroupDisplayName "cn"
-        $set ldapCacheTTL "600"
-        $set ldapGidNumber "gidnumber"
-        $set turnOffCertCheck "0"
-        $set ldapExperiencedAdmin "0"
-        $set ldapConnectionTimeout "15"
-        $set ldapConfigurationActive "1"
-        nextcloud-occ ldap:test-config s01
-        nextcloud-occ ldap:show-config s01
+      script = let
+        uid = "uid=${host-id}-nextcloud-service,ou=users,dc=proton,dc=org";
+        passwordPath = "/run/credentials/nextcloud-custom-config.service/nextcloud-service-ldap-password";
+        ldapHost = "nickel.proton";
+        script = pkgs.writeShellApplication {
+          name = "nextcloud-ldap-configure";
+          runtimeInputs = [
+            config.services.nextcloud.occ
+            pkgs.openldap
+          ];
+          text = ''
+            set -e
+            # None of this is going to work if we can't do a simple bind.
+            ldapwhoami -x \
+              -D "${uid}" \
+              -w "$(cat "${passwordPath}")" \
+              -H ldaps://${ldapHost}
+            set="nextcloud-occ ldap:set-config s01"
+            nextcloud-occ app:enable user_ldap
+            if nextcloud-occ ldap:show-config s01 ; then
+              echo "Configuration exists.  But going to set values anyways..."
+            else
+              echo "Prior configuration does not exist.  Creating now..."
+              nextcloud-occ ldap:create-empty-config
+            fi
+            $set ldapHost "ldaps://${ldapHost}"
+            $set ldapPort "636"
+            $set ldapBase "dc=proton,dc=org"
+            $set ldapBaseGroups "dc=proton,dc=org"
+            $set ldapBaseUsers "dc=proton,dc=org"
+            $set ldapAgentName "${uid}"
+            $set ldapAgentPassword "$(cat "${passwordPath}")"
+            $set ldapAttributesForUserSearch "uid"
+            $set ldapExpertUsernameAttr "uid"
+            $set ldapLoginFilter "(&(&(|(objectclass=inetOrgPerson))(|(memberof=cn=nextcloud-users,ou=groups,dc=proton,dc=org)))(uid=%uid))"
+            $set ldapLoginFilterEmail "0"
+            $set ldapLoginFilterMode "1"
+            $set ldapLoginFilterUsername "1"
+            # We probably want to revisit this at some point.
+            $set ldapNestedGroups "0"
+            $set ldapPagingSize "500"
+            $set ldapAdminGroup "nextcloud-admins"
+            $set ldapUserFilter "(&(|(objectclass=inetOrgPerson))(|(memberof=cn=nextcloud-admins,ou=groups,dc=proton,dc=org)(memberof=cn=nextcloud-users,ou=groups,dc=proton,dc=org)))"
+            $set ldapUserFilterGroups "nextcloud-admins;nextcloud-users"
+            $set ldapUserFilterMode "1"
+            $set ldapUserFilterObjectClass "inetOrgPerson"
+            $set ldapUserAvatarRule "default"
+            $set ldapUserDisplayName "cn"
+            $set ldapUuidGroupAttribute "auto"
+            $set ldapUuidUserAttribute "auto"
+            $set markRemnantsAsDisabled "0"
+            $set turnOnPasswordChange "0"
+            $set useMemberOfToDetectMembership "0"
+            $set lastJpegPhotoLookup "0"
+            $set hasMemberOfFilterSupport "1"
+            $set ldapGroupFilter "(&(|(objectclass=groupOfNames))(|(cn=nextcloud-admins)(cn=nextcloud-users)))"
+            $set ldapGroupFilterGroups "nextcloud-admins;nextcloud-users"
+            $set ldapGroupFilterMode "1"
+            $set ldapGroupFilterObjectClass "groupOfNames"
+            $set ldapGroupMemberAssocAttr "member"
+            $set ldapGroupDisplayName "cn"
+            $set ldapCacheTTL "600"
+            $set ldapGidNumber "gidnumber"
+            $set turnOffCertCheck "0"
+            $set ldapExperiencedAdmin "0"
+            $set ldapConnectionTimeout "15"
+            $set ldapConfigurationActive "1"
+            nextcloud-occ ldap:test-config s01
+            nextcloud-occ ldap:show-config s01
+          '';
+        };
+      in ''
+        ${script}/bin/nextcloud-ldap-configure
       '';
       before = [ "phpfpm-nextcloud.service" ];
       wantedBy = [ "multi-user.target" ];

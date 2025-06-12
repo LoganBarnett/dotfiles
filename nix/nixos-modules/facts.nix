@@ -274,12 +274,26 @@
         };
       }
       # Service / non-interactive users.
+      # TODO: I need a better way of declaring these here and in the modules
+      # where they are used.  If I forget to set up the service account here, it
+      # simply won't get used in the LDAP server, and things just fail without
+      # much indication that I'm missing a declaration here.  Perhaps I need a
+      # service account function that validates the presence here, or gets the
+      # values it needs from here. That way I have a nice error trail that leads
+      # me to the correct conclusion quickly.
       // {
         bromine-matrix-service = {
           email = "bromine-matrix-service@proton";
           type = "service";
           description = "Matrix on Bromine.";
           full-name = "bromine-matrix-service";
+          devices = [];
+        };
+        copper-nextcloud-service = {
+          email = "copper-nextcloud-service@proton";
+          type = "service";
+          description = "Nextcloud on Copper.";
+          full-name = "copper-nextcloud-service";
           devices = [];
         };
         nickel-alertmanager-service = {
@@ -294,13 +308,6 @@
           type = "service";
           description = "Grafana on Nickel.";
           full-name = "nickel-grafana-service";
-          devices = [];
-        };
-        gallium-nextcloud-service = {
-          email = "gallium-nextcloud-service@proton";
-          type = "service";
-          description = "Nextcloud on Gallium.";
-          full-name = "gallium-nextcloud-service";
           devices = [];
         };
         selenium-octoprint-service = {
