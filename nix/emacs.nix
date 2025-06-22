@@ -49,6 +49,9 @@
           # Vertico and friends.
           epkgs.embark
           epkgs.embark-consult
+          # Support working in a git configuration file, gitignore file, or
+          # gitattributes file.
+          epkgs.git-modes
           # Give us colorful icons in auto-complete, which could help us
           # visually identify certain kinds of completion information (such as
           # structs vs. enums in Rust).
