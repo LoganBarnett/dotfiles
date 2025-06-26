@@ -237,11 +237,14 @@ Files are returned as relative paths to DIRECTORY."
       :desc "Switch project" :n "p" #'project-switch-project
       )
    )
+  ;; TODO: Perhaps this should go in a more generalized search mapping?
   (map!
    :after project
+   :after swiper
    :leader
    :prefix ("s" . "search")
    :desc "Find text in project" :n "p" #'consult-ripgrep
+   :desc "swiper" "s" #'swiper
    )
   )
 #+end_src

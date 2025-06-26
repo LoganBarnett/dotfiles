@@ -1411,8 +1411,13 @@ This is the region of offending code, I think:
     :desc "inactive datestamp" "T" #'org-timestamp-inactive
     :desc "Inactive timestamp" "C" #'config/org-mode-insert-inactive-time-stamp-with-time
     )
-   (:prefix ("s" . "subtree/heading")
+   (:prefix ("h" . "heading")
       :desc "archive" "a" #'org-archive-subtree
+     )
+   ;; I'm not sure how swiper gets pulled in, nor how it should be pulled in,
+   ;; but it is available after Emacs starts.
+   (:prefix ("s" . "search")
+      :desc "swiper" "s" #'swiper
      )
    )
   ;; A series of helpers from Doom that we already use.
