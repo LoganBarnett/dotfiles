@@ -27,7 +27,17 @@
 # https://docs.nextcloud.com/server/latest/admin_manual/configuration_user/user_auth_ldap.html
 #
 # You can see a listing of apps on https://apps.nextcloud.com or locally via
-# https://gallium.proton/settings/apps.
+# https://nextcloud.proton/settings/apps.
+#
+# This setup might seem a little janky but I have to fight with systemd quite a
+# bit to make it robust and able to survive a reboot.  In essence, there's been
+# a lot of work in making sure the system mounts and mounts again (once for NFS,
+# the other for limited permissions) before anything that needs to _use_ those
+# mounts gets to run.  If those mounts aren't in place, these processes will
+# still write something but it will be wrong.  Thus you will see some belt and
+# suspender stuff - checks that are redundant, but I found helpful when trying
+# to get everything working.  I'd like to leave it in place unless these
+# (possibly) redundant checks prove problematic in some way.
 ################################################################################
 {
   config,
@@ -49,7 +59,7 @@ in {
     ../nixos-modules/wireguard-agenix-rekey-generator.nix
     ./bindfs.nix
   ];
-  age.secrets = if config.services.nextcloud.enable then ({
+  age.secrets = {
     nextcloud-nfs-wireguard-key = {
       generator.script = "wireguard-priv";
       group = "nextcloud";
@@ -70,10 +80,15 @@ in {
     config.lib.ldap.ldap-password
       "openldap-${host-id}-nextcloud-service"
       "${host-id}-nextcloud-service"
-  )) else {};
+  );
+  # Use bindfs to give us a mount that the nextcloud user can control.
   bindfs-mappings.nextcloud = {
     source = "${data-dir}-raw";
-    target = data-dir;
+    # It's important to only use the data directory.  The NixOS Nextcloud
+    # service definition will lay down the base directory structure.  We only
+    # need the data subdirectory anyways.  So this handles conflicts that come
+    # up with load order and the like.
+    target = "${data-dir}/data";
     uid = {
       source = 994;
       destination = 998;
@@ -85,7 +100,7 @@ in {
     extraOptions = [ "--create-for-user=nextcloud" ];
   };
   fileSystems."${data-dir}-raw" = {
-    device = "${nfs-vpn-hostname}:/tank/data/nextcloud";
+    device = "${nfs-vpn-hostname}:/tank/data/nextcloud/data";
     fsType = "nfs";
     options = [
       "defaults"
@@ -101,16 +116,21 @@ in {
   };
   systemd.automounts = [
     {
-      where = "mnt-nextcloud-data";
+      name = lib.mkForce "mnt-nextcloud-data.automount";
+      where = "${data-dir}/data";
+      before = [ "nextcloud.service" ];
       wantedBy = [ "nextcloud.service" ];
+      after = [ "network-online.target" ];
+      requires = [ "network-online.target" ];
       automountConfig.TimeoutIdleSec = "600";
     }
   ];
   systemd.mounts = [
     {
-      what = "${nfs-vpn-hostname}:/tank/data/nextcloud";
+      name = lib.mkForce "mnt-nextcloud-data-raw.mount";
+      what = "${nfs-vpn-hostname}:/tank/data/nextcloud/data";
       type = "nfs";
-      where = "/mnt/nextcloud-data";
+      where = "${data-dir}-raw";
       options = "defaults,noatime,_netdev,x-systemd.requires=network-online.target,x-systemd.after=network-online.target";
     }
   ];
@@ -121,6 +141,7 @@ in {
     privateKeyFile = config.age.secrets.nextcloud-nfs-wireguard-key.path;
     peers = [
       {
+        name = "silicon-nfs";
         publicKey = builtins.readFile ../secrets/silicon-nfs-wireguard-key.pub;
         endpoint = "${nfs-physical-hostname}:51820";
         allowedIPs = [ "10.100.0.1/32" ];
@@ -143,6 +164,7 @@ in {
     # error: 1 dependencies of derivation '/nix/store/ddd9xzy4clnq9hvxwvl9yap3silk467a-nix-apps.drv' failed to build
     # error: 1 dependencies of derivation '/nix/store/p1vf696xgb4z39gf62sx0a76n3hd3yj2-nextcloud-30.0.2-with-apps.drv' failed to build
     package = pkgs.nextcloud31;
+    database.createLocally = true;
     datadir = data-dir;
     hostName = fqdn;
     # This needs to be set in conjunction with the https custom module I have.
@@ -150,11 +172,24 @@ in {
     # whole new process, it just uses HTTPS directly.
     https = true;
     config = {
-      adminpassFile = config.age.secrets.nextcloud-admin-password.path;
-      dbtype = "sqlite";
       # This defaults to root.  It's pretty much documented everywhere as
       # "admin".
       # adminuser = "root";
+      adminuser = "admin";
+      adminpassFile = config.age.secrets.nextcloud-admin-password.path;
+      # dbtype = "sqlite";
+      dbtype = "pgsql";
+      dbuser = "nextcloud";
+      dbname = "nextcloud";
+      # The documentation says this should be a path to the socket, but it
+      # really should be a path to the socket's base directory.  The socket n
+      # name is derived from the standard socket name template that PostgreSQL
+      # uses, including converting its TCP port into part of the path.
+      dbhost = "/run/postgresql";
+      # dbpass = "";
+      # This shouldn't be needed because of PostgreSQL's peer authentication.
+      # In essence: The Unix user name must match.
+      # dbpassFile = config.age.secrets.nextcloud-database-password.path;
     };
     phpOptions = {
       "opcache.enable" = "1";
@@ -180,7 +215,9 @@ in {
     extraAppsEnable = true;
     # This might get us into trouble but at least it'll let me look around at
     # things more, I hope.
-    appstoreEnable = true;
+    # appstoreEnable = true;
+    # It got us into trouble.  I suppose it didn't survive an update.
+    appstoreEnable = false;
     settings = {
       # Unfortunately setting this to true will break the pre-start service.
       # Setting it to false will make other, internal machinations in Nextcloud
@@ -221,10 +258,27 @@ in {
       # user_ldap = {};
     };
   };
+  services.postgresql = {
+    enable = true;
+    package = pkgs.postgresql_16;
+    ensureDatabases = [ "nextcloud" ];
+    ensureUsers = [
+      {
+        # This uses peer authentication by default, which means only users of
+        # matching Unix user names can connect as this user.
+        name = "nextcloud";
+        ensureDBOwnership = true;
+      }
+    ];
+  };
   systemd.services = {
     phpfpm-nextcloud = {
       # Make it so Nextcloud can always find its admin password.
-      after = [ "run-agenix.d.mount" ];
+      requires = [
+        "bindfs-nextcloud.service"
+        "postgresql.service"
+        "run-agenix.d.mount"
+      ];
       serviceConfig = {
         BindPaths = data-dir;
         LoadCredential = [
@@ -233,6 +287,30 @@ in {
           }"
         ];
       };
+    };
+    # This is so sticky, so put a check in place to ensure it's happening
+    # correctly.  We _really_ don't want to be reading and writing to the wrong
+    # directory that doesn't get backed up and doesn't even host our files we
+    # want.
+    nextcloud-bindfs-check = let
+      after = [ "bindfs-nextcloud.service" ];
+      # List them all in case we take out the custom config one day.
+      before = [
+        "nextcloud-setup.service"
+        "nextcloud-custom-config.service"
+        "nextcloud.service"
+      ];
+    in {
+      serviceConfig = {
+        AssertPathIsMountPoint = "${data-dir}/data";
+      };
+      after = after;
+      requires = after;
+      before = before;
+      wantedBy = before;
+      # This file was placed to ensure we're looking at the right directory,
+      # regardless of mount settings and all that.
+      script = ''stat "${data-dir}/data/nfs-share-working"'';
     };
     # To do "dynamic" configuration like we do here, see:
     # https://wiki.nixos.org/wiki/Nextcloud#Dynamic_configuration
@@ -305,6 +383,9 @@ in {
             $set ldapUserDisplayName "cn"
             $set ldapUuidGroupAttribute "auto"
             $set ldapUuidUserAttribute "auto"
+            # Prevents NextCloud from using the UUID username form on disk, and
+            # helps keep things very tidy and consistent.
+            $set internalUsernameAttribute "uid"
             $set markRemnantsAsDisabled "0"
             $set turnOnPasswordChange "0"
             $set useMemberOfToDetectMembership "0"
@@ -329,17 +410,66 @@ in {
       in ''
         ${script}/bin/nextcloud-ldap-configure
       '';
-      before = [ "phpfpm-nextcloud.service" ];
-      wantedBy = [ "multi-user.target" ];
+      after = [
+        "run-agenix.d.mount"
+        "bindfs-nextcloud.service"
+        "nextcloud-setup.service"
+      ];
+      requires = [
+        "run-agenix.d.mount"
+        "bindfs-nextcloud.service"
+        "nextcloud-setup.service"
+      ];
+      before = [ "multi-user.target" "phpfpm-nextcloud.service" ];
+      wantedBy = [ "multi-user.target" "phpfpm-nextcloud.service" ];
     };
-    bindfs-nextcloud.after = [ "mnt-nextcloud-data.mount" ];
+    bindfs-nextcloud = let
+      after = [
+        # There's just no getting around this unless you want to use something
+        # else like no words.  It's a really unfortunate decision on systemd's
+        # part.  Both are listed for clarity, even though the other is
+        # essentially a no-op.
+        # "mnt-nextcloud\x2ddata\x2draw.mount"
+        "mnt-nextcloud\\x2ddata\\x2draw.mount"
+        # "mnt-nextcloud-data.mount"
+      ];
+      before = [
+        "nextcloud-setup.service"
+        "nextcloud-update-db.service"
+        "nextcloud-custom-config.service"
+        "nextcloud.service"
+      ];
+    in {
+      after = after;
+      requires = after;
+      before = before;
+      wantedBy = before;
+    };
+    "wireguard-wg0-peer-silicon-nfs-start" = let
+      after = [
+        "network-online.target"
+        "nss-lookup.target"
+      ];
+    in {
+      after = after;
+      requires = after;
+    };
   };
   # systemd.tmpfiles.rules = [
-  #   "d ${data-dir} 0770 nextcloud nextcloud -"
+  #   "d ${data-dir}-raw 0770 root root -"
   # ];
-  users.users.nextcloud.extraGroups = [
-    "openldap-${host-id}-nextcloud-service"
-  ];
+  users.users.nextcloud = {
+    # This is typically set by the Nextcloud NixOS module, but if we disable it
+    # because we're doing an upgrade or fresh install, we might set
+    # services.nextcloud.enable = false and then suddenly this field needs to be
+    # set again.  So just leave it there.
+    isSystemUser = true;
+    extraGroups = [
+      "openldap-${host-id}-nextcloud-service"
+    ];
+    group = "nextcloud";
+  };
+  users.groups.nextcloud = {};
   users.groups."openldap-${host-id}-nextcloud-service" = {};
   networking.hosts = {
     # Give us a fake hostname so we can ensure traffic flows through the VPN,
