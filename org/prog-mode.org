@@ -403,6 +403,17 @@ Emacs is smart enough to skip the shebang.
 to something like ~9.00~ to help it.  The variable itself includes a lot of
 documentation as to how the heuristic works.
 
+**** overriding dtrt et. al.
+
+#+name: config/dtrt-indent-bless-safe-local-variables
+#+begin_src emacs-lisp :results none :exports code :tangle no
+(put 'standard-indent 'safe-local-variable #'integerp)
+(defun config/integer-or-booleanp (val)
+  (or (booleanp val) (integerp val))
+  )
+(put 'dtrt-indent-mode 'safe-local-variable #'config/integer-or-booleanp)
+#+end_src
+
 **** other culprits
 
 ~indent-bars~ is the only thing I can think of, but I can't see it doing
@@ -417,6 +428,7 @@ are there so many ways to configure indentation?!
 
 (use-package "prog-mode"
   :init
+  <<config/dtrt-indent-bless-safe-local-variables>>
   <<config/prog-mode-comment-and-yank-newline-fix>>
   <<config/prog-mode-c-style-comment-block-fix>>
   <<config/prog-mode-fix-c-indentation>>
