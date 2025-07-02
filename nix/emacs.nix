@@ -254,6 +254,8 @@
           # Cucumber .feature files.
           epkgs.feature-mode
           epkgs.json-mode
+          # Edit justfiles for just - a Rust based make alternative.
+          epkgs.just-mode
           epkgs.lsp-mode
           epkgs.lsp-ui
           # Text based diagramming.
