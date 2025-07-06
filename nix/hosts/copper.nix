@@ -12,6 +12,7 @@ in {
   imports = [
     ../nixos-modules/nix-builder-provide.nix
     ../nixos-modules/server-host.nix
+    ../nixos-configs/dex-oidc.nix
     ../nixos-modules/nextcloud.nix
     ../nixos-modules/notes-sync.nix
     ({ lib, pkgs, ... }: {

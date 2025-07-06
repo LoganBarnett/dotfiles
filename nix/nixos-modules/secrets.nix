@@ -286,6 +286,7 @@ in {
     # both reference the same file.
     flake-inputs.agenix.nixosModules.default
     flake-inputs.agenix-rekey.nixosModules.default
+    ../nixos-configs/environment-file-secret.nix
   ];
   environment.systemPackages = [
     # This should remain out because agenix-rekey brings in a replacement

@@ -97,6 +97,7 @@
       };
       copper = {
         aliases = [
+          "dex"
           "nextcloud"
         ];
         controlledHost = true;
@@ -287,6 +288,13 @@
           type = "service";
           description = "Matrix on Bromine.";
           full-name = "bromine-matrix-service";
+          devices = [];
+        };
+        copper-dex-oidc-service = {
+          email = "bromine-dex-oidc-service@proton";
+          type = "service";
+          description = "Dex-OIDC on Copper.";
+          full-name = "copper-dex-oidc-service";
           devices = [];
         };
         copper-nextcloud-service = {
