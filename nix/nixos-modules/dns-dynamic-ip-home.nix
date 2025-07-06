@@ -25,7 +25,8 @@ in {
   systemd.timers.dns-dynamic-ip-home = {
     wantedBy = [ "timers.target" ];
     timerConfig = {
-      # OnBootSec = "15m";
+      # Without this, it won't start on boot too.
+      OnBootSec = "15m";
       OnUnitActiveSec = "15m";
     };
   };
