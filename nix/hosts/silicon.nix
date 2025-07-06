@@ -241,10 +241,15 @@ in {
         readWritePaths = [
           snapshot-dir
         ];
-        repo = "/mnt/backup/backup-repo";
+        repo = "/tank/backup/backup-repo";
         encryption.mode = "repokey-blake2";
         encryption.passCommand = "cat /run/agenix/borg-passphrase";
         compression = "zstd";
+        patterns = [
+          "+ /tank/data/nextcloud/**"
+          "+ /tank/data/gitea/**"
+          "- *"
+        ];
         prune.keep = {
           daily = 7;
           weekly = 4;
