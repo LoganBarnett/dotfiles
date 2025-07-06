@@ -1,12 +1,24 @@
 # For using AMD GPUs for graphics, gaming, or compute.
-# See https://nixos.wiki/wiki/AMD_GPU for a guide.
+# See https://wiki.nixos.org/wiki/AMD_GPU for a guide.
 # Unfortunately the guide doesn't speak much as to _when_ you'd want to turn on
 # these various settings, so for which applications these settings are needed is
 # less understood.  That's an exercise left the reader.
 { lib, options, pkgs, ... }: {
   boot.initrd.kernelModules = [ "amdgpu" ];
   # Some programs hard-code the path to HIP.
-  systemd.tmpfiles.rules = ["L+ /opt/rocm/hip - - - - ${pkgs.rocmPackages.clr}"];
+  # systemd.tmpfiles.rules = ["L+ /opt/rocm/hip - - - - ${pkgs.rocmPackages.clr}"];
+  systemd.tmpfiles.rules = let
+    rocmEnv = pkgs.symlinkJoin {
+      name = "rocm-combined";
+      paths = [
+        pkgs.rocmPackages.rocblas
+        pkgs.rocmPackages.hipblas
+        pkgs.rocmPackages.clr
+      ];
+    };
+  in [
+    "L+    /opt/rocm   -    -    -     -    ${rocmEnv}"
+  ];
   environment.systemPackages = [
     # More diagnostics.
     pkgs.clinfo
