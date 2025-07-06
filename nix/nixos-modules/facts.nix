@@ -85,6 +85,7 @@
       bromine = {
         aliases = [
           "matrix"
+          "home-assistant"
         ];
         controlledHost = true;
         ipv4 = 3;
