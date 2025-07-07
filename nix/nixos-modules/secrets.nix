@@ -176,6 +176,7 @@ in {
     flake-inputs.agenix-rekey.nixosModules.default
     ../nixos-configs/environment-file-secret.nix
     ../nixos-configs/tls-secret.nix
+    ../nixos-configs/yaml-secret.nix
   ];
   environment.systemPackages = [
     # This should remain out because agenix-rekey brings in a replacement
