@@ -510,8 +510,11 @@ in {
         ];
         use_x_forwarded_for = true;
       };
+      # Yep, just leave it empty.  I found out this is Because No Reasons.
       zwave_js = {
-        url = "ws://localhost:${toString config.services.zwave-js.port}";
+        # I can't find a way to make this work.
+        # LOL just leave this out I guess?
+        # url = "ws://localhost:${toString config.services.zwave-js.port}";
       };
     };
   };

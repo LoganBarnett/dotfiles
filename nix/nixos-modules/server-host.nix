@@ -73,6 +73,8 @@
     # This gives us strings among other things.
     pkgs.binutils
     (pkgs.callPackage ../packages/ethernet-restart.nix {})
+    # Show us details about a file.
+    pkgs.file
     # Gives us ldapsearch et. al. for debugging LDAP issues.
     pkgs.openldap
     # Allow us to debug TLS issues.
@@ -87,6 +89,8 @@
     # per: https://dentarg.blog/post/186913288147/umac-64-etm
     # pkgs.openssh_hpn
     pkgs.openssh
+    # Gives us lsusb which allows us to query USB devices.
+    pkgs.usbutils
   ];
   # This seems to cause build issues with users-groups.json for reasons that are
   # unclear.  Disable.
