@@ -70,6 +70,8 @@
     "xfs"
   ];
   environment.systemPackages = [
+    # This gives us strings among other things.
+    pkgs.binutils
     (pkgs.callPackage ../packages/ethernet-restart.nix {})
     # Gives us ldapsearch et. al. for debugging LDAP issues.
     pkgs.openldap

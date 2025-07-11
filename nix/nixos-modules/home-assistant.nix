@@ -593,6 +593,23 @@ in
         ]
     );
 
+    onboardingComplete = mkOption {
+      default = null;
+      type = types.nullOr types.bool;
+      description = ''
+        Whether or not to disable onboarding.  Leave as null to allow Home
+        Assistant to manage this itself.
+      '';
+    };
+
+    staticUsers = mkOption {
+      default = null;
+      type = types.nullOr types.attrs;
+      description = ''
+        Users to pre-populate.
+      '';
+    };
+
     secretsFile = mkOption {
       default = null;
       type = types.nullOr types.path;
@@ -660,6 +677,92 @@ in
               ''
                 ln -fs /etc/home-assistant/ui-lovelace.yaml "${cfg.configDir}/ui-lovelace.yaml"
               '';
+          onboardingCompleteConfig =
+            if cfg.onboardingComplete != null then
+              ''
+                mkdir --parents "${cfg.configDir}/.storage"
+                ln \
+                  --force \
+                  --symbolic \
+                  --no-dereference \
+                  ${
+                    pkgs.writeTextFile {
+                      name = "home-assistant-onboarding.json";
+                      text = builtins.toJSON {
+                        version = 1;
+                        minor_version = 1;
+                        key = "onboarding";
+                        data = {
+                          done = [
+                            "user"
+                            "core_config"
+                            "integration"
+                          ];
+                        };
+                      };
+                    }
+                  } \
+                  "${cfg.configDir}/.storage/onboarding"
+              ''
+            else ""
+          ;
+          staticUsersConfig =
+            if cfg.staticUsers != null then
+              ''
+                mkdir --parents "${cfg.configDir}/.storage"
+                ln \
+                  --force \
+                  --symbolic \
+                  --no-dereference \
+                  ${
+                    pkgs.writeTextFile {
+                      name = "home-assistant-users.json";
+                      text = builtins.toJSON (let
+                        # anonymous-user-id = "35646913-ae33-4de2-8918-366f2078097d";
+                        # I pulled this value from the example here so it will
+                        # probably work:
+                        # https://www.home-assistant.io/docs/authentication/providers/
+                        user-id = "acbbff56461748718f3650fb914b88c9";
+                      in {
+                        version = 1;
+                        key = "auth_provider.homeassistant";
+                        data = {
+                          refresh_tokens = [];
+                          credentials = [
+                            {
+                              auth_provider_type = "homeassistant";
+                              auth_provider_id = "homeassistant";
+                              data = {};
+                              id = user-id;
+                              user_id = user-id;
+                              is_new = false;
+                            }
+                          ];
+                          # Largely reverse engineered from:
+                          # https://github.com/home-assistant/core/blob/6b5b35feceee75c57ea29630819c7d00445b0819/homeassistant/auth/models.py#L71
+                          users = [
+                            {
+                              id = user-id;
+                              local_only = false;
+                              name = "anonymous";
+                              is_active = true;
+                              is_owner = true;
+                              groups = [];
+                              # mfa_modules = [];
+                              refresh_tokens = [];
+                              # Setting this to false is what allows the
+                              # anonymous login.
+                              system_generated = false;
+                            }
+                          ];
+                        };
+                      });
+                    }
+                  } \
+                  "${cfg.configDir}/.storage/auth"
+              ''
+            else ""
+          ;
           secretsFileConfig =
             if cfg.secretsFile != null then
               ''
@@ -728,7 +831,9 @@ in
         in
         (optionalString (cfg.config != null) copyConfig)
         + (optionalString (cfg.lovelaceConfig != null) copyLovelaceConfig)
+        + (optionalString (cfg.onboardingComplete != null) onboardingCompleteConfig)
         + (optionalString (cfg.secretsFile != null) secretsFileConfig)
+        + staticUsersConfig
         + copyCustomLovelaceModules
         + copyCustomComponents
         + removeBlueprints

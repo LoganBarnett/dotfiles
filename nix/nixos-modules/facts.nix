@@ -291,6 +291,13 @@
           full-name = "bromine-matrix-service";
           devices = [];
         };
+        bromine-authelia-home-assistant-service = {
+          email = "bromine-authelia-home-assistant-service@proton";
+          type = "service";
+          description = "Authelia authentication for Home Assistant on Bromine.";
+          full-name = "bromine-authelia-home-assistant-service";
+          devices = [];
+        };
         copper-dex-oidc-service = {
           email = "bromine-dex-oidc-service@proton";
           type = "service";
@@ -348,6 +355,18 @@
       };
       "grafana-viewers" = {
         description = "People who can view dashboards in Grafana.";
+        members = [
+          "logan"
+        ];
+      };
+      "home-assistant-admins" = {
+        description = "People who can administer Home Assistant.";
+        members = [
+          "logan"
+        ];
+      };
+      "home-assistant-users" = {
+        description = "People who can use Home Assistant.";
         members = [
           "logan"
         ];

@@ -31,7 +31,9 @@
     lib.strings.concatLines
       (builtins.map
         (dep: ''
-          echo '${dep.name}: '"$(${decrypt} ${lib.escapeShellArg dep.file})"
+          echo '${
+            dep.settings.fieldName or dep.name
+          }: '"$(${decrypt} ${lib.escapeShellArg (lib.traceVal dep).file})"
         '')
         deps
       )

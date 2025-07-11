@@ -175,6 +175,8 @@ in {
     flake-inputs.agenix.nixosModules.default
     flake-inputs.agenix-rekey.nixosModules.default
     ../nixos-configs/environment-file-secret.nix
+    ../nixos-configs/hex-configurable-secret.nix
+    ../nixos-configs/secret-template-file.nix
     ../nixos-configs/tls-secret.nix
     ../nixos-configs/yaml-secret.nix
   ];
