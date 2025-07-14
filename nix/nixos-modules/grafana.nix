@@ -671,7 +671,7 @@
 in {
   imports = [
     (import ../nixos-modules/https.nix {
-      server-port = config.services.grafana.port;
+      server-port = config.services.grafana.settings.server.http_port;
       inherit host-id;
       fqdn = "grafana.proton";
     })
