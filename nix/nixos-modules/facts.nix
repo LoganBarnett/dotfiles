@@ -86,6 +86,7 @@
         aliases = [
           "matrix"
           "home-assistant"
+          "zwave-js-ui"
         ];
         controlledHost = true;
         ipv4 = 3;
