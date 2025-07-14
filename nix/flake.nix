@@ -26,6 +26,7 @@
     # Allows re-keying and bootstrapping of secrets used by agenix.
     agenix-rekey = {
       url = "github:LoganBarnett/agenix-rekey/generators-new-line-optional";
+      # url = "github:LoganBarnett/agenix-rekey/paramterize-generators-cherry-pick";
       # url = "github:LoganBarnett/agenix-rekey/parameterize-generators";
       # url = "github:LoganBarnett/agenix-rekey/parameterize-generators-master-identities-fix";
       # url = "git+file:///Users/logan/dev/agenix-rekey?ref=parameterize-generators";

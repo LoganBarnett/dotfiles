@@ -33,6 +33,7 @@ in
     # Test it!
     config.allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) [
       "signal-desktop-bin"
+      "zoom-us"
     ];
 
   };
@@ -116,6 +117,7 @@ in {
         # I tried overriding them where they are used (via passthru), but still
         # no joy.
         pkgs-latest.signal-desktop-bin
+        pkgs-latest.zoom-us
       ];
       system.stateVersion = 5;
     })
