@@ -174,5 +174,12 @@ in {
       # '';
       system.stateVersion = 5;
     })
+    {
+      imports = [
+        ../nixos-modules/ollama-nix-darwin.nix
+      ];
+      services.ollama.enable = true;
+      # services.open-webui.enable = true;
+    }
   ];
 }

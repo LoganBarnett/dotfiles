@@ -132,6 +132,21 @@ in {
   security.pki.keychain.certificateFiles = [
     ./secrets/proton-ca.crt
   ];
+  networking = {
+    applicationFirewall = {
+      # Enable the internal firewall to prevent unauthorised applications,
+      # programs and services from accepting incoming connections.
+      enable = false;
+      blockAllIncoming = false;
+      # Allows any signed Application to accept incoming requests.
+      allowSigned = false;
+      # Allows any downloaded Application that has been signed to accept
+      # incoming requests.
+      allowSignedApp = false;
+      # Drops incoming requests via ICMP such as ping requests.
+      enableStealthMode = false;
+    };
+  };
   system = {
     # Settings that don't have an option in nix-darwin.
     activationScripts.postActivation.text = ''
@@ -391,23 +406,6 @@ done
       };
       # Automatically install Mac OS software updates.
       SoftwareUpdate.AutomaticallyInstallMacOSUpdates = false;
-      alf = {
-        # Allows any downloaded Application that has been signed to accept
-        # incoming requests.
-        allowdownloadsignedenabled = 0;
-        # Allows any signed Application to accept incoming requests.
-        allowsignedenabled = 0;
-        # Enable the internal firewall to prevent unauthorised applications,
-        # programs and services from accepting incoming connections.
-        # 0 = Disabled.
-        # 1 = Enabled.
-        # 2 = Blocks all connections except for essential services.
-        globalstate = 0;
-        # Enable logging of requests made to the firewall.
-        loggingenabled = 0;
-        # Drops incoming requests via ICMP such as ping requests.
-        stealthenabled = 0;
-      };
       # Refresh with `killall Dock`.
       dock = {
         # Whether to display the appswitcher on all displays or only the main
