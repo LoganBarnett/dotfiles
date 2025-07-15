@@ -230,17 +230,256 @@ _C-g_ back one menu
 ;;                  )
 #+end_src
 
+* key bindings
+
+#+name: config/org-agenda-map-clean
+#+begin_src emacs-lisp :results none :exports code :tangle no
+;; I give up.  I can't figure out how to override these blasted key bindings no
+;; matter what I do.  So instead I'll just copy the whole function and comment
+;; out the stuff I don't want.  I don't know why this has to be so hard.
+;;
+;; Actually, I figured out _why_ this is so difficult to override.  Motions are
+;; kind of in their own special precidence, and thse bindings are _all_ defined
+;; as motions!  Even though most are not.  This could be a good contribution
+;; back to evil-collection.  I have not affected the fix here yet.
+(defun evil-org-agenda-set-keys ()
+  "Set motion state keys for `org-agenda'."
+  (evil-set-initial-state 'org-agenda-mode 'motion)
+
+  ;; Horizontal movements have little use, thus we can override "f" and "t".
+  ;; "w", "b", "e", "ge" and their upcase counterparts are preserved.
+  (evil-define-key 'motion org-agenda-mode-map
+    ;; Unused keys: D, X
+
+    ;; open
+    (kbd "<tab>") 'org-agenda-goto
+    (kbd "S-<return>") 'org-agenda-goto
+    (kbd "g TAB") 'org-agenda-goto
+    (kbd "RET") 'org-agenda-switch-to
+    (kbd "M-RET") 'org-agenda-recenter
+
+    (kbd "SPC") 'org-agenda-show-and-scroll-up
+    (kbd "<delete>") 'org-agenda-show-scroll-down
+    (kbd "<backspace>") 'org-agenda-show-scroll-down
+
+    ;; motion
+    "j" 'org-agenda-next-line
+    "k" 'org-agenda-previous-line
+    "gj" 'org-agenda-next-item
+    "gk" 'org-agenda-previous-item
+    "gH" 'evil-window-top
+    "gM" 'evil-window-middle
+    "gL" 'evil-window-bottom
+    (kbd "C-j") 'org-agenda-next-item
+    (kbd "C-k") 'org-agenda-previous-item
+    (kbd "[[") 'org-agenda-earlier
+    (kbd "]]") 'org-agenda-later
+
+    ;; manipulation
+    ;; We follow standard org-mode bindings (not org-agenda bindings):
+    ;; <HJKL> change todo items and priorities.
+    ;; M-<jk> drag lines.
+    ;; M-<hl> cannot demote/promote, we use it for "do-date".
+    "J" 'org-agenda-priority-down
+    "K" 'org-agenda-priority-up
+    "H" 'org-agenda-do-date-earlier
+    "L" 'org-agenda-do-date-later
+    "t" 'org-agenda-todo
+    (kbd "M-j") 'org-agenda-drag-line-forward
+    (kbd "M-k") 'org-agenda-drag-line-backward
+    (kbd "C-S-h") 'org-agenda-todo-previousset ; Original binding "C-S-<left>"
+    (kbd "C-S-l") 'org-agenda-todo-nextset ; Original binding "C-S-<right>"
+
+    ;; undo
+    "u" 'org-agenda-undo
+
+    ;; actions
+    ;; "dd" 'org-agenda-kill
+    ;; "dA" 'org-agenda-archive
+    ;; "da" 'org-agenda-archive-default-with-confirmation
+    "ct" 'org-agenda-set-tags
+    "ce" 'org-agenda-set-effort
+    "cT" 'org-timer-set-timer
+    "i" 'org-agenda-diary-entry
+    ;; "a" 'org-agenda-add-note
+    "A" 'org-agenda-append-agenda
+    "C" 'org-agenda-capture
+
+    ;; mark
+    "m" 'org-agenda-bulk-toggle
+    "~" 'org-agenda-bulk-toggle-all
+    "*" 'org-agenda-bulk-mark-all
+    "%" 'org-agenda-bulk-mark-regexp
+    "M" 'org-agenda-bulk-unmark-all
+    "x" 'org-agenda-bulk-action
+
+    ;; refresh
+    "gr" 'org-agenda-redo
+    "gR" 'org-agenda-redo-all
+
+    ;; quit
+    "ZQ" 'org-agenda-exit
+    "ZZ" 'org-agenda-quit
+
+    ;; display
+    ;; "Dispatch" can prefix the following:
+    ;; 'org-agenda-toggle-deadlines
+    ;; 'org-agenda-toggle-diary
+    ;; 'org-agenda-follow-mode
+    ;; 'org-agenda-log-mode
+    ;; 'org-agenda-entry-text-mode
+    ;; 'org-agenda-toggle-time-grid
+    ;; 'org-agenda-day-view
+    ;; 'org-agenda-week-view
+    ;; 'org-agenda-year-view
+    "gD" 'org-agenda-view-mode-dispatch
+    "ZD" 'org-agenda-dim-blocked-tasks
+
+    ;; filter
+    "sc" 'org-agenda-filter-by-category
+    "sr" 'org-agenda-filter-by-regexp
+    "se" 'org-agenda-filter-by-effort
+    "st" 'org-agenda-filter-by-tag
+    "s^" 'org-agenda-filter-by-top-headline
+    "ss" 'org-agenda-limit-interactively
+    "S" 'org-agenda-filter-remove-all
+
+    ;; clock
+    "I" 'org-agenda-clock-in ; Original binding
+    "O" 'org-agenda-clock-out ; Original binding
+    "cg" 'org-agenda-clock-goto
+    "cc" 'org-agenda-clock-cancel
+    "cr" 'org-agenda-clockreport-mode
+
+    ;; go and show
+    "." 'org-agenda-goto-today ; TODO: What about evil-repeat?
+    "gc" 'org-agenda-goto-calendar
+    "gC" 'org-agenda-convert-date
+    "gd" 'org-agenda-goto-date
+    "gh" 'org-agenda-holidays
+    "gm" 'org-agenda-phases-of-moon
+    "gs" 'org-agenda-sunrise-sunset
+    "gt" 'org-agenda-show-tags
+
+    "p" 'org-agenda-date-prompt
+    "P" 'org-agenda-show-the-flagging-note
+
+    ;; 'org-save-all-org-buffers ; Original binding "C-x C-s"
+
+    ;; Others
+    "+" 'org-agenda-manipulate-query-add
+    "-" 'org-agenda-manipulate-query-subtract))
+
+#+end_src
+
+
+#+name: config/org-agenda-map
+#+begin_src emacs-lisp :results none :exports code :tangle no
+
+(message "Setting up org-agenda-map overrides...")
+;; (define-key org-agenda-mode-map "d" nil)
+;; (define-key org-agenda-mode-map "dd" nil)
+;; (define-key org-agenda-mode-map "da" nil)
+;; (define-key org-agenda-mode-map "dA" nil)
+;; (define-key org-agenda-mode-map "d" nil)
+;; (define-key org-agenda-mode-map "r" nil)
+;; (define-key org-agenda-mode-map "a" nil)
+;; (define-key org-agenda-mode-map "b" nil)
+;; Force the prefix to not be stupid.
+(define-prefix-command 'my-org-agenda-d-prefix)
+(define-key org-agenda-mode-map (kbd "d") 'my-org-agenda-d-prefix)
+(define-prefix-command 'my-org-agenda-a-prefix)
+(define-key org-agenda-mode-map (kbd "a") 'my-org-agenda-a-prefix)
+(define-prefix-command 'my-org-agenda-r-prefix)
+(define-key org-agenda-mode-map (kbd "r") 'my-org-agenda-r-prefix)
+(define-prefix-command 'my-org-agenda-b-prefix)
+(evil-define-key 'motion org-agenda-mode-map "b" 'my-org-agenda-b-prefix)
+(map!
+  :mode org-agenda-mode
+  ;; Force overriding.
+  ;; :map org-agenda-mode-map
+  ;; :map general-override-mode-map
+  ;; :map evil-make-intercept-map
+  ;; :map evil-local-set-key
+  ;; There's a lot of defaults in place but I wish to override them.
+  ;; Notably, there's not a quick way to schedule things without using an Emacs
+  ;; pedal.  Some things don't match what I would expect.  Under the odd
+  ;; defaults, "s" is for filtering, "d" is for archiving (perhaps an extension
+  ;; of "delete"?), and there's nothing to schedule at all, which is one of my
+  ;; most used shortcuts.
+  ;; Under the new bindings, "d" is for dates.  "r" is for refile.  "s" can
+  ;; continue to be searching but I might move it to "f".
+
+  ;; Try to make it see that it needs to create the prefix, since we blew away
+  ;; the prior keymap.
+  ;; "d" nil ;;
+  (:prefix ("d" . "date + schedule")
+    :desc "org-agenda-schedule" "s" #'org-agenda-schedule
+    :desc "org-agenda-deadline" "S" #'org-agenda-deadline
+    :desc "org-agenda-date-prompt" "d" #'org-agenda-date-prompt
+    )
+  (:prefix ("a" . "archive")
+    :desc "org-agenda-archive-default" "A" #'org-agenda-archive-default
+    :desc "org-agenda-toggle-archive-tag" "a" #'org-agenda-toggle-archive-tag
+    :desc "org-agenda-archive-kill" "d" #'org-agenda-kill
+    )
+  (:prefix ("r" . "refile")
+    :desc "org-agenda-refile" "r" #'org-agenda-refile
+    )
+  ;; It's not well understood why this doesn't work while the other ones do.
+  (:prefix ("b" . "agenda-buffer")
+    ;; This is reall a refresh.  You can also get to it via `g r'.
+    :desc "org-agenda-redo (refresh)" "r" #'org-agenda-redo
+    )
+   )
+(message "Setup org-agenda key map without error!")
+#+end_src
+
+
 * all together
 
 #+begin_src emacs-lisp :results none :noweb yes
-  (use-package "org-agenda"
-    :defer t
-    :init
-    (require 'mu4e)
-    :config
-    <<config/org-agenda-autosave>>
-    <<config/org-agenda-default-view>>
-    ;; This is disabled until I can figure out how to make it more performant.
-    ;; (config/org-agenda-include-diary-sexp)
+<<config/org-agenda-map-clean>>
+
+(use-package org-agenda
+  :defer t
+  :init
+  ;; Somehow "~/org" winds up getting added in.  I don't know who is doing this
+  ;; and how I would stop it.
+  ;; `org-agenda-files' is also modified in org-agenda-private.org in my private
+  ;; repo.
+  (setq
+   org-agenda-files
+   `(
+     "~/notes/agenda.org"
+     "~/notes/inbox.org"
+     )
+   )
+  (require 'mu4e)
+  ;; :hook
+  ;; This is how you're supposed to override settings, lest you run into prefix
+  ;; problems and the like.  This is not covered in the README of
+  ;; evil-colleciton and I should add it.  The source is here:
+  ;; https://github.com/emacs-evil/evil-collection/issues/214
+  ;; Except it doesn't work :(
+  ;; (evil-collection-setup . #'config/org-agenda-mode-map)
+  :general
+  :config
+  (message "in org-agenda :config section...")
+  (require 'evil-org-agenda)
+  <<config/org-agenda-map-clean>>
+  (evil-org-agenda-set-keys)
+  (after! evil-org-agenda
+    (condition-case err
+    (eval '(progn
+      <<config/org-agenda-map>>
+      ))
+      (error (message "Error with keymaps in org-agenda: %s" err))
+      )
     )
+  <<config/org-agenda-autosave>>
+  <<config/org-agenda-default-view>>
+  ;; This is disabled until I can figure out how to make it more performant.
+  ;; (config/org-agenda-include-diary-sexp)
+  )
 #+end_src

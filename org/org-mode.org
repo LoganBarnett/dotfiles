@@ -74,8 +74,6 @@ I'll try to list the ones I frequently use.
 (add-hook 'org-mode-hook 'evil-org-mode)
 (evil-org-set-key-theme '(navigation insert textobjects additional calendar))
 (setq-default evil-org-special-o/O '(table-row item))
-(require 'evil-org-agenda)
-(evil-org-agenda-set-keys)
 #+end_src
 
 * images
@@ -410,13 +408,6 @@ A common form of hidden content is collapsed headings."
  diary-file "~/notes/diary.org"
  ;; appt-audible t
  calendar-date-style 'iso
- ;; `org-agenda-files' is also modified in org-agenda-private.org in my private
- ;; repo.
- org-agenda-files
- `(
-   "~/notes/agenda.org"
-   "~/notes/inbox.org"
-   )
  ;; For optimizations:
  org-hide-leading-stars nil
  org-startup-indented nil
@@ -1348,12 +1339,14 @@ This is the region of offending code, I think:
 
 #+name: config/org-capture-web-sites
 #+begin_src emacs-lisp :results none :exports code :tangle no
+(after! org-capture
 (add-to-list
  'org-capture-templates
  '(("w" "Web snippet" entry
     (file+headline "~/org/notes.org" "Web Clippings")
     "* %:description\nURL: %:link\n\n%:initial"))
  )
+)
 #+end_src
 
 
@@ -1394,6 +1387,12 @@ This is the region of offending code, I think:
   ;; documentation states that if evil is not loaded yet, then evil-specific
   ;; bindings are ignored.  At the moment we don't have anything for evil here
   ;; but that could change.
+  (map!
+   :leader
+   (:prefix ("o" . "+standlone apps")
+      :desc "org-agenda" "a" #'org-agenda
+      )
+   )
   (map!
    ;; :after org-mode
    :mode org-mode
