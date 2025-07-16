@@ -3000,3 +3000,24 @@ It sits in the USB reader rather loosely, so it could also be that's the issue.
 I've given up on the SD card, and instead used another one from a
 non-operational Pi.  It was remarkably fast to get a new ~argon~ Pi up and
 running again.
+* TLS Certificate Trusting
+** iOS
+
+1. Email ~./secrets/proton-ca.crt~ to the recipient.
+2. Open the email in iOS.
+3. Tap the name of the file (not the download button).
+4. Choose the current device to install the profile.
+5. Open the Settings app.
+6. Profile Download should appear just below the user account (should be the
+   second entry).  Go there.
+7. "Not verified" is normal/expected to see.  Tap Install.
+8. Tap install again.
+9. Tap install yet again.
+10. Go to the root of the Settings app.
+11. Navigate to General → About → Certificate Trust Settings.  The last entry
+    will be at the bottom.
+12. Turn on the domain for the network (~proton~).
+13. Press Continue.
+14. Verify by navigating to a resource such as https://home-assistant.proton -
+    it doesn't matter if you can't log in.  You just need the page to load
+    without a security warning.

@@ -21,7 +21,7 @@
 # At some point I should make a read-only mode to lock things down, but I expect
 # I'll be tweaking it for a while.
 ################################################################################
-{ config, host-id, ... }: {
+{ config, host-id, lib, pkgs, ... }: {
   disabledModules = [
     "services/home-automation/zwave-js-ui.nix"
   ];
@@ -48,18 +48,68 @@
   };
   services.zwave-js-ui = {
     enable = true;
+    package = pkgs.zwave-js-ui.overrideAttrs (let
+      version = "10.9.0";
+    in old: rec {
+      inherit version;
+      src = pkgs.fetchFromGitHub {
+        owner = "LoganBarnett";
+        repo = "zwave-js-ui";
+        rev = "fix-settings-circular-on-logging-override";
+        # hash = lib.fakeHash;
+        hash = "sha256-QYIfrkirCdIvuvy8vqEB+NgwijTWFUGWlvHcNucjtwo=";
+      };
+      # overrideAttrs and buildNpmPackage don't play together.  This has to be
+      # overridden in npmDeps as well.
+      # Don't actually worry about setting this.
+      # npmDepsHash = lib.fakeHash;
+      npmDeps = pkgs.fetchNpmDeps {
+        inherit src;
+        # hash = lib.fakeHash;
+        hash = "sha256-E3+6N04R02Re/AIMQu1l5PlZrwpnfEQJGVf7CzXo8zw=";
+      };
+    });
     secretsConfigFile = "/run/credentials/zwave-js-ui.service/zwave-js-secret";
     settings2 = {
-      logLevel = "debug";
       # See
       # https://github.com/zwave-js/zwave-js-ui/blob/26f2e698354e56b7ec1b82cd3a99e106fedcf923/api/lib/ZwaveClient.ts#L588
       # for the closest thing to a document for some of these settings.
       zwave = {
+        commandsTimeout = 30;
+        # logLevel = "debug";
+        # logEnabled = true;
+        # Prevent it from logging the good stuff to a file where the systemd
+        # journal doesn't see it, and also keeps us from having to worry about
+        # log rotation outside of the journal.
+        # logToFile = false;
         serverEnabled = true;
         serverHost = "127.0.0.1";
         serverPort = 3000;
         enableStatistics = false;
         disclaimerVersion = 1;
+        # Per the document, this is where the secret settings show up, which win
+        # out over the documented settings.  See
+        # https://zwave-js.github.io/zwave-js/#/api/driver?id=zwaveoptions for
+        # them just pasting their blasted TypeScript interfaces into an HTML
+        # file, which is supposed to stand for documentation.
+        # There's some additional mention of it here:
+        # https://github.com/zwave-js/zwave-js-ui/discussions/2166#discussioncomment-1948873
+        # In that comment it is suggested that all logging values should be
+        # declared here and not a mishmash of here and in the root of zwave.
+        # Also when logging settings appear in both locations, the UI becomes
+        # unusable because it cannot serialize the JSON needed to supply
+        # settings to the UI.
+        options = {
+          # Force it to log everything to the console and not just some things.
+          logConfig = {
+            # Which is it?
+            enable = true;
+            enabled = true;
+            forceConsole = true;
+            # 6 is "silly" for reference.  5 is debug.
+            level = 5;
+          };
+        };
       };
     } // {
       # This section has settings that are set by the UI on startup.  We'll set

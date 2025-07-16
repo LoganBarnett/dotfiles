@@ -80,10 +80,13 @@ in
         options = {
           logLevel = mkOption {
             type = (types.enum [
-              "debug"
+              # In order of ascending verbosity.
               "error"
-              "info"
               "warn"
+              "info"
+              "verbose"
+              "debug"
+              "silly"
             ]);
             default = "info";
           };

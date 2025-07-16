@@ -256,6 +256,12 @@
     users =
       # Interactive / human users.
       {
+        cassandra = {
+          description = "";
+          email = "cassandra@proton";
+          full-name = "Cassandra Barnett";
+          devices = [];
+        };
         logan = {
           description = "The reason we suffer.";
           email = "logustus@proton";
@@ -369,6 +375,7 @@
       "home-assistant-users" = {
         description = "People who can use Home Assistant.";
         members = [
+          "cassandra"
           "logan"
         ];
       };

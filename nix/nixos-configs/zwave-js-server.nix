@@ -25,7 +25,8 @@
         forceConsole = true;
         # level = "debug";
         # Should be debug.  6 is "silly".
-        level = 5;
+        # level = 5;
+        level = "debug";
       };
       serial = {
         baudRate = 115200;
