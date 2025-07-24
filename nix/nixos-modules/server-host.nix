@@ -22,6 +22,7 @@
     #     };
     #   };
     # }
+    ./https-module.nix
     ./secrets.nix
     ./facts-secrets.nix
     # TODO: Remove this and only include it on hosts that need it.  Also make it
