@@ -35,7 +35,6 @@ in
       "signal-desktop-bin"
       "zoom-us"
     ];
-
   };
 
 in {
@@ -117,6 +116,12 @@ in {
         # I tried overriding them where they are used (via passthru), but still
         # no joy.
         pkgs-latest.signal-desktop-bin
+        # Screen Sharing.app is nice that it's built-in but it doesn't support
+        # as many encryption/security options, It think.
+        # Doh, broken.
+        # pkgs-latest.tigervnc
+        # pkgs-latest.turbovnc
+        pkgs.moonlight-qt
         pkgs-latest.zoom-us
       ];
       system.stateVersion = 5;

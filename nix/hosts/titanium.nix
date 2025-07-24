@@ -33,6 +33,7 @@ in {
     ../nixos-modules/uefi-systemd-boot.nix
     ../nixos-modules/x-desktop.nix
     ../nixos-modules/server-host.nix
+    ../nixos-configs/sunshine.nix
     ({ config, lib, pkgs, ... }: {
       imports = [
         (modulesPath + "/installer/scan/not-detected.nix")
