@@ -93,6 +93,9 @@ in {
       environment.systemPackages = (import ../personal-packages.nix {
         inherit pkgs;
       }) ++ [
+        # Use latest to benefit from work done here:
+        # https://github.com/Aider-AI/aider/issues/2318
+        pkgs-latest.aider-chat
         (pkgs.callPackage ../derivations/dice-roller.nix {})
         # Let us communicate with the Matrix chat protocol.
         pkgs.element-desktop

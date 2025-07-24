@@ -14,6 +14,9 @@ let
   # openconnect-sso-src = builtins.fetchTarball "https://github.com/vlaci/openconnect-sso/archive/master.tar.gz";
 in
 {
+  imports = [
+    ./home-modules/aider-chat.nix
+  ];
   # Let Home Manager install and manage itself.
   # programs.home-manager.enable = true;
   programs.direnv.enable = true;

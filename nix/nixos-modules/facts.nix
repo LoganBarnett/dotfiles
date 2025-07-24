@@ -69,6 +69,9 @@
         system = "aarch64-linux";
       };
       arsenic = {
+        aliases = [
+          "ollama"
+        ];
         controlledHost = true;
         flake-input-overrides = {
           nixpkgs = "nixpkgs-cuda";
