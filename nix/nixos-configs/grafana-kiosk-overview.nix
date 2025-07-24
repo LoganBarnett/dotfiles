@@ -9,4 +9,8 @@
     enable = true;
     url = "https://grafana.proton/d/system-monitoring/system-monitoring?orgId=1&from=now-6h&to=now&timezone=America/Los_Angeles&kiosk=fullscreen&refresh=5s";
   };
+  # Not sure if this is doing anything.
+  services.xserver.displayManager.sessionCommands = ''
+    xrandr --output eDP-1 --brightness 2.0
+  '';
 }
