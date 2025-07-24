@@ -103,4 +103,7 @@
     device = "/swapfile";
     size = 16 * 1024; # 16GB.
   }];
+  # Further make life easier for builds by lowering the OOM score of the service
+  # used to build.
+  systemd.services.nix-daemon.serviceConfig.OOMScoreAdjust = -500;
 }
