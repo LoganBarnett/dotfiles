@@ -188,6 +188,7 @@ in {
       echo "spctl: $SPCTL"
       if ! [ "$SPCTL" = "assessments disabled" ]; then
         echo "Disabling master assessments..."
+        echo 'If this fails, go to Settings.app -> Privacy & Security -> Security -> "Allow application from" and choose "Anywhere".'
         sudo spctl --master-disable
         echo "Disabled master assessments."
       fi
