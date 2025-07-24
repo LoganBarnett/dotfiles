@@ -16,9 +16,12 @@
     mode = "0440";
   };
   systemd.timers.notes-sync = {
-    wantedBy = [ "timers.target" ];
+    # multi-user.target is how we ensure this timer is started on a
+    # `nixos-rebuild switch`.
+    wantedBy = [ "multi-user.target" "timers.target" ];
     timerConfig = {
-      # OnBootSec = "15m";
+      # This is needed to also start the timer at boot.
+      OnBootSec = "15m";
       OnUnitActiveSec = "15m";
     };
   };
@@ -41,7 +44,7 @@
           # ];
           text = builtins.readFile ../scripts/notes-sync.sh;
         };
-        user-dir = "28d7f832-85ab-103f-8ebf-0f400f369f71_4229";
+        user-dir = "logan";
         git-url = "git@bitbucket.org:LoganBarnett/notes.git";
         notes-dir =
           "${config.services.nextcloud.home}/data/${user-dir}/files/notes";
@@ -53,6 +56,9 @@
           --ssh-identity ${config.age.secrets.notes-sync-ssh.path} \
           --sync-dir ${notes-dir}
         '';
+      # Ensure these get captured.  We were observing stderr not getting logged.
+      StandardOutput = "journal";
+      StandardError = "journal+console";
       Type = "oneshot";
       # TODO: Make this less sloppy.
       User = "nextcloud";
