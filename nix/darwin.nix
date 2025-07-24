@@ -150,6 +150,19 @@ in {
   system = {
     # Settings that don't have an option in nix-darwin.
     activationScripts.postActivation.text = ''
+      # Set the default shell.  While some systems can work fine without this (I
+      # was using Terminal.app just fine while it was broken), things like sshd
+      # will silently fail.
+      # TODO: Make this work for multiple users.
+      # TODO: Contribute this back when multiple activation scripts are allowed.
+      # This either doesn't work, or it isn't enough.  See also the next
+      # command.
+      echo 'Updating user shells...'
+      dscl . -create /Users/logan.barnett UserShell /run/current-system/sw/bin/zsh
+      # You'd think we'd just use this, but it's forcibly interactive even when
+      # run as root.  Or I'm using it wrong.
+      # chsh -u logan.barnett -s /run/current-system/sw/bin/zsh
+      echo 'User shells updated.'
       echo "Set disk image verification..."
       # I don't know what I want these set to, or what the defaults are, so
       # skipping for now.

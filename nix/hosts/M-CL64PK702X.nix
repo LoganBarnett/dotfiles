@@ -173,6 +173,10 @@ in {
       # system.activationScripts.postActivation.text = ''
       # '';
       system.stateVersion = 5;
+      system.activationScripts.postActivation.text = ''
+        # Grant SSH access.
+        dseditgroup -o edit -a logan.barnett -t user com.apple.access_ssh
+      '';
     })
     {
       imports = [
