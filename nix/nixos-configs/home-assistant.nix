@@ -38,6 +38,7 @@ in {
           config.age.secrets."${host-id}-home-assistant-elevation"
           config.age.secrets."${host-id}-home-assistant-latitude"
           config.age.secrets."${host-id}-home-assistant-longitude"
+          config.age.secrets.mosquitto-home-assistant-password
         ];
       };
       rekeyFile = ../secrets/home-assistant-secrets.age;
@@ -79,6 +80,7 @@ in {
     "${host-id}-authelia-home-assistant-service"
   ;
   imports = [
+    ./mosquitto-secrets.nix
     ../nixos-modules/home-assistant.nix
     ./home-assistant-secret-file.nix
     (import ../nixos-modules/https.nix {
@@ -230,6 +232,12 @@ in {
             policy = "one_factor";
           }
         ];
+      };
+      mqtt = {
+        broker = "mosquitto.proton";
+        username = "home-assistant";
+        certificate = "auto";
+        password = "!secret mosquitto-password";
       };
       notifier = {
         # The docs warn not to do this, but I don't see a need for this and it

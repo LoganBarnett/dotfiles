@@ -6,6 +6,7 @@
   cfg = config.tls;
   inherit (lib) mkEnableOption mkIf mkMerge mkOption types;
 in {
+  # TODO: Make this `security.tls`.
   options.tls = {
     enable = mkEnableOption "Manage TLS certificates." // { default = true; };
     tls-leafs = mkOption (let

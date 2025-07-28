@@ -12,6 +12,7 @@
     ../nixos-modules/server-host.nix
     ../nixos-configs/matrix-server.nix
     ../nixos-configs/home-assistant.nix
+    ../nixos-configs/mosquitto.nix
     # ../nixos-configs/zwave-js-server.nix
     ../nixos-configs/zwave-js-ui.nix
     ../hardware/aeotec-z-stick-7.nix

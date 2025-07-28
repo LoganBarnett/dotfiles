@@ -366,9 +366,12 @@
           // self.darwinConfigurations
           // self.containerGuestHosts
       ;
-      # pkgs = import flake-inputs.nixpkgs {
-      #   system = "aarch64-darwin";
-      # };
+      # This doesn't seem to actually make the overlays available to secret
+      # generators.  I suspect a bug, but cannot yet prove it.
+      pkgs = import flake-inputs.nixpkgs {
+        system = "aarch64-darwin";
+        overlays = import ./overlays/default.nix;
+      };
     };
 
     # nixosConfigurations.test-pi = flake-inputs.nixpkgs.lib.nixosSystem (let

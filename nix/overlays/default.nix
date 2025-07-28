@@ -49,4 +49,11 @@
   (final: prev: {
     dness = final.callPackage ../derivations/dness.nix {};
   })
+  # This section is for anything we have listed in ../derivations/ which we
+  # intend to see moved to nixpkgs, and not a deliberate overriding.
+  # We need to migrate some things here.  Scan above and figure out what to move
+  # into this section.
+  (final: prev: {
+    mqttpassworder = final.callPackage ../derivations/mqttpassworder.nix {};
+  })
 ]

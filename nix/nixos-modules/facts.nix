@@ -89,6 +89,7 @@
         aliases = [
           "matrix"
           "home-assistant"
+          "mosquitto"
           "zwave-js-ui"
         ];
         controlledHost = true;
