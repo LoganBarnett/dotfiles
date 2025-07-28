@@ -175,8 +175,10 @@
       nickel = {
         aliases = [
           "alertmanager"
+          "auth"
           "grafana"
           "prometheus"
+          "ldap"
         ];
         controlledHost = true;
         flake-input-overrides = {
@@ -328,6 +330,13 @@
           type = "service";
           description = "AlertManager on Nickel.  Primarily for posting alerts.";
           full-name = "nickel-alertmanager-service";
+          devices = [];
+        };
+        nickel-authelia-service = {
+          email = "nickel-authelia-service@proton";
+          type = "service";
+          description = "Authelia on Nickel.  For SSO authentication via OIDC.";
+          full-name = "nickel-authelia-service";
           devices = [];
         };
         nickel-grafana-service = {
