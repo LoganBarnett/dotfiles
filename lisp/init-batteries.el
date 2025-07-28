@@ -146,7 +146,11 @@
     (init-org-file "piper.org")
     (init-org-file "cucumber.org")
     (init-org-file "git.org")
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    ;; Begin Emacs "apps".
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     (init-org-file "email.org")
+    (load-library "eshell-config.el")
     ;; org-agenda must be loaded after mu4e. The file itself does not call upon
     ;; mu4e directly, but perhaps something in org-agenda? This has been difficult
     ;; to track down. I might need to hook up some dependency hooks with
@@ -156,6 +160,9 @@
     (init-org-file "transportation-circle.org")
     (init-org-file "dnd.org")
     (init-org-file "jira.org")
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    ;; End Emacs "apps".
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     (load-library "doom-fonts.el")
     ;; Abandon hope due to my encountering setup problems the same as this:
     ;; https://github.com/freckletonj/uniteai/issues/30
