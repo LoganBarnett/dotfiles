@@ -174,11 +174,12 @@ in {
     # both reference the same file.
     flake-inputs.agenix.nixosModules.default
     flake-inputs.agenix-rekey.nixosModules.default
-    ../nixos-configs/environment-file-secret.nix
-    ../nixos-configs/hex-configurable-secret.nix
-    ../nixos-configs/secret-template-file.nix
-    ../nixos-configs/tls-secret.nix
-    ../nixos-configs/yaml-secret.nix
+    ../agenix/agenix-rekey-generator-mosquitto-password-file.nix
+    ../agenix/environment-file-secret.nix
+    ../agenix/hex-configurable-secret.nix
+    ../agenix/secret-template-file.nix
+    ../agenix/tls-secret.nix
+    ../agenix/yaml-secret.nix
   ];
   environment.systemPackages = [
     # This should remain out because agenix-rekey brings in a replacement

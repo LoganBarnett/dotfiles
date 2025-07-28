@@ -32,7 +32,7 @@
         or (builtins.readFile secret.settings.templateFile)
     );
   in
-   lib.traceVal ''
+   ''
      cat ${lib.escapeShellArg secret.settings.templateFile} \
        ${
          lib.strings.concatStringsSep " " (builtins.map

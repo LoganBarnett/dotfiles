@@ -17,7 +17,7 @@
     ...
   }:
     # 24 was the original default.
-    lib.traceVal "${pkgs.openssl}/bin/openssl rand -hex ${
+    "${pkgs.openssl}/bin/openssl rand -hex ${
       toString (secret.settings.length or 24)
     }"
   );

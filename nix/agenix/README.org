@@ -1,0 +1,9 @@
+#+title:     Agenix
+#+author:    Logan Barnett
+#+email:     logustus@gmail.com
+#+date:      <2025-07-27 Sun>
+#+language:  en
+#+file_tags:
+#+tags:
+
+Here is where to place agenix-rekey secret generators and other supporting work.

@@ -33,7 +33,7 @@
         (dep: ''
           echo '${
             dep.settings.fieldName or dep.name
-          }: '"$(${decrypt} ${lib.escapeShellArg (lib.traceVal dep).file})"
+          }: '"$(${decrypt} ${lib.escapeShellArg dep.file})"
         '')
         deps
       )
