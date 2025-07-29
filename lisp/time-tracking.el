@@ -156,7 +156,7 @@ you see only 'table and 'table-row elements when doing this."
            (format "| %s | %s | %.2f | | |\n" year week total-hours)
            )
           (org-table-align)
-          (org-table-recalculate)
+          (org-table-recalculate 'iterate)
           (message
            "Inserted row for year %s, week %s with %.2f hours"
            year
