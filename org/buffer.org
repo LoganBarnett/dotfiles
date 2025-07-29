@@ -69,6 +69,7 @@ function that takes care of this for me.
   :desc "Buffer delete (kill)" "d" #'config/buffer-delete
   :desc "Buffer jump" "b" #'counsel-switch-buffer
   :desc "Buffer reload" "r" #'config/buffer-revert
+  :desc "eval-buffer" "e" #'eval-buffer
  )
 #+end_src
 
