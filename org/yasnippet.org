@@ -173,6 +173,64 @@ question.
 (setq-default +snippets-dir "~/dev/dotfiles/yasnippets")
 #+end_src
 
+Since we're using ~yatemplate~ as well, you can find file templates in
+~auto-insert-alist~.
+
+The default Emacs Lisp template's ~Keywords~ doesn't play nice here.  There's no
+way to terminate it properly.  If I put in a keyword, it just prompts again.  If
+I hit ~ESC~, the snippet expansion completely halts.  Plus the keyword selection
+is fixed and requires me to pick within the fixed list.  Just disable it by
+overriding a template that doesn't do anything for ~Keywords~.
+
+#+name: config/auto-insert-mode-fix-emacs-lisp-template
+#+begin_src emacs-lisp :results none :exports code
+(add-to-list
+ 'auto-insert-alist
+    '(("\\.el\\'" . "Emacs Lisp header")
+     "Short description: "
+     ";;; " (file-name-nondirectory (buffer-file-name)) " --- " str
+     (make-string (max 2 (- 80 (current-column) 27)) ?\s)
+     "-*- lexical-binding: t; -*-" '(setq lexical-binding t)
+     "
+
+;; Copyright (C) " (format-time-string "%Y") "  "
+ (getenv "ORGANIZATION") | (progn user-full-name) "
+
+;; Author: " (user-full-name)
+'(if (search-backward "&" (line-beginning-position) t)
+     (replace-match (capitalize (user-login-name)) t t))
+'(end-of-line 1) " <" (progn user-mail-address) ">
+;; Keywords:
+
+\;; This program is free software; you can redistribute it and/or modify
+\;; it under the terms of the GNU General Public License as published by
+\;; the Free Software Foundation, either version 3 of the License, or
+\;; (at your option) any later version.
+
+\;; This program is distributed in the hope that it will be useful,
+\;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+\;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+\;; GNU General Public License for more details.
+
+\;; You should have received a copy of the GNU General Public License
+\;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+\;;; Commentary:
+
+\;; " _ "
+
+\;;; Code:
+
+
+
+\(provide '"
+       (file-name-base (buffer-file-name))
+       ")
+\;;; " (file-name-nondirectory (buffer-file-name)) " ends here\n")
+    )
+#+end_src
+
+
 * overriding default snippets
 
 I think this can be done, but a [[https://emacs.stackexchange.com/a/66215][Stack Overflow answer]] seems to indicate that
@@ -186,31 +244,33 @@ templates]] for more details on things like the =__= files.
 * apply
 
   #+begin_src emacs-lisp :results none :noweb yes
-    (require 'use-package)
+  (require 'use-package)
 
-    (use-package "yasnippet"
-      :demand t
-      :init
-      <<config/yasnippets-override-doom-template-dir>>
-      <<config/yasnippet-require-file-newline-mark-safe>>
-      <<config/yasnippet-snippet-dirs>>
-      ;; This gets crushed by Doom.  Leave for reference.
-      (setq-default yas-snippet-dirs '("~/dev/dotfiles/yasnippets"))
-      (message "Just set yas-snippet-dirs to %s" yas-snippet-dirs)
-      (config/yasnippet-fundamental-mode)
-      :config
-      ;; Controlling when things get loaded and dependences (together) is best
-      ;; accomplished by actually nesting the declaration.  This way we can
-      ;; ensure that yatemplate is loaded by the time that we go to do
-      ;; yas/reload-all/yas-recompile-all.  See
-      ;; https://github.com/jwiegley/use-package/issues/315 for the official
-      ;; run-down.
-      <<config/yatemplate>>
-      (yas-global-mode 1)
-      (yas-recompile-all)
-      ;; Set NO-JIT to `t' so that it actually reloads everything.  Without
-      ;; this, we lose the yatemplates.
-      (yas-reload-all t)
-      )
+  (use-package "yasnippet"
+    :demand t
+    :init
+    <<config/yasnippets-override-doom-template-dir>>
+    <<config/yasnippet-require-file-newline-mark-safe>>
+    <<config/yasnippet-snippet-dirs>>
+    ;; This gets crushed by Doom.  Leave for reference.
+    (setq-default yas-snippet-dirs '("~/dev/dotfiles/yasnippets"))
+    (message "Just set yas-snippet-dirs to %s" yas-snippet-dirs)
+    (config/yasnippet-fundamental-mode)
+    :config
+    <<config/auto-insert-mode-fix-emacs-lisp-template>>
+
+    ;; Controlling when things get loaded and dependences (together) is best
+    ;; accomplished by actually nesting the declaration.  This way we can
+    ;; ensure that yatemplate is loaded by the time that we go to do
+    ;; yas/reload-all/yas-recompile-all.  See
+    ;; https://github.com/jwiegley/use-package/issues/315 for the official
+    ;; run-down.
+    <<config/yatemplate>>
+    (yas-global-mode 1)
+    (yas-recompile-all)
+    ;; Set NO-JIT to `t' so that it actually reloads everything.  Without
+    ;; this, we lose the yatemplates.
+    (yas-reload-all t)
+    )
 
   #+end_src
