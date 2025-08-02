@@ -8,7 +8,9 @@
 # [2025-02-25].  One can force it with:
 # sudo -u nextcloud nextcloud-occ files:scan --all
 ################################################################################
-{ config, pkgs, ... }: {
+{ config, flake-inputs, lib, pkgs, system, ... }: let
+  repo-sync = flake-inputs.repo-sync-flake.packages.${system}.default;
+in {
   age.secrets.notes-sync-ssh = {
     rekeyFile = ../secrets/notes-sync-ssh.age;
     generator.script = "ssh-ed25519-with-pub";
@@ -36,25 +38,28 @@
         script = pkgs.writeShellApplication {
           name = "notes-sync";
           runtimeInputs = [
-            pkgs.git
-            pkgs.openssh
+            config.services.nextcloud.occ
           ];
           # excludeShellChecks = [
           #   "SC2154"
           # ];
-          text = builtins.readFile ../scripts/notes-sync.sh;
+          text = ''
+            ${repo-sync}/bin/repo-sync \
+             --git-url ${git-url} \
+             --ssh-identity ${config.age.secrets.notes-sync-ssh.path} \
+             --sync-dir ${notes-dir} \
+             && nextcloud-occ files:scan --path=${notes-relative-dir}
+          '';
         };
+        # TODO: Move hostname and domain into facts.nix.
         user-dir = "logan";
         git-url = "git@bitbucket.org:LoganBarnett/notes.git";
+        notes-relative-dir = "/${user-dir}/files/notes";
         notes-dir =
-          "${config.services.nextcloud.home}/data/${user-dir}/files/notes";
+          "${config.services.nextcloud.datadir}/data" + notes-relative-dir;
       in
-        # TODO: Move hostname and domain into facts.nix.
         ''
-        ${script}/bin/notes-sync \
-          --git-url ${git-url} \
-          --ssh-identity ${config.age.secrets.notes-sync-ssh.path} \
-          --sync-dir ${notes-dir}
+          ${script}/bin/notes-sync
         '';
       # Ensure these get captured.  We were observing stderr not getting logged.
       StandardOutput = "journal";

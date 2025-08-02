@@ -133,6 +133,10 @@
       url = "github:wamserma/flake-programs-sqlite";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    repo-sync-flake = {
+      url = "github:LoganBarnett/repo-sync";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
 
     # sytter = {
     #   url = "file:///Users/logan/dev/sytter";
@@ -148,6 +152,7 @@
     current-system,
     disko,
     emacs-overlay,
+    home-manager,
     nextcloud-desktop,
     nix,
     nix-darwin,
@@ -159,9 +164,9 @@
     nixos-anywhere,
     nixos-hardware,
     nixos-generators,
-    home-manager,
     prusa-slicer-pr-390476,
     raspberry-pi-nix,
+    repo-sync-flake,
     # sytter,
     self,
     ...
