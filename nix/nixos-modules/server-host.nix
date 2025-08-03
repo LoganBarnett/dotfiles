@@ -105,5 +105,8 @@
   }];
   # Further make life easier for builds by lowering the OOM score of the service
   # used to build.
-  systemd.services.nix-daemon.serviceConfig.OOMScoreAdjust = -500;
+  systemd.services.nix-daemon.serviceConfig = {
+    OOMPolicy = "continue";
+    OOMScoreAdjust = -1000;
+  };
 }
