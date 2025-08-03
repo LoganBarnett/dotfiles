@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+script="$(basename -- "${BASH_SOURCE[0]}")"
+git_dir="$(git rev-parse --git-dir)"
+local_script_path="$git_dir/hooks/$script"
+echo "Running $script on $local_script_path..."
+# Run any local hook first.
+if [ -x "$local_script_path" ]; then
+    "$local_script_path" "$@"
+fi

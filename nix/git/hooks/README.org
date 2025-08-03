@@ -1,0 +1,11 @@
+#+title:     Git Hooks
+#+author:    Logan Barnett
+#+email:     logustus@gmail.com
+#+date:      <2025-07-29 Tue>
+#+language:  en
+#+file_tags:
+#+tags:
+
+This file contains my default git hooks.  Some of them are populated with
+something meaningful (~prepare-commit-msg~ being a notable one).  Every one of
+these will delegate to the git repository's hooks, if they exist.

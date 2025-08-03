@@ -15,6 +15,12 @@ function filterComments() {
   sed -E 's/^([^#]*)#?(.*)$/\1/' "$1"
 }
 
+script="$(basename -- "${BASH_SOURCE[0]}")"
+# Run any local hook first.
+if [ -x "$GIT_DIR/hooks/$script" ]; then
+    "$GIT_DIR/hooks/$script" "$@"
+fi
+
 original=$1
 # Assume "HEAD" if the command fails. This can happen when we are making the
 # initial commit.

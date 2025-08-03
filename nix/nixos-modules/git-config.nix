@@ -125,10 +125,14 @@ in {
   ];
   environment.etc = {
     gitignore.source = ../git/gitignore_global;
-    "git-hooks/prepare-commit-msg" = {
-      source = ../git/hooks/prepare-commit-msg;
-    };
-  };
+  } // (
+    lib.attrsets.mapAttrs'
+      (name: value: {
+        name = "git-hooks/${name}";
+        value = { source = ../git/hooks/${name}; };
+      })
+      (builtins.readDir ../git/hooks)
+  );
   nixpkgs.overlays = [
     # TODO: Contribute this back to nixpkgs, and update readme to _not_ use the
     # global configuration because some packages' tests can be fouled by the
