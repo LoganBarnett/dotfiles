@@ -78,6 +78,27 @@ using =smart-parens=. Disable it. Always.
  )
 #+end_src
 
+* rust-analyzer / lsp
+
+** lodged rust-analyzer
+
+Sometimes ~rust-analyzer~ can get lodged when ~nix-direnv~ there's some trouble
+with the builds in ~nix-direnv~ (even if it gets resolved later).  Doing a
+~(lsp-work-space-restart)~ fixes the issue, but knowing it's needed is tricky.
+While we don't know if we want to automate this, there is a lot of merit in just
+reminding me it might be needed.
+
+#+name: config/rust-analyzer-lodged-restart-notification
+#+begin_src emacs-lisp :results none :exports code
+(defun config/rustic-lsp-check-diagnostics ()
+  (when (and (eq major-mode 'rustic-mode)
+             (not (lsp-diagnostics)))
+    (message "⚠️ No diagnostics yet — you may need M-x lsp-workspace-restart.")))
+
+(add-hook 'lsp-on-idle-hook #'config/rustic-lsp-check-diagnostics)
+#+end_src
+
+
 * stitch
 
 #+begin_src emacs-lisp :results none :noweb yes
@@ -85,13 +106,14 @@ using =smart-parens=. Disable it. Always.
   :init
   (message "add rust to path manually...")
   (add-to-list 'exec-path (expand-file-name "/run/current-system/sw/bin"))
-  ;; Fix - this path no longer exists, but maybe keep for pure home-manager
-  ;; configs if we ever are forced to use them.
+  ;; This path no longer exists, but maybe keep for pure home-manager configs if
+  ;; we ever are forced to use them.
   (add-to-list 'exec-path (expand-file-name "~/.nix-profile/bin"))
   <<config/smartparens-disable>>
   <<config/rust-redshift>>
   <<config/rust-indentation>>
   :config
+  <<config/rust-analyzer-lodged-restart-notification>>
   ;; Needed to take advantage of config/rust-multi-line-commas.
   (require 'multi-line)
   <<config/rust-multi-line-commas>>
