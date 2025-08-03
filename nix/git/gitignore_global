@@ -1,4 +1,11 @@
 # -*- gitignore -*-
+
+# Ignore Aider (aider.chat) history files.
+.aider.chat.history.md
+.aider.input.history
+# Ignore Aider (aider.chat) cache.
+.aider.tags.cache.*/
+
 # Ignore Emacs directory specific configuration.
 .dir-locals.el
 
