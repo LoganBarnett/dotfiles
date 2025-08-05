@@ -56,6 +56,10 @@ in {
       # ensuring the machine stays awake.
       pkgs.darwin.PowerManagement
       macos-keyboard-remap
+      # TODO: Move this to a general "Logan desktop" Nix file.  I already have a
+      # logan-desktop.nix but it is Linux centric.  I want something more
+      # general purpose some renaming must be done.
+      pkgs.zalgo-cli
     ];
   };
   fonts = {
