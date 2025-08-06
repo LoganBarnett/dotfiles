@@ -16,6 +16,7 @@
     # ../nixos-configs/zwave-js-server.nix
     ../nixos-configs/zwave-js-ui.nix
     ../hardware/aeotec-z-stick-7.nix
+    # ../nixos-configs/matrix-signal-bridge.nix
     {
       networking.hostId = "37fab2ca";
       nixpkgs.hostPlatform = system;
