@@ -10,7 +10,8 @@
   can get around this issue for emacs-wide snippets by adding a hook onto the
   =yasnippet= minor mode.
 
-  #+begin_src emacs-lisp
+  #+name: config/yasnippet-in-fundamental-mode
+  #+begin_src emacs-lisp :tangle no
     (defun config/yasnippet-fundamental-mode ()
       "Make sure we use snippets in `fundamental-mode' globally."
       (add-hook 'yas-minor-mode-hook
@@ -161,7 +162,7 @@ during startup, it appears that =yasnippet= simply skips the snippet in
 question.
 
 #+name: config/yasnippet-require-file-newline-mark-safe
-#+begin_src emacs-lisp :results none
+#+begin_src emacs-lisp :results none :tangle no
 (add-to-list 'safe-local-variable-values
               '(require-file-newline . nil)
               )
@@ -169,7 +170,7 @@ question.
 * snippet dirs
 
 #+name: config/yasnippet-snippet-dirs
-#+begin_src emacs-lisp :results none
+#+begin_src emacs-lisp :results none :tangle no
 (setq-default +snippets-dir "~/dev/dotfiles/yasnippets")
 #+end_src
 
@@ -183,7 +184,7 @@ is fixed and requires me to pick within the fixed list.  Just disable it by
 overriding a template that doesn't do anything for ~Keywords~.
 
 #+name: config/auto-insert-mode-fix-emacs-lisp-template
-#+begin_src emacs-lisp :results none :exports code
+#+begin_src emacs-lisp :results none :exports code :tangle no
 (add-to-list
  'auto-insert-alist
     '(("\\.el\\'" . "Emacs Lisp header")
@@ -249,6 +250,9 @@ templates]] for more details on things like the =__= files.
   (use-package "yasnippet"
     :demand t
     :init
+    ;; Ensure `auto-insert-mode' is loaded so we can touch `auto-insert-alist'.
+    (require 'autoinsert)
+    <<config/yasnippet-in-fundamental-mode>>
     <<config/yasnippets-override-doom-template-dir>>
     <<config/yasnippet-require-file-newline-mark-safe>>
     <<config/yasnippet-snippet-dirs>>
