@@ -13,27 +13,7 @@ Rust toolchain (such as deprecating =racer= and =rls=). For this reason I have
 chosen =rustic-mode=. I thought I used it before, but didn't record reasons for
 switching. This might be sitting in the git history for this file.
 
-* indentation
 
-As a huge proponent to 80 columns, I find Rust's 4 space indent to be an awful
-choice. Their code formatting uses it, and the community uses it. So trying to
-change it seems like a lost cause. That's okay though, because we have
-=redshift=.
-
-Ever since installing =highlight-indent-guides-mode=, =redshift-indent-mode= no
-longer works alongside it.
-
-#+name: config/rust-redshift
-#+begin_src emacs-lisp :results none :tangle no
-
-;; (defun config/rust-redshift-fix-indentation ()
-;;   (setq-local redshift-cosmological-constant 0.5)
-;;   (redshift-indent-mode)
-;;   (redshift-indent -2)
-;;   )
-;; (add-hook 'rustic-mode-hook #'config/rust-redshift-fix-indentation)
-(message "Skipping redshift-indent-mode for rust until we can figure out how to make it play nice with highlight-indent-guides-mode.")
-#+end_src
 * racer
 
 =racer= is deprecated, as is =rls=. Prefer =rust-analyzer= now.
@@ -70,12 +50,59 @@ using =smart-parens=. Disable it. Always.
 
 * indentation
 
+As a huge proponent to 80 columns, I find Rust's 4 space indent to be an awful
+choice. Their code formatting uses it, and the community uses it. So trying to
+change it seems like a lost cause. That's okay though, because we have
+=redshift=.
+
+Ever since installing =highlight-indent-guides-mode=, =redshift-indent-mode= no
+longer works alongside it.
+
+#+name: config/rust-redshift
+#+begin_src emacs-lisp :results none :tangle no
+
+;; (defun config/rust-redshift-fix-indentation ()
+;;   (setq-local redshift-cosmological-constant 0.5)
+;;   (redshift-indent-mode)
+;;   (redshift-indent -2)
+;;   )
+;; (add-hook 'rustic-mode-hook #'config/rust-redshift-fix-indentation)
+(message "Skipping redshift-indent-mode for rust until we can figure out how to make it play nice with highlight-indent-guides-mode.")
+#+end_src
+
 #+name: config/rust-indentation
 #+begin_src emacs-lisp :results none :exports code :tangle no
-(setq-default
- rust-indent-offset 2
- rustic-indent-offset 2
- )
+(defun config/rust-indent-from-rustfmt ()
+  "Set `rust-indent-offset` from rustfmt.toml if present."
+  (require 'toml)
+  ;; These aren't buffer-local for some reason.  Bug?
+  (make-variable-buffer-local 'rustic-indent-offset)
+  (make-variable-buffer-local 'rust-indent-offset)
+  (let* ((rustfmt-file (locate-dominating-file default-directory "rustfmt.toml")))
+    (if rustfmt-file
+        (let* ((config-path (concat rustfmt-file "rustfmt.toml"))
+               (config (toml:read-from-file config-path))
+               (tab-spaces (alist-get "tab_spaces" config nil nil #'string=))
+               (hard-tabs (alist-get "hard_tabs" config nil nil #'string=))
+               (indentation (or tab-spaces (if hard-tabs 8 4)))
+               )
+          ;; Use tab_spaces if defined, otherwise fallback.
+          (message "Using rustfml.toml indentation (%s)." indentation)
+          (setq-local rust-indent-offset indentation)
+          (setq-local rustic-indent-offset indentation)
+          )
+      ;; No rustfmt.toml found, fallback.
+      (let ((indentation 4))
+        (message "No rustfmt.toml settings, using %s as a default." indentation)
+        (setq-local rust-indent-offset indentation)
+        (setq-local rustic-indent-offset indentation)
+        )
+      )
+    )
+  )
+
+;; Run after defaults are set.
+(add-hook 'rust-mode-hook #'config/rust-indent-from-rustfmt t)
 #+end_src
 
 * rust-analyzer / lsp

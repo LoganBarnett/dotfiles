@@ -240,6 +240,8 @@
           epkgs.request
           # Make HTTP requests... but later.
           epkgs.request-deferred
+          # Allow us to parse TOML files.
+          epkgs.toml
         ];
         languages = [
           epkgs.dockerfile-mode
