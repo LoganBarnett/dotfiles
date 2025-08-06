@@ -38,17 +38,20 @@ in {
         script = pkgs.writeShellApplication {
           name = "notes-sync";
           runtimeInputs = [
+            pkgs.bash
+            pkgs.git
             config.services.nextcloud.occ
+            repo-sync
           ];
           # excludeShellChecks = [
           #   "SC2154"
           # ];
           text = ''
-            ${repo-sync}/bin/repo-sync \
-             --git-url ${git-url} \
-             --ssh-identity ${config.age.secrets.notes-sync-ssh.path} \
-             --sync-dir ${notes-dir} \
-             && nextcloud-occ files:scan --path=${notes-relative-dir}
+            ${../scripts/notes-sync.sh} \
+              --git-url ${git-url} \
+              --ssh-identity ${config.age.secrets.notes-sync-ssh.path} \
+              --sync-dir ${notes-dir} \
+              --relative-notes-dir ${notes-relative-dir}
           '';
         };
         # TODO: Move hostname and domain into facts.nix.
