@@ -139,10 +139,17 @@
     };
 
     # sytter = {
-    #   url = "file:///Users/logan/dev/sytter";
+    #   # TODO: Always keep one path example around.  Don't use file:// unless
+    #   # you're pointing at a tarball (which should happen just about never).
+    #   url = "path:/Users/logan/dev/sytter";
     #   inputs.nixpkgs.follows = "nixpkgs";
     #   inputs.nix-darwin.follows = "nix-darwin";
     # };
+    typeypipe-flake = {
+      # url = "github:LoganBarnett/TypeyPipe";
+      url = "path:/Users/logan/dev/TypeyPipe";
+      # inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs = flake-inputs@{
@@ -168,6 +175,7 @@
     raspberry-pi-nix,
     repo-sync-flake,
     # sytter,
+    typeypipe-flake,
     self,
     ...
   }: let

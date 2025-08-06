@@ -60,6 +60,7 @@ in {
       # logan-desktop.nix but it is Linux centric.  I want something more
       # general purpose some renaming must be done.
       pkgs.zalgo-cli
+      flake-inputs.typeypipe-flake.packages.${system}.default
     ];
   };
   fonts = {
