@@ -449,7 +449,7 @@ _C-g_ back one menu
   ;; and how I would stop it.
   ;; `org-agenda-files' is also modified in org-agenda-private.org in my private
   ;; repo.
-  (setq
+  (setq-default
    org-agenda-files
    `(
      "~/notes/agenda.org"
