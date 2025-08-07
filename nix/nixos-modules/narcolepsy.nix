@@ -17,7 +17,7 @@
   systemd.targets.hibernate.enable = false;
   systemd.targets.hybrid-sleep.enable = false;
   # Don't suspend the machine from idleness.
-  services.xserver.displayManager.gdm.autoSuspend = false;
+  services.displayManager.gdm.autoSuspend = false;
   # A tip from @ryantm:
   # https://discourse.nixos.org/t/why-is-my-new-nixos-install-suspending/19500/2
   # This has some troubleshooting and potential extra context on the "bug":
