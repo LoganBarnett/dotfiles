@@ -384,7 +384,8 @@ _C-g_ back one menu
 ;; (define-key org-agenda-mode-map "d" nil)
 ;; (define-key org-agenda-mode-map "r" nil)
 ;; (define-key org-agenda-mode-map "a" nil)
-;; (define-key org-agenda-mode-map "b" nil)
+;; Some of these need to be undefined to work properly.  Here's one.
+(define-key org-agenda-mode-map "b" nil)
 ;; Force the prefix to not be stupid.
 (define-prefix-command 'my-org-agenda-d-prefix)
 (define-key org-agenda-mode-map (kbd "d") 'my-org-agenda-d-prefix)
