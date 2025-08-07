@@ -176,6 +176,26 @@ inappropriate to derive from =prog-mode=.
 
 See [[file:./fundamental-mode.org::*line wrapping][line wrapping in fundamental-mode.org]].
 
+* multi-line
+
+I like the ~multi-line~ package for either quickly joining lines together or
+splitting them apart (by far the most common usage).  It could use a face lift
+(some modes don't work, and I'd love a smart means of adding trailing commas or
+using the weird prefixed-comma style if configured).  There's no key binding for
+it by default so let's tuck one under the ~code~ prefix for the ~localleader~.
+
+#+name: config/multi-line-keybinding
+#+begin_src emacs-lisp :results none :exports code :tangle no
+(defun config/multi-line-prog-mode-key-binding ()
+  (map!
+   :map prog-mode-map
+   :localleader
+   (:prefix ("c" . "code")
+            :desc "multi-line" "m" #'multi-line
+            )
+   )
+  )
+#+end_src
 
 * newlines
 
@@ -441,10 +461,13 @@ are there so many ways to configure indentation?!
   (add-hook 'prog-mode-hook #'config/disable-line-wrapping)
   <<config/prog-mode-disable-visual-line-mode>>
   <<config/tab-width>>
+  <<config/multi-line-keybinding>>
   ;; (add-hook 'prog-mode-hook #'config/disable-smartparens-pairs)
   ;; I have found repeating this in a hook fixes the <> completion in JavaScript
   ;; modes.
   ;; (add-hook 'prog-mode-hook #'config/prog-mode-disable-smart-parens)
+  :hook
+  (prog-mode . config/multi-line-prog-mode-key-binding)
   :config
   (require 'multi-line)
   <<config/prog-multi-line-default-strategy>>
