@@ -63,6 +63,49 @@
       };
     }
     {
+      title = "Disk I/O - Read/Write Bytes/sec";
+      type = "timeseries";
+      datasource = "Prometheus";
+      targets = let
+        # Exclude device which are non-physical (LVM volume mappers, shows as
+        # "dm") and optical drives (shows as "sr").
+        exclude-devices = ''{device!~"^sr.*|^dm-.*"}'';
+      in [
+        {
+          expr = without-socket-port
+            "rate(node_disk_read_bytes_total${exclude-devices}[1m])";
+          legendFormat = "{{instance}} - read - {{device}}";
+          format = "time_series";
+        }
+        {
+          expr = without-socket-port
+            "rate(node_disk_written_bytes_total${exclude-devices}[1m])";
+          legendFormat = "{{instance}} - write - {{device}}";
+          format = "time_series";
+        }
+      ];
+      fieldConfig = {
+        defaults = {
+          unit = "Bps";
+          decimals = 2;
+          # Different devices have dramatically different throughput.  Use a
+          # logarithmic scale to help us identify spikes and sustained usage.
+          # Seeing everything at the same linear scale isn't terribly helpful.
+          custom = {
+            scaleDistribution = {
+              type = "log";
+            };
+          };
+        };
+      };
+      gridPos = {
+        h = 1 * height;
+        w = 1 * width;
+        x = 1 * width;
+        y = 1 * height;
+      };
+    }
+    {
       title = "Disk Usage %";
       type = "timeseries";
       datasource = "Prometheus";
@@ -90,8 +133,8 @@
       gridPos = {
         h = 1 * height;
         w = 1 * width;
-        x = 2 * width;
-        y = 0 * height;
+        x = 0 * width;
+        y = 1 * height;
       };
     }
     {
@@ -125,8 +168,8 @@
       gridPos = {
         h = 1 * height;
         w = 1 * width;
-        x = 0 * width;
-        y = 1 * height;
+        x = 2 * width;
+        y = 0 * height;
       };
       fieldConfig = {
         defaults = {
@@ -153,8 +196,8 @@
       gridPos = {
         h = 1 * height;
         w = 1 * width;
-        x = 0 * width;
-        y = 2 * height;
+        x = 2 * width;
+        y = 1 * height;
       };
     }
     {
@@ -201,7 +244,7 @@
       gridPos = {
         h = 1 * height;
         w = 1 * width;
-        x = 1 * width;
+        x = 0 * width;
         y = 2 * height;
       };
       targets = [
