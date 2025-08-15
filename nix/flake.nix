@@ -121,6 +121,10 @@
       url = "github:nix-community/home-manager/release-25.05";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    openhab-flake = {
+      url = "github:LoganBarnett/openhab-flake/add-darwin-devshell-support";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     # nixpkgs-nickel.url = "github:nixos/nixpkgs?ref=9a9960b98418f8c385f52de3b09a63f9c561427a";
     raspberry-pi-nix = {
       # url = "github:tstat/raspberry-pi-nix";
@@ -171,6 +175,7 @@
     nixos-anywhere,
     nixos-hardware,
     nixos-generators,
+    openhab-flake,
     prusa-slicer-pr-390476,
     raspberry-pi-nix,
     repo-sync-flake,
@@ -208,6 +213,10 @@
         };
         modules = [
           ./hosts/${host-id}.nix
+          # This is the only way to pull in this dependency.  In the flake it
+          # resides in, this is already imported, so importing it again via
+          # `imports` just makes Nix barf with an infinite recursion error.
+          # openhab-flake.nixosModules.${system}.openhab
         ];
       }
     ;

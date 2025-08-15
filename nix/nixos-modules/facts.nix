@@ -90,6 +90,7 @@
           "matrix"
           "home-assistant"
           "mosquitto"
+          "openhab"
           "zwave-js-ui"
         ];
         controlledHost = true;
