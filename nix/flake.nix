@@ -150,8 +150,9 @@
     #   inputs.nix-darwin.follows = "nix-darwin";
     # };
     typeypipe-flake = {
+      url = "github:dkoontz/TypeyPipe";
       # url = "github:LoganBarnett/TypeyPipe";
-      url = "path:/Users/logan/dev/TypeyPipe";
+      # url = "path:/Users/logan/dev/TypeyPipe";
       # inputs.nixpkgs.follows = "nixpkgs";
     };
   };

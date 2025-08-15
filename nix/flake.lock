@@ -994,6 +994,38 @@
         "type": "github"
       }
     },
+    "nixpkgs_5": {
+      "locked": {
+        "lastModified": 1754340878,
+        "narHash": "sha256-lgmUyVQL9tSnvvIvBp7x1euhkkCho7n3TMzgjdvgPoU=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "cab778239e705082fe97bb4990e0d24c50924c04",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "ref": "nixpkgs-unstable",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
+    "nixpkgs_6": {
+      "locked": {
+        "lastModified": 1744536153,
+        "narHash": "sha256-awS2zRgF4uTwrOKwwiJcByDzDOdo3Q1rPZbiHQg/N38=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "18dd725c29603f582cf1900e0d25f9f1063dbf11",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "ref": "nixpkgs-unstable",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
     "nuenv": {
       "inputs": {
         "nixpkgs": "nixpkgs",
@@ -1175,7 +1207,8 @@
         "programsdb": "programsdb",
         "prusa-slicer-pr-390476": "prusa-slicer-pr-390476",
         "raspberry-pi-nix": "raspberry-pi-nix",
-        "repo-sync-flake": "repo-sync-flake"
+        "repo-sync-flake": "repo-sync-flake",
+        "typeypipe-flake": "typeypipe-flake"
       }
     },
     "rpi-bluez-firmware-src": {
@@ -1321,6 +1354,24 @@
         "type": "github"
       }
     },
+    "rust-overlay_3": {
+      "inputs": {
+        "nixpkgs": "nixpkgs_6"
+      },
+      "locked": {
+        "lastModified": 1754448563,
+        "narHash": "sha256-JdgvzorJa4h2RSjIUj+rEYDCdQl1ubqoS8WebYJjQ2s=",
+        "owner": "oxalica",
+        "repo": "rust-overlay",
+        "rev": "1bee06db858d83014983af40e9d1cfca96c32f7f",
+        "type": "github"
+      },
+      "original": {
+        "owner": "oxalica",
+        "repo": "rust-overlay",
+        "type": "github"
+      }
+    },
     "spectrum": {
       "flake": false,
       "locked": {
@@ -1397,6 +1448,21 @@
         "type": "github"
       }
     },
+    "systems_5": {
+      "locked": {
+        "lastModified": 1681028828,
+        "narHash": "sha256-Vy1rq5AaRuLzOxct8nz4T6wlgyUR7zLU309k9mBC768=",
+        "owner": "nix-systems",
+        "repo": "default",
+        "rev": "da67096a3b9bf56a91d16901293e51ba5b49a27e",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nix-systems",
+        "repo": "default",
+        "type": "github"
+      }
+    },
     "treefmt-nix": {
       "inputs": {
         "nixpkgs": [
@@ -1436,6 +1502,26 @@
       "original": {
         "owner": "numtide",
         "repo": "treefmt-nix",
+        "type": "github"
+      }
+    },
+    "typeypipe-flake": {
+      "inputs": {
+        "flake-utils": "flake-utils_5",
+        "nixpkgs": "nixpkgs_5",
+        "rust-overlay": "rust-overlay_3"
+      },
+      "locked": {
+        "lastModified": 1754521137,
+        "narHash": "sha256-iAmuGPEDh0xszTeLiL/t/2aVKLtIgMwxZdRrJU0bdJw=",
+        "owner": "dkoontz",
+        "repo": "TypeyPipe",
+        "rev": "65b946f5dccae552069829152679bb267543b2ce",
+        "type": "github"
+      },
+      "original": {
+        "owner": "dkoontz",
+        "repo": "TypeyPipe",
         "type": "github"
       }
     },
