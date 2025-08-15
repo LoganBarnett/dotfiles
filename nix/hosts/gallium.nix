@@ -1,17 +1,14 @@
 ################################################################################
-# Gallium hosts our NextCloud server - essentially an all-in-one service for
-# file sharing, calendar support, and a number of other features that are nice
-# to have in one place.  This is called a "groupware" I think.
-#
 # Trivia: Gallium is used for non-toxic thermometers as an alternative to
 # mercury, due to its low melting point.  It also is a critical element needed
 # for making violet and blue LEDs.  Gallium can be 3D printed.
+#
+# Gallium presently has no uses.
 ################################################################################
 { flake-inputs, host-id, system, ... }: let
 in {
   imports = [
     ../nixos-modules/raspberry-pi-5.nix
-    ../nixos-modules/nix-builder-provide.nix
     ../nixos-modules/server-host.nix
     ({ lib, pkgs, ... }: {
       # networking.hostId is needed by the filesystem stuffs.

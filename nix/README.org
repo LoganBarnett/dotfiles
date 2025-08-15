@@ -24,7 +24,7 @@ Look up the next element in the periodic table, and then create that under
 ** by machine type
 
 Instructions across various kinds of machines are not consistent due to
-bootstrapping.
+bootstrapping.  See also [[All Machine Types]].
 
 *** BIOS systems
 
@@ -115,11 +115,20 @@ error: unexpected end-of-file
 
 But using ~remote-deploy $host~ works fine.
 
+I recently added my deploy user to the trusted users list, so let's see if that
+helps.  Why this is an issue for the initial deploy but not after a local
+~switch~ is done is not well understood.
+
 *** Container Guests
 
 #+begin_src sh :results none :exports code
 host='my-host'; ssh-keygen -t ed25519 -N "" -f secrets/$host-pub-key
 #+end_src
+
+*** All Machine Types
+
+You will need to deploy to ~nickel~ to have it pull in the new host for both its
+DNS settings, DHCP, and Prometheus exporting.
 
 ** public key
 

@@ -99,6 +99,17 @@
           "node"
           "systemd"
         ];
+      cobalt = {
+        aliases = [
+          "rpi-build"
+        ];
+        controlledHost = true;
+        ipv4 = 11;
+        monitors = [
+          "blackbox-ping"
+          "node"
+          "systemd"
+        ];
         system = "aarch64-linux";
       };
       copper = {

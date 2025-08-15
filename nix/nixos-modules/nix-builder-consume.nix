@@ -5,8 +5,11 @@
   # sshKey = config.age.secrets.builder-key.path;
   # This may be causing conflicts with the darwin linux-builder, since this is
   # its path.
-  sshKey = "/etc/nix/builder_ed25519";
-  # sshKey = "/etc/nix/remote-builder_ed25519";
+  # sshKey = "/etc/nix/builder_ed25519";
+  # Switched on 2025-08-14 for a Raspberry Pi host.  Unsure how this could
+  # impact the linux-builder host (per my notes above), but something I want to
+  # keep an eye out for.
+  sshKey = "/etc/nix/remote-builder_ed25519";
   sshUser = "builder";
   toBase64 = (pkgs.callPackage ../base64.nix {}).toBase64;
   rpi-systems = [
@@ -15,28 +18,29 @@
     "armv7l-linux"
     "arm-linux"
   ];
+  rpi-build = {
+    inherit sshKey;
+    inherit sshUser;
+    hostName = "rpi-build.proton";
+    systems = rpi-systems;
+    protocol = "ssh-ng";
+    # Keep this host from being bogged down by builds.
+    # Beware setting this to 1, as it can mean no jobs are available ever
+    # (possibly due to a bug?).
+    maxJobs = 2;
+    # What's this for?
+    speedFactor = 2;
+    # Note: "kvm" means "Kernel-based Virtual Machine":
+    # https://en.m.wikipedia.org/wiki/Kernel-based_Virtual_Machine
+    # This is something I got from TLATER here:
+    # https://discourse.nixos.org/t/kvm-is-required-error-building-a-docker-image-using-runasroot/22923/2
+    # I seem to be unable to build other Raspberry Pi images without it.
+    supportedFeatures = [ "benchmark" "big-parallel" "kvm" ];
+    mandatoryFeatures = [];
+  };
 in {
   nix.buildMachines = [
-    {
-      inherit sshKey;
-      inherit sshUser;
-      hostName = "gallium.proton";
-      systems = rpi-systems;
-      protocol = "ssh-ng";
-      # Keep this host from being bogged down by builds.
-      # Beware setting this to 1, as it can mean no jobs are available ever
-      # (possibly due to a bug?).
-      maxJobs = 2;
-      # What's this for?
-      speedFactor = 2;
-      # Note: "kvm" means "Kernel-based Virtual Machine":
-      # https://en.m.wikipedia.org/wiki/Kernel-based_Virtual_Machine
-      # This is something I got from TLATER here:
-      # https://discourse.nixos.org/t/kvm-is-required-error-building-a-docker-image-using-runasroot/22923/2
-      # I seem to be unable to build other Raspberry Pi images without it.
-      supportedFeatures = [ "benchmark" "big-parallel" "kvm" ];
-      mandatoryFeatures = [];
-    }
+    rpi-build
     # {
     #   inherit sshKey;
     #   inherit sshUser;
@@ -97,8 +101,12 @@ in {
   #   builders-use-substitutes = true
   # '';
 
-  # This seems to not do anything useful.
-  # programs.ssh.knownHosts = {
+  programs.ssh.knownHosts = {
+    "rpi-build.proton" = {
+      hostNames = [ "rpi-build.proton" ];
+      publicKeyFile = ../secrets/cobalt-pub-key.pub;
+    };
+  };
   #   lithium = {
   #     hostNames = [ "lithium.proton" ];
   #     publicKeyFile = /etc/nix/builder_ed25519.pub;

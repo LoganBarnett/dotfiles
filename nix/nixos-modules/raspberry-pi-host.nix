@@ -7,15 +7,14 @@
 ################################################################################
 { flake-inputs, host-id, lib, ... }: {
   imports = [
-   # ./secrets.nix
   ];
-  # age.secrets."${host-id}-pub-key" = {
-  #   generator.script = "ssh-ed25519-with-pub";
-  #   rekeyFile = ../secrets/${host-id}-pub-key.age;
-  # };
   # Disable swap devices for these.  They have little SD cards with abysmal
   # write speeds.  Perhaps if we have a permanently connected disk with some
   # speed to it, we can change this up.  We can also destroy the SD cards
   # quickly with a swap device.
   swapDevices = lib.mkForce [];
+  # By default, Raspberry Pis are disallowed from doing their own builds.  We
+  # have a single Raspberry Pi build host - a host with sufficient memory and no
+  # other services on it.  This prevents any local builds from occurring.
+  nix.settings.max-jobs = 0;
 }

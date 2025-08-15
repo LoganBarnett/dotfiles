@@ -8,7 +8,6 @@ in {
   imports = [
     ../nixos-modules/raspberry-pi-4.nix
     ../nixos-modules/raspberry-pi-host.nix
-    ../nixos-modules/nix-builder-provide.nix
     ../nixos-modules/server-host.nix
     ../nixos-modules/wireguard-server-standard.nix
     ../nixos-modules/dns-dynamic-ip-home.nix

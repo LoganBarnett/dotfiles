@@ -28,4 +28,15 @@
       ];
     };
   };
+  # This should allow me to do remote deployments without --use-remote-sudo, or
+  # at least will make it work on a freshly installed NixOS host.  The initially
+  # deployed versions use a slimmed down version of the configuration, whose
+  # settings are somewhat hand picked by the image maintainers.  I don't know
+  # why my remote builds work without this after the first deployment has been
+  # done (which must be done by copying the source over).  I can't find good
+  # explanations of this.  But the wiki
+  # (https://wiki.nixos.org/wiki/Nixos-rebuild#Deploying_on_other_machines)
+  # specifically covers this error (even if the sequence doesn't come up).
+  # I haven't tested this yet because new hosts are slow to come by.
+  nix.settings.trusted-users = [ "logan" ];
 }

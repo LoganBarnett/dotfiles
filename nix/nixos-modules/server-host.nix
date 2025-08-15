@@ -25,12 +25,13 @@
     ./https-module.nix
     ./secrets.nix
     ./facts-secrets.nix
+    # Allow servers to consume builds from other hosts.
+    ./nix-builder-consume.nix
     # TODO: Remove this and only include it on hosts that need it.  Also make it
     # use the domain.
     ./tls-leaf-proton.nix
     # A server should never sleep/suspend unless we have a really good reason.
     ./narcolepsy.nix
-    ./nix-builder-provide.nix
     # See facts.nix for how this is specifically configured per host.
     ../nixos-modules/prometheus-client.nix
     (import ./nix-flake-environment.nix {

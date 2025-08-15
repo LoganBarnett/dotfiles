@@ -12,7 +12,6 @@ in {
     ../nixos-configs/authelia.nix
     ../nixos-modules/dns-server.nix
     ../nixos-modules/raspberry-pi-4.nix
-    ../nixos-modules/nix-builder-provide.nix
     ../nixos-modules/raspberry-pi-builder.nix
     ../nixos-modules/server-host.nix
     ../nixos-modules/ldap-server.nix

@@ -12,8 +12,6 @@
   wireguard-port = 51820;
 in {
   imports = [
-    # We don't want builds going over the tunnel to this host.
-    # ../nixos-modules/nix-builder-provide.nix
     ../nixos-modules/server-host.nix
     # (import ../nixos-modules/wireguard-client.nix {
     #   inherit host-id;
