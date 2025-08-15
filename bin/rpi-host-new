@@ -17,8 +17,4 @@ agenix rekey -a
 # Ah but not everything that is generated is added.  Add the TLS certificate
 # manually if it exists.
 git add "secrets/tls-$host.crt"
-nom build \
-    ".#nixosConfigurations.${host}.config.system.build.sdImage" \
-    --show-trace \
-    --verbose \
-    --accept-flake-config
+image-create --host "$host"

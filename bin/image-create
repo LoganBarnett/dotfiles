@@ -21,6 +21,9 @@ The image file name is printed upon success.
 EOH
 }
 
+host=''
+build_tool='nom'
+
 while true; do
   case "${1:-}" in
     -h | --help)
@@ -30,6 +33,10 @@ while true; do
     -H | --host)
       host="${2:-}"
       shift 2
+      ;;
+    -n | --nix)
+      build_tool='nix'
+      shift 1
       ;;
     * ) break ;;
   esac
@@ -41,34 +48,35 @@ if [[ -z ${host+x} ]]; then
   exit 1
 fi
 
-image_name='nixos-image.img'
-./with-podman " \
-set -x
-sed -i '/extra-platforms/d' /etc/nix/nix.conf
-# tail -n +1 /proc/sys/fs/binfmt_misc/*
-echo 'extra-platforms = i686-linux x86_64-linux aarch64-linux aarch64-darwin' \
-  >> /etc/nix/nix.conf
-cat /etc/nix/nix.conf
-cat /etc/nixos/configuration.nix
-# qemu-system-x86_64 --version
-ls -al /usr/bin/qemu*
-nix-env -i qemu-system-x86_64
-nix \
-  --extra-experimental-features nix-command \
-  --extra-experimental-features flakes \
-  build '.#${host}'
-ls -al \$(readlink result)/nix-support
-cp \$(readlink result)/sd-image/* /workdir/$image_name.zst
-rm result
-"
-unzstd \
-  --force \
-  --decompress $image_name.zst \
-  -o $image_name
-rm --force $image_name.zst
-hdiutil imageinfo $image_name
+image_type="$([[ "$host" == 'nucleus' ]] && echo 'isoImage' || echo 'sdImage')"
+output='image'
+system="$(
+  nix eval --raw --file nixos-modules/facts.nix "network.hosts.$host.system"
+)"
+if [[ "$system" == '' ]]; then
+  echo 'Error: Could not determine system.' 1>&2
+  exit 1
+fi
+
+if [[ "$image_type" == '' ]]; then
+  echo 'Error: Could not determine image type.' 1>&2
+  exit 1
+fi
+
+# Beware the --system arg.  It can make for very difficult to spot errors.
+# Instead if this isn't working, you likely don't have a builder
+# available/working for the system double.
+"$build_tool" \
+  build \
+  ".#nixosConfigurations.$host.config.system.build.$image_type" \
+  --accept-flake-config \
+  --out-link "$output" \
+  --print-build-logs \
+  --show-trace \
+  --verbose
+
 
 echo 'Image built successfully.' 1>&2
 # Print the name used so we can use it elsewhere, and scripts needn't be tightly
 # coupled.
-echo $image_name
+echo "$output"
