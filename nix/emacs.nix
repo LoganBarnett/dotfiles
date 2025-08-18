@@ -405,6 +405,11 @@
               license = lib.licenses.gpl3;
             };
           })
+          # Git collaboration server integration into Magit (GitHub, GitLab,
+          # Gitea, etc).
+          epkgs.forge
+          # The best git UI.
+          epkgs.magit
           # Emacs interface to mu, an email client.
           epkgs.mu4e
           # I forgot exactly what this is for.
@@ -476,8 +481,6 @@
               license = lib.licenses.gpl3;
             };
           })
-          # The best git UI.
-          epkgs.magit
           # Helper to break expressions into multiple lines, or multiple lines
           # combined into a single line.
           epkgs.multi-line
@@ -498,7 +501,7 @@
           # Emacs has trouble with extremely long lines.  This detects that and
           # disables a bunch of minor modes so you can at least look upon the
           # file.
-# File is directly included in the dotfiles repo.
+          # File is directly included in the dotfiles repo.
           # pkgs.so-long
           # Allow converting between various cases (PascalCase, camelCase,
           # snake_case, kebob-case, etc).  How does this vary from
@@ -512,7 +515,7 @@
           epkgs.ws-butler
           # Navigate chorded keybindings in a self-documenting way.
           epkgs.which-key
-          # Use editorconfig settings, I think.
+          # Use `emacsclient` as `$EDTIOR`.
           epkgs."with-editor"
           # Fix up HTML documents.
           epkgs.web-beautify

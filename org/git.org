@@ -273,6 +273,8 @@ https://github.com/doomemacs/doomemacs/blob/master/modules/emacs/vc/config.el
 (use-package "magit"
   :defer t
   :init
+  ;; This is supposed to be set before magit loads, according to the docs.
+  (setq forge-add-default-bindings t)
   (config/git-blame-output)
   <<config/gitignore-file-template-disable>>
   <<config/editor-env-emacsclient-ensure>>
@@ -287,5 +289,11 @@ https://github.com/doomemacs/doomemacs/blob/master/modules/emacs/vc/config.el
   :config
   <<config/git-commit-message-evil-insert-state>>
   (config/connect-git-gutter-and-magit)
+  )
+
+(use-package forge
+  :after magit
+  :ensure t
+  :config
   )
 #+end_src

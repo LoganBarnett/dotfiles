@@ -60,6 +60,12 @@
           # In prior setups, I needed this.  I don't expect much usage here
           # between agenix-rekey and Nix itself.
           filter = {};
+          # This is not an official Git configuration value but something that
+          # Emacs' Forge package demands.  This may mean overriding it in other
+          # areas, assuming Forge can even do that.
+          github = {
+            user = "LoganBarnett";
+          };
           init = {
             defaultBranch = "main";
           };
