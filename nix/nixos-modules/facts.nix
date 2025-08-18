@@ -246,6 +246,9 @@
         system = "x86_64-linux";
       };
       titanium = {
+        aliases = [
+          "musicgpt"
+        ];
         controlledHost = true;
         flake-input-overrides = {
           home-manager = "home-manager-working-rocm";

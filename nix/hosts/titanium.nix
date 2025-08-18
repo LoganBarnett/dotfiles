@@ -34,6 +34,7 @@ in {
     ../nixos-modules/x-desktop.nix
     ../nixos-modules/server-host.nix
     ../nixos-configs/sunshine.nix
+    ../nixos-configs/musicgpt-ui.nix
     ({ config, lib, pkgs, ... }: {
       imports = [
         (modulesPath + "/installer/scan/not-detected.nix")

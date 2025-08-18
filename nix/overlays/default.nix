@@ -55,6 +55,7 @@
   # into this section.
   (final: prev: {
     mqttpassworder = final.callPackage ../derivations/mqttpassworder.nix {};
+    musicgpt = final.callPackage ../derivations/musicgpt.nix {};
     zalgo-cli = final.callPackage ../derivations/zalgo-cli.nix {};
   })
 ]
