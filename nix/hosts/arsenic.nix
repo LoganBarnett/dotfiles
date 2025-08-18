@@ -37,7 +37,6 @@
     ../users/cassandra-desktop.nix
     ../users/kai-desktop.nix
     ({ config, lib, pkgs, ... }: {
-      nixpkgs.hostPlatform = system;
       nix.channel.enable = false;
     })
     # From nixos-generate-config:
