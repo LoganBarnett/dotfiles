@@ -157,6 +157,14 @@ in {
   #   enable = true;
   #   enableBashIntegration = true;
   # };
+  nix = {
+    settings = {
+      experimental-features = [
+        "nix-command"
+        "flakes"
+      ];
+    };
+  };
   # nix.settings = {
   #   extra-platforms = [
   #     # This might show up or not show up in an error list, helping us
