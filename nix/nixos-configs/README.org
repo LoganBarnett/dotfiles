@@ -13,3 +13,63 @@ designed for parameterization or re-use, and they certainly have no place in
 
 My system did not start this way, so I will be slowly migrating over my
 configurations to this directory.
+
+* Managing Secrets
+
+Oh this is a fun one, because neither services nor NixOS modules handle this
+consistently (and NixOS doesn't get a pass because services are inconsistent -
+NixOS modules are inconsistent across services that would otherwise be
+consistent).
+
+The general formula is this:
+1. Declare needed secrets and either allow generation or produce the secrets
+   required via ~agenix-rekey~ and ~agenix~ itself.
+2. Declare ~LoadCredential~ for each of the services.  This is somewhat a
+   duplication, but we actually need it in the universal case.  While ~agenix~
+   will lay down the secrets in ~/run/agenix~ for us, they won't be readable by
+   the service.  We could hardcode the service's group name, and possibly even
+   create the group, but that's not the ~systemd~ way, especially when
+   ~DynamicUser=true~.  By putting them in ~LoadCredential~, all of the
+   permission stuff is handled for us in the temporary FS mounts ~systemd~ makes
+   for us.
+3. Ensure the service starts _after_ ~agenix~ with:
+   #+begin_src nix :results none :exports code
+   systemd.services.foo = {
+     after = [
+       "run-agenix.d.mount"
+       ];
+     wants = [
+       "run-agenix.d.mount"
+       ];
+   };
+   #+end_src
+
+
+Now if we just need secret _files_, you're basically done.  Take those paths
+(which are always under ~/run/credentials/foo.service/$nameOfSecret~) and
+provide them as necessary.  Win!
+
+If they require environment variables, we still have more to do.  The extended
+list is:
+1. Create an "environment file".  This will correspond with ~EnvironmentFile~ in
+   the ~systemd~ unit, but some NixOS modules provide an ~environmentFile~
+   field, supposedly for convenience.  But they may trigger additional logic so
+   watch out for that.  You can use something like this code snippet to generate
+   the file:
+
+#+begin_src nix :results none :exports code
+    environmentFile = pkgs.writeTextFile {
+      name = "litellm-environment-file.env";
+      text = ''
+        OPENAI_API_KEY="$(cat /run/credentials/litellm.service/OPENAI_API_KEY)"
+        LITELLM_MASTER_KEY="$(cat /run/credentials/litellm.service/LITELLM_MASTER_KEY)"
+        LITELLM_SALT_KEY="$(cat /run/credentials/litellm.service/LITELLM_SALT_KEY)"
+      '';
+    };
+#+end_src
+
+Just to keep myself sane in this case, I used ~CONSTANT_CASE~ for the files so
+they just matched up 1:1 with the environment variables.
+
+Ideally I should be able to provide a helper soon that will set this stuff for
+us and remove much of the ceremony.

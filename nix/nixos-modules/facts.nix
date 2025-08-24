@@ -115,6 +115,7 @@
       };
       copper = {
         aliases = [
+          "chronicle-proxy"
           "dex"
           "nextcloud"
         ];

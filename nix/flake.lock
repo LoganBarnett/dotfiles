@@ -38,16 +38,16 @@
         "treefmt-nix": "treefmt-nix"
       },
       "locked": {
-        "lastModified": 1738979498,
-        "narHash": "sha256-fp87eoMnp+qfTzB7zBgYhR2l3CsXQOh+hid3n1RnIrc=",
+        "lastModified": 1755906899,
+        "narHash": "sha256-+dPwWI1BDUG0VoFtY+aXJ+UimHUty7Yxu7ovlTkRmg8=",
         "owner": "LoganBarnett",
         "repo": "agenix-rekey",
-        "rev": "d72192cd81a3eca8530cac40ea8a613b4b13b7c8",
+        "rev": "1b284677d03c22cca54e50b068bc59d6854f4be6",
         "type": "github"
       },
       "original": {
         "owner": "LoganBarnett",
-        "ref": "generators-new-line-optional",
+        "ref": "parameterize-generators",
         "repo": "agenix-rekey",
         "type": "github"
       }

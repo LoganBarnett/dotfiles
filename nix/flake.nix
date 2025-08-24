@@ -25,7 +25,7 @@
     # https://github.com/oddlama/agenix-rekey
     # Allows re-keying and bootstrapping of secrets used by agenix.
     agenix-rekey = {
-      url = "github:LoganBarnett/agenix-rekey/generators-new-line-optional";
+      url = "github:LoganBarnett/agenix-rekey/parameterize-generators";
       # url = "github:LoganBarnett/agenix-rekey/paramterize-generators-cherry-pick";
       # url = "github:LoganBarnett/agenix-rekey/parameterize-generators";
       # url = "github:LoganBarnett/agenix-rekey/parameterize-generators-master-identities-fix";
@@ -158,30 +158,13 @@
   };
 
   outputs = flake-inputs@{
-    agenix,
     agenix-rekey,
-    comfyui-pr,
-    current-system,
-    disko,
-    emacs-overlay,
-    home-manager,
-    nextcloud-desktop,
     nix,
     nix-darwin,
     nixpkgs,
-    nixpkgs-cuda,
     nixpkgs-latest,
-    nixpkgs-working-rocm,
-    nixpkgs-rpi,
-    nixos-anywhere,
-    nixos-hardware,
     nixos-generators,
-    openhab-flake,
     prusa-slicer-pr-390476,
-    raspberry-pi-nix,
-    repo-sync-flake,
-    # sytter,
-    typeypipe-flake,
     self,
     ...
   }: let
@@ -206,11 +189,13 @@
       # };
       # config = import ./hosts/${host-id}.nix;
     # };
+
     nix-host = args@{ host-id, flake-inputs, system }:
       flake-inputs.nixpkgs.lib.nixosSystem {
         specialArgs = {
           inherit facts flake-inputs host-id nodes system;
           disko-proper = flake-inputs.disko;
+          lib-custom = import ./lib.nix;
         };
         modules = [
           ./hosts/${host-id}.nix
@@ -221,10 +206,12 @@
         ];
       }
     ;
+
     darwin-host = args@{ host-id, flake-inputs, system }:
       nix-darwin.lib.darwinSystem {
         specialArgs = {
           inherit facts flake-inputs host-id nodes system;
+          lib-custom = import ./lib.nix;
           disko-proper = flake-inputs.disko;
         };
         modules = [
@@ -251,6 +238,7 @@
         ];
       }
     ;
+
     lib = nixpkgs.lib;
     host-config = name: hostFacts: {
       flake-inputs = flake-inputs // (

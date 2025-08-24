@@ -16,6 +16,7 @@ in {
     ../nixos-configs/gitea.nix
     ../nixos-modules/nextcloud.nix
     ../nixos-modules/notes-sync.nix
+    ../nixos-configs/chronicle-proxy.nix
     ({ lib, pkgs, ... }: {
       # networking.hostId is needed by the filesystem stuffs.
       # An arbitrary ID needed for zfs so a pool isn't accidentally imported on

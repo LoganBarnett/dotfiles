@@ -1,12 +1,20 @@
-{ ... }: {
+################################################################################
+# Some custom functions that get used in a lot of places, but need access to
+# the NixOS module system.
+#
+# TODO: Move these to ../lib.nix.
+################################################################################
+{ config, lib, ... }: {
   # This becomes available as `pkgs.lib`.  How it can just be "lib" remains a
   # mystery.
   nixpkgs.overlays = [(final: prev: {
     lib = prev.lib // {
       custom = {
+
         monitor-to-exporter-name = monitor: {
           blackbox-ping = "blackbox";
         }.${monitor} or monitor;
+
         pemToCertificates = pemData: (let
           lines = final.lib.strings.splitString "\n" pemData;
           certs-acc = final.lib.lists.foldl'
@@ -41,6 +49,7 @@
         in
           certs-acc.certs
         );
+
         # Lifted from:
         # https://gist.github.com/manveru/74eb41d850bc146b7e78c4cb059507e2
         toBase64 = text: let
@@ -75,6 +84,8 @@
         in
           join (head ++ [tail]);
       };
+
+
     };
   })];
 }
