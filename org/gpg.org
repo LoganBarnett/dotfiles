@@ -31,6 +31,9 @@ Sources:
 ;; I am not certain this is the package to use, but it's best guess.
 (use-package epg-config
   :init
+  ;; Use this to make sure we always do public key encrpytion (vastly preferred
+  ;; over symmetric).
+  (setq epa-file-encrypt-to '("logustus@gmail.com"))
   <<config/gpg-agent-wait-for-status-fix>>
   )
 #+end_src
