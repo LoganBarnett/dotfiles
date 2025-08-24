@@ -48,7 +48,7 @@ in {
     #     dependencies = [
     #       config.age.secrets."${host-id}-authelia-home-assistant-matrix-service-ldap-password"
     #     ];
-    #     script = "environment-file";
+    #     script = "environment-variable";
     #   };
     #   settings.field = "LDAP_BIND_PASSWORD";
     #   rekeyFile = ../secrets/${host-id}-authelia-home-assistant-service-ldap-password-environment-file.age;
@@ -58,7 +58,7 @@ in {
     #     dependencies = [
     #       config.age.secrets."${host-id}-authelia-home-assistant-matrix-service-ldap-password-environment-file"
     #     ];
-    #     script = "environment-file";
+    #     script = "environment-variable";
     #   };
     #   rekeyFile = ../secrets/${host-id}-authelia-home-assistant-service-environment-file-aggregate.age;
     # };

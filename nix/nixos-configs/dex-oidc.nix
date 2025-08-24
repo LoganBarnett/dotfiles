@@ -10,7 +10,7 @@ in {
   age.secrets = {
     dex-oidc-ldap-environment-file = {
       generator = {
-        script = "environment-file";
+        script = "environment-variable";
         dependencies = [
           config.age.secrets."${host-id}-dex-oidc-service-ldap-password"
         ];
@@ -21,7 +21,7 @@ in {
     };
     home-assistant-client-secret-environment-file = {
       generator = {
-        script = "environment-file";
+        script = "environment-variable";
         dependencies = [
           config.age.secrets."home-assistant-client-secret"
         ];
@@ -32,7 +32,7 @@ in {
     };
     dex-oidc-environment-file = {
       generator = {
-        script = "environment-file-aggregate";
+        script = "environment-file";
         dependencies = [
           config.age.secrets.home-assistant-client-secret-environment-file
           config.age.secrets.dex-oidc-ldap-environment-file
