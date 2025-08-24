@@ -193,6 +193,9 @@
   :bind
   (("C-." . embark-act)         ;; pick some comfortable binding
    ("C-;" . embark-dwim)        ;; good alternative: M-.
+   ("C-c C-e" . embark-export)
+   ("C-c C-a" . emark-act)
+   ("C-c C-d" . embark-dwim)
    ("C-h B" . embark-bindings)) ;; alternative for `describe-bindings'
   :init
   (setq-default
