@@ -267,6 +267,20 @@ this was the most apparent I could find.
 #+end_src
 
 
+** org-babel
+
+We need ~ob-ruby~ and add to ~org-babel-load-languages~ to get ~org-babel~ to
+work with Ruby blocks.
+
+#+name: config/ruby-org-babel
+#+begin_src emacs-lisp :results none :exports code :tangle no
+(require 'ob-ruby)
+(add-to-list 'org-src-lang-modes '("ruby" . enh-ruby))
+(org-babel-do-load-languages
+ 'org-babel-load-languages
+ '((ruby . t)))
+#+end_src
+
 ** stitch
 
 #+begin_src emacs-lisp :results none :noweb yes
@@ -281,6 +295,7 @@ this was the most apparent I could find.
   <<config/ruby-rubocopy-disable>>
   <<config/ruby-multi-line-strategy-hook>>
   <<config/ruby-mode-fix-hanging-indentation>>
+  <<config/ruby-org-babel>>
   ;; Leave this disabled for now.  It grays out everything that's an ERB
   ;; template expression!  See:
   ;; https://github.com/petere/emacs-eruby-mode/issues/2
