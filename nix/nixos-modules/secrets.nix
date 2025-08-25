@@ -82,7 +82,8 @@ in {
     ];
     # Must be relative to the flake.nix file.
     localStorageDir = ../secrets/rekeyed/${host-id};
-    generatedSecretsDir = ../secrets/generated/${host-id};
+    generatedSecretsDir = ../secrets/generated;
+    secretsDir = ../secrets;
     # These fields are labeled as missing with:
     #  The option `age.rekey.userFlake' does not exist. Definition values:
     # userFlake = flake-inputs.self;

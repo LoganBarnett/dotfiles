@@ -3,11 +3,12 @@
 # mercury, due to its low melting point.  It also is a critical element needed
 # for making violet and blue LEDs.  Gallium can be 3D printed.
 #
-# Gallium presently has no uses.
+# Gallium is an authentication server.
 ################################################################################
 { flake-inputs, host-id, system, ... }: let
 in {
   imports = [
+    ../nixos-configs/authentik.nix
     ../nixos-modules/raspberry-pi-5.nix
     ../nixos-modules/server-host.nix
     ({ lib, pkgs, ... }: {

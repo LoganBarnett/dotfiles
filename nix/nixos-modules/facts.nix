@@ -132,7 +132,10 @@
         system = "x86_64-linux";
       };
       gallium = {
-        aliases = [];
+        aliases = [
+          "authentik"
+          "ldap"
+        ];
         controlledHost = true;
         flake-input-overrides = {
           nixpkgs = "nixpkgs-25";
@@ -188,10 +191,8 @@
       nickel = {
         aliases = [
           "alertmanager"
-          "auth"
           "grafana"
           "prometheus"
-          "ldap"
         ];
         controlledHost = true;
         flake-input-overrides = {

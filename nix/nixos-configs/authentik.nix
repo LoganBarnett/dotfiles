@@ -1,13 +1,49 @@
 ################################################################################
 #
 ################################################################################
-{ config, facts, lib, ... }: let
+{ config, facts, flake-inputs, lib, ... }: let
   inherit (lib) optionalAttrs pipe;
-  inherit (lib.attrsets) mapAttrsToList;
+  inherit (lib.attrsets) filterAttrs mapAttrs mapAttrsToList mapAttrs';
+  inherit (lib.generators) toYAML;
+  inherit (lib.strings) replaceStrings;
   # A helper to create the fancy !Find references in YAML documents.
   Find = (model: key: value: { __ref__ = [ model [key value] ]; });
+  snake-case = s: replaceStrings ["-"] ["_"] s;
+  service-user-password-env-var = name: "authentik_${snake-case name}_password";
+  service-user-secret-password = name: "authentik-${name}-password";
+  service-users = filterAttrs
+    (user: data: data.type == "service")
+    facts.network.users
+  ;
+
   blueprints = {
-    "00-groups" = {
+
+    # The akadmin user is a requirement for Authentik, but we don't have to use
+    # it or have it enabled.  Its presence makes me suspicious, but I've been
+    # assured that it only exists in a vestigial sense when users enter the
+    # enlightened era of declarative configuration.
+    "00-disable-akadmin" = {
+      version = 1;
+      metadata = {
+        name = "disable-akadmin";
+      };
+      entries = [
+        {
+          model = "authentik_core.user";
+          id = "akadmin_disable";
+          identifiers = {
+            username = "akadmin";
+          };
+          state = "present";
+          attrs = {
+            is_active = false;
+            is_superuser = false;
+          };
+        }
+      ];
+    };
+
+    "10-groups" = {
       version = 1;
       entries = mapAttrsToList
         (name: data: {
@@ -28,7 +64,8 @@
       #   }
       # ];
     };
-    "10-users.yaml" = {
+
+    "20-users.yaml" = {
       version = 1;
       entries = mapAttrsToList
         (name: data: {
@@ -42,16 +79,14 @@
             is_active = true;
             is_superuser = false;
           } // (optionalAttrs (data.type == "service") {
-            # TODO: Look up password format for env lookups.
-            password = "!Env ${"foo"}";
+            password = "!Env ${service-user-password-env-var name}";
           });
         })
         facts.network.users
         ;
     };
 
-
-    "20-membership" = {
+    "30-membership" = {
       version = 1;
       entries = pipe facts.network.users [
         (mapAttrsToList
@@ -74,7 +109,7 @@
       ];
     };
 
-    "30-provider" = {
+    "40-provider" = {
       version = 1;
       entries = [
         # Not currently required.
@@ -105,7 +140,7 @@
       ];
     };
 
-    "40-application" = {
+    "50-application" = {
       version = 1;
       entries = [
         # Application linked to provider
@@ -129,7 +164,7 @@
       ];
     };
 
-    "50-policy-allow-app-users" = {
+    "60-policy-allow-app-users" = {
       version = 1;
       entries = [
         # Expression policy: allow if user in "app-users"
@@ -151,7 +186,7 @@
       ];
     };
 
-    "60-bind-policy-to-app" = {
+    "70-bind-policy-to-app" = {
       version = 1;
       entries = [
         # Bind the expression policy to the Application (enforcement)
@@ -170,34 +205,157 @@
         }
       ];
     };
-  };
-in {
-  age.secrets = {
-    authentik-environment-file = {
-      generator = {
-        script = "environment-file-aggregate";
-        dependencies = [
 
-        ];
-      };
+    # Why are we using YAML templates here instead of serializing Nix
+    # expressions?  Sit down for a moment, and let us tell you a tale of sadness
+    # and treachery.  Authentik makes use of a YAML feature called "tags".  This
+    # is a special form of a string / scalar that YAML uses to create references
+    # to itself in the document.  Some parses know how to understand this
+    # instead of treating the entire document as inert data.  Such YAML
+    # documents cannot round trip through serializers.  They require this
+    # because their structures want to refer to primary, auto incremented keys
+    # in a database.  So to keep those auto generated keys (which aren't
+    # remotely portable) out of the config files, they chose to rely on tags
+    # (instead of just making the slug or id unique and referencing that for
+    # some reason...).  Is Authentik to blame for using such a criminal feature,
+    # or is YAML for introducing such a feature?  An exercise for the reader as
+    # their tear their hair out trying to serialize a Nix expression into the
+    # YAML that Authentik wants to see.  This is why we use a YAML template.
+    "90-password-reset-on-empty-password".text = ''
+      version: 1
+      metadata:
+        name: authn-with-initial-password-enrollment
+      entries:
+        # Flow
+        - model: authentik_flows.flow
+          id: flow_authn
+          identifiers:
+            slug: default-authentication
+          attrs:
+            designation: authentication
+            name: Default AuthN
+
+        # Stages
+        - model: authentik_stages_identification.identificationstage
+          id: stg_ident
+          attrs:
+            name: Identify
+            user_fields: [username, email]
+
+        - model: authentik_stages_password.passwordstage
+          id: stg_password
+          attrs:
+            name: Password
+            backends: [default]
+
+        - model: authentik_stages_password.passwordchangestage
+          id: stg_password_change
+          attrs:
+            name: Set/Change Password
+
+        # Stage bindings (order matters)
+        - model: authentik_flows.stagebinding
+          id: bind_ident
+          attrs:
+            target: !Find [authentik_flows.flow, [slug, default-authentication]]
+            stage:  !Find [authentik_stages_identification.identificationstage, [name, Identify]]
+            order: 10
+
+        - model: authentik_flows.stagebinding
+          id: bind_password
+          attrs:
+            target: !Find [authentik_flows.flow, [slug, default-authentication]]
+            stage:  !Find [authentik_stages_password.passwordstage, [name, Password]]
+            order: 20
+
+        - model: authentik_flows.stagebinding
+          id: bind_password_change
+          attrs:
+            target: !Find [authentik_flows.flow, [slug, default-authentication]]
+            stage:  !Find [authentik_stages_password.passwordchangestage, [name, "Set/Change Password"]]
+            order: 25
+
+        # Expression policy: include pw-change stage only if no usable password exists
+        - model: authentik_policies_expression.expressionpolicy
+          id: pol_needs_pw
+          attrs:
+            name: Needs password enrollment
+            expression: |
+              # Include the stage if the user has no usable password
+              return request.user.has_usable_password is False
+
+        # Bind the policy to the *password-change* stage binding
+        - model: authentik_policies.policybinding
+          id: bind_pol_to_pw_change
+          attrs:
+            target: !Find [authentik_flows.stagebinding, [id, bind_password_change]]
+            policy: !Find [authentik_policies_expression.expressionpolicy, [name, "Needs password enrollment"]]
+            order: 1
+      '';
+
+  };
+
+  environment-file-service = {
+    enable = true;
+    secrets = (mapAttrs'
+      (name: data: {
+        name = service-user-secret-password name;
+        value = service-user-password-env-var name;
+      })
+      service-users
+    ) // {
+      authentik-secret-key = "AUTHENTIK_SECRET_KEY";
     };
   };
+
+in {
+  imports = [
+    flake-inputs.authentik-nix.nixosModules.default
+  ];
+
+  age.secrets = (mapAttrs'
+    (name: data: {
+      name = service-user-secret-password name;
+      value = {
+        generator.script = "long-passphrase";
+        rekeyFile = ../secrets/authentik-${name}-password.age;
+      };
+    })
+    service-users
+  ) // {
+    authentik-secret-key = {
+      generator.script = "hex";
+      settings.length = 60;
+    };
+  };
+
+  services.environment-file-secrets.services.authentik = environment-file-service;
+  services.environment-file-secrets.services.authentik-migrate = environment-file-service;
+  services.environment-file-secrets.services.authentik-worker = environment-file-service;
+
   services.https.fqdns."authentik.proton" = {
     enable = true;
-    internalPort = config.services.authentik.port;
+    # It doesn't look like they expose the port config field yet.
+    internalPort = config.services.authentik.port or 9000;
   };
   services.authentik = {
     enable = true;
-    environmentFile = config.age.secrets.authentik-environment-file.path;
-    postgresql = {
-      createLocally = true;
-      host = "/run/postgresql";
-    };
+    # environmentFile = config.age.secrets.authentik-environment-file.path;
+    # We have this exposed as "secrets.env" and loaded via LoadCredential, but
+    # the authentik-flake project has some special stuff wired in where this
+    # expect this file, they expect it to be owned by root, and there are
+    # multiple systemd services stood up that all share it.  So there's a lot of
+    # plumbing and instead of fighting it, we'll just give it that file we
+    # generated from our environment-file-secrets.nix module.
+    environmentFile = "/run/agenix/authentik-environment-file";
+    # postgresql = {
+    #   createLocally = true;
+    #   host = "/run/postgresql";
+    # };
   };
-  environment.etc = lib.attrsets.mapAttrs' (name: value: {
-    "authentik/blueprints/default/${name}.yaml".text = builtins.toYAML {
-
-    };
+  environment.etc = lib.attrsets.mapAttrs' (name: blueprint: {
+    name = "authentik/blueprints/default/${name}.yaml";
+    value.text = toYAML {} blueprint;
   }) blueprints;
   # Bind-mount the /etc path into the path Authentik expects (/blueprints).
   # Worker is the component that reads/applies blueprints.
