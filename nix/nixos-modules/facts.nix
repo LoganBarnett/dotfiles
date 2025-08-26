@@ -19,7 +19,7 @@
     };
     ##
     # The hosts here have the following structure:
-    # ${hostname} = {
+    # "${hostname}" = {
     #  controlledHost = boolean;
     #  flake-input-overrides = {
     #    nixpkgs = "nixpkgs-working-rocm";
@@ -32,6 +32,7 @@
     #  roaming = boolean;
     #  system = "aarch64-linux";
     # };
+    #
     # - The hostname is the hostname portion of the host's FQDN.
     # - controlledHost indicates this is a host that is controlled completely by
     #   our configuration here.  This can have many implications.  A
