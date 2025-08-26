@@ -100,6 +100,11 @@
           "node"
           "systemd"
         ];
+        flake-input-overrides = {
+          nixpkgs = "nixpkgs-25";
+        };
+        system = "aarch64-linux";
+      };
       cobalt = {
         aliases = [
           "rpi-build"
