@@ -39,6 +39,9 @@
       url = "github:zhaofengli/attic";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    authentik-nix = {
+      url = "github:nix-community/authentik-nix";
+    };
     # Give us a tool for getting the current system.  See
     # https://discourse.nixos.org/t/getting-the-current-system-from-the-command-line/19781/10
     # for discussion on the matter.
