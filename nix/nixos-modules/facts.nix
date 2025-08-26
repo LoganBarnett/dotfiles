@@ -213,6 +213,21 @@
         monitors = [];
         system = "x86_64-linux";
       };
+      # A WiFi endpoint / extender / repeater, depending on how it is
+      # configured.  I have it in the endpoint/extender mode, but its
+      # configuration can go astray if it doesn't wake up in a positive state.
+      # This is the default hostname.  I'm not sure how to configure it, and I
+      # have two of them.  I'm unsure how to address them further.  But this
+      # device is configured to have a static IP which is the same that I have
+      # here.
+      re500x = {
+        controlledHost = false;
+        # Not necessarily the most compact.  I was troubleshooting and needed to
+        # pick something I was fairly certain was available.  Find lower IPs if
+        # you're adding a new host.
+        ipv4 = 20;
+        monitors = [ "blackbox-ping" ];
+      };
       scandium = {
         controlledHost = true;
         flake-input-overrides = {
