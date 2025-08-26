@@ -297,6 +297,7 @@
         cassandra = {
           description = "";
           email = "cassandra@proton";
+          type = "person";
           full-name = "Cassandra Barnett";
           devices = [];
         };
