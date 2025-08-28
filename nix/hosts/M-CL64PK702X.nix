@@ -94,6 +94,7 @@ in {
           }
       '';
       environment.systemPackages = [
+        pkgs.aider-chat
         pkgs.awscli
         # Stop using the cursed GlobalProtect VPN GUI client and use something
         # we can better automate instead.
