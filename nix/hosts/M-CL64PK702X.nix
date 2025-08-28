@@ -52,6 +52,9 @@ in {
       ];
     in {
       home-manager.users."logan.barnett" = {
+        imports = [
+          ../home-configs/gh-cli.nix
+        ];
         home.file.".gemrc".text = (pkgs.callPackage ../gemrc.nix {
           extra-gem-sources = [
             (lib.concatStrings [
@@ -96,6 +99,8 @@ in {
       environment.systemPackages = [
         pkgs.aider-chat
         pkgs.awscli
+        # Use GitHub from the command line.
+        pkgs.gh
         # Stop using the cursed GlobalProtect VPN GUI client and use something
         # we can better automate instead.
         pkgs.gpclient

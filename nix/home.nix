@@ -16,6 +16,7 @@ in
 {
   imports = [
     ./home-modules/aider-chat.nix
+    ./home-configs/gh-cli.nix
   ];
   # Let Home Manager install and manage itself.
   # programs.home-manager.enable = true;
