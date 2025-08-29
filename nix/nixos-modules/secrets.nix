@@ -176,6 +176,7 @@ in {
     flake-inputs.agenix.nixosModules.default
     flake-inputs.agenix-rekey.nixosModules.default
     ../agenix/agenix-rekey-generator-mosquitto-password-file.nix
+    ../agenix/base64-configurable-secret.nix
     ../agenix/environment-file-secret.nix
     ../agenix/hex-configurable-secret.nix
     ../agenix/secret-template-file.nix
