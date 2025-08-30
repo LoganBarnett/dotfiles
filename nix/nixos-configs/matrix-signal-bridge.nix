@@ -34,7 +34,7 @@
   ];
   age.secrets.mautrix-signal-appservice-token-environment = {
     generator = {
-      script = "environment-file";
+      script = "environment-variable";
       settings.field = "appservice_token";
       dependencies = [
         config.age.secrets.mautrix-signal-appservice-token
@@ -44,7 +44,7 @@
   };
   age.secrets.mautrix-signal-homeserver-token-environment = {
     generator = {
-      script = "environment-file";
+      script = "environment-variable";
       settings.field = "homeserver_token";
       dependencies = [
         config.age.secrets.mautrix-signal-homeserver-token
@@ -54,7 +54,7 @@
   };
   age.secrets.mautrix-signal-environment-file-aggregate = {
     generator = {
-      script = "environment-file-aggregate";
+      script = "environment-file";
       dependencies = [
         config.age.secrets.mautrix-signal-appservice-token-environment
         config.age.secrets.mautrix-signal-homeserver-token-environment
