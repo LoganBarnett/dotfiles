@@ -15,6 +15,12 @@
     (user: data: data.type == "service")
     facts.network.users
   ;
+  oidc-client-secret-name = name: "authentik-${name}-client-secret";
+  oidc-client-env-var = name: "authentik_${snake-case name}_client_secret";
+  oidc-clients = filterAttrs
+    (user: data: data.authentication == "oidc")
+    facts.network.services
+  ;
 
   blueprints = {
 
@@ -88,7 +94,7 @@
 
     "30-membership" = {
       version = 1;
-      entries = pipe facts.network.users [
+      entries = pipe facts.network.groups [
         (mapAttrsToList
           (name: data:
             builtins.map (member: {
@@ -102,109 +108,36 @@
           model = "authentik_core.membership";
           state = "present";
           identifiers = {
-            user__username = "alice";
+            user__username = membership;
             group__name = "app-users";
           };
         }))
       ];
     };
 
-    "40-provider" = {
-      version = 1;
-      entries = [
-        # Not currently required.
-        # {
-        #   model = "authentik_providers_oidc.oidcprovider";
-        #   state = "present";
-        #   identifiers = { name = "demo-oidc"; };
-        #   attributes = {
-        #     name = "demo-oidc";
-        #     # Public client_id; secret via env below
-        #     client_id = "demo-client-id";
-        #     client_secret = "!Env AK_DEMO_CLIENT_SECRET";
-        #     # Update to your app’s URLs:
-        #     redirect_uris = [
-        #       "https://app.example.proton/oauth/callback"
-        #       "https://app.example.proton/auth/callback"
-        #     ];
-        #     # Tweak as needed:
-        #     response_types = [ "code" ];
-        #     signing_key = null;         # auto-generate/manage server-side
-        #     subject_mode = "pairwise";  # or "public"
-        #     access_token_validity = 3600;
-        #     refresh_token_validity = 1209600;
-        #     property_mappings = [];     # default mappings are fine for many apps
-        #     scopes = [ "openid" "email" "profile" "offline_access" ];
-        #   };
-        # }
-      ];
-    };
-
-    "50-application" = {
-      version = 1;
-      entries = [
-        # Application linked to provider
-        {
-          model = "authentik_core.application";
-          state = "present";
-          identifiers.slug = "openhab";
-          attributes = {
-            name = "OpenHAB";
-            slug = "openhab";
-            # Link to the provider created above:
-            provider = Find
-              "authentik_providers_oidc.oidcprovider"
-              "name"
-              "demo-oidc"
-            ;
-            open_in_new_tab = false;
-            meta_icon = "";  # optional icon URL
-          };
-        }
-      ];
-    };
-
-    "60-policy-allow-app-users" = {
-      version = 1;
-      entries = [
-        # Expression policy: allow if user in "app-users"
-        # TODO: Develop a model for "apps" so we can create app+group
-        # associations and then build this policy list automatically.
-        {
-          model = "authentik_policies_expression.expressionpolicy";
-          state = "present";
-          identifiers.name = "allow-openhab-users";
-          attributes = {
-            name = "allow-openhab-users";
-            # Ugh I was given list comprehensions by ChatGPT.
-            expression = ''
-            # "user" is provided in context
-            return user is not None and "openhab-users" in [g.name for g in user.groups.all()]
-          '';
-          };
-        }
-      ];
-    };
-
-    "70-bind-policy-to-app" = {
-      version = 1;
-      entries = [
-        # Bind the expression policy to the Application (enforcement)
-        {
-          model = "authentik_policies.policybinding";
-          state = "present";
-          identifiers = {
-            target = Find "authentik_core.application" "slug" "openhab";
-            order = 0;
-            policy = Find
-              "authentik_policies_expression.expressionpolicy"
-              "name"
-              "allow-openhab-users"
-            ;
-          };
-        }
-      ];
-    };
+    # "50-application" = {
+    #   version = 1;
+    #   entries = [
+    #     # Application linked to provider
+    #     {
+    #       model = "authentik_core.application";
+    #       state = "present";
+    #       identifiers.slug = "openhab";
+    #       attributes = {
+    #         name = "OpenHAB";
+    #         slug = "openhab";
+    #         # Link to the provider created above:
+    #         provider = Find
+    #           "authentik_providers_oidc.oidcprovider"
+    #           "name"
+    #           "demo-oidc"
+    #         ;
+    #         open_in_new_tab = false;
+    #         meta_icon = "";  # optional icon URL
+    #       };
+    #     }
+    #   ];
+    # };
 
     # Why are we using YAML templates here instead of serializing Nix
     # expressions?  Sit down for a moment, and let us tell you a tale of sadness
@@ -221,6 +154,73 @@
     # or is YAML for introducing such a feature?  An exercise for the reader as
     # their tear their hair out trying to serialize a Nix expression into the
     # YAML that Authentik wants to see.  This is why we use a YAML template.
+
+    "40-provider".text = ''
+      version: 1
+      entries:
+      ${lib.concatStringsSep "\n" (lib.mapAttrsToList (name: data: ''
+        - model: authentik_providers_oidc.oidcprovider
+          id: prov_${name}
+          state: present
+          attrs:
+            name: "${name}-oidc"
+            client_type: confidential
+            client_id: "${name}-client-id"
+            client_secret: !Env ${oidc-client-env-var name}
+            redirect_uris:${
+              lib.concatStringsSep
+                ""
+                # Thanks YAML...
+                (map (u: "\n        - ${u}") data.redirectUris)
+            }
+            response_types: [code]
+            subject_mode: pairwise
+            access_token_validity: 3600
+            refresh_token_validity: 1209600
+            scopes: [openid, email, profile, offline_access]
+            # Built-in consent/authorization flow
+            authorization_flow: !Find
+            - authentik_flows.flow
+            - [slug, default-provider-authorization-implicit-consent]
+            # Provider's server-side signing keypair (tokens RS256 by default)
+            signing_key: !Find
+            - authentik_crypto.certificatekeypair
+            - [name, "ak-default"]
+        - model: authentik_core.application
+          id: app_${name}
+          state: present
+          attrs:
+            name: "${name}"
+            slug: "${name}"
+            # Link the app to the OIDC provider above
+            protocol_provider: !KeyOf prov_${name}
+        - model: authentik_policies.policybinding
+          state: present
+          identifiers:
+            target: !Find
+            - authentik_core.application
+            - [slug, ${name}]]
+            order: 0
+            policy: !Find
+            - authentik_policies_expression.expressionpolicy
+            - [name, allow-${name}-users]]
+        # Expression policy: allow if user in "app-users".
+        # TODO: Develop a model for "apps" so we can create app+group
+        # associations and then build this policy list automatically.
+        - model: authentik_policies_expression.expressionpolicy
+          state: present
+          identifiers:
+            name: allow-${name}-users
+          attributes:
+            name: allow-${name}-users
+            expression: |
+              return (
+                user is not None and "openhab-users"
+                in [g.name for g in user.groups.all()]
+              )
+      '') facts.network.services)}
+      '';
+
     "90-password-reset-on-empty-password".text = ''
       version: 1
       metadata:
@@ -258,24 +258,33 @@
           id: bind_ident
           attrs:
             target: !Find [authentik_flows.flow, [slug, default-authentication]]
-            stage:  !Find [authentik_stages_identification.identificationstage, [name, Identify]]
+            stage:  !Find
+            - authentik_stages_identification.identificationstage
+            - [name, Identify]
             order: 10
 
         - model: authentik_flows.stagebinding
           id: bind_password
           attrs:
-            target: !Find [authentik_flows.flow, [slug, default-authentication]]
-            stage:  !Find [authentik_stages_password.passwordstage, [name, Password]]
+            target: !Find
+            - authentik_flows.flow
+            - [slug, default-authentication]
+            stage:  !Find
+            - authentik_stages_password.passwordstage
+            - [name, Password]
             order: 20
 
         - model: authentik_flows.stagebinding
           id: bind_password_change
           attrs:
             target: !Find [authentik_flows.flow, [slug, default-authentication]]
-            stage:  !Find [authentik_stages_password.passwordchangestage, [name, "Set/Change Password"]]
+            stage:  !Find
+            - authentik_stages_password.passwordchangestage
+            - [name, "Set/Change Password"]
             order: 25
 
-        # Expression policy: include pw-change stage only if no usable password exists
+        # Expression policy: include pw-change stage only if no usable password
+        # exists.
         - model: authentik_policies_expression.expressionpolicy
           id: pol_needs_pw
           attrs:
@@ -284,12 +293,16 @@
               # Include the stage if the user has no usable password
               return request.user.has_usable_password is False
 
-        # Bind the policy to the *password-change* stage binding
+        # Bind the policy to the *password-change* stage binding.
         - model: authentik_policies.policybinding
           id: bind_pol_to_pw_change
           attrs:
-            target: !Find [authentik_flows.stagebinding, [id, bind_password_change]]
-            policy: !Find [authentik_policies_expression.expressionpolicy, [name, "Needs password enrollment"]]
+            target: !Find
+            - authentik_flows.stagebinding
+            - [id, bind_password_change]
+            policy: !Find
+            - authentik_policies_expression.expressionpolicy
+            - [name, "Needs password enrollment"]
             order: 1
       '';
 
@@ -300,11 +313,17 @@
     secrets = (mapAttrs'
       (name: data: {
         name = service-user-secret-password name;
-        value = service-user-password-env-var name;
+        value.environmentVariable = service-user-password-env-var name;
       })
       service-users
+    ) // (mapAttrs'
+      (name: data: {
+        name = oidc-client-secret-name name;
+        value.environmentVariable = oidc-client-env-var name;
+      })
+      oidc-clients
     ) // {
-      authentik-secret-key = "AUTHENTIK_SECRET_KEY";
+      authentik-secret-key.environmentVariable = "AUTHENTIK_SECRET_KEY";
     };
   };
 
@@ -322,6 +341,15 @@ in {
       };
     })
     service-users
+  ) // (mapAttrs'
+    (name: data: {
+      name = oidc-client-secret-name name;
+      value = {
+        generator.script = "hex";
+        settings.length = 60;
+      };
+    })
+    oidc-clients
   ) // {
     authentik-secret-key = {
       generator.script = "hex";

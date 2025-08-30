@@ -426,6 +426,14 @@
           full-name = "selenium-octoprint-service";
           devices = [];
         };
+      } // {
+        openhab-oidc-client = {
+          email = "openhab-oidc-client@proton";
+          type = "oidc-client";
+          description = "OpenHab OIDC client.";
+          full-name = "openhab-oidc-client";
+          devices = [];
+        };
       };
     groups = {
       "3d-printer-admins" = {
@@ -502,6 +510,13 @@
           "logan"
         ];
       };
+      openhab-users = {
+        description = "People who can use OpenHab.";
+        members = [
+          "logan"
+          "cassandra"
+        ];
+      };
       screen-addicts = {
         description =
           "Users who are addicted to screens and require help with "
@@ -513,5 +528,17 @@
         ];
       };
     };
+
+    services = {
+
+      openhab = {
+        authentication = "oidc";
+        redirectUris = [
+          "https://openhab.proton/outpost.goauthentik.io/callback"
+        ];
+      };
+
+    };
+
   };
 }
