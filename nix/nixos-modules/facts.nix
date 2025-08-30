@@ -440,6 +440,18 @@
           "logan"
         ];
       };
+      "gitea-admins" = {
+        description = "People who can administer Gitea.";
+        members = [
+          "logan"
+        ];
+      };
+      "gitea-users" = {
+        description = "People who can user Gitea.";
+        members = [
+          "logan"
+        ];
+      };
       "grafana-admins" = {
         description = "People who can administer Grafana.";
         members = [
