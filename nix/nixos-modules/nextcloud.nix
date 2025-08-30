@@ -89,15 +89,11 @@ in {
     # need the data subdirectory anyways.  So this handles conflicts that come
     # up with load order and the like.
     target = "${data-dir}/data";
-    uid = {
-      source = 994;
-      destination = 998;
-    };
-    gid = {
-      source = 994;
-      destination = 998;
-    };
-    extraOptions = [ "--create-for-user=nextcloud" ];
+    # The Nextcloud NixOS module no longer provides these.
+    user = "nextcloud";
+    group = "nextcloud";
+    createForUser = true;
+    createForGroup = true;
   };
   fileSystems."${data-dir}-raw" = {
     device = "${nfs-vpn-hostname}:/tank/data/nextcloud/data";
@@ -322,7 +318,13 @@ in {
     # https://github.com/nextcloud/server/tree/8886f367e433277cf7aa0c01b93a9d4348db47a8/apps/user_ldap
     # TODO: Use services.nextcloud.settings to configure this plugin.  I should
     # be able to copy the values.
-    nextcloud-custom-config = {
+    nextcloud-custom-config = let
+      after = [
+        "run-agenix.d.mount"
+        "bindfs-nextcloud.service"
+        "nextcloud-setup.service"
+      ];
+    in {
       path = [];
       serviceConfig = {
         LoadCredential = [
@@ -410,16 +412,8 @@ in {
       in ''
         ${script}/bin/nextcloud-ldap-configure
       '';
-      after = [
-        "run-agenix.d.mount"
-        "bindfs-nextcloud.service"
-        "nextcloud-setup.service"
-      ];
-      requires = [
-        "run-agenix.d.mount"
-        "bindfs-nextcloud.service"
-        "nextcloud-setup.service"
-      ];
+      inherit after;
+      requires = after;
       before = [ "multi-user.target" "phpfpm-nextcloud.service" ];
       wantedBy = [ "multi-user.target" "phpfpm-nextcloud.service" ];
     };
@@ -459,10 +453,8 @@ in {
   #   "d ${data-dir}-raw 0770 root root -"
   # ];
   users.users.nextcloud = {
-    # This is typically set by the Nextcloud NixOS module, but if we disable it
-    # because we're doing an upgrade or fresh install, we might set
-    # services.nextcloud.enable = false and then suddenly this field needs to be
-    # set again.  So just leave it there.
+    # This is typically _not_ set by the Nextcloud NixOS module, but we're
+    # doing a lot of hand-off that requires permissions to align.
     isSystemUser = true;
     extraGroups = [
       "openldap-${host-id}-nextcloud-service"
