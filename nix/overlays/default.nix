@@ -54,6 +54,7 @@
   # We need to migrate some things here.  Scan above and figure out what to move
   # into this section.
   (final: prev: {
+    chronicle-proxy = final.callPackage ../derivations/chronicle-proxy.nix {};
     mqttpassworder = final.callPackage ../derivations/mqttpassworder.nix {};
     musicgpt = final.callPackage ../derivations/musicgpt.nix {};
     zalgo-cli = final.callPackage ../derivations/zalgo-cli.nix {};
