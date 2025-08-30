@@ -45,7 +45,7 @@
         address = [
           "192.168.102.${vpn-host-ip}"
         ];
-        dns = [ "192.168.254.254" ];
+        dns = [ "192.168.254.1" ];
         listenPort = 51820;
         # null means automatic for MTU settings.
         mtu = null;
@@ -55,7 +55,7 @@
               "192.168.254.0/24"
               "192.168.102.0/24"
             ];
-            endpoint = "50.39.141.240:51820";
+            endpoint = "vpn.logustus.com:51820";
             persistentKeepalive = null;
             presharedKeyFile = null;
             publicKey = builtins.readFile ../secrets/argon-wireguard-server.pub;
@@ -68,7 +68,7 @@
         address = [
           "192.168.102.${vpn-host-ip}"
         ];
-        dns = [ "192.168.254.254" ];
+        dns = [ "192.168.254.1" ];
         listenPort = 51820;
         # null means automatic for MTU settings.
         mtu = null;
@@ -80,8 +80,7 @@
               # To pass everything through.
               "0.0.0.0/0"
             ];
-            # TODO: Use vpn.logustus.com once the transfer completes.
-            endpoint = "50.39.141.240:51820";
+            endpoint = "vpn.logustus.com:51820";
             persistentKeepalive = null;
             presharedKeyFile = null;
             publicKey = builtins.readFile ../secrets/argon-wireguard-server.pub;
