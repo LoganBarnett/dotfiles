@@ -18,6 +18,40 @@
       barnett-main = "192.168.254";
     };
     ##
+    # The nfsVolumes here have the following structure:
+    # {
+    #   host-id = "oganesson";
+    #   peerNumber = 118;
+    #   volume = "photos";
+    # };
+    #
+    # - The hostname is the hostname portion of the host's FQDN.
+    # - peerNumber is used to build the host's IP used in the WireGuard network
+    #   used to secure the NFS shares.
+    # - volume is the name of the volume to share, which will expand to
+    #   "/tank/data/${volume}".
+    nfsVolumes = [
+      # Currently, nextcloud "works", so don't mess with it until we have solid
+      # verification on a system that is not yet critical or known to be
+      # delicately functional.
+      # {
+      #   host-id = "copper";
+      #   peerNumber = 2;
+      #   service = "nextcloud";
+      #   volume = "nextcloud";
+      #   user = "nextcloud";
+      #   group = "nextcloud";
+      # }
+      {
+        host-id = "copper";
+        peerNumber = 2;
+        service = "gitea";
+        volume = "gitea";
+        user = "gitea";
+        group = "gitea";
+      }
+    ];
+    ##
     # The hosts here have the following structure:
     # "${hostname}" = {
     #  controlledHost = boolean;
