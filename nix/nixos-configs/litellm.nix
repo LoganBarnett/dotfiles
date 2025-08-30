@@ -1,34 +1,27 @@
-{ config, host-id, ... }: {
+{ config, host-id, pkgs, ... }: {
   age.secrets = {
     "${host-id}-litellm-chatgpt-api-key" = {
       rekeyFile = ../secrets/${host-id}-litellm-chatgpt-api-key.age;
     };
     "${host-id}-litellm-chatgpt-api-key-environment-variable" = {
-      script = {
-        generator = "environment-file";
+      generator = {
+        script = "environment-variable";
         dependencies = [
           config.age.secrets."${host-id}-litellm-chatgpt-api-key"
         ];
       };
-      field = "OPENAI_API_KEY";
+      settings.field = "OPENAI_API_KEY";
       rekeyFile =
         ../secrets/${host-id}-litellm-chatgpt-api-key-environment-variable.age;
     };
     "${host-id}-litellm-master-key" = {
-      script.generator = "hex";
+      generator.script = "hex";
       settings.length = 32;
       rekeyFile = ../secrets/${host-id}-litellm-master-key.age;
     };
-    "${host-id}-litellm-master-key" = {
-      script = {
-        generator = "environment-file";
-      };
-      rekeyFile =
-        ../secrets/${host-id}-litellm-master-key-environment-variable.age;
-    };
     "${host-id}-litellm-master-key-environment-variable" = {
-      script = {
-        generator = "environment-file";
+      generator = {
+        script = "environment-variable";
         dependencies = [
           config.age.secrets."${host-id}-litellm-master-key"
         ];
@@ -37,16 +30,21 @@
       rekeyFile =
         ../secrets/${host-id}-litellm-master-key-environment-variable.age;
     };
-    "${host-id}-litellm-environment-file" = {
-      script = {
-        generator = "environment-file-aggregate";
+    "${host-id}-litellm-salt-key" = {
+      generator.script = "hex";
+      settings.length = 32;
+      rekeyFile = ../secrets/${host-id}-litellm-salt-key.age;
+    };
+    "${host-id}-litellm-salt-key-environment-variable" = {
+      generator = {
+        script = "environment-variable";
         dependencies = [
-          config.age.secrets."${host-id}-litellm-chatgpt-api-key-environment-variable"
-          config.age.secrets."${host-id}-litellm-master-key-environment-variable"
+          config.age.secrets."${host-id}-litellm-salt-key"
         ];
       };
+      settings.field = "LITELLM_SALT_KEY";
       rekeyFile =
-        ../secrets/${host-id}-litellm-chatgpt-api-key-environment-variable.age;
+        ../secrets/${host-id}-litellm-salt-key-environment-variable.age;
     };
   };
   services.https.fqdns."litellm.proton" = {
@@ -58,14 +56,32 @@
     environment = {
       ANONYMIZED_TELEMETRY = "False";
       DO_NOT_TRACK = "True";
+      DATABASE_URL = "postgres:///litellm?host=/run/postgresql";
+      # TODO: You can run LiteLLM without this.  Contribute this back.
+      # Otherwise we fail with trying to write to `/.cache`.
+      HOME = "/var/lib/litellm";
+      # TODO: You can run LiteLLM without this.  Contribute this back.
+      # These are needed otherwise Prisma wants to install nodeenv so it can
+      # later install Node.JS, and then (eventually) install its engines.
+      PRISMA_QUERY_ENGINE_BINARY = "${pkgs.prisma-engines}/bin/query-engine";
+      PRISMA_MIGRATION_ENGINE_BINARY = "${pkgs.prisma-engines}/bin/migration-engine";
+      PRISMA_SCHEMA_ENGINE_BINARY = "${pkgs.prisma-engines}/bin/schema-engine";
+      # TODO: You can run LiteLLM without this.  Contribute this back.
+      # Otherwise we fail with trying to write to `/.cache`.
+      PRISMA_CACHE_DIR = "/var/cache/prisma";
       SCARF_NO_ANALYTICS = "True";
+      # TODO: You can run LiteLLM without this.  Contribute this back.
+      # Otherwise we fail with trying to write to `/.cache`.
+      XDG_CACHE_HOME = "/var/cache/litellm";
     };
-    environmentFile = config
-      .age
-      .secrets
-      ."${host-id}-litellm-environment-file"
-      .path
-    ;
+    environmentFile = pkgs.writeTextFile {
+      name = "litellm-environment-file.env";
+      text = ''
+        OPENAI_API_KEY="$(cat /run/credentials/litellm.service/OPENAI_API_KEY)"
+        LITELLM_MASTER_KEY="$(cat /run/credentials/litellm.service/LITELLM_MASTER_KEY)"
+        LITELLM_SALT_KEY="$(cat /run/credentials/litellm.service/LITELLM_SALT_KEY)"
+      '';
+    };
     settings = {
       # LiteLLM behavior hardening.
       litellm_settings = {
@@ -76,10 +92,10 @@
       };
       model_list = [
         {
-          model_name = "gpt-5o";
+          model_name = "gpt-5";
           litellm_params = {
-            model = "gpt-5o";
-            api_key = "os.environ/OPENAPI_API_KEY";
+            model = "gpt-5";
+            api_key = "os.environ/OPENAI_API_KEY";
           };
         }
       ];
@@ -87,5 +103,39 @@
       # for later.
       router_settings = { routing_strategy = "simple"; };
     };
+  };
+  systemd.services.litellm = {
+    after = [
+      "run-agenix.d.mount"
+    ];
+    requires = [
+      "run-agenix.d.mount"
+    ];
+    # TODO: You can run LiteLLM without this.  Contribute this back.
+    path = [
+      pkgs.prisma
+      pkgs.prisma-engines
+    ];
+    serviceConfig = {
+      LoadCredential = [
+        "OPENAI_API_KEY:${config.age.secrets."${host-id}-litellm-chatgpt-api-key".path}"
+        "LITELLM_MASTER_KEY:${config.age.secrets."${host-id}-litellm-master-key".path}"
+        "LITELLM_SALT_KEY:${config.age.secrets."${host-id}-litellm-salt-key".path}"
+      ];
+      # TODO: You can run LiteLLM without this.  Contribute this back.
+      # Otherwise it tries to write to the `/.cache`.
+      CacheDirectory = "litellm";
+    };
+  };
+  services.postgresql = {
+    enable = true;
+    # package = pkgs.postgresql_16;
+    ensureDatabases = [ "litellm" ];
+    ensureUsers = [
+      {
+        name = "litellm";
+        ensureDBOwnership = true;
+      }
+    ];
   };
 }
