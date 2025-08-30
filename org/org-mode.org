@@ -1440,6 +1440,7 @@ This is the region of offending code, I think:
   <<config/org-mode-babel-show-noweb-ref-error>>
   <<config/org-mode-set-priorities>>
   (require 'ob-dsq)
+  (org-babel-do-load-languages 'org-babel-load-languages '((dsq . t)))
   (require 'gnuplot)
   (org-babel-do-load-languages 'org-babel-load-languages '((gnuplot . t)))
   )
