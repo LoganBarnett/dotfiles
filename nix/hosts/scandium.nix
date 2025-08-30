@@ -4,6 +4,12 @@ let
   username = "logan";
 in
 { flake-inputs, lib, system, pkgs, ... }: let
+  work-alias = lib.strings.concatStrings (lib.lists.reverseList [
+    "a"
+    "e"
+    "w"
+    "n"
+  ]);
   nextcloud = (flake-inputs.nextcloud-desktop.packages.${system}.default.overrideAttrs (old: {
     # Inkscape dies with SIGTRAP and we see no other useful information.
     # Sounds like a project unto itself.  However as of
@@ -87,6 +93,16 @@ in {
         Host nickel.proton
           HostName 192.168.254.1
        '';
+      environment.etc."ssh/ssh_config.d/103-${work-alias}-workstation.conf".text = ''
+        Host M-CL64PK702X
+          User logan.barnett
+        Host M-CL64PK702X.proton
+          User logan.barnett
+        Host m-cl64pk702x
+          User logan.barnett
+        Host m-cl64pk702x.proton
+          User logan.barnett
+      '';
     }
     ({ lib, pkgs, ...}: {
       imports = [
