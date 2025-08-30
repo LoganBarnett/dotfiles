@@ -44,6 +44,16 @@ in {
       #   co = "pr checkout";
       #   pv = "pr view";
       # };
+      git_protocol = "ssh";
+      # gitCredentialHelper.hosts = [
+      #   (lib.strings.concatStrings [
+      #     "https://"
+      #     "h"
+      #     "m"
+      #     "h"
+      #     ".ghe.com"
+      #   ])
+      # ];
     };
     extensions = [
       # For migrating from Stash / Bitbucket Server / BitBucket DataCenter.
