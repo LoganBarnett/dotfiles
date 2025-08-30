@@ -80,6 +80,14 @@ in {
     ../users/logan-personal.nix
     ../headed-host.nix
     ../darwin-linux-builder-module.nix
+    {
+      # Sometimes we run into DNS issues locally, so provide this as an escape
+      # hatch.
+      environment.etc."ssh/ssh_config.d/102-nickel-escape-hatch.conf".text = ''
+        Host nickel.proton
+          HostName 192.168.254.1
+       '';
+    }
     ({ lib, pkgs, ...}: {
       imports = [
         ../nixos-modules/unfree-predicates.nix
