@@ -1,28 +1,25 @@
 ################################################################################
 # Provide a generalized means of consuming an NFS share. Authentication,
 # authorization, and encryption are handled via WireGuard.
+#
+# We create several mounts here for an individual binding.  The "raw" mount is
+# done to establish an NFS mount via `fileSystems` and `automounts`.  A
+# `bindfs-mappings` mount is also created so we can expose permissions properly
+# to the service in question.
 ################################################################################
 { config, lib, pkgs, ... }: let
   inherit (lib) mkEnableOption mkIf mkOption mkMerge types literalExpression;
+  inherit (lib) systemdUtils;
   cfg = config.services.nfs-mount;
   nfsMountModule = { name, config, ... }: let
-    mountNameSanitized = builtins.replaceStrings
-      ["-" "." "/"]
-      ["_" "_" "_"]
-      name
-    ;
-    mountUnitName = builtins.replaceStrings
-      ["/" "-"]
-      ["-" "\\x2d"]
-      config.mountPoint
-    ;
+    mountUnitName = systemdUtils.escapePath config.mountPoint;
     defaultInterface = "wgnfs-${name}";
     wgInterface = config.wgInterfaceName;
   in {
     options = {
-      enable = mkEnableOption ''
+      enable = (mkEnableOption ''
         Enable this NFS mount.
-      '';
+      '') // { default = true; };
 
       remoteHost = mkOption {
         type = types.str;
@@ -162,7 +159,11 @@
         neededForBoot = false;
       };
 
-      networking.hosts."${builtins.match ".*?([0-9.]+).*" config.wgPeerIP}" = [
+      networking.hosts."${
+        builtins.elemAt
+          (builtins.match ".*?([0-9.]+).*" config.wgPeerIP)
+          0
+      }" = [
         config.vpnHost
       ];
 
@@ -201,25 +202,25 @@
         automountConfig.TimeoutIdleSec = "600";
       }];
 
-      bindfs-mappings.${name} = cfg.bindfs;
-      systemd.services = lib.mkIf (config.bindToService != null) {
-        "${config.bindToService}".after = [
+      bindfs-mappings.fqdns.${name} = config.bindfs;
+      systemd.services = lib.mkIf (config.bindToService != null) (let
+        after = builtins.map systemdUtils.toUnitName [
           "mnt-${mountUnitName}-raw.mount"
           "nfs-mount-${name}-bindfs.service"
           "nfs-mount-${name}-sanity-check.service"
         ];
-        "${config.bindToService}".requires = [
-          "mnt-${mountUnitName}-raw.mount"
-          "nfs-mount-${name}-bindfs.service"
-          "nfs-mount-${name}-sanity-check.service"
-        ];
+       in {
+        "${config.bindToService}".after = after;
+        "${config.bindToService}".requires = after;
         "${config.bindToService}".serviceConfig.BindPaths = [
           config.mountPoint
         ];
         "nfs-mount-${name}-sanity-check" = mkIf
           (config.preconditionFile != null)
           {
-            after = [ "nfs-mount-${name}-bindfs.service" ];
+            after = [
+              (systemdUtils.toUnitName "nfs-mount-${name}-bindfs.service")
+            ];
             wantedBy = [ "multi-user.target" ]
                        ++ lib.optional (config.bindToService != null)
                          "${config.bindToService}.service";
@@ -231,10 +232,15 @@
           '';
           };
         "nfs-mount-${name}-bindfs" = mkIf (config.bindfs != null) {
-          after = [ "${mountUnitName}-raw.mount" ];
+          after = [
+            (systemdUtils.toUnitName "${mountUnitName}-raw.mount")
+          ];
           wantedBy = [ "multi-user.target" ]
                      ++ lib.optional (config.bindToService != null)
-                       "${config.bindToService}.service";
+                       (
+                         systemdUtils.toUnitName
+                           "${config.bindToService}.service"
+                       );
           serviceConfig = {
             Type = "oneshot";
             RemainAfterExit = true;
@@ -248,7 +254,7 @@
             "${config.mountPoint}-raw" "${config.mountPoint}"
         '';
         };
-      };
+      });
     };
   };
 

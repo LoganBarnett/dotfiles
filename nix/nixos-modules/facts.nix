@@ -157,6 +157,7 @@
         aliases = [
           "chronicle-proxy"
           "dex"
+          "gitea"
           "nextcloud"
         ];
         controlledHost = true;

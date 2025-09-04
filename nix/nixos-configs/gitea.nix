@@ -11,8 +11,11 @@
   service = "gitea";
   domain = "${service}.proton";
   dataDir = "/mnt/gitea";
+  ldap-enabled = false;
 in {
   imports = [
+    ../nixos-modules/bindfs.nix
+    ../nixos-modules/https-module.nix
     ../nixos-modules/nfs-mount-consumer.nix
   ];
   age.secrets = {
@@ -24,10 +27,16 @@ in {
     };
     # Other secrets go in here.
   } // (
-    config.lib.ldap.ldap-password
+    if ldap-enabled
+    then config.lib.ldap.ldap-password
       "openldap-${host-id}-${service}-service"
       "${host-id}-${service}-service"
+    else {}
   );
+  services.https.fqdns."gitea.proton" = {
+    enable = true;
+    internalPort = config.services.gitea.settings.server.HTTP_PORT;
+  };
   services.nfs-mount.mounts.gitea-data = {
     enable = true;
     bindToService = "gitea";
@@ -35,7 +44,7 @@ in {
     vpnHost = "silicon-nas.proton";
     share = "/tank/data/gitea";
     mountPoint = dataDir;
-    testFile = "/mnt/gitea/nfs-share-working";
+    preconditionFile = "/mnt/gitea/nfs-share-working";
     wgPrivateKeyFile = config.age.secrets.gitea-nfs-wireguard-key.path;
     wgIP = "10.100.0.4/24";
     wgPeerPublicKeyFile = ../secrets/silicon-nfs-wireguard-key.pub;
@@ -52,7 +61,6 @@ in {
       type = "postgres";
     };
     settings = {
-      stateDir = dataDir;
       service = {
         DISABLE_REGISTRATION = true;
         DOMAIN = domain;
@@ -72,29 +80,36 @@ in {
       #   OPENID_CONNECT_AUTO_DISCOVER_URL = "https://auth.proton/.well-known/openid-configuration";
       #   SCOPES = "openid profile email";
       # };
-      "auth.ldap" = let
-        base-dn = "dc=proton,dc=org";
-      in {
-        ENABLED = true;
-        NAME = "LDAP";
-        HOST = "nickel.proton";
-        PORT = 636;
-        USE_SSL = true;
-        START_TLS = false;
-        BIND_DN = "cn=admin,${base-dn}";
-        BIND_PASSWORD = "@${config.age.secrets."${host-id}-gitea-service".path}";
-        USER_BASE = "ou=users,${base-dn}";
-        USER_FILTER = "(&(memberOf=cn=gitea-users,ou=groups,${base-dn})(objectClass=person)(uid=%s))";
-        ADMIN_FILTER = "(memberOf=cn=gitea-admins,ou=groups,${base-dn})";
-        ATTRIBUTE_USERNAME = "uid";
-        ATTRIBUTE_NAME = "cn";
-        ATTRIBUTE_SURNAME = "sn";
-        ATTRIBUTE_MAIL = "mail";
-        IS_ACTIVE = true;
-        ALLOW_DEACTIVATION = false;
-        SKIP_TLS_VERIFY = false;
-      };
+      "auth.ldap" =
+        if ldap-enabled
+        then
+          let
+            base-dn = "dc=proton,dc=org";
+          in {
+            ENABLED = true;
+            NAME = "LDAP";
+            HOST = "nickel.proton";
+            PORT = 636;
+            USE_SSL = true;
+            START_TLS = false;
+            BIND_DN = "cn=admin,${base-dn}";
+            BIND_PASSWORD = "@${config.age.secrets."${host-id}-gitea-service".path}";
+            USER_BASE = "ou=users,${base-dn}";
+            USER_FILTER = "(&(memberOf=cn=gitea-users,ou=groups,${base-dn})(objectClass=person)(uid=%s))";
+            ADMIN_FILTER = "(memberOf=cn=gitea-admins,ou=groups,${base-dn})";
+            ATTRIBUTE_USERNAME = "uid";
+            ATTRIBUTE_NAME = "cn";
+            ATTRIBUTE_SURNAME = "sn";
+            ATTRIBUTE_MAIL = "mail";
+            IS_ACTIVE = true;
+            ALLOW_DEACTIVATION = false;
+            SKIP_TLS_VERIFY = false;
+          }
+        else
+          {}
+      ;
     };
+    stateDir = dataDir;
   };
   systemd.services.gitea = let
     after = [
