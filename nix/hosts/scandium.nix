@@ -149,6 +149,8 @@ in {
         # pkgs-latest.tigervnc
         # pkgs-latest.turbovnc
         pkgs.moonlight-qt
+        # Translate audio to text, but do it fast (unlike Python versions).
+        pkgs.whisper-cpp
         pkgs-latest.zoom-us
       ];
       system.stateVersion = 5;
