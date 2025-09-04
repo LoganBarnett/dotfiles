@@ -54,6 +54,7 @@ in {
       home-manager.users."logan.barnett" = {
         imports = [
           ../home-configs/gh-cli.nix
+          ../home-configs/gh-cli-ache-em-ache.nix
         ];
         home.file.".gemrc".text = (pkgs.callPackage ../gemrc.nix {
           extra-gem-sources = [
@@ -115,6 +116,13 @@ in {
         # Needed for our flavor of Hiera EYAML usage.  See `hiera-eyaml` for
         # more info.
         pkgs.saml2aws
+        # Let us log in on the blasted VPN UI.
+        # pkgs.sunshine
+        # `jq` but for YAML.  The `yq` (no suffix) is a Python app which
+        # converts YAML into JSON and then back again if desired.  So it
+        # requires `jq` for operations.  This `yq` is standalone and can work
+        # with YAML idioms, but isn't as mature as `jq`.
+        pkgs.yq-go
       ];
       networking.hostName = host-id;
       nixpkgs.hostPlatform = system;
