@@ -9,9 +9,9 @@ in {
   options.bindfs-mappings = mkOption {
     type = types.attrsOf (types.submodule ({ name, ... }: {
       options = {
-        enable = mkEnableOption ''
+        enable = (mkEnableOption ''
           Enable this bindfs mapping.
-        '';
+        '') // { default = true; };
 
         source = mkOption {
           type = types.str;
@@ -119,7 +119,7 @@ in {
           extra = concatStringsSep " " opts.extraOptions;
         in {
           name = "bindfs-${name}";
-          value = lib.mkIf (opts.enable or true) {
+          value = lib.mkIf opts.enable {
             description = "bindfs mapping ${name}";
             after = [ "network.target" ];
             wantedBy = [ "multi-user.target" ];
