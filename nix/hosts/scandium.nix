@@ -142,7 +142,7 @@ in {
         # and imports a couple of packages using callPackage in a let binding.
         # I tried overriding them where they are used (via passthru), but still
         # no joy.
-        pkgs-latest.signal-desktop-bin
+        pkgs.signal-desktop-bin
         # Screen Sharing.app is nice that it's built-in but it doesn't support
         # as many encryption/security options, It think.
         # Doh, broken.

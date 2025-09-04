@@ -49,6 +49,20 @@
   (final: prev: {
     dness = final.callPackage ../derivations/dness.nix {};
   })
+  (final: prev: {
+    # Earlier my tests didn't give me any info but I found out I'd mispelled
+    # "signal" as "singal".  So I should try again and see if this works.
+    # signal-desktop-bin = (import ./signal-desktop-bin.nix final prev);
+    signal-desktop-bin = prev.signal-desktop-bin.overrideAttrs (_: let
+      version = "7.68.0";
+      url = "https://updates.signal.org/desktop/signal-desktop-mac-universal-${version}.dmg";
+    in {
+      src = prev.fetchurl {
+        hash = "sha256-qnNSiUD0DmPPg7bfGmKZXh+TNtytVNzZv0b6fokhAXs=";
+        inherit url version;
+      };
+    });
+  })
   # This section is for anything we have listed in ../derivations/ which we
   # intend to see moved to nixpkgs, and not a deliberate overriding.
   # We need to migrate some things here.  Scan above and figure out what to move
