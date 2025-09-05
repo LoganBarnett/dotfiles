@@ -14,6 +14,7 @@
     }
     ./environment-file-secrets.nix
     ./lib-custom.nix
+    ./nested-submodule-config-proof.nix
     # TODO: Test this - I think I put this in to solve remote build issues, but
     # I don't know if it actually did anything.
     # {
