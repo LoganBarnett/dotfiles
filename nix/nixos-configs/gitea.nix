@@ -19,12 +19,12 @@ in {
     ../nixos-modules/nfs-mount-consumer.nix
   ];
   age.secrets = {
-    gitea-nfs-wireguard-key = {
-      generator.script = "wireguard-priv";
-      group = "gitea";
-      mode = "0440";
-      rekeyFile = ../secrets/gitea-nfs-wireguard-key.age;
-    };
+    # gitea-nfs-wireguard-key = {
+    #   generator.script = "wireguard-priv";
+    #   group = "gitea";
+    #   mode = "0440";
+    #   rekeyFile = ../secrets/gitea-nfs-wireguard-key.age;
+    # };
     # Other secrets go in here.
   } // (
     if ldap-enabled
@@ -37,23 +37,23 @@ in {
     enable = true;
     internalPort = config.services.gitea.settings.server.HTTP_PORT;
   };
-  services.nfs-mount.mounts.gitea-data = {
+  services.nfs-mount.mounts.gitea = {
     enable = true;
     bindToService = "gitea";
     remoteHost = "silicon.proton";
     vpnHost = "silicon-nas.proton";
     share = "/tank/data/gitea";
     mountPoint = dataDir;
-    preconditionFile = "/mnt/gitea/nfs-share-working";
-    wgPrivateKeyFile = config.age.secrets.gitea-nfs-wireguard-key.path;
+    preconditionFile = "nfs-share-working";
+    wgPrivateKeyFile = config.age.secrets."${host-id}-nfs-wireguard-key".path;
     wgIP = "10.100.0.4/24";
     wgPeerPublicKeyFile = ../secrets/silicon-nfs-wireguard-key.pub;
     wgPeerIP = "10.100.0.1/32";
     # Optional bindfs mapping if Gitea runs under its own user/group.
-    bindfs = {
-      uid = "994";
-      gid = "998";
-    };
+    # bindfs = {
+    #   uid = "994";
+    #   gid = "998";
+    # };
   };
   services.gitea = {
     enable = true;

@@ -95,18 +95,16 @@ in
   };
 
   config = mkIf cfg.enable {
-    #### Borg passphrase (file-based; no env var)
-    age.secrets.borg-passphrase = {
+    age.secrets."${host-id}-borg-encryption-passphrase" = {
       generator.script = "long-passphrase";
       group = "borg";
       mode = "0440";
-      rekeyFile = ../secrets/${host-id}-borg-encryption-passphrase.age;
     };
 
     #### Group and directories
     users.groups.${cfg.groupName} = { };
     systemd.tmpfiles.rules =
-      lib.lists.flatMap (p: [
+      lib.lists.concatMap (p: [
         "d ${p} 0770 root ${cfg.groupName} -"
         # Include this as a sanity check, which the consumer can be configured
         # to look for via `preconditionCheck`.
@@ -139,7 +137,8 @@ in
             let v0 = builtins.head vs;
             in {
               publicKey =
-                builtins.readFile ../secrets/${v0.hostId}-nfs-wireguard-key.pub;
+                builtins.readFile
+                  ../secrets/generated/${v0.hostId}-nfs-wireguard-key.pub;
               allowedIPs = [ "10.100.0.${toString v0.peerNumber}/32" ];
             };
         in map toPeer (builtins.attrValues groups);
@@ -165,7 +164,9 @@ in
       readWritePaths = [ snapshotDir ];
       repo = "/tank/backup/backup-repo";
       encryption.mode = "repokey-blake2";
-      encryption.passCommand = "cat /run/agenix/borg-passphrase";
+      encryption.passCommand = "cat ${
+        config.age.secrets."${host-id}-borg-encryption-passphrase".path
+      }";
       compression = "zstd";
       prune.keep = { daily = 7; weekly = 4; monthly = 6; };
       startAt = "10:00";
@@ -198,27 +199,36 @@ in
         message = "Each peerNumber must be between 1 and 254.";
       }
       {
-        assertion = unique (map (v: v.peerNumber) cfg.volumes)
-          == (map (v: v.peerNumber) cfg.volumes);
-        message = "peerNumber values must be unique across volumes.";
-      }
-      {
         assertion = unique (map (v: v.volumeRelativeDir) cfg.volumes)
           == (map (v: v.volumeRelativeDir) cfg.volumes);
         message = "volumeRelativeDir values must be unique.";
       }
-      {
-        assertion =
+      (let
+        # Ensure string keys for groupBy
+        groups = lib.groupBy (v: toString v.hostId) cfg.volumes;
+
+        analyzed =
+        lib.mapAttrsToList (hostId: vs:
           let
-            groups = lib.groupBy (v: v.hostId) cfg.volumes;
-            sameNum = vs:
-              (lib.length (lib.unique (map (v: v.peerNumber) vs))) == 1;
-          in lib.all sameNum (builtins.attrValues groups);
+            nums = map (v: v.peerNumber) vs;
+            uniq = lib.unique nums;
+          in {
+            inherit hostId nums uniq;
+            ok = (lib.length uniq) == 1;
+          }
+        ) groups;
+
+      bad = lib.filter (g: !g.ok) analyzed;
+      in {
+        assertion =
+          bad == [];
+
         message = ''
           For each hostId, all peerNumber values must be identical across
           volumes.
+          Failures (per hostId): ${builtins.toJSON bad}
         '';
-      }
+      })
     ];
   };
 }

@@ -89,10 +89,7 @@ in {
     # need the data subdirectory anyways.  So this handles conflicts that come
     # up with load order and the like.
     target = "${data-dir}/data";
-    # The Nextcloud NixOS module no longer provides these.
-    user = "nextcloud";
     group = "nextcloud";
-    createForUser = true;
     createForGroup = true;
   };
   fileSystems."${data-dir}-raw" = {

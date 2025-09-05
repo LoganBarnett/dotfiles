@@ -6,6 +6,7 @@ in {
   imports = [
     ../nixos-modules/nix-builder-provide.nix
     ../nixos-modules/server-host.nix
+    ../nixos-modules/nfs-mount-provider.nix
     ../nixos-configs/grafana-kiosk-overview.nix
     # TODO: Right now agenix-rekey wants to build wireguard to do the
     # generation.  This fails due to a problem with macOS building wireguard-go
@@ -168,41 +169,40 @@ in {
         };
       };
     }
-    {
-      imports = [
-        ../nixos-modules/wireguard-agenix-rekey-generator.nix
-      ];
-      services.nfs.server = {
-        enable = true;
-        exports = ''
-         /tank/backup 10.100.0.2/32(rw,sync,no_subtree_check,no_root_squash)
-         /tank/data/nextcloud 10.100.0.3/32(rw,sync,no_subtree_check,no_root_squash)
-         /tank/data/gitea 10.100.0.4/32(rw,sync,no_subtree_check,no_root_squash)
-        '';
-      };
-      networking.firewall = {
-        allowedTCPPorts = [ ];
-        interfaces."wg0".allowedTCPPorts = [ 2049 ];
-        allowedUDPPorts = [ 51820 ];
-      };
-      networking.wireguard.interfaces.wg0 = {
-        ips = [ "10.100.0.1/24" ];
-        listenPort = 51820;
-        privateKeyFile = config.age.secrets."${host-id}-nfs-wireguard-key".path;
-        # Use peers to control who can get to what.
-        peers = [
-          # Borg.
-          # Nextcloud.
-          {
-            publicKey = builtins.readFile
-              ../secrets/nextcloud-nfs-wireguard-key.pub;
-            # Use IPs in services.nfs.server.exports (see above) for controlling
-            # which service gets to see which subdirectory.
-            allowedIPs = [ "10.100.0.3/32" ];
-          }
-        ];
-      };
-    }
+    # {
+    #   imports = [
+    #     ../nixos-modules/wireguard-agenix-rekey-generator.nix
+    #   ];
+    #   services.nfs.server = {
+    #     enable = true;
+    #     exports = ''
+    #      /tank/backup 10.100.0.2/32(rw,sync,no_subtree_check,no_root_squash)
+    #      /tank/data/nextcloud 10.100.0.3/32(rw,sync,no_subtree_check,no_root_squash)
+    #      /tank/data/gitea 10.100.0.4/32(rw,sync,no_subtree_check,no_root_squash)
+    #     '';
+    #   };
+    #   networking.firewall = {
+    #     allowedTCPPorts = [ ];
+    #     interfaces."wg0".allowedTCPPorts = [ 2049 ];
+    #     allowedUDPPorts = [ 51820 ];
+    #   };
+    #   networking.wireguard.interfaces.wg0 = {
+    #     ips = [ "10.100.0.1/24" ];
+    #     listenPort = 51820;
+    #     privateKeyFile = config.age.secrets."${host-id}-nfs-wireguard-key".path;
+    #     # Use peers to control who can get to what.
+    #     peers = [
+    #       # Nextcloud.
+    #       {
+    #         publicKey = builtins.readFile
+    #           ../secrets/nextcloud-nfs-wireguard-key.pub;
+    #         # Use IPs in services.nfs.server.exports (see above) for controlling
+    #         # which service gets to see which subdirectory.
+    #         allowedIPs = [ "10.100.0.3/32" ];
+    #       }
+    #     ];
+    #   };
+    # }
     # Backup of /tank.
     ({ pkgs, ... }: let
       # We use a btrfs snapshot to prevent write locks from fouling up the
@@ -215,22 +215,30 @@ in {
       #   generator.script = "wireguard-priv";
       #   rekeyFile = ../secrets/${host-id}-wireguard-key.age;
       # };
-      age.secrets."${host-id}-nfs-wireguard-key" = {
-        generator.script = "wireguard-priv";
-        rekeyFile = ../secrets/${host-id}-nfs-wireguard-key.age;
-      };
-      age.secrets.borg-passphrase = {
-        # See secrets.nix for where this is declared.
-        generator.script = "long-passphrase";
-        group = "borg";
-        mode = "0440";
-        rekeyFile = ../secrets/${host-id}-borg-encryption-passphrase.age;
-      };
+      # age.secrets."${host-id}-nfs-wireguard-key" = {
+      #   generator.script = "wireguard-priv";
+      #   rekeyFile = ../secrets/${host-id}-nfs-wireguard-key.age;
+      # };
       # fileSystems."${snapshot-dir}" = {
       #   device = "/tank/snapshots";
       #   fsType = "none";
       #   options = [ "bind" ];
       # };
+      nfsProvider = {
+        enable = true;
+        volumes = [
+          {
+            hostId = "copper";
+            volumeRelativeDir = "nextcloud";
+            peerNumber = 3;
+          }
+          {
+            hostId = "copper";
+            volumeRelativeDir = "gitea";
+            peerNumber = 3;
+          }
+        ];
+      };
       services.borgbackup.jobs.dataBackup = let
         btrfs-bin = "${pkgs.btrfs-progs}/bin/btrfs";
       in {
@@ -243,7 +251,9 @@ in {
         ];
         repo = "/tank/backup/backup-repo";
         encryption.mode = "repokey-blake2";
-        encryption.passCommand = "cat /run/agenix/borg-passphrase";
+        encryption.passCommand = "cat ${
+          config.age.secrets."${host-id}-borg-encryption-passphrase".path
+        }";
         compression = "zstd";
         patterns = [
           "+ /tank/data/nextcloud/**"
