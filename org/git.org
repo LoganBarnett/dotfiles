@@ -255,6 +255,51 @@ https://github.com/doomemacs/doomemacs/blob/master/modules/emacs/vc/config.el
 (setq-default vc-handled-backends '(SVN Git Hg))
 #+end_src
 
+* tramp and gpg-agent
+
+If commits are GPG signed then prompting of the GPG key's passphrase may occur
+during a commit.  Locally this works just fine, but over Tramp things get
+tricky.  When reaching out to a remote for ~magit~, use ~keychain~ if present to
+hook onto the existing ~gpg-agent~ so we can avoid prompting.  This isn't
+bullet-proof but it would be a good start.  At least using this method, one
+could warm up the agent via a separate SSH session.  The best solution would be
+to forward the prompt through.  That's probably worth a ticket on ~magit~ side
+of things.
+
+#+name: config/magit-load-remote-keychain-env
+#+begin_src emacs-lisp :results none :exports code
+(with-eval-after-load 'magit
+  (defun config/magit-load-remote-keychain-env ()
+    (when (file-remote-p default-directory)
+      ;; Check if keychain exists on the remote.
+      (when (eq 0 (
+                   call-process
+                     "sh"
+                     nil
+                     nil
+                     nil
+                     "-c"
+                     "command -v keychain >/dev/null 2>&1"
+                  ))
+        (let* ((cmd
+                "keychain --quiet --agents ssh,gpg --eval 2>/dev/null \
+| sed -E -e 's/^export[[:space:]]+([^=]+)=(.*);$/\\1=\\2/'")
+               (out (ignore-errors (shell-command-to-string cmd))))
+          (when (and out (string-match-p "SSH_AUTH_SOCK=" out))
+            (dolist (line (split-string out "\n" t))
+              (cl-pushnew line magit-git-environment :test #'string=)
+              )
+            )
+          )
+        )
+      )
+    )
+  (add-hook 'magit-pre-start-git-hook #'config/magit-load-remote-keychain-env)
+  )
+
+#+end_src
+
+
 * all together
 
 #+begin_src emacs-lisp :results none :noweb yes :tangle yes
@@ -262,6 +307,7 @@ https://github.com/doomemacs/doomemacs/blob/master/modules/emacs/vc/config.el
 <<config/magit-read-gpgsign-from-gitconfig>>
 <<config/git-mirror-commands>>
 <<config/git-tramp-vc-backend-optimize>>
+<<config/magit-load-remote-keychain-env>>
 
 (use-package "git-gutter-fringe"
   :demand t
