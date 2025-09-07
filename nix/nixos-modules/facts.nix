@@ -202,10 +202,6 @@
         ipv4 = 254;
         monitors = [];
       };
-      grafana = {
-        controlledHost = true;
-        monitors = [];
-      };
       lithium = {
         controlledHost = true;
         flake-input-overrides = {

@@ -79,8 +79,7 @@ in
     systemd.services = lib.mkMerge (lib.mapAttrsToList (fqdn: inst: let
       svc = "oidc-proxy-${lib.replaceStrings ["."] ["-"] fqdn}";
     in {
-      ${svc} = let
-      in {
+      ${svc} = {
         description = "oauth2-proxy for ${fqdn}";
         wantedBy = [ "multi-user.target" ];
         after    = [ "network.target" ];
