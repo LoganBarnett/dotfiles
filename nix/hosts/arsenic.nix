@@ -6,6 +6,7 @@
   imports = [
     # Spared for good behavior.
     # ../nixos-modules/bedtime-for-screen-addicts.nix
+    ../nixos-configs/fishnetwork-stockings.nix
     ../nixos-modules/cpu-frequency.nix
     (import ../nixos-modules/nvidia.nix {
       inherit flake-inputs;
