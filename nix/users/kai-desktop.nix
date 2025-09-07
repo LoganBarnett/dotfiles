@@ -9,6 +9,26 @@
   imports = [
     ../nixos-modules/unfree-predicates.nix
   ];
+  services.userLockoutSchedule.users.kai = {
+    schedule = let
+      weekday = {
+        enableAt = [ "16:30" ];
+        logoutAt = [ "17:30" ];
+      };
+      weekend = {
+        enableAt = [ "11:30" ];
+        logoutAt = [ "12:30" ];
+      };
+    in {
+      mon = weekday;
+      tue = weekday;
+      wed = weekday;
+      thu = weekday;
+      fri = weekday;
+      sat = weekend;
+      sun = weekend;
+    };
+  };
   # Nothing to do here yet.
   # home-manager.users.kai = {};
   users.users.kai = {

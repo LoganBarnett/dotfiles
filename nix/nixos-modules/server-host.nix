@@ -46,6 +46,7 @@
     ./sshd.nix
     ./tls-trust.nix
     ./user-can-admin.nix
+    ./user-lockout-schedule.nix
     ../users/logan-server.nix
   ];
   # This is just blindly copied from somewhere, but I don't know where.  I

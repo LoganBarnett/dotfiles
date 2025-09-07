@@ -14,7 +14,6 @@
 { disko-proper, flake-inputs, host-id, system, ... }: let
 in {
   imports = [
-    ../nixos-modules/bedtime-for-screen-addicts.nix
     ../users/solomon-desktop.nix
     (let
       # Default ComfyUI port.
