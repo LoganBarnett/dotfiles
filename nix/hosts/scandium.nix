@@ -131,6 +131,10 @@ in {
         # Allow generating Nextcloud plugins as a Nix expression.
         pkgs.nc4nix
         # nextcloud
+        # Run programs in parallel, with the ability to propagate exit codes of
+        # the failed job without halting other jobs, keeping order, retries,
+        # resume, and the ability to pluck out fields in an input list.
+        pkgs.rush-parallel
         # Yet another chat app.  I guess it's supposed to be secure, but I
         # assume anything going to the Internet is fundamentally insecure to
         # whomever receives it, and everyone in between.
