@@ -85,6 +85,10 @@
     pkgs.ripgrep
     # Copy files recursively. Replaces BSD version on macOS.
     pkgs.rsync
+    # Run programs in parallel, with the ability to propagate exit codes of the
+    # failed job without halting other jobs, keeping order, retries, resume, and
+    # the ability to pluck out fields in an input list.
+    pkgs.rush-parallel
     # Watch TCP packets!
     pkgs.tcpdump
     # Show a tree-listing of directories and files.
