@@ -15,10 +15,9 @@
         enableAt = [ "18:30" ];
         logoutAt = [ "19:30" ];
       };
-      # Restore to 17:30 start time on weekends after today.
       weekend = {
-        enableAt = [ "11:30" ];
-        logoutAt = [ "12:30" ];
+        enableAt = [ "17:30" ];
+        logoutAt = [ "18:30" ];
       };
     in {
       mon = weekday;
