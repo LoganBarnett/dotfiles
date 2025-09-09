@@ -75,7 +75,11 @@ fi
 
 if [ -z ${image_name+x} ]; then
   if [[ $noop == false ]]; then
-    image_name="$(image-create --host "$host")"
+    image_result="$(image-create --host "$host")"
+    # -d keeps ls from descending into the directory.
+    image_dir="$(ls -d "$image_result"/*-image)"
+    image_file="$(ls "$image_dir")"
+    image_name="$image_dir/$image_file"
     echo "Created image '$image_name'."
   fi
 fi
@@ -90,7 +94,10 @@ if [[ "$image_name" =~ \.zst$ ]]; then
   if [[ $noop == false ]]; then
     # I could get this to work, but found it as a recommendation.
     # tar --use-compress-program=zstd -xvf $image_name
-    unzstd -d $image_name -o $uncompressed_image_name
+    # unzstd has a --force but it includes a slew of other behavior.  I haven't
+    # been able to find an "overwrite file" equivalent.  Only needed if this run
+    # was canceled before finishing.
+    unzstd --decompress $image_name -o $uncompressed_image_name
   fi
   image_name=$uncompressed_image_name
   # These images get pretty big.  We'll need to clean it up afterwards.
