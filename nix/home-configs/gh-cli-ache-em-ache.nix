@@ -50,6 +50,12 @@
   ghHost = "${toOrg}.ghe.com";
   migrations = [
     {
+      bucketName = lib.strings.concatStrings (
+        lib.stringToCharacters
+          (lib.lists.reverseList
+            "tekcub-ehg-ot-hsats-ttenrab-nagol-nitram-samoht"
+          )
+      );
       # This is computed from the adjacent id_rsa, but in PEM form and sans
       # passphrase, since the automation cannot handle a passphrase in the SSH
       # key.
@@ -86,35 +92,41 @@ in {
         export AWS_ACCESS_KEY_ID="$(pass gh-migration-s3-key-id)"
         export AWS_REGION="us-west-2"
         export AWS_SECRET_ACCESS_KEY="$(pass gh-migration-s3-secret-key)"
+        export BUCKET_NAME="${settings.bucketName}"
 
-        function gh-migrate-${settings.type}() {
-          project="$1"
-          repo="$2"
-          if [[ "$3" == 'true' ]]; then
-            set -x
-          fi
-          gh \
-           ${settings.type}2gh \
-           migrate-repo \
-           --github-org "NWEA" \
-           --github-repo "$2" \
-           --${settings.type}-project "$1" \
-           --${settings.type}-repo "$2" \
-           --${settings.type}-server-url '${settings.sourceServerApiUrl}' \
-           --target-api-url "$GH_TARGET_API_URL" \
-           --verbose \
-           --ssh-user "${settings.sourceServerSshUser}" \
-           --ssh-private-key ${settings.sourceServerPrivateKey} \
-           --archive-download-host ${settings.sourceServerSshHost} \
-           --bbs-shared-home ${settings.sourceServerHome} \
-           --github-pat "$GH_PAT" \
-           --aws-region 'us-west-2' \
-           --aws-bucket-name 'thomas-martin-logan-barnett-stash-to-ghe-bucket'
-          set +x
-        }
+        export BBS_BASE_URL="${settings.sourceServerApiUrl}"
       '';
     })
     migrations
   );
+
+  home.packages = map (settings: pkgs.writeShellApplication {
+    name = "gh-migrate-${settings.type}";
+    text = ''
+      project="$1"
+      repo="$2"
+      if [[ "''${3:-}" == 'true' ]]; then
+        set -x
+      fi
+      gh \
+        ${settings.type}2gh \
+        migrate-repo \
+        --github-org "NWEA" \
+        --github-repo "$repo" \
+        --${settings.type}-project "$project" \
+        --${settings.type}-repo "$repo" \
+        --${settings.type}-server-url "''$BBS_BASE_URL" \
+        --target-api-url "$GH_TARGET_API_URL" \
+        --verbose \
+        --ssh-user "${settings.sourceServerSshUser}" \
+        --ssh-private-key "${settings.sourceServerPrivateKey}" \
+        --archive-download-host "${settings.sourceServerSshHost}" \
+        --bbs-shared-home "${settings.sourceServerHome}" \
+        --github-pat "$GH_PAT" \
+        --aws-region 'us-west-2' \
+        --aws-bucket-name "$BUCKET_NAME"
+    '';
+  }
+  ) migrations;
 
 }
