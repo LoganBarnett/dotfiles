@@ -32,13 +32,9 @@ $HOME/.nix""-profile/bin:\
 /bin:\
 /usr/local/bin:\
 /opt/local/bin:\
-$HOME/dev/adt-bundle-mac/sdk/platform-tools:\
-$HOME/.config/emacs/bin:\
 /Library/TeX/texbin:\
 /usr/bin:\
 /opt/X11/bin:\
-$HOME/.gem/ruby/2.6.0/bin:\
-$HOME/Library/Python/3.8/bin:\
 /opt/homebrew/bin"
 
 # prevent emacs tramp from barfing on startup
