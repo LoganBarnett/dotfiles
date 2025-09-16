@@ -51,8 +51,8 @@
   migrations = [
     {
       bucketName = lib.strings.concatStrings (
-        lib.stringToCharacters
-          (lib.lists.reverseList
+        lib.lists.reverseList
+          (lib.stringToCharacters
             "tekcub-ehg-ot-hsats-ttenrab-nagol-nitram-samoht"
           )
       );
@@ -111,7 +111,7 @@ in {
       gh \
         ${settings.type}2gh \
         migrate-repo \
-        --github-org "NWEA" \
+        --github-org "${lib.strings.toUpper fromOrg}" \
         --github-repo "$repo" \
         --${settings.type}-project "$project" \
         --${settings.type}-repo "$repo" \

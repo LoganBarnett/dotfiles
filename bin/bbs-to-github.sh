@@ -14,7 +14,7 @@ export BBS_AUTH="$BBS_USERNAME:$BBS_PASSWORD"
 # in `$BITBUCKET_HOME/shared/bitbucket.properties` to adjust this value, but it
 # requires a server restart, and it might be under your Puppet management.
 rush \
-  --jobs 2 \
+  --jobs 10 \
   --keep-order \
   --continue \
   --succ-cmd-file bbs2gh.rush-continue \
