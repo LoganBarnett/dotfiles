@@ -146,9 +146,24 @@ other code block indentation in the mode.
     '((assoc ";" "&") (assoc "&&" "||") (assoc "|" "|&")))))
 #+end_src
 
+** ~rm~, but working
+
+Apparently ~eshell~ masks some common utilities (~ls~, ~rm~ and ~cp~ being some
+ones I explicitly know about).  I haven't really noticed this until I saw ~rm
+somefile~ not actually remove ~somefile~ with no mention of failure.  Maybe
+because the file wasn't under version control?  But no matter - this is a huge
+breaking problem.  We need to have a working ~rm~, no matter what.
+
+#+name: config/eshell-rm-rm-function
+#+begin_src emacs-lisp :results none :exports code :tangle no
+(with-eval-after-load 'em-ls
+  (fmakunbound 'eshell/rm))
+#+end_src
+
 ** all together
 
 #+begin_src emacs-lisp :results none :noweb yes
+<<config/eshell-rm-rm-function>>
 (use-package shell
   :init
   <<config/shell-indentation-2-spaces>>
