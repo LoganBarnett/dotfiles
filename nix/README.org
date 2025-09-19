@@ -119,6 +119,18 @@ I recently added my deploy user to the trusted users list, so let's see if that
 helps.  Why this is an issue for the initial deploy but not after a local
 ~switch~ is done is not well understood.
 
+Hey that seemed to work as of [2025-09-13 Sat].
+
+To help bootstrap the system, it needs the remote builder key so it can utilize
+the ~rpi-build~ host.
+
+#+begin_src sh :results none :exports code
+sudo cat /run/agenix/builder-key \
+  | ssh rpi-installer.proton 'sudo tee /run/agenix/remote-builder_ed25519'
+ssh rpi-installer.proton 'sudo chmod 400 /run/agenix/remote-builder_ed25519'
+#+end_src
+
+
 *** Container Guests
 
 #+begin_src sh :results none :exports code
