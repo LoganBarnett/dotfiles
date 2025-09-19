@@ -85,7 +85,8 @@ in {
     ../darwin.nix
     ../users/logan-personal.nix
     ../headed-host.nix
-    ../darwin-linux-builder-module.nix
+    # Turn this on if I can't use rpi-build.proton for some reason.
+    # ../darwin-linux-builder-module.nix
     {
       # Sometimes we run into DNS issues locally, so provide this as an escape
       # hatch.
