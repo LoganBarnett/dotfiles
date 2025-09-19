@@ -268,7 +268,7 @@
       scandium = {
         controlledHost = true;
         flake-input-overrides = {
-          nixpkgs = "nixpkgs-latest";
+          nixpkgs = "nixpkgs";
         };
         monitors = [];
         roaming = true;
