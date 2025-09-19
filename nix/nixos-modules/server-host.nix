@@ -6,6 +6,7 @@
     {
       # Hostname is not an FQDN.
       networking.hostName = host-id;
+      nixpkgs.hostPlatform = system;
       nixpkgs.overlays = (import ../overlays/default.nix {
         inherit flake-inputs system;
       });
