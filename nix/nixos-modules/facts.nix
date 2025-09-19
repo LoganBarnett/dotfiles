@@ -250,6 +250,12 @@
         monitors = [];
         system = "x86_64-linux";
       };
+      rpi-installer = {
+        controlledHost = false;
+        ipv4 = 253;
+        monitors = [];
+        system = "aarch64-linux";
+      };
       # A WiFi endpoint / extender / repeater, depending on how it is
       # configured.  I have it in the endpoint/extender mode, but its
       # configuration can go astray if it doesn't wake up in a positive state.
