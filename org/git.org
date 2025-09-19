@@ -267,7 +267,7 @@ to forward the prompt through.  That's probably worth a ticket on ~magit~ side
 of things.
 
 #+name: config/magit-load-remote-keychain-env
-#+begin_src emacs-lisp :results none :exports code
+#+begin_src emacs-lisp :results none :exports code :tangle no
 (with-eval-after-load 'magit
   (defun config/magit-load-remote-keychain-env ()
     (when (file-remote-p default-directory)
@@ -307,7 +307,8 @@ of things.
 <<config/magit-read-gpgsign-from-gitconfig>>
 <<config/git-mirror-commands>>
 <<config/git-tramp-vc-backend-optimize>>
-<<config/magit-load-remote-keychain-env>>
+;; Not working, and I think in fact is is breaking my local setup.
+;; <<config/magit-load-remote-keychain-env>>
 
 (use-package "git-gutter-fringe"
   :demand t
