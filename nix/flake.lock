@@ -1152,6 +1152,22 @@
     },
     "nixpkgs_6": {
       "locked": {
+        "lastModified": 1736320768,
+        "narHash": "sha256-nIYdTAiKIGnFNugbomgBJR+Xv5F1ZQU+HfaBqJKroC0=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "4bc9c909d9ac828a039f288cf872d16d38185db8",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "ref": "nixpkgs-unstable",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
+    "nixpkgs_7": {
+      "locked": {
         "lastModified": 1754340878,
         "narHash": "sha256-lgmUyVQL9tSnvvIvBp7x1euhkkCho7n3TMzgjdvgPoU=",
         "owner": "NixOS",
@@ -1166,7 +1182,7 @@
         "type": "github"
       }
     },
-    "nixpkgs_7": {
+    "nixpkgs_8": {
       "locked": {
         "lastModified": 1744536153,
         "narHash": "sha256-awS2zRgF4uTwrOKwwiJcByDzDOdo3Q1rPZbiHQg/N38=",
@@ -1415,6 +1431,7 @@
         "prusa-slicer-pr-390476": "prusa-slicer-pr-390476",
         "raspberry-pi-nix": "raspberry-pi-nix",
         "repo-sync-flake": "repo-sync-flake",
+        "sytter": "sytter",
         "typeypipe-flake": "typeypipe-flake"
       }
     },
@@ -1563,7 +1580,25 @@
     },
     "rust-overlay_3": {
       "inputs": {
-        "nixpkgs": "nixpkgs_7"
+        "nixpkgs": "nixpkgs_6"
+      },
+      "locked": {
+        "lastModified": 1739154531,
+        "narHash": "sha256-QGeN6e0nMJlNLzm3Y2A7P6riXhQXMeCXLZ7yajZYFQM=",
+        "owner": "oxalica",
+        "repo": "rust-overlay",
+        "rev": "035dac86ab7ce5c1e8a4d59dfe85e6911a3526ea",
+        "type": "github"
+      },
+      "original": {
+        "owner": "oxalica",
+        "repo": "rust-overlay",
+        "type": "github"
+      }
+    },
+    "rust-overlay_4": {
+      "inputs": {
+        "nixpkgs": "nixpkgs_8"
       },
       "locked": {
         "lastModified": 1754448563,
@@ -1685,6 +1720,24 @@
         "type": "github"
       }
     },
+    "sytter": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ],
+        "rust-overlay": "rust-overlay_3"
+      },
+      "locked": {
+        "lastModified": 1757394834,
+        "narHash": "sha256-5IsMognai14EuxlYzLWi/AkFBI/KFqYibRaeQVRAjLw=",
+        "path": "/Users/logan/dev/sytter",
+        "type": "path"
+      },
+      "original": {
+        "path": "/Users/logan/dev/sytter",
+        "type": "path"
+      }
+    },
     "treefmt-nix": {
       "inputs": {
         "nixpkgs": [
@@ -1730,8 +1783,8 @@
     "typeypipe-flake": {
       "inputs": {
         "flake-utils": "flake-utils_6",
-        "nixpkgs": "nixpkgs_6",
-        "rust-overlay": "rust-overlay_3"
+        "nixpkgs": "nixpkgs_7",
+        "rust-overlay": "rust-overlay_4"
       },
       "locked": {
         "lastModified": 1754521137,

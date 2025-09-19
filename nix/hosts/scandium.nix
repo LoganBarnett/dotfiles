@@ -77,6 +77,7 @@ in {
       nixpkgs.hostPlatform = system;
       networking.hostName = host-id;
     }
+    ../darwin-configs/sytter.nix
     ../nixos-modules/tls-trust.nix
     ../nixos-modules/user-can-admin.nix
     (import ../nixos-modules/user-can-develop.nix {

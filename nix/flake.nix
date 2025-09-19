@@ -145,13 +145,13 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # sytter = {
+    sytter = {
     #   # TODO: Always keep one path example around.  Don't use file:// unless
     #   # you're pointing at a tarball (which should happen just about never).
-    #   url = "path:/Users/logan/dev/sytter";
-    #   inputs.nixpkgs.follows = "nixpkgs";
-    #   inputs.nix-darwin.follows = "nix-darwin";
-    # };
+      url = "path:/Users/logan/dev/sytter";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.nix-darwin.follows = "nix-darwin";
+    };
     typeypipe-flake = {
       url = "github:dkoontz/TypeyPipe";
       # url = "github:LoganBarnett/TypeyPipe";

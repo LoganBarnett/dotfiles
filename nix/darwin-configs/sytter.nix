@@ -6,6 +6,9 @@
   imports = [
     flake-inputs.sytter.darwinModules.default
   ];
+  nixpkgs.overlays = [
+    flake-inputs.sytter.overlays.default
+  ];
   services.sytter = {
     enable = true;
   };
