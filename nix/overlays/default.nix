@@ -71,6 +71,7 @@
     chronicle-proxy = final.callPackage ../derivations/chronicle-proxy.nix {};
     mqttpassworder = final.callPackage ../derivations/mqttpassworder.nix {};
     musicgpt = final.callPackage ../derivations/musicgpt.nix {};
+    mypaint = final.callPackage ../derivations/mypaint.nix {};
     zalgo-cli = final.callPackage ../derivations/zalgo-cli.nix {};
   })
 ]

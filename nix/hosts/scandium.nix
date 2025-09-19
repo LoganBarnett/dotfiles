@@ -128,6 +128,10 @@ in {
         (pkgs.callPackage ../derivations/dice-roller.nix {})
         # Let us communicate with the Matrix chat protocol.
         pkgs.element-desktop
+        # Drawing program (Like MS Paint, or more like Gimp/Photoshop?).
+        # Linux-only though in Nix.  Probably due to problems with GTK that a
+        # lots of Linux GUI-centric programs have in the Nix ecosystem.
+        # pkgs.mypaint
         # Note: This might be unusable on nix-darwin, or with flakes.
         pkgs.nixos-option
         # A 3D printer slicer I really like.  It might work for resin printers
