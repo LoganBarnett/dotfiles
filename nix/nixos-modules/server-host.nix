@@ -13,6 +13,15 @@
       system.stateVersion = "23.11";
       documentation.enable = lib.mkForce false;
     }
+    # {
+    #   age.rekey = {
+    #     # TODO: This is the host key, and we should call it that instead of the
+    #     # pub key.  The .pub is the pub key, but we also have a private key and
+    #     # having that called the pub-key doesn't make sense.  Make sure to
+    #     # capture other references, and rename what's already on disk.
+    #     hostPubkey = ../secrets/${host-id}-pub-key.pub;
+    #   };
+    # }
     ./environment-file-secrets.nix
     ./lib-custom.nix
     ./nested-submodule-config-proof.nix
