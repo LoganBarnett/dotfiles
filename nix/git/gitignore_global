@@ -6,6 +6,10 @@
 # Ignore Aider (aider.chat) cache.
 .aider.tags.cache.*/
 
+# Ignore Claude Code's "settings" which includes recorded decisions made in the
+# prompts.
+.claude/
+
 # Ignore Emacs directory specific configuration.
 .dir-locals.el
 
