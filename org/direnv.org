@@ -10,14 +10,26 @@ Adds the direnv paths for ~exec-path~ and ~process-environment~ so our Emacs
 tooling can consume things such as a ~devShell~ from Nix.
 
 #+begin_src emacs-lisp :results none :exports code :tangle yes :noweb yes
+(defun config/direnv-reinit-lsp ()
+  "Restart lsp (or eglot?) when the direnv environment is updated.
+
+Intended to be used in conjunction with the `direnv-update-environment-hook'."
+  (cond
+   ((bound-and-true-p lsp-mode)
+    (lsp-workspace-restart))
+   ((bound-and-true-p eglot--managed-mode)
+    (eglot-reconnect))
+   ))
+
 (use-package direnv
- :config
- (direnv-mode)
- :hook (
-        ;; These provide eshell with equivalent "shell hook" behaviors that you
-        ;; would find in bash, zsh, et. al.
-        (eshell-directory-change . direnv-update-environment)
-        (eshell-before-prompt . direnv-update-environment)
-        )
- )
+  :config
+  (direnv-mode)
+  :hook (
+         (direnv-update-environment-hook . config/direnv-reinit-lsp)
+         ;; These provide eshell with equivalent "shell hook" behaviors that you
+         ;; would find in bash, zsh, et. al.
+         (eshell-directory-change . direnv-update-environment)
+         (eshell-before-prompt . direnv-update-environment)
+         )
+  )
 #+end_src

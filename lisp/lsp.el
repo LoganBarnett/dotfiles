@@ -6,6 +6,8 @@
 (use-package "lsp-mode"
   :init
   :config
+  ;; Ensure that direnv is used to find rust-analyzer.
+  (setq lsp-rust-analyzer-server-command '("direnv" "exec" "." "rust-analyzer"))
   ;; Show us more complete and helpful information under the cursor.
   (setq lsp-ui-doc-enable nil)
   (setq lsp-ui-doc-show-with-cursor nil)
