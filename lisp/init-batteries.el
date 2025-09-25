@@ -126,6 +126,7 @@
     (init-org-file "xml-mode.org")
     ;; End languages.
     ;; Programming Support.
+    (load-library "claude-code.el")
     (load-library "lsp.el")
     ;; End Programming Support.
     (init-org-file "hipchat.org")

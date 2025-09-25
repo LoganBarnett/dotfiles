@@ -30,6 +30,26 @@
       # Use `config` above as the default init file.
       defaultInitFile = true;
       extraEmacsPackages = (epkgs: let
+        claude-code-ide = (pkgs.emacs.pkgs.trivialBuild {
+          pname = "claude-code-ide";
+          ename = "claude-code-ide";
+          version = "2025-09-15-unstable";
+          src = pkgs.fetchFromGitHub {
+            owner = "manzaltu";
+            repo = "claude-code-ide.el";
+            rev = "32d853e20b9d245a6ee89c4a153a4e568250c62c";
+            hash = "sha256-OrcnUZXqRijJCgf1QE5kkPKKdWSJ4oMYt47Sn/EdQy0=";
+          };
+          packageRequires = [
+            epkgs.transient
+            epkgs.websocket
+            epkgs.web-server
+          ];
+          meta = {
+            homepage = "https://github.com/manzaltu/claude-code-ide.el";
+            license = lib.licenses.gpl3;
+          };
+        });
         completion-packages = [
           # In-buffer completion.  Helpful for suggesting symbols in programming
           # languages, and words that have been used before in the same buffer
@@ -243,7 +263,9 @@
           # Allow us to parse TOML files.
           epkgs.toml
         ];
+        # Also include code-centric tools, such as LSP.
         languages = [
+          claude-code-ide
           epkgs.dockerfile-mode
           epkgs.elm-mode
           # This must come from something else.  Magit perhaps?

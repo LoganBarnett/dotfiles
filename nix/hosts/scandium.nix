@@ -124,7 +124,7 @@ in {
         # https://github.com/Aider-AI/aider/issues/2318
         pkgs-latest.aider-chat
         # Make machines write the code instead.  What could go wrong? :D
-        pkgs.claude-code
+        pkgs-latest.claude-code
         (pkgs.callPackage ../derivations/dice-roller.nix {})
         # Let us communicate with the Matrix chat protocol.
         pkgs.element-desktop
