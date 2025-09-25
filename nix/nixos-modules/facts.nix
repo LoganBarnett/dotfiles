@@ -175,6 +175,7 @@
       gallium = {
         aliases = [
           "authentik"
+          "jenkins"
           "ldap"
         ];
         controlledHost = true;

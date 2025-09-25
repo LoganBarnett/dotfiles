@@ -57,6 +57,14 @@
       url = "github:nix-community/emacs-overlay/master";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    github-to-jenkins-webhook = {
+      # TODO: Always keep one path example around.  Don't use file:// unless
+      # you're pointing at a tarball (which should happen just about never).
+      url = "path:/Users/logan/dev/github-to-jenkins-webhook";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     home-manager-working-rocm = {
       url = "github:nix-community/home-manager/release-24.11";
       inputs.nixpkgs.follows = "nixpkgs-working-rocm";
@@ -151,12 +159,12 @@
     };
 
     sytter = {
-    #   # TODO: Always keep one path example around.  Don't use file:// unless
-    #   # you're pointing at a tarball (which should happen just about never).
+      # TODO: Always keep one path example around.  Don't use file:// unless
+      # you're pointing at a tarball (which should happen just about never).
       url = "path:/Users/logan/dev/sytter";
       inputs.nixpkgs.follows = "nixpkgs";
-      inputs.nix-darwin.follows = "nix-darwin";
     };
+
     typeypipe-flake = {
       url = "github:dkoontz/TypeyPipe";
       # url = "github:LoganBarnett/TypeyPipe";

@@ -2,7 +2,15 @@
 # Give me a Jenkins instance to test things like jj and
 # github-to-jenkins-webhook.
 ################################################################################
-{ config, ... }: {
+{ config, flake-inputs, ... }: {
+
+  imports = [
+    flake-inputs.github-to-jenkins-webhook.nixosModules.default
+  ];
+
+  nixpkgs.overlays = [
+    flake-inputs.github-to-jenkins-webhook.overlays.default
+  ];
 
   age.secrets.github-to-jenkins-webhook-secret = {
     generator.script = "long-passphrase";
@@ -12,10 +20,17 @@
     enable = true;
     githubSecretFile = config.age.secrets.github-to-jenkins-webhook-secret.path;
     jenkinsUrl = "http://localhost:${toString config.services.jenkins.port}";
+    # TODO: This conflicts with the default port of Jenkins on 8080.
+    port = 8081;
   };
 
   services.jenkins = {
     enable = true;
+  };
+
+  services.https.fqdns."jenkins.proton" = {
+    enable = true;
+    internalPort = config.services.jenkins.port;
   };
 
   security.acme = {
