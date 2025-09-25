@@ -9,7 +9,6 @@
 # Chop up the string to defeat its detection. This allows us to do the install
 # without having to remove it during a reinstallation and then re-add it.
 export PATH="\
-/nix/var/nix/profiles/default/bin:\
 $HOME/.nix""-profile/bin:\
 /run/current-system/sw/bin:\
 ${PATH}\
@@ -21,4 +20,3 @@ JAVA_HOME="/Library/Java/Home"
 export PATH="$PATH:/Library/TeX/texbin/"
 
 source ~/dev/dotfiles-private/bashrc-private
-. "$HOME/.cargo/env"

@@ -5,6 +5,8 @@
 # obvious. Taken from
 # https://github.com/NixOS/nix/issues/1727#issuecomment-360355330
 # Also NIX_PATH is taken...
+# This might be a legacy path.  I no longer include it because switching Nix
+# versions (just the runtime) caused issues for me.
 NIX_PATH_ASDF="/nix/var/nix/profiles/default/bin"
 
 # Per the home-manager instructions.
@@ -20,10 +22,8 @@ $HOME/.nix-defexpr/channels:$NIX_PATH"
 export PATH="\
 $HOME/dev/dotfiles-private/bin:\
 $HOME/bin:\
-$NIX_PATH_ASDF:\
 $HOME/.nix""-profile/bin:\
 /etc/profiles/per-user/$USER/bin:\
-/nix/var/nix/profiles/default/bin:\
 /run/current-system/sw/bin:\
 /sbin:\
 /usr/sbin:\

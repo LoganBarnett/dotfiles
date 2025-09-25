@@ -10,7 +10,6 @@ source nix/bash-logging
 export NIX_PATH="$HOME/.nix-defexpr/channels${NIX_PATH:+:}$NIX_PATH:\
 nixpkgs-overlays=$HOME/.config/nixpkgs/overlays/"
 export PATH="\
-/nix/var/nix/profiles/default/bin:\
 $HOME/.nix""-profile/bin:\
 ${PATH}\
 "
