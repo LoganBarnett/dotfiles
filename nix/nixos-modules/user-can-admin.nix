@@ -38,6 +38,8 @@
     pkgs.gnused
     # Who wants BSD ls when you could have GNU ls? And other GNU things.
     pkgs.gnutls
+    # A more visual top.
+    pkgs.htop
     # Performance test IP connections.  Supports TCP/UDP/SCTP and both IPv4 and
     # IPv6.  It requires running a client and a server simultaneously.
     pkgs.iperf
