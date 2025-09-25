@@ -125,9 +125,11 @@ To help bootstrap the system, it needs the remote builder key so it can utilize
 the ~rpi-build~ host.
 
 #+begin_src sh :results none :exports code
+host='rpi-installer'
 sudo cat /run/agenix/builder-key \
-  | ssh rpi-installer.proton 'sudo tee /run/agenix/remote-builder_ed25519'
-ssh rpi-installer.proton 'sudo chmod 400 /run/agenix/remote-builder_ed25519'
+  | ssh $host.proton 'sudo tee /run/agenix/builder-key' \
+  > /dev/null
+ssh $host.proton 'sudo chmod 400 /run/agenix/builder-key'
 #+end_src
 
 
