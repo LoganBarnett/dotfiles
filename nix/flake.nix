@@ -116,7 +116,12 @@
     # This is the Nix runtime itself, so be real careful about bumping this.
     # But at least now I can bump it without having to reinstall everything.
     nix = {
-      url = "github:nixos/nix?ref=2.24.11";
+      # Use this pull request to do `nix store break-lock <derv-path>` to remove
+      # locks on errant builds.  I've seen this lodged on macOS once out a very
+      # long time.  Might be related to remote builds.
+      # https://github.com/NixOS/nix/pull/13813
+      url = "github:siraben/nix?ref=store-break-lock";
+      # url = "github:nixos/nix?ref=2.24.11";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     # nix-doom-emacs.url = "github:nix-community/nix-doom-emacs";

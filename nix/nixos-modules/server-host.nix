@@ -47,9 +47,7 @@
     ./narcolepsy.nix
     # See facts.nix for how this is specifically configured per host.
     ../nixos-modules/prometheus-client.nix
-    (import ./nix-flake-environment.nix {
-      inherit (flake-inputs) nix nixpkgs programsdb;
-    })
+    ./nix-flake-environment.nix
     ./nix-store-optimize.nix
     # Haven't gotten this working yet.
     # ./server-host-pub-key.nix

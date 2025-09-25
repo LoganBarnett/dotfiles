@@ -13,17 +13,10 @@
 # it can support nix-darwin too.
 # https://github.com/NobbZ/nixos-config/blob/99df721f491a6c33a12d7e82e09659935f15ab2b/nixos/modules/flake.nix
 ################################################################################
-{
-  # unstable,
-  # nixpkgs-2105,
-  # nixpkgs-2111,
-  nix,
-  nixpkgs,
-  programsdb,
-  ...
-}: { config, lib, options, pkgs, ... }: let
+{ config, flake-inputs, lib, options, pkgs, system, ... }: let
   base = "/etc/nixpkgs/channels";
   nixpkgsPath = "${base}/nixpkgs";
+  inherit (flake-inputs) nixpkgs nix;
   # Additional versions of nixpkgs should be added thusly:
   # nixpkgs2105Path = "${base}/nixpkgs2105";
   # nixpkgs2111Path = "${base}/nixpkgs2111";
@@ -48,9 +41,8 @@ in (lib.mkMerge [
   })
   {
     nix = {
-      package = pkgs.nixVersions.latest;
-      # Old way of getting this package?  Doesn't work.
-      # package = lib.mkDefault nix.packages.${pkgs.system}.nix;
+      # package = pkgs.nixVersions.latest;
+      package = nix.packages.${system}.nix;
       # Enable flakes and new 'nix' command.
       settings = {
         # This apparently defaults to true, but when doing flake evaluation,

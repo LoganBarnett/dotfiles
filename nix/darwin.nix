@@ -40,9 +40,7 @@
   macos-keyboard-remap = pkgs.callPackage ./packages/macos-keyboard-remap.nix {};
 in {
   imports = [
-    (import ./nixos-modules/nix-flake-environment.nix {
-      inherit (flake-inputs) nix nixpkgs programsdb;
-    })
+    ./nixos-modules/nix-flake-environment.nix
     ./nixos-modules/darwin-tls-trust.nix
     # NixOS has this built in, but this is our copy for Darwin.  It's needed for
     # ./nixos-modules/user-can-admin.nix.
