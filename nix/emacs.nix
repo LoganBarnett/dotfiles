@@ -65,6 +65,12 @@
           epkgs.consult-dir
           epkgs.consult-flycheck
           epkgs.consult-yasnippet
+          # "Emulate A Terminal".  BiS for terminal usage inside Emacs.
+          # Commands do not block Emacs, works well with TUIs like top (needs a
+          # key binding to switch to "pass through mode", and we can still use
+          # evil-mode bindings to edit the prompted command, scroll back, copy
+          # text, and benefit from prompt completions.
+          epkgs.eat
           # Kind of a smart DWIM system in a way, and is recommended to go with
           # Vertico and friends.
           epkgs.embark

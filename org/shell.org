@@ -6,7 +6,7 @@
 #+file_tags: config shell
 #+tags:
 
-* shell config
+* Shell file editing
 ** indentation
 *** 2 spaces
 2 spaces is king, especially with 80 columns. Also use spaces instead of
@@ -146,6 +146,7 @@ other code block indentation in the mode.
     '((assoc ";" "&") (assoc "&&" "||") (assoc "|" "|&")))))
 #+end_src
 
+* eshell config (outdated)
 ** ~rm~, but working
 
 Apparently ~eshell~ masks some common utilities (~ls~, ~rm~ and ~cp~ being some
@@ -162,8 +163,8 @@ breaking problem.  We need to have a working ~rm~, no matter what.
 
 ** all together
 
-#+begin_src emacs-lisp :results none :noweb yes
-<<config/eshell-rm-rm-function>>
+#+begin_src emacs-lisp :results none :noweb yes :tangle yes
+;; <<config/eshell-rm-rm-function>>
 (use-package shell
   :init
   <<config/shell-indentation-2-spaces>>
