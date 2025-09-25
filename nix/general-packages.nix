@@ -3,9 +3,6 @@
   # A test script to show we can add an arbitrary Bash script with a foreign
   # depependency to Nix.
   pkgs.test-script
-  # Write certificates out - these aren't present on macOS in a freely
-  # available way.
-  pkgs.cacert
   # Give us isoinfo.  Use it to debug iso issues, such as seeing if an iso is
   # bootable without actually having to boot with it.
   # Use `isoinfo -d <iso-file>` to test if bootable.  Look for an El Torito

@@ -50,6 +50,9 @@ in {
   environment = {
     shells = [ pkgs.zsh ];
     systemPackages = [
+      # Write certificates out - these aren't present on macOS in a freely
+      # available way.
+      pkgs.cacert
       # Give us the caffeinate command to run long running processes while
       # ensuring the machine stays awake.
       pkgs.darwin.PowerManagement
