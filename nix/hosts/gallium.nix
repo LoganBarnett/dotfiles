@@ -11,6 +11,7 @@ in {
     ../nixos-configs/authentik.nix
     ../nixos-modules/raspberry-pi-5.nix
     ../nixos-modules/server-host.nix
+    ../nixos-configs/jenkins-github-webhook-test.nix
     ({ lib, pkgs, ... }: {
       # networking.hostId is needed by the filesystem stuffs.
       # An arbitrary ID needed for zfs so a pool isn't accidentally imported on
