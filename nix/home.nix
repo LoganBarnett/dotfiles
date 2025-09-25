@@ -16,6 +16,7 @@ in
 {
   imports = [
     ./home-modules/aider-chat.nix
+    ./home-configs/btop.nix
     ./home-configs/gh-cli.nix
     ./home-configs/claude-code.nix
   ];

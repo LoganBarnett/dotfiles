@@ -50,6 +50,7 @@ in {
   # won't need it.
   ids.gids.nixbld = 350;
   imports = [
+    ../agnostic-configs/logan-workstation.nix
     ../nixos-modules/nix-builder-consume.nix
     ../nixos-modules/sd-image-raspberrypi.nix
     ../nixos-modules/secrets.nix
@@ -134,16 +135,12 @@ in {
         # pkgs.mypaint
         # Note: This might be unusable on nix-darwin, or with flakes.
         pkgs.nixos-option
-        # A 3D printer slicer I really like.  It might work for resin printers
-        # but I know it best for its FFF/FDM support.
-        (pkgs.prusa-slicer.override { boost = pkgs.boost179; })
         # Allow generating Nextcloud plugins as a Nix expression.
         pkgs.nc4nix
         # nextcloud
-        # Run programs in parallel, with the ability to propagate exit codes of
-        # the failed job without halting other jobs, keeping order, retries,
-        # resume, and the ability to pluck out fields in an input list.
-        pkgs.rush-parallel
+        # A 3D printer slicer I really like.  It might work for resin printers
+        # but I know it best for its FFF/FDM support.
+        (pkgs.prusa-slicer.override { boost = pkgs.boost179; })
         # Yet another chat app.  I guess it's supposed to be secure, but I
         # assume anything going to the Internet is fundamentally insecure to
         # whomever receives it, and everyone in between.

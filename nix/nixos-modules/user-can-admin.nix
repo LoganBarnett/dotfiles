@@ -14,6 +14,8 @@
     # A grep-sed like alternative. Offers a scripting language for
     # transformations.
     pkgs.ack
+    # A more visual version of top and htop.
+    pkgs.btop
     # This is a suite of GNU utilities.
     pkgs.coreutils
     # curl does http requests. Comes with MacOS but no reason to use a dated
@@ -36,8 +38,6 @@
     pkgs.gnused
     # Who wants BSD ls when you could have GNU ls? And other GNU things.
     pkgs.gnutls
-    # A more visual version of top.
-    pkgs.htop
     # Performance test IP connections.  Supports TCP/UDP/SCTP and both IPv4 and
     # IPv6.  It requires running a client and a server simultaneously.
     pkgs.iperf
