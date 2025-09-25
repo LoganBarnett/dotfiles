@@ -58,62 +58,6 @@ Nix installation can be run by itself via =./nix-install.sh=.
 
 I have in-progress work and notes in [[./nix/README.org]].
 
-** Updating Nix packages
-:PROPERTIES:
-:CUSTOM_ID: nix--updating-nix-packages
-:END:
-
-This is done via:
-
-#+begin_src shell :exports code
-nix-channel --update
-#+end_src
-
-** Switching
-:PROPERTIES:
-:CUSTOM_ID: nix--switching
-:END:
-
-Use this to apply changes on macOS:
-
-#+begin_src shell :results none :exports code
-nix-darwin-switch
-#+end_src
-
-This wraps the normal invocation.
-
-** Home Manager
-:PROPERTIES:
-:CUSTOM_ID: nix--home-manager
-:END:
-
-Home Manager manages the configuration of a user.
-
-Warning: Do not use the invocations below.  Home manager is in use but delegated
-to by =nix-darwin= or NixOS.
-
-Normally you would use this to build a home-manager configuration:
-
-#+begin_example shell
-home-manager build
-#+end_example
-
-To use the new configuration, use
-
-#+begin_example shell
-home-manager switch
-#+end_example
-
-=switch= implies =build=.
-
-=home.nix= is the starting point for =home-manager=, and is required to be named
-that via =home-manager= _when =home-manager= is the only entity in control.
-This does not apply when using =nix-darwin= or NixOS.
-
-Generally we want to avoid global tool installs for various things (like what
-version of Node.js you're running), and instead push those to specific
-repositories.
-
 ** With Direnv and shell.nix Files
 :PROPERTIES:
 :CUSTOM_ID: nix--with-direnv-and-shell.nix-files
