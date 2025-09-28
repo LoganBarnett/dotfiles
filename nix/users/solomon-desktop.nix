@@ -16,8 +16,8 @@
         logoutAt = [ "19:30" ];
       };
       weekend = {
-        enableAt = [ "17:30" ];
-        logoutAt = [ "18:30" ];
+        enableAt = [ "15:00" ];
+        logoutAt = [ "16:00" ];
       };
     in {
       mon = weekday;
