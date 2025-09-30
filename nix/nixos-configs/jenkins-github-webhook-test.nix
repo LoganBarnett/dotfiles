@@ -20,6 +20,7 @@
     enable = true;
     githubSecretFile = config.age.secrets.github-to-jenkins-webhook-secret.path;
     jenkinsUrl = "http://localhost:${toString config.services.jenkins.port}";
+    logLevel = "debug";
     # TODO: This conflicts with the default port of Jenkins on 8080.
     port = 8081;
   };
