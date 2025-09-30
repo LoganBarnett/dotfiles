@@ -15,6 +15,7 @@ in {
         (pkg: builtins.elem (lib.getName pkg) [
           "example-unfree-package"
           "unrar"
+          "windsurf"
         ])
       ];
     })
@@ -116,8 +117,10 @@ in {
         # Needed for our flavor of Hiera EYAML usage.  See `hiera-eyaml` for
         # more info.
         pkgs.saml2aws
-        # Let us log in on the blasted VPN UI.
+        # Let us log in on the blasted VPN UI.  Doesn't work on macOS currently.
         # pkgs.sunshine
+        # Let machines write the machine instructions.
+        pkgs.windsurf
         # `jq` but for YAML.  The `yq` (no suffix) is a Python app which
         # converts YAML into JSON and then back again if desired.  So it
         # requires `jq` for operations.  This `yq` is standalone and can work
