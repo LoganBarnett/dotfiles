@@ -85,6 +85,7 @@ in {
       value.text = ''
         export GH_PAT="$(pass ${toOrg}-ghe-pat)"
         export GH_TARGET_API_URL="${targetApiUrl}"
+        export GH_ORG="${lib.strings.toUpper fromOrg}"
         export ${typeUpper}_USERNAME="$USER"
         export ${typeUpper}_PASSWORD="$(pass ${murica})"
 
@@ -111,7 +112,7 @@ in {
       gh \
         ${settings.type}2gh \
         migrate-repo \
-        --github-org "${lib.strings.toUpper fromOrg}" \
+        --github-org "''$GH_ORG" \
         --github-repo "$repo" \
         --${settings.type}-project "$project" \
         --${settings.type}-repo "$repo" \
