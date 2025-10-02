@@ -82,7 +82,7 @@
             # Now defaults to ~/.config/git/ignore
             # excludesfile = ~/dev/dotfiles/gitignore_global;
             # This doesn't allow for a Path so we have to lay down the file via
-            # `environments.etc` and then reference it thusly.
+            # `environment.etc` and then reference it thusly.
             excludesfile = "/etc/gitignore";
             # Requires git 2.19, defaults to ~/.config/git/hooks
             hooksPath = "/etc/git-hooks";
