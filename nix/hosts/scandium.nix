@@ -115,6 +115,7 @@ in {
         (pkg: builtins.elem (lib.getName pkg) [
           "claude-code"
           "ngrok"
+          "signal-desktop-bin"
           "unrar"
         ])
       ];
@@ -153,6 +154,50 @@ in {
         # I tried overriding them where they are used (via passthru), but still
         # no joy.
         pkgs.signal-desktop-bin
+        # (pkgs.signal-desktop-bin.overrideAttrs (old: {
+        #   preInstall = pkgs.lib.traceVal ''
+        #     mkdir src-modified
+        #     ls -al "Signal.app"
+        #     ${pkgs.asar}/bin/asar \
+        #       extract \
+        #       "Signal.app/Contents/Resources/app.asar" \
+        #       src-modified
+        #     ls -al src-modified/app
+        #     # Keep this around in case the brittle substitution breaks.
+        #     grep -C20 -R hasExpired src-modified/ts/state/selectors/expiration.js
+        #     # Let's just see what's inside.
+        #     substituteInPlace \
+        #       src-modified/ts/state/selectors/expiration.js \
+        #       --replace-fail '(buildExpiration, autoDownloadUpdate, now) => {' \
+        #         '(buildExpiration, autoDownloadUpdate, now) => { return false;'
+        #     # Let's see how the file looks now too.
+        #     grep -C20 -R hasExpired src-modified/ts/state/selectors/expiration.js
+        #     cd src-modified
+        #     ls -al .
+        #     # This prevents the V8 engine from barfing on a cache mismatch.
+        #     rm -f preload.bundle.cache
+        #     ${pkgs.asar}/bin/asar pack . ../app.asar
+        #     cd ..
+        #     mv app.asar Signal.app/Contents/Resources/app.asar
+        #     # exit 1
+        #   '';
+        #   # installPhase = ''
+        #   #   runHook preInstall
+
+        #   #   mkdir -p $out/Applications
+        #   #   cp -r Signal.app $out/Applications
+
+        #   #   runHook postInstall
+        #   # '';
+        # }))
+        # (pkgs-latest.signal-desktop-bin.overrideAttrs (old: {
+        #   src = pkgs.fetchFromGitHub {
+        #     owner = "LoganBarnett";
+        #     repo = "Signal-Desktop";
+        #     rev = "remove-expiration";
+        #     hash = "sha256-tmxaupVwN8k9ZYtFZjDJuhN9bbkIpcWEJ2JDfrDlBgg=";
+        #   };
+        # }))
         # Screen Sharing.app is nice that it's built-in but it doesn't support
         # as many encryption/security options, It think.
         # Doh, broken.
