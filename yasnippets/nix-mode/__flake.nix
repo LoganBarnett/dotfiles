@@ -21,9 +21,7 @@
       "x86_64-linux"
     ];
     forAllSystems = f: nixpkgs.lib.genAttrs systems f;
-    overlays = [
-      (import rust-overlay)
-    ];
+    overlays = [];
     pkgsFor = system: import nixpkgs { inherit overlays system; };
     packages = (pkgs: let
 
