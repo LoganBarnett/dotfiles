@@ -13,16 +13,30 @@
     nixpkgs.url = github:NixOS/nixpkgs/nixpkgs-unstable;
   };
 
-  outputs = { self, nixpkgs }@inputs: {
+  outputs = { self, nixpkgs }@inputs: let
+    systems = [
+      "aarch64-darwin"
+      "aarch64-linux"
+      "x86_64-darwin"
+      "x86_64-linux"
+    ];
+    forAllSystems = f: nixpkgs.lib.genAttrs systems f;
+    overlays = [
+      (import rust-overlay)
+    ];
+    pkgsFor = system: import nixpkgs { inherit overlays system; };
+    packages = (pkgs: let
 
-    devShells.aarch64-darwin.default = let
-      system = "aarch64-darwin";
-      pkgs = import nixpkgs {
-        inherit system;
+    in [
+
+    ]);
+  in {
+
+    devShells = forAllSystems (system: {
+      default = (pkgsFor system).mkShell {
+        buildInputs = (packages (pkgsFor system));
       };
-    in pkgs.mkShell {
-      buildInputs = [];
-    };
+    });
 
   };
 }
