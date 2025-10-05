@@ -33,7 +33,7 @@
     );
   in
    ''
-     cat ${lib.escapeShellArg secret.settings.templateFile} \
+     printf '%s' ${lib.escapeShellArg template} \
        ${
          lib.strings.concatStringsSep " " (builtins.map
            (dep: ''

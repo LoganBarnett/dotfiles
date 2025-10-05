@@ -174,9 +174,10 @@
       };
       gallium = {
         aliases = [
-          "authentik"
+          "authelia"
           "jenkins"
           "ldap"
+          "sso"
         ];
         controlledHost = true;
         flake-input-overrides = {
@@ -381,13 +382,13 @@
           full-name = "bromine-matrix-service";
           devices = [];
         };
-        bromine-authelia-home-assistant-service = {
-          email = "bromine-authelia-home-assistant-service@proton";
-          type = "service";
-          description = "Authelia authentication for Home Assistant on Bromine.";
-          full-name = "bromine-authelia-home-assistant-service";
-          devices = [];
-        };
+        # bromine-authelia-home-assistant-service = {
+        #   email = "bromine-authelia-home-assistant-service@proton";
+        #   type = "service";
+        #   description = "Authelia authentication for Home Assistant on Bromine.";
+        #   full-name = "bromine-authelia-home-assistant-service";
+        #   devices = [];
+        # };
         copper-dex-oidc-service = {
           email = "bromine-dex-oidc-service@proton";
           type = "service";
@@ -537,9 +538,14 @@
 
       openhab = {
         authentication = "oidc";
-        redirectUris = [
-          "https://openhab.proton/outpost.goauthentik.io/callback"
+        fqdn = "openhab.proton";
+        groups = [
+          "openhab-admins"
+          "openhab-users"
         ];
+        # redirectUris = [
+        #   "https://openhab.proton/outpost.goauthentik.io/callback"
+        # ];
       };
 
     };

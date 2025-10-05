@@ -9,6 +9,7 @@
 in {
   imports = [
     # ../nixos-configs/authentik.nix
+    ../nixos-configs/authelia.nix
     ../nixos-modules/raspberry-pi-5.nix
     ../nixos-modules/server-host.nix
     ../nixos-configs/jenkins-github-webhook-test.nix
