@@ -8,7 +8,7 @@
 { flake-inputs, host-id, system, ... }: let
 in {
   imports = [
-    ../nixos-configs/authentik.nix
+    # ../nixos-configs/authentik.nix
     ../nixos-modules/raspberry-pi-5.nix
     ../nixos-modules/server-host.nix
     ../nixos-configs/jenkins-github-webhook-test.nix
