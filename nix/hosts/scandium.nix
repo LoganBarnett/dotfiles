@@ -125,6 +125,7 @@ in {
         # Use latest to benefit from work done here:
         # https://github.com/Aider-AI/aider/issues/2318
         pkgs-latest.aider-chat
+        pkgs.chromium
         # Make machines write the code instead.  What could go wrong? :D
         pkgs-latest.claude-code
         (pkgs.callPackage ../derivations/dice-roller.nix {})
