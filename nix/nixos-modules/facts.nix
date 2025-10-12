@@ -34,21 +34,25 @@
       # Currently, nextcloud "works", so don't mess with it until we have solid
       # verification on a system that is not yet critical or known to be
       # delicately functional.
-      # {
-      #   host-id = "copper";
-      #   peerNumber = 2;
-      #   service = "nextcloud";
-      #   volume = "nextcloud";
-      #   user = "nextcloud";
-      #   group = "nextcloud";
-      # }
       {
-        host-id = "copper";
-        peerNumber = 2;
+        consumerHostId = "copper";
+        providerHostId = "silicon";
+        peerNumber = 3;
+        service = "nextcloud";
+        volume = "nextcloud";
+        user = "nextcloud";
+        group = "nextcloud";
+        gid = 29971;
+      }
+      {
+        consumerHostId = "copper";
+        providerHostId = "silicon";
+        peerNumber = 3;
         service = "gitea";
         volume = "gitea";
         user = "gitea";
         group = "gitea";
+        gid = 29972;
       }
     ];
     ##

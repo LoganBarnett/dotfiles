@@ -112,6 +112,7 @@ in {
   services.nfs-mount.mounts.nextcloud = {
     enable = true;
     bindToService = "nextcloud";
+    gid = 29971;
     remoteHost = "silicon.proton";
     vpnHost = "silicon-nas.proton";
     share = "/tank/data/nextcloud";
@@ -244,10 +245,12 @@ in {
       }
     ];
   };
-  systemd.services = {
+  systemd.services = let
+    preNfsService = "nfs-mount-nextcloud-sanity-check.service";
+  in {
     phpfpm-nextcloud = let
       after = [
-        "bindfs-nextcloud.service"
+        preNfsService
         "postgresql.service"
         "run-agenix.d.mount"
       ];
@@ -268,8 +271,9 @@ in {
     # correctly.  We _really_ don't want to be reading and writing to the wrong
     # directory that doesn't get backed up and doesn't even host our files we
     # want.
+    # TODO: Rename to nfs from bindfs, since we no longer use bindfs.
     nextcloud-bindfs-check = let
-      after = [ "bindfs-nextcloud.service" ];
+      after = [ preNfsService ];
       # List them all in case we take out the custom config one day.
       before = [
         "nextcloud-setup.service"
@@ -301,7 +305,7 @@ in {
     nextcloud-custom-config = let
       after = [
         "run-agenix.d.mount"
-        "bindfs-nextcloud.service"
+        preNfsService
         "nextcloud-setup.service"
       ];
     in {
@@ -397,7 +401,7 @@ in {
       before = [ "multi-user.target" "phpfpm-nextcloud.service" ];
       wantedBy = [ "multi-user.target" "phpfpm-nextcloud.service" ];
     };
-    bindfs-nextcloud = let
+    "${preNfsService}" = let
       before = [
         "nextcloud-setup.service"
         "nextcloud-update-db.service"

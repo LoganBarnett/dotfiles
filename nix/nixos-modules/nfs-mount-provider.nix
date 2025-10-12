@@ -52,6 +52,24 @@ in
             '';
             example = "nextcloud";
           };
+
+          gid = mkOption {
+            type = types.int;
+            description = ''
+              The GID to use for the group.  Try to use an arbitrarily high one
+              to avoid collisions (>= 29970).
+            '';
+            example = 29970;
+          };
+
+          group = mkOption {
+            type = types.str;
+            description = ''
+              Group that will own each exported directory. Directories are
+              created with mode 0770 and group ownership set to this group.
+            '';
+            example = "nextcloud";
+          };
           volumeRelativeDir = mkOption {
             type = types.str;
             description = ''
@@ -78,38 +96,48 @@ in
         number for the 10.100.0.0/24 subnet.
       '';
       example = [
-        { hostId = "nextcloud"; volumeRelativeDir = "nextcloud"; peerNumber = 3; }
-        { hostId = "gitea";     volumeRelativeDir = "gitea";     peerNumber = 4; }
+        {
+          hostId = "copper";
+          peerNumber = 3;
+          volumeRelativeDir = "nextcloud";
+          group = "nextcloud";
+          gid = 29971;
+        }
+        {
+          hostId = "copper";
+          peerNumber = 3;
+          volumeRelativeDir = "gitea";
+          group = "gitea";
+          gid = 29972;
+        }
       ];
     };
 
-    groupName = mkOption {
-      type = types.str;
-      default = "borg";
-      description = ''
-        Group that will own each exported directory. Directories are created
-        with mode 0770 and group ownership set to this group.
-      '';
-      example = "borg";
-    };
   };
 
   config = mkIf cfg.enable {
     age.secrets."${host-id}-borg-encryption-passphrase" = {
       generator.script = "long-passphrase";
-      group = "borg";
-      mode = "0440";
     };
 
     #### Group and directories
-    users.groups.${cfg.groupName} = { };
+    users.groups = lib.pipe cfg.volumes [
+      (builtins.map (v: {
+        name = v.group;
+        value = { gid = v.gid; };
+      }))
+      builtins.listToAttrs
+    ];
+
     systemd.tmpfiles.rules =
-      lib.lists.concatMap (p: [
-        "d ${p} 0770 root ${cfg.groupName} -"
+      lib.lists.concatMap (v: let
+        absoluteVolumePath = volAbsPath v;
+      in [
+        "d ${absoluteVolumePath} 0770 root ${v.group} -"
         # Include this as a sanity check, which the consumer can be configured
         # to look for via `preconditionCheck`.
-        "f ${p}/nfs-working-share 0555 root root -"
-      ]) volPaths;
+        "f ${absoluteVolumePath}/nfs-working-share 0555 root root -"
+      ]) cfg.volumes;
 
     #### Provider WireGuard private key via agenix-rekey
     age.secrets.${wgSecretName} = {
@@ -151,6 +179,8 @@ in
     };
 
     #### Borg backup covering all volumes (nightly at 03:00 / 10:00 UTC)
+    # Borg runs as root by default, so we don't need to mess with permissions
+    # until we wish to secure this further.
     services.borgbackup.jobs.nfsProvider = let
       btrfsBin = "${pkgs.btrfs-progs}/bin/btrfs";
     in {

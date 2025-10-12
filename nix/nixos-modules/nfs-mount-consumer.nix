@@ -1,11 +1,6 @@
 ################################################################################
 # Provide a generalized means of consuming an NFS share. Authentication,
 # authorization, and encryption are handled via WireGuard.
-#
-# We create several mounts here for an individual binding.  The "raw" mount is
-# done to establish an NFS mount via `fileSystems` and `automounts`.  A
-# `bindfs-mappings` mount is also created so we can expose permissions properly
-# to the service in question.
 ################################################################################
 { config, host-id, lib, pkgs, ... }: let
   inherit (lib) mkEnableOption mkIf mkOption mkMerge types literalExpression;
@@ -43,8 +38,6 @@
   # --suffix=mount`.
   cfg = config.services.nfs-mount;
   mountsEnabled = lib.filterAttrs (_: m: m.enable or false) cfg.mounts;
-  rawWhereOf = m: "${toString m.mountPoint}-raw";
-  rawUnitOf  = m: "${toMountUnit (rawWhereOf m)}";
   peerIPv4Of = m: builtins.elemAt
     (builtins.match "([^/]*)/.*" m.wgPeerIP)
     0
@@ -53,110 +46,116 @@
     defaultInterface = "wgnfs-${config.vpnHost}";
   in {
     options = {
-        enable = (mkEnableOption ''
-          Enable this NFS mount.
-        '') // { default = true; };
+      enable = (mkEnableOption "Enable this NFS mount.") // { default = true; };
 
       remoteHost = mkOption {
-      type = types.str;
-      example = "silicon.proton";
-      description = ''
-        The remote NFS hostname, used in the WireGuard endpoint.
-      '';
-    };
+        type = types.str;
+        example = "silicon.proton";
+        description = ''
+          The remote NFS hostname, used in the WireGuard endpoint.
+        '';
+      };
 
-    vpnHost = mkOption {
-      type = types.str;
-      example = "silicon-nas.proton";
-      description = ''
-        The hostname used to reach the NFS share once the VPN is up.
-      '';
-    };
+      gid = mkOption {
+        type = types.int;
+        description = ''
+          The GID to use for the group.  Try to use an arbitrarily high one to
+          avoid collisions (>= 29970).
+        '';
+      };
 
-    share = mkOption {
-      type = types.str;
-      example = "/tank/data/foo";
-      description = ''
-        The exported NFS share path on the remote host.
-      '';
-    };
+      vpnHost = mkOption {
+        type = types.str;
+        example = "silicon-nas.proton";
+        description = ''
+          The hostname used to reach the NFS share once the VPN is up.
+        '';
+      };
 
-    mountPoint = mkOption {
-      type = types.path;
-      example = "/mnt/foo";
-      description = ''
-        The local mount point for this NFS share.
-      '';
-    };
+      share = mkOption {
+        type = types.str;
+        example = "/tank/data/foo";
+        description = ''
+          The exported NFS share path on the remote host.
+        '';
+      };
 
-    wgPrivateKeyFile = mkOption {
-      type = types.path;
-      example = "/run/agenix/nextcloud-nfs-wireguard-key";
-      description = ''
-        Path to the WireGuard private key (use with agenix).
-      '';
-    };
+      mountPoint = mkOption {
+        type = types.path;
+        example = "/mnt/foo";
+        description = ''
+          The local mount point for this NFS share.
+        '';
+      };
 
-    wgIP = mkOption {
-      type = types.str;
-      example = "10.100.0.3/24";
-      description = ''
-        IP address for the local WireGuard interface.
-      '';
-    };
+      wgPrivateKeyFile = mkOption {
+        type = types.path;
+        example = "/run/agenix/nextcloud-nfs-wireguard-key";
+        description = ''
+          Path to the WireGuard private key (use with agenix).
+        '';
+      };
 
-    wgPeerPublicKeyFile = mkOption {
-      type = types.path;
-      example = "../secrets/silicon-nfs-wireguard-key.pub";
-      description = ''
-        Path to the peer's public key file.
-      '';
-    };
+      wgIP = mkOption {
+        type = types.str;
+        example = "10.100.0.3/24";
+        description = ''
+          IP address for the local WireGuard interface.
+        '';
+      };
 
-    wgPeerIP = mkOption {
-      type = types.str;
-      example = "10.100.0.1/32";
-      description = ''
-        IP address for the remote WireGuard peer.
-      '';
-    };
+      wgPeerPublicKeyFile = mkOption {
+        type = types.path;
+        example = "../secrets/silicon-nfs-wireguard-key.pub";
+        description = ''
+          Path to the peer's public key file.
+        '';
+      };
 
-    wgPort = mkOption {
-      type = types.port;
-      default = 51820;
-      description = ''
-        The WireGuard peer endpoint port.
-      '';
-    };
+      wgPeerIP = mkOption {
+        type = types.str;
+        example = "10.100.0.1/32";
+        description = ''
+          IP address for the remote WireGuard peer.
+        '';
+      };
 
-    wgInterfaceName = mkOption {
-      type = types.str;
-      default = defaultInterface;
-      example = "wgnfs-myshare";
-      description = ''
-        The name of the WireGuard interface to create. Must be 15 characters
-        or fewer to be accepted by the Linux kernel.
-      '';
-    };
+      wgPort = mkOption {
+        type = types.port;
+        default = 51820;
+        description = ''
+          The WireGuard peer endpoint port.
+        '';
+      };
 
-    preconditionFile = mkOption {
-      type = types.str;
-      default = "nfs-working-share";
-      description = ''
-        Filename to check as a mount sanity test.
-      '';
-    };
+      wgInterfaceName = mkOption {
+        type = types.str;
+        default = defaultInterface;
+        example = "wgnfs-myshare";
+        description = ''
+          The name of the WireGuard interface to create. Must be 15 characters
+          or fewer to be accepted by the Linux kernel.
+        '';
+      };
 
-    bindToService = mkOption {
-      type = types.nullOr types.str;
-      default = null;
-      example = "gitea";
-      description = ''
-        Optional systemd service to bind this mount to. This ensures the
-        mount is available before the service starts. Also injects
-        BindPaths=''${mountPoint} into the serviceConfig.
-      '';
-    };
+      preconditionFile = mkOption {
+        type = types.str;
+        default = "nfs-working-share";
+        description = ''
+          Filename to check as a mount sanity test.
+        '';
+      };
+
+      bindToService = mkOption {
+        type = types.nullOr types.str;
+        default = null;
+        example = "gitea";
+        description = ''
+          Optional systemd service to bind this mount to. This ensures the
+          mount is available before the service starts. Also injects
+          BindPaths=''${mountPoint} into the serviceConfig.
+        '';
+      };
     };
   };
 
@@ -194,19 +193,10 @@
       }
     ) {} mountsEnabled;
 
-  automountsList =
-    mapAttrsToList (_: m: {
-      # where = m.mountPoint;
-      where = rawWhereOf m;
-      after = [ "network-online.target" ];
-      requires = [ "network-online.target" ];
-      automountConfig.TimeoutIdleSec = "600";
-    }) mountsEnabled;
-
-  fileSystemsRaw =
+  fileSystems =
     foldlAttrs (acc: name: m:
       acc // {
-        "${rawWhereOf m}" = {
+        "${toString m.mountPoint}" = {
           device = "${m.vpnHost}:${m.share}";
           fsType = "nfs";
           options = [
@@ -229,34 +219,6 @@
       }
     ) {} mountsEnabled;
 
-  # ----- bindfs-mappings (attrset) for your other module
-  bindfsMappings =
-    mapAttrs
-      (name: m: {
-        enable = true;
-        source = rawWhereOf m;
-        target = m.mountPoint;
-        createForGroup = true;
-        group = m.bindToService;
-      })
-      mountsEnabled
-  ;
-  bindfsSystemdConfigs =
-    mapAttrs'
-      (name: m: let
-        after = [
-          "${toMountUnit (rawWhereOf m)}.automount"
-        ];
-      in {
-        name = "bindfs-${name}";
-        value = {
-          inherit after;
-          requires = after;
-        };
-      })
-      mountsEnabled
-  ;
-
   # ----- service merges (handle multi-mount → same service)
   mergeSvc = svcOld: svcAdd:
     let
@@ -278,8 +240,7 @@
         svc = m.bindToService;
         entry = let
           after = [
-            "${rawUnitOf m}.mount"
-            "nfs-mount-${name}-bindfs.service"
+            "${toMountUnit (toString m.mountPoint)}.mount"
             "nfs-mount-${name}-sanity-check.service"
           ];
         in {
@@ -303,8 +264,11 @@
     foldlAttrs (acc: name: m:
       if m.preconditionFile == null then acc else
       acc // {
-        "nfs-mount-${name}-sanity-check" = {
-          after = [ "nfs-mount-${name}-bindfs.service" ];
+        "nfs-mount-${name}-sanity-check" = let
+          after = [ "${toMountUnit (toString m.mountPoint)}.mount" ];
+        in {
+          inherit after;
+          requires = after;
           wantedBy = [ "multi-user.target" ]
                      ++ lib.optional (m.bindToService != null)
                        "${m.bindToService}.service";
@@ -317,16 +281,9 @@
     ) {} mountsEnabled;
 
   tmpfilesRules =
-      # Lock the raw path used by NFS.
-    (mapAttrsToList
-      (_: m: "d ${rawWhereOf m} 000 root root - -")
-      mountsEnabled
-    )
-      # And the final path that bindfs will present to services.
-    ++ (mapAttrsToList
+    mapAttrsToList
       (_: m: "d ${toString m.mountPoint} 000 root root - -")
-      mountsEnabled
-    );
+      mountsEnabled;
 
 in {
   options.services.nfs-mount.mounts = mkOption {
@@ -355,14 +312,13 @@ in {
     networking.wireguard.interfaces = wgInterfaces;
     # A gotcha: Don't use fileSystems and systemd.mounts.  fileSystems will emit
     # systemd.mounts, in effect.
-    fileSystems = fileSystemsRaw;
-    systemd.automounts = automountsList;
-    bindfs-mappings.mounts = bindfsMappings;
-    systemd.services =
-      servicesFromBinds // servicesSanity // bindfsSystemdConfigs;
+    fileSystems = fileSystems;
+    systemd.services = servicesFromBinds // servicesSanity;
     users.groups = mapAttrs' (name: value: {
       name = value.bindToService;
-      value = {};
+      value = {
+        gid = value.gid;
+      };
     }) mountsEnabled;
   };
 }
