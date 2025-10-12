@@ -52,12 +52,12 @@
   nfs-vpn-hostname = "silicon-nas.proton";
 in {
   imports = [
-    (import ../nixos-modules/https.nix {
-      inherit fqdn host-id;
-      redirect = false;
-    })
-    ../nixos-modules/wireguard-agenix-rekey-generator.nix
-    ./bindfs.nix
+    # (import ../nixos-modules/https.nix {
+    #   inherit fqdn host-id;
+    #   redirect = false;
+    # })
+    ../nixos-modules/bindfs.nix
+    ../nixos-modules/nfs-mount-consumer.nix
   ];
   age.secrets = {
     nextcloud-nfs-wireguard-key = {
@@ -81,66 +81,46 @@ in {
       "openldap-${host-id}-nextcloud-service"
       "${host-id}-nextcloud-service"
   );
-  # Use bindfs to give us a mount that the nextcloud user can control.
-  bindfs-mappings.nextcloud = {
-    source = "${data-dir}-raw";
-    # It's important to only use the data directory.  The NixOS Nextcloud
-    # service definition will lay down the base directory structure.  We only
-    # need the data subdirectory anyways.  So this handles conflicts that come
-    # up with load order and the like.
-    target = "${data-dir}/data";
-    group = "nextcloud";
-    createForGroup = true;
-  };
-  fileSystems."${data-dir}-raw" = {
-    device = "${nfs-vpn-hostname}:/tank/data/nextcloud/data";
-    fsType = "nfs";
-    options = [
-      "defaults"
-      "noatime"
-      "x-systemd.requires=network-online.target"
-      "x-systemd.after=network-online.target"
-      "_netdev"
-      # "x-systemd.after=wireguard-wg0.service"
-      # "x-systemd.requires=wireguard-wg0.service"
-    ];
-    # Important!  Don't block boot if it's unavailable.
-    neededForBoot = false;
-  };
-  systemd.automounts = [
-    {
-      name = lib.mkForce "mnt-nextcloud-data.automount";
-      where = "${data-dir}/data";
-      before = [ "nextcloud.service" ];
-      wantedBy = [ "nextcloud.service" ];
-      after = [ "network-online.target" ];
-      requires = [ "network-online.target" ];
-      automountConfig.TimeoutIdleSec = "600";
-    }
+  environment.systemPackages = [
+    # If you had to reinstall Nextcloud, you've probably quickly learned that it
+    # gets into a lodged state where any number of tiny little things that
+    # shouldn't be a problem actually serve to lodge it further in mysterious
+    # and nonsensical ways.  This option is somewhat nuclear - you'll lose any
+    # and all "Nextcloud data", but it will retain your files your users have at
+    # least.  Except for admin.  But we do keep a backup of admin in case you
+    # need something.
+    (pkgs.writeShellApplication {
+      name = "nextcloud-clean-for-install";
+      text = ''
+        rm ${data-dir}/config/config.php || true
+        rm ${data-dir}/config/override.config.php || true
+        mv ${data-dir}/data/${
+          config.services.nextcloud.config.adminuser
+        }{,.bak-"$(date '+%s')"} || true
+        # We could wipe the entire server but there might be other services
+        # using PostgreSQL.  So just wipe the nextcloud database.
+        sudo -u postgres psql -c "DROP DATABASE nextcloud;" || true
+        sudo -u postgres psql -c "CREATE DATABASE nextcloud OWNER nextcloud;" \
+          || true
+      '';
+    })
   ];
-  systemd.mounts = [
-    {
-      name = lib.mkForce "mnt-nextcloud-data-raw.mount";
-      what = "${nfs-vpn-hostname}:/tank/data/nextcloud/data";
-      type = "nfs";
-      where = "${data-dir}-raw";
-      options = "defaults,noatime,_netdev,x-systemd.requires=network-online.target,x-systemd.after=network-online.target";
-    }
-  ];
-  systemd.network.wait-online.enable = true;
-  networking.wireguard.enable = true;
-  networking.wireguard.interfaces.wg0 = {
-    ips = [ "10.100.0.3/24" ];
-    privateKeyFile = config.age.secrets.nextcloud-nfs-wireguard-key.path;
-    peers = [
-      {
-        name = "silicon-nfs";
-        publicKey = builtins.readFile ../secrets/silicon-nfs-wireguard-key.pub;
-        endpoint = "${nfs-physical-hostname}:51820";
-        allowedIPs = [ "10.100.0.1/32" ];
-        persistentKeepalive = 25;
-      }
-    ];
+  services.https.fqdns."nextcloud.proton" = {
+    enable = true;
+    proxy = false;
+  };
+  services.nfs-mount.mounts.nextcloud = {
+    enable = true;
+    bindToService = "nextcloud";
+    remoteHost = "silicon.proton";
+    vpnHost = "silicon-nas.proton";
+    share = "/tank/data/nextcloud";
+    mountPoint = data-dir;
+    wgPrivateKeyFile = config.age.secrets."${host-id}-nfs-wireguard-key".path;
+    wgIP = "10.100.0.3/24";
+    wgPeerPublicKeyFile = ../secrets/generated/silicon-nfs-wireguard-key.pub;
+    wgPeerIP = "10.100.0.1/32";
+    wgInterfaceName = "wgfs-silicon";
   };
   services.nextcloud = {
     enable = true;
@@ -265,13 +245,16 @@ in {
     ];
   };
   systemd.services = {
-    phpfpm-nextcloud = {
-      # Make it so Nextcloud can always find its admin password.
-      requires = [
+    phpfpm-nextcloud = let
+      after = [
         "bindfs-nextcloud.service"
         "postgresql.service"
         "run-agenix.d.mount"
       ];
+    in {
+      # Make it so Nextcloud can always find its admin password.
+      inherit after;
+      requires = after;
       serviceConfig = {
         BindPaths = data-dir;
         LoadCredential = [
@@ -415,15 +398,6 @@ in {
       wantedBy = [ "multi-user.target" "phpfpm-nextcloud.service" ];
     };
     bindfs-nextcloud = let
-      after = [
-        # There's just no getting around this unless you want to use something
-        # else like no words.  It's a really unfortunate decision on systemd's
-        # part.  Both are listed for clarity, even though the other is
-        # essentially a no-op.
-        # "mnt-nextcloud\x2ddata\x2draw.mount"
-        "mnt-nextcloud\\x2ddata\\x2draw.mount"
-        # "mnt-nextcloud-data.mount"
-      ];
       before = [
         "nextcloud-setup.service"
         "nextcloud-update-db.service"
@@ -431,24 +405,10 @@ in {
         "nextcloud.service"
       ];
     in {
-      after = after;
-      requires = after;
       before = before;
       wantedBy = before;
     };
-    "wireguard-wg0-peer-silicon-nfs-start" = let
-      after = [
-        "network-online.target"
-        "nss-lookup.target"
-      ];
-    in {
-      after = after;
-      requires = after;
-    };
   };
-  # systemd.tmpfiles.rules = [
-  #   "d ${data-dir}-raw 0770 root root -"
-  # ];
   users.users.nextcloud = {
     # This is typically _not_ set by the Nextcloud NixOS module, but we're
     # doing a lot of hand-off that requires permissions to align.
@@ -460,6 +420,7 @@ in {
   };
   users.groups.nextcloud = {};
   users.groups."openldap-${host-id}-nextcloud-service" = {};
+  # TODO: Move to `../nixos-modules/nfs-mount-consumer.nix`.
   networking.hosts = {
     # Give us a fake hostname so we can ensure traffic flows through the VPN,
     # otherwise the NFS IP protection will drop the traffic.

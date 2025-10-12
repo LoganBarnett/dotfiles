@@ -46,9 +46,10 @@ in {
     mountPoint = dataDir;
     preconditionFile = "nfs-share-working";
     wgPrivateKeyFile = config.age.secrets."${host-id}-nfs-wireguard-key".path;
-    wgIP = "10.100.0.4/24";
-    wgPeerPublicKeyFile = ../secrets/silicon-nfs-wireguard-key.pub;
+    wgIP = "10.100.0.3/24";
+    wgPeerPublicKeyFile = ../secrets/generated/silicon-nfs-wireguard-key.pub;
     wgPeerIP = "10.100.0.1/32";
+    wgInterfaceName = "wgfs-silicon";
     # Optional bindfs mapping if Gitea runs under its own user/group.
     # bindfs = {
     #   uid = "994";

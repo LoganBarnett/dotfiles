@@ -11,31 +11,36 @@
   inherit (lib) mkEnableOption mkIf mkOption mkMerge types literalExpression;
   inherit (lib.attrsets) mapAttrsToList mapAttrs mapAttrs' foldlAttrs;
   inherit (lib) optional;
+  toMountUnit = path: let
+    p = toString path;
+    normalize =
+      s:
+      # Strip a single trailing slash (except root) and the leading slash.
+      let
+        noTrail = if s != "/" && lib.hasSuffix "/" s
+                  then lib.removeSuffix "/"
+                  else s;
+        noLead  = if lib.hasPrefix "/" noTrail
+                  then lib.removePrefix "/" noTrail
+                  else noTrail;
+      in
+        noLead;
+    norm = normalize p;
+    # Escape literal "-" inside a path component (they must become \x2d).
+    escapeDash = s: builtins.replaceStrings [ "-" ] [ "\\x2d" ] s;
+
+    # Split by "/", drop empty bits (handles accidental //), escape, then join
+    # with "-".
+    comps =
+      lib.filter (s: s != "") (lib.splitString "/" norm);
+    stem =
+      lib.concatStringsSep "-" (map escapeDash comps);
+  in
+    if p == "/"
+    then "-"
+    else stem;
   # Derive a systemd .mount unit name from a path, like `systemd-escape --path
   # --suffix=mount`.
-  toMountUnit =
-    path:
-    let
-      p = toString path;
-      normalize =
-        s:
-        # Strip a single trailing slash (except root) and the leading slash.
-        let
-          noTrail = if s != "/" && lib.hasSuffix "/" s
-                    then lib.removeSuffix "/"
-                    else s;
-          noLead  = if lib.hasPrefix "/" noTrail
-                    then lib.removePrefix "/" noTrail
-                    else noTrail;
-        in
-          noLead;
-      stem0 = builtins.replaceStrings [ "/" ] [ "-" ] (normalize p);
-      # Escape literal '-' as \x2d to avoid ambiguity with '/'.
-      stem  = builtins.replaceStrings [ "-" ] [ "\\x2d" ] stem0;
-    in
-      if p == "/"
-      then "-.mount"
-      else "${stem}.mount";
   cfg = config.services.nfs-mount;
   mountsEnabled = lib.filterAttrs (_: m: m.enable or false) cfg.mounts;
   rawWhereOf = m: "${toString m.mountPoint}-raw";
@@ -44,8 +49,8 @@
     (builtins.match "([^/]*)/.*" m.wgPeerIP)
     0
   ;
-  nfsMountModule = { name, _config, ... }: let
-    defaultInterface = "wgnfs-${name}";
+  nfsMountModule = { name, config, ... }: let
+    defaultInterface = "wgnfs-${config.vpnHost}";
   in {
     options = {
         enable = (mkEnableOption ''
@@ -134,22 +139,9 @@
       '';
     };
 
-    # bindfs = mkOption {
-    #   type = types.nullOr (types.attrsOf types.str);
-    #   default = null;
-    #   example = {
-    #     group = "nextcloud";
-    #     user = "nextcloud";
-    #   };
-    #   description = ''
-    #     Optional bindfs remapping. Specify uid/gid remaps and optionally
-    #     extra options.
-    #   '';
-    # };
-
     preconditionFile = mkOption {
       type = types.str;
-      default = "nfs-share-working";
+      default = "nfs-working-share";
       description = ''
         Filename to check as a mount sanity test.
       '';
@@ -175,14 +167,7 @@
         WireGuard interface name '${m.wgInterfaceName}' exceeds 15 characters.
       '';
     }) mountsEnabled
-    ++ (let
-         ifaces = mapAttrsToList (_: m: m.wgInterfaceName) mountsEnabled;
-       in lib.optional (lib.length ifaces != lib.length (lib.unique ifaces)) {
-            assertion = false;
-            message = ''
-              Duplicate wgInterfaceName across services.nfs-mount.mounts.
-            '';
-          });
+  ;
 
   # ----- networking.hosts (merge by IP; collect vpnHost list)
   networkingHosts =
@@ -199,7 +184,7 @@
           ips            = [ m.wgIP ];
           privateKeyFile = m.wgPrivateKeyFile;  # secret path, not read
           peers = [{
-            name       = "nfs-${name}";
+            name       = "nfs-${m.wgInterfaceName}";
             publicKey  = builtins.readFile m.wgPeerPublicKeyFile; # public only
             endpoint   = "${m.remoteHost}:${toString m.wgPort}";
             allowedIPs = [ m.wgPeerIP ];
@@ -209,35 +194,65 @@
       }
     ) {} mountsEnabled;
 
-  # ----- systemd.mounts / automounts (lists)
-  mountsList =
-    mapAttrsToList (_: m: {
-      where   = rawWhereOf m;
-      what    = "${m.vpnHost}:${m.share}";
-      type    = "nfs";
-      options = lib.concatStringsSep "," [
-        "defaults" "noatime" "_netdev"
-        "x-systemd.requires=network-online.target"
-        "x-systemd.after=network-online.target"
-      ];
-    }) mountsEnabled;
-
   automountsList =
     mapAttrsToList (_: m: {
-      where = m.mountPoint;
+      # where = m.mountPoint;
+      where = rawWhereOf m;
       after = [ "network-online.target" ];
       requires = [ "network-online.target" ];
       automountConfig.TimeoutIdleSec = "600";
     }) mountsEnabled;
 
+  fileSystemsRaw =
+    foldlAttrs (acc: name: m:
+      acc // {
+        "${rawWhereOf m}" = {
+          device = "${m.vpnHost}:${m.share}";
+          fsType = "nfs";
+          options = [
+            "_netdev"
+            "addr=${peerIPv4Of m}"
+            "x-systemd.automount"
+            "noauto"
+            "x-systemd.idle-timeout=600s"
+            "x-systemd.requires=network-online.target"
+            "x-systemd.after=network-online.target"
+            "x-systemd.requires=wireguard-${m.wgInterfaceName}.service"
+            "x-systemd.after=wireguard-${m.wgInterfaceName}.service"
+            "nfsvers=4.2"
+            "proto=tcp"
+            "hard"
+            "timeo=600"
+            "retrans=3"
+          ];
+        };
+      }
+    ) {} mountsEnabled;
+
   # ----- bindfs-mappings (attrset) for your other module
   bindfsMappings =
     mapAttrs
       (name: m: {
+        enable = true;
         source = rawWhereOf m;
         target = m.mountPoint;
         createForGroup = true;
         group = m.bindToService;
+      })
+      mountsEnabled
+  ;
+  bindfsSystemdConfigs =
+    mapAttrs'
+      (name: m: let
+        after = [
+          "${toMountUnit (rawWhereOf m)}.automount"
+        ];
+      in {
+        name = "bindfs-${name}";
+        value = {
+          inherit after;
+          requires = after;
+        };
       })
       mountsEnabled
   ;
@@ -263,7 +278,7 @@
         svc = m.bindToService;
         entry = let
           after = [
-            (rawUnitOf m)
+            "${rawUnitOf m}.mount"
             "nfs-mount-${name}-bindfs.service"
             "nfs-mount-${name}-sanity-check.service"
           ];
@@ -301,6 +316,18 @@
       }
     ) {} mountsEnabled;
 
+  tmpfilesRules =
+      # Lock the raw path used by NFS.
+    (mapAttrsToList
+      (_: m: "d ${rawWhereOf m} 000 root root - -")
+      mountsEnabled
+    )
+      # And the final path that bindfs will present to services.
+    ++ (mapAttrsToList
+      (_: m: "d ${toString m.mountPoint} 000 root root - -")
+      mountsEnabled
+    );
+
 in {
   options.services.nfs-mount.mounts = mkOption {
     type = types.attrsOf (types.submodule nfsMountModule);
@@ -315,15 +342,24 @@ in {
     age.secrets."${host-id}-nfs-wireguard-key" = {
       generator.script = "wireguard-priv";
     };
+    boot.supportedFilesystems = [ "nfs" ];
+    environment.systemPackages = [
+      # Allow us to debug NFS issues.
+      pkgs.nfs-utils
+      # Allow us to debug Wireguard issues.
+      pkgs.wireguard-tools
+    ];
     networking.hosts = networkingHosts;
     networking.wireguard.enable =
       lib.mkIf (mountsEnabled != {}) true;
     networking.wireguard.interfaces = wgInterfaces;
-    systemd.mounts = mountsList;
+    # A gotcha: Don't use fileSystems and systemd.mounts.  fileSystems will emit
+    # systemd.mounts, in effect.
+    fileSystems = fileSystemsRaw;
     systemd.automounts = automountsList;
-    bindfs-mappings.fqdns = bindfsMappings;
+    bindfs-mappings.mounts = bindfsMappings;
     systemd.services =
-      servicesFromBinds // servicesSanity;
+      servicesFromBinds // servicesSanity // bindfsSystemdConfigs;
     users.groups = mapAttrs' (name: value: {
       name = value.bindToService;
       value = {};

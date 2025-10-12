@@ -1,12 +1,20 @@
 ################################################################################
 # Use bindfs to present a mount with group-based ownership for DynamicUser.
+#
+# This is just kept for reference.
+#
+# I guess because it's a FUSE plugin and therefore runs in userspce, it's
+# ridiculously slow for massive file usage, which is basically what we want this
+# for.  Plus it's single threaded per mount.  That kind of makes it seem like a
+# toy rather than something of real use (at least for my use case).  See
+# `uidmapfs.nix` for a more heavy duty, kernel space equivalent.
 ################################################################################
 { config, lib, pkgs, ... }:
 let
   inherit (lib) mkMerge mkOption mkEnableOption types concatStringsSep;
   cfg = config.bindfs-mappings;
 in {
-  options.bindfs-mappings = mkOption {
+  options.bindfs-mappings.mounts = mkOption {
     type = types.attrsOf (types.submodule ({ name, ... }: {
       options = {
         enable = (mkEnableOption ''
@@ -120,7 +128,7 @@ in {
           };
         }
       )
-      cfg;
+      cfg.mounts;
 
     # Ensure target mount points exist with proper group & perms.
     systemd.tmpfiles.rules = lib.mapAttrsToList
@@ -128,6 +136,6 @@ in {
         # 2000 = setgid to preserve group assignment.
         "d ${opts.target} 2770 root ${opts.group} - -"
       )
-      cfg;
+      cfg.mounts;
   };
 }
