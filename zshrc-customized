@@ -32,6 +32,7 @@ $HOME/.nix""-profile/bin:\
 /bin:\
 /usr/local/bin:\
 /opt/local/bin:\
+$HOME/.config/emacs/bin:\
 /Library/TeX/texbin:\
 /usr/bin:\
 /opt/X11/bin:\
