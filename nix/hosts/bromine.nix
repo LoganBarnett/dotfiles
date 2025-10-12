@@ -5,6 +5,7 @@
 ################################################################################
 { flake-inputs, host-id, system, ... }: {
   imports = [
+    ../nixos-configs/raspberry-pi-usb-disk.nix
     ../nixos-modules/raspberry-pi-4.nix
     ../nixos-modules/server-host.nix
     ../nixos-configs/matrix-server.nix
