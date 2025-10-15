@@ -39,6 +39,7 @@ in {
     ../darwin.nix
     ../users/logan-new-e-ah.nix
     ../nixos-modules/user-can-admin.nix
+    ../nixos-configs/workstation.nix
     (import ../nixos-modules/user-can-develop.nix {
       inherit username;
     })
