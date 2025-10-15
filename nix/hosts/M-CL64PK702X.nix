@@ -102,6 +102,7 @@ in {
       environment.systemPackages = [
         pkgs.aider-chat
         pkgs.awscli
+        pkgs.confluence-markdown-exporter
         # Use GitHub from the command line.
         pkgs.gh
         # Stop using the cursed GlobalProtect VPN GUI client and use something
