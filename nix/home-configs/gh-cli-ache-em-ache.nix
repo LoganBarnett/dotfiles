@@ -25,6 +25,7 @@
 # useful function.s
 ################################################################################
 { config, pkgs, lib, ... }: let
+  inherit (lib.strings) toUpper;
   # I'm the Riddler!
   murica = lib.strings.concatStrings [
     "a"
@@ -47,7 +48,8 @@
     "m"
     "h"
   ];
-  ghHost = "${toOrg}.ghe.com";
+   ghHost = "github.com";
+ # ghHost = "${toOrg}.ghe.com";
   migrations = [
     {
       bucketName = lib.strings.concatStrings (
@@ -83,11 +85,13 @@ in {
     in {
       name = ".config/gh/${settings.type}-env";
       value.text = ''
-        export GH_PAT="$(pass ${toOrg}-ghe-pat)"
+        export GH_PAT="$(pass ${toOrg}-ghec-prd-pat)"
         export GH_TARGET_API_URL="${targetApiUrl}"
-        export GH_ORG="${lib.strings.toUpper fromOrg}"
+        # export GH_ORG="${toUpper toOrg}-GHEC-Dev"
+        export GH_ORG="${toUpper toOrg}-${toUpper fromOrg}-Test"
         export ${typeUpper}_USERNAME="$USER"
         export ${typeUpper}_PASSWORD="$(pass ${murica})"
+        export ${typeUpper}_AUTH="$BBS_USERNAME:$BBS_PASSWORD"
 
         # S3 bucket settings.
         export AWS_ACCESS_KEY_ID="$(pass gh-migration-s3-key-id)"
@@ -102,7 +106,7 @@ in {
   );
 
   home.packages = map (settings: pkgs.writeShellApplication {
-    name = "gh-migrate-${settings.type}";
+    name = "gh-migrate-${settings.type}-repo";
     text = ''
       project="$1"
       repo="$2"

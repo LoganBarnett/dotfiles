@@ -97,4 +97,4 @@ rush \
   --infile ~/.bbs2gh/repos.csv \
   --field-delimiter ',' \
   --verbose \
-  'gh-migrate-bbs {1} {2}'
+  'gh-migrate-bbs-repo {1} {2}'
