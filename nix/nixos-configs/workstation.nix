@@ -4,7 +4,8 @@
 # On a workstation, I want to perform actual work tasks with my computer (not
 # like `$WORK` but instead just constructive things.
 #
-# Much consolidation is needed.
+# Much consolidation is needed.  Particularly let's also nab what we see on
+# ../nixos-modules/user-can-develop.nix.
 ################################################################################
 { pkgs, ... }: {
   environment.systemPackages = [
@@ -28,5 +29,4 @@
       vendorHash = "sha256-xZ7JbX1sAt2ZtgSMm86MQEJWwjL17O9LMsjOmkhzWt0=";
     }))
   ];
-
 }
