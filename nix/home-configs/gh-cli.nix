@@ -3,7 +3,7 @@
 ################################################################################
 { pkgs, lib, ... }: let
   gh-bbs2gh = pkgs.stdenvNoCC.mkDerivation (let
-    version = "1.18.0";
+    version = "1.19";
     # Map Nix platform -> GitHub release suffix like "linux-amd64"
     ghAssetSuffix =
       let
@@ -27,7 +27,7 @@
     version = "v${version}";
     src = pkgs.fetchurl {
       url = "https://github.com/github/gh-bbs2gh/releases/download/v${version}/bbs2gh-${ghAssetSuffix}";
-      sha256 = "sha256-t2kxy2f77MpgB3F4PXDJB50c3jFgGLKVax/L+J2Ktdc=";
+      sha256 = "sha256-Nt4X3IeqG4SXC6yyrVwDKIgm/lrndh812QcWkZYqbEE=";
     };
     # It's just a raw binary.
     dontUnpack = true;
