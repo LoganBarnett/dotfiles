@@ -21,19 +21,34 @@
     # USB3 host on Pi 4/5 hubs.
     "xhci_pci"
   ];
-  # boot.kernelParams = [
-  #   "console=tty1"
+  boot.kernelParams = [
+    # Ensure logs on HDMI.
+    "console=tty1"
   #   # Shows logs if you later attach a UART dongle.
   #   "console=serial0,115200"
-  #   "systemd.debug_shell=1"
+    "systemd.debug_shell=1"
   #   "rootwait"
-  #   "rootdelay=5"
+    "rootdelay=5"
+    # Disable UAS for this JMicron bridge.
+    # You can query for the manufacturer ID (first ID), and product ID (second
+    # ID) via:
+    #
+    "usb-storage.quirks=152d:a578:u"
+    # Avoid autosuspend surprises.
+    "usbcore.autosuspend=-1"
   #   "systemd.log_level=debug"
   #   "systemd.log_target=console"
   #   "boot.shell_on_fail"
   #   # Try to keep the screen from blanking after a certain point.
-  #   ''"video=HDMI-A-1:1024x768@60D fbcon=nodefer"''
-  # ];
+    "video=HDMI-A-1:1024x768@60D"
+    "fbcon=nodefer"
+  ];
+  # Don't include uas in initrd kernel modules, because it causes some kind of
+  # panic.  Instead, we can load it after the kernel has undergone its init
+  # already.  This helps us combat what I am told are faulty controllers
+  # (generally JMicron).
+  boot.kernelModules = [ "uas" ];
+  # blacklistedKernelModules = [ "uas" ];
   # fileSystems."/" = lib.mkForce {
   #   device = "/dev/disk/by-label/NIXOS_SD";
   #   # This is needed to ensure we get to use btrfs, since sdImage from
