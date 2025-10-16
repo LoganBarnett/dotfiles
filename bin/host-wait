@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+host="${1:-}"
+
+until ping --count=1 --quiet "$host"; do
+  echo "Waiting for host $host..."
+  sleep 1
+done
+echo "Host is up"
