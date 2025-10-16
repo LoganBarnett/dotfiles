@@ -27,8 +27,6 @@ let
         "${volAbsPath v} 10.100.0.${toString v.peerNumber}/32" +
         "(rw,sync,no_subtree_check,no_root_squash)";
     in concatStringsSep "\n" (map line cfg.volumes);
-  borgPatterns = (map (v: "+ ${v.volumeRelativeDir}/**") cfg.volumes)
-                 ++ [ "- *" ];
 in
 {
   options.nfsProvider = {
@@ -118,6 +116,7 @@ in
   config = mkIf cfg.enable {
     age.secrets."${host-id}-borg-encryption-passphrase" = {
       generator.script = "long-passphrase";
+      mode = "0440";
     };
 
     #### Group and directories
@@ -183,6 +182,10 @@ in
     # until we wish to secure this further.
     services.borgbackup.jobs.nfsProvider = let
       btrfsBin = "${pkgs.btrfs-progs}/bin/btrfs";
+      borgPatterns =
+        (map (v: "+ ${v.volumeRelativeDir}/**") cfg.volumes)
+        ++ [ "- *" ]
+      ;
     in {
       # We know we'll always be backing up from the same relative place, so we
       # don't need to use the "/" path for absolutes.
@@ -199,23 +202,36 @@ in
       }";
       compression = "zstd";
       prune.keep = { daily = 7; weekly = 4; monthly = 6; };
+      # Daily by default.
+      # 10:00 UTC is 03:00 PT.
       startAt = "10:00";
 
       preHook = ''
         set -euo pipefail
+        set -x
+        whoami
         SNAP_NAME="data-$(date +%Y%m%d-%H%M%S)"
         SNAP_PATH="${snapshotDir}/$SNAP_NAME"
         mkdir --parents "$SNAP_PATH"
-        # -r (read-only) has no long form in current btrfs-progs.
+        # -r is for read-only, but there is no long argument form.
+        # Supposedly upstream has a fix!  But not as of 6.14.
         ${btrfsBin} subvolume snapshot -r ${realPath} "$SNAP_PATH"
         ln -sfn "$SNAP_PATH" ${snapshotDir}/data
       '';
       postHook = ''
         set -euo pipefail
         rm -f ${snapshotDir}/data
+        # I'm not sure why this needs to be include /data as a subdirectory
+        # but it's what btrfs sees for its snapshots.
         ${btrfsBin} subvolume delete "$SNAP_PATH"/data
       '';
     };
+
+    system.activationScripts.snapshotsOwnership.text = ''
+      mkdir --parents ${snapshotDir}
+      # chown borg:borg ${snapshotDir}
+      # chmod 750 ${snapshotDir}
+    '';
 
     #### Guardrails
     assertions = [
