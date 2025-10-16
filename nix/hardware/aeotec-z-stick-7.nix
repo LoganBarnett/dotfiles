@@ -1,5 +1,7 @@
 ################################################################################
 # Configuration for an Aeotec Z-Stick 7.
+#
+# This is centric to zwave-js-ui and should be renamed as such.
 ################################################################################
 { config, pkgs, ... }: let
   keys = [
@@ -114,7 +116,7 @@ in {
     ];
   };
   services.zwave-js-ui.serialPort = device-path;
-  services.zwave-js-ui.settings2.zwave.port = device-path;
+  services.zwave-js-ui.settings.zwave.port = device-path;
   services.zwave-js = {
     serialPort = device-path;
     settings.serial.port = device-path;

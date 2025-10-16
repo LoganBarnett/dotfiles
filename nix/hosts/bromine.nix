@@ -20,10 +20,5 @@
       networking.hostId = "37fab2ca";
       nixpkgs.hostPlatform = system;
     }
-    (import ../nixos-modules/https.nix {
-      server-port = 3000;
-      inherit host-id;
-      fqdn = "${host-id}.proton";
-    })
   ];
 }
