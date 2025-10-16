@@ -6,7 +6,6 @@ in {
   imports = [
     ../nixos-modules/nix-builder-provide.nix
     ../nixos-modules/server-host.nix
-    ../nixos-modules/nfs-mount-provider.nix
     ../nixos-configs/grafana-kiosk-overview.nix
     # TODO: Right now agenix-rekey wants to build wireguard to do the
     # generation.  This fails due to a problem with macOS building wireguard-go
@@ -224,83 +223,85 @@ in {
       #   fsType = "none";
       #   options = [ "bind" ];
       # };
-      nfsProvider = {
-        enable = true;
-        volumes = [
-          {
-            hostId = "copper";
-            volumeRelativeDir = "nextcloud";
-            peerNumber = 3;
-          }
-          {
-            hostId = "copper";
-            volumeRelativeDir = "gitea";
-            peerNumber = 3;
-          }
-        ];
-      };
-      services.borgbackup.jobs.dataBackup = let
-        btrfs-bin = "${pkgs.btrfs-progs}/bin/btrfs";
-      in {
-        paths = [ "${snapshot-dir}/data" ];
-        # The jobs are disabled from writing anywhere but a select few
-        # directories.  Since we need to create a snapshot, let's bless the
-        # snapshot directory.
-        readWritePaths = [
-          snapshot-dir
-        ];
-        repo = "/tank/backup/backup-repo";
-        encryption.mode = "repokey-blake2";
-        encryption.passCommand = "cat ${
-          config.age.secrets."${host-id}-borg-encryption-passphrase".path
-        }";
-        compression = "zstd";
-        patterns = [
-          "+ /tank/data/nextcloud/**"
-          "+ /tank/data/gitea/**"
-          "- *"
-        ];
-        prune.keep = {
-          daily = 7;
-          weekly = 4;
-          monthly = 6;
-        };
-        # Daily by default.
-        # 10:00 UTC is 03:00 PT.
-        startAt = "10:00";
-        preHook = ''
-          set -euo pipefail
-          set -x
-          whoami
-          SNAP_NAME="data-$(date +%Y%m%d-%H%M%S)"
-          SNAP_PATH="${snapshot-dir}/$SNAP_NAME"
-          mkdir --parents "$SNAP_PATH"
-          # -r is for read-only, but there is no long argument form.
-          # Supposedly upstream has a fix!  But not as of 6.14.
-          ${btrfs-bin} subvolume snapshot -r ${realPath} "$SNAP_PATH"
-          ln -sfn "$SNAP_PATH" ${snapshot-dir}/data
-        '';
-        postHook = ''
-          set -euo pipefail
-          rm -f ${snapshot-dir}/data
-          # I'm not sure why this needs to be include /data as a subdirectory
-          # but it's what btrfs sees for its snapshots.
-          ${btrfs-bin} subvolume delete "$SNAP_PATH"/data
-        '';
-      };
+      # nfsProvider = {
+      #   enable = true;
+      #   volumes = [
+      #     {
+      #       hostId = "copper";
+      #       groupName = "nextcloud";
+      #       volumeRelativeDir = "nextcloud";
+      #       peerNumber = 3;
+      #     }
+      #     {
+      #       hostId = "copper";
+      #       groupName = "gitea";
+      #       volumeRelativeDir = "gitea";
+      #       peerNumber = 3;
+      #     }
+      #   ];
+      # };
+      # services.borgbackup.jobs.dataBackup = let
+      #   btrfs-bin = "${pkgs.btrfs-progs}/bin/btrfs";
+      # in {
+      #   paths = [ "${snapshot-dir}/data" ];
+      #   # The jobs are disabled from writing anywhere but a select few
+      #   # directories.  Since we need to create a snapshot, let's bless the
+      #   # snapshot directory.
+      #   readWritePaths = [
+      #     snapshot-dir
+      #   ];
+      #   repo = "/tank/backup/backup-repo";
+      #   encryption.mode = "repokey-blake2";
+      #   encryption.passCommand = "cat ${
+      #     config.age.secrets."${host-id}-borg-encryption-passphrase".path
+      #   }";
+      #   compression = "zstd";
+      #   patterns = [
+      #     "+ /tank/data/nextcloud/**"
+      #     "+ /tank/data/gitea/**"
+      #     "- *"
+      #   ];
+      #   prune.keep = {
+      #     daily = 7;
+      #     weekly = 4;
+      #     monthly = 6;
+      #   };
+      #   # Daily by default.
+      #   # 10:00 UTC is 03:00 PT.
+      #   startAt = "10:00";
+      #   preHook = ''
+      #     set -euo pipefail
+      #     set -x
+      #     whoami
+      #     SNAP_NAME="data-$(date +%Y%m%d-%H%M%S)"
+      #     SNAP_PATH="${snapshot-dir}/$SNAP_NAME"
+      #     mkdir --parents "$SNAP_PATH"
+      #     # -r is for read-only, but there is no long argument form.
+      #     # Supposedly upstream has a fix!  But not as of 6.14.
+      #     ${btrfs-bin} subvolume snapshot -r ${realPath} "$SNAP_PATH"
+      #     ln -sfn "$SNAP_PATH" ${snapshot-dir}/data
+      #   '';
+      #   postHook = ''
+      #     set -euo pipefail
+      #     rm -f ${snapshot-dir}/data
+      #     # I'm not sure why this needs to be include /data as a subdirectory
+      #     # but it's what btrfs sees for its snapshots.
+      #     ${btrfs-bin} subvolume delete "$SNAP_PATH"/data
+      #   '';
+      # };
 
-      system.activationScripts.snapshotsOwnership.text = ''
-        mkdir --parents ${snapshot-dir}
-        # chown borg:borg ${snapshot-dir}
-        # chmod 750 ${snapshot-dir}
-      '';
-      systemd.tmpfiles.rules = [
-        "d /tank/data/gitea 0770 root borg -"
-        "d /tank/data/nextcloud 0770 root borg -"
-      ];
-      # This can help bootstrap a fresh system which won't have the borg group
-      # yet.
-      users.groups.borg = {};
+      # system.activationScripts.snapshotsOwnership.text = ''
+      #   mkdir --parents ${snapshot-dir}
+      #   # chown borg:borg ${snapshot-dir}
+      #   # chmod 750 ${snapshot-dir}
+      # '';
+      # systemd.tmpfiles.rules = [
+      #   "d /tank/data/gitea 0770 root borg -"
+      #   "d /tank/data/nextcloud 0770 root borg -"
+      # ];
+      # # This can help bootstrap a fresh system which won't have the borg group
+      # # yet.
+      # users.groups.borg = {};
     })
   ];
 }
