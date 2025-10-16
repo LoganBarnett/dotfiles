@@ -140,7 +140,7 @@ in {
         # Alerts room.
         # Be mindful that this is a private room, and so invites must be sent
         # out.  I might just want to make it public.
-        roomId = "!ziClTiKWyaNaoVjuey:matrix.proton";
+        roomId = "!qCtJEBShlKlBhZWqLd:matrix.proton";
         receivers = [ "team-admins" ];
       }
     ];
@@ -182,6 +182,7 @@ in {
     };
   };
   systemd.services.matrix-alertmanager-token-refresh = {
+    enable = true;
     description = "Refresh the Matrix access token.";
     serviceConfig = {
       Type = "oneshot";
