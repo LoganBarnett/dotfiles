@@ -78,11 +78,16 @@ in
     # systemd
     systemd.services = lib.mkMerge (lib.mapAttrsToList (fqdn: inst: let
       svc = "oidc-proxy-${lib.replaceStrings ["."] ["-"] fqdn}";
+      after = [
+        "network.target"
+        "run-agenix.d.mount"
+      ];
     in {
       ${svc} = {
         description = "oauth2-proxy for ${fqdn}";
         wantedBy = [ "multi-user.target" ];
-        after    = [ "network.target" ];
+        inherit after;
+        requires = after;
         serviceConfig = {
           DynamicUser = true;
           Environment = [
@@ -119,7 +124,7 @@ in
           location = /oauth2/auth {
             proxy_pass http://127.0.0.1:${toString inst.proxyPort};
             include proxy_params;
-                      }
+          }
           location / {
             auth_request /oauth2/auth;
             error_page 401 =302 /oauth2/start;
