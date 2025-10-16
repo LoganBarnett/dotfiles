@@ -29,6 +29,8 @@
     # administrative tools because it needs to be on the remote host when using
     # Tramp.
     pkgs.fd
+    # Give us find.  Also useful on macOS to give us GNU find (over BSD find).
+    pkgs.findutils
     # Perhaps the everlasting version control system.
     # git is needed on a server to do various Nix flake operations.
     pkgs.git
