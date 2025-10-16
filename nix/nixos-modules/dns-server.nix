@@ -12,6 +12,9 @@
 # simply allow the facts structure to dictate what we need.
 ################################################################################
 { lib, facts, host-id, ... }: let
+  inherit (lib) optionalString pipe;
+  inherit (lib.attrsets) filterAttrs mapAttrsToList;
+  inherit (lib.lists) flatten;
   domain = facts.network.domain;
   # TODO: Make this a dynamic value on the host.
   subnet = facts.network.subnets.barnett-main;
@@ -73,25 +76,30 @@ in {
       no-hosts = true;
       expand-hosts = true;
       dhcp-range = "192.168.254.100,192.168.254.200,12h";
-      dhcp-host = lib.pipe facts.network.hosts [
-        (lib.attrsets.filterAttrs (hostname: host:
+      dhcp-host = pipe facts.network.hosts [
+        (filterAttrs (hostname: host:
           host ? ipv4 && host.ipv4 != null
         ))
-        (lib.attrsets.mapAttrsToList (hostname: host:
-          "${hostname},${host-ip hostname host}"
+        (mapAttrsToList (hostname: host:
+          (optionalString (host.macAddress or null != null) "${host.macAddress or ""},")
+          + "${hostname},${host-ip hostname host}"
         ))
       ];
-      # We need a manual entry for this host so it does not use the loopback IP.
-      host-record = [
-        "${host-id}.${domain},${my-ip}"
+      host-record = pipe facts.network.hosts [
+        (filterAttrs (hostname: host:
+          host ? ipv4 && host.ipv4 != null
+        ))
+        (mapAttrsToList (hostname: host:
+          "${hostname}.${domain},${host-ip hostname host}"
+        ))
       ];
       cname = lib.pipe facts.network.hosts [
-        (lib.attrsets.mapAttrsToList (hostname: host:
+        (mapAttrsToList (hostname: host:
           builtins.map
             (alias: "${alias}.${domain},${hostname}.${domain}")
             (host.aliases or [])
         ))
-        lib.lists.flatten
+        flatten
       ];
       # dhcp-host = [
       #   # Examples - make these dynamic.
@@ -100,6 +108,7 @@ in {
       #   "prometheus,192.168.100.30"
       # ];
       dhcp-option = [
+        "option:domain-search,${domain}"
         "option:router,192.168.254.254"
         "option:dns-server,${my-ip}"
       ];

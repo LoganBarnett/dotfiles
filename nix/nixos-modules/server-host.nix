@@ -6,6 +6,19 @@
     {
       # Hostname is not an FQDN.
       networking.hostName = host-id;
+      # Override DHCP - we know who we are.  Not actually used, but if we start
+      # using NetworkManager, we'll want this.
+      # By default, NixOS uses its internal "legacy" networking layer - a sort
+      # of systemd-networkd light.
+      # networking.networkmanager.settings.main.hostname-mode = "none";
+      # # This is set by default I think, but let's be explicit so we know.
+      # networking.dhcpcd.enable = true;
+      # networking.dhcpcd.extraConfig = ''
+      #   hostname bromine        # Explicitly send this name.
+      #   # There seems to be problems with hosts built with the rpi-installer.
+      #   # This fixes the sticky hostname issue.
+      #   nohook hostname         # Do not accept hostname from server.
+      # '';
       nixpkgs.hostPlatform = system;
       nixpkgs.overlays = (import ../overlays/default.nix {
         inherit flake-inputs system;

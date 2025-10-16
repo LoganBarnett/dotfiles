@@ -304,6 +304,7 @@
         controlledHost = true;
         flake-input-overrides = {};
         ipv4 = 9;
+        macAddress = "b8:ca:3a:77:a9:2a";
         monitors = [
           "blackbox-ping"
           "node"
