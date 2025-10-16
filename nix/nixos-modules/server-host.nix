@@ -28,6 +28,7 @@
     ../nixos-configs/networking-static.nix
     # This can safely be included even if the host doesn't expose NFS volumes.
     ../nixos-configs/nfs-mount-provider-from-facts.nix
+    ../nixos-configs/nix-store-tools.nix
     # TODO: Test this - I think I put this in to solve remote build issues, but
     # I don't know if it actually did anything.
     # {

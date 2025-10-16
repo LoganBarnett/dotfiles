@@ -52,6 +52,7 @@ in {
   imports = [
     ../agnostic-configs/logan-workstation.nix
     ../nixos-modules/nix-builder-consume.nix
+    ../nixos-configs/nix-store-tools.nix
     ../nixos-modules/sd-image-raspberrypi.nix
     ../nixos-modules/secrets.nix
     ../nixos-modules/software-engineering-networking.nix
