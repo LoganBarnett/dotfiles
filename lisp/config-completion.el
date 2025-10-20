@@ -225,5 +225,30 @@
   (embark-collect-mode . consult-preview-at-point-mode)
   )
 
+(evil-define-operator config/wgrep-mark-deletion-operator (beg end type)
+  "Mark lines for deletion in wgrep, or use normal delete for single-line edits,
+all between BEG, END, respecting evil's TYPE."
+  :motion evil-line
+  (interactive "<R>")
+  (if (and (eq type 'inclusive)
+           (= (line-number-at-pos beg) (line-number-at-pos end)))
+      ;; Single-line motion, use normal delete
+      (evil-delete beg end type ?_)
+    ;; Multi-line motion, mark for wgrep deletion
+    (save-excursion
+      (goto-char beg)
+      (let ((line-end (save-excursion (goto-char end) (line-number-at-pos))))
+        (while (<= (line-number-at-pos) line-end)
+          (wgrep-mark-deletion)
+          (forward-line 1))))))
+
+(use-package wgrep
+  :config
+  (map!
+   :map wgrep-mode-map
+   :nv "d" #'config/wgrep-mark-deletion-operator
+   )
+  )
+
 (provide 'config-completion)
 ;;; config-completion.el ends here
