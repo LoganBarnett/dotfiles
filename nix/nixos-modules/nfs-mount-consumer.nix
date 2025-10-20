@@ -212,8 +212,8 @@
             "nfsvers=4.2"
             "proto=tcp"
             "hard"
-            "timeo=600"
-            "retrans=3"
+            "timeo=5"
+            "retrans=5"
           ];
         };
       }

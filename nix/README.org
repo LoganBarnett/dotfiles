@@ -2997,6 +2997,80 @@ Welcome to DNS.
 This could be an issue with macOS's DNS cache.  I did use ~~/bin/dnsflush~ to no
 avail.  But not with ~sudo~ so who knows.
 
+** ~switch~ cannot find an old systemd unit
+
+You'll see something like this when doing a ~switch~, and the resulting error
+will halt any progression you have.
+
+#+begin_src text :results none :exports code
+restarting sysinit-reactivation.target
+Error: Failed to open unit file /nix/store/1rfg3jjqsqk2rvxyyxfc38pcphnkpj6m-nixos-system-copper-25.11.20250516.e56e0be/etc/systemd/system/mnt-nextcloud\x2ddata.mount
+#+end_src
+
+I found this to be a issue of the mount I was using wasn't working, but since
+it's a systemd generated mount (which springs from or to ~fstab~, I don't know
+which), it can get lost when the mount is down.  Fixing the mount (which was
+having trouble communicating over NFS) fixed the issue.
+
+*** is the store busted?
+
+This is a path I attempted, but didn't bear fruit.
+
+If you check for that path, you'll see it indeed doesn't exist.
+
+My first inclination was that perhaps there was a derivation where the store was
+incomplete, busted, or otherwise mutated.  Very bad.  TLDR; that wasn't the
+issue.  It's a derived path that's canonicalized incorrectly.
+
+-----
+
+First, let's check to see if that store path reference exists anywhere.  The
+~nixos-system-...~ bit tells us that this is the system generations.  On the
+host we can do:
+
+#+begin_src sh :results none :exports code
+narhash='1rfg3jjqsqk2rvxyyxfc38pcphnkpj6m'
+sudo grep \
+     --recursive \
+     --fixed-strings \
+     --with-filename \
+     --line-number \
+     --color=always \
+     "$narhash" \
+     /boot/loader/entries
+#+end_src
+
+You'll see something like this:
+
+#+begin_example
+/boot/loader/entries/nixos-generation-138.conf:6:options init=/nix/store/1rfg3jjqsqk2rvxyyxfc38pcphnkpj6m-nixos-system-copper-25.11.20250516.e56e0be/init loglevel=4
+#+end_example
+
+That ~138~ is our generation number.  We can look for that.
+
+#+begin_src sh :results none :exports code
+nixos-rebuild list-generations
+#+end_src
+
+#+begin_example
+Generation   Build-date           NixOS version           Kernel   Configuration Revision  Specialisation
+138 current  2025-10-19 19:43:47  25.11.20250516.e56e0be  6.12.28                          *
+137          2025-10-12 22:31:24  25.11.20250516.e56e0be  6.12.28                          *
+136          2025-10-12 22:27:00  25.11.20250516.e56e0be  6.12.28                          *
+135          2025-10-12 22:22:39  25.11.20250516.e56e0be  6.12.28                          *
+134          2025-10-12 21:33:20  25.11.20250516.e56e0be  6.12.28                          *
+...
+#+end_example
+
+In this case, ~138~ is current.
+
+So all this really tells us is the error is elsewhere, but it's printing the
+canonical path.
+
+
+
+
+
 * Toil Log
 
 I keep this log as a way of trying to remember what I worked on.  Not all fixes
