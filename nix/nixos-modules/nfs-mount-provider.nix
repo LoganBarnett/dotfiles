@@ -7,6 +7,7 @@
 let
   inherit (lib) mkIf mkEnableOption mkOption types concatStringsSep all unique;
   cfg = config.nfsProvider;
+  btrfsBin = "${pkgs.btrfs-progs}/bin/btrfs";
   # We use a btrfs snapshot to prevent write locks from fouling up the
   # backup.  This is the real path we want, which used to go into `paths`.
   realPath = "/tank/data";
@@ -171,61 +172,117 @@ in
         in map toPeer (builtins.attrValues groups);
     };
 
+    systemd.services.wireguard-wgnfs0 = let
+      after = [ "run-agenix.d.mount" ];
+    in {
+      inherit after;
+      requires = after;
+    };
+
     #### NFS server and exports restricted to each peer /32
     services.nfs.server = {
       enable = true;
       exports = exportsText;
     };
 
+    services.restic = {
+      server = {
+        enable = true;
+        appendOnly = true;
+        prometheus = true;
+        # By default, Restic expects a htpasswd file and it enables
+        # authentication.  It won't start without this file present.  This
+        # probably begs some kind of shimming to get _real_ authentication
+        # working.  There's been a request to add such a feature via
+        # https://github.com/restic/restic/issues/5439 but the author has stated
+        # that this seems like a very complicated add.
+        # I believe we can work around this via an oauth2-proxy that has access
+        # to this header alone (or just coexists locally).
+        # Until I have time to chase that down, let's just disable it for now.
+        # I mostly want this service up for the OpenMetrics/Prometheus
+        # exporter.
+        extraFlags = [
+          "--no-auth"
+        ];
+      };
+      backups.nfsProvider = {
+        initialize = true;
+        paths = map (v: "/tank/data/${v.volumeRelativeDir}") cfg.volumes;
+        pruneOpts = [ "--keep-daily 7" "--keep-weekly 4" "--keep-monthly 6" ];
+        repository = "/tank/backup/restic";
+        timerConfig.OnCalendar = "daily";
+        backupPrepareCommand = ''
+          set -euo pipefail
+          set -x
+          whoami
+          SNAP_NAME="data-$(date +%Y%m%d-%H%M%S)"
+          SNAP_PATH="${snapshotDir}/$SNAP_NAME"
+          mkdir --parents "$SNAP_PATH"
+          # -r is for read-only, but there is no long argument form.
+          # Supposedly upstream has a fix!  But not as of 6.14.
+          ${btrfsBin} subvolume snapshot -r ${realPath} "$SNAP_PATH"
+          ln -sfn "$SNAP_PATH" ${snapshotDir}/data
+        '';
+        backupCleanupCommand = ''
+          set -euo pipefail
+          rm -f ${snapshotDir}/data
+          # I'm not sure why this needs to be include /data as a subdirectory
+          # but it's what btrfs sees for its snapshots.
+          ${btrfsBin} subvolume delete "$SNAP_PATH"/data
+        '';
+      };
+    };
+
     #### Borg backup covering all volumes (nightly at 03:00 / 10:00 UTC)
     # Borg runs as root by default, so we don't need to mess with permissions
     # until we wish to secure this further.
-    services.borgbackup.jobs.nfsProvider = let
-      btrfsBin = "${pkgs.btrfs-progs}/bin/btrfs";
-      borgPatterns =
-        (map (v: "+ ${v.volumeRelativeDir}/**") cfg.volumes)
-        ++ [ "- *" ]
-      ;
-    in {
-      # We know we'll always be backing up from the same relative place, so we
-      # don't need to use the "/" path for absolutes.
-      paths = [ "${snapshotDir}/data" ];
-      patterns = borgPatterns;
-      # The jobs are disabled from writing anywhere but a select few
-      # directories.  Since we need to create a snapshot, let's bless the
-      # snapshot directory.
-      readWritePaths = [ snapshotDir ];
-      repo = "/tank/backup/backup-repo";
-      encryption.mode = "repokey-blake2";
-      encryption.passCommand = "cat ${
-        config.age.secrets."${host-id}-borg-encryption-passphrase".path
-      }";
-      compression = "zstd";
-      prune.keep = { daily = 7; weekly = 4; monthly = 6; };
-      # Daily by default.
-      # 10:00 UTC is 03:00 PT.
-      startAt = "10:00";
+    # services.borgbackup.jobs.nfsProvider = let
+    #   borgPatterns =
+    #     (map (v: "+ ${v.volumeRelativeDir}/**") cfg.volumes)
+    #     ++ [ "- *" ]
+    #   ;
+    # in {
+    #   # We know we'll always be backing up from the same relative place, so we
+    #   # don't need to use the "/" path for absolutes.
+    #   paths = [ "${snapshotDir}/data" ];
+    #   patterns = borgPatterns;
+    #   # The jobs are disabled from writing anywhere but a select few
+    #   # directories.  Since we need to create a snapshot, let's bless the
+    #   # snapshot directory.
+    #   readWritePaths = [ snapshotDir ];
+    #   repo = "/tank/backup/backup-repo";
+    #   encryption.mode = "repokey-blake2";
+    #   # We have to ensure that there's no line break.  Somehow one snuck in.
+    #   encryption.passCommand = ''
+    #     ${pkgs.gnused}/bin/sed --null-data 's/\n$//' ${
+    #       config.age.secrets."${host-id}-borg-encryption-passphrase".path
+    #     }'';
+    #   compression = "zstd";
+    #   prune.keep = { daily = 7; weekly = 4; monthly = 6; };
+    #   # Daily by default.
+    #   # 10:00 UTC is 03:00 PT.
+    #   startAt = "10:00";
 
-      preHook = ''
-        set -euo pipefail
-        set -x
-        whoami
-        SNAP_NAME="data-$(date +%Y%m%d-%H%M%S)"
-        SNAP_PATH="${snapshotDir}/$SNAP_NAME"
-        mkdir --parents "$SNAP_PATH"
-        # -r is for read-only, but there is no long argument form.
-        # Supposedly upstream has a fix!  But not as of 6.14.
-        ${btrfsBin} subvolume snapshot -r ${realPath} "$SNAP_PATH"
-        ln -sfn "$SNAP_PATH" ${snapshotDir}/data
-      '';
-      postHook = ''
-        set -euo pipefail
-        rm -f ${snapshotDir}/data
-        # I'm not sure why this needs to be include /data as a subdirectory
-        # but it's what btrfs sees for its snapshots.
-        ${btrfsBin} subvolume delete "$SNAP_PATH"/data
-      '';
-    };
+    #   preHook = ''
+    #     set -euo pipefail
+    #     set -x
+    #     whoami
+    #     SNAP_NAME="data-$(date +%Y%m%d-%H%M%S)"
+    #     SNAP_PATH="${snapshotDir}/$SNAP_NAME"
+    #     mkdir --parents "$SNAP_PATH"
+    #     # -r is for read-only, but there is no long argument form.
+    #     # Supposedly upstream has a fix!  But not as of 6.14.
+    #     ${btrfsBin} subvolume snapshot -r ${realPath} "$SNAP_PATH"
+    #     ln -sfn "$SNAP_PATH" ${snapshotDir}/data
+    #   '';
+    #   postHook = ''
+    #     set -euo pipefail
+    #     rm -f ${snapshotDir}/data
+    #     # I'm not sure why this needs to be include /data as a subdirectory
+    #     # but it's what btrfs sees for its snapshots.
+    #     ${btrfsBin} subvolume delete "$SNAP_PATH"/data
+    #   '';
+    # };
 
     system.activationScripts.snapshotsOwnership.text = ''
       mkdir --parents ${snapshotDir}

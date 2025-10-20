@@ -65,6 +65,7 @@
     ../nixos-modules/prometheus-client.nix
     ./nix-flake-environment.nix
     ./nix-store-optimize.nix
+    ../nixos-modules/restic-shim.nix
     # Haven't gotten this working yet.
     # ./server-host-pub-key.nix
     ./sshd.nix

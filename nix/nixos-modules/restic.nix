@@ -387,10 +387,6 @@ in
             !(fileBackup && commandBackup);
           message = "services.restic.backups.${name}: cannot do both a command backup and a file backup at the same time.";
         }
-        {
-          assertion = (backup.passwordFile != null) || (backup.environmentFile != null);
-          message = "services.restic.backups.${name}: passwordFile or environmentFile must be set";
-        }
       ]) config.services.restic.backups
     );
     systemd.services = lib.mapAttrs' (
@@ -432,6 +428,8 @@ in
             RESTIC_CACHE_DIR = "/var/cache/restic-backups-${name}";
             RESTIC_PASSWORD_FILE = backup.passwordFile;
             RESTIC_REPOSITORY = backup.repository;
+          }
+          // lib.optionalAttrs (backup.passwordFile != null) {
             RESTIC_REPOSITORY_FILE = backup.repositoryFile;
           }
           // lib.optionalAttrs (backup.rcloneOptions != null) (
@@ -485,7 +483,11 @@ in
             ''}
             ${lib.optionalString backup.initialize ''
               ${resticCmd} cat config > /dev/null || ${resticCmd} init
-            ''}
+            '' + (lib.optionalString
+              (backup.passwordFile == null)
+                "--insecure-no-password"
+            )
+             }
             ${lib.optionalString (backup.paths != null && backup.paths != [ ]) ''
               cat ${pkgs.writeText "staticPaths" (lib.concatLines backup.paths)} >> ${filesFromTmpFile}
             ''}
