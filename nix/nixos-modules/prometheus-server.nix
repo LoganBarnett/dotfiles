@@ -29,7 +29,11 @@
 # module translates that to Prometheus configuration.  Also we might have a
 # monitor differ in name but share the same exporter.
 ################################################################################
-{ config, facts, host-id, lib, pkgs, ... }: {
+{ config, facts, host-id, lib, pkgs, ... }: let
+  inherit (lib) pipe;
+  inherit (lib.attrsets) filterAttrs mapAttrsToList;
+  inherit (lib.lists) fold;
+in {
   imports = [
     (import ../nixos-modules/https.nix {
       server-port = 9090;

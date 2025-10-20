@@ -4,6 +4,10 @@
 # both something configurable and not something I know the default of.
 ################################################################################
 { config, lib, facts, host-id, pkgs, ... }: let
+  inherit (lib) pipe;
+  inherit (lib.attrsets) filterAttrs mapAttrsToList;
+  inherit (lib.lists) fold;
+  hostFacts = facts.network.hosts.${host-id};
   # monitors = lib.attrsets.mapAttrsToList
   #   (settings: settings.monitors )
   #   facts.network.hosts
@@ -14,10 +18,7 @@
       openFirewall = true;
     } // ({
       node = let
-        # Default port, but stated explicitly for clarity.
-        port = 9100;
       in {
-        inherit port;
         enabledCollectors = [
           "logind"
           "systemd"
@@ -25,32 +26,27 @@
         disabledCollectors = [
           "textfile"
         ];
-        # openFirewall = true;
         # TODO: Always use long arguments if possible, or document that they
         # don't exist for the involved tool.  This was yanked directly from the
         # docs, which could possibly use expansion.
         # firewallFilter = "-i br0 -p tcp -m tcp --dport ${port}";
       };
-      blackbox-ping = {
-        configFile = pkgs.writeTextFile {
-          name = "blackbox-ping.yaml";
-          text = (builtins.toJSON {
-            modules = {
-              icmp = {
-                prober = "icmp";
-                timeout = "10s";
-                icmp = {
-                  preferred_ip_protocol = "ip4";
-                };
-              };
-            };
-          });
-        };
-      };
+      # The blackbox exporter is too simplistic for multi-tenant HTTPS services.
+      # It does only one check.  So we leave it out and favor Gatus instead.  It
+      # might make sense to
     }.${monitor} or {});
   };
 in {
-  services.prometheus.exporters = lib.lists.fold (monitor: acc:
-    acc // (monitor-to-exporter monitor)
-  ) {} facts.network.hosts.${host-id}.monitors;
+  # TODO: Move this to a gatus specific config which lifts from
+  # facts.network.services.  Select a host that runs gatus (probably argon but
+  # look).
+  services.gatus = let
+    enable = (builtins.length hostFacts.monitors) > 0;
+  in {
+    inherit enable;
+    openFirewall = enable;
+  };
+  services.prometheus.exporters = pipe hostFacts.monitors [
+    (fold (monitor: acc: acc // (monitor-to-exporter monitor)) {})
+  ];
 }

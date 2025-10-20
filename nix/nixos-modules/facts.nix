@@ -100,7 +100,6 @@
         controlledHost = true;
         ipv4 = 2;
         monitors = [
-          "blackbox-ping"
           "node"
           "systemd"
           "wireguard"
@@ -117,7 +116,6 @@
         };
         ipv4 = 7;
         monitors = [
-          "blackbox-ping"
           "node"
           "nvidia-gpu"
           "systemd"
@@ -135,7 +133,6 @@
         controlledHost = true;
         ipv4 = 3;
         monitors = [
-          "blackbox-ping"
           "node"
           "systemd"
         ];
@@ -151,7 +148,6 @@
         controlledHost = true;
         ipv4 = 11;
         monitors = [
-          "blackbox-ping"
           "node"
           "systemd"
         ];
@@ -170,7 +166,6 @@
         };
         ipv4 = 10;
         monitors = [
-          "blackbox-ping"
           "node"
           "systemd"
         ];
@@ -189,7 +184,6 @@
         };
         ipv4 = 4;
         monitors = [
-          "blackbox-ping"
           "node"
           "systemd"
         ];
@@ -215,7 +209,6 @@
         };
         ipv4 = 8;
         monitors = [
-          "blackbox-ping"
           "node"
           "nvidia-gpu"
           "systemd"
@@ -244,7 +237,6 @@
         };
         ipv4 = 1;
         monitors = [
-          "blackbox-ping"
           # "openldap"
           "node"
           "systemd"
@@ -275,7 +267,7 @@
         # pick something I was fairly certain was available.  Find lower IPs if
         # you're adding a new host.
         ipv4 = 20;
-        monitors = [ "blackbox-ping" ];
+        monitors = [];
       };
       scandium = {
         controlledHost = true;
@@ -293,7 +285,6 @@
         };
         ipv4 = 5;
         monitors = [
-          "blackbox-ping"
           # "octoprint"
           "node"
           "systemd"
@@ -306,7 +297,6 @@
         ipv4 = 9;
         macAddress = "b8:ca:3a:77:a9:2a";
         monitors = [
-          "blackbox-ping"
           "node"
           "systemd"
         ];
@@ -323,13 +313,13 @@
         };
         ipv4 = 6;
         monitors = [
-          "blackbox-ping"
           "node"
           "systemd"
         ];
         system = "x86_64-linux";
       };
     };
+
     ##
     # A user has the following structure:
     # ${username} = {
@@ -551,6 +541,25 @@
         # redirectUris = [
         #   "https://openhab.proton/outpost.goauthentik.io/callback"
         # ];
+      };
+
+      nextcloud = {
+        authentication = "ldap";
+        fqdn = "nextcloud.proton";
+        groups = [
+          "nextcloud-admins"
+          "nextcloud-users"
+        ];
+        healthCheck = {
+          subUri = "/status.php";
+          conditions = [
+            "[STATUS] == 200"
+            "[BODY].installed == true"
+            "[BODY].maintenance == false"
+            "[RESPONSE_TIME] < 300"
+            "[CERTIFICATE_EXPIRATION] > 168h"   # Must have >7 days left.
+          ];
+        };
       };
 
     };
