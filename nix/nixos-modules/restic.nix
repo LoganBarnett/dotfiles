@@ -14,6 +14,10 @@
 let
   # Type for a valid systemd unit option. Needed for correctly passing "timerConfig" to "systemd.timers"
   inherit (utils.systemdUtils.unitOptions) unitOption;
+  insecurePasswordArg = backup:
+    lib.optionalString (backup.passwordFile == null)
+    "--insecure-no-password"
+  ;
 in
 {
   options.services.restic.backups = lib.mkOption {
@@ -400,7 +404,9 @@ in
           "--what='sleep'"
           "--why=${lib.escapeShellArg "Scheduled backup ${name}"} "
         ];
-        resticCmd = "${lib.optionalString backup.inhibitsSleep inhibitCmd}${lib.getExe backup.package}${extraOptions}";
+        resticCmd = "${lib.optionalString backup.inhibitsSleep inhibitCmd}${lib.getExe backup.package} ${
+          insecurePasswordArg backup
+          } ${extraOptions}";
         excludeFlags = lib.optional (
           backup.exclude != [ ]
         ) "--exclude-file=${pkgs.writeText "exclude-patterns" (lib.concatStringsSep "\n" backup.exclude)}";
@@ -421,11 +427,8 @@ in
         rcloneAttrToConf = v: "RCLONE_CONFIG_" + lib.toUpper (rcloneRemoteName + "_" + v);
         toRcloneVal = v: if lib.isBool v then lib.boolToString v else v;
       in
-      lib.nameValuePair "restic-backups-${name}" (let
-        insecurePasswordArg = lib.optionalString
-          (backup.passwordFile == null)
-          "--insecure-no-password";
-        in {
+      lib.nameValuePair "restic-backups-${name}" (
+        {
           environment = {
             # not %C, because that wouldn't work in the wrapper script
             RESTIC_CACHE_DIR = "/var/cache/restic-backups-${name}";
@@ -461,7 +464,7 @@ in
             Type = "oneshot";
             ExecStart =
               lib.optionals doBackup [
-                "${resticCmd} backup ${insecurePasswordArg} ${
+                "${resticCmd} backup ${
                   lib.concatStringsSep " " (
                     backup.extraBackupArgs
                     ++ lib.optionals fileBackup (excludeFlags ++ [ "--files-from=${filesFromTmpFile}" ])
@@ -487,8 +490,8 @@ in
               ${pkgs.writeScript "backupPrepareCommand" backup.backupPrepareCommand}
             ''}
             ${lib.optionalString backup.initialize ''
-              ${resticCmd} cat config ${insecurePasswordArg} > /dev/null \
-                || ${resticCmd} init ${insecurePasswordArg}
+              ${resticCmd} cat config > /dev/null \
+                || ${resticCmd} init
               ''
              }
             ${lib.optionalString (backup.paths != null && backup.paths != [ ]) ''
@@ -524,7 +527,9 @@ in
       name: backup:
       let
         extraOptions = lib.concatMapStrings (arg: " -o ${arg}") backup.extraOptions;
-        resticCmd = "${lib.getExe backup.package}${extraOptions}";
+        resticCmd = "${lib.getExe backup.package} ${
+          insecurePasswordArg backup
+        } ${extraOptions}";
       in
       pkgs.writeShellScriptBin "restic-${name}" ''
         set -a  # automatically export variables
