@@ -12,8 +12,8 @@
   services.userLockoutSchedule.users.solomon = {
     schedule = let
       weekday = {
-        enableAt = [ "18:30" ];
-        logoutAt = [ "19:30" ];
+        enableAt = [ "18:00" ];
+        logoutAt = [ "19:00" ];
       };
       weekend = {
         enableAt = [ "15:00" ];
