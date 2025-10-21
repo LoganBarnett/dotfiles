@@ -57,6 +57,8 @@ in {
         imports = [
           ../home-configs/gh-cli.nix
           ../home-configs/gh-cli-ache-em-ache.nix
+          ../home-configs/copilot.nix
+          ../home-configs/copilot-ache-em-ache.nix
         ];
         home.file.".gemrc".text = (pkgs.callPackage ../gemrc.nix {
           extra-gem-sources = [
