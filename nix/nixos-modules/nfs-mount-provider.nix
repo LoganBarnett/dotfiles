@@ -120,6 +120,21 @@ in
       mode = "0440";
     };
 
+    environment.systemPackages = [
+      (pkgs.writeShellApplication {
+        name = "snapshots-purge-all";
+        text = ''
+          set -euo pipefail
+          cd "${realPath}"
+          ${btrfsBin} subvolume list . \
+            | ${pkgs.gawk}/bin/awk '{print substr($0, index($0,$9))}' \
+            | xargs -I{} btrfs subvolume delete {}
+          # These should be empty now.  Anything else should alert us.
+          rmdir snapshots/*
+        '';
+      })
+    ];
+
     #### Group and directories
     users.groups = lib.pipe cfg.volumes [
       (builtins.map (v: {
@@ -238,10 +253,10 @@ in
           SNAP_PATH="$(cat ${
             config.services.restic.backups.nfsProvider.repository
           }/last-snapshot)"
-          rm -f ${snapshotDir}/data
           # I'm not sure why this needs to be include /data as a subdirectory
           # but it's what btrfs sees for its snapshots.
           ${btrfsBin} subvolume delete "$SNAP_PATH"/data
+          rmdir ${snapshotDir}
         '';
       };
     };
