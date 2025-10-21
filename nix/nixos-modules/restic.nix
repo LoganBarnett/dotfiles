@@ -421,15 +421,20 @@ in
         rcloneAttrToConf = v: "RCLONE_CONFIG_" + lib.toUpper (rcloneRemoteName + "_" + v);
         toRcloneVal = v: if lib.isBool v then lib.boolToString v else v;
       in
-      lib.nameValuePair "restic-backups-${name}" (
-        {
+      lib.nameValuePair "restic-backups-${name}" (let
+        insecurePasswordArg = lib.optionalString
+          (backup.passwordFile == null)
+          "--insecure-no-password";
+        in {
           environment = {
             # not %C, because that wouldn't work in the wrapper script
             RESTIC_CACHE_DIR = "/var/cache/restic-backups-${name}";
-            RESTIC_PASSWORD_FILE = backup.passwordFile;
             RESTIC_REPOSITORY = backup.repository;
           }
           // lib.optionalAttrs (backup.passwordFile != null) {
+            RESTIC_PASSWORD_FILE = backup.passwordFile;
+          }
+          // lib.optionalAttrs (backup.repositoryFile != null) {
             RESTIC_REPOSITORY_FILE = backup.repositoryFile;
           }
           // lib.optionalAttrs (backup.rcloneOptions != null) (
@@ -456,7 +461,7 @@ in
             Type = "oneshot";
             ExecStart =
               lib.optionals doBackup [
-                "${resticCmd} backup ${
+                "${resticCmd} backup ${insecurePasswordArg} ${
                   lib.concatStringsSep " " (
                     backup.extraBackupArgs
                     ++ lib.optionals fileBackup (excludeFlags ++ [ "--files-from=${filesFromTmpFile}" ])
@@ -482,11 +487,9 @@ in
               ${pkgs.writeScript "backupPrepareCommand" backup.backupPrepareCommand}
             ''}
             ${lib.optionalString backup.initialize ''
-              ${resticCmd} cat config > /dev/null || ${resticCmd} init
-            '' + (lib.optionalString
-              (backup.passwordFile == null)
-                "--insecure-no-password"
-            )
+              ${resticCmd} cat config ${insecurePasswordArg} > /dev/null \
+                || ${resticCmd} init ${insecurePasswordArg}
+              ''
              }
             ${lib.optionalString (backup.paths != null && backup.paths != [ ]) ''
               cat ${pkgs.writeText "staticPaths" (lib.concatLines backup.paths)} >> ${filesFromTmpFile}

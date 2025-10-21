@@ -207,6 +207,13 @@ in
       };
       backups.nfsProvider = {
         initialize = true;
+        # We truly don't want to have to manage a password that holds all of our
+        # data hostage.  The risk is pushed to leaking rather than just losing
+        # everything because the password was lost or poorly rotated.  But,
+        # seriously, if you can read this directory you are root.  We're already
+        # done in, and the password would be lifted by easily following the
+        # config back to the file the password lived in.
+        passwordFile = null;
         paths = map (v: "/tank/data/${v.volumeRelativeDir}") cfg.volumes;
         pruneOpts = [ "--keep-daily 7" "--keep-weekly 4" "--keep-monthly 6" ];
         repository = "/tank/backup/restic";
@@ -217,6 +224,9 @@ in
           whoami
           SNAP_NAME="data-$(date +%Y%m%d-%H%M%S)"
           SNAP_PATH="${snapshotDir}/$SNAP_NAME"
+          echo "$SNAP_PATH" > ${
+            config.services.restic.backups.nfsProvider.repository
+          }/last-snapshot
           mkdir --parents "$SNAP_PATH"
           # -r is for read-only, but there is no long argument form.
           # Supposedly upstream has a fix!  But not as of 6.14.
@@ -225,6 +235,9 @@ in
         '';
         backupCleanupCommand = ''
           set -euo pipefail
+          SNAP_PATH="$(cat ${
+            config.services.restic.backups.nfsProvider.repository
+          }/last-snapshot)"
           rm -f ${snapshotDir}/data
           # I'm not sure why this needs to be include /data as a subdirectory
           # but it's what btrfs sees for its snapshots.
