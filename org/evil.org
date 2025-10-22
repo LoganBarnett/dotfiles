@@ -557,7 +557,9 @@ library is already loaded.
 (use-package evil-collection
   :after evil
   :config
-  (evil-collection-init)
+  (evil-collection-init
+   'eshell
+   )
   )
 
 <<config/evil-surround>>
