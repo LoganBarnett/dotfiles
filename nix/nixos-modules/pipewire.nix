@@ -327,10 +327,10 @@ in
   ###### implementation
   config = mkIf cfg.enable {
     assertions = [
-      {
-        assertion = cfg.audio.enable -> !config.services.pulseaudio.enable;
-        message = "Using PipeWire as the sound server conflicts with PulseAudio. This option requires `services.pulseaudio.enable` to be set to false";
-      }
+      # {
+      #   assertion = cfg.audio.enable -> !config.services.pulseaudio.enable;
+      #   message = "Using PipeWire as the sound server conflicts with PulseAudio. This option requires `services.pulseaudio.enable` to be set to false";
+      # }
       {
         assertion = cfg.jack.enable -> !config.services.jack.jackd.enable;
         message = "PipeWire based JACK emulation doesn't use the JACK service. This option requires `services.jack.jackd.enable` to be set to false";

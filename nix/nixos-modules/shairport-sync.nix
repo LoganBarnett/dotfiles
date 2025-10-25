@@ -2,6 +2,12 @@
 # Titanium has to lag behind in nixpkgs versions because of dicey support for
 # AMD GPUs.  So we need this copy where we trim the stuff doesn't work with the
 # nixpkgs-24.11 era stuff.
+#
+# Notes I found from another user trying to do this:
+# https://discourse.nixos.org/t/help-getting-shairport-sync-up-and-running/58855/3
+# run `sudo -u pulse PULSE_RUNTIME_PATH=/run/pulse pactl list sinks short` to display available sinks
+# run `sudo -u pulse alsamixer` to adjust volume levels
+# run `sudo alsactl store` so save the volume levels persistently
 ################################################################################
 {
   config,
@@ -136,10 +142,23 @@ in
         group = cfg.group;
         extraGroups = [
           "audio"
-        ] ++ optional (config.services.pulseaudio.enable or config.services.pipewire.pulse.enable) "pulse";
+        ] ++ optionals
+          (config.services.pulseaudio.enable or config.services.pipewire.pulse.enable)
+          [
+            "pulse"
+            "pulse-access"
+            "pipewire"
+          ];
+        linger = true;
       };
       groups.${cfg.group} = { };
     };
+
+    services.pipewire.socketActivation = true;
+    services.pipewire.systemWide = true;
+    # services.wireplumber.enable = true;
+    # Start WirePlumber (with PipeWire) at boot.
+    systemd.user.services.wireplumber.wantedBy = [ "default.target" ];
 
     networking.firewall = mkIf cfg.openFirewall {
       allowedTCPPorts = [ 5000 ];
@@ -155,15 +174,19 @@ in
       description = "shairport-sync";
       after = [
         "network.target"
-        "avahi-daemon.service"
+        # "avahi-daemon.service"
+        # Because this is a user service.
+        "pipewire-pulse.socket"
+        "wireplumber.service"
       ];
-      wantedBy = [ "multi-user.target" ];
+      wantedBy = [ "default.target" ];
       serviceConfig = {
-        User = cfg.user;
+        # User = cfg.user;
         Group = cfg.group;
         ExecStart = "${lib.getExe cfg.package} ${cfg.arguments}";
         Restart = "on-failure";
         RuntimeDirectory = "shairport-sync";
+        SupplementaryGroups = [ "pipewire" ];
       };
     };
 
