@@ -40,12 +40,12 @@ in {
   # TODO: Move this to a gatus specific config which lifts from
   # facts.network.services.  Select a host that runs gatus (probably argon but
   # look).
-  services.gatus = let
-    enable = (builtins.length hostFacts.monitors) > 0;
-  in {
-    inherit enable;
-    openFirewall = enable;
-  };
+  # services.gatus = let
+  #   enable = (builtins.length hostFacts.monitors) > 0;
+  # in {
+  #   inherit enable;
+  #   openFirewall = enable;
+  # };
   services.prometheus.exporters = pipe hostFacts.monitors [
     (fold (monitor: acc: acc // (monitor-to-exporter monitor)) {})
   ];
