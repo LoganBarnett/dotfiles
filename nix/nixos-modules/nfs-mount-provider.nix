@@ -256,7 +256,7 @@ in
           # I'm not sure why this needs to be include /data as a subdirectory
           # but it's what btrfs sees for its snapshots.
           ${btrfsBin} subvolume delete "$SNAP_PATH"/data
-          rmdir ${snapshotDir}
+          rmdir "$SNAP_PATH"
         '';
       };
     };
