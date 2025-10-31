@@ -143,6 +143,9 @@
   # instead of Python, so it's really zippy.  It defaults to being aliased to
   # "f".
   programs.pay-respects.enable = true;
+  # Uses plocate by default, faster than mlocate (which usually is thought of as
+  # locate).
+  services.locate.enable = true;
   imports = [
     # cyme isn't available on all versions of nixpkgs I use.
     (lib.mkIf (builtins.hasAttr "cyme" pkgs) {
