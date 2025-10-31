@@ -57,6 +57,7 @@ in {
         imports = [
           ../home-configs/gh-cli.nix
           ../home-configs/gh-cli-ache-em-ache.nix
+          ../home-configs/mcphost.nix
           ../home-configs/copilot.nix
           ../home-configs/copilot-ache-em-ache.nix
         ];
