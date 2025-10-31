@@ -50,7 +50,6 @@ in {
   # won't need it.
   ids.gids.nixbld = 350;
   imports = [
-    ../agnostic-configs/logan-workstation.nix
     ../nixos-modules/nix-builder-consume.nix
     ../nixos-configs/nix-store-tools.nix
     ../nixos-modules/sd-image-raspberrypi.nix

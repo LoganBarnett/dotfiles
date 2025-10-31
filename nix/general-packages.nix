@@ -90,8 +90,6 @@
   pkgs.html-tidy
   # For previewing LaTeX in Emacs.
   pkgs.imagemagick
-  # Manage Jira from the command line, like a scholar.
-  pkgs.jira-cli-go
   # JSON parsing, querying, and updating.
   pkgs.jq
   # Manage pesky ssh-agent and gpg-agent sessions universally.

@@ -7,7 +7,10 @@
 # Much consolidation is needed.  Particularly let's also nab what we see on
 # ../nixos-modules/user-can-develop.nix.
 ################################################################################
-{ lib, pkgs, ... }: let
+{ flake-inputs, lib, pkgs, system, ... }: let
+  pkgs-latest = import flake-inputs.nixpkgs-latest {
+    inherit system;
+  };
   npm-generate-package-lock-json = pkgs.writeShellApplication {
     name = "npm-generate-package-lock-json";
     text = builtins.readFile ../scripts/npm-generate-package-lock-json.sh;
@@ -43,17 +46,33 @@
   # readily available.
   github-copilot-cli = pkgs.callPackage ../derivations/github-copilot-cli.nix {};
 in {
+
   allowUnfreePackagePredicates = [
     (pkg: builtins.elem (lib.getName pkg) [
       "github-copilot-cli"
     ])
   ];
+
+  imports = [
+    ../agnostic-configs/btop.nix
+  ];
+
   environment.systemPackages = [
+    # A universal text/code formatter in Rust, so it's fast and no baggage.
+    # This is really good, because the things you must do to get prettier.js to
+    # format your Ruby code are a little nutty.  At least in a "secure" world
+    # where netcat is considered dangerous...
+    # Use `dprint fmt <file>` to format or `dprint check <file>` to do a no-op
+    # version.
+    pkgs.dprint
     github-copilot-cli
+    # Manage Jira from the command line, like a scholar.
+    pkgs-latest.jira-cli-go
     # An interactive LLM runner with MCP support.  Written in Go, so no runtime
     # and weird build dependencies.  It supports various debugging options as
     # well.  See https://github.com/mark3labs/mcphost for details.
     mcphost
     npm-generate-package-lock-json
   ];
+
 }
