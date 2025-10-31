@@ -29,12 +29,12 @@ in {
     # Ugh this is rather hopeless.  Nixpkgs drifts behind so some hero needs to
     # keep it updated, and I'm not that hero.
     .overrideAttrs (old: let
-      version = "7.72.1";
+      version = "7.76.0";
     in {
       inherit version;
       src = final.fetchurl {
         url = "https://updates.signal.org/desktop/signal-desktop-mac-universal-${version}.dmg";
-        hash = "sha256-X1x9GObrTIf+5zxY9cfsDVhYeJIhRZ3KChrQxTo5J3E=";
+        hash = "sha256-kyPhLz0XN+Dr/5K8I+im23h8qppyPj99/ubLari+6xQ=";
       };
     })
   ;
