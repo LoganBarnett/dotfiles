@@ -233,12 +233,6 @@ in {
           }
         ];
       };
-      mqtt = {
-        broker = "mosquitto.proton";
-        username = "home-assistant";
-        certificate = "auto";
-        password = "!secret mosquitto-password";
-      };
       notifier = {
         # The docs warn not to do this, but I don't see a need for this and it
         # significantly complicates my configuration.
@@ -254,7 +248,7 @@ in {
       };
       session = {
         cookies = [{
-          authelia_url = "https://home-assistant.proton/login/";
+          authelia_url = "https://auth.home-assistant.proton/login/";
           default_redirection_url = "https://home-assistant.proton";
           domain = "home-assistant.proton";
         }];
@@ -395,7 +389,13 @@ in {
   };
   services.home-assistant = {
     enable = true;
-    extraComponents = [ "frontend" "http" "auth" "isal" ];
+    extraComponents = [
+      "auth"
+      "frontend"
+      "http"
+      "isal"
+      "mqtt"
+    ];
     extraPackages = ps: [
       ps.roombapy
     ];
@@ -518,6 +518,16 @@ in {
         ];
         use_x_forwarded_for = true;
       };
+      mqtt = [
+        {
+        broker = "mosquitto.proton";
+        username = "home-assistant";
+        certificate = "auto";
+        password = "!secret mosquitto-home-assistant-password";
+        # This is sort of what "activates" the integration in the UI.
+        discovery = true;
+        }
+      ];
       # Yep, just leave it empty.  I found out this is Because No Reasons.
       zwave_js = {
         # I can't find a way to make this work.
