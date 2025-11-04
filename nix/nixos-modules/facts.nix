@@ -318,6 +318,50 @@
         ];
         system = "x86_64-linux";
       };
+
+    }
+      # This is sort of miscellaneous hosts that aren't part of critical
+      # infrastructure.  I want them tracked so I know what kind of block
+      # profiles they are, and I have a handy lookup should I need to identify
+      # them later.
+      # "uih" is short for unidentified host.
+    // {
+      uih0 = { mac = "ac:19:8e:f6:04:a0"; ipv4 = 120; };
+      some-unidentified-iphone = { mac = "ea:c6:99:b2:df:de"; ipv4 = 121; };
+      uih1 = { mac = "f0:a2:25:49:25:c8"; ipv4 = 122; };
+      uih2 = { mac = "32:ca:84:c2:82:7b"; ipv4 = 123; };
+      uih3 = { mac = "66:f2:6e:b8:a5:16"; ipv4 = 124; };
+      uih4 = { mac = "10:2c:b1:a5:ad:68"; ipv4 = 125; };
+      uih5 = { mac = "10:2c:b1:76:68:5d"; ipv4 = 126; };
+      uih6 = { mac = "ac:19:8e:1a:81:19"; ipv4 = 127; };
+      uih7 = { mac = "92:0a:15:a6:00:07"; ipv4 = 128; };
+      uih8 = { mac = "c8:a3:62:84:33:99"; ipv4 = 129; };
+      uih9 = { mac = "5e:8c:33:66:1d:65"; ipv4 = 130; };
+      uih10 = { mac = "76:3c:6c:a6:57:3c"; ipv4 = 131; };
+      uih11 = { mac = "28:cf:51:c9:1d:01"; ipv4 = 132; };
+      uih12 = { mac = "92:8b:79:8a:9e:c4"; ipv4 = 133; };
+      uih13 = { mac = "80:f3:ef:3b:b6:4d"; ipv4 = 134; };
+      uih14 = { mac = "10:2c:b1:8e:0f:ee"; ipv4 = 135; };
+      uih15 = { mac = "06:8a:dc:63:fe:e6"; ipv4 = 136; };
+      Tonal-080300100010266 = { mac = "10:59:17:00:cf:4f"; ipv4 = 137; };
+      Canonc618b2 = { mac = "20:0b:74:9a:21:2b"; ipv4 = 138; };
+      SOUNDPLUS_X_E0A8 = { mac = "02:22:6c:07:e0:a8"; ipv4 = 139; };
+      tasmota-8CFDB2-7602 = { mac = "d8:bc:38:8c:fd:b2"; ipv4 = 140; };
+      # What is this?
+      ESP_45248A = { mac = "cc:7b:5c:45:24:8a"; ipv4 = 141; };
+      # What is this?
+      S380HB = { mac = "90:bf:d9:3e:20:d8"; ipv4 = 142; };
+      WYZEC1-JZ-2CAA8E995847 = { mac = "2c:aa:8e:99:58:47"; ipv4 = 143; };
+      some-unidentified-apple-watch = { mac = "ee:b0:c4:e8:3e:c6"; ipv4 = 144; };
+      some-unidentified-mac-book-pro = { mac = "3e:8f:45:9d:b3:cd"; ipv4 = 145; };
+      iRobot-E49F9CCC561A410AB51B88723BB7BB1E = { mac = "50:14:79:b7:a1:b5"; ipv4 = 146; };
+      amazon-1fa3b1b81 = { mac = "40:b4:cd:35:85:61"; ipv4 = 147; };
+      roku3-667 = {
+        controlledHost = false;
+        # TODO: Find a better IP.
+        ipv4 = 148;
+        mac = "b0:a7:37:96:c6:33";
+      };
     };
 
     ##
@@ -340,6 +384,21 @@
           type = "person";
           full-name = "Cassandra Barnett";
           devices = [];
+          blockProfiles = [
+            "adult"
+          ];
+        };
+        kai = {
+          description = "";
+          email = "kai@proton";
+          type = "person";
+          full-name = "Kai Barnett";
+          devices = [
+            { host-id = "arsenic"; vpn = false; }
+          ];
+          blockProfiles = [
+            "child"
+          ];
         };
         logan = {
           description = "The reason we suffer.";
@@ -350,6 +409,9 @@
             { host-id = "scandium"; ip = "20"; vpn = true; }
             { host-id = "manganese"; ip = "22"; vpn = true; }
           ];
+          blockProfiles = [
+            "adult"
+          ];
         };
         selena = {
           description = "";
@@ -358,6 +420,21 @@
           full-name = "Selena";
           devices = [
             { host-id = "selena-laptop"; ip = "23"; vpn = true; }
+          ];
+          blockProfiles = [
+            "adult"
+          ];
+        };
+        solomon = {
+          description = "";
+          email = "solomon@proton";
+          type = "person";
+          full-name = "Solomon Barnett";
+          devices = [
+            { host-id = "lithium"; vpn = false; }
+          ];
+          blockProfiles = [
+            "child"
           ];
         };
       }
@@ -557,7 +634,8 @@
             "[BODY].installed == true"
             "[BODY].maintenance == false"
             "[RESPONSE_TIME] < 300"
-            "[CERTIFICATE_EXPIRATION] > 168h"   # Must have >7 days left.
+            # Must have >7 days left.
+            "[CERTIFICATE_EXPIRATION] > 168h"
           ];
         };
       };

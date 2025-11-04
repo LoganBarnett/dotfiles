@@ -47,13 +47,13 @@ in {
     globalConfig.scrape_interval = "10s";
     scrapeConfigs = let
       monitors = lib.pipe facts.network.hosts [
-        (lib.attrsets.mapAttrsToList (host: settings: settings.monitors))
+        (lib.attrsets.mapAttrsToList (host: settings: (settings.monitors or [])))
         lib.lists.flatten
         lib.lists.unique
       ];
       host-targets = monitor: lib.pipe facts.network.hosts [
         (lib.attrsets.filterAttrs (host: settings:
-          settings.controlledHost
+          (settings.controlledHost or false)
           && (!settings.roaming or false)
           && (lib.lists.any (m: m == monitor) settings.monitors)
         ))

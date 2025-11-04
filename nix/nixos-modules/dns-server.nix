@@ -58,6 +58,7 @@ in {
     cloudflare
     google
   ];
+  # networking.nameservers = [ "192.168.254.2" ];
   # Allow actual DNS and DHCP connections.
   networking.firewall.allowedUDPPorts = [ 53 67 ];
   # Larger connections (DNSSEC, zone transfers) use TCP for DNS.
@@ -75,7 +76,7 @@ in {
       # least that's how NixOS sets it up.
       no-hosts = true;
       expand-hosts = true;
-      dhcp-range = "192.168.254.100,192.168.254.200,12h";
+      dhcp-range = "192.168.254.175,192.168.254.250,12h";
       dhcp-host = pipe facts.network.hosts [
         (filterAttrs (hostname: host:
           host ? ipv4 && host.ipv4 != null
@@ -110,7 +111,8 @@ in {
       dhcp-option = [
         "option:domain-search,${domain}"
         "option:router,192.168.254.254"
-        "option:dns-server,${my-ip}"
+        # TODO: Do a lookup for argon's IP.
+        "option:dns-server,192.168.254.2"
       ];
     };
   };
