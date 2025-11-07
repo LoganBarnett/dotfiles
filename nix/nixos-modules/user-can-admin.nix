@@ -7,13 +7,13 @@
     EDITOR = "vim";
   };
   environment.systemPackages = [
+    # A grep-sed like alternative. Offers a scripting language for
+    # transformations.
+    pkgs.ack
     # A functional lens of updating configuration values for virtually any
     # kind.  You probably want to run `augtool` but there are other `aug*`
     # executables available.  There is no `augeas` executable.
     pkgs.augeas
-    # A grep-sed like alternative. Offers a scripting language for
-    # transformations.
-    pkgs.ack
     # A more visual version of top and htop.
     pkgs.btop
     # This is a suite of GNU utilities.
