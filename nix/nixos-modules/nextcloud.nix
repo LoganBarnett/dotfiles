@@ -52,10 +52,6 @@
   nfs-vpn-hostname = "silicon-nas.proton";
 in {
   imports = [
-    # (import ../nixos-modules/https.nix {
-    #   inherit fqdn host-id;
-    #   redirect = false;
-    # })
     ../nixos-modules/bindfs.nix
     ../nixos-modules/nfs-mount-consumer.nix
   ];
