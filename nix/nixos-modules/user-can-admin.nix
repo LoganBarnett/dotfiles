@@ -1,7 +1,7 @@
 # -*- mode: Nix; dtrt-indent-mode: 0; tab-width: 2; standard-indent: 2; -*-
 # The Emacs file variable line above is requied because dtrt-indent-mode
 # Global system administration tools.
-{ config, flake-inputs, lib, pkgs, system, ... }: {
+{ config, flake-inputs, lib, options, pkgs, system, ... }: {
   environment.variables = {
     # Why this defaults to nano is beyond me.
     EDITOR = "vim";
@@ -143,9 +143,6 @@
   # instead of Python, so it's really zippy.  It defaults to being aliased to
   # "f".
   programs.pay-respects.enable = true;
-  # Uses plocate by default, faster than mlocate (which usually is thought of as
-  # locate).
-  services.locate.enable = true;
   imports = [
     # cyme isn't available on all versions of nixpkgs I use.
     (lib.mkIf (builtins.hasAttr "cyme" pkgs) {
@@ -161,6 +158,17 @@
         ]
         else []
       ;
+    })
+    (lib.mkIf (builtins.hasAttr "locate" options.services) {
+      # Uses plocate by default, faster than mlocate (which usually is thought
+      # of as locate).
+      services.${
+        if (builtins.hasAttr "locate" options.services)
+        then "locate"
+        else null
+      } = {
+        enable = true;
+      };
     })
   ];
 }
