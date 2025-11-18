@@ -20,11 +20,12 @@
         logoutAt = [ "12:30" ];
       };
     in {
-      mon = weekday;
-      tue = weekday;
-      wed = weekday;
-      thu = weekday;
-      fri = weekday;
+      # Get them grades up.
+      # mon = weekday;
+      # tue = weekday;
+      # wed = weekday;
+      # thu = weekday;
+      # fri = weekday;
       sat = weekend;
       sun = weekend;
     };
