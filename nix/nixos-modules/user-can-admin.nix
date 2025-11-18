@@ -87,6 +87,8 @@
     pkgs.smartmontools
     # A self-proclaimed better netcat.
     pkgs.socat
+    # A WHOIS alternative protocol.
+    pkgs.rdap
     # Really fast grep alternative.  Required by Emacs (which is also used via
     # Tramp).
     pkgs.ripgrep
