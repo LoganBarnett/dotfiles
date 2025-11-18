@@ -14,6 +14,7 @@
     # kind.  You probably want to run `augtool` but there are other `aug*`
     # executables available.  There is no `augeas` executable.
     pkgs.augeas
+    pkgs.avahi
     # A more visual version of top and htop.
     pkgs.btop
     # This is a suite of GNU utilities.
