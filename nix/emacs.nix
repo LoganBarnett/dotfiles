@@ -273,6 +273,7 @@
         languages = [
           claude-code-ide
           epkgs.dockerfile-mode
+          epkgs.d2-mode
           epkgs.elm-mode
           # This must come from something else.  Magit perhaps?
           # epkgs.gitignore-mode
@@ -342,6 +343,14 @@
           # undesirable.
           # ob-duckdb
           epkgs.ob-dsq
+          # Provide diagramming support via d2, a competitor/replacement for
+          # plantuml.
+          # Per
+          # https://github.com/xcapaldi/ob-d2/issues/5#issuecomment-1738525073
+          # this doesn't work with d2-mode.  As such I will not use ob-d2 since
+          # I might want to actually edit d2 files directly, and d2-mode comes
+          # with org-babel support (it's just not presently documented).
+          # epkgs.ob-d2
           # Org-babel for OpenSCAD.  This is tucked into scad-mode.
           # epkgs.ob-scad
           # The readme mentions `openscad-lsp` which could be used to enhance
