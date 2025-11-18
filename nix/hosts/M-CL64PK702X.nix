@@ -217,7 +217,10 @@ in {
       imports = [
         ../nixos-modules/ollama-nix-darwin.nix
       ];
-      services.ollama.enable = true;
+      services.ollama = {
+        enable = true;
+        host = "0.0.0.0";
+      };
       # services.open-webui.enable = true;
     }
   ];
