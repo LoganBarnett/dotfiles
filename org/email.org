@@ -77,6 +77,7 @@ I need my line numbers.
 #+name: mu4e-line-numbers
 #+begin_src emacs-lisp :results none :tangle yes
 (add-hook 'mu4e-headers-mode-hook #'display-line-numbers-mode)
+(add-hook 'mu4e-view-mode-hook #'display-line-numbers-mode)
 #+end_src
 
 *** archiving
