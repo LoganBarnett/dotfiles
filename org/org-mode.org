@@ -600,6 +600,20 @@ We should drop or convert these characters.
 * org-agenda
 This is worthy of its own file. See [[file:./org-agenda.org][org-agenda.org]].
 * org-babel
+** images
+
+When ~org-babel~ generates a new image (such as from a ~plantuml~ source block),
+it will invalidate the "overlay" that displays the image.  To get the image to
+display again, we just need to jump on the hook and redisplay the image.
+
+#+name: config/org-babel-images-redisplay-when-recomputed
+#+begin_src emacs-lisp :results none :exports code :tangle no
+
+(add-hook 'org-babel-after-execute-hook
+  #'org-redisplay-inline-images
+  )
+#+end_src
+
 ** text
 I need json and other text code blocks to be treated as content.
 
@@ -1382,6 +1396,7 @@ This is the region of offending code, I think:
   ;; :hook
   ;; ('org-load-hook . +org-init-appearance-h)
   :config
+  <<config/org-babel-images-redisplay-when-recomputed>>
   <<config/org-capture-web-sites>>
   ;; This is very broken because evil-mode hasn't loaded yet and map!'s
   ;; documentation states that if evil is not loaded yet, then evil-specific
