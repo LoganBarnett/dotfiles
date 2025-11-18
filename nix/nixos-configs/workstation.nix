@@ -65,6 +65,10 @@ in {
     # Use `dprint fmt <file>` to format or `dprint check <file>` to do a no-op
     # version.
     pkgs.dprint
+    # Effectively a plantuml replacement.  Write flow charts and similar
+    # diagrams using a text based language.  Supports a variety of outputs
+    # including SVG, PNG, and ASCII text.
+    pkgs-latest.d2
     github-copilot-cli
     # Manage Jira from the command line, like a scholar.
     pkgs-latest.jira-cli-go
