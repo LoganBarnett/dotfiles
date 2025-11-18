@@ -41,6 +41,8 @@
     pkgs.gnused
     # Who wants BSD ls when you could have GNU ls? And other GNU things.
     pkgs.gnutls
+    # Like jq, but for html.
+    pkgs.htmlq
     # A more visual top.
     pkgs.htop
     # Performance test IP connections.  Supports TCP/UDP/SCTP and both IPv4 and
