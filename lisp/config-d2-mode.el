@@ -33,7 +33,6 @@
                 )
            )
            (with-temp-file temp-file (insert body))
-           (message "command: %s" cmd)
            (org-babel-eval cmd "")
            ;; org-babel can output text if it is returned, which we will do if no
            ;; :file header was present.  This is especially useful for ascii
