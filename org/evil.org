@@ -560,6 +560,12 @@ library is already loaded.
   (evil-collection-init
    'eshell
    )
+  (evil-collection-init
+   'magit
+   )
+  (evil-collection-init
+   'mu4e
+   )
   )
 
 <<config/evil-surround>>
