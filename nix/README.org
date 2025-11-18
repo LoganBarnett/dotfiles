@@ -1957,24 +1957,26 @@ First, find or create your ~imports~ for the module in question.  Next, use
 to ~null~ based on a check.
 
 #+begin_src nix :results none :exports code
-imports = [
-  (lib.mkIf (builtins.hasAttr "comfyui" options.services) {
-    # This is kind of magical.  See
-    # https://nix.dev/manual/nix/2.17/language/values.html?highlight=coerced#attribute-set
-    # but basically if the attribute name evaluates to null then the attribute
-    # won't exist.  Without this hack, we get `The option `services.comfyui'
-    # does not exist.`.  This is a special case and one cannot use null as a
-    # key name.
-    services.${
-      if (builtins.hasAttr "comfyui" options.services)
-      then "comfyui"
-      else null
-    } = {
-      package = pkgs ? comfyui-rocm;
-      rocmSupport = true;
-    };
-  })
-];
+{ lib, options, ... }: {
+  imports = [
+    (lib.mkIf (builtins.hasAttr "comfyui" options.services) {
+      # This is kind of magical.  See
+      # https://nix.dev/manual/nix/2.17/language/values.html?highlight=coerced#attribute-set
+      # but basically if the attribute name evaluates to null then the attribute
+      # won't exist.  Without this hack, we get `The option `services.comfyui'
+      # does not exist.`.  This is a special case and one cannot use null as a
+      # key name.
+      services.${
+        if (builtins.hasAttr "comfyui" options.services)
+        then "comfyui"
+        else null
+      } = {
+        package = pkgs ? comfyui-rocm;
+        rocmSupport = true;
+      };
+    })
+  ];
+}
 #+end_src
 
 This is the best way to avoid ~config.modules~ and ~lib.mkMerge~ while also
