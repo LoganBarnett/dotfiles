@@ -849,6 +849,16 @@ not always be the case.  For me it is setup via =nix=.  Instead of hardcoding a
 #+end_src
 
 *** troubleshooting
+**** debugging SMTP issues
+
+Dial up the logging so we can see what happened.
+
+#+name: config/mu4e-smtp-debug
+#+begin_src emacs-lisp :results none :exports code :tangle no
+(setq smtpmail-debug-info t
+      smtpmail-debug-verb t)
+#+end_src
+
 
 **** mu4e version mismatch with mu binary
 
@@ -1113,6 +1123,7 @@ to default behaviors.
     <<config/mu4e-composing>>
     :config
     (message "initializing mu4e...")
+    <<config/mu4e-smtp-debug>>
     <<mu4e-open-keybinding>>
     <<config/mu4e-add-bookmarks>>
     <<config/mu4e-mark-for-spam>>
