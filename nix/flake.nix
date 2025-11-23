@@ -84,6 +84,12 @@
       # documentation typically recommends this step.
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    # Allow surgical edits to static/literal Nix files.  Great for doing things
+    # like bumping a version and hash automatically.
+    nix-editor = {
+      url = "github:snowfallorg/nix-editor";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     nixos-generators = {
       # url = "github:LoganBarnett/nixos-generators?ref=add-sd-image-raspberrypi";
       url = "github:nix-community/nixos-generators/master";
