@@ -2,6 +2,9 @@
 # Lutris provides games via various platforms (and no platforms).  It can help
 # get things going with Wine and a variety of other tools as part of a launcher.
 # I think it can do ROMs as well.
+#
+# See also ../home-configs/lutris-gaming.nix for additional configuration, such
+# as providing Lutris with additional versions of Wine.
 ################################################################################
 { lib, pkgs, ... }: {
 
