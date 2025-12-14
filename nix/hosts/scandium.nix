@@ -210,6 +210,8 @@ in {
         pkgs.moonlight-qt
         # Translate audio to text, but do it fast (unlike Python versions).
         pkgs.whisper-cpp
+        # Let's be able to view media.
+        pkgs.vlc-bin
         pkgs-latest.zoom-us
       ];
       system.stateVersion = 5;
