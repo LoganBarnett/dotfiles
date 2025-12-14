@@ -74,5 +74,6 @@
     musicgpt = final.callPackage ../derivations/musicgpt.nix {};
     mypaint = final.callPackage ../derivations/mypaint.nix {};
     zalgo-cli = final.callPackage ../derivations/zalgo-cli.nix {};
+    zsh-git-prompt = final.callPackage ../derivations/zsh-git-prompt.nix {};
   })
 ]
