@@ -18,18 +18,10 @@ let
     rev   = "v0.3.28";
     hash  = "sha256-QKx9JgN1l9o8iifKLP3aVzhWO1qVsrv7vm77ItXiHLo=";
   };
-  cargoHash = "sha256-Tee1t4g9J2dO9gMGlwRUhdixmY/A3ospb10hXH1O9GY=";
+  cargoHash = "sha256-7dfpuo9vSLnHeqjDrcAlVIy9mPZ1pd0J9lNP9cNvTkQ=";
   linuxInputs = [
     alsa-lib
     pulseaudio
-  ];
-  darwinInputs = [
-    darwin.apple_sdk.frameworks.CoreAudio
-    darwin.apple_sdk.frameworks.AudioToolbox
-    darwin.apple_sdk.frameworks.CoreFoundation
-    darwin.apple_sdk.frameworks.Security
-    darwin.apple_sdk.frameworks.AppKit
-    darwin.apple_sdk.frameworks.Foundation
   ];
 in
 rustPlatform.buildRustPackage {
@@ -41,7 +33,7 @@ rustPlatform.buildRustPackage {
     openssl
   ]
     ++ lib.optionals stdenv.isLinux linuxInputs
-    ++ lib.optionals stdenv.isDarwin darwinInputs;
+  ;
   # Force using system OpenSSL via pkg-config (no vendored build).
   OPENSSL_NO_VENDOR = "1";
   OPENSSL_LIB_DIR = "${openssl.out}/lib";

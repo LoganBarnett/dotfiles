@@ -31,14 +31,16 @@
       "vpnc"
     ])
   ];
+  services.desktopManager = {
+    gnome.enable = true;
+  };
+  services.displayManager.gdm = {
+    enable = true;
+    wayland = false;
+  };
   services.xserver = {
     enable = true;
-    desktopManager.gnome.enable = true;
     displayManager.startx.enable = true;
-    displayManager.gdm = {
-      enable = true;
-      wayland = false;
-    };
     windowManager = {
       qtile.enable = true;
       bspwm.enable = true;
@@ -55,7 +57,7 @@
   # Enable sound with pipewire.
   # Actually this is broken per: https://github.com/NixOS/nixpkgs/issues/319809
   # sound.enable = true;
-  hardware.pulseaudio = {
+  services.pulseaudio = {
     enable = false;
     support32Bit = false;
   };

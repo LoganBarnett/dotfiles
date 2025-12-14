@@ -5,7 +5,7 @@
     ${user.host-username} = {
       programs.git = {
         enable = true;
-        extraConfig = {
+        settings = {
           alias = {
             branchg="!git branch -avv | grep";
             fast-amend = "commit --amend --no-edit";

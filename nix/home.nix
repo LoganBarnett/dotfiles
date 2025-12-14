@@ -39,7 +39,6 @@ in
   # simple `ssh-add` invocation, but it is a one-time thing.
   programs.keychain = {
     enable = true;
-    agents = [ "gpg" "ssh" ];
     extraFlags = [ "--noask" "--quiet" ];
     enableZshIntegration = true;
   };
@@ -76,13 +75,13 @@ in
   # to solve.
   # Much like how fonts can manage the ~/Library/Fonts, perhaps there is another
   # home-manager feature for applications?
-  home.file."Applications/home-manager".source = let
-  apps = pkgs.buildEnv {
-    name = "home-manager-applications";
-    paths = config.home.packages;
-    pathsToLink = "/Applications";
-  };
-  in lib.mkIf pkgs.stdenv.targetPlatform.isDarwin "${apps}/Applications";
+  # home.file."Applications/home-manager".source = let
+  # apps = pkgs.buildEnv {
+  #   name = "home-manager-applications";
+  #   paths = config.home.packages;
+  #   pathsToLink = "/Applications";
+  # };
+  # in lib.mkIf pkgs.stdenv.targetPlatform.isDarwin "${apps}/Applications";
   # My little colorized/bracketed logger.
   home.file.".bash-logging".source = ./bash-logging;
 

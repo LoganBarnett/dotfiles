@@ -77,7 +77,7 @@
       # inputs.nixpkgs.follows = "nixpkgs";
     };
     nix-darwin = {
-      url = "github:LnL7/nix-darwin/master";
+      url = "github:LnL7/nix-darwin/nix-darwin-25.11";
       # rev = "72dd60bfc98c128149d84213b17d1b8a68863055";
       # Leaving this present breaks things and nix-darwin will not load or
       # otherwise will not be present.  It is not understood why, even though
@@ -90,6 +90,7 @@
       url = "github:snowfallorg/nix-editor";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    nix-homebrew.url = "github:zhaofengli/nix-homebrew";
     nixos-generators = {
       # url = "github:LoganBarnett/nixos-generators?ref=add-sd-image-raspberrypi";
       url = "github:nix-community/nixos-generators/master";
@@ -110,10 +111,10 @@
     # This is forced at the moment, because we have some heavy deltas coming
     # into flake.lock and I want that to stabilize before I pin it here.
     # nixpkgs.url = "github:nixos/nixpkgs?ref=f9f59197478b3ec9c954b67ae0d1d5429de23124";
-    nixpkgs.url = "github:nixos/nixpkgs/25.11-pre";
+    nixpkgs.url = "github:nixos/nixpkgs/25.11";
     nixpkgs-working-rocm.url = "github:nixos/nixpkgs/master";
     nixpkgs-cuda.url = "github:nixos/nixpkgs/master";
-    nixpkgs-25.url = "github:nixos/nixpkgs/25.11-pre";
+    nixpkgs-25-11.url = "github:nixos/nixpkgs/25.11";
     # We need a version of nixpkgs for things that want to constantly
     # auto-update themselves in a forceful (yet asinine) manner.  Culprits
     # include Signal Desktop, but I should add more to the shame list as I find
@@ -140,7 +141,7 @@
     };
     # nix-doom-emacs.url = "github:nix-community/nix-doom-emacs";
     home-manager = {
-      url = "github:nix-community/home-manager/release-25.05";
+      url = "github:nix-community/home-manager/release-25.11";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     openhab-flake = {
@@ -168,6 +169,7 @@
       # TODO: Always keep one path example around.  Don't use file:// unless
       # you're pointing at a tarball (which should happen just about never).
       url = "path:/Users/logan/dev/sytter";
+      # url = github:LoganBarnett/sytter/add-nix-darwin-module-as-launchctl-service;
       inputs.nixpkgs.follows = "nixpkgs";
     };
 

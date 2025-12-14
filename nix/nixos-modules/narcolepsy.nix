@@ -23,7 +23,7 @@ in {
     (if versionAtLeast (lib.traceVal nixpkgsVersion) "25.11"
       # TODO: I lost the real path for the new way of doing it, and I don't have
       # a host which warns about this on hand.
-     then { services.xserver.displayManager.gdm.autoSuspend = false; }
+     then { services.displayManager.gdm.autoSuspend = false; }
      else { services.xserver.displayManager.gdm.autoSuspend = false; }
     )
     {

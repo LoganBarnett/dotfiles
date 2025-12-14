@@ -68,7 +68,7 @@
   pkgs.gallery-dl
   # macOS doesn't ship with free.
   # pkgs.unixtools.free
-  pkgs.utillinux
+  pkgs.util-linux
   # Read EXIF metadata from images.
   pkgs.exiftool
   # Give us free? and watch on macOS.

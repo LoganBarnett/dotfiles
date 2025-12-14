@@ -38,10 +38,6 @@
       "/run/opengl-driver/share/vulkan/icd.d/radeon_icd.x86_64.json";
   };
   hardware.amdgpu = {
-    amdvlk = {
-      enable = true;
-      support32Bit.enable = true;
-    };
     opencl.enable = true;
     initrd.enable = true;
   };
@@ -51,13 +47,10 @@
     enable = true;
     enable32Bit = true;
     extraPackages = [
-      pkgs.amdvlk
       pkgs.rocmPackages.clr.icd
     ];
     # For 32 bit applications.
-    extraPackages32 = [
-      pkgs.driversi686Linux.amdvlk
-    ];
+    extraPackages32 = [];
   };
   imports = [
     (lib.mkIf (builtins.hasAttr "comfyui" options.services) {

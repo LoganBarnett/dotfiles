@@ -136,9 +136,6 @@
           "node"
           "systemd"
         ];
-        flake-input-overrides = {
-          nixpkgs = "nixpkgs-25";
-        };
         system = "aarch64-linux";
       };
       cobalt = {
@@ -161,9 +158,6 @@
           "nextcloud"
         ];
         controlledHost = true;
-        flake-input-overrides = {
-          nixpkgs = "nixpkgs-25";
-        };
         ipv4 = 10;
         monitors = [
           "node"
@@ -179,9 +173,6 @@
           "sso"
         ];
         controlledHost = true;
-        flake-input-overrides = {
-          nixpkgs = "nixpkgs-25";
-        };
         ipv4 = 4;
         monitors = [
           "node"
@@ -307,10 +298,6 @@
           "musicgpt"
         ];
         controlledHost = true;
-        flake-input-overrides = {
-          home-manager = "home-manager-working-rocm";
-          nixpkgs = "nixpkgs-working-rocm";
-        };
         ipv4 = 6;
         monitors = [
           "node"
