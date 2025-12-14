@@ -3072,6 +3072,89 @@ canonical path.
 
 
 
+** ~Cargo.lock~ does not exist error from random file
+
+There are two forms of this.  One is the remote deploy version, which generally
+can be traced back to another Rust package that is maintained upstream.  The
+other is a self-maintained Rust package is failing to build for legitimate
+reasons, regardless of locality.
+
+*** via remote deploy
+Here's an example spew:
+
+#+begin_example
+$ caffeinate proton-deploy switch titanium --show-trace
+
+building the system configuration...
+warning: Git tree '/Users/logan/dev/dotfiles' is dirty
+trace: 25.11.20251130.871b9fd
+error (ignored): error: interrupted by the user
+error: path '//nix/store/gfnv9n4h835fggiv4frwm1jvcpqn4nkr-Cargo.lock' does not exist
+#+end_example
+
+The ~interrupted by user~ message typically appears when once manually cancels
+the deployment, but this is not the case here.
+
+The fix is to use ~remote-deploy~ and see if it works there.  The hypothesis is
+that the file sought is referenced in a way that breaks sandboxing, and later
+versions of ~nixpkgs~ tightened the sandboxing.  After the ~remote-deploy~, you
+should be able to do ~proton-deploy~ invocations again.
+
+
+
+*** via self maintained Rust packages
+
+Generally the cause is this:
+
+#+begin_src nix :results none :exports code
+rustPlatform.buildRustPackage {
+  src = lib.cleanSource (../.);
+  cargoLock = {
+    lockFile = ../Cargo.lock;
+    outputHashes = { };
+  };
+  # ... other derivation stuff.
+}
+#+end_src
+
+The fix is to hinge it off of ~src~.
+
+#+begin_src nix :results none :exports code
+rustPlatform.buildRustPackage (let
+  src = lib.cleanSource (../.);
+in {
+  inherit src;
+  cargoLock = {
+    lockFile = "${src}/Cargo.lock";
+    outputHashes = { };
+  };
+  # ... other derivation stuff.
+})
+#+end_src
+
+** Global ~.gitignore~ file is ignored
+
+The symptom is that you see files appearing in your ~git status~ or equivalent
+invocations, even though they should clearly be ignored based on the contents of
+your global git ignore file.
+
+You can run:
+
+#+begin_src sh :results output :exports both
+git config --get core.excludesFile
+#+end_src
+
+#+RESULTS:
+: /etc/gitignore
+
+I've found this is because the symlink was destroyed by ~nix-collect-garbage~
+because somehow that file doesn't exist anymore and the symlink is dead.  It
+could be the garbage collection, or perhaps a failed ~switch~, or both.
+
+Get things up and running again re: ~switch~, and if the issue still persists,
+get a better reproduction.  This does make me wonder if anything we place under
+~etc~ via ~environment.etc~ is to be trusted in ~nix-darwin~.  This might be
+worth filing a bug.
 
 * Toil Log
 
