@@ -108,9 +108,10 @@ in {
           User logan.barnett
       '';
     }
-    ({ lib, pkgs, ...}: {
+    ({ flake-inputs, lib, pkgs, ...}: {
       imports = [
         ../nixos-modules/unfree-predicates.nix
+        flake-inputs.nix-homebrew.darwinModules.nix-homebrew
       ];
       allowUnfreePackagePredicates = [
         (pkg: builtins.elem (lib.getName pkg) [
@@ -120,6 +121,38 @@ in {
           "unrar"
         ])
       ];
+      # Enable Homebrew integration.
+      nix-homebrew = {
+        enable = true;
+        # If an existing homebrew is in the way, we just intelligently replace
+        # it.  This should retain everything that was installed via Homebrew,
+        # but only impacts Homebrew itself.
+        autoMigrate = true;
+        # Uh, what?  What if I need more than one user?
+        user   = "logan";
+        # enableRosetta = true;  # if you want x86_64 brews too
+      };
+      homebrew = {
+        enable = true;
+        casks = [
+          "alfred"
+          "dash"
+          "discord"
+          # "doxie"
+          "istat-menus"
+          "keycastr"
+          # "openscad"
+          "steam"
+          "ultimaker-cura"
+          # "vlc"
+        ];
+
+        # Optional but recommended:
+        # auto-cleanup bottles/casks that are no longer declared.
+        onActivation.autoUpdate = true;
+        onActivation.cleanup = "uninstall";       # removes undeclared brews/casks
+        onActivation.upgrade = false;              # upgrade on switch
+      };
       environment.systemPackages = (import ../personal-packages.nix {
         inherit pkgs;
       }) ++ [
