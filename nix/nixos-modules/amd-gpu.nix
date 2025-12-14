@@ -34,8 +34,8 @@
     # Force radv.  Why?
     # AMD_VULKAN_ICD = "RADV";
     # Or this for some reason.  Why?
-    VK_ICD_FILENAMES =
-      "/run/opengl-driver/share/vulkan/icd.d/radeon_icd.x86_64.json";
+    # VK_ICD_FILENAMES =
+    #   "/run/opengl-driver/share/vulkan/icd.d/radeon_icd.x86_64.json";
   };
   hardware.amdgpu = {
     opencl.enable = true;
@@ -107,9 +107,34 @@
       # };
     })
   ];
-  services.xserver.enable = true;
-  # This says the wiki is wrong:
-  # https://discourse.nixos.org/t/amd-rx-7700-xt-not-being-detected-properly/33683/2
-  # Do not use "amdgpu" here, use "modesetting".  Why?
-  services.xserver.videoDrivers = [ "amdgpu" "modesetting" ];
+  services.displayManager.gdm = {
+    enable = true;
+    # To dial up the logging.
+    # debug = true;
+  };
+  # Debug if the display manager ever fails.
+  # services.xserver.displayManager.lightdm.enable = lib.mkForce true;
+  services.xserver = {
+    enable = true;
+    # This says the wiki is wrong:
+    # https://discourse.nixos.org/t/amd-rx-7700-xt-not-being-detected-properly/33683/2
+    # Do not use "amdgpu" here, use "modesetting".  Why?
+    videoDrivers = [ "modesetting" ];
+    # It seems to be looking for /dev/dri/card0 but it's at /dev/dri/card1.
+    # Perhaps a migration issue to NixOS 25.11.
+    config = ''
+      Section "Device"
+        Identifier "AMD"
+        Driver "modesetting"
+        Option "PrimaryGPU" "true"
+        Option "kmsdev" "/dev/dri/card1"
+      EndSection
+    '';
+  };
+  # Weird that we have to set this, but it relates to the /dev/dri/card1
+  # problem.
+  users.users.gdm.extraGroups = [
+    "video"
+    "render"
+  ];
 }

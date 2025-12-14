@@ -34,7 +34,7 @@ in {
     ../nixos-modules/x-desktop.nix
     ../nixos-modules/server-host.nix
     ../nixos-configs/sunshine.nix
-    ../nixos-configs/musicgpt-ui.nix
+    # ../nixos-configs/musicgpt-ui.nix
     ({ config, lib, pkgs, ... }: {
       imports = [
         (modulesPath + "/installer/scan/not-detected.nix")
@@ -54,6 +54,11 @@ in {
         kernelModules = [
           "nvme"
           "dm-snapshot"
+        ];
+      };
+      home-manager.users.logan = {
+        imports = [
+          ../home-configs/lutris-gaming.nix
         ];
       };
       hardware.cpu.intel.updateMicrocode = lib.mkDefault
