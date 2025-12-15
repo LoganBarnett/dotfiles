@@ -102,8 +102,8 @@
         monitors = [
           "node"
           "systemd"
-          "wireguard"
         ];
+        networkInterface = "enu1u1";
         system = "aarch64-linux";
       };
       arsenic = {
@@ -290,7 +290,9 @@
         monitors = [
           "node"
           "systemd"
+          "wireguard"
         ];
+        networkInterface = "eno1";
         system = "x86_64-linux";
       };
       titanium = {

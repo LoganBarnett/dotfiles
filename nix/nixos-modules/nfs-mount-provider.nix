@@ -170,7 +170,7 @@ in
     #### WireGuard interface + peers derived from volumes
     networking.wireguard.interfaces.${wgIface} = {
       ips = [ providerCidr ];
-      listenPort = 51820;
+      listenPort = 51821;
       privateKeyFile = config.age.secrets.${wgSecretName}.path;
       peers =
         let

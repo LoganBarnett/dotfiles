@@ -8,8 +8,7 @@
 { config, facts, host-id, lib, pkgs, ... }: let
   wireguard-port = 51820;
   vpn-subnet-prefix = "192.168.102";
-  # Beware - this only works on argon due to how the network port got named.
-  network-interface = "enu1u1";
+  network-interface = facts.network.hosts.${host-id}.networkInterface or "enp0";
   peers = lib.pipe facts.network.users [
     (lib.attrsets.mapAttrsToList (name: user: user.devices))
     lib.lists.flatten
@@ -53,9 +52,25 @@ in {
     allowedUDPPorts = [ 51820 ];
   };
 
+  # This was suggested as some troubleshooting, but after moving hosts it didn't
+  # seem to manifest.  I'd just leave this for reference for now.
+  # networking.interfaces.wg0 = {
+  #   # DHCP doesn't make sense here, since everything is statically defined.
+  #   # Having this set to be true might be causing this issue from
+  #   # `network-setup-start` as well:
+  #   # Nexthop has invalid gateway.
+  #   useDHCP = false;
+  # };
+  # Just belt-and-suspenders to making sure we don't use DHCP in our Wireguard
+  # interface.  It's to hopefully prevent these kinds of issues arising in
+  # `network-setup-start`:
+  # Nexthop has invalid gateway.
+  # networking.dhcpcd.denyInterfaces = [ "wg0" ];
+
   networking.wireguard.enable = true;
   networking.wireguard.interfaces = {
-    # "wg0" is the network interface name. You can name the interface arbitrarily.
+    # "wg0" is the network interface name. You can name the interface
+    # arbitrarily.
     wg0 = {
       # Determines the IP address and subnet of the server's end of the tunnel
       # interface.

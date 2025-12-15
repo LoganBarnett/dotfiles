@@ -122,7 +122,7 @@
 
       wgPort = mkOption {
         type = types.port;
-        default = 51820;
+        default = 51821;
         description = ''
           The WireGuard peer endpoint port.
         '';

@@ -15,9 +15,9 @@ in {
     # ../nixos-modules/nix-flake-environment.nix.  I'm at a loss here.  This
     # probably warrants a ticket and I'll get to that sometime.  I have
     # confirmed that commenting this out (at least temporarily) fixes the issue.
-    # (import ../nixos-modules/wireguard-server.nix {
-    #   inherit host-id;
-    # })
+    # However I already have pre-generated secrets so I'm not bumping into the
+    # issue currently.
+    ../nixos-modules/wireguard-server-standard.nix
     ({ pkgs, ... }: {
       # networking.hostId is needed by the filesystem stuffs.
       # An arbitrary ID needed for zfs so a pool isn't accidentally imported on
