@@ -5,6 +5,7 @@
 # nixos-modules/nfs-provider.nix
 { lib, config, host-id, pkgs, ... }:
 let
+  port = 51821;
   inherit (lib) mkIf mkEnableOption mkOption types concatStringsSep all unique;
   cfg = config.nfsProvider;
   btrfsBin = "${pkgs.btrfs-progs}/bin/btrfs";
@@ -164,13 +165,13 @@ in
     #### Firewall
     networking.firewall = {
       interfaces.${wgIface}.allowedTCPPorts = [ 2049 ];
-      allowedUDPPorts = [ 51820 ];
+      allowedUDPPorts = [ port ];
     };
 
     #### WireGuard interface + peers derived from volumes
     networking.wireguard.interfaces.${wgIface} = {
       ips = [ providerCidr ];
-      listenPort = 51821;
+      listenPort = port;
       privateKeyFile = config.age.secrets.${wgSecretName}.path;
       peers =
         let
