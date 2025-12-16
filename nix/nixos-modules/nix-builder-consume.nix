@@ -70,29 +70,30 @@ in {
     #   #   (builtins.readFile ../secrets/builder-key.pub)
     #   # ;
     # }
-    {
-      inherit sshKey sshUser;
-      hostName = "lithium.proton";
-      # Or use systems with a list.
-      systems = [
-        "x86_64-linux"
-        # Allows building 32-bit binaries which are sometimes needed (like
-        # Steam).
-        "i686-linux"
-      ];
-      protocol = "ssh-ng";
-      # Keep this host from being bogged down by builds.
-      # Beware setting this to 1, as it can mean no jobs are available ever
-      # (possibly due to a bug?).
-      maxJobs = 2;
-      # What's this for?
-      speedFactor = 2;
-      supportedFeatures = [ "big-parallel" "benchmark" "kvm" ];
-      mandatoryFeatures = [];
-      # publicHostKey = toBase64
-      #   (builtins.readFile ../secrets/lithium-pub-key.pub)
-      # ;
-    }
+    # Kept for reference.
+    # {
+    #   inherit sshKey sshUser;
+    #   hostName = "lithium.proton";
+    #   # Or use systems with a list.
+    #   systems = [
+    #     "x86_64-linux"
+    #     # Allows building 32-bit binaries which are sometimes needed (like
+    #     # Steam).
+    #     "i686-linux"
+    #   ];
+    #   protocol = "ssh-ng";
+    #   # Keep this host from being bogged down by builds.
+    #   # Beware setting this to 1, as it can mean no jobs are available ever
+    #   # (possibly due to a bug?).
+    #   maxJobs = 2;
+    #   # What's this for?
+    #   speedFactor = 2;
+    #   supportedFeatures = [ "big-parallel" "benchmark" "kvm" ];
+    #   mandatoryFeatures = [];
+    #   # publicHostKey = toBase64
+    #   #   (builtins.readFile ../secrets/lithium-pub-key.pub)
+    #   # ;
+    # }
   ];
   nix.distributedBuilds = true;
   # Optional.  Useful when the builder has a faster internet connection than
