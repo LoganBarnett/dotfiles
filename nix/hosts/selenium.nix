@@ -25,6 +25,10 @@
         "video"
         "openldap-${host-id}-octoprint-service"
       ];
+      services.https.fqdns."selenium.proton" = {
+        enable = true;
+        internalPort = config.services.octoprint.port;
+      };
       users.groups."openldap-${host-id}-octoprint-service" = {};
       services.nginx = {
         # Allow large uploads, because we actually do send large files.  This is
@@ -249,11 +253,6 @@
         # users = [];
       };
     }
-    (import ../nixos-modules/https.nix {
-      inherit host-id;
-      fqdn = "${host-id}.proton";
-      server-port = 5000;
-    })
     {
       # networking.hostId is needed by the filesystem stuffs.
       # An arbitrary ID needed for zfs so a pool isn't accidentally imported on
