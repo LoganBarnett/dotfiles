@@ -27,6 +27,8 @@
       ];
       users.groups."openldap-${host-id}-octoprint-service" = {};
       services.nginx = {
+        # Allow large uploads, because we actually do send large files.  This is
+        # probably crazy but hey we won't have to adjust it again.
         clientMaxBodySize = "1g";
       };
       services.octoprint = {
