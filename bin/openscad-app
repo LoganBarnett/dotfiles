@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
 # Homebrew doesn't install the executable. The Nix package does, but is broken
 # currently.
-/Applications/OpenSCAD.app/Contents/MacOS/OpenSCAD $@
+/Applications/Nix\ Apps/OpenSCAD.app/Contents/MacOS/OpenSCAD $@
