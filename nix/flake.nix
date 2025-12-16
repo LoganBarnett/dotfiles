@@ -121,7 +121,6 @@
     # them.
     nixpkgs-latest.url = "github:nixos/nixpkgs/master";
     comfyui-pr.url = "github:LoganBarnett/nixpkgs?ref=comfyui-fetch-model-hide-rebase";
-    prusa-slicer-pr-390476.url = "github:nixos/nixpkgs?ref=pull/390476/head";
     nixos-option-pr-369151.url = "github:nixos/nixpkgs?ref=pull/369151/head";
     # I've run into a host of issues with Raspberry Pi 5s after a successful
     # build is made.  I'd like to move nixpkgs around to see if we can skip over
@@ -188,7 +187,6 @@
     nixpkgs,
     nixpkgs-latest,
     nixos-generators,
-    prusa-slicer-pr-390476,
     self,
     ...
   }: let
@@ -242,12 +240,6 @@
           {
             nixpkgs.overlays = [
               (final: prev: {
-                prusa-slicer-pr-390476 = flake-inputs
-                  .prusa-slicer-pr-390476
-                  .outputs
-                  .legacyPackages
-                  .${system}
-                ;
                 nixos-option = flake-inputs
                   .nixos-option-pr-369151
                   .outputs

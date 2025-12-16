@@ -1372,22 +1372,6 @@
         "type": "github"
       }
     },
-    "prusa-slicer-pr-390476": {
-      "locked": {
-        "lastModified": 1742156118,
-        "narHash": "sha256-BzavYcqvtnTYH7ioXAnVl03bc3afnf3SLUJw1MUz2rg=",
-        "owner": "nixos",
-        "repo": "nixpkgs",
-        "rev": "15fc832bbf4e420f7922e4ddf039eb37d4d570e5",
-        "type": "github"
-      },
-      "original": {
-        "owner": "nixos",
-        "ref": "pull/390476/head",
-        "repo": "nixpkgs",
-        "type": "github"
-      }
-    },
     "pyproject-build-systems": {
       "inputs": {
         "nixpkgs": [
@@ -1519,7 +1503,6 @@
         "nixpkgs-working-rocm": "nixpkgs-working-rocm",
         "openhab-flake": "openhab-flake",
         "programsdb": "programsdb",
-        "prusa-slicer-pr-390476": "prusa-slicer-pr-390476",
         "raspberry-pi-nix": "raspberry-pi-nix",
         "repo-sync-flake": "repo-sync-flake",
         "sytter": "sytter",
