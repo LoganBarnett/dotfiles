@@ -156,7 +156,7 @@ in {
 
         # Optional but recommended:
         # auto-cleanup bottles/casks that are no longer declared.
-        onActivation.autoUpdate = true;
+        onActivation.autoUpdate = false;
         onActivation.cleanup = "uninstall";       # removes undeclared brews/casks
         onActivation.upgrade = false;              # upgrade on switch
       };
