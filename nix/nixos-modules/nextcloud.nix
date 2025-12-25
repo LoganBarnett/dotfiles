@@ -133,7 +133,7 @@ in {
     # error: 1 dependencies of derivation '/nix/store/3lk2jrxjzvgk07xdqzacxbj0ql37g6y8-nextcloud-app-contacts-6.1.1.drv' failed to build
     # error: 1 dependencies of derivation '/nix/store/ddd9xzy4clnq9hvxwvl9yap3silk467a-nix-apps.drv' failed to build
     # error: 1 dependencies of derivation '/nix/store/p1vf696xgb4z39gf62sx0a76n3hd3yj2-nextcloud-30.0.2-with-apps.drv' failed to build
-    package = pkgs.nextcloud31;
+    package = pkgs.nextcloud32;
     database.createLocally = true;
     datadir = data-dir;
     hostName = fqdn;
