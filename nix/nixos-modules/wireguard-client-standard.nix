@@ -58,7 +58,7 @@
             endpoint = "vpn.logustus.com:51820";
             persistentKeepalive = null;
             presharedKeyFile = null;
-            publicKey = builtins.readFile ../secrets/argon-wireguard-server.pub;
+            publicKey = builtins.readFile ../secrets/silicon-wireguard-server.pub;
           }
         ];
         privateKeyFile = config.age.secrets."${host-id}-wireguard-client".path;
@@ -83,7 +83,7 @@
             endpoint = "vpn.logustus.com:51820";
             persistentKeepalive = null;
             presharedKeyFile = null;
-            publicKey = builtins.readFile ../secrets/argon-wireguard-server.pub;
+            publicKey = builtins.readFile ../secrets/silicon-wireguard-server.pub;
           }
         ];
         privateKeyFile = config.age.secrets."${host-id}-wireguard-client".path;
