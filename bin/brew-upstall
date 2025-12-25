@@ -1,5 +1,0 @@
-#! /usr/bin/env bash
-
-# Installs or updates a brew package as needed.
-
-brew install $@ || (brew upgrade $@ && brew link --overwrite $@)
