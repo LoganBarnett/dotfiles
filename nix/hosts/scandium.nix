@@ -142,6 +142,7 @@ in {
           "istat-menus"
           "keycastr"
           # "openscad"
+          "prusaslicer"
           "steam"
           "ultimaker-cura"
           # "vlc"
@@ -178,7 +179,8 @@ in {
         # nextcloud
         # A 3D printer slicer I really like.  It might work for resin printers
         # but I know it best for its FFF/FDM support.
-        (pkgs.prusa-slicer.override { boost = pkgs.boost179; })
+        # pkgs.prusa-slicer
+        # (pkgs.prusa-slicer.override { boost = pkgs.boost179; })
         # Yet another chat app.  I guess it's supposed to be secure, but I
         # assume anything going to the Internet is fundamentally insecure to
         # whomever receives it, and everyone in between.

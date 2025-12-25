@@ -29,7 +29,7 @@
 , openvdb
 , pcre
 , qhull
-, tbb_2021_11
+, tbb_2022
 , wxGTK32
 , xorg
 , libbgcode
@@ -64,7 +64,7 @@ let
       hash = "sha256-WNdAYu66ggpSYJ8Kt57yEA4mSTv+Rvzj9Rm1q765HpY=";
     };
   });
-  openvdb_tbb_2021_8 = openvdb.override { tbb = tbb_2021_11; };
+  openvdb_tbb_2022 = openvdb;
   wxGTK-override' = if wxGTK-override == null then wxGTK-prusa else wxGTK-override;
 
   patches = [
@@ -126,10 +126,10 @@ stdenv.mkDerivation (finalAttrs: {
     nanosvg-fltk
     nlopt
     opencascade-occt
-    openvdb_tbb_2021_8
+    openvdb_tbb_2022
     pcre
     qhull
-    tbb_2021_11
+    tbb_2022
     wxGTK-override'
     xorg.libX11
     libbgcode
@@ -137,9 +137,6 @@ stdenv.mkDerivation (finalAttrs: {
     catch2
   ] ++ lib.optionals withSystemd [
     systemd
-  ] ++ lib.optionals stdenv.hostPlatform.isDarwin [
-    darwin.apple_sdk_11_0.frameworks.CoreWLAN
-    darwin.apple_sdk_11_0.frameworks.WebKit
   ];
 
   strictDeps = true;
@@ -185,6 +182,8 @@ stdenv.mkDerivation (finalAttrs: {
     "-DSLIC3R_STATIC=0"
     "-DSLIC3R_FHS=1"
     "-DSLIC3R_GTK=3"
+    "-Wno-dev"
+    "-DCMAKE_POLICY_VERSION_MINIMUM=3.5"
   ];
 
   postInstall = ''

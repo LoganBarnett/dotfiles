@@ -12,6 +12,6 @@ final: prev: {
   # 5. Identify if the WebKit addition is due to the new version or if it just
   #    never built on aarch64-darwin.
   prusa-slicer = prev.callPackage ../derivations/prusa-slicer.nix {
-    stdenv = if prev.stdenv.isDarwin then prev.overrideLibcxx prev.darwin.apple_sdk_11_0.llvmPackages_14.stdenv else prev.stdenv;
+    # stdenv = if prev.stdenv.isDarwin then prev.overrideLibcxx prev.darwin.apple_sdk_11_0.llvmPackages_14.stdenv else prev.stdenv;
   };
 }

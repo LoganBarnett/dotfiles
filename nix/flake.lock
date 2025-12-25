@@ -1096,22 +1096,6 @@
         "type": "github"
       }
     },
-    "nixpkgs-rpi": {
-      "locked": {
-        "lastModified": 1735268880,
-        "narHash": "sha256-7QEFnKkzD13SPxs+UFR5bUFN2fRw+GlL0am72ZjNre4=",
-        "owner": "nixos",
-        "repo": "nixpkgs",
-        "rev": "7cc0bff31a3a705d3ac4fdceb030a17239412210",
-        "type": "github"
-      },
-      "original": {
-        "owner": "nixos",
-        "ref": "master",
-        "repo": "nixpkgs",
-        "type": "github"
-      }
-    },
     "nixpkgs-stable": {
       "locked": {
         "lastModified": 1724316499,
@@ -1499,7 +1483,6 @@
         "nixpkgs-25-11": "nixpkgs-25-11",
         "nixpkgs-cuda": "nixpkgs-cuda",
         "nixpkgs-latest": "nixpkgs-latest",
-        "nixpkgs-rpi": "nixpkgs-rpi",
         "nixpkgs-working-rocm": "nixpkgs-working-rocm",
         "openhab-flake": "openhab-flake",
         "programsdb": "programsdb",

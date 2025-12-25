@@ -271,9 +271,7 @@
       };
       selenium = {
         controlledHost = true;
-        flake-input-overrides = {
-          nixpkgs = "nixpkgs-rpi";
-        };
+        flake-input-overrides = {};
         ipv4 = 5;
         monitors = [
           # "octoprint"

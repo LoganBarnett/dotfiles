@@ -122,10 +122,6 @@
     nixpkgs-latest.url = "github:nixos/nixpkgs/master";
     comfyui-pr.url = "github:LoganBarnett/nixpkgs?ref=comfyui-fetch-model-hide-rebase";
     nixos-option-pr-369151.url = "github:nixos/nixpkgs?ref=pull/369151/head";
-    # I've run into a host of issues with Raspberry Pi 5s after a successful
-    # build is made.  I'd like to move nixpkgs around to see if we can skip over
-    # some issues somehow.
-    nixpkgs-rpi.url = "github:nixos/nixpkgs/master";
     # nixpkgs.url = "github:nixos/nixpkgs?ref=9a9960b98418f8c385f52de3b09a63f9c561427a";
     # This is the Nix runtime itself, so be real careful about bumping this.
     # But at least now I can bump it without having to reinstall everything.

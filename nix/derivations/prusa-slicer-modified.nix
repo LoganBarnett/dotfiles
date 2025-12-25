@@ -121,6 +121,7 @@ stdenv.mkDerivation (finalAttrs: {
     nanosvg-fltk
     nlopt
     opencascade-occt
+    # openvdb
     openvdb_tbb_2021_8
     pcre
     qhull
