@@ -10,7 +10,7 @@
 ################################################################################
 {
   signal-desktop-bin = {
-    version = "7.81.0";
-    hash = "sha256-LWConZwFOXf6LS1tgpkUACQt3s5nhk/exeJadNjxW30=";
+    version = "7.83.0";
+    hash = "sha256-5W70xzjT5+PbzmDHBFIqAUdXn9N1L0aZm1rrdAPUXRw=";
   };
 }
