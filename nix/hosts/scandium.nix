@@ -116,6 +116,9 @@ in {
       allowUnfreePackagePredicates = [
         (pkg: builtins.elem (lib.getName pkg) [
           "claude-code"
+          "firefox-bin"
+          "firefox"
+          "firefox-bin-unwrapped"
           "ngrok"
           "signal-desktop-bin"
           "unrar"
@@ -138,6 +141,9 @@ in {
           "alfred"
           "dash"
           "discord"
+          # The firefox-bin package doesn't work on macOS - it immediately
+          # crashes.
+          "firefox"
           # "doxie"
           "istat-menus"
           "keycastr"
@@ -162,12 +168,15 @@ in {
         pkgs-latest.aider-chat
         # A less dial-home-to-an-ad-company way of running Chrome extensions.
         # Not working because it's a Linux only build.
-        # pkgs.chromium
+        # pkgs.ungoogled-chromium
         # Make machines write the code instead.  What could go wrong? :D
         pkgs-latest.claude-code
         (pkgs.callPackage ../derivations/dice-roller.nix {})
         # Let us communicate with the Matrix chat protocol.
         pkgs.element-desktop
+        # Crashes on open.
+        # pkgs.firefox-bin
+        pkgs.moonlight-qt
         # Drawing program (Like MS Paint, or more like Gimp/Photoshop?).
         # Linux-only though in Nix.  Probably due to problems with GTK that a
         # lots of Linux GUI-centric programs have in the Nix ecosystem.
@@ -242,7 +251,6 @@ in {
         # Doh, broken.
         # pkgs-latest.tigervnc
         # pkgs-latest.turbovnc
-        pkgs.moonlight-qt
         # Translate audio to text, but do it fast (unlike Python versions).
         pkgs.whisper-cpp
         # Let's be able to view media.
