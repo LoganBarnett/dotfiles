@@ -133,7 +133,7 @@ in {
         # but only impacts Homebrew itself.
         autoMigrate = true;
         # Uh, what?  What if I need more than one user?
-        user   = "logan";
+        user = "logan";
         # enableRosetta = true;  # if you want x86_64 brews too
       };
       homebrew = {
