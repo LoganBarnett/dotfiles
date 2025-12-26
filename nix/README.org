@@ -158,6 +158,39 @@ git add secrets/$host-pub-key*
 host='host'; ssh-keyscan $host.proton | grep -o 'ssh-ed25519.*' > secrets/$host-pub-key.pub
 #+end_src
 
+* devices
+
+This covers miscellaneous devices on the network which need special instruction
+or understanding.
+
+** Aruba 6300M
+
+Sometimes the windfall is pretty good!
+
+*** credentials and connection
+
+The user name is ~admin~, and the password can be found at
+[[file:./secrets/aruba-admin-pass.age]].
+
+If the machine is reset, the username is still ~admin~.
+
+Don't use ~screen~, since it either has no options to make the serial connection
+work properly, or I don't know of them.  ~picocom~ does the trick though.
+Connect thusly:
+
+#+begin_src sh :results none :exports code
+picocom --baud 115200 --flow none /dev/tty.usbmodemM1230887551
+#+end_src
+
+Press enter to make it prompt you for credentials.
+
+If you idle too long, it will log you out.
+
+*** Configuring
+
+Coming soon!
+
+
 * projects
 
 This is all the Nix related projects I have.
