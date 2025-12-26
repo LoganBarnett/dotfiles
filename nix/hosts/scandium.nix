@@ -172,6 +172,9 @@ in {
         # pkgs.ungoogled-chromium
         # Make machines write the code instead.  What could go wrong? :D
         pkgs-latest.claude-code
+        # Should play music of any of the screamer/tracker formats, but doesn't
+        # build on macOS because Reasons.
+        # pkgs.deadbeef
         (pkgs.callPackage ../derivations/dice-roller.nix {})
         # Let us communicate with the Matrix chat protocol.
         pkgs.element-desktop

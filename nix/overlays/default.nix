@@ -70,9 +70,11 @@
   (final: prev: {
     chronicle-proxy = final.callPackage ../derivations/chronicle-proxy.nix {};
     confluence-markdown-exporter = final.callPackage ../derivations/confluence-markdown-exporter.nix {};
+    deadbeef = final.callPackage ../derivations/deadbeef.nix {};
     mqttpassworder = final.callPackage ../derivations/mqttpassworder.nix {};
     musicgpt = final.callPackage ../derivations/musicgpt.nix {};
     mypaint = final.callPackage ../derivations/mypaint.nix {};
+    # vlc = final.callPackage ../derivations/vlc.nix {};
     zalgo-cli = final.callPackage ../derivations/zalgo-cli.nix {};
     zsh-git-prompt = final.callPackage ../derivations/zsh-git-prompt.nix {};
   })
