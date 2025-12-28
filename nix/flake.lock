@@ -523,6 +523,22 @@
         "type": "github"
       }
     },
+    "flatpaks": {
+      "locked": {
+        "lastModified": 1763835632,
+        "narHash": "sha256-6q7bnvI8OawJsG6z8fnPxrvU91221AsMBfsUAepoFvM=",
+        "owner": "in-a-dil-emma",
+        "repo": "declarative-flatpak",
+        "rev": "8580e2112e41814344cfd27973248af89a169886",
+        "type": "github"
+      },
+      "original": {
+        "owner": "in-a-dil-emma",
+        "ref": "latest",
+        "repo": "declarative-flatpak",
+        "type": "github"
+      }
+    },
     "git-hooks-nix": {
       "inputs": {
         "flake-compat": [
@@ -1467,6 +1483,7 @@
         "current-system": "current-system",
         "disko": "disko",
         "emacs-overlay": "emacs-overlay",
+        "flatpaks": "flatpaks",
         "github-to-jenkins-webhook": "github-to-jenkins-webhook",
         "home-manager": "home-manager",
         "home-manager-working-rocm": "home-manager-working-rocm",

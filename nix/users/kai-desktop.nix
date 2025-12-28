@@ -8,6 +8,7 @@
   ];
   imports = [
     ../nixos-modules/unfree-predicates.nix
+    ../nixos-configs/roblox.nix
   ];
   services.userLockoutSchedule.users.kai = {
     schedule = let

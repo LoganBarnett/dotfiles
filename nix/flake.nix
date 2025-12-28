@@ -65,6 +65,9 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    # Allow Flatpak usage, specifically so we can install Roblox via Sober.
+    flatpaks.url = "github:in-a-dil-emma/declarative-flatpak/latest";
+
     home-manager-working-rocm = {
       url = "github:nix-community/home-manager/release-24.11";
       inputs.nixpkgs.follows = "nixpkgs-working-rocm";
