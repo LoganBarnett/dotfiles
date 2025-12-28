@@ -224,21 +224,20 @@
           #     # maintainers = with lib.maintainers; [ logan-barnett ];
           #   };
           # }))
+          # A needed PR I submitted has been merged, but there is no release for
+          # it that I know of yet.
           (pg.buildPlugin (let
             version = "2022-11-10-unstable";
           in {
             pname = "octoprint-plugin-authldap";
             inherit version;
+            format = "setuptools";
             src = pkgs.fetchFromGitHub {
               owner = "gillg";
               repo = "OctoPrint-LDAP";
-              rev = "473cf955309b8ba427d4c6b5f50b4d7b58c56477";
-              hash = "sha256-6b5IXCIOxLlyKLo17y9gh30gQF7S0OEJVhTF6U2hrz0=";
+              rev = "841504487d7c5e634a93e4bd32c71f06b974ed36";
+              hash = "sha256-xxwkOgQUUt5JmqjFZIXPipH6zvq8ysTbOaU3h6RLNzs=";
             };
-            patches = [
-              # ../nixos-modules/octoprint-auth-ldap-extra-logging.patch
-              ../nixos-modules/octoprint-auth-ldap-password-file.patch
-            ];
             propagatedBuildInputs = [
               pkgs.python3Packages.python-ldap
             ];
