@@ -131,7 +131,6 @@
     nixpkgs-latest.url = "github:nixos/nixpkgs/master";
     comfyui-pr.url = "github:LoganBarnett/nixpkgs?ref=comfyui-fetch-model-hide-rebase";
     nixos-option-pr-369151.url = "github:nixos/nixpkgs?ref=pull/369151/head";
-    # nixpkgs.url = "github:nixos/nixpkgs?ref=9a9960b98418f8c385f52de3b09a63f9c561427a";
     # This is the Nix runtime itself, so be real careful about bumping this.
     # But at least now I can bump it without having to reinstall everything.
     nix = {
@@ -143,21 +142,12 @@
       # url = "github:nixos/nix?ref=2.24.11";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    # nix-doom-emacs.url = "github:nix-community/nix-doom-emacs";
     home-manager = {
       url = "github:nix-community/home-manager/release-25.11";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     openhab-flake = {
       url = "github:LoganBarnett/openhab-flake/add-darwin-devshell-support";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-    # nixpkgs-nickel.url = "github:nixos/nixpkgs?ref=9a9960b98418f8c385f52de3b09a63f9c561427a";
-    raspberry-pi-nix = {
-      # url = "github:tstat/raspberry-pi-nix";
-      url = "github:nix-community/raspberry-pi-nix";
-      # url = "github:tstat/raspberry-pi-nix?ref=8fc9cbd3e4a53d365596c9cc4fc3cc07cd447af4";
-      # url = "github:LoganBarnett/raspberry-pi-nix?ref=revert-kernel-to-6-1";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     programsdb = {
@@ -336,29 +326,6 @@
         overlays = import ./overlays/default.nix;
       };
     };
-
-    # nixosConfigurations.test-pi = flake-inputs.nixpkgs.lib.nixosSystem (let
-    #   host-id = "test-pi";
-    # in {
-    #   modules = [
-    #     {
-    #       imports = [
-    #         (import ./nixos-modules/raspberry-pi-exact-readme-module.nix {
-    #           inherit flake-inputs;
-    #         })
-    #         # To keep agenix-rekey happy.  It requires all nodes include
-    #         # agenix and agenix-rekey.
-    #         flake-inputs.agenix.nixosModules.default
-    #         flake-inputs.agenix-rekey.nixosModules.default
-    #         {
-    #           age.rekey.storageMode = "local";
-    #           age.rekey.localStorageDir = ./secrets/rekeyed/${host-id};
-    #         }
-    #         ./nixos-modules/btf-disable.nix
-    #       ];
-    #     }
-    #   ];
-    # });
 
   };
 
