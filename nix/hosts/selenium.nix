@@ -131,6 +131,10 @@
             autologinLocal = false;
             userManager = "octoprint.access.users.LDAPUserManager";
           };
+          # api = {
+          #   enabled = false;
+          #   allowCrossOrigin = true;
+          # };
           commands = {
             # This should disable some of the errors spewed due to constant
             # checks.
