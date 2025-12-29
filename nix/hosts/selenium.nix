@@ -132,20 +132,6 @@
               tracking = "null";
             };
           };
-          temperature = {
-            profiles = [
-              {
-                bed = 100;
-                chamber = "null";
-                name = "ABS";
-              }
-              {
-                bed = 60;
-                chamber = "null";
-                name = "PLA";
-              }
-            ];
-          };
         };
         openFirewall = false;
         # Unfortunately plugins do not appear in the NixOS search page.  But you
