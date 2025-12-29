@@ -82,6 +82,9 @@
         enable = true;
         defaultPrinterProfile = "prusa-xl";
         printerProfiles = {
+          # If the origin is not set on the lower left for various axes,
+          # OctoPrint will prevent the print, but clicking print again works.
+          # Better to just fix it though.
           prusa-xl = {
             axes = {
               e = {
@@ -90,14 +93,17 @@
               };
               x = {
                 inverted = false;
+                origin = "lowerleft";
                 speed = 6000;
               };
               y = {
                 inverted = false;
+                origin = "lowerleft";
                 speed = 6000;
               };
               z = {
                 inverted = false;
+                origin = "lowerleft";
                 speed = 200;
               };
             };
