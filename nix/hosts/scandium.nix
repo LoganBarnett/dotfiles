@@ -254,6 +254,9 @@ in {
         #     hash = "sha256-tmxaupVwN8k9ZYtFZjDJuhN9bbkIpcWEJ2JDfrDlBgg=";
         #   };
         # }))
+        # A cloud VPN provider.  It breaks my self hosted proclivities, but
+        # others can give me links to go into their VPNs.
+        pkgs.tailscale
         # Screen Sharing.app is nice that it's built-in but it doesn't support
         # as many encryption/security options, It think.
         # Doh, broken.
@@ -265,6 +268,9 @@ in {
         pkgs.vlc-bin
         pkgs-latest.zoom-us
       ];
+      # A cloud VPN provider.  It breaks my self hosted proclivities, but
+      # others can give me links to go into their VPNs.
+      services.tailscale.enable = true;
       system.stateVersion = 5;
     })
   ];
