@@ -162,6 +162,11 @@
           pg.stlviewer
           # Save our eyes by letting us load a dark mode theme.
           pg.themeify
+          # bgcode is Prusa's binary format.  It's not strictly needed and the
+          # space savings aren't impactful in a meaningful way for us.  I'm not
+          # sure if this plugin is even supported.  However that does mean that
+          # a Prusa Slicer configuration needs to be set to use gcode instead of
+          # bgcode.
           # (pg.buildPlugin (let
           #   version = "2024-05-29-unstable";
           # in {
