@@ -141,6 +141,39 @@
             localPipCommand = "None";
           };
           plugins = {
+            _disabled = [
+              # Core / UI
+              "achievements"
+              "announcements"
+              "corewizard"
+              # "customcontrolmanager"
+              # "eventmanager"
+              # "logging"
+              # "uploadmanager"
+              # Auth / keys / security-adjacent
+              # "appkeys"
+              # "tracking"
+              # "errortracking"
+              # "health_check"
+              # Printer / state / UI bindings
+              # "action_command_notification"
+              # "action_command_prompt"
+              # "gcodeviewer"
+              # "virtual_printer"
+              # Discovery / network
+              # "discovery"
+              # Webcam
+              # "classicwebcam"
+              # Maintenance / updates
+              # "backup"
+              "pluginmanager"
+              "softwareupdate"
+              # Platform-specific
+              "pi_support"
+              # Validation helpers
+              # "file_check"
+              # "firmware_check"
+            ];
             # Per https://github.com/gillg/OctoPrint-LDAP/issues/5 the log level
             # for all of Octoprint can be set to `DEBUG` and we should see more
             # errors.  Right now I see nothing.
