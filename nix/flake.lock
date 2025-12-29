@@ -1062,6 +1062,22 @@
         "type": "github"
       }
     },
+    "nixpkgs-openscad-bin": {
+      "locked": {
+        "lastModified": 1765847327,
+        "narHash": "sha256-zwsr7nT2liw4ZaB593EVbGqkuqmDD/Uxo9rqLDndMyw=",
+        "owner": "LoganBarnett",
+        "repo": "nixpkgs",
+        "rev": "994a1d85fdb7cc360e5ab264b276c202ccb0b657",
+        "type": "github"
+      },
+      "original": {
+        "owner": "LoganBarnett",
+        "ref": "openscad-darwin-preserve-cli",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
     "nixpkgs-regression": {
       "locked": {
         "lastModified": 1643052045,
@@ -1437,6 +1453,7 @@
         "nixpkgs-25-11": "nixpkgs-25-11",
         "nixpkgs-cuda": "nixpkgs-cuda",
         "nixpkgs-latest": "nixpkgs-latest",
+        "nixpkgs-openscad-bin": "nixpkgs-openscad-bin",
         "nixpkgs-working-rocm": "nixpkgs-working-rocm",
         "openhab-flake": "openhab-flake",
         "programsdb": "programsdb",

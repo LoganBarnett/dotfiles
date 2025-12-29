@@ -30,6 +30,9 @@ in
     # ];
   #   buildInputs = old.buildInputs ++ [ pkgs.libp11 pkgs.libsForQt5 ];
   }));
+  pkgs-openscad-bin = import flake-inputs.nixpkgs-openscad-bin {
+    inherit system;
+  };
   pkgs-latest = import flake-inputs.nixpkgs-latest {
     inherit system;
     # TODO: Constrain to signal-desktop-bin to make this precise.  This is
@@ -190,6 +193,7 @@ in {
         # Allow generating Nextcloud plugins as a Nix expression.
         pkgs.nc4nix
         # nextcloud
+        pkgs-openscad-bin.openscad
         # Used as a better `screen` for communicating at various baud rates and
         # formats.  I found this necessary for interfacing with an Aruba managed
         # switch.
