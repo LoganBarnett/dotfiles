@@ -111,8 +111,9 @@ in {
       dhcp-option = [
         "option:domain-search,${domain}"
         "option:router,192.168.254.254"
-        # TODO: Do a lookup for argon's IP.
-        "option:dns-server,192.168.254.2"
+        "option:dns-server,192.168.254.${
+          toString facts.network.hosts.silicon.ipv4
+        }"
       ];
     };
   };

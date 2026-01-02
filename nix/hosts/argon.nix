@@ -6,7 +6,6 @@
   system = "aarch64-linux";
 in {
   imports = [
-    ../nixos-configs/blocky.nix
     ../nixos-modules/raspberry-pi-4.nix
     ../nixos-modules/raspberry-pi-host.nix
     ../nixos-modules/server-host.nix
