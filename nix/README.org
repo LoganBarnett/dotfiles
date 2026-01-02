@@ -3236,3 +3236,27 @@ running again.
 14. Verify by navigating to a resource such as https://home-assistant.proton -
     it doesn't matter if you can't log in.  You just need the page to load
     without a security warning.
+* Operations
+** File syncing
+
+Example invocation to sync over my music files.  Note that this preserves the
+directory, so ~music~ is one layer deep (not nested), and ensured to exist.
+
+#+begin_src sh :results none :exports code
+rsync \
+  --archive \
+  --verbose \
+  --human-readable \
+  --iconv=utf-8-mac,utf-8 \
+  --chown=nextcloud:nextcloud \
+  ~/Dropbox/music \
+  --rsync-path='sudo rsync' 'silicon.proton:/tank/data/nextcloud/data/logan/files/'
+#+end_src
+
+Some notable things:
+1. This ensures the files are owned by Nextcloud - required for Nextcloud to manage
+   them.
+2. The ~--iconv~ invocation converts from the macOS (see
+   https://serverfault.com/a/427200 for details).  Basically macOS uses UTF-8
+   NFC and Linux uses UTF-8 NFD.  Linux seems to tolerate it, but the PHP
+   runtime does not.
