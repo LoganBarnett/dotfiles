@@ -52,11 +52,6 @@
     "octoprint"
     "${host-id}-octoprint-service"
   ;
-  boot.kernelParams = [
-    # The USB connection can hypothetically suspend and cause prints to fail.
-    # By default this is 2, but setting it to -1 disables it.
-    "usbcore.autosuspend=-1"
-  ];
   # Used in conjunction with the libraspberrypi library (which provides the
   # vcgencmd command), we should be able to see under-voltage reports in
   # OctoPrint.
