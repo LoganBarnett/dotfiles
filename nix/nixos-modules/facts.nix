@@ -98,6 +98,9 @@
     hosts = {
       argon = {
         controlledHost = true;
+        flake-input-overrides = {
+          nixpkgs = "nixpkgs-nixos-raspberrypi";
+        };
         ipv4 = 2;
         monitors = [
           "node"
@@ -223,8 +226,7 @@
         ];
         controlledHost = true;
         flake-input-overrides = {
-          # Give Prometheus the ability to see the nvidia-gpu exporter.
-          nixpkgs = "nixpkgs-cuda";
+          nixpkgs = "nixpkgs-nixos-raspberrypi";
         };
         ipv4 = 1;
         monitors = [
@@ -271,7 +273,9 @@
       };
       selenium = {
         controlledHost = true;
-        flake-input-overrides = {};
+        flake-input-overrides = {
+          nixpkgs = "nixpkgs-nixos-raspberrypi";
+        };
         ipv4 = 5;
         monitors = [
           # "octoprint"

@@ -111,6 +111,15 @@
       # nixos-hardware doesn't actually use nixpkgs.
       # inputs.nixpkgs.follows = "nixpkgs";
     };
+    # Give us the ability to manage the boot options via config.txt,
+    # declaratively.
+    nixos-raspberrypi = {
+      url = "github:nvmd/nixos-raspberrypi/develop";
+      inputs.nixpkgs.follows = "nixpkgs-nixos-raspberrypi";
+    };
+    nixpkgs-nixos-raspberrypi = {
+      url = "github:nvmd/nixpkgs/modules-with-keys-25.11";
+    };
     # This is forced at the moment, because we have some heavy deltas coming
     # into flake.lock and I want that to stabilize before I pin it here.
     # nixpkgs.url = "github:nixos/nixpkgs?ref=f9f59197478b3ec9c954b67ae0d1d5429de23124";
