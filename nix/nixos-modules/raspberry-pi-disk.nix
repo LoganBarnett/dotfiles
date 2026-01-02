@@ -1,5 +1,5 @@
 ################################################################################
-# Give us a default disk for Rasbperry Pi SD cards.
+# Give us a default disk for Raspberry Pi SD cards.
 #
 # This may not work for all Raspberry Pi images going forward.  You can see what
 # partitions are availble (via their /dev file) and the partition type with

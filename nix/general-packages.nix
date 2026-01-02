@@ -104,7 +104,7 @@
   # Pre format my NixOS contributions to save some PR churn.
   pkgs.nixfmt-rfc-style
   # Provides `nixos-generate` which can be used to build ready-to-go images of
-  # NixOS.  Useful for writing state to an SD card and putting into an Rasberry
+  # NixOS.  Useful for writing state to an SD card and putting into an Raspberry
   # Pi, for example.  The nixpkgs version lags behind a lot, so see overlays for
   # managing the specific version/rev.
   # pkgs.nixos-generators

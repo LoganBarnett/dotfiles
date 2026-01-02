@@ -881,7 +881,7 @@ There is a big deprecated section I copied unwittingly.
 nix build '.#nixosConfigurations.cobalt-pi.config.system.build.sdImage' --system 'aarch64-linux' --no-eval-cache
 #+end_src
 
-[[https://github.com/NixOS/nixpkgs/issues/260754][nixpkgs#260754]] led me to using =rasbperry-pi-nix= for building Raspberry Pi
+[[https://github.com/NixOS/nixpkgs/issues/260754][nixpkgs#260754]] led me to using =raspberry-pi-nix= for building Raspberry Pi
 images.  I would like to tie that in with =nixos-generators= if at all
 reasonable.
 

@@ -1,5 +1,5 @@
 ################################################################################
-# This includes any and all hardware peripheral settings for Rasberry Pis.  See
+# This includes any and all hardware peripheral settings for Raspberry Pis.  See
 # https://wiki.nixos.org/wiki/NixOS_on_ARM/Raspberry_Pi for reference.
 ################################################################################
 { version, model }:  {
