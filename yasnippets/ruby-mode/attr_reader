@@ -1,0 +1,11 @@
+# -*- mode: snippet; require-file-newline: nil -*-
+# name: attr-reader
+# key: attr_reader
+# condition: t
+# This creates a read-only accessor attribute, along with its Yard
+# documentation.
+# --
+##
+# @!attribute [r] $1
+# @return [$2] $3
+attr_reader(:$1)
