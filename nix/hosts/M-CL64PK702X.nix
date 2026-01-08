@@ -110,7 +110,7 @@ in {
         pkgs.gh
         # Stop using the cursed GlobalProtect VPN GUI client and use something
         # we can better automate instead.
-        pkgs.gpclient
+        # pkgs.gpclient
         # Used for encrypting sensitive information in Hiera.
         pkgs.hiera-eyaml
         pkgs.mktemp
