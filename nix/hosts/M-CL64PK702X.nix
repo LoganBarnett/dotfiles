@@ -21,6 +21,7 @@ in {
       ];
       allowUnfreePackagePredicates = [
         (pkg: builtins.elem (lib.getName pkg) [
+          "claude-code"
           "example-unfree-package"
           "unrar"
           "windsurf"
@@ -105,6 +106,7 @@ in {
       environment.systemPackages = [
         pkgs.aider-chat
         pkgs.awscli
+        pkgs.claude-code
         pkgs.confluence-markdown-exporter
         # Use GitHub from the command line.
         pkgs.gh
