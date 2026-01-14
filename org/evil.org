@@ -308,6 +308,21 @@ commands prefixed with =:e=.
 
 * searching
 
+** search module
+
+Use ~evil-search~ to get smart case overriding behavior like ~\C~ at the
+beginning of the search to force a case sensitive search.
+
+#+name: config/evil-search-module
+#+begin_src emacs-lisp :results none :exports code :tangle no
+(setq evil-search-module 'evil-search)
+#+end_src
+
+** historical issues
+
+This is old and no longer relevant, but I'm keeping it due to significant
+research that was required.
+
 A recent =org-mode= update has broken searching for =evil-mode=. Basically:
 Searching in =evil-mode= won't unfold anything in the buffer, so =evil-mode=
 thinks there's only what's visible as possible search candidates. The total
@@ -523,7 +538,6 @@ It may not be apparent but =use-package= works as you'd want it to even if the
 library is already loaded.
 
 #+begin_src emacs-lisp :results none :noweb yes
-;; <<config/evil-fix-org-fold-search-doom-6578>>
 (use-package "evil"
   :ensure t
   :init
@@ -531,6 +545,7 @@ library is already loaded.
   <<config/evil-Y-yanks-to-eol>>
   (setq evil-want-integration t)
   (setq evil-want-keybinding nil)
+  <<config/evil-search-module>>
   (message "requiring evil-mode...")
   (require 'evil)
   (require 'evil-exchange)
