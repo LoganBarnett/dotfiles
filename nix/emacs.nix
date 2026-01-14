@@ -275,6 +275,8 @@
           epkgs.dockerfile-mode
           epkgs.d2-mode
           epkgs.elm-mode
+          # Cucumber .feature files.
+          epkgs.feature-mode
           # This must come from something else.  Magit perhaps?
           # epkgs.gitignore-mode
           # Editing of graphics shaders.
@@ -282,11 +284,11 @@
           epkgs.gnuplot
           # A subset of plantuml - text declared diagramming.
           epkgs.graphviz-dot-mode
-          # Cucumber .feature files.
-          epkgs.feature-mode
           epkgs.json-mode
           # Edit justfiles for just - a Rust based make alternative.
           epkgs.just-mode
+          # Did you know `jq` allows for scripts?!  Edit them with jq-ts-mode.
+          epkgs.jq-ts-mode
           epkgs.lsp-mode
           epkgs.lsp-ui
           # Text based diagramming.
@@ -327,6 +329,47 @@
           epkgs.terraform-mode
           epkgs.yaml-mode
           epkgs.vimrc-mode
+        ];
+        # Managing all of the grammars and parsers is managed here, though
+        # individual language modes should still go in `languages`.
+        # See https://wiki.nixos.org/wiki/Emacs#Tree-sitter for documentation on
+        # this.
+        tree-sitter = [
+          epkgs.tree-sitter-langs
+          (epkgs.treesit-grammars.with-grammars (grammars: [
+            grammars.tree-sitter-bash
+            grammars.tree-sitter-bibtex
+            grammars.tree-sitter-comment
+            grammars.tree-sitter-crystal
+            grammars.tree-sitter-css
+            grammars.tree-sitter-dockerfile
+            grammars.tree-sitter-elisp
+            grammars.tree-sitter-go
+            grammars.tree-sitter-graphql
+            grammars.tree-sitter-html
+            grammars.tree-sitter-http
+            grammars.tree-sitter-haskell
+            grammars.tree-sitter-java
+            grammars.tree-sitter-javascript
+            grammars.tree-sitter-just
+            grammars.tree-sitter-json
+            grammars.tree-sitter-json5
+            (pkgs.callPackage ./derivations/tree-sitter-jq.nix {})
+            grammars.tree-sitter-latex
+            grammars.tree-sitter-make
+            grammars.tree-sitter-markdown
+            grammars.tree-sitter-markdown-inline
+            grammars.tree-sitter-nix
+            grammars.tree-sitter-python
+            grammars.tree-sitter-regex
+            grammars.tree-sitter-ruby
+            grammars.tree-sitter-rust
+            grammars.tree-sitter-toml
+            grammars.tree-sitter-tsx
+            grammars.tree-sitter-typescript
+            grammars.tree-sitter-yaml
+            grammars.tree-sitter-verilog
+          ]))
         ];
         org-mode-packages = [
           # Allow more advanced table querying / building than tblfm.  This
@@ -524,6 +567,11 @@
           # Prettify a buffer.  Only for JavaScript?  Other languages use it
           # too, but unknown for this Emacs library.
           epkgs.prettier-js
+          # Convert Nix SHAs into ellipsis.  I don't think I actually want this,
+          # because seeing that the SHA changed has being a real life saver.
+          # Still, this gets honorable mention, and it stands as a reason to
+          # show that I know about it, and decided not to use it.
+          # epkgs.pretty-sha-path
           # Coloring keywords is okay but coloring identifiers is pretty
           # helpful.  Doesn't always seem to work though.
           epkgs.rainbow-identifiers
@@ -573,6 +621,7 @@
         ++ editing
         ++ languages
         ++ programs
+        ++ tree-sitter
         ++ utility-packages
         ++ org-mode-packages
       );
