@@ -106,7 +106,7 @@ reporter = currentUser())" id keys-s id keys-s)
   (add-hook 'jiralib2-post-login-hook #'ejira-guess-epic-sprint-fields)
   (require 'ejira-agenda)
   ;; Ensure org-agenda can see the issues.
-  (add-to-list 'org-agenda-files ejira-org-directory)
+  ;; (add-to-list 'org-agenda-files ejira-org-directory)
   <<config/ejira-update-only-my-tickets-fork>>
   ;; Filter only jira issues. This might need some tuning.
   (org-add-agenda-custom-command

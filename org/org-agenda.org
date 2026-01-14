@@ -442,20 +442,44 @@ _C-g_ back one menu
 #+begin_src emacs-lisp :results none :noweb yes
 <<config/org-agenda-map-clean>>
 
+(defun config/find-org-files (directory)
+  "Return a list of non-archived Org files under DIRECTORY, recursively.
+
+Archived files are excluded using `org-archive-file-regexp`."
+  (let (
+        (dir (expand-file-name directory))
+        )
+    (seq-filter
+     (lambda (file)
+       (not
+        (string-suffix-p
+"_archive.org"
+         (file-name-base file)
+         )
+        )
+       )
+     (directory-files-recursively
+      dir
+      "\\.org\\'")
+     )
+    )
+  )
+
 (use-package org-agenda
   :defer t
   :init
-  ;; Somehow "~/org" winds up getting added in.  I don't know who is doing this
-  ;; and how I would stop it.
-  ;; `org-agenda-files' is also modified in org-agenda-private.org in my private
-  ;; repo.
-  (setq-default
+  (setq
    org-agenda-files
-   `(
-     "~/notes/agenda.org"
-     "~/notes/inbox.org"
+   (list
+     ;; "~/notes/agenda.org"
+     ;; "~/notes/calendar.org"
+     ;; "~/notes/inbox.org"
+     (config/find-org-files "~/notes")
+     (config/find-org-files "~/work-notes")
      )
    )
+  (setq org-directory "~/notes")
+  (debug-on-variable-change 'org-agenda-files)
   (require 'mu4e)
   ;; :hook
   ;; This is how you're supposed to override settings, lest you run into prefix
