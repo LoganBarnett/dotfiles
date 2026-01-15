@@ -452,10 +452,7 @@ Archived files are excluded using `org-archive-file-regexp`."
     (seq-filter
      (lambda (file)
        (not
-        (string-suffix-p
-"_archive.org"
-         (file-name-base file)
-         )
+        (string-suffix-p "_archive.org" (file-name-base file))
         )
        )
      (directory-files-recursively
@@ -470,10 +467,10 @@ Archived files are excluded using `org-archive-file-regexp`."
   :init
   (setq
    org-agenda-files
-   (list
      ;; "~/notes/agenda.org"
      ;; "~/notes/calendar.org"
      ;; "~/notes/inbox.org"
+   (append
      (config/find-org-files "~/notes")
      (config/find-org-files "~/work-notes")
      )
