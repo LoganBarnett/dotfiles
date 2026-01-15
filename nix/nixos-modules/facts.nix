@@ -134,6 +134,9 @@
           "zwave-js-ui"
         ];
         controlledHost = true;
+        flake-input-overrides = {
+          nixpkgs = "nixpkgs-nixos-raspberrypi";
+        };
         ipv4 = 3;
         monitors = [
           "node"
@@ -146,6 +149,9 @@
           "rpi-build"
         ];
         controlledHost = true;
+        flake-input-overrides = {
+          nixpkgs = "nixpkgs-nixos-raspberrypi";
+        };
         ipv4 = 11;
         monitors = [
           "node"
@@ -176,6 +182,9 @@
           "sso"
         ];
         controlledHost = true;
+        flake-input-overrides = {
+          nixpkgs = "nixpkgs-nixos-raspberrypi";
+        };
         ipv4 = 4;
         monitors = [
           "node"
@@ -241,12 +250,15 @@
         monitors = [];
         system = "x86_64-linux";
       };
-      rpi-installer = {
-        controlledHost = false;
-        ipv4 = 253;
-        monitors = [];
-        system = "aarch64-linux";
-      };
+      # rpi-installer = {
+      #   controlledHost = false;
+      #   flake-input-overrides = {
+      #     nixpkgs = "nixpkgs-nixos-raspberrypi";
+      #   };
+      #   ipv4 = 253;
+      #   monitors = [];
+      #   system = "aarch64-linux";
+      # };
       # A WiFi endpoint / extender / repeater, depending on how it is
       # configured.  I have it in the endpoint/extender mode, but its
       # configuration can go astray if it doesn't wake up in a positive state.

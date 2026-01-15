@@ -12,6 +12,9 @@
   # Undocumented from nixos-raspberrypi.  See
   # https://github.com/nvmd/nixos-raspberrypi/blob/f8900910f63477626010938da8d849ba2cc3d011/modules/configtxt-config.nix
   # for now this gets laid down.
+  boot.kernelParams = [
+    "usbcore.autosuspend=-1"
+  ];
   hardware.raspberry-pi = {
     config.all.options = {
       # The USB connection can hypothetically suspend and cause prints to fail.

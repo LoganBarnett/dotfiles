@@ -7,13 +7,14 @@
 ################################################################################
 { flake-inputs, host-id, lib, ... }: {
   imports = [
+    flake-inputs.nixos-raspberrypi.nixosModules.sd-image
     flake-inputs.nixos-raspberrypi.lib.inject-overlays
     flake-inputs.nixos-raspberrypi.nixosModules.nixpkgs-rpi
     # Make this suspect if there are problems with things like ffmpeg.
     flake-inputs.nixos-raspberrypi.lib.inject-overlays-global
   ];
   # /boot/firmware must be kept small intentionally.
-  boot.loader.generic-extlinux-compatible.configurationLimit = 1;
+  boot.loader.generic-extlinux-compatible.configurationLimit = 8;
   # boot.loader.grub.enable = false;
   # boot.loader.generic-extlinux-compatible.enable = true;
   # Removed in nixpkgs, but it now comes from nixos-raspberrypi.
