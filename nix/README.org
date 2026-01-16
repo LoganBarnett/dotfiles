@@ -3189,6 +3189,29 @@ get a better reproduction.  This does make me wonder if anything we place under
 ~etc~ via ~environment.etc~ is to be trusted in ~nix-darwin~.  This might be
 worth filing a bug.
 
+** Raspberry Pi ~/boot/firmware~ out of disk space
+
+I think this is resulting from moving to ~raspberry-pi-nix~ to
+~nixos-raspberrypi~.  There's different boot methodology and the files are
+managed a little differently.  This requires some pruning based on the Pi in
+question.
+
+The offending files can be found in ~/boot/firmware~ and
+~/boot/firmware/nixos/default~.  Adjacent to ~default~ might be other boot
+generations with their own copies of files that must be pruned.
+
+Keep an eye out for whatever system you are using that it doesn't lay down a
+bunch of extra ~dtb~ files you don't need.
+
+1. For an PRi 3, _keep_ ~bcm2710-*~ files.
+2. For an RPi 4, _keep_ ~bcm2711-*~ files.
+3. For an RPi 5, _keep_ ~bcm2712-*~ files.
+
+They may exist in _all_ of the directories above.  Prune them from all
+locations.
+
+If I do this again, capture some commands I can run thoughtlessly.
+
 * Toil Log
 
 I keep this log as a way of trying to remember what I worked on.  Not all fixes
