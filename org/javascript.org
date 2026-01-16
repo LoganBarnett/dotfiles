@@ -416,124 +416,155 @@ minor mode in =safe-local-variable-values=.
 Finally, tie it all together on demand.
 
 #+begin_src emacs-lisp :noweb yes :results none :tangle yes
-  (defun my/js2-disable-global-variable-highlight ()
-    "Disable js2 global variable highlight.  Wait.  Am I using this?"
-    (font-lock-remove-keywords 'js2-mode 'js2-external-variable)
-    )
-
-  (defun my/fix-js2-rainbow-identifiers ()
-    "Plea to the gods to fix rainbow-identifiers with js2-mode."
-    (message "HACK: turning off rainbow-identifiers-mode")
-    (rainbow-identifiers-mode 0)
-    (message "HACK: turning back on rainbow-identifiers-mode")
-    (rainbow-identifiers-mode 1)
-    )
-
-  ;; This is in its own function so it can be shared across javascript modes.
-  ;; Sometimes we want to be in rjsx mode but other, lighter configurations
-  ;; such as the inner-mode that org-babel uses can just get away with
-  ;; js2-mode or something similar.
-  (defun config/configure-javascript-mode (hook)
-    "HOOK should be a quoted variable."
-    ;; (require 'flycheck-flow)
-    ;; (require 'rainbow-identifiers)
-    (message "Configuring Javascript")
-    ;; (add-hook 'js2-mode-hook 'flow-minor-enable-automatically)
-    (setq-default flycheck-javascript-flow-args '("--respect-pragma"))
-    ;; This was found in my .spacemacs file. I don't know how it got there, and
-    ;; the variable is undocumented. It is also set above. Commented until I learn
-    ;; more.
-    ;; (custom-set-variables '(flycheck-javascript-flow-args nil t))
-    (add-to-list 'grep-find-ignored-directories "node_modules")
-    <<config/javascript-indentation-chaining>>
-    <<config/javascript-indentation-spacing>>
-    <<config/javascript-identation-align-fix>>
-    <<config/javascript-unignore-flow-typed>>
-    (setq-default js2-strict-missing-semi-warning nil)
-    (setq-default js2-strict-trailing-comma-warning nil)
-    (setq-default js2-mode-show-parse-errors nil)
-    (setq-default js2-highlight-external-variables nil)
-    ;; (setq-default js2-mode-toggle-warnings-and-errors 0)
-    (setq-default js2-mode-show-strict-warnings nil)
-    ;; (add-hook 'js2-mode 'js2-mode-toggle-warnings-and-errors)
-    ;; (add-hook 'js2-mode 'my/disable-js2-global-var-highlight)
-
-    ;; TODO: See what this setting does. It relates to this issue, which I'm not
-    ;; necessarily having trouble with, but am curious about.
-    ;; https://www.reddit.com/r/spacemacs/comments/9owc4b/javascript_typescript_indentation/
-    ;; (setq js-indent-align-list-continuation nil)
-
-    ;; prevent indentation from lining up with a prior line's glyph
-    ;; this will make it so fighting is less necessary to appease linters
-    (setq-default js2-pretty-multiline-declarations nil)
-    (my/find-javascript-flycheck-backends hook)
-;; TODO: Fix this. Doesn't work in a post-Doom era.
-    ;; (config/connect-javascript-flycheck-backends)
-
-    ;; (my/config-javascript-company-backends)
-    ;; Setting this locally should work because it's only for this individual
-    ;; buffer, and not the project. This should survive buffer renames/moves.
-    ;; (setq-local lsp-clients-flow-server
-    ;;             (concat (projectile-project-root) "node_modules/.bin/flow")
-    ;;             )
-
-    ;; ugh debugging company
-    ;; (defun company-flow-prefix ()
-    ;;   (interactive)
-    ;;   (message "result: %s" (company-flow--prefix))
-    ;; )
+(defun my/js2-disable-global-variable-highlight ()
+  "Disable js2 global variable highlight.  Wait.  Am I using this?"
+  (font-lock-remove-keywords 'js2-mode 'js2-external-variable)
   )
 
-  (require 'use-package)
-  (use-package "js2-mode"
-    :defer t
-    :init
-    (message "initializing Javascript via js2-mode")
-    (add-hook 'js2-mode #'my/config-javascript-company-backends)
-    (add-hook 'js2-mode #'lsp)
-
-    :config
-    (config/configure-javascript-mode 'js2-mode-hook)
-    (require 'grep)
-    (require 'flycheck)
-    (require 'multi-line)
-    <<config/javascript-multi-line-commas>>
-    <<config/javascript-allow-prettier-on-save>>
+(defun my/fix-js2-rainbow-identifiers ()
+  "Plea to the gods to fix rainbow-identifiers with js2-mode."
+  (message "HACK: turning off rainbow-identifiers-mode")
+  (rainbow-identifiers-mode 0)
+  (message "HACK: turning back on rainbow-identifiers-mode")
+  (rainbow-identifiers-mode 1)
   )
 
-  (use-package "rjsx-mode"
-    :defer t
-    :init
-    (message "initializing Javascript via rjsx-mode")
-    ;; (add-to-list 'auto-mode-alist '("\\.js" . rjsx-mode))
-    (add-hook 'rjsx-mode #'my/config-javascript-company-backends)
-    (add-hook 'rjsx-mode #'lsp)
+;; This is in its own function so it can be shared across javascript modes.
+;; Sometimes we want to be in rjsx mode but other, lighter configurations
+;; such as the inner-mode that org-babel uses can just get away with
+;; js2-mode or something similar.
+(defun config/configure-javascript-mode (hook)
+  "HOOK should be a quoted variable."
+  ;; (require 'flycheck-flow)
+  ;; (require 'rainbow-identifiers)
+  (message "Configuring Javascript")
+  ;; (add-hook 'js2-mode-hook 'flow-minor-enable-automatically)
+  (setq-default flycheck-javascript-flow-args '("--respect-pragma"))
+  ;; This was found in my .spacemacs file. I don't know how it got there, and
+  ;; the variable is undocumented. It is also set above. Commented until I learn
+  ;; more.
+  ;; (custom-set-variables '(flycheck-javascript-flow-args nil t))
+  (add-to-list 'grep-find-ignored-directories "node_modules")
+  <<config/javascript-indentation-chaining>>
+  <<config/javascript-indentation-spacing>>
+  <<config/javascript-identation-align-fix>>
+  <<config/javascript-unignore-flow-typed>>
+  (setq-default js2-strict-missing-semi-warning nil)
+  (setq-default js2-strict-trailing-comma-warning nil)
+  (setq-default js2-mode-show-parse-errors nil)
+  (setq-default js2-highlight-external-variables nil)
+  ;; (setq-default js2-mode-toggle-warnings-and-errors 0)
+  (setq-default js2-mode-show-strict-warnings nil)
+  ;; (add-hook 'js2-mode 'js2-mode-toggle-warnings-and-errors)
+  ;; (add-hook 'js2-mode 'my/disable-js2-global-var-highlight)
 
-    :config
-    (config/configure-javascript-mode 'rjsx-mode-hook)
-    (require 'grep)
-    (require 'flycheck)
-    (require 'multi-line)
-    <<config/javascript-multi-line-commas>>
-    ;; Turn off auto closing of tags (it's usually wrong anyways).
-    (define-key rjsx-mode-map "<" nil)
-    (define-key rjsx-mode-map (kbd "C-d") nil)
-    (define-key rjsx-mode-map ">" nil)
-    <<config/javascript-allow-prettier-on-save>>
+  ;; TODO: See what this setting does. It relates to this issue, which I'm not
+  ;; necessarily having trouble with, but am curious about.
+  ;; https://www.reddit.com/r/spacemacs/comments/9owc4b/javascript_typescript_indentation/
+  ;; (setq js-indent-align-list-continuation nil)
+
+  ;; prevent indentation from lining up with a prior line's glyph
+  ;; this will make it so fighting is less necessary to appease linters
+  (setq-default js2-pretty-multiline-declarations nil)
+  (my/find-javascript-flycheck-backends hook)
+  ;; TODO: Fix this. Doesn't work in a post-Doom era.
+  ;; (config/connect-javascript-flycheck-backends)
+
+  ;; (my/config-javascript-company-backends)
+  ;; Setting this locally should work because it's only for this individual
+  ;; buffer, and not the project. This should survive buffer renames/moves.
+  ;; (setq-local lsp-clients-flow-server
+  ;;             (concat (projectile-project-root) "node_modules/.bin/flow")
+  ;;             )
+
+  ;; ugh debugging company
+  ;; (defun company-flow-prefix ()
+  ;;   (interactive)
+  ;;   (message "result: %s" (company-flow--prefix))
+  ;; )
   )
+
+(require 'use-package)
+;; I've gutted much of my config while switching to the tree-sitter variants of
+;; the various JavaScript modes.  I haven't done full testing on anything so
+;; this is left for reference until I'm a lot more happy with it.
+;; (use-package "js2-mode"
+;;   :defer t
+;;   :init
+;;   (message "initializing Javascript via js2-mode")
+;;   (add-hook 'js2-mode #'my/config-javascript-company-backends)
+;;   (add-hook 'js2-mode #'lsp)
+
+;;   :config
+;;   (config/configure-javascript-mode 'js2-mode-hook)
+;;   (require 'grep)
+;;   (require 'flycheck)
+;;   (require 'multi-line)
+;;   <<config/javascript-multi-line-commas>>
+;;   <<config/javascript-allow-prettier-on-save>>
+;; )
+
+(use-package "js-ts-mode"
+  :defer t
+  :init
+  (message "initializing Javascript via js2-ts-mode")
+  (add-hook 'js2-mode #'my/config-javascript-company-backends)
+  (add-hook 'js2-mode #'lsp)
+  :mode
+  ("\\.js\\'"  . js-ts-mode)
+  ("\\.mjs\\'" . js-ts-mode)
+  ("\\.cjs\\'" . js-ts-mode)
+  :config
+  (config/configure-javascript-mode 'js-ts-mode-hook)
+  (require 'grep)
+  (require 'flycheck)
+  (require 'multi-line)
+  <<config/javascript-multi-line-commas>>
+  <<config/javascript-allow-prettier-on-save>>
+  )
+
+;; I've gutted much of my config while switching to the tree-sitter variants of
+;; the various JavaScript modes.  I haven't done full testing on anything so
+;; this is left for reference until I'm a lot more happy with it.
+;; (use-package "rjsx-mode"
+;;   :defer t
+;;   :init
+;;   (message "initializing Javascript via rjsx-mode")
+;;   ;; (add-to-list 'auto-mode-alist '("\\.js" . rjsx-mode))
+;;   (add-hook 'rjsx-mode #'my/config-javascript-company-backends)
+;;   (add-hook 'rjsx-mode #'lsp)
+
+;;   :config
+;;   (config/configure-javascript-mode 'rjsx-mode-hook)
+;;   (require 'grep)
+;;   (require 'flycheck)
+;;   (require 'multi-line)
+;;   <<config/javascript-multi-line-commas>>
+;;   ;; Turn off auto closing of tags (it's usually wrong anyways).
+;;   (define-key rjsx-mode-map "<" nil)
+;;   (define-key rjsx-mode-map (kbd "C-d") nil)
+;;   (define-key rjsx-mode-map ">" nil)
+;;   <<config/javascript-allow-prettier-on-save>>
+;; )
 
 ;; Utterly shameless lift from
 ;; https://github.com/emacs-typescript/typescript.el/issues/4#issuecomment-873485004
 ;; @josemiguelo even uses 2 spaces! *Swoon*
-(use-package typescript-mode
+(use-package typescript-ts-mode
   :ensure t
-  :init
-  (define-derived-mode typescript-tsx-mode typescript-mode "tsx")
+  ;; :init
+  ;; (define-derived-mode typescript-tsx-mode typescript-mode "tsx")
+  :mode
+  ("\\.ts\\'" . typescript-ts-mode)
   :config
   (setq typescript-indent-level 2)
-  (add-hook 'typescript-mode #'subword-mode)
-  (add-to-list 'auto-mode-alist '("\\.tsx?\\'" . typescript-tsx-mode))
+  (add-hook 'typescript-ts-mode #'subword-mode)
   <<config/javascript-allow-prettier-on-save>>
+  )
+
+(use-package tsx-ts-mode
+  :mode
+  ("\\.tsx\\'" . tsx-ts-mode)
   )
 
 (use-package tree-sitter

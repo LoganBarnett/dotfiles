@@ -286,9 +286,11 @@
           epkgs.graphviz-dot-mode
           epkgs.json-mode
           # Edit justfiles for just - a Rust based make alternative.
-          epkgs.just-mode
+          epkgs.just-ts-mode
           # Did you know `jq` allows for scripts?!  Edit them with jq-ts-mode.
           epkgs.jq-ts-mode
+          # Nothing to do here!  It's built in.
+          # epkgs.js-ts-mode
           epkgs.lsp-mode
           epkgs.lsp-ui
           # Text based diagramming.
@@ -298,10 +300,12 @@
           epkgs.js2-mode
           epkgs.lua-mode
           epkgs.markdown-mode
-          epkgs.typescript-mode
           epkgs.nix-mode
-          # For JSX editing.
-          epkgs.rjsx-mode
+          # Nothing to do here!  It's built in.
+          # epkgs.typescript-ts-mode
+          # For JSX under TypeScript editing.  Also nothing to do here, it's
+          # built in!
+          # epkgs.tsx-ts-mode
           # epkgs.css-mode
           epkgs.web-mode
           # epkgs.html-mode

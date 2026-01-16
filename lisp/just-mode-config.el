@@ -2,7 +2,7 @@
 
 (require 'use-package)
 
-(use-package just-mode
+(use-package just-ts-mode
   :init
   (setq-default just-indent-offset 2)
   :config
