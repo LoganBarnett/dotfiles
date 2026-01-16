@@ -21,6 +21,7 @@
   #+end_src
 * file templates
 
+
 ** Doom's file-templates
 
 File templates are templates that expand for new or blank files.  This is a
@@ -177,6 +178,20 @@ question.
 Since we're using ~yatemplate~ as well, you can find file templates in
 ~auto-insert-alist~.
 
+* auto-insert-mode
+
+~auto-insert-mode~ is the mechanism that automatically assumes a template when
+creating a new file-buffer for the associated mode.  Its workhorse is
+~auto-insert-alist~, which contains an association of mappings from file regular
+expressions to templates to use.
+
+~yatemplate~ integrates with it so we can also use ~yasnippet~ to declare file
+templates, but that doesn't remove the use of ~auto-insert-alist~.
+
+Either through integration with ~yatemplate~ or just out-of-box, I've had
+problems with some of the built in templates.
+
+** ~*.el~
 The default Emacs Lisp template's ~Keywords~ doesn't play nice here.  There's no
 way to terminate it properly.  If I put in a keyword, it just prompts again.  If
 I hit ~ESC~, the snippet expansion completely halts.  Plus the keyword selection
@@ -231,6 +246,45 @@ overriding a template that doesn't do anything for ~Keywords~.
     )
 #+end_src
 
+** ~.dir-locals.el~
+
+There is a problem I've encountered where the snippet for ~.dir-locals.el~ isn't
+triggering and instead I get the generic one for ~*.el~.  To fix this, I need to
+override the template to use the correct form.  I believe the form being
+included is using a ~nil~.  So let's just take a copy and give it a no-op
+function.  I also converted it to use a proper regular expression.  The ~\\`~
+means beginning of... file?  And ~\\'~ means end of file.  I think.  ~ignore~ is
+a noop function that takes any arguments and returns ~nil~.
+
+I've tried making a ~yatemplate~ version to fix this but it doesn't work -
+probably because I can't easily control the load order.
+
+#+name: config/auto-insert-mode-fix-dir-locals-template
+#+begin_src emacs-lisp :results none :exports code :tangle no
+
+(add-to-list 'auto-insert-alist
+'(("\\.dir-locals\\.el\\'" . identity)
+ ";;; Directory Local Variables         -*- no-byte-compile: t; -*-\n"
+ ";;; For more information see (info \"(emacs) Directory Variables\")\n\n" "(("
+ '(setq v1
+        (let (modes)
+          (mapatoms
+           (lambda (mode)
+             (let ((name (symbol-name mode)))
+               (when (string-match "-mode\\'" name) (push name modes)))))
+          (sort modes 'string<)))
+ (completing-read "Local variables for mode: " v1 nil t) " . (("
+ (let
+     ((all-variables
+       (apropos-internal ".*"
+                         (lambda (symbol)
+                           (and (boundp symbol)
+                                (get symbol 'variable-documentation))))))
+   (completing-read "Variable to set: " all-variables))
+ " . " (completing-read "Value to set it to: " nil) "))))\n")
+  )
+#+end_src
+
 
 * overriding default snippets
 
@@ -260,8 +314,11 @@ templates]] for more details on things like the =__= files.
     (setq-default yas-snippet-dirs '("~/dev/dotfiles/yasnippets"))
     (message "Just set yas-snippet-dirs to %s" yas-snippet-dirs)
     (config/yasnippet-fundamental-mode)
-    :config
     <<config/auto-insert-mode-fix-emacs-lisp-template>>
+    ;; Make sure this comes _after_ the Emacs Lisp template fix (immediate line
+    ;; above).
+    <<config/auto-insert-mode-fix-dir-locals-template>>
+    :config
 
     ;; Controlling when things get loaded and dependences (together) is best
     ;; accomplished by actually nesting the declaration.  This way we can
