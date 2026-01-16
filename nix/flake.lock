@@ -1770,8 +1770,8 @@
         "rust-overlay": "rust-overlay_4"
       },
       "locked": {
-        "lastModified": 1765668317,
-        "narHash": "sha256-HbmjG/zxudThAOH32B7pQeshYeW6njb76RgvKga/gB0=",
+        "lastModified": 1765673028,
+        "narHash": "sha256-tg4miIZTvl6Cy89wZDF8Ttfszlc3lahQPemNdbB0M4o=",
         "path": "/Users/logan/dev/sytter",
         "type": "path"
       },
