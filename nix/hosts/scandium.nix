@@ -119,7 +119,6 @@ in {
       ];
       allowUnfreePackagePredicates = [
         (pkg: builtins.elem (lib.getName pkg) [
-          "claude-code"
           "firefox-bin"
           "firefox"
           "firefox-bin-unwrapped"
@@ -128,6 +127,14 @@ in {
           "unrar"
         ])
       ];
+      home-manager.users.logan = {
+        # Make machines write the code instead.  What could go wrong? :D
+        programs.claude-code = {
+          # This is a custom setting provided by ../home-modules/claude.nix.
+          # For shared settings between various hosts, see
+          # ../home-configs/claude-code.nix.
+          passApiKey = "claude-code-api-key";
+      };
       # Enable Homebrew integration.
       nix-homebrew = {
         enable = true;
@@ -173,8 +180,6 @@ in {
         # A less dial-home-to-an-ad-company way of running Chrome extensions.
         # Not working because it's a Linux only build.
         # pkgs.ungoogled-chromium
-        # Make machines write the code instead.  What could go wrong? :D
-        pkgs-latest.claude-code
         # Should play music of any of the screamer/tracker formats, but doesn't
         # build on macOS because Reasons.
         # pkgs.deadbeef

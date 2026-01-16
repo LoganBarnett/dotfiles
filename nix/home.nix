@@ -1,9 +1,9 @@
 {
-  home-manager,
   config,
-  pkgs,
-  lib,
   fetchFromGitHub,
+  home-manager,
+  lib,
+  pkgs,
   ...
 }:
 let
@@ -17,8 +17,9 @@ in
   imports = [
     # ./home-modules/aider-chat.nix
     ./home-configs/btop.nix
-    ./home-configs/gh-cli.nix
     ./home-configs/claude-code.nix
+    ./home-modules/claude-code.nix
+    ./home-configs/gh-cli.nix
   ];
   # Let Home Manager install and manage itself.
   # programs.home-manager.enable = true;

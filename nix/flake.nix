@@ -230,6 +230,11 @@
           # resides in, this is already imported, so importing it again via
           # `imports` just makes Nix barf with an infinite recursion error.
           # openhab-flake.nixosModules.${system}.openhab
+          {
+            home-manager.extraSpecialArgs = {
+              inherit facts flake-inputs host-id;
+            };
+          }
         ];
       }
     ;
@@ -254,6 +259,11 @@
                 ;
               })
             ];
+          }
+          {
+            home-manager.extraSpecialArgs = {
+              inherit facts flake-inputs host-id system;
+            };
           }
           ./hosts/${host-id}.nix
         ];
