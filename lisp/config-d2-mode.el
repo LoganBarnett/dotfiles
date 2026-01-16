@@ -49,6 +49,7 @@
 
   (use-package d2-mode
     :config
+    (config-d2-mode)
     )
 
   )
