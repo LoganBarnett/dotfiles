@@ -1,7 +1,7 @@
 # -*- mode: snippet; require-file-newline: nil -*-
 # name: gitignore
 # key: gitignore
-# condition: ".gitignore"
+# condition: "\\.gitignore\\'"
 # group: yatemplate
 # --
 
