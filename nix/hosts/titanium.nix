@@ -23,6 +23,7 @@ in {
     })
     flake-inputs.home-manager.nixosModules.home-manager
     ../users/logan-desktop.nix
+    ../nixos-configs/airplay-server.nix
     ../nixos-modules/amd-gpu.nix
     ../nixos-modules/discord.nix
     ../nixos-modules/gaming-android.nix
