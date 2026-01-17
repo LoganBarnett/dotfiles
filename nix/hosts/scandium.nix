@@ -133,7 +133,9 @@ in {
           # This is a custom setting provided by ../home-modules/claude.nix.
           # For shared settings between various hosts, see
           # ../home-configs/claude-code.nix.
-          passApiKey = "claude-code-api-key";
+          # Actually we don't need this anymore.
+          # passApiKey = "claude-code-api-key";
+        };
       };
       # Enable Homebrew integration.
       nix-homebrew = {
