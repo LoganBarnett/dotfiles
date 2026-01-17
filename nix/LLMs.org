@@ -1,0 +1,44 @@
+#+title:     LLMs
+#+language:  en
+
+* General code guidelines
+
+These are instructions for LLMs to write code more to my liking.
+
+** Documents
+
+When authoring new content, make them ~org-mode~ files.
+
+Use ~:exports code~ if you just want to show off the code, and don't want it to
+actually run anything.
+
+No file lists in documentation.
+
+** Comments
+
+*** Formatting and punctuation
+
+Comments must be complete sentences, wrapped at ~80 columns, with standard
+punctuation.
+
+*** Content
+
+Only comment non-obvious intent, invariants, tradeoffs, or historical
+constraints; no restating of control flow.
+
+** Code
+
+*** initialisms
+
+Use Pascal Initialisms (~Url~) instead of Preserved Initialisms (~URL~) when
+_authoring_ new identifiers in camel case.
+
+** Nix
+
+*** Flake Inputs
+
+Try to keep Flake inputs in lexicographical order.
+
+When adding an new input, you don't need to include it in the outputs section
+unless it's specifically required in that section.  This is afforded due to
+~flake-inputs~ being aggregated and passed into the hosts using ~specialArgs~.
