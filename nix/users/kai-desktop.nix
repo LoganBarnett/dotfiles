@@ -17,8 +17,8 @@
         logoutAt = [ "17:30" ];
       };
       weekend = {
-        enableAt = [ "11:30" ];
-        logoutAt = [ "12:30" ];
+        enableAt = [ "08:30" ];
+        logoutAt = [ "09:30" ];
       };
     in {
       # Get them grades up.
