@@ -6,10 +6,17 @@
   inherit (lib.strings) concatLines replaceStrings;
   inherit (pkgs.callPackage ../lib/yaml.nix {}) indentLines;
 
+  # The instance service name is authelia (prefix) and (authelia) the instance.
+  # I think I'm leaving it this way for now because I expect to support more
+  # instances in the future.
+  service-name = "authelia-authelia";
+
   services = facts.network.services or {};
   users    = facts.network.users or {};
 
   credName = name: "${name}-oidc-client-secret";
+
+  port = 9091;
 
   # mkRedirects = svc: svc.redirectUris or [
   #   "https://${svc.fqdn}/oauth2/callback"
@@ -43,6 +50,12 @@
   clientYaml = ''
     identity_providers:
       oidc:
+        jwks:
+          - key_id: default
+            algorithm: RS256
+            use: sig
+            key:
+              path: /var/lib/authelia/jwks.json
         clients:
     ''
   + (pipe oidcServices [
@@ -119,6 +132,10 @@ in {
       };
     };
 
+  services.https.fqdns."authelia.proton" = {
+    enable = true;
+    internalPort = port;
+  };
   services.authelia.instances.authelia = {
     enable = true;
     # I don't recall why I pinned this to a more current version but let's leave
@@ -141,19 +158,22 @@ in {
     # consistent with the rest of the secrets we're using.
     # secrets.manual = true;
     secrets = {
-      storageEncryptionKeyFile = "/run/credentials/authelia/storage-encryption-key";
-      jwtSecretFile = "/run/credentials/authelia/jwt-secret";
-      sessionSecretFile = "/run/credentials/authelia/session-secret";
+      storageEncryptionKeyFile = "/run/credentials/${service-name}.service/storage-encryption-key";
+      jwtSecretFile = "/run/credentials/${service-name}.service/jwt-secret";
+      sessionSecretFile = "/run/credentials/${service-name}.service/session-secret";
     };
     # See https://github.com/authelia/authelia/blob/master/config.template.yml
     # for how this configuration should look.
 
     settingsFiles = [
-      "/run/credentials/authelia/oidc-secrets"
+      "/run/credentials/${service-name}.service/authelia-oidc-secrets-config"
     ];
     settings = {
       theme = "dark";
-      # authentication_backend = {
+      # address = "authelia.proton:${toString port}";
+      authentication_backend = {
+        file = {
+        };
       #   ldap = {
       #     # We have to keep using nickel.proton because currently that's the
       #     # ceriticate it offers.
@@ -179,7 +199,7 @@ in {
       #     user = "uid=${host-id}-authelia-service,ou=users,dc=proton,dc=org";
       #   };
       #   password_reset.disable = true;
-      # };
+      };
       access_control = {
         default_policy = "deny";
         rules = mapAttrsToList (name: data: {
@@ -218,19 +238,19 @@ in {
         };
       };
       server = {
-        address = "tcp://127.0.0.1:9091/login";
+        address = "tcp://127.0.0.1:${toString port}/login";
       };
       session = {
         cookies = [
           {
             authelia_url = "https://authelia.proton/login/";
             default_redirection_url = "https://authelia.proton";
-            domain = "proton";
+            domain = ".proton";
           }
           {
             authelia_url = "https://authelia.proton/login/";
             default_redirection_url = "https://authelia.proton";
-            domain = "auth.proton";
+            domain = "authelia.proton";
           }
         ];
       };
@@ -250,7 +270,7 @@ in {
   #   }) oidcServices);
   # };
 
-  systemd.services.authelia = let
+  systemd.services.authelia-authelia = let
     after = [ "run-agenix.d.mount" ];
   in {
     inherit after;
@@ -258,6 +278,8 @@ in {
     serviceConfig = {
       LoadCredential = (
         map (name:
+          # Surrounding with parenthesis makes it so we can be a little more
+          # permissive with characters here.
           "(${credName name}):${
             config.age.secrets."${credName name}".path
           }"
@@ -284,6 +306,13 @@ in {
             ."${host-id}-authelia-session-secret"
             .path
         }"
+        "authelia-oidc-secrets-config:${
+          config
+            .age
+            .secrets
+            ."${host-id}-authelia-oidc-secrets-config.yaml"
+            .path
+        }"
       ];
       # Environment = pipe oidcServices [
       #   (mapAttrs' (name: value: {
@@ -295,4 +324,7 @@ in {
       # ];
     };
   };
+  systemd.tmpfiles.rules = [
+    "d /var/lib/${service-name} 0750 authelia authelia -"
+  ];
 }
