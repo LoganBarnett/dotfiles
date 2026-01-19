@@ -10,7 +10,9 @@
 .tmp-css
 .tmp-css-write
 code-injector-rules.json
+# Ignore NPM/Yarn generated dependencies.
 node_modules/
+# Ignore org-mode compiled emacs-lisp files.
 org/*.el
 
 # Cookies from curl usages.
@@ -41,3 +43,12 @@ venv/
 
 # Ignore stuff we might just remove anyways.
 *.test-if-can-be-removed/
+
+# Ignore Nix generated images.
+/nix/image
+
+# Ignore Nix generated SSH keys for the Darwin Linux-builder.
+/nix/keys
+
+# Ignore the Linux-builder image itself.  It's not that big currently (19MB).
+/nix/nixos.qcow2
