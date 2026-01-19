@@ -5,12 +5,29 @@
 # toxicity.
 #
 # Selenium provides an OctoPrint server for the Prusia 3D FFF/FDM printer.
+################################################################################
 { config, flake-inputs, host-id, system, ... }: {
   imports = [
     ../nixos-modules/raspberry-pi-5.nix
     ../nixos-modules/nix-builder-provide.nix
     ../nixos-modules/server-host.nix
     ../nixos-configs/octoprint-prusa-xl.nix
+  ];
+  nixpkgs.overlays = [
+    (final: prev: {
+      # `valkey` runs a series of integration tests during its build, which are
+      # prone to failure on even our build-ready Raspberry Pi.  I'm not sure why
+      # it's suddenly needed to build from scratch.  Is it due to the Raspberry
+      # Pi changes through `nixos-raspberrypi`, or perhaps some intersection of
+      # that and OctoPrint?  Move this closer if additional association is
+      # found.
+      # valkey = prev.valkey.overrideAttrs (_: {
+      #   enableParallelBuilding = false;
+      #   doCheck = false;
+      #   checkPhase = "";
+      #   passthru = {};
+      # });
+    })
   ];
   services.https.fqdns."selenium.proton" = {
     enable = true;
