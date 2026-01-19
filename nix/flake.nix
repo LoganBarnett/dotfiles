@@ -225,6 +225,7 @@
           lib-custom = import ./lib.nix;
         };
         modules = [
+          flake-inputs.home-manager.nixosModules.home-manager
           ./hosts/${host-id}.nix
           # This is the only way to pull in this dependency.  In the flake it
           # resides in, this is already imported, so importing it again via
@@ -247,6 +248,7 @@
           disko-proper = flake-inputs.disko;
         };
         modules = [
+          flake-inputs.home-manager.darwinModules.home-manager
           {
             nixpkgs.overlays = [
               (final: prev: {
