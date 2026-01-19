@@ -42,3 +42,22 @@ Try to keep Flake inputs in lexicographical order.
 When adding an new input, you don't need to include it in the outputs section
 unless it's specifically required in that section.  This is afforded due to
 ~flake-inputs~ being aggregated and passed into the hosts using ~specialArgs~.
+
+*** File Layout
+
+There are both ~<system-type>-configs~ and ~<system-type>-modules~, where
+~<system-type>~ is one of ~nixos~, ~darwin~, or ~home~.  This corresponds with
+whether or not it belongs to NixOS, macOS, or Home Manager.
+
+~configs~ are inert sets of configuration.  They could use functions to
+calculate or compose settings, but the act of importing the config is what
+activates said config.  These files do not include ~config~ or ~options~
+attributes.
+
+~modules~ are configurable option sets.  They use ~config~ and ~options~
+attributes.  Importing one of these simply makes the options available, and by
+itself doesn't change anything for a host's configuration.
+
+I do have some inconsistencies wherein some ~nixos-modules~ are actually
+~nixos-configs~, but I didn't have the split pattern at time of authorship of
+those.
