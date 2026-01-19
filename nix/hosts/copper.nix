@@ -12,8 +12,8 @@ in {
   imports = [
     ../nixos-modules/nix-builder-provide.nix
     ../nixos-modules/server-host.nix
-    ../nixos-configs/dex-oidc.nix
-    ../nixos-configs/gitea.nix
+    # ../nixos-configs/dex-oidc.nix
+    # ../nixos-configs/gitea.nix
     ../nixos-modules/nextcloud.nix
     ../nixos-modules/notes-sync.nix
     ../nixos-configs/chronicle-proxy.nix
