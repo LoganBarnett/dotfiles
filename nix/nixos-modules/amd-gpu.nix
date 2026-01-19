@@ -47,10 +47,15 @@
     enable = true;
     enable32Bit = true;
     extraPackages = [
-      pkgs.rocmPackages.clr.icd
+      # pkgs.rocmPackages.clr.icd
+      # Help out with browsers-in-games stuff.
+      pkgs.mesa
     ];
     # For 32 bit applications.
-    extraPackages32 = [];
+    extraPackages32 = [
+      # Help out with browsers-in-games stuff.
+      pkgs.pkgsi686Linux.mesa
+    ];
   };
   imports = [
     (lib.mkIf (builtins.hasAttr "comfyui" options.services) {
