@@ -2037,6 +2037,405 @@ imports = [
 ];
 #+end_src
 
+** Options and Config
+*** Utilities
+
+**** Looking up NixOS config
+
+This is for showing the current configuration values tied to a host.
+
+This is a pure Flake environment, so ~nixos-options~ will never work.  Instead
+you can query the Flake itself thusly:
+
+#+begin_src sh :results output :exports both :dir .
+host='silicon'
+nix eval \
+  --impure \
+  --json \
+  .#nixosConfigurations.$host.config.services.openssh.enable
+#+end_src
+
+#+RESULTS:
+: true
+
+**** Looking up NixOS options
+
+This is for showing the documentation of options available for a host.
+
+Note, while this does print _something_, it won't show you that you're looking
+at nested options (I don't think it even prints them).  Right now
+([2026-01-19 Mon]) there is no solid utility for doing this short of going to
+https://search.nixos.org.
+
+#+begin_src sh :results output :exports both :dir .
+host='silicon'
+nix eval \
+  --impure \
+  --json \
+  --apply '
+    opts:
+      builtins.listToAttrs (map
+        (n: {
+          name = n;
+          value = {
+            description = (opts.${n}.description or null);
+            type = (opts.${n}.type.name or null);
+          };
+        })
+        (builtins.attrNames opts))
+  ' \
+  .#nixosConfigurations.$host.options.services.nginx \
+  | jq '
+  to_entries
+  | map({
+      name: .key,
+      description: (.value.description // "<no description>"),
+      type: (.value.type // "<unknown>"),
+      default:
+        (if .value.hasDefault
+         then (.value.default // "<unset>")
+         else "<no default>"
+         end),
+    })
+  | sort_by(.name)
+'
+#+end_src
+
+#+RESULTS:
+#+begin_example
+[
+  {
+    "name": "additionalModules",
+    "description": "Additional [third-party nginx modules](https://www.nginx.com/resources/wiki/modules/)\nto install. Packaged modules are available in `pkgs.nginxModules`.\n",
+    "type": "listOf",
+    "default": "<no default>"
+  },
+  {
+    "name": "appendConfig",
+    "description": "Configuration lines appended to the generated Nginx\nconfiguration file. Commonly used by different modules\nproviding http snippets. {option}`appendConfig`\ncan be specified more than once and its value will be\nconcatenated (contrary to {option}`config` which\ncan be set only once).\n",
+    "type": "separatedString",
+    "default": "<no default>"
+  },
+  {
+    "name": "appendHttpConfig",
+    "description": "Configuration lines to be appended to the generated http block.\nThis is mutually exclusive with using config and httpConfig for\nspecifying the whole http block verbatim.\n",
+    "type": "separatedString",
+    "default": "<no default>"
+  },
+  {
+    "name": "clientMaxBodySize",
+    "description": "Set nginx global client_max_body_size.",
+    "type": "str",
+    "default": "<no default>"
+  },
+  {
+    "name": "commonHttpConfig",
+    "description": "With nginx you must provide common http context definitions before\nthey are used, e.g. log_format, resolver, etc. inside of server\nor location contexts. Use this attribute to set these definitions\nat the appropriate location.\n",
+    "type": "separatedString",
+    "default": "<no default>"
+  },
+  {
+    "name": "config",
+    "description": "Verbatim {file}`nginx.conf` configuration.\nThis is mutually exclusive to any other config option for\n{file}`nginx.conf` except for\n- [](#opt-services.nginx.appendConfig)\n- [](#opt-services.nginx.httpConfig)\n- [](#opt-services.nginx.logError)\n\nIf additional verbatim config in addition to other options is needed,\n[](#opt-services.nginx.appendConfig) should be used instead.\n",
+    "type": "str",
+    "default": "<no default>"
+  },
+  {
+    "name": "defaultHTTPListenPort",
+    "description": "If vhosts do not specify listen.port, use these ports for HTTP by default.\n",
+    "type": "unsignedInt16",
+    "default": "<no default>"
+  },
+  {
+    "name": "defaultListen",
+    "description": "If vhosts do not specify listen, use these addresses by default.\nThis option takes precedence over {option}`defaultListenAddresses` and\nother listen-related defaults options.\n",
+    "type": "listOf",
+    "default": "<no default>"
+  },
+  {
+    "name": "defaultListenAddresses",
+    "description": "If vhosts do not specify listenAddresses, use these addresses by default.\nThis is akin to writing `defaultListen = [ { addr = \"0.0.0.0\" } ]`.\n",
+    "type": "listOf",
+    "default": "<no default>"
+  },
+  {
+    "name": "defaultMimeTypes",
+    "description": "Default MIME types for NGINX, as MIME types definitions from NGINX are very incomplete,\nwe use by default the ones bundled in the mailcap package, used by most of the other\nLinux distributions.\n",
+    "type": "path",
+    "default": "<no default>"
+  },
+  {
+    "name": "defaultSSLListenPort",
+    "description": "If vhosts do not specify listen.port, use these ports for SSL by default.\n",
+    "type": "unsignedInt16",
+    "default": "<no default>"
+  },
+  {
+    "name": "enable",
+    "description": "Whether to enable Nginx Web Server.",
+    "type": "bool",
+    "default": "<no default>"
+  },
+  {
+    "name": "enableQuicBPF",
+    "description": "Enables routing of QUIC packets using eBPF. When enabled, this allows\nto support QUIC connection migration. The directive is only supported\non Linux 5.7+.\nNote that enabling this option will make nginx run with extended\ncapabilities that are usually limited to processes running as root\nnamely `CAP_SYS_ADMIN` and `CAP_NET_ADMIN`.\n",
+    "type": "bool",
+    "default": "<no default>"
+  },
+  {
+    "name": "enableReload",
+    "description": "Reload nginx when configuration file changes (instead of restart).\nThe configuration file is exposed at {file}`/etc/nginx/nginx.conf`.\nSee also `systemd.services.*.restartIfChanged`.\n",
+    "type": "bool",
+    "default": "<no default>"
+  },
+  {
+    "name": "eventsConfig",
+    "description": "Configuration lines to be set inside the events block.\n",
+    "type": "separatedString",
+    "default": "<no default>"
+  },
+  {
+    "name": "experimentalZstdSettings",
+    "description": "Enable alpha quality zstd module with recommended settings.\nLearn more about compression in Zstd format [here](https://github.com/tokers/zstd-nginx-module).\n\nThis adds `pkgs.nginxModules.zstd` to `services.nginx.additionalModules`.\n",
+    "type": "bool",
+    "default": "<no default>"
+  },
+  {
+    "name": "gitweb",
+    "description": "<no description>",
+    "type": "<unknown>",
+    "default": "<no default>"
+  },
+  {
+    "name": "group",
+    "description": "Group account under which nginx runs.",
+    "type": "str",
+    "default": "<no default>"
+  },
+  {
+    "name": "httpConfig",
+    "description": "Configuration lines to be set inside the http block.\nThis is mutually exclusive with the structured configuration\nvia virtualHosts and the recommendedXyzSettings configuration\noptions. See appendHttpConfig for appending to the generated http block.\n",
+    "type": "separatedString",
+    "default": "<no default>"
+  },
+  {
+    "name": "logError",
+    "description": "Configures logging.\nThe first parameter defines a file that will store the log. The\nspecial value stderr selects the standard error file. Logging to\nsyslog can be configured by specifying the “syslog:” prefix.\nThe second parameter determines the level of logging, and can be\none of the following: debug, info, notice, warn, error, crit,\nalert, or emerg. Log levels above are listed in the order of\nincreasing severity. Setting a certain log level will cause all\nmessages of the specified and more severe log levels to be logged.\nIf this parameter is omitted then error is used.\n",
+    "type": "str",
+    "default": "<no default>"
+  },
+  {
+    "name": "mapHashBucketSize",
+    "description": "Sets the bucket size for the map variables hash tables. Default\nvalue depends on the processor’s cache line size.\n\nRefer to [the nginx docs on hashes](https://nginx.org/en/docs/hash.html)\nfor more information.\n",
+    "type": "nullOr",
+    "default": "<no default>"
+  },
+  {
+    "name": "mapHashMaxSize",
+    "description": "Sets the maximum size of the map variables hash tables.\n",
+    "type": "nullOr",
+    "default": "<no default>"
+  },
+  {
+    "name": "package",
+    "description": "Nginx package to use. This defaults to the stable version. Note\nthat the nginx team recommends to use the mainline version which\navailable in nixpkgs as `nginxMainline`.\nSupported Nginx forks include `angie`, `openresty` and `tengine`.\n",
+    "type": "package",
+    "default": "<no default>"
+  },
+  {
+    "name": "preStart",
+    "description": "Shell commands executed before the service's nginx is started.\n",
+    "type": "separatedString",
+    "default": "<no default>"
+  },
+  {
+    "name": "prependConfig",
+    "description": "Configuration lines prepended to the generated Nginx\nconfiguration file. Can for example be used to load modules.\n{option}`prependConfig` can be specified more than once\nand its value will be concatenated (contrary to {option}`config`\nwhich can be set only once).\n",
+    "type": "separatedString",
+    "default": "<no default>"
+  },
+  {
+    "name": "proxyCache",
+    "description": "<no description>",
+    "type": "<unknown>",
+    "default": "<no default>"
+  },
+  {
+    "name": "proxyCachePath",
+    "description": "Configure a proxy cache path entry.\nSee <https://nginx.org/en/docs/http/ngx_http_proxy_module.html#proxy_cache_path> for documentation.\n",
+    "type": "attrsOf",
+    "default": "<no default>"
+  },
+  {
+    "name": "proxyResolveWhileRunning",
+    "description": "Resolves domains of proxyPass targets at runtime and not only at startup.\nThis can be used as a workaround if nginx fails to start because of not-yet-working DNS.\n\n:::{.warn}\n`services.nginx.resolver` must be set for this option to work.\n:::\n",
+    "type": "bool",
+    "default": "<no default>"
+  },
+  {
+    "name": "proxyTimeout",
+    "description": "Change the proxy related timeouts in recommendedProxySettings.\n",
+    "type": "str",
+    "default": "<no default>"
+  },
+  {
+    "name": "recommendedBrotliSettings",
+    "description": "Enable recommended brotli settings.\nLearn more about compression in Brotli format [here](https://github.com/google/ngx_brotli/).\n\nThis adds `pkgs.nginxModules.brotli` to `services.nginx.additionalModules`.\n",
+    "type": "bool",
+    "default": "<no default>"
+  },
+  {
+    "name": "recommendedGzipSettings",
+    "description": "Enable recommended gzip settings.\nLearn more about compression in Gzip format [here](https://docs.nginx.com/nginx/admin-guide/web-server/compression/).\n",
+    "type": "bool",
+    "default": "<no default>"
+  },
+  {
+    "name": "recommendedOptimisation",
+    "description": "Enable recommended optimisation settings.\n",
+    "type": "bool",
+    "default": "<no default>"
+  },
+  {
+    "name": "recommendedProxySettings",
+    "description": "Whether to enable recommended proxy settings if a vhost does not specify the option manually.\n",
+    "type": "bool",
+    "default": "<no default>"
+  },
+  {
+    "name": "recommendedTlsSettings",
+    "description": "Enable recommended TLS settings.\n",
+    "type": "bool",
+    "default": "<no default>"
+  },
+  {
+    "name": "recommendedUwsgiSettings",
+    "description": "Whether to enable recommended uwsgi settings if a vhost does not specify the option manually.\n",
+    "type": "bool",
+    "default": "<no default>"
+  },
+  {
+    "name": "recommendedZstdSettings",
+    "description": "<no description>",
+    "type": "unspecified",
+    "default": "<no default>"
+  },
+  {
+    "name": "resolver",
+    "description": "Configures name servers used to resolve names of upstream servers into addresses\n",
+    "type": "submodule",
+    "default": "<no default>"
+  },
+  {
+    "name": "serverNamesHashBucketSize",
+    "description": "Sets the bucket size for the server names hash tables. Default\nvalue depends on the processor’s cache line size.\n",
+    "type": "nullOr",
+    "default": "<no default>"
+  },
+  {
+    "name": "serverNamesHashMaxSize",
+    "description": "Sets the maximum size of the server names hash tables.\n",
+    "type": "nullOr",
+    "default": "<no default>"
+  },
+  {
+    "name": "serverTokens",
+    "description": "Show nginx version in headers and error pages.",
+    "type": "bool",
+    "default": "<no default>"
+  },
+  {
+    "name": "sslCiphers",
+    "description": "Ciphers to choose from when negotiating TLS handshakes.",
+    "type": "nullOr",
+    "default": "<no default>"
+  },
+  {
+    "name": "sslDhparam",
+    "description": "Path to DH parameters file.",
+    "type": "nullOr",
+    "default": "<no default>"
+  },
+  {
+    "name": "sslProtocols",
+    "description": "Allowed TLS protocol versions.",
+    "type": "str",
+    "default": "<no default>"
+  },
+  {
+    "name": "sso",
+    "description": "<no description>",
+    "type": "<unknown>",
+    "default": "<no default>"
+  },
+  {
+    "name": "stateDir",
+    "description": "<no description>",
+    "type": "unspecified",
+    "default": "<no default>"
+  },
+  {
+    "name": "statusPage",
+    "description": "Enable status page reachable from localhost on http://127.0.0.1/nginx_status.\n",
+    "type": "bool",
+    "default": "<no default>"
+  },
+  {
+    "name": "streamConfig",
+    "description": "Configuration lines to be set inside the stream block.\n",
+    "type": "separatedString",
+    "default": "<no default>"
+  },
+  {
+    "name": "tailscaleAuth",
+    "description": "<no description>",
+    "type": "<unknown>",
+    "default": "<no default>"
+  },
+  {
+    "name": "typesHashMaxSize",
+    "description": "Sets the maximum size of the types hash tables (`types_hash_max_size`).\nIt is recommended that the minimum size possible size is used.\nIf {option}`recommendedOptimisation` is disabled, nginx would otherwise\nfail to start since the mailmap `mime.types` database has more entries\nthan the nginx default value 1024.\n",
+    "type": "positiveInt",
+    "default": "<no default>"
+  },
+  {
+    "name": "upstreams",
+    "description": "Defines a group of servers to use as proxy target.\n",
+    "type": "attrsOf",
+    "default": "<no default>"
+  },
+  {
+    "name": "user",
+    "description": "User account under which nginx runs.",
+    "type": "str",
+    "default": "<no default>"
+  },
+  {
+    "name": "uwsgiResolveWhileRunning",
+    "description": "Resolves domains of uwsgi targets at runtime\nand not only at start, you have to set\nservices.nginx.resolver, too.\n",
+    "type": "bool",
+    "default": "<no default>"
+  },
+  {
+    "name": "uwsgiTimeout",
+    "description": "Change the uwsgi related timeouts in recommendedUwsgiSettings.\n",
+    "type": "str",
+    "default": "<no default>"
+  },
+  {
+    "name": "validateConfigFile",
+    "description": "Whether to enable validating configuration with pkgs.writeNginxConfig.",
+    "type": "bool",
+    "default": "<no default>"
+  },
+  {
+    "name": "virtualHosts",
+    "description": "Declarative vhost config",
+    "type": "attrsOf",
+    "default": "<no default>"
+  }
+]
+#+end_example
 
 * Making Things Nix
 
