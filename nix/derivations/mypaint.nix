@@ -127,6 +127,8 @@ buildPythonApplication rec {
       url = "https://github.com/mypaint/mypaint/commit/5496b1cd1113fcd46230d87760b7e6b51cc747bc.patch";
       hash = "sha256-h+sE1LW04xDU2rofH5KqXsY1M0jacfBNBC+Zb0i6y1w=";
     })
+    # Darwin gettext support
+    ./mypaint-darwin-gettext.patch
   ];
 
   nativeBuildInputs = [
@@ -180,9 +182,8 @@ buildPythonApplication rec {
     runHook postBuild
   '';
 
-  postFixup = ''
+  preFixup = ''
     # Create a private loaders dir and symlink both sets of loaders into it.
-    # This works with gdk-pixbuf ≥ 2.42 which no longer needs/ships a cache.
     loaders="$out/lib/gdk-pixbuf-2.0/2.10.0/loaders"
     mkdir -p "$loaders"
     for d in \
@@ -190,19 +191,31 @@ buildPythonApplication rec {
         "${librsvg}/lib/gdk-pixbuf-2.0/2.10.0/loaders"
     do
       if [ -d "$d" ]; then
-        for so in "$d"/*.so; do
-          [ -e "$so" ] || continue
-          ln -sf "$so" "$loaders/$(basename "$so")"
+        for lib in "$d"/*.so "$d"/*.dylib; do
+          [ -e "$lib" ] || continue
+          ln -sf "$lib" "$loaders/$(basename "$lib")"
         done
       fi
     done
+
+    # Generate a combined loaders.cache for macOS.
+    # Use gdk-pixbuf's existing cache as a base, then append librsvg's loader.
+    cat "${gdk-pixbuf}/lib/gdk-pixbuf-2.0/2.10.0/loaders.cache" > "$loaders.cache"
+    # Extract just the loader line from librsvg's cache
+    if [ -f "${librsvg}/lib/gdk-pixbuf-2.0/2.10.0/loaders.cache" ]; then
+      grep "^\"" "${librsvg}/lib/gdk-pixbuf-2.0/2.10.0/loaders.cache" | \
+        sed "s|${librsvg}|$out|g" >> "$loaders.cache"
+    fi
 
     # Wrap so GTK sees our icons and uses our private loader dir (incl. SVG).
     gappsWrapperArgs+=(
       --prefix XDG_DATA_DIRS : "$out/share"
       --prefix XDG_DATA_DIRS : "${hicolor-icon-theme}/share"
       --prefix XDG_DATA_DIRS : "${adwaita-icon-theme}/share"
-      --set GDK_PIXBUF_MODULEDIR "$loaders"
+      --unset GDK_PIXBUF_MODULE_FILE
+      --set GDK_PIXBUF_MODULE_FILE "$loaders.cache"
+      --prefix PATH : "${gettext}/bin"
+      --prefix DYLD_LIBRARY_PATH : "${gettext}/lib"
       # Optional while debugging:
       # --set GTK_ICON_THEME Adwaita
     )
@@ -213,7 +226,8 @@ buildPythonApplication rec {
 
     ${python3.interpreter} setup.py managed_install --prefix=$out
 
-    # For Darwin - Put MyPaint’s icons into the standard places.
+    # For Darwin - Put MyPaint's icons into hicolor theme (fallback).
+    # Don't put them in Adwaita because GTK stops at the first Adwaita it finds.
     install -D -m0644 desktop/icons/hicolor/scalable/apps/org.mypaint.MyPaint.svg \
       "$out/share/icons/hicolor/scalable/apps/org.mypaint.MyPaint.svg"
     install -D -m0644 "$out/share/icons/hicolor/scalable/apps/org.mypaint.MyPaint.svg" \
@@ -222,14 +236,6 @@ buildPythonApplication rec {
     # Provide theme index in _this_ prefix so GTK recognizes hicolor here.
     install -D -m0644 "${hicolor-icon-theme}/share/icons/hicolor/index.theme" \
       "$out/share/icons/hicolor/index.theme"
-
-    # Mirror for Adwaita.
-    install -D -m0644 "${adwaita-icon-theme}/share/icons/Adwaita/index.theme" \
-      "$out/share/icons/Adwaita/index.theme"
-    install -D -m0644 "$out/share/icons/hicolor/scalable/apps/org.mypaint.MyPaint.svg" \
-      "$out/share/icons/Adwaita/scalable/apps/org.mypaint.MyPaint.svg"
-    install -D -m0644 "$out/share/icons/hicolor/symbolic/apps/mypaint-brush-symbolic.svg" \
-      "$out/share/icons/Adwaita/symbolic/apps/mypaint-brush-symbolic.svg"
 
     # For Darwin - Build the theme cache (some GTK builds need it present).
     ${gtk3}/bin/gtk-update-icon-cache --force --ignore-theme-index \
