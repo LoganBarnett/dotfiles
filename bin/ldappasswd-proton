@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+################################################################################
+# Helper to change the LDAP password on proton, since I find the arguments
+# difficult to remember.
+################################################################################
+# Arguments:
+# -H: The URI to use.  This is better than -h, -p, and -Z (which can, when
+#     combined, specify the same thing).  It's better because the non-URI
+#     arguments only support TLS over starttls, which works a bit differently.
+# -x: Use simple authentication.  We aren't using SASL (yet, but maybe never).
+# -D: The "Bind Distinguished Name", or "bind DN".  This is effectively the
+#     username, but because it is a distinguished name, it must be fully
+#     qualified.  Used to authenticate with LDAP.
+# -W: Prompt for the bind password.
+# -A: Prompt for the old password.
+# -S: Prompt for the new password.
+echo 'Warning: The "Enter LDAP Password" prompt means put in the bind DN password!'
+ldappasswd \
+  -H ldaps://nickel.proton \
+  -x \
+  -D "uid=$USER,ou=users,dc=proton,dc=org" \
+  -W \
+  -A \
+  -S \
+  "uid=$1,ou=users,dc=proton,dc=org"
