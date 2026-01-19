@@ -9,7 +9,7 @@
   # Set this to true to disable anything that needs build time secrets, so
   # agenix-rekey can actually lay down those files.  Run a switch to execute.
   # Then set it back to true and run a switch again.
-  key-catch-22 = false;
+  key-catch-22 = true;
 in {
   # We don't actually need this file, but it's kept for reference.
   age.secrets.civitai-token = {
@@ -49,22 +49,22 @@ in {
     (final: prev: {
       # See https://github.com/NixOS/nixpkgs/issues/280621 for the issue report
       # and the commit that introduced the issue.
-      astc-encoder = prev.asct-encoder.overrideAttrs (prev-pkg: rec {
-        version = "4.6.1";
-        src = prev.fetchFromGitHub {
-          owner = "ARM-software";
-          repo = "astc-encoder";
-          rev = version;
-          sha256 = "sha256-7/GBzqgXh8sU3Pl30eH9Mi24PPIqayQqNuhkMnn5Lq0=";
-        };
-      });
-      opencv = prev.opencv.overrideAttrs (prev-pkg: {
-        cmakeFlags = [
-          ''-DPYTHON_LIBRARY=${prev.python3}/lib''
-          ''-DPYTHON_INCLUDE_DIR=${prev.python3}/include''
-          ''-DPYTHON_EXECUTABLE=${prev.python3}/bin/python3''
-        ] ++ prev-pkg.cmakeFlags;
-      });
+      # astc-encoder = prev.asct-encoder.overrideAttrs (prev-pkg: rec {
+      #   version = "4.6.1";
+      #   src = prev.fetchFromGitHub {
+      #     owner = "ARM-software";
+      #     repo = "astc-encoder";
+      #     rev = version;
+      #     sha256 = "sha256-7/GBzqgXh8sU3Pl30eH9Mi24PPIqayQqNuhkMnn5Lq0=";
+      #   };
+      # });
+      # opencv = prev.opencv.overrideAttrs (prev-pkg: {
+      #   cmakeFlags = [
+      #     ''-DPYTHON_LIBRARY=${prev.python3}/lib''
+      #     ''-DPYTHON_INCLUDE_DIR=${prev.python3}/include''
+      #     ''-DPYTHON_EXECUTABLE=${prev.python3}/bin/python3''
+      #   ] ++ prev-pkg.cmakeFlags;
+      # });
       pythonPackagesExtensions = [(py-final: py-prev: {
         # Some of this is required to use torch-bin, but I couldn't get it to
         # work.  That said, I didn't build it while I had a _working_ Cuda
