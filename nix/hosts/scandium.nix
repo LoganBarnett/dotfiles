@@ -188,6 +188,8 @@ in {
         (pkgs.callPackage ../derivations/dice-roller.nix {})
         # Let us communicate with the Matrix chat protocol.
         pkgs.element-desktop
+        # Download content from Fanbox.
+        pkgs.fanbox-dl
         # Crashes on open.
         # pkgs.firefox-bin
         pkgs.moonlight-qt
@@ -205,6 +207,8 @@ in {
         # formats.  I found this necessary for interfacing with an Aruba managed
         # switch.
         pkgs.picocom
+        # Download content from Pixiv.
+        pkgs.pxder
         # A 3D printer slicer I really like.  It might work for resin printers
         # but I know it best for its FFF/FDM support.
         # pkgs.prusa-slicer
