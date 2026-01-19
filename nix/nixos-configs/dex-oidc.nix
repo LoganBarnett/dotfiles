@@ -47,7 +47,6 @@ in {
   );
   users.groups.${group} = {};
   imports = [
-    ./home-assistant-secret-file.nix
     (import ../nixos-modules/https.nix {
       server-port = 5556;
       inherit host-id;
