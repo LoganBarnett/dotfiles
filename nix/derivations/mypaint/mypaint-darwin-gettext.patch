@@ -1,0 +1,41 @@
+--- a/lib/gettext_setup.py
++++ b/lib/gettext_setup.py
+@@ -123,6 +123,13 @@ def init_gettext(localepath):
+                         libname,
+                     )
+                     break
++        elif sys.platform == 'darwin':
++            # macOS: Python's gettext.bindtextdomain() causes malloc crashes
++            # on macOS with Nix, so we skip all gettext initialization.
++            # The app will run in English only.
++            logger.info(
++                "macOS: skipping gettext initialization entirely (English only)"
++            )
+         else:
+             logger.error(
+                 "No platform-specific fallback for locating bindtextdomain "
+@@ -172,8 +179,12 @@ def init_gettext(localepath):
+         # initializes the native Python "gettext" module.
+         # Required for marked strings in Python source to be translated.
+         # See http://docs.python.org/release/2.7/library/locale.html
+-        p = gettext.bindtextdomain(dom, path)
+-        logger.debug("Python bindtextdomain(%r, %r): %r", dom, path, p)
++        # Skip on Darwin to avoid malloc crash
++        if sys.platform != 'darwin':
++            p = gettext.bindtextdomain(dom, path)
++            logger.debug("Python bindtextdomain(%r, %r): %r", dom, path, p)
++        else:
++            logger.debug("Darwin: skipped Python bindtextdomain(%r, %r)", dom, path)
+     if bindtextdomain and textdomain:
+         if sys.platform == 'win32':
+             d = textdomain(defaultdom.encode('utf-8'))
+@@ -182,3 +193,7 @@ def init_gettext(localepath):
+         logger.debug("C textdomain(%r): %r", defaultdom, d)
+-    d = gettext.textdomain(defaultdom)
+-    logger.debug("Python textdomain(%r): %r", defaultdom, d)
++    # Skip on Darwin to avoid malloc crash
++    if sys.platform != 'darwin':
++        d = gettext.textdomain(defaultdom)
++        logger.debug("Python textdomain(%r): %r", defaultdom, d)
++    else:
++        logger.debug("Darwin: skipped Python textdomain(%r)", defaultdom)
