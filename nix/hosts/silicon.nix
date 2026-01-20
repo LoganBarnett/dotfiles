@@ -6,7 +6,7 @@ in {
   imports = [
     ../nixos-modules/nix-builder-provide.nix
     ../nixos-modules/server-host.nix
-    ../nixos-configs/blocky.nix
+    ../nixos-configs/blocky-with-updater.nix
     ../nixos-configs/grafana-kiosk-overview.nix
     # TODO: Right now agenix-rekey wants to build wireguard to do the
     # generation.  This fails due to a problem with macOS building wireguard-go
