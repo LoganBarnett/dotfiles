@@ -54,6 +54,12 @@
       "org/gnome/desktop/interface" = {
         clock-format = "24h";
       };
+      "org/gnome/desktop/peripherals/mouse" = {
+        natural-scroll = true;
+      };
+      "org/gnome/desktop/peripherals/touchpad" = {
+        natural-scroll = true;
+      };
       # "org/gnome/desktop/wm/keybindings" = {
       #   # TODO: Switch these keys.
       #   switch-input-source = [ "<Alt>Tab" ];
