@@ -111,7 +111,6 @@
     (load-library "applescript-mode.el")
     (init-org-file "docker.org")
     (load-library "config-d2-mode.el")
-    (config-d2-mode)
     (init-org-file "javascript.org")
     (init-org-file "groovy.org")
     (init-org-file "purescript.org")
