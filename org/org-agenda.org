@@ -443,22 +443,24 @@ _C-g_ back one menu
 <<config/org-agenda-map-clean>>
 
 (defun config/find-org-files (directory)
-  "Return a list of non-archived Org files under DIRECTORY, recursively.
-
-Archived files are excluded using `org-archive-file-regexp`."
-  (let (
-        (dir (expand-file-name directory))
+  "Return a list of non-archived Org files under DIRECTORY, recursively."
+  (interactive)
+  (seq-filter
+    (lambda (path)
+      (let (
+            (file-name (file-name-nondirectory path))
+            )
+        (not
+         (or
+           (string-suffix-p "_archive.org" file-name)
+           (string-match-p "old-notes" path)
+           (string-match-p "journal/" path)
+           (string= "SE.org" file-name)
+           )
+         )
         )
-    (seq-filter
-     (lambda (file)
-       (not
-        (string-suffix-p "_archive.org" (file-name-base file))
-        )
-       )
-     (directory-files-recursively
-      dir
-      "\\.org\\'")
-     )
+      )
+      (directory-files-recursively (expand-file-name directory) "\\.org\\'")
     )
   )
 
@@ -476,7 +478,7 @@ Archived files are excluded using `org-archive-file-regexp`."
      )
    )
   (setq org-directory "~/notes")
-  (debug-on-variable-change 'org-agenda-files)
+  ;; (debug-on-variable-change 'org-agenda-files)
   (require 'mu4e)
   ;; :hook
   ;; This is how you're supposed to override settings, lest you run into prefix
