@@ -54,6 +54,16 @@
         group = "gitea";
         gid = 29972;
       }
+      {
+        consumerHostId = "krypton";
+        providerHostId = "silicon";
+        peerNumber = 4;
+        service = "jellyfin";
+        volume = "jellyfin-media";
+        user = "jellyfin";
+        group = "jellyfin";
+        gid = 29973;
+      }
     ];
     ##
     # The hosts here have the following structure:
@@ -307,6 +317,18 @@
           "wireguard"
         ];
         networkInterface = "eno1";
+        system = "x86_64-linux";
+      };
+      krypton = {
+        aliases = [
+          "jellyfin"
+        ];
+        controlledHost = true;
+        ipv4 = 12;
+        monitors = [
+          "node"
+          "systemd"
+        ];
         system = "x86_64-linux";
       };
       titanium = {
