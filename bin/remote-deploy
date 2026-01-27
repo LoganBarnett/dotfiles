@@ -159,8 +159,8 @@ cd proton-nix
 # --write-efi-boot-entries
 # --yes-wipe-all-disks \
 #
-sudo nix run 'github:nix-community/disko/latest' -- --help
-sudo nix run 'github:nix-community/disko/latest' -- \
+sudo nix run '.#disko' -- --help
+sudo nix run '.#disko' -- \
   --flake '.#$target' \
   --mode destroy,format,mount \
   $( [[ "$efi" == true ]] && echo '--write-efi-boot-entries' || echo '' ) \

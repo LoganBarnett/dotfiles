@@ -330,6 +330,9 @@
         ./hosts/nucleus.nix
       ];
     };
+    # Just expose Disko in some ways - used by ../bin/remote-deploy.
+    packages.x86_64-linux.disko = flake-inputs.disko.packages.x86_64-linux.disko or flake-inputs.disko.packages.x86_64-linux.default;
+    packages.aarch64-linux.disko = flake-inputs.disko.packages.aarch64-linux.disko or flake-inputs.disko.packages.aarch64-linux.default;
 
 
     agenix-rekey = agenix-rekey.configure {
