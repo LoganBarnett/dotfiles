@@ -137,7 +137,13 @@ if [[ "$enter_via_host" == '' ]]; then
   command="set -x; cd proton-nix ;
   sudo $nix_command --flake '.#$target' --show-trace --impure"
 else
-  efiBooted="$(bootctl | grep 'Not booted with EFI' ; echo [[ "$?" != '0' ]])"
+  efiBooted=$(
+    if ssh $host "bootctl 2>/dev/null | grep -q 'Not booted with EFI'"; then
+      echo "false"
+    else
+      echo "true"
+    fi
+  )
   if [[ "$efi" == true && "$efiBooted" != true ]]; then
      echo "Did not boot with EFI, but --efi supplied.  This will result in error.  Exiting."
      exit 1
