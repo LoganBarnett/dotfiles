@@ -106,6 +106,9 @@ in {
         pkgs.aider-chat
         pkgs.awscli
         pkgs.confluence-markdown-exporter
+        # Command line utility to query, search and tail EL (elasticsearch,
+        # logstash) logs.
+        pkgs.elktail
         # Use GitHub from the command line.
         pkgs.gh
         # Stop using the cursed GlobalProtect VPN GUI client and use something
