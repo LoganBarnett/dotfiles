@@ -100,6 +100,7 @@
             followTags = true;
           };
           rebase = {
+            autosquash = true;
             autoStash = true;
           };
           tag = {
