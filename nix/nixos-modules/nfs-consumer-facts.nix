@@ -8,7 +8,10 @@ let
   cfg = config.nfsConsumerFacts;
 
   # Filter facts for this consumer.
-  myVolumes = lib.filter (v: v."host-id" == host-id) facts.nfsVolumes;
+  myVolumes = lib.filter
+    (v: v."consumerHostId" == host-id)
+    facts.network.nfsVolumes
+  ;
 
   # Convenience builders.
   mkMountName = v: v.volume;  # e.g., "gitea"
@@ -22,7 +25,8 @@ in
 {
   options.nfsConsumerFacts = {
     enable = mkEnableOption ''
-      Enable consumer mounts derived from facts.nfsVolumes for this host.
+      Enable consumer mounts derived from facts.network.nfsVolumes for this
+      host.
     '';
 
     baseMountDir = mkOption {
