@@ -189,10 +189,12 @@ in {
       ${macos-keyboard-remap}/bin/macos-keyboard-remap
       echo "Do not sleep when on AC power."
       pmset -c sleep 0 # Needs testing - UI not immediately updated.
-      echo "Allow apps from anywhere..."
+      # As of Sequoia (15.5), the option "Allow apps from anywhere" no longer
+      # exists, which makes me wonder how you run anything at all...
+      echo "Allow applications from 'App Store & Known Developers'..."
       SPCTL=$(spctl --status 2>&1 || true)
       echo "spctl: $SPCTL"
-      if ! [ "$SPCTL" = "assessments disabled" ]; then
+      if ! [ "$SPCTL" = "assessments enabled" ]; then
         echo "Disabling master assessments..."
         echo 'If this fails, go to Settings.app -> Privacy & Security -> Security -> "Allow application from" and choose "Anywhere".'
         sudo spctl --master-disable
