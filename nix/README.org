@@ -3611,6 +3611,23 @@ locations.
 
 If I do this again, capture some commands I can run thoughtlessly.
 
+** Remote builder unreachable, so we can't deploy
+
+If the remote builder becomes unreachable, or something about the remote build
+machinery is misconfigured, you can run into a chicken+egg problem, where you
+need to deploy a fix, but you can't deploy anything because that would be
+delegated to the builder, which you can't reach.
+
+You can troubleshoot specific issues with ~nix-remote-builder-doctor~, but when
+you go to affect a change, you will find you cannot manually edit the files
+involved because they all reside within the Nix store.
+
+The trick is that the files involved (typically things like ~/etc/nix/machines~
+and ~/etc/ssh/ssh_known_hosts~) are symlinks to the real files.  You can simply
+remove the symlinks and place a file of your choosing in its place.  This is
+your break-glass.  On NixOS, these files will be replaced when you switch to a
+new system profile.  You can even edit files with ~/run/agenix/~.
+
 * Toil Log
 
 I keep this log as a way of trying to remember what I worked on.  Not all fixes
