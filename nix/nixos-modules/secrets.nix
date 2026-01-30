@@ -151,10 +151,12 @@ in {
   age.secrets.builder-key = {
     generator.script = "ssh-ed25519-with-pub";
     rekeyFile = ../secrets/builder-key.age;
-    # This used to be required due to some trouble I was having on nix-darwin
-    # but no longer (see secretsDir below for information about that).
+    # Don't set a custom path - let agenix manage it in /run/agenix.  Setting a
+    # custom path in /etc/nix conflicts with nix-darwin's environment.etc
+    # management, which causes nix-darwin to rename the file with a
+    # .before-nix-darwin suffix.
     # path = "/etc/nix/builder-agenix-key";
-    path = "/etc/nix/remote-builder_ed25519";
+    # path = "/etc/nix/builder_ed25519";
   };
 
   # If you're here because you can't find /run/agenix, you're probably on

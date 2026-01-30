@@ -9,7 +9,6 @@
 { config, flake-inputs, host-id, system, ... }: {
   imports = [
     ../nixos-modules/raspberry-pi-5.nix
-    ../nixos-modules/nix-builder-provide.nix
     ../nixos-modules/server-host.nix
     ../nixos-configs/octoprint-prusa-xl.nix
   ];

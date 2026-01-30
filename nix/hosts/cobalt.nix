@@ -25,9 +25,10 @@
       # `../nixos-modules/raspberry-pi-host.nix`.
       nix.settings.max-jobs = lib.mkForce 4;
     })
-    ../nixos-modules/nix-builder-provide.nix
     # Add some extra ARM build architectures in case we need them.
     ../nixos-modules/raspberry-pi-builder.nix
+    # Allow this host to accept build requests from other hosts.
+    ../nixos-modules/nix-builder-provide.nix
     ../nixos-modules/server-host.nix
   ];
 }

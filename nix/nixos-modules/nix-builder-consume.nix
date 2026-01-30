@@ -2,14 +2,17 @@
 # Make this host consume our various builders.
 ################################################################################
 { config, lib, pkgs, ... }: let
-  # sshKey = config.age.secrets.builder-key.path;
+  # sshKey = ../secrets/builder-key.pub;
+  # Use the agenix-managed secret path directly.  This avoids conflicts with
+  # nix-darwin's environment.etc management.
+  sshKey = config.age.secrets.builder-key.path;
   # This may be causing conflicts with the darwin linux-builder, since this is
   # its path.
   # sshKey = "/etc/nix/builder_ed25519";
   # Switched on 2025-08-14 for a Raspberry Pi host.  Unsure how this could
   # impact the linux-builder host (per my notes above), but something I want to
   # keep an eye out for.
-  sshKey = "/etc/nix/remote-builder_ed25519";
+  # sshKey = "/etc/nix/remote-builder_ed25519";
   sshUser = "builder";
   toBase64 = (pkgs.callPackage ../base64.nix {}).toBase64;
   rpi-systems = [
@@ -38,62 +41,25 @@
     supportedFeatures = [ "benchmark" "big-parallel" "kvm" ];
     mandatoryFeatures = [];
   };
+  silicon = {
+    inherit sshKey;
+    inherit sshUser;
+    hostName = "silicon.proton";
+    systems = [ "x86_64-linux" ];
+    protocol = "ssh-ng";
+    # Keep this host from being bogged down by builds.
+    # Beware setting this to 1, as it can mean no jobs are available ever
+    # (possibly due to a bug?).
+    maxJobs = 2;
+    # What's this for?
+    speedFactor = 2;
+    supportedFeatures = [ "benchmark" "big-parallel" "kvm" ];
+    mandatoryFeatures = [];
+  };
 in {
   nix.buildMachines = [
     rpi-build
-    # {
-    #   inherit sshKey;
-    #   inherit sshUser;
-    #   # sshKey = config.age.secrets.builder-key.path;
-    #   hostName = "nickel.proton";
-    #   systems = [
-    #     "aarch64-linux"
-    #     "armv6l-linux"
-    #     "armv7l-linux"
-    #     "arm-linux"
-    #   ];
-    #   protocol = "ssh-ng";
-    #   # Keep this host from being bogged down by builds.
-    #   # Beware setting this to 1, as it can mean no jobs are available ever
-    #   # (possibly due to a bug?).
-    #   maxJobs = 2;
-    #   # What's this for?
-    #   speedFactor = 2;
-    #   # Note: "kvm" means "Kernel-based Virtual Machine":
-    #   # https://en.m.wikipedia.org/wiki/Kernel-based_Virtual_Machine
-    #   # This is something I got from TLATER here:
-    #   # https://discourse.nixos.org/t/kvm-is-required-error-building-a-docker-image-using-runasroot/22923/2
-    #   # I seem to be unable to build other Raspberry Pi images without it.
-    #   supportedFeatures = [ "benchmark" "big-parallel" "kvm" ];
-    #   mandatoryFeatures = [];
-    #   # publicHostKey = toBase64
-    #   #   (builtins.readFile ../secrets/builder-key.pub)
-    #   # ;
-    # }
-    # Kept for reference.
-    # {
-    #   inherit sshKey sshUser;
-    #   hostName = "lithium.proton";
-    #   # Or use systems with a list.
-    #   systems = [
-    #     "x86_64-linux"
-    #     # Allows building 32-bit binaries which are sometimes needed (like
-    #     # Steam).
-    #     "i686-linux"
-    #   ];
-    #   protocol = "ssh-ng";
-    #   # Keep this host from being bogged down by builds.
-    #   # Beware setting this to 1, as it can mean no jobs are available ever
-    #   # (possibly due to a bug?).
-    #   maxJobs = 2;
-    #   # What's this for?
-    #   speedFactor = 2;
-    #   supportedFeatures = [ "big-parallel" "benchmark" "kvm" ];
-    #   mandatoryFeatures = [];
-    #   # publicHostKey = toBase64
-    #   #   (builtins.readFile ../secrets/lithium-pub-key.pub)
-    #   # ;
-    # }
+    silicon
   ];
   nix.distributedBuilds = true;
   # Optional.  Useful when the builder has a faster internet connection than
@@ -104,8 +70,14 @@ in {
 
   programs.ssh.knownHosts = {
     "rpi-build.proton" = {
-      hostNames = [ "rpi-build.proton" ];
+      # Include all hostname variations since rpi-build.proton is a CNAME for
+      # cobalt.proton, and SSH may check the key against any of these names.
+      hostNames = [ "rpi-build.proton" "cobalt.proton" ];
       publicKeyFile = ../secrets/cobalt-pub-key.pub;
+    };
+    "silicon.proton" = {
+      hostNames = [ "silicon.proton" ];
+      publicKeyFile = ../secrets/silicon-pub-key.pub;
     };
   };
   #   lithium = {
@@ -124,6 +96,6 @@ in {
   #     IdentityFile ${config.age.secrets.builder-key.path}
   # '';
 
-  # environment.etc."nix/remote-builder-key".text =
-  #   builtins.readFile ../secrets/builder-key.age;
+  environment.etc."nix/builder_ed25519.pub".text =
+    builtins.readFile ../secrets/builder-key.pub;
 }

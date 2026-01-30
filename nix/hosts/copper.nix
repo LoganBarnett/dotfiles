@@ -10,7 +10,6 @@
 { flake-inputs, host-id, system, ... }: let
 in {
   imports = [
-    ../nixos-modules/nix-builder-provide.nix
     ../nixos-modules/server-host.nix
     # ../nixos-configs/dex-oidc.nix
     # ../nixos-configs/gitea.nix
