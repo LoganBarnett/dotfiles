@@ -10,120 +10,105 @@
 # disko to create our partitions for us.
 ################################################################################
 {
+  config,
   flake-inputs,
   host-id,
+  lib,
+  options,
+  pkgs,
   system,
   ...
 } : let
 in {
   imports = [
-    # (import "${flake-inputs.nixpkgs}/nixos/modules/installer/cd-dvd/installation-cd-minimal.nix")
-    # Per the NixOS documentation:
-    # Provide an initial copy of the NixOS channel so that the user doesn't need
-    # to run "nix-channel --update" first.
-    # (import "${flake-inputs.nixpkgs}/nixos/modules/installer/cd-dvd/installer-cd-dvd-channel.nix")
-    # (import "${flake-inputs.nixpkgs}/nixos/modules/installer/cd-dvd/channel.nix")
-    ../hacks/installer/installation-cd-minimal.nix
-    # ../hacks/installer/cd-dvd-channel.nix
-    ../nixos-modules/server-host.nix
-    ({ pkgs, lib, ... }: {
-      # Make it so we can read the USB device that we booted from.  Otherwise
-      # stuff just doesn't work and we get a "timed out waiting for device"
-      # error.  This seems to have no effect on the build though, and is
-      # probably included via the CD installer module.
-      boot.initrd.availableKernelModules = [ "uas" "usbcore" "usb_storage" ];
-      # I don't know what else to set this to that's meaningful, but it has to
-      # be set to _something_.  This is very likely something that will bite me
-      # later.
-      # boot.loader.grub.devices = [ "/dev/sda1" ];
-      # Or maybe this is required to get BIOS booting working?
-      # Verify: This solves the dreaded "unable to mount root fs on unknown
-      # block(0, 0)" error, which many elude to being a different problem.
-      # iso-image.nix handles the grub menu I guess.
-      # boot.loader.grub.devices = [ "nodev" ];
-      # iso-image.nix handles the grub menu I guess.
-      # boot.loader.grub.enable = true;
-      environment.systemPackages = [
-        # Use to setup partitions on the disk.
-        # (pkgs.callPackage ./bootstrap/bootstrap-disk.nix)
-        # This gives us nixos-config, which is needed if we want to make changes
-        # to the installer after we have flashed it somewhere.  Otherwise we
-        # cannot run `nixos-rebuild switch`.
-        pkgs.nixos-install-tools
-        # Use git so we can use nix flakes.
-        pkgs.git
-        # rsync must be installed on the destination to do syncs.
-        pkgs.rsync
-        # Give us vim in case we need to make some quick edits.
-        pkgs.vim
-      ];
-      # Disable building documentation.  We don't it, we don't need to build it,
-      # and it tends to cause cross-compilation issues.
-      documentation.enable = lib.mkForce false;
-      documentation.man.enable = lib.mkForce true;
-      documentation.nixos.enable = lib.mkForce false;
-      documentation.doc.enable = lib.mkForce false;
-      documentation.info.enable = lib.mkForce false;
-      # New changes - need to be tested to see if they help with the boot
-      # problem.
-      # Two modules are fighting over this value.  We want the boot loader, so
-      # just force it.
-      # - /nixos/modules/system/boot/loader/generic-extlinux-compatible/default.nix
-      # - /nixos/modules/system/boot/loader/systemd-boot/systemd-boot.nix
-      # system.build.installBootLoader = lib.mkForce true;
-      boot.loader.systemd-boot.enable = true;
-      boot.loader.efi.canTouchEfiVariables = false;
-      boot.loader.grub.efiInstallAsRemovable = true;
-      # fileSystems."/" = {
-      #   device = "/dev/disk/by-label/NIXOS_SD";
-      #   fsType = "ext4";
-      # };
-      # fileSystems."/boot" = {
-      #   device = "/dev/disk/by-label/ESP";
-      #   fsType = "vfat";
-      # };
-      # Force it to be FAT32 to help make this work against recalcitrant UEFI
-      # implementations.
-      # fileSystems."/boot".format = lib.mkForce "FAT32";
-      # fileSystems."/boot" = lib.mkForce {
-      #   device = "/dev/disk/by-label/ESP";
-      #   fsType = "vfat";
-      #   options = [ "shortname=winnt" "utf8" ];
-      # };
-      # isoImage.efiBootPartitionSize = 100;
-      isoImage.makeUsbBootable = lib.mkForce true;
-      isoImage.makeBiosBootable = lib.mkForce true;
-      isoImage.makeEfiBootable = lib.mkForce true;
-      # isoImage.squashfsCompression = "xz -Xdict-size 100% -Xbcj x86";
-      # virtualisation.graphics = false;
-      # Hostname is not an FQDN.
-      networking.hostName = "nucleus";
-      nixpkgs.hostPlatform = system;
-      # I verified that setting overlays in the pkgs creation in flake.nix
-      # does not work for making the overlays stick.  This does, however.
-      # Probably because this module is getting a different pkgs due to
-      # cross-compilation.
-      nixpkgs.overlays = [
-        (final: prev: {
-          # makeDBusConf = { suidHelper, serviceDirectories, apparmor ? "disabled" }:
-          #   prev.callPackage ../hacks/make-dbus-conf/make-dbus-conf.nix {
-          #     inherit suidHelper serviceDirectories apparmor;
-          #   };
-          # nixos-configuration-reference-manpage =
-          #   abort builtins.traceVerbose "nucleus-configuration overlay for nixos-configuration-reference-manpage"
-          #     prev.stdenv.mkDerivation {
-          #       name = "nixos-configuration-reference-manpage";
-          #     };
-          # documentation =
-          #   builtins.traceVerbose "nucleus-configuration overlay for documentation"
-          #     prev.documentation.overrideAttrs {
-          #       baseOptionsJSON = null;
-          #     };
-        })
-      ];
-      services.openssh.settings.PasswordAuthentication = lib.mkOverride 50 true;
-      # https://nixos.wiki/wiki/FAQ/When_do_I_update_stateVersion
-      system.stateVersion = "23.11";
+    (import "${flake-inputs.nixpkgs}/nixos/modules/installer/cd-dvd/iso-image.nix")
+    (import "${flake-inputs.nixpkgs}/nixos/modules/profiles/minimal.nix")
+    (import "${flake-inputs.nixpkgs}/nixos/modules/profiles/base.nix")
+    (import "${flake-inputs.nixpkgs}/nixos/modules/profiles/installation-device.nix")
+    ../users/logan-server.nix
+    ../nixos-modules/sshd.nix
+    ../nixos-configs/nix-store-tools.nix
+    ../nixos-modules/narcolepsy.nix
+    ../nixos-modules/nix-flake-environment.nix
+    ../nixos-modules/nix-store-optimize.nix
+    ../nixos-modules/nix-builder-consume.nix
+    ../nixos-modules/user-can-admin.nix
+    ../nixos-modules/secrets.nix
+  ];
+  # Make it so we can read the USB device that we booted from.  Otherwise
+  # stuff just doesn't work and we get a "timed out waiting for device"
+  # error.
+  boot.initrd.availableKernelModules = [ "uas" "usbcore" "usb_storage" ];
+
+  # Enable all hardware support (from installation-cd-base).
+  hardware.enableAllHardware = true;
+
+  # Add terminus font for HiDPI displays (from installation-cd-base).
+  console.packages = options.console.packages.default ++ [ pkgs.terminus_font ];
+
+  environment.systemPackages = [
+    pkgs.git
+    # This gives us nixos-config, which is needed if we want to make changes
+    # to the installer after we have flashed it somewhere.  Otherwise we
+    # cannot run `nixos-rebuild switch`.
+    pkgs.nixos-install-tools
+    # We need this to actually do rsync (needed on both sides).
+    pkgs.rsync
+    # Give us vim in case we need to make some quick edits.
+    pkgs.vim
+    # Make disko available for partitioning operations.
+    flake-inputs.disko.packages.${system}.disko
+  ];
+
+  # Disable building documentation.  We don't it, we don't need to build it,
+  # and it tends to cause cross-compilation issues.
+  documentation.enable = lib.mkForce false;
+  documentation.man.enable = lib.mkOverride 500 true;
+  documentation.nixos.enable = lib.mkForce false;
+  documentation.doc.enable = lib.mkOverride 500 true;
+  documentation.info.enable = lib.mkForce false;
+
+  fonts.fontconfig.enable = lib.mkOverride 500 false;
+
+  boot.loader.systemd-boot.enable = true;
+  boot.loader.efi.canTouchEfiVariables = false;
+  boot.loader.grub.efiInstallAsRemovable = true;
+  boot.loader.grub.memtest86.enable = true;
+
+  # An installation media cannot tolerate a host config defined file system
+  # layout on a fresh machine, before it has been formatted.
+  swapDevices = lib.mkImageMediaOverride [ ];
+  fileSystems = lib.mkImageMediaOverride config.lib.isoFileSystems;
+  boot.initrd.luks.devices = lib.mkImageMediaOverride { };
+
+  boot.postBootCommands = ''
+    for o in $(</proc/cmdline); do
+      case "$o" in
+        live.nixos.passwd=*)
+          set -- $(IFS==; echo $o)
+          echo "nixos:$2" | ${pkgs.shadow}/bin/chpasswd
+          ;;
+      esac
+    done
+  '';
+
+  isoImage.makeUsbBootable = lib.mkForce true;
+  isoImage.makeBiosBootable = lib.mkForce true;
+  isoImage.makeEfiBootable = lib.mkForce true;
+  isoImage.edition = lib.mkOverride 500 "minimal";
+
+  # Hostname is not an FQDN.
+  networking.hostName = "nucleus";
+  nixpkgs.hostPlatform = system;
+
+  nixpkgs.overlays = [
+    (final: prev: {
     })
   ];
+  services.openssh.settings.PasswordAuthentication = lib.mkOverride 50 true;
+  # Settle a conflict with ../nixos-modules/sshd.nix.
+  services.openssh.settings.PermitRootLogin = lib.mkOverride 50 "yes";
+
+  # https://nixos.wiki/wiki/FAQ/When_do_I_update_stateVersion
+  system.stateVersion = lib.mkDefault lib.trivial.release;
 }
