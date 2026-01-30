@@ -4,10 +4,16 @@
 # This configuration sets up Jellyfin to serve media from NFS-mounted volumes
 # that are provided by the nfs-provider infrastructure.
 ################################################################################
-{ config, lib, pkgs, ... }:
-{
+{ config, host-id, lib, pkgs, ... }: let
+  dataDir = "/mnt/jellyfin-data";
+in {
+  imports = [
+    ../nixos-modules/nfs-consumer-facts.nix
+    ../nixos-modules/nfs-mount-consumer.nix
+  ];
   services.jellyfin = {
     enable = true;
+    inherit dataDir;
     # The default user is "jellyfin" with a dynamic UID/GID.
     # We'll ensure the jellyfin user can access the media directories.
     openFirewall = true;

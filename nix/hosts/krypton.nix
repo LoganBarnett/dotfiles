@@ -2,6 +2,10 @@
 # Krypton is a noble gas discovered in 1898, known for its use in high-powered
 # lamps and photography.
 #
+# The krypton host is a Mac Mini, but at time of writing the exact details are
+# unavailable to me.  It uses spinning disks and is in the 2010-2014 era of Mac
+# Minis - before Apple Silicon.
+#
 # This host serves as a Jellyfin media server, using NFS-mounted media from the
 # silicon host.
 ################################################################################
@@ -9,13 +13,11 @@
   imports = [
     ../nixos-modules/server-host.nix
     ../nixos-configs/jellyfin.nix
-    ../nixos-configs/nfs-mount-provider-from-facts.nix
     ({ config, lib, pkgs, ... }: {
       imports = [
         (modulesPath + "/installer/scan/not-detected.nix")
       ];
 
-      # Mac Mini is typically Intel x86_64.
       boot.kernelModules = [
         "kvm-intel"
       ];

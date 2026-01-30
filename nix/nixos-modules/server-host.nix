@@ -35,9 +35,9 @@
     #     hostPubkey = ../secrets/${host-id}-pub-key.pub;
     #   };
     # }
-    ./environment-file-secrets.nix
-    ./lib-custom.nix
-    ./nested-submodule-config-proof.nix
+    ../nixos-modules/environment-file-secrets.nix
+    ../nixos-modules/lib-custom.nix
+    ../nixos-modules/nested-submodule-config-proof.nix
     ../nixos-configs/networking-static.nix
     # This can safely be included even if the host doesn't expose NFS volumes.
     ../nixos-configs/nfs-mount-provider-from-facts.nix
@@ -51,27 +51,27 @@
     #     };
     #   };
     # }
-    ./https-module.nix
-    ./secrets.nix
-    ./facts-secrets.nix
+    ../nixos-modules/https-module.nix
+    ../nixos-modules/secrets.nix
+    ../nixos-modules/facts-secrets.nix
     # Allow servers to consume builds from other hosts.
-    ./nix-builder-consume.nix
+    ../nixos-modules/nix-builder-consume.nix
     # TODO: Remove this and only include it on hosts that need it.  Also make it
     # use the domain.
-    ./tls-leaf-proton.nix
+    ../nixos-modules/tls-leaf-proton.nix
     # A server should never sleep/suspend unless we have a really good reason.
-    ./narcolepsy.nix
+    ../nixos-modules/narcolepsy.nix
     # See facts.nix for how this is specifically configured per host.
     ../nixos-modules/prometheus-client.nix
-    ./nix-flake-environment.nix
-    ./nix-store-optimize.nix
+    ../nixos-modules/nix-flake-environment.nix
+    ../nixos-modules/nix-store-optimize.nix
     ../nixos-modules/restic-shim.nix
     # Haven't gotten this working yet.
     # ./server-host-pub-key.nix
-    ./sshd.nix
-    ./tls-trust.nix
-    ./user-can-admin.nix
-    ./user-lockout-schedule.nix
+    ../nixos-modules/sshd.nix
+    ../nixos-modules/tls-trust.nix
+    ../nixos-modules/user-can-admin.nix
+    ../nixos-modules/user-lockout-schedule.nix
     ../users/logan-server.nix
   ];
   # This is just blindly copied from somewhere, but I don't know where.  I
