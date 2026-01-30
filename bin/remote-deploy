@@ -91,6 +91,10 @@ EOH
       build=true
       shift 1
       ;;
+    --user)
+      ssh_user="${2:-}"
+      shift 2
+      ;;
     * ) break ;;
   esac
 done
@@ -105,7 +109,10 @@ else
 fi
 target="${1:-}"
 shift
-echo "Deploying $target to $host..."
+if [[ ! -n ${ssh_user-} ]]; then
+  ssh_user="$(ssh -G $host | awk '$1 == "user" { print $2 }')"
+fi
+echo "Deploying $target to $ssh_user@$host..."
 # rsync is ideal, but needs to be present on the remote machine.  We don't have
 # that setup yet - or at least I have old installer without it.  Next time we
 # look, switch.
@@ -123,7 +130,7 @@ rsync \
   --delete-after \
   --exclude='result' \
   --exclude='.git' \
-  ./ $host':~/proton-nix'
+  ./ "$host"':~/proton-nix'
 # This needs to be sudo because nixos-rebuild claims one or more of the .git
 # files.
 # ssh $host 'sudo rm -rf $HOME/proton-nix'
@@ -138,7 +145,8 @@ if [[ "$enter_via_host" == '' ]]; then
   sudo $nix_command --flake '.#$target' --show-trace --impure"
 else
   efiBooted=$(
-    if ssh $host "bootctl 2>/dev/null | grep -q 'Not booted with EFI'"; then
+    if ssh $ssh_user@ $host \
+           "bootctl 2>/dev/null | grep -q 'Not booted with EFI'"; then
       echo "false"
     else
       echo "true"
@@ -185,7 +193,7 @@ fi
 # "git bundle" that might help here.  It packs and unpacks a git blob that more
 # safely can traverse the wire, and wouldn't require rsync as badly.
 # scp -r $HOME/dev/dotfiles/nix/ $host':~/proton-nix' > /dev/null
-ssh $host "\
+ssh $ssh_user@$host "\
 set -e; \
 set -x; \
 cd proton-nix && \

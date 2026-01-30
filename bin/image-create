@@ -76,7 +76,7 @@ fi
   --verbose
 
 
-echo 'Image built successfully.' 1>&2
+echo "Image built successfully: $output" 1>&2
 # Print the name used so we can use it elsewhere, and scripts needn't be tightly
 # coupled.
 echo "$output"
