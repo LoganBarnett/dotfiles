@@ -128,6 +128,12 @@ in {
         ])
       ];
       home-manager.users.logan = {
+        imports = [
+          ../home-configs/ssh-config-general.nix
+          ../home-configs/ssh-config-container-vm.nix
+          ../home-configs/ssh-config-emacs.nix
+          ../home-configs/ssh-config-proton.nix
+        ];
         # Make machines write the code instead.  What could go wrong? :D
         programs.claude-code = {
           # This is a custom setting provided by ../home-modules/claude.nix.
