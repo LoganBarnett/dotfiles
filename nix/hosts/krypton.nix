@@ -2,44 +2,23 @@
 # Krypton is a noble gas discovered in 1898, known for its use in high-powered
 # lamps and photography.
 #
-# The krypton host is a Mac Mini, but at time of writing the exact details are
-# unavailable to me.  It uses spinning disks and is in the 2010-2014 era of Mac
-# Minis - before Apple Silicon.
+# The krypton host is a Mac Mini 7,1 (Late 2014) with an Intel Core i5-4260U
+# (Haswell) CPU.
 #
 # This host serves as a Jellyfin media server, using NFS-mounted media from the
-# silicon host.
+# silicon host.  It also runs Kodi in a sort of kiosk mode.  It is plugged
+# directly into the TV.
 ################################################################################
-{ flake-inputs, host-id, modulesPath, pkgs, system, ... }: {
+{ flake-inputs, host-id, pkgs, system, ... }: {
   imports = [
+    (flake-inputs.nixos-hardware + "/apple/macmini")
     ../nixos-modules/server-host.nix
     ../nixos-configs/jellyfin.nix
-    ({ config, lib, pkgs, ... }: {
-      imports = [
-        (modulesPath + "/installer/scan/not-detected.nix")
-      ];
+    ../nixos-configs/kodi-standalone-with-jellyfin.nix
+    ({ lib, ... }: {
+      boot.initrd.availableKernelModules = [ "ahci" "xhci_pci" "usbhid" "usb_storage" "sd_mod" ];
+      boot.kernelModules = [ "kvm-intel" ];
 
-      boot.kernelModules = [
-        "kvm-intel"
-      ];
-
-      boot.initrd = {
-        availableKernelModules = [
-          "ahci"
-          "sd_mod"
-          "usb_storage"
-          "usbhid"
-          "xhci_pci"
-        ];
-        kernelModules = [
-          "dm-snapshot"
-        ];
-      };
-
-      # Enable Intel CPU microcode updates.
-      hardware.cpu.intel.updateMicrocode = lib.mkDefault
-        config.hardware.enableRedistributableFirmware;
-
-      # Use DHCP for networking (update once you know the static IP).
       networking.useDHCP = lib.mkDefault true;
 
       # This hostId is needed by some filesystems like ZFS.

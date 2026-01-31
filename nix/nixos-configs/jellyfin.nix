@@ -6,17 +6,22 @@
 ################################################################################
 { config, host-id, lib, pkgs, ... }: let
   dataDir = "/mnt/jellyfin-data";
+  web-port = 8096;
 in {
   imports = [
     ../nixos-modules/nfs-consumer-facts.nix
     ../nixos-modules/nfs-mount-consumer.nix
   ];
+  services.https.fqdns."jellyfin.proton" = {
+    enable = true;
+    internalPort = web-port;
+  };
   services.jellyfin = {
     enable = true;
     inherit dataDir;
     # The default user is "jellyfin" with a dynamic UID/GID.
     # We'll ensure the jellyfin user can access the media directories.
-    openFirewall = true;
+    openFirewall = false;
   };
 
   # Ensure the jellyfin user can access NFS-mounted media.
@@ -41,14 +46,6 @@ in {
   # This is especially useful for Intel QuickSync on the Mac Mini.
   # Note: May need to adjust based on actual hardware capabilities.
   hardware.graphics.enable = true;
-
-  # Nginx reverse proxy configuration could go here if needed,
-  # but for now we'll keep it simple and access via port 8096.
-
-  networking.firewall.allowedTCPPorts = [
-    8096  # Jellyfin web interface.
-    8920  # Jellyfin HTTPS (optional).
-  ];
 
   networking.firewall.allowedUDPPorts = [
     1900  # DLNA discovery.
