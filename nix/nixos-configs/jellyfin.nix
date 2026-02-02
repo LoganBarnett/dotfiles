@@ -5,23 +5,57 @@
 # that are provided by the nfs-provider infrastructure.
 ################################################################################
 { config, host-id, lib, pkgs, ... }: let
-  dataDir = "/mnt/jellyfin-data";
   web-port = 8096;
 in {
   imports = [
     ../nixos-modules/nfs-consumer-facts.nix
     ../nixos-modules/nfs-mount-consumer.nix
   ];
+
+  nfsConsumerFacts = {
+    enable = true;
+    provider = {
+      remoteHost = "silicon.proton";
+      vpnHost = "silicon-nas.proton";
+      providerHostId = "silicon";
+      wgPort = 51821;
+    };
+  };
+
   services.https.fqdns."jellyfin.proton" = {
     enable = true;
     internalPort = web-port;
   };
   services.jellyfin = {
     enable = true;
-    inherit dataDir;
     # The default user is "jellyfin" with a dynamic UID/GID.
     # We'll ensure the jellyfin user can access the media directories.
+    # dataDir defaults to /var/lib/jellyfin for config and database.
+    # Media files will be served from /mnt/jellyfin-media (NFS mount).
     openFirewall = false;
+  };
+
+  # Declaratively configure Jellyfin media library via API on startup.
+  systemd.services.jellyfin-setup-library = {
+    description = "Configure Jellyfin media library";
+    after = [ "jellyfin.service" ];
+    wantedBy = [ "multi-user.target" ];
+    serviceConfig = {
+      Type = "oneshot";
+      RemainAfterExit = true;
+    };
+    script = ''
+      # Wait for Jellyfin to be ready.
+      for i in {1..30}; do
+        ${pkgs.curl}/bin/curl -s http://localhost:${toString web-port}/health && break
+        sleep 2
+      done
+
+      # TODO: Use Jellyfin API to add /mnt/jellyfin-media as a media library.
+      # This requires authentication and proper API calls.
+      # For now, this is a placeholder for the declarative configuration.
+      echo "Jellyfin library setup would go here"
+    '';
   };
 
   # Ensure the jellyfin user can access NFS-mounted media.

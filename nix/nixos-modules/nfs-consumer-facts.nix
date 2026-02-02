@@ -19,7 +19,7 @@ let
   mkShare = v: "/tank/data/${v.volume}";
   mkWgIP = v: "10.100.0.${toString v.peerNumber}/24";
   wgPeerIP = "10.100.0.1/32";  # provider fixed per your scheme
-  wgPrivPath = v: "/run/agenix/${v."host-id"}-nfs-wireguard-key";
+  wgPrivPath = v: "/run/agenix/${v.consumerHostId}-nfs-wireguard-key";
   wgPeerPubPath = cfg.provider.wgPeerPublicKeyFile;
 in
 {
@@ -74,12 +74,12 @@ in
       wgPeerPublicKeyFile = mkOption {
         type = types.path;
         default =
-          ../secrets/${config.nfsConsumerFacts.provider.providerHostId}-nfs-wireguard-key.pub;
+          ../secrets/generated/${config.nfsConsumerFacts.provider.providerHostId}-nfs-wireguard-key.pub;
         description = ''
           Path to the provider WireGuard public key file. Defaults to a path
           based on providerHostId.
         '';
-        example = "../secrets/silicon-nfs-wireguard-key.pub";
+        example = "../secrets/generated/silicon-nfs-wireguard-key.pub";
       };
     };
   };
@@ -94,23 +94,25 @@ in
           vpnHost = cfg.provider.vpnHost;
           share = mkShare v;
           mountPoint = mkMountPoint v;
-          preconditionFile = "nfs-share-working";
+          preconditionFile = "nfs-working-share";
           wgPrivateKeyFile = wgPrivPath v;
           wgIP = mkWgIP v;
           wgPeerPublicKeyFile = wgPeerPubPath;
           wgPeerIP = wgPeerIP;
           wgPort = cfg.provider.wgPort;
-          # Interface name kept short: "wgnfs-<volume>".
-          wgInterfaceName = "wgnfs-${mkMountName v}";
-          bindfs = {
-            source = "${mkMountPoint v}-raw";
-            target = mkShare v;
-            user = v.user;
-            group = v.group;
-            createForUser = true;
-            createForGroup = true;
-          };
+          # Interface name kept short: "wg-<volume-truncated>".
+          # Linux kernel limit is 15 characters for interface names.
+          wgInterfaceName = "wg-" + (lib.substring 0 12 (mkMountName v));
+          # bindfs-mappings = {
+          #   source = "${mkMountPoint v}-raw";
+          #   target = mkShare v;
+          #   user = v.user;
+          #   group = v.group;
+          #   createForUser = true;
+          #   createForGroup = true;
+          # };
           bindToService = v.service;
+          gid = v.gid;
         }
       )
       (lib.listToAttrs
