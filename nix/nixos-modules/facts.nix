@@ -58,10 +58,10 @@
         consumerHostId = "krypton";
         providerHostId = "silicon";
         peerNumber = 4;
-        service = "jellyfin";
-        volume = "jellyfin-media";
-        user = "jellyfin";
-        group = "jellyfin";
+        service = "kodi";
+        volume = "kodi-media";
+        user = "kodi";
+        group = "kodi";
         gid = 29973;
       }
     ];

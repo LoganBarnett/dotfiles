@@ -1,8 +1,22 @@
 ################################################################################
-# Jellyfin is a free and open-source media server application.
+# TOMBSTONE: This configuration is ABANDONED.
 #
-# This configuration sets up Jellyfin to serve media from NFS-mounted volumes
-# that are provided by the nfs-provider infrastructure.
+# WHY: Jellyfin requires interactive setup (startup wizard) and stores library
+# configuration in SQLite instead of declarative config files. This violates
+# the cardinal rule of Logan's infrastructure: everything must be declarative
+# and config-file based. Rebuilding a host should not require re-running
+# interactive wizards.
+#
+# REPLACEMENT: Kodi can read media files directly from NFS mounts and manage
+# its own library without needing a separate media server. This is simpler,
+# fully declarative, and fits our infrastructure philosophy.
+#
+# See kodi-standalone-with-jellyfin.nix (TODO: rename to kodi-standalone.nix)
+# for the working Kodi configuration with NFS media access.
+################################################################################
+#
+# Original purpose: Jellyfin is a free and open-source media server application.
+# This configuration was meant to serve media from NFS-mounted volumes.
 ################################################################################
 { config, host-id, lib, pkgs, ... }: let
   web-port = 8096;

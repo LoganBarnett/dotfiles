@@ -1,18 +1,32 @@
 ################################################################################
 # Kodi standalone mode for TV media playback.
 #
-# This configuration runs Kodi in fullscreen mode with the Jellyfin addon,
-# connecting to the local Jellyfin server. The system auto-boots to Kodi and
-# keeps the TV as a dumb display.
+# This configuration runs Kodi in fullscreen mode, reading media files directly
+# from NFS-mounted storage. The system auto-boots to Kodi and keeps the TV as
+# a dumb display. Kodi manages its own media library declaratively without
+# needing a separate media server.
 ################################################################################
-{ config, pkgs, ... }: {
+{ config, host-id, lib, pkgs, ... }: {
   imports = [
     ../nixos-modules/kodi-standalone.nix
+    ../nixos-modules/nfs-consumer-facts.nix
+    ../nixos-modules/nfs-mount-consumer.nix
   ];
+
+  # Configure NFS mount for media files.
+  nfsConsumerFacts = {
+    enable = true;
+    provider = {
+      remoteHost = "silicon.proton";
+      vpnHost = "silicon-nas.proton";
+      providerHostId = "silicon";
+      wgPort = 51821;
+    };
+  };
   services.kodi-standalone = {
     enable = true;
     package = pkgs.kodi.withPackages (kodiPkgs: with kodiPkgs; [
-      jellyfin
+      # jellyfin addon removed - reading media files directly from NFS
       inputstream-adaptive
       inputstream-ffmpegdirect
     ]);
@@ -51,6 +65,14 @@
       "inputstream.adaptive"
       "inputstream.ffmpegdirect"
     ];
+    mediaSources = {
+      video = [
+        {
+          name = "Media Library";
+          path = "/mnt/kodi-media/";
+        }
+      ];
+    };
   };
 
   # Expose Kodi's web interface for remote control via mobile apps.

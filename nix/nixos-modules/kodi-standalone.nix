@@ -86,6 +86,37 @@ in {
           "inputstream.ffmpegdirect"
         ];
       };
+      mediaSources = mkOption {
+        type = lib.types.attrsOf (lib.types.listOf (lib.types.submodule {
+          options = {
+            name = mkOption {
+              type = lib.types.str;
+              description = "Display name for this media source.";
+            };
+            path = mkOption {
+              type = lib.types.str;
+              description = "File path or network location for this media source.";
+            };
+          };
+        }));
+        default = {};
+        description = ''
+          Declarative media sources to configure via sources.xml.
+          Sources are organized by media type (video, music, pictures, programs).
+
+          This allows fully declarative configuration of Kodi's media library
+          without requiring interactive setup through the UI.
+        '';
+        example = {
+          video = [
+            { name = "Movies"; path = "/mnt/kodi-media/Movies/"; }
+            { name = "TV Shows"; path = "/mnt/kodi-media/TV/"; }
+          ];
+          music = [
+            { name = "Music Library"; path = "/mnt/kodi-media/Music/"; }
+          ];
+        };
+      };
     };
   };
   config = mkIf cfg.enable (lib.mkMerge [
@@ -255,6 +286,31 @@ in {
           '';
         }
       ) cfg.addonSettings;
+    };
+  })
+  (mkIf (cfg.mediaSources != {}) {
+    # Generate sources.xml from the mediaSources option.
+    home-manager.users.${cfg.systemUser} = {
+      home.file.".kodi/userdata/sources.xml".text = let
+        sourcesXml = ''
+          <sources>
+            ${builtins.concatStringsSep "\n  " (
+              lib.mapAttrsToList (mediaType: sources:
+                ''<${mediaType}>
+              ${builtins.concatStringsSep "\n    " (
+                map (source:
+                  ''<source>
+                  <name>${source.name}</name>
+                  <path pathversion="1">${source.path}</path>
+                </source>''
+                ) sources
+              )}
+            </${mediaType}>''
+              ) cfg.mediaSources
+            )}
+          </sources>
+        '';
+      in sourcesXml;
     };
   })
 ]);

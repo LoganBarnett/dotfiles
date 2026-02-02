@@ -5,16 +5,14 @@
 # The krypton host is a Mac Mini 7,1 (Late 2014) with an Intel Core i5-4260U
 # (Haswell) CPU.
 #
-# This host serves as a Jellyfin media server, using NFS-mounted media from the
-# silicon host.  It also runs Kodi in a sort of kiosk mode.  It is plugged
-# directly into the TV.
+# This host runs Kodi in standalone kiosk mode for TV media playback, using
+# NFS-mounted media from the silicon host.  It is plugged directly into the TV.
 ################################################################################
 { flake-inputs, host-id, pkgs, system, ... }: {
   imports = [
     (flake-inputs.nixos-hardware + "/apple/macmini")
     ../nixos-modules/server-host.nix
-    ../nixos-configs/jellyfin.nix
-    ../nixos-configs/kodi-standalone-with-jellyfin.nix
+    ../nixos-configs/kodi-media-player.nix
     ({ lib, ... }: {
       boot.initrd.availableKernelModules = [ "ahci" "xhci_pci" "usbhid" "usb_storage" "sd_mod" ];
       boot.kernelModules = [ "kvm-intel" ];
@@ -89,7 +87,7 @@
         };
       };
       # Works around the issue where the installer warns that the boot seed is
-      # leaked. You may still get the warning, but this should actually address
+      # leaked.  You may still get the warning, but this should actually address
       # the security issue. See
       # https://github.com/NixOS/nixpkgs/issues/279362#issuecomment-1913506090
       # for more discussion.
