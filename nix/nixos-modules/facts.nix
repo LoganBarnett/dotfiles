@@ -321,6 +321,7 @@
       };
       krypton = {
         aliases = [
+          "kodi-living-room"
           "jellyfin"
         ];
         controlledHost = true;

@@ -30,18 +30,66 @@ in {
       };
       package = mkOption {
         type = lib.types.package;
-        default = pkgs.kodi.withPackages (kodiPkgs: with kodiPkgs; [
-          jellyfin
-          inputstream-adaptive
-          inputstream-ffmpegdirect
-        ]);
         description = ''
-          The Kodi package to use, with Jellyfin addon by default.
+          The Kodi package to use.
         '';
+      };
+      advancedSettings = mkOption {
+        type = lib.types.attrsOf (lib.types.attrsOf lib.types.str);
+        default = {};
+        description = ''
+          Advanced Kodi settings to configure via advancedsettings.xml.
+          These settings override guisettings.xml and are hidden from the UI.
+
+          Settings are specified as nested attrsets matching the XML structure.
+          See https://kodi.wiki/view/Advancedsettings.xml for available settings.
+        '';
+        example = {
+          services = {
+            webserver = "true";
+            esallinterfaces = "true";
+          };
+          addons = {
+            unknownsources = "true";
+          };
+        };
+      };
+      addonSettings = mkOption {
+        type = lib.types.attrsOf (lib.types.attrsOf lib.types.str);
+        default = {};
+        description = ''
+          Addon-specific settings to configure via userdata/addon_data/*/settings.xml.
+          These files use the <settings version="2"> format with <setting id="key">value</setting>.
+
+          Settings are specified as addon-path -> setting-id -> value.
+        '';
+        example = {
+          "plugin.video.jellyfin" = {
+            ipaddress = "localhost";
+            port = "8096";
+            https = "false";
+          };
+          "inputstream.adaptive" = {
+            DECRYPTERPATH = "special://home/cdm";
+          };
+        };
+      };
+      enabledAddons = mkOption {
+        type = lib.types.listOf lib.types.str;
+        default = [];
+        description = ''
+          List of addon IDs to enable automatically on Kodi startup via JSON-RPC.
+        '';
+        example = [
+          "plugin.video.jellyfin"
+          "inputstream.adaptive"
+          "inputstream.ffmpegdirect"
+        ];
       };
     };
   };
-  config = mkIf cfg.enable {
+  config = mkIf cfg.enable (lib.mkMerge [
+    {
     age.secrets.kodi-passphrase = {
       generator.script = "long-passphrase";
       group = cfg.systemGroup;
@@ -56,6 +104,11 @@ in {
         ];
       };
     };
+    environment.systemPackages = [
+      # Can be useful for querying some of Kodi's databases for debugging
+      # purposes.
+      pkgs.sqlite
+    ];
     users.users.${cfg.systemUser} = {
       isNormalUser = true;
       group = cfg.systemGroup;
@@ -123,5 +176,86 @@ in {
     };
     # Enable hardware acceleration for video playback.
     hardware.graphics.enable = true;
-  };
+  }
+  (mkIf (cfg.enabledAddons != []) {
+    # Service to enable addons via JSON-RPC after Kodi starts.
+    systemd.user.services.kodi-enable-addons = {
+      description = "Enable Kodi addons via JSON-RPC";
+      after = [ "kodi.service" ];
+      wantedBy = [ "default.target" ];
+      serviceConfig = {
+        Type = "oneshot";
+        RemainAfterExit = false;
+        ExecStart = pkgs.writeShellScript "kodi-enable-addons" ''
+          # Wait for Kodi's JSON-RPC web server to be available.
+          for i in {1..30}; do
+            if ${pkgs.curl}/bin/curl \
+                 --silent \
+                 http://localhost:8080/jsonrpc &>/dev/null;
+            then
+              break
+            fi
+            sleep 1
+          done
+
+          # Enable each addon in the list.
+          ${builtins.concatStringsSep "\n" (
+            map (addonId: ''
+              ${pkgs.curl}/bin/curl \
+                --silent \
+                --header "Content-Type: application/json" \
+                --data '{
+                  "jsonrpc":"2.0",
+                  "method":"Addons.SetAddonEnabled",
+                  "params":{"addonid":"${addonId}","enabled":true},
+                  "id":1
+                }' \
+                http://localhost:8080/jsonrpc
+            '') cfg.enabledAddons
+          )}
+        '';
+      };
+    };
+  })
+  (mkIf (cfg.advancedSettings != {}) {
+    # Generate advancedsettings.xml from the advancedSettings option.
+    home-manager.users.${cfg.systemUser} = {
+      home.file.".kodi/userdata/advancedsettings.xml".text = let
+        advancedSettingsXml = ''
+          <advancedsettings>
+            ${builtins.concatStringsSep "\n" (
+              lib.mapAttrsToList (section: settings:
+                ''<${section}>
+              ${builtins.concatStringsSep "\n    " (
+                lib.mapAttrsToList (name: value:
+                  ''<${name}>${value}</${name}>''
+                ) settings
+              )}
+            </${section}>''
+              ) cfg.advancedSettings
+            )}
+          </advancedsettings>
+        '';
+      in advancedSettingsXml;
+    };
+  })
+  (mkIf (cfg.addonSettings != {}) {
+    # Generate addon settings XML files from the addonSettings option.
+    home-manager.users.${cfg.systemUser} = {
+      home.file = lib.mapAttrs' (addonPath: settings:
+        lib.nameValuePair ".kodi/userdata/addon_data/${addonPath}/settings.xml" {
+          text = ''
+            <settings version="2">
+              ${builtins.concatStringsSep "\n  " (
+                lib.mapAttrsToList (settingId: value:
+                  ''<setting id="${settingId}">${value}</setting>''
+                ) settings
+              )}
+            </settings>
+          '';
+        }
+      ) cfg.addonSettings;
+    };
+  })
+]);
 }
