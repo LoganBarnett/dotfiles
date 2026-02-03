@@ -187,4 +187,36 @@ in {
       ${pkgs.acl}/bin/setfacl -m g:media-shared:rwx /tank/data/nextcloud-shared-media
     '';
   };
+
+  # Btrfs deduplication for /tank/data only. Runs weekly to reclaim space from
+  # duplicate files (e.g., photos re-uploaded by phones).
+  environment.systemPackages = [ pkgs.duperemove ];
+
+  systemd.services.duperemove-tank-data = {
+    description = "Deduplicate files on /tank/data using duperemove";
+    after = [ "tank-data.mount" ];
+    serviceConfig = {
+      Type = "oneshot";
+      # Run with lower priority to avoid impacting other services.
+      Nice = 19;
+      IOSchedulingClass = "idle";
+    };
+    script = ''
+      ${pkgs.duperemove}/bin/duperemove \
+        --dedupe-options=same \
+        --hashfile=/tank/data/.duperemove.hash \
+        --recursive \
+        /tank/data
+    '';
+  };
+
+  systemd.timers.duperemove-tank-data = {
+    description = "Weekly deduplication of /tank/data";
+    wantedBy = [ "timers.target" ];
+    timerConfig = {
+      # Run Sundays at 2:00 AM (before the 3:00 AM backup).
+      OnCalendar = "Sun *-*-* 02:00:00";
+      Persistent = true;
+    };
+  };
 }
