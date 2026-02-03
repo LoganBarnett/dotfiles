@@ -58,11 +58,11 @@
         consumerHostId = "krypton";
         providerHostId = "silicon";
         peerNumber = 4;
-        service = "kodi";
+        service = "media-shared";
         volume = "kodi-media";
         user = "kodi";
-        group = "kodi";
-        gid = 29973;
+        group = "media-shared";
+        gid = 29974;
       }
       {
         consumerHostId = "copper";
@@ -79,7 +79,7 @@
         consumerHostId = "krypton";
         providerHostId = "silicon";
         peerNumber = 4;
-        service = "kodi";
+        service = "media-shared";
         volume = "nextcloud-shared-media";
         user = "kodi";
         group = "media-shared";

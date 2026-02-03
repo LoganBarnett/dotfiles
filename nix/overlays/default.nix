@@ -33,6 +33,7 @@
   # Give us rust-docs.
   (import ./rust.nix)
   (import ./signal-desktop.nix { inherit flake-inputs system; } )
+  (import ./makemkv.nix)
   # (import (builtins.fetchTarball
   #   "https://github.com/oxalica/rust-overlay/archive/master.tar.gz"))
   # (import ./openconnect-sso.nix)

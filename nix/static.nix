@@ -13,4 +13,15 @@
     version = "7.85.0";
     hash = "sha256-oXt4MlSvpj4NHwULg8K0XukaMqnlsF2UPkvBGH3Htko=";
   };
+
+  makemkv = {
+    version = "1.18.3";
+    # MakeMKV has two components: oss (open source) and bin (proprietary).
+    oss = {
+      hash = "sha256-vIuwhK46q81QPVu5PvwnPgRuT9RmPTmpg2zgwEf+6CM=";
+    };
+    bin = {
+      hash = "sha256-we5yCukbJ2p8ib6GEUbFuTRjGDHo1sj0U0BkNXJOkr0=";
+    };
+  };
 }

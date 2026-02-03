@@ -100,9 +100,10 @@ in
           wgPeerPublicKeyFile = wgPeerPubPath;
           wgPeerIP = wgPeerIP;
           wgPort = cfg.provider.wgPort;
-          # Interface name kept short: "wg-<volume-truncated>".
-          # Linux kernel limit is 15 characters for interface names.
-          wgInterfaceName = "wg-" + (lib.substring 0 12 (mkMountName v));
+          # Interface name based on provider, not volume. All mounts from the
+          # same provider share one WireGuard interface. Linux kernel limit
+          # is 15 characters for interface names.
+          wgInterfaceName = "wgnfs-" + (lib.substring 0 10 cfg.provider.providerHostId);
           # bindfs-mappings = {
           #   source = "${mkMountPoint v}-raw";
           #   target = mkShare v;

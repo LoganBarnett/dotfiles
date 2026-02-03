@@ -1,11 +1,14 @@
 ################################################################################
 # This defines the entirety of the configuration for the silicon host.
 ################################################################################
-{ config, flake-inputs, host-id, pkgs, system, ... }: let
+{ config, lib, flake-inputs, host-id, pkgs, system, ... }: let
 in {
   imports = [
+    ../nixos-modules/makemkv-ripper.nix
+    ../nixos-modules/makemkv-updater.nix
     ../nixos-modules/nix-builder-provide.nix
     ../nixos-modules/server-host.nix
+    ../nixos-modules/unfree-predicates.nix
     ../nixos-configs/blocky-with-updater.nix
     ../nixos-configs/grafana-kiosk-overview.nix
     ../nixos-configs/nfs-mount-provider-from-facts.nix
@@ -203,9 +206,11 @@ in {
     };
     script = ''
       ${pkgs.duperemove}/bin/duperemove \
+        -r \
+        -d \
         --dedupe-options=same \
         --hashfile=/tank/data/.duperemove.hash \
-        --recursive \
+        -h \
         /tank/data
     '';
   };
@@ -219,4 +224,33 @@ in {
       Persistent = true;
     };
   };
+
+  # MakeMKV DVD ripper for Silicon's internal drive.
+  services.makemkv-ripper = {
+    enable = true;
+    outputPath = "/tank/data/kodi-media";
+    autoRip = true;
+    ejectWhenComplete = true;
+    outputUser = "root";
+    outputGroup = "media-shared";
+    defaultDevice = "/dev/sr0";
+  };
+
+  # Auto-update MakeMKV beta key monthly.
+  services.makemkv-updater = {
+    enable = true;
+    user = "root";
+    group = "root";
+  };
+
+  # Allow unfree MakeMKV package.
+  allowUnfreePackagePredicates = [
+    (pkg: builtins.elem (lib.getName pkg) [ "makemkv" ])
+  ];
+
+  # Silicon provides builds to other hosts, so it should not consume builds
+  # from itself.  Override the nix-builder-consume module imported by
+  # server-host.nix to prevent self-referential build loops.
+  nix.distributedBuilds = lib.mkForce false;
+  nix.buildMachines = lib.mkForce [];
 }

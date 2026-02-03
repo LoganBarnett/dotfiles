@@ -91,12 +91,7 @@
   # access on port 8080. Android HTTPS support is not known.
   networking.firewall.allowedTCPPorts = [ 8080 ];
 
-  # Create media-shared group for shared directory access.
-  users.groups.media-shared = {
-    gid = 29974;
-  };
-
-  # Add kodi user to media-shared group.
+  # Add kodi user to media-shared group (created by nfs-consumer-facts).
   users.users.${config.services.kodi-standalone.systemUser}.extraGroups = [ "media-shared" ];
 
   # Pre-configure Kodi for the kodi user.
