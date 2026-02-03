@@ -24,6 +24,7 @@
         hostId = v.consumerHostId;
         volumeRelativeDir = v.volume;
         inherit (v) gid group peerNumber;
+        backupContents = v.backupContents or true;
       })
       ownedVolumes
     ;

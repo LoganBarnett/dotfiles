@@ -119,6 +119,24 @@ in {
     wgPeerIP = "10.100.0.1/32";
     wgInterfaceName = "wgfs-silicon";
   };
+
+  # Configure NFS mount for the shared media directory (uses same WireGuard
+  # tunnel as main nextcloud mount, but different share).
+  services.nfs-mount.mounts.nextcloud-shared-media = {
+    enable = true;
+    bindToService = "nextcloud-shared";
+    gid = 29974;
+    remoteHost = "silicon.proton";
+    vpnHost = "silicon-nas.proton";
+    share = "/tank/data/nextcloud-shared-media";
+    mountPoint = "/mnt/nextcloud-shared-media";
+    wgPrivateKeyFile = config.age.secrets."${host-id}-nfs-wireguard-key".path;
+    wgIP = "10.100.0.3/24";
+    wgPeerPublicKeyFile = ../secrets/generated/silicon-nfs-wireguard-key.pub;
+    wgPeerIP = "10.100.0.1/32";
+    wgInterfaceName = "wgfs-silicon";
+  };
+
   services.nextcloud = {
     enable = true;
     # Be mindful that Nextcloud doesn't support upgrades over multiple versions,
@@ -408,6 +426,23 @@ in {
       before = before;
       wantedBy = before;
     };
+    # Create symlink from NFS mount to Nextcloud data directory so users can
+    # access shared media.
+    nextcloud-shared-media-symlink = {
+      description = "Create symlink for shared media in Nextcloud";
+      after = [ "nfs-mount-nextcloud-shared-media.service" "nextcloud-setup.service" ];
+      before = [ "phpfpm-nextcloud.service" ];
+      wantedBy = [ "multi-user.target" ];
+      serviceConfig = {
+        Type = "oneshot";
+        RemainAfterExit = true;
+      };
+      script = ''
+        mkdir -p "${data-dir}/data"
+        ln -sfn /mnt/nextcloud-shared-media "${data-dir}/data/shared-media"
+        chown nextcloud:nextcloud "${data-dir}/data/shared-media"
+      '';
+    };
   };
   users.users.nextcloud = {
     # This is typically _not_ set by the Nextcloud NixOS module, but we're
@@ -415,6 +450,7 @@ in {
     isSystemUser = true;
     extraGroups = [
       "openldap-${host-id}-nextcloud-service"
+      "media-shared"  # For shared media directory access.
     ];
     group = "nextcloud";
   };

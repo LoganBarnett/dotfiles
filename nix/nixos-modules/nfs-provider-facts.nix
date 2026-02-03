@@ -13,6 +13,7 @@ let
     hostId = v."host-id";
     volumeRelativeDir = v.volume;
     peerNumber = v.peerNumber;
+    backupContents = v.backupContents or true;
   };
 in
 {

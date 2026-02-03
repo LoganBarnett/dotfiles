@@ -64,6 +64,28 @@
         group = "kodi";
         gid = 29973;
       }
+      {
+        consumerHostId = "copper";
+        providerHostId = "silicon";
+        peerNumber = 3;
+        service = "nextcloud-shared";
+        volume = "nextcloud-shared-media";
+        user = "nextcloud";
+        group = "media-shared";
+        gid = 29974;
+        backupContents = false;
+      }
+      {
+        consumerHostId = "krypton";
+        providerHostId = "silicon";
+        peerNumber = 4;
+        service = "kodi";
+        volume = "nextcloud-shared-media";
+        user = "kodi";
+        group = "media-shared";
+        gid = 29974;
+        backupContents = false;
+      }
     ];
     ##
     # The hosts here have the following structure:

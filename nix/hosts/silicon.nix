@@ -1,13 +1,14 @@
 ################################################################################
 # This defines the entirety of the configuration for the silicon host.
 ################################################################################
-{ config, flake-inputs, host-id, system, ... }: let
+{ config, flake-inputs, host-id, pkgs, system, ... }: let
 in {
   imports = [
     ../nixos-modules/nix-builder-provide.nix
     ../nixos-modules/server-host.nix
     ../nixos-configs/blocky-with-updater.nix
     ../nixos-configs/grafana-kiosk-overview.nix
+    ../nixos-configs/nfs-mount-provider-from-facts.nix
     # TODO: Right now agenix-rekey wants to build wireguard to do the
     # generation.  This fails due to a problem with macOS building wireguard-go
     # (documented in the overlay in this repository).  It is not understood why
@@ -170,4 +171,20 @@ in {
       };
     }
   ];
+
+  # Configure ACLs for shared media directory so both nextcloud and kodi can
+  # read/write.
+  systemd.services.setup-shared-media-acls = {
+    description = "Set up ACLs for shared media directory";
+    wantedBy = [ "multi-user.target" ];
+    after = [ "tank-data.mount" ];
+    serviceConfig = {
+      Type = "oneshot";
+      RemainAfterExit = true;
+    };
+    script = ''
+      ${pkgs.acl}/bin/setfacl -d -m g:media-shared:rwx /tank/data/nextcloud-shared-media
+      ${pkgs.acl}/bin/setfacl -m g:media-shared:rwx /tank/data/nextcloud-shared-media
+    '';
+  };
 }

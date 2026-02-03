@@ -65,7 +65,7 @@ in
           group = mkOption {
             type = types.str;
             description = ''
-              Group that will own each exported directory. Directories are
+              Group that will own each exported directory.  Directories are
               created with mode 0770 and group ownership set to this group.
             '';
             example = "nextcloud";
@@ -82,16 +82,26 @@ in
             type = types.ints.u8;
             description = ''
               Last octet of the WireGuard peer's IP on 10.100.0.0/24. The peer
-              is granted NFS access as 10.100.0.<peerNumber>/32. For example,
-              5 gives 10.100.0.5/32.
+              is granted NFS access as 10.100.0.<peerNumber>/32.  For example, 5
+              gives 10.100.0.5/32.
             '';
             example = 4;
+          };
+          backupContents = mkOption {
+            type = types.bool;
+            default = true;
+            description = ''
+              Whether to include this volume in the Restic backup.  Set to false
+              for volumes that are pass-throughs or otherwise don't need backing
+              up (e.g., a Nextcloud directory that Kodi reads from).
+            '';
+            example = false;
           };
         };
       }));
       default = [ ];
       description = ''
-        List of volumes, each mapped to a WireGuard peer. Each item provides a
+        List of volumes, each mapped to a WireGuard peer.  Each item provides a
         hostId for key lookup, a subdirectory under ${realPath}, and a peer
         number for the 10.100.0.0/24 subnet.
       '';
@@ -230,7 +240,9 @@ in
         # done in, and the password would be lifted by easily following the
         # config back to the file the password lived in.
         passwordFile = null;
-        paths = map (v: "/tank/data/${v.volumeRelativeDir}") cfg.volumes;
+        paths = map
+          (v: "/tank/data/${v.volumeRelativeDir}")
+          (builtins.filter (v: v.backupContents) cfg.volumes);
         pruneOpts = [ "--keep-daily 7" "--keep-weekly 4" "--keep-monthly 6" ];
         repository = "/tank/backup/restic";
         timerConfig.OnCalendar = "daily";
@@ -330,11 +342,9 @@ in
           (map (v: v.peerNumber) cfg.volumes);
         message = "Each peerNumber must be between 1 and 254.";
       }
-      {
-        assertion = unique (map (v: v.volumeRelativeDir) cfg.volumes)
-          == (map (v: v.volumeRelativeDir) cfg.volumes);
-        message = "volumeRelativeDir values must be unique.";
-      }
+      # Removed volumeRelativeDir uniqueness check to allow multiple hosts
+      # to access the same shared directory (e.g., nextcloud-shared-media
+      # accessed by both Copper and Krypton).
       (let
         # Ensure string keys for groupBy
         groups = lib.groupBy (v: toString v.hostId) cfg.volumes;

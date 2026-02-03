@@ -71,6 +71,10 @@
           name = "Media Library";
           path = "/mnt/kodi-media/";
         }
+        {
+          name = "NextCloud Uploads";
+          path = "/mnt/nextcloud-shared-media/";
+        }
       ];
     };
   };
@@ -86,6 +90,14 @@
   # The Kodi iOS app does not support HTTPS endpoints and requires direct HTTP
   # access on port 8080. Android HTTPS support is not known.
   networking.firewall.allowedTCPPorts = [ 8080 ];
+
+  # Create media-shared group for shared directory access.
+  users.groups.media-shared = {
+    gid = 29974;
+  };
+
+  # Add kodi user to media-shared group.
+  users.users.${config.services.kodi-standalone.systemUser}.extraGroups = [ "media-shared" ];
 
   # Pre-configure Kodi for the kodi user.
   home-manager.users.${config.services.kodi-standalone.systemUser} = {
