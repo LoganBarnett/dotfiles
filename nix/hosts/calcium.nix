@@ -1,5 +1,6 @@
 ################################################################################
-# The calcium host.
+# The calcium host.  It's all theoretical config and doesn't run on any hardware
+# currently.
 #
 # Its primary use is a Nix cache.  Currently this is achieved via Attic
 # (https://github.com/zhaofengli/attic).
