@@ -14,16 +14,18 @@
     ../nixos-modules/server-host.nix
     ../nixos-configs/kodi-media-player.nix
     ({ lib, ... }: {
-      boot.initrd.availableKernelModules = [ "ahci" "xhci_pci" "usbhid" "usb_storage" "sd_mod" ];
+      boot.initrd.availableKernelModules = [
+        "ahci"
+        "xhci_pci"
+        "usbhid"
+        "usb_storage"
+        "sd_mod"
+      ];
       boot.kernelModules = [ "kvm-intel" ];
-
-      networking.useDHCP = lib.mkDefault true;
-
       # This hostId is needed by some filesystems like ZFS.
       # Generated using: head -c4 /dev/urandom | od -A none -t x4 | tr -d ' '
       # You'll want to regenerate this on the actual hardware.
       networking.hostId = "4ead70ae";
-
       nixpkgs.hostPlatform = system;
     })
     ({
@@ -42,11 +44,6 @@
         disk = {
           os = {
             type = "disk";
-            # TODO: Update this device path once you have the actual hardware.
-            # Find it using: ls -l /dev/disk/by-id/
-            # Common Mac mini paths:
-            # - SATA: /dev/disk/by-id/ata-APPLE_SSD_...
-            # - NVMe: /dev/disk/by-id/nvme-APPLE_SSD_...
             device = "/dev/disk/by-id/ata-APPLE_HDD_HTS545050A7E362_TNS5193T2X33VH";
             content = {
               type = "gpt";
