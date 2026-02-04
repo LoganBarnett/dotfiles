@@ -136,6 +136,13 @@ in {
       };
     };
     environment.systemPackages = [
+      # Allow us to adjust the volume.  Not sure if we're using Alsa or
+      # PulseAudio, so we include them both.
+      pkgs.alsa-utils
+      # Allow us to adjust the volume.  Not sure if we're using Alsa or
+      # PulseAudio, so we include them both.
+      pkgs.pamixer
+      pkgs.pulseaudioFull
       # Can be useful for querying some of Kodi's databases for debugging
       # purposes.
       pkgs.sqlite

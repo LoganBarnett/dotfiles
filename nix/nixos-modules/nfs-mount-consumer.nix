@@ -285,6 +285,27 @@
       (_: m: "d ${toString m.mountPoint} 000 root root - -")
       mountsEnabled;
 
+  # Systemd service overrides for wireguard peer services to ensure DNS is
+  # available before attempting to resolve hostnames in endpoints. Without
+  # this, boot-time startup fails when DNS isn't available yet.
+  wireguardPeerServices =
+    foldlAttrs (acc: name: m:
+      let
+        peerName = "nfs-${m.wgInterfaceName}";
+        serviceName = "wireguard-${m.wgInterfaceName}-peer-${peerName}";
+      in acc // {
+        ${serviceName} = {
+          after = [ "network-online.target" "nss-lookup.target" ];
+          wants = [ "network-online.target" "nss-lookup.target" ];
+          serviceConfig = {
+            # Restart on failure to handle transient DNS issues.
+            Restart = "on-failure";
+            RestartSec = "5";
+          };
+        };
+      }
+    ) {} mountsEnabled;
+
 in {
   options.services.nfs-mount.mounts = mkOption {
     type = types.attrsOf (types.submodule nfsMountModule);
@@ -313,7 +334,7 @@ in {
     # A gotcha: Don't use fileSystems and systemd.mounts.  fileSystems will emit
     # systemd.mounts, in effect.
     fileSystems = fileSystems;
-    systemd.services = servicesFromBinds // servicesSanity;
+    systemd.services = servicesFromBinds // servicesSanity // wireguardPeerServices;
     users.groups = mapAttrs' (name: value: {
       name = value.bindToService;
       value = {

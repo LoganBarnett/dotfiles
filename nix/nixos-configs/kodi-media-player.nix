@@ -45,6 +45,11 @@
         # Allow installation of addon dependencies without prompts.
         unknownsources = "true";
       };
+      audio = {
+        # Boost audio volume by 12dB. Many DVDs are encoded with low audio levels,
+        # and this amplification compensates without distortion. Adjust if needed.
+        volumeamplification = "12.0";
+      };
     };
     addonSettings = {
       "plugin.video.jellyfin" = {
@@ -97,5 +102,42 @@
   # Pre-configure Kodi for the kodi user.
   home-manager.users.${config.services.kodi-standalone.systemUser} = {
     home.stateVersion = "25.11";
+
+    # Configure WirePlumber to prefer HDMI audio output over analog.
+    # This ensures audio routes to the TV via HDMI instead of the Mac Mini's
+    # built-in speakers.
+    xdg.configFile."wireplumber/main.lua.d/51-hdmi-default.lua".text = ''
+      -- Set HDMI audio as the default sink.
+      -- Matches HDA Intel HDMI devices and increases their priority.
+      rule = {
+        matches = {
+          {
+            { "node.name", "matches", "alsa_output.pci-0000_00_03.0.hdmi-*" },
+          },
+        },
+        apply_properties = {
+          ["priority.session"] = 2000,  -- Higher than default 1009
+          ["node.default"] = true,
+        },
+      }
+
+      table.insert(alsa_monitor.rules, rule)
+    '';
+
+    # Set HDMI audio sink volume to 100% on startup.
+    systemd.user.services.set-hdmi-volume = {
+      Unit = {
+        Description = "Set HDMI audio volume to 100%";
+        After = [ "pipewire.service" ];
+      };
+      Service = {
+        Type = "oneshot";
+        ExecStart = "${pkgs.pulseaudioFull}/bin/pactl set-sink-volume alsa_output.pci-0000_00_03.0.hdmi-stereo 100%";
+        RemainAfterExit = false;
+      };
+      Install = {
+        WantedBy = [ "default.target" ];
+      };
+    };
   };
 }
