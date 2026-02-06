@@ -23,6 +23,7 @@ in {
         (pkg: builtins.elem (lib.getName pkg) [
           "example-unfree-package"
           "unrar"
+          "terraform"
           "windsurf"
         ])
       ];
@@ -129,6 +130,9 @@ in {
         # Needed for our flavor of Hiera EYAML usage.  See `hiera-eyaml` for
         # more info.
         pkgs.saml2aws
+        # Try out terraform changes, including checking on HCP workspaces, which
+        # can really speed up coding agent usage.
+        pkgs.terraform
         # Let us log in on the blasted VPN UI.  Doesn't work on macOS currently.
         # pkgs.sunshine
         # Let machines write the machine instructions.
