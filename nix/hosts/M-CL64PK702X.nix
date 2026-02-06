@@ -29,6 +29,7 @@ in {
       ];
     })
     ../nixos-modules/secrets.nix
+    ../nixos-modules/ssh-ai-coding-agent.nix
     flake-inputs.home-manager.darwinModules.home-manager
     # the _module.args idiom is how I can ensure these values get passed via the
     # internal callPackage mechanism for darwinSystem on these modules.  We want
@@ -53,7 +54,8 @@ in {
       inherit username;
     })
     ../headed-host.nix
-    ({ lib, pkgs, ...}: {
+    ../home-configs/ssh-ai-coding-agent-new-e-ah.nix
+    ({ config, lib, pkgs, ...}: {
       home-manager.users."logan.barnett" = {
         imports = [
           ../home-configs/gh-cli.nix
