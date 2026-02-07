@@ -29,7 +29,7 @@
 # module translates that to Prometheus configuration.  Also we might have a
 # monitor differ in name but share the same exporter.
 ################################################################################
-{ config, facts, host-id, lib, pkgs, ... }: let
+{ config, facts, host-id, lib, nodes, pkgs, ... }: let
   inherit (lib) pipe;
   inherit (lib.attrsets) filterAttrs mapAttrsToList;
   inherit (lib.lists) fold;
@@ -59,7 +59,9 @@ in {
         ))
         (lib.attrsets.mapAttrsToList (host: settings:
           "${host}:${
-            toString config
+            toString nodes
+              .${host}
+              .config
               .services
               .prometheus
               .exporters
