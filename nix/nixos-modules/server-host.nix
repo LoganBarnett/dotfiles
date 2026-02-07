@@ -3,6 +3,7 @@
 ################################################################################
 { flake-inputs, host-id, lib, pkgs, system, ... }: {
   imports = [
+    ../nixos-configs/journalctl-iso8601.nix
     {
       # Hostname is not an FQDN.
       networking.hostName = host-id;
