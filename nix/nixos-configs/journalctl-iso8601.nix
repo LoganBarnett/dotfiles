@@ -1,21 +1,17 @@
 { ... }: {
-  # Configure journalctl to display timestamps in ISO-8601 format by default.
+  # Configure timestamps to use ISO-8601 format system-wide.
   #
-  # Note: systemd/journald has no configuration file setting to change the
-  # default output format. The format is controlled by command-line flags.
-  # We use shell aliases to make ISO-8601 the default for interactive use.
+  # Systemd respects the LC_TIME locale setting for timestamp formatting.
+  # Using en_DK.UTF-8 (English with Danish conventions) gives us ISO-8601
+  # timestamps in journalctl and other programs, while keeping English text.
+  #
+  # This affects:
+  # - journalctl output
+  # - systemctl status timestamps
+  # - date command output
+  # - Any program that respects LC_TIME
 
-  # Create shell alias for journalctl with ISO-8601 timestamps.
-  # This makes `journalctl` always use ISO-8601 format in interactive shells.
-  programs.bash.shellAliases = {
-    journalctl = "journalctl --output=short-iso";
-  };
-
-  programs.zsh.shellAliases = {
-    journalctl = "journalctl --output=short-iso";
-  };
-
-  programs.fish.shellAliases = {
-    journalctl = "journalctl --output=short-iso";
+  i18n.extraLocaleSettings = {
+    LC_TIME = "en_DK.UTF-8";
   };
 }
