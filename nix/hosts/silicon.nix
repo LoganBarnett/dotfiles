@@ -7,7 +7,6 @@ in {
     ../nixos-modules/makemkv-ripper.nix
     ../nixos-modules/makemkv-updater.nix
     ../nixos-modules/nix-builder-provide.nix
-    ../nixos-modules/prometheus-exporter-dns-smart-block.nix
     ../nixos-modules/server-host.nix
     ../nixos-configs/blocky-with-updater.nix
     ../nixos-configs/dns-smart-block.nix
