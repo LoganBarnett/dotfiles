@@ -1,0 +1,60 @@
+################################################################################
+# DNS Smart Block - LLM-powered DNS classification and blocking.
+#
+# Provides gaming and video streaming classifiers that watch Blocky DNS logs,
+# classify domains using Ollama LLM, and serve dynamic blocklists via HTTP API.
+################################################################################
+{ ... }: {
+  # DNS Smart Block - LLM-powered DNS blocking with gaming and video streaming
+  # classification.
+  services.dns-smart-block = {
+    enable = true;
+
+    # Ollama LLM server configuration.
+    ollama = {
+      url = "http://M-CL64PK702X.proton:11434";
+      model = "llama3.2:3b";
+    };
+
+    # Enable gaming and video streaming classifiers.
+    classifiers = {
+      gaming = {
+        enable = true;
+        preset = "gaming";
+        minConfidence = 0.8;
+        ttlDays = 10;
+      };
+      video-streaming = {
+        enable = true;
+        preset = "video-streaming";
+        minConfidence = 0.8;
+        ttlDays = 10;
+      };
+    };
+
+    # Watch Blocky DNS logs for domains to classify.
+    logProcessor = {
+      enable = true;
+      logSource = "cmd:journalctl -f -u blocky";
+    };
+
+    # Serve blocklists via HTTP API. Bind to all interfaces to allow
+    # Prometheus scraping from other hosts.
+    blocklistServer = {
+      enable = true;
+      bindAddress = "0.0.0.0:3000";
+    };
+
+    # Use built-in PostgreSQL and NATS.
+    database.enable = true;
+    nats.enable = true;
+
+    # Blocky DNS integration. Automatically map locally enabled classifiers to
+    # Blocky blacklist groups.
+    integrations.blocky = {
+      enable = true;
+      blocklistUrl = "http://localhost:3000";
+      autoMapAllBlocklists = true;
+    };
+  };
+}

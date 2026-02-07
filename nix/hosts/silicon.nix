@@ -7,10 +7,13 @@ in {
     ../nixos-modules/makemkv-ripper.nix
     ../nixos-modules/makemkv-updater.nix
     ../nixos-modules/nix-builder-provide.nix
+    ../nixos-modules/prometheus-exporter-dns-smart-block.nix
     ../nixos-modules/server-host.nix
     ../nixos-configs/blocky-with-updater.nix
+    ../nixos-configs/dns-smart-block.nix
     ../nixos-configs/grafana-kiosk-overview.nix
     ../nixos-configs/nfs-mount-provider-from-facts.nix
+    flake-inputs.dns-smart-block.nixosModules.default
     # TODO: Right now agenix-rekey wants to build wireguard to do the
     # generation.  This fails due to a problem with macOS building wireguard-go
     # (documented in the overlay in this repository).  It is not understood why

@@ -13,6 +13,7 @@
 
         monitor-to-exporter-name = monitor: {
           blackbox-ping = "blackbox";
+          dns-smart-block = "dns-smart-block-exporter";
         }.${monitor} or monitor;
 
         pemToCertificates = pemData: (let

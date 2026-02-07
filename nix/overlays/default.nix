@@ -12,6 +12,7 @@
 #
 # See: https://github.com/NixOS/nix/issues/8443
 { flake-inputs, system, ... }: [
+  flake-inputs.dns-smart-block.overlays.default
   (import ./test-script.nix)
   (import ./amdvlk-348903-fix.nix)
   (import ./battlescribe-update-data.nix)
