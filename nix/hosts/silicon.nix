@@ -8,7 +8,6 @@ in {
     ../nixos-modules/makemkv-updater.nix
     ../nixos-modules/nix-builder-provide.nix
     ../nixos-modules/server-host.nix
-    ../nixos-modules/unfree-predicates.nix
     ../nixos-configs/blocky-with-updater.nix
     ../nixos-configs/grafana-kiosk-overview.nix
     ../nixos-configs/nfs-mount-provider-from-facts.nix

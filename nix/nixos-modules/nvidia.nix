@@ -133,8 +133,6 @@ in {
     # things just don't work out as we expect.
     # flake-inputs.nixos-hardware.nixosModules.common-cpu-amd-pstate
     flake-inputs.nixos-hardware.nixosModules.common-gpu-nvidia-nonprime
-    # Gives us allowUnfreePackagePredicates.
-    ./unfree-predicates.nix
     ((lib.mkIf (builtins.hasAttr "saxpy" pkgs.cudaPackages)) {
       environment.systemPackages = [
         # saxpy can is the best "doctor" tool for version mismatches.  Example

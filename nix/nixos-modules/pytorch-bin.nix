@@ -1,7 +1,4 @@
 { lib, pkgs, ... }: {
-  imports = [
-    ../nixos-modules/unfree-predicates.nix
-  ];
   nixpkgs.overlays = [
     (final: prev: {
       pythonPackagesExtensions = [(py-final: py-prev: {

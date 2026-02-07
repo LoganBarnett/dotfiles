@@ -5,9 +5,6 @@
 # https://webglsamples.org/aquarium/aquarium.html
 ################################################################################
 { lib, pkgs, ... }: {
-  imports = [
-    ../nixos-modules/unfree-predicates.nix
-  ];
   allowUnfreePackagePredicates = [
     (pkg: builtins.elem (lib.getName pkg) [
       "Superposition"

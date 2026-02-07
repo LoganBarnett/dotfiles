@@ -15,9 +15,6 @@
     pkgs.wmctrl
     pkgs.wmname
   ];
-  imports = [
-    ./unfree-predicates.nix
-  ];
   # Required for touchpad support, and some managers such as hyprland require
   # it.
   services.libinput = {

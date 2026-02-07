@@ -114,7 +114,6 @@ in {
     }
     ({ flake-inputs, lib, pkgs, ...}: {
       imports = [
-        ../nixos-modules/unfree-predicates.nix
         flake-inputs.nix-homebrew.darwinModules.nix-homebrew
       ];
       allowUnfreePackagePredicates = [

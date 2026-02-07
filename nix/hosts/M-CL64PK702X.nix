@@ -16,9 +16,6 @@ in {
   ids.gids.nixbld = 30000;
   imports = [
     ({ lib, pkgs, ... }: {
-      imports = [
-        ../nixos-modules/unfree-predicates.nix
-      ];
       allowUnfreePackagePredicates = [
         (pkg: builtins.elem (lib.getName pkg) [
           "example-unfree-package"

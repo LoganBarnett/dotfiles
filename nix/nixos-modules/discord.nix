@@ -1,7 +1,6 @@
 { lib, pkgs, ... }: {
   imports = [
     ../nixos-modules/configuration-lens.nix
-    ../nixos-modules/unfree-predicates.nix
   ];
   allowUnfreePackagePredicates = [
     (pkg: builtins.elem (lib.getName pkg) [ "discord" ])

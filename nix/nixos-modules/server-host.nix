@@ -70,6 +70,7 @@
     # ./server-host-pub-key.nix
     ../nixos-modules/sshd.nix
     ../nixos-modules/tls-trust.nix
+    ../nixos-modules/unfree-predicates.nix
     ../nixos-modules/user-can-admin.nix
     ../nixos-modules/user-lockout-schedule.nix
     ../users/logan-server.nix

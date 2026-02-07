@@ -1,8 +1,5 @@
 # https://nixos.wiki/wiki/Steam
 { lib, pkgs, ... }: {
-  imports = [
-    ./unfree-predicates.nix
-  ];
   environment.systemPackages = [
     pkgs.steamcmd
   ];

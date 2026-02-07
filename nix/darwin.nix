@@ -45,6 +45,7 @@ in {
     # NixOS has this built in, but this is our copy for Darwin.  It's needed for
     # ./nixos-modules/user-can-admin.nix.
     ./nixos-modules/pay-respects.nix
+    ./nixos-modules/unfree-predicates.nix
   ];
   # Global packages that can't be bound to a specific user, such as shells.
   environment = {

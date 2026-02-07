@@ -1,7 +1,6 @@
 { config, lib, pkgs, ... }: {
   imports = [
     ./pytorch-bin.nix
-    ./unfree-predicates.nix
   ];
   services.ollama = {
     enable = true;
