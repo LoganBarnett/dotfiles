@@ -306,6 +306,15 @@
         ipv4 = 20;
         monitors = [];
       };
+      rubidium = {
+        controlledHost = true;
+        ipv4 = 13;
+        monitors = [
+          "node"
+          "systemd"
+        ];
+        system = "x86_64-linux";
+      };
       scandium = {
         controlledHost = true;
         flake-input-overrides = {
