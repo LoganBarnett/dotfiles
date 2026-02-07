@@ -116,6 +116,7 @@ in {
       imports = [
         flake-inputs.nix-homebrew.darwinModules.nix-homebrew
       ];
+      # documentation.option-search.enable = true;
       allowUnfreePackagePredicates = [
         (pkg: builtins.elem (lib.getName pkg) [
           "firefox-bin"

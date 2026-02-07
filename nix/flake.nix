@@ -98,6 +98,10 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     nix-homebrew.url = "github:zhaofengli/nix-homebrew";
+    nix-option-search = {
+      url = "github:ciderale/nix-option-search";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     nixos-generators = {
       # url = "github:LoganBarnett/nixos-generators?ref=add-sd-image-raspberrypi";
       url = "github:nix-community/nixos-generators/master";
@@ -230,6 +234,7 @@
         };
         modules = [
           flake-inputs.home-manager.nixosModules.home-manager
+          flake-inputs.nix-option-search.nixosModules.default
           ./hosts/${host-id}.nix
           # This is the only way to pull in this dependency.  In the flake it
           # resides in, this is already imported, so importing it again via
@@ -253,6 +258,7 @@
         };
         modules = [
           flake-inputs.home-manager.darwinModules.home-manager
+          # flake-inputs.nix-option-search.darwinModules.default
           {
             nixpkgs.overlays = [
               (final: prev: {
