@@ -141,30 +141,59 @@
 
     # Row 1: Current Classification Counts.
     (mkCountStatPanel {
-      title = "Total Domains Classified";
+      title = "Total Classifications";
       expr = without-socket-port "dns_smart_block_domains_classified_total";
       x = 0 * width;
       y = 1 * height;
     })
     (mkCountStatPanel {
-      title = "Gaming Domains";
-      expr = without-socket-port ''dns_smart_block_domains_classified{classification_type="gaming"}'';
+      title = "Positive Classifications";
+      expr = without-socket-port "dns_smart_block_domains_classified_positive_total";
       x = 1 * width;
       y = 1 * height;
+      colorSteps = [
+        { color = "green"; value = null; }
+        { color = "yellow"; value = 50; }
+        { color = "orange"; value = 200; }
+        { color = "red"; value = 500; }
+      ];
     })
     (mkCountStatPanel {
-      title = "Video Streaming Domains";
-      expr = without-socket-port ''dns_smart_block_domains_classified{classification_type="video-streaming"}'';
+      title = "Negative Classifications";
+      expr = without-socket-port "dns_smart_block_domains_classified_negative_total";
       x = 2 * width;
       y = 1 * height;
+      colorSteps = [
+        { color = "blue"; value = null; }
+      ];
     })
 
-    # Row 2: Historical Classification Totals and Domains Seen.
+    # Row 2: Positive Classifications by Type.
+    (mkCountStatPanel {
+      title = "Gaming (Positive)";
+      expr = without-socket-port ''dns_smart_block_domains_classified_positive{classification_type="gaming"}'';
+      x = 0 * width;
+      y = 2 * height;
+      colorSteps = [
+        { color = "green"; value = null; }
+      ];
+    })
+    (mkCountStatPanel {
+      title = "Video Streaming (Positive)";
+      expr = without-socket-port ''dns_smart_block_domains_classified_positive{classification_type="video-streaming"}'';
+      x = 1 * width;
+      y = 2 * height;
+      colorSteps = [
+        { color = "green"; value = null; }
+      ];
+    })
+
+    # Row 3: Historical Classification Totals and Domains Seen.
     (mkCountStatPanel {
       title = "Total Classifications (All Time)";
       expr = without-socket-port "dns_smart_block_classifications_all_total";
       x = 0 * width;
-      y = 2 * height;
+      y = 3 * height;
       colorSteps = [
         { color = "blue"; value = null; }
       ];
@@ -173,15 +202,15 @@
       title = "Unique Domains Seen";
       expr = without-socket-port "dns_smart_block_domains_seen";
       x = 1 * width;
-      y = 2 * height;
+      y = 3 * height;
       colorSteps = [
         { color = "purple"; value = null; }
       ];
     })
 
-    # Row 3: Classification Rate (over time).
+    # Row 4: Classification Rate (over time).
     {
-      title = "Classification Rate (classifications/min)";
+      title = "Classification Rate (all classifications/min)";
       type = "timeseries";
       datasource = "Prometheus";
       targets = [
@@ -206,11 +235,11 @@
         h = height;
         w = 3 * width;
         x = 0 * width;
-        y = 3 * height;
+        y = 4 * height;
       };
     }
 
-    # Row 4: Classification Events by Action.
+    # Row 5: Classification Events by Action.
     {
       title = "Classification Events by Action";
       type = "timeseries";
@@ -234,11 +263,11 @@
         h = height;
         w = 3 * width;
         x = 0 * width;
-        y = 4 * height;
+        y = 5 * height;
       };
     }
 
-    # Row 5: Blocklist Request Rate.
+    # Row 6: Blocklist Request Rate.
     {
       title = "Blocklist Requests Rate (req/min)";
       type = "timeseries";
@@ -265,11 +294,11 @@
         h = height;
         w = 3 * width;
         x = 0 * width;
-        y = 5 * height;
+        y = 6 * height;
       };
     }
 
-    # Row 6: Domains Classified Over Time.
+    # Row 7: Domains Classified Over Time (Positive vs Total).
     {
       title = "Domains Classified (Current)";
       type = "timeseries";
@@ -277,16 +306,30 @@
       targets = [
         {
           expr = without-socket-port ''
-            dns_smart_block_domains_classified
+            dns_smart_block_domains_classified_positive
           '';
-          legendFormat = "{{classification_type}}";
+          legendFormat = "{{classification_type}} (positive)";
           format = "time_series";
         }
         {
           expr = without-socket-port ''
-            dns_smart_block_domains_classified_total
+            dns_smart_block_domains_classified_negative
           '';
-          legendFormat = "Total";
+          legendFormat = "{{classification_type}} (negative)";
+          format = "time_series";
+        }
+        {
+          expr = without-socket-port ''
+            dns_smart_block_domains_classified_positive_total
+          '';
+          legendFormat = "Total Positive";
+          format = "time_series";
+        }
+        {
+          expr = without-socket-port ''
+            dns_smart_block_domains_classified_negative_total
+          '';
+          legendFormat = "Total Negative";
           format = "time_series";
         }
       ];
@@ -300,7 +343,7 @@
         h = height;
         w = 3 * width;
         x = 0 * width;
-        y = 6 * height;
+        y = 7 * height;
       };
     }
   ];
