@@ -291,8 +291,8 @@
         "rust-overlay": "rust-overlay_2"
       },
       "locked": {
-        "lastModified": 1770505459,
-        "narHash": "sha256-aeunITxTBevCNFcx26PdV4Sum3Y9mvu4pb4OL50PKIA=",
+        "lastModified": 1770581780,
+        "narHash": "sha256-jfSoJ+4QiKvbFLLWLD0uyLtQ1Gq/3EYlw3jB04svbuY=",
         "path": "/Users/logan/dev/dns-smart-block",
         "type": "path"
       },
