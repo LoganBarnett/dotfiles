@@ -5,10 +5,6 @@
 # htpasswd authentication using agenix-rekey.
 ################################################################################
 { config, ... }: {
-  imports = [
-    ./dns-smart-block-admin-secrets.nix
-  ];
-
   # Expose admin interface via HTTPS with basic auth.
   services.https.fqdns."dns-admin.proton" = {
     locations."/" = {

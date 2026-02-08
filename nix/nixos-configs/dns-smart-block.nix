@@ -4,7 +4,28 @@
 # Provides gaming and video streaming classifiers that watch Blocky DNS logs,
 # classify domains using Ollama LLM, and serve dynamic blocklists via HTTP API.
 ################################################################################
-{ ... }: {
+{ config, ... }: {
+  # Admin interface secrets for HTTP Basic Auth.
+  age.secrets = {
+    dns-smart-block-admin-password = {
+      generator.script = "long-passphrase";
+    };
+    dns-smart-block-admin-htpasswd = {
+      generator = {
+        script = "htpasswd";
+        dependencies = [
+          config.age.secrets.dns-smart-block-admin-password
+        ];
+      };
+      settings = {
+        username = "admin";
+      };
+      mode = "0440";
+      owner = "nginx";
+      group = "nginx";
+    };
+  };
+
   # DNS Smart Block - LLM-powered DNS blocking with gaming and video streaming
   # classification.
   services.dns-smart-block = {
