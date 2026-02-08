@@ -5,18 +5,9 @@
 # htpasswd authentication using agenix-rekey.
 ################################################################################
 { config, ... }: {
-  # Generate htpasswd file for admin access using agenix-rekey's built-in
-  # htpasswd generator.
-  age.generators.htpasswd.dns-smart-block-admin = {
-    users = ["admin"];
-  };
-
-  age.secrets.dns-smart-block-admin-htpasswd = {
-    generator = config.age.generators.htpasswd.dns-smart-block-admin;
-    mode = "0440";
-    owner = "nginx";
-    group = "nginx";
-  };
+  imports = [
+    ./dns-smart-block-admin-secrets.nix
+  ];
 
   # Expose admin interface via HTTPS with basic auth.
   services.https.fqdns."dns-admin.proton" = {

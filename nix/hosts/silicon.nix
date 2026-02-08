@@ -10,6 +10,7 @@ in {
     ../nixos-modules/server-host.nix
     ../nixos-configs/blocky-with-updater.nix
     ../nixos-configs/dns-smart-block.nix
+    ../nixos-configs/dns-smart-block-admin.nix
     ../nixos-configs/grafana-kiosk-overview.nix
     ../nixos-configs/nfs-mount-provider-from-facts.nix
     flake-inputs.dns-smart-block.nixosModules.default

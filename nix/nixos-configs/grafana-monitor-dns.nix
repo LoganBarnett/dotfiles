@@ -228,7 +228,7 @@
         defaults = {
           unit = "cpm";
           decimals = 2;
-          max = 3;
+          max = 1;
         };
         overrides = [];
       };
