@@ -63,7 +63,8 @@
     # Prometheus scraping from other hosts.
     blocklistServer = {
       enable = true;
-      publicBindAddress = "0.0.0.0:3000";
+      publicBindHost = "0.0.0.0";
+      publicBindPort = 3000;
     };
 
     # Use built-in PostgreSQL and NATS.
