@@ -217,7 +217,7 @@
         {
           expr = without-socket-port ''
             sum by (classification_type) (
-              rate(dns_smart_block_classifications_total[5m]) * 60
+              dns_smart_block_recent_classifications_5m / 5
             )
           '';
           legendFormat = "{{classification_type}}";

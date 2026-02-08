@@ -11,6 +11,10 @@
     lib = prev.lib // {
       custom = {
 
+        # Trace with a message prefix and pretty-printed value.
+        traceMsg = msg: val:
+          builtins.trace "${msg}: ${final.lib.generators.toPretty {} val}" val;
+
         monitor-to-exporter-name = monitor: {
           blackbox-ping = "blackbox";
           dns-smart-block = "dns-smart-block-exporter";

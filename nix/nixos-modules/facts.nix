@@ -344,6 +344,7 @@
         macAddress = "b8:ca:3a:77:a9:2a";
         monitors = [
           "dns-smart-block"
+          "dns-smart-block-admin"
           "node"
           "systemd"
           "wireguard"

@@ -12,6 +12,7 @@
     # evidence.  I have had broken hashes during a `nix-store --verify
     # --check-contents`.  I also have other compiler errors.  I've had physical
     # memory issues in the past, but those have passed lots of tests.
-    auto-optimise-store = false;
+    # auto-optimise-store = false;
+    auto-optimise-store = true;
   };
 }
