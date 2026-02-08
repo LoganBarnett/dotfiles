@@ -26,15 +26,6 @@
     };
   };
 
-  # Expose admin interface via HTTPS with basic auth.
-  services.https.fqdns."dns-admin.proton" = {
-    locations."/" = {
-      proxyPass = "http://127.0.0.1:8080";
-      basicAuth = "DNS Smart Block Admin";
-      basicAuthFile = config.age.secrets.dns-smart-block-admin-htpasswd.path;
-    };
-  };
-
   # DNS Smart Block - LLM-powered DNS blocking with gaming and video streaming
   # classification.
   services.dns-smart-block = {
@@ -72,7 +63,7 @@
     # Prometheus scraping from other hosts.
     blocklistServer = {
       enable = true;
-      bindAddress = "0.0.0.0:3000";
+      publicBindAddress = "0.0.0.0:3000";
     };
 
     # Use built-in PostgreSQL and NATS.
@@ -85,6 +76,20 @@
       enable = true;
       blocklistUrl = "http://localhost:3000";
       autoMapAllBlocklists = true;
+    };
+  };
+
+  # TLS termination for admin interface.
+  services.https.fqdns."dns-smart-block-admin.proton" = {
+    internalPort = config.services.dns-smart-block.blocklistServer.adminBindPort;
+  };
+
+  # Nginx proxy configuration for admin interface with HTTP Basic Auth.
+  services.nginx.virtualHosts."dns-smart-block-admin.proton" = {
+    locations."/" = {
+      proxyPass = "http://${config.services.dns-smart-block.blocklistServer.adminBindHost}:${toString config.services.dns-smart-block.blocklistServer.adminBindPort}";
+      basicAuth = "DNS Smart Block Admin";
+      basicAuthFile = config.age.secrets.dns-smart-block-admin-htpasswd.path;
     };
   };
 }
