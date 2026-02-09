@@ -54,6 +54,10 @@ in {
   networking.firewall.allowedUDPPorts = [ 53 ];
   # Larger connections (DNSSEC, zone transfers) use TCP for DNS.
   networking.firewall.allowedTCPPorts = [ 53 ];
+  services.https.fqdns."blocky.proton" = {
+    enable = true;
+    internalPort = config.services.blocky.settings.ports.http;
+  };
   services.blocky = {
     enable = true;
     settings = {

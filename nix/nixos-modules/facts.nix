@@ -316,10 +316,12 @@
         system = "x86_64-linux";
       };
       scandium = {
+        blockProfiles = [ "adult" ];
         controlledHost = true;
         flake-input-overrides = {
           nixpkgs = "nixpkgs";
         };
+        ipv4 = 209;
         monitors = [];
         roaming = true;
         system = "aarch64-darwin";
@@ -338,6 +340,9 @@
         system = "aarch64-linux";
       };
       silicon = {
+        aliases = [
+          "blocky"
+        ];
         controlledHost = true;
         flake-input-overrides = {};
         ipv4 = 9;
