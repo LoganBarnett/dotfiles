@@ -81,13 +81,13 @@
   };
 
   # TLS termination for admin interface.
-  services.https.fqdns."dns-smart-block-admin.proton" = {
+  services.https.fqdns."dns-smart-block.proton" = {
     enable = true;
     internalPort = config.services.dns-smart-block.blocklistServer.adminBindPort;
   };
 
   # Nginx proxy configuration for admin interface with HTTP Basic Auth.
-  services.nginx.virtualHosts."dns-smart-block-admin.proton" = {
+  services.nginx.virtualHosts."dns-smart-block.proton" = {
     locations."/" = {
       # proxyPass = "http://${config.services.dns-smart-block.blocklistServer.adminBindHost}:${toString config.services.dns-smart-block.blocklistServer.adminBindPort}";
       basicAuth = "DNS Smart Block Admin";

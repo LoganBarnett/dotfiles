@@ -359,7 +359,6 @@
       krypton = {
         aliases = [
           "kodi-living-room"
-          "jellyfin"
         ];
         controlledHost = true;
         ipv4 = 12;
