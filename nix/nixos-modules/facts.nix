@@ -259,6 +259,11 @@
         roaming = true;
         system = "aarch64-darwin";
       };
+      manganese = {
+        controlledHost = false;
+        ipv4 = 102;
+        system = "aarch64-ios";
+      };
       nickel = {
         aliases = [
           "alertmanager"
