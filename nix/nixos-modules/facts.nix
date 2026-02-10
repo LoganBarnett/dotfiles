@@ -260,6 +260,7 @@
         system = "aarch64-darwin";
       };
       manganese = {
+        blockProfiles = [ "adult" ];
         controlledHost = false;
         ipv4 = 102;
         system = "aarch64-ios";
