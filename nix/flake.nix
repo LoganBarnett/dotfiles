@@ -62,12 +62,12 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    github-to-jenkins-webhook = {
-      # TODO: Always keep one path example around.  Don't use file:// unless
-      # you're pointing at a tarball (which should happen just about never).
-      url = "path:/Users/logan/dev/github-to-jenkins-webhook";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
+    # github-to-jenkins-webhook = {
+    #   # TODO: Always keep one path example around.  Don't use file:// unless
+    #   # you're pointing at a tarball (which should happen just about never).
+    #   url = "path:/Users/logan/dev/github-to-jenkins-webhook";
+    #   inputs.nixpkgs.follows = "nixpkgs";
+    # };
 
     # Allow Flatpak usage, specifically so we can install Roblox via Sober.
     flatpaks.url = "github:in-a-dil-emma/declarative-flatpak/latest";
