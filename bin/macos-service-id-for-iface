@@ -1,0 +1,49 @@
+#!/usr/bin/env bash
+################################################################################
+# Get the service ID (e.g. WiFi) for an interface name (e.g. en0).
+################################################################################
+
+iface="${1-en0}"
+
+if [[ "$iface" == "-h" || "$iface" == "--help" ]]; then
+  cat <<EOUSAGE
+$0 [iface=en0]
+
+Get the service ID (e.g. "Wi-Fi") for an interface name (e.g. "en0").
+
+Arguments:
+  --help,-h Displays this help message.
+EOUSAGE
+  exit 0
+fi
+
+service_id=$(sudo scutil <<'EOF' | awk '
+  /^  subKey \[[0-9]+\] = Setup:\/Network\/Service\/[0-9A-F-]+\/Interface$/ {
+    key=$0
+    sub(/^.* = /,"",key)
+    uuid=key
+    sub(/^Setup:\/Network\/Service\//,"",uuid)
+    sub(/\/Interface$/,"",uuid)
+
+    cmd="sudo scutil <<\"EOK\"\nshow " key "\nEOK"
+    cmd | getline line
+    close(cmd)
+
+    # read full show output
+    out=""
+    while ((cmd | getline line) > 0) out=out line "\n"
+    close(cmd)
+
+    if (out ~ /DeviceName[[:space:]]*:[[:space:]]*en0/) print uuid
+  }
+'
+list
+EOF
+)
+
+if [[ -z "${service_id}" ]]; then
+  echo "Could not find network service ID for interface ${iface}" >&2
+  exit 1
+fi
+
+echo "$service_id"

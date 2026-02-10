@@ -149,6 +149,10 @@ in {
                 name = "${name}.${facts.network.domain}";
                 value = blockProfiles;
               }
+              {
+                inherit name;
+                value = blockProfiles;
+              }
             ] ++ (optionals (data.ipv4 or null != null) [{
               name = "${facts.network.subnets.barnett-main}.${toString data.ipv4}";
               value = blockProfiles;

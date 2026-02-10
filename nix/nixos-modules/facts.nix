@@ -321,7 +321,7 @@
         flake-input-overrides = {
           nixpkgs = "nixpkgs";
         };
-        ipv4 = 209;
+        ipv4 = 101;
         monitors = [];
         roaming = true;
         system = "aarch64-darwin";
@@ -372,6 +372,7 @@
         aliases = [
           "musicgpt"
         ];
+        blockProfiles = [ "adult" ];
         controlledHost = true;
         ipv4 = 6;
         monitors = [

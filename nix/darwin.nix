@@ -36,7 +36,7 @@
 # Much of this is shamelessly lifted from:
 # https://github.com/nmasur/dotfiles/blob/master/modules/darwin/system.nix
 
-{ config, emacs-overlay, flake-inputs, nixpkgs, lib, pkgs, system, ... }: let
+{ config, flake-inputs, host-id, lib, nixpkgs, pkgs, system, ... }: let
   macos-keyboard-remap = pkgs.callPackage ./packages/macos-keyboard-remap.nix {};
 in {
   imports = [
@@ -156,6 +156,9 @@ in {
       # Drops incoming requests via ICMP such as ping requests.
       enableStealthMode = false;
     };
+    computerName = host-id;
+    hostName = host-id;
+    localHostName = host-id;
   };
   system = {
     # Settings that don't have an option in nix-darwin.

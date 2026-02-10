@@ -1,0 +1,121 @@
+#!/usr/bin/env bash
+################################################################################
+# Reset DHCP state.  This can be helpful when DHCP seems to be lodged, such as
+# in the case of the hostname being offered incorrectly to DHCP.  For example,
+# this invocation (BSD) (separate tab/shell):
+# sudo tcpdump -i en0 -n -vvv udp port 67 or udp port 68
+# And then doing:
+# sudo ipconfig set en0 NONE
+# sudo ipconfig set en0 DHCP
+# Would result in seeing it offer "MacBookPro".  We want it to offer other
+# things.  Our nix-darwin (darwin.nix) settings under `networking` already
+# manage the correct settings for this, so this is a caching issue.
+################################################################################
+
+source ~/.bash-logging
+
+set -euo pipefail
+
+iface="${1-en0}"
+
+if [[ "$iface" == "-h" || "$iface" == "--help" ]]; then
+  cat <<EOUSAGE
+$0 [iface=en0]
+
+Flush DHCP settings for macOS.  Really.
+
+Arguments:
+  --help,-h Displays this help message.
+EOUSAGE
+  exit 0
+fi
+
+slog "Stopping IPv4 on ${iface}..."
+sudo ipconfig set "${iface}" NONE
+
+slog "Wiping DHCP client lease/state (macOS persists these)..."
+# This is the client-side DHCP state; removing it forces macOS to rebuild its
+# view of DHCP parameters on next DISCOVER/REQUEST.
+sudo rm -f /var/db/dhcpclient/leases/* 2>/dev/null || true
+sudo rm -f /var/db/dhcpclient/* 2>/dev/null || true
+
+slog "Restarting configd (which hosts IPConfiguration agent)..."
+# kickstart may be restricted for some system processes on newer macOS, so use
+# kill to force restart behavior.
+sudo killall -HUP configd || true
+
+# Prints the network service name for a given device (e.g. en0 -> "Wi-Fi")
+service_for_device() {
+  local device="$1"
+  networksetup -listnetworkserviceorder \
+    | awk -v dev="Device: ${device}" '
+        /^\([0-9]+\)/ { svc=$0; sub(/^\([0-9]+\) /,"",svc) }
+        $0 ~ dev { print svc; exit }
+      '
+}
+
+slog "Renewing DHCP on ${iface}..."
+# original_service="$(service_for_device "$iface")"
+# if [[ -z "${original_service}" ]]; then
+#   echo "Could not find network service for device ${iface}" >&2
+#   exit 1
+# fi
+# tmp_service="${original_service} (tmp)"
+# # Create a second service on the same device (so macOS will allow removal).
+# slog "Creating temporary service (macos quirk)..."
+# sudo networksetup -createnetworkservice "$tmp_service" "$iface"
+# slog "Removing original service..."
+# sudo networksetup -removenetworkservice "$original_service"
+# slog "Renaming temporary service to original service..."
+# sudo networksetup -renamenetworkservice "$tmp_service" "$original_service"
+# slog "Using DHCP for service..."
+# sudo networksetup -setdhcp "$original_service"
+# slog "Using DHCP for service (more)..."
+# sudo ipconfig set "${iface}" DHCP
+service_id=$(macos-service-id-for-iface "$iface")
+desired="$(scutil --get ComputerName)"
+slog "Current settings: $(sudo scutil <<EOF
+show Setup:/Network/Service/${service_id}/Interface
+show Setup:/Network/Service/${service_id}
+EOF
+)"
+found_iface="$(sudo scutil <<EOF 2>&1
+show Setup:/Network/Service/${service_id}/Interface
+EOF
+)"
+if [[ "$found_iface" != "$iface" ]]; then
+  slog "scutil did not find $iface with service ID $service_id: $found_iface"
+  exit 1
+fi
+
+slog "ServiceID for ${iface}: ${service_id}"
+slog "Setting per-service DHCP HostName to: ${desired}"
+exit 1
+# Create/overwrite the per-service DHCP dictionary with HostName.
+# This avoids "No such key" when /DHCP doesn't exist yet.
+scutil_output="$(
+  sudo scutil 2>&1 <<EOF
+d.init
+d.add HostName ${desired}
+set Setup:/Network/Service/${service_id}/DHCP
+quit
+EOF
+)" || {
+  slog "scutil failed setting DHCP HostName"
+  exit 1
+}
+
+# scutil often prints failures but exits 0; treat those as failures.
+if echo "${scutil_output}" | grep -q --fixed-strings "No such key"; then
+  slog "${scutil_output}"
+  exit 1
+fi
+
+slog "Your computer will use the following host names:
+$(networksetup -getcomputername) <- networksetup -getcomputername
+$(scutil --get ComputerName) <- scutil --get ComputerName
+$(scutil --get LocalHostName) <- scutil --get LocalHostName
+$(scutil --get HostName) <- scutil --get HostName
+$(defaults read /Library/Preferences/SystemConfiguration/com.apple.smb.server NetBIOSName) <- defaults read /Library/Preferences/SystemConfiguration/com.apple.smb.server NetBIOSName
+"
+slog "Mismatches in these names should be addressed."

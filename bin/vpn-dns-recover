@@ -21,11 +21,15 @@ states=$(
     | awk '{ print $4 }' \
     | egrep '^State:.+/DNS$' \
 )
-hardwarePorts=$(networksetup -listallhardwareports \
-  | grep 'Hardware Port:' \
-  | sed -E 's/Hardware Port: (.+)$/\1/' \
-  | grep -v -E 'Thunderbolt [0-9]+'
-  )
+# I've read these commands expect "services" and not hardware ports - it's just
+# that sometimes the hardware port names match the service names, so I've seen
+# some measure of success.
+# hardwarePorts=$(networksetup -listallhardwareports \
+#   | grep 'Hardware Port:' \
+#   | sed -E 's/Hardware Port: (.+)$/\1/' \
+#   | grep -v -E 'Thunderbolt [0-9]+'
+#   )
+services="$(networksetup -listallnetworkservices | tail -n +2)"
 IFS=$'\n'
 # What we used to do:
 # d.add ServerAddresses * ${dnsIps}
@@ -50,21 +54,21 @@ IFS=$'\n'
 # " | tee /dev/tty | sudo scutil
 # done
 function dnsReset() {
-  for port in $hardwarePorts; do
-    slog "Configuring $port to use DHCP."
+  for service in $services; do
+    slog "Configuring $service to use DHCP."
     # This tells macOS to use DHCP for this port. Without this, the
     # -setdnsservers and -setsearchdomains will persist across networks, and the
     # system will not query and use DHCP to get information - this breaks our
     # presence on other networks or even disconnecting from VPN.
-    sudo networksetup -setdhcp "$port"
-    slog "Setting $port DNS to Empty..."
-    sudo networksetup -setdnsservers "$port" Empty
-    slog "Setting $port search domains to Empty..."
-    sudo networksetup -setsearchdomains "$port" Empty
-    sudo networksetup -setwebproxystate "$port" Off
-    sudo networksetup -setsecurewebproxystate "$port" Off
-    sudo networksetup -setv6automatic "$port"
-    sudo networksetup -setproxybypassdomains "$port" Empty
+    sudo networksetup -setdhcp "$service"
+    slog "Setting $service DNS to Empty..."
+    sudo networksetup -setdnsservers "$service" Empty
+    slog "Setting $service search domains to Empty..."
+    sudo networksetup -setsearchdomains "$service" Empty
+    sudo networksetup -setwebproxystate "$service" Off
+    sudo networksetup -setsecurewebproxystate "$service" Off
+    sudo networksetup -setv6automatic "$service"
+    sudo networksetup -setproxybypassdomains "$service" Empty
   done
 }
 
@@ -81,11 +85,11 @@ sudo killall -HUP mDNSResponder
 
 slog "Unfortunately absolutely none of this works without a restart."
 slog "Bringing the network service down. This will interrupt connections."
-for port in $hardwarePorts; do
-  slog "Stopping $port..."
-  sudo networksetup -setnetworkserviceenabled "$port" Off
-  slog "Restarting $port..."
-  sudo networksetup -setnetworkserviceenabled "$port" On
+for service in $services; do
+  slog "Stopping $service..."
+  sudo networksetup -setnetworkserviceenabled "$service" Off
+  slog "Restarting $service..."
+  sudo networksetup -setnetworkserviceenabled "$service" On
 done
 dnsReset
 slog "Resetting DNS daemon..."
