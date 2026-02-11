@@ -154,6 +154,7 @@
     ;; Begin Emacs "apps".
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     (load-library "eat-config.el")
+    (load-library "ibuffer-config.el")
     (init-org-file "email.org")
     (load-library "eshell-config.el")
     ;; org-agenda must be loaded after mu4e. The file itself does not call upon
