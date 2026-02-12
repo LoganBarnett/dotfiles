@@ -47,6 +47,18 @@ in {
       type = "postgres";
     };
     settings = {
+      server = {
+        # Use Gitea's built-in SSH server on port 2222 since the host
+        # already uses port 22 for system SSH.
+        SSH_PORT = 2222;
+        START_SSH_SERVER = true;
+        DISABLE_SSH = false;
+        # Use standard 'git' username for SSH operations instead of 'gitea'.
+        # BUILTIN_SSH_SERVER_USER controls what username the SSH server
+        # accepts, while SSH_USER only controls what's displayed in clone
+        # URLs.
+        BUILTIN_SSH_SERVER_USER = "git";
+      };
       service = {
         DISABLE_REGISTRATION = true;
         DOMAIN = domain;
@@ -133,6 +145,8 @@ in {
     after = [ "gitea.service" ];
     wants = [ "gitea.service" ];
     wantedBy = [ "multi-user.target" ];
+    # Provide awk and grep for the script.
+    path = [ pkgs.gawk pkgs.gnugrep ];
     serviceConfig = {
       Type = "oneshot";
       RemainAfterExit = true;
@@ -195,4 +209,6 @@ in {
       }
     ];
   };
+  # Open firewall for Gitea's SSH server.
+  networking.firewall.allowedTCPPorts = [ 2222 ];
 }
