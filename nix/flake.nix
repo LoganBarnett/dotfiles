@@ -102,6 +102,10 @@
       url = "github:ciderale/nix-option-search";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    optnix = {
+      url = "github:water-sucks/optnix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     nixos-generators = {
       # url = "github:LoganBarnett/nixos-generators?ref=add-sd-image-raspberrypi";
       url = "github:nix-community/nixos-generators/master";
@@ -275,8 +279,8 @@
                   src = prev.fetchgit {
                     url = "https://gitea.com/gitea/tea";
                     rev = "6c5811e4e9241b16376beb8eb9138d7951d6090f";
-                    sha256 =
-                      "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
+                    hash =
+                      "sha256-JCvwvVxJGSzr+L+OMfXIeeYsKi+m0PSS83BJ97U4u0c=";
                   };
                 });
               })

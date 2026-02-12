@@ -40,6 +40,7 @@
   macos-keyboard-remap = pkgs.callPackage ./packages/macos-keyboard-remap.nix {};
 in {
   imports = [
+    ./darwin-configs/optnix.nix
     ./nixos-modules/nix-flake-environment.nix
     ./nixos-modules/darwin-tls-trust.nix
     # NixOS has this built in, but this is our copy for Darwin.  It's needed for
