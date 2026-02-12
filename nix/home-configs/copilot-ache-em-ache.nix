@@ -71,7 +71,6 @@ in {
           JIRA_URL = "https://${new-e-ah-alias}.atlassian.net";
           JIRA_USERNAME = "<%USER%>@${ache-em-ache-domain}";
           # TODO: You still need to set this token in your session. Use:
-          # export MCP_ATLASSIAN_TOKEN="$(pass show hmh-atlassian-token-mcphost)"
           JIRA_API_TOKEN = "<%MCP_ATLASSIAN_TOKEN%>";
         };
       };

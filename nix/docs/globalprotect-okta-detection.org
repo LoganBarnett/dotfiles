@@ -7,7 +7,7 @@ When using headless browser automation, Okta detects it as a "new browser" and
 may reject the login with "Unable to sign in" error.
 
 The screenshot shows:
-- "This is the first time you are connecting to hmhco.okta.com from this browser"
+- "This is the first time you are connecting to $DOMAIN from this browser"
 - "Unable to sign in"
 
 * The Solution

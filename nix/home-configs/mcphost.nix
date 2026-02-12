@@ -8,6 +8,12 @@
     "m"
     "h"
   ];
+  sub-org-alias = lib.concatStrings [
+    "n"
+    "w"
+    "e"
+    "a"
+  ];
   work-domain = "${work-alias}co.com";
 in {
   home.file.".mcphost.json".text = (builtins.toJSON {
@@ -24,7 +30,7 @@ in {
           "ghcr.io/sooperset/mcp-atlassian:latest"
         ];
         environment = {
-          JIRA_URL = "https://nwea.atlassian.net";
+          JIRA_URL = "https://${sub-org-alias}.atlassian.net";
           JIRA_USERNAME = "\${env://USER}@${work-domain}";
           JIRA_API_TOKEN = "\${env://MCP_ATLASSIAN_TOKEN}";
         };

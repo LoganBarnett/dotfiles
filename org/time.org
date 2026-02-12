@@ -374,8 +374,8 @@ billingDetailItems[0].billingTimeSpans[0].startHourM
 
 The test:
 #+begin_src emacs-lisp :tangle no
-  ;; (message "%s" (time/get-work-logbook-entries (date-to-time "2018-12-31 00:00:00") (date-to-time "2019-01-04 23:59:59") "~/work-notes/nwea-log.org"))
-  (time/get-work-logbook-entries (date-to-time "2018-12-31 00:00:00") (date-to-time "2019-01-04 23:59:59") "~/work-notes/nwea-log.org")
+  ;; (message "%s" (time/get-work-logbook-entries (date-to-time "2018-12-31 00:00:00") (date-to-time "2019-01-04 23:59:59") "~/work-notes/$WORK-log.org"))
+  (time/get-work-logbook-entries (date-to-time "2018-12-31 00:00:00") (date-to-time "2019-01-04 23:59:59") "~/work-notes/$WORK-log.org")
 #+end_src
 
 #+RESULTS:

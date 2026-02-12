@@ -70,7 +70,7 @@ in
         List of host patterns to match.  These patterns follow SSH config
         matching rules (supports wildcards like *.example.com).
       '';
-      example = [ "*.nwea.pvt" "*.nweacolo.pvt" ];
+      example = [ "*.com" "*.foo.com" ];
     };
 
     homeManagerUsers = lib.mkOption {

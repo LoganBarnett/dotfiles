@@ -73,8 +73,8 @@ function dnsReset() {
 }
 
 # For reasons beyond me, this must be called twice - once before the reset of
-# the network and once after. This appears to only apply when running vpn-nwea
-# by itself. When running via nwea-clock-in this doesn't seem to be needed,
+# the network and once after. This appears to only apply when running vpn-$WORK
+# by itself. When running via $WORK-clock-in this doesn't seem to be needed,
 # indicating a timing issue perhaps. Though I don't know what I shoud latch on
 # to in order to fix the timing.
 dnsReset

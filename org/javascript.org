@@ -147,7 +147,7 @@ employed to integrate linters, type checkers, compilers, and coverage utilities.
 The flow checkers in the past needed a specific order of setup, but I haven't
 observed that lately. Type check errors coexist with linter errors as far as I
 can see. I have =jshint= as a means of supporting some of the older applications
-during my time at NWEA.
+during my time at ~$WORK~.
 
 #+BEGIN_SRC emacs-lisp
   (defun my/find-javascript-flycheck-backends (hook)

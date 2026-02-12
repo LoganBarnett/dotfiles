@@ -51,6 +51,8 @@ cat $leaf | openssl verify -CAfile $cafile
 rm -f $leaf
 #+end_src
 
-#+call: openssl-leaf-test(host="doc-server.prod.hmheng-infra.br.internal", cafile="ach-em-ach-flintstones-ca.pem")
+#+call: openssl-leaf-test(host="doc-server.prod.${ORG_NAME}eng-infra.br.internal", cafile="ach-em-ach-flintstones-ca.pem")
 
 I still can't get this to work.
+
+My fake substitution will probably have to be corrected to test this again.

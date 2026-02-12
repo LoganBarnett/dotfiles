@@ -122,7 +122,7 @@
             # https://unix.stackexchange.com/a/613909 for a decent answer on this.
             signingkey = user.git-signing-key;
           };
-          # includeIf."gitdir:~/dev/nwea/" = {};
+          # includeIf."gitdir:~/dev/$WORK/" = {};
         };
       };
     };
