@@ -1,0 +1,249 @@
+#+title:     GlobalProtect Headless Automation
+#+language:  en
+
+* Overview
+
+When using ~--browser remote~ mode, gpclient provides a clean handoff point for
+headless automation.  Instead of opening a browser directly, it gives you a
+URL and waits for the authentication callback.
+
+* How It Works
+
+** 1. Start gpclient in remote mode
+
+#+begin_src bash :exports code
+gpclient connect --browser remote $GP_SERVER -vv
+#+end_src
+
+** 2. gpclient starts a local web server
+
+Output shows:
+#+begin_example
+==== Manual Authentication Required ====
+
+Please open the following URL in your browser:
+
+http://192.168.254.228:63016/c7026d8d-48d4-43cc-a638-8961ed60b77a
+
+After completing the authentication, please paste the authentication data back
+to this terminal.  (The data should start with "globalprotectcallback:...")
+#+end_example
+
+** 3. Authentication Flow
+
+1. Open that URL in a browser (real or headless)
+2. Complete SSO/SAML authentication
+3. Complete TOTP/MFA challenge
+4. Browser receives SAML callback with format: ~globalprotectcallback:...~
+5. Local web server receives the callback
+6. gpclient establishes VPN connection
+
+* Automation Integration Points
+
+** Option A: Headless Browser Automation
+
+Use Selenium, Playwright, or Puppeteer to:
+
+1. Extract the URL from gpclient output
+2. Navigate to that URL in a headless browser
+3. Fill in credentials programmatically
+4. Complete TOTP (read from authenticator app API or TOTP library)
+5. Let the SAML callback complete to the local server
+
+#+begin_src python :exports code
+# Example with Playwright
+from playwright.sync_api import sync_playwright
+import subprocess
+import re
+
+# Start gpclient in background
+proc = subprocess.Popen(
+    ['gpclient', 'connect', '--browser', 'remote', '-vv', server],
+    stdout=subprocess.PIPE,
+    stderr=subprocess.PIPE,
+    text=True
+)
+
+# Extract URL from output
+for line in proc.stderr:
+    if match := re.search(r'http://[\d.]+:\d+/[a-f0-9-]+', line):
+        auth_url = match.group(0)
+        break
+
+# Automate the browser
+with sync_playwright() as p:
+    browser = p.chromium.launch(headless=True)
+    page = browser.new_page()
+    page.goto(auth_url)
+
+    # Fill in credentials
+    page.fill('#username', username)
+    page.fill('#password', password)
+    page.click('button[type=submit]')
+
+    # Handle TOTP
+    import pyotp
+    totp = pyotp.TOTP(totp_secret)
+    page.fill('#mfa-code', totp.now())
+    page.click('button[type=submit]')
+
+    # Wait for callback to complete
+    page.wait_for_url('**/auth/callback**', timeout=30000)
+    browser.close()
+
+# gpclient receives callback and establishes connection
+proc.wait()
+#+end_src
+
+** Option B: Manual Callback Paste
+
+If you can extract the ~globalprotectcallback:...~ string another way:
+
+#+begin_src bash :exports code
+# Start gpclient in remote mode
+gpclient connect --browser remote $GP_SERVER
+
+# It will wait for you to paste the callback string
+# You can obtain this from:
+# - Browser network inspector (look for the redirect URL)
+# - Intercepting proxy
+# - Previous authentication session (if saved)
+#+end_src
+
+** Option C: Cookie Reuse
+
+After first successful authentication:
+
+#+begin_src bash :exports code
+# First time: authenticate manually
+gpclient connect --browser remote $GP_SERVER
+# Complete auth in browser
+
+# Subsequent connections reuse the cached cookie (24 hours)
+gpclient connect $GP_SERVER
+# No authentication needed!
+#+end_src
+
+* Extracting Authentication Details
+
+** Get the auth URL programmatically
+
+#+begin_src bash :exports code
+# Run gpclient in background and extract URL
+gpclient connect --browser remote -vv $GP_SERVER 2>&1 | \
+  grep -oE 'http://[0-9.]+:[0-9]+/[a-f0-9-]+'
+#+end_src
+
+** Inspect what the callback contains
+
+After completing browser authentication, check:
+- Browser network inspector
+- Look for requests to the local server (~192.168.254.228:63016~)
+- The callback URL parameter contains the authentication token
+
+** Save and reuse authentication data
+
+#+begin_src bash :exports code
+# The authentication cookie is stored in:
+~/.config/gpclient/
+
+# You can backup and restore this for quick reconnection
+#+end_src
+
+* Complete Headless Workflow Script
+
+#+begin_src bash :exports code
+#!/usr/bin/env bash
+
+set -e
+
+SERVER="${GP_SERVER}"
+USERNAME="${USER}"
+PASSWORD_CMD="security find-generic-password -s vpn-password -w"
+TOTP_SECRET_CMD="security find-generic-password -s vpn-totp -w"
+
+# Start gpclient in background
+gpclient connect --browser remote -vv "$SERVER" 2>&1 | \
+while IFS= read -r line; do
+    echo "$line"
+
+    # Extract auth URL
+    if [[ "$line" =~ http://[0-9.]+:[0-9]+/[a-f0-9-]+ ]]; then
+        AUTH_URL="${BASH_REMATCH[0]}"
+        echo "Found auth URL: $AUTH_URL"
+
+        # Call your headless automation script
+        python3 ./headless-vpn-auth.py \
+            --url "$AUTH_URL" \
+            --username "$USERNAME" \
+            --password "$($PASSWORD_CMD)" \
+            --totp-secret "$($TOTP_SECRET_CMD)"
+
+        break
+    fi
+done &
+
+# Wait for gpclient to complete
+wait
+#+end_src
+
+* Security Considerations
+
+** Credential Storage
+
+- Store credentials securely (macOS Keychain, 1Password CLI, etc.)
+- Never hardcode passwords or TOTP secrets
+- Use environment variables or secure secret managers
+
+** TOTP Secret Protection
+
+#+begin_src bash :exports code
+# Store TOTP secret in keychain
+security add-generic-password \
+  -a "$USER" \
+  -s vpn-totp \
+  -w "YOUR_TOTP_SECRET_BASE32"
+
+# Retrieve when needed
+TOTP_SECRET=$(security find-generic-password -s vpn-totp -w)
+#+end_src
+
+** Network Security
+
+- The local web server only binds to your machine
+- Port is randomly assigned
+- URL is single-use (one authentication per URL)
+- URL contains a UUID to prevent guessing
+
+* Troubleshooting
+
+** Port already in use
+
+The random port might conflict.  Retry the connection attempt.
+
+** URL times out
+
+The authentication URL expires after a short time.  Generate a new one by
+restarting gpclient.
+
+** Callback not received
+
+- Check firewall settings
+- Ensure the browser can reach the local IP address
+- Verify the browser isn't being redirected to the GUI app
+
+** Browser tries to open GlobalProtect.app
+
+This happens when NOT using ~--browser remote~.  Always use the remote option
+for automation.
+
+* Next Steps
+
+1. Set up credential storage (keychain/password manager)
+2. Choose a headless browser automation tool
+3. Write the authentication flow automation
+4. Test the full workflow
+5. Integrate with the gp-monitor service for automatic reconnection
+
+The key insight: ~--browser remote~ gives you complete control over the
+authentication process while keeping gpclient waiting for the callback.

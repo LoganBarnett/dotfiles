@@ -1,0 +1,221 @@
+#+title:     GlobalProtect Testing Guide
+#+language:  en
+
+* Quick Test - Manual Connection
+
+** 1. Connect to VPN
+
+#+begin_src bash :exports code
+# Connect using your wrapper script (uses GP_SERVER from environment)
+gp-connect
+#+end_src
+
+This will:
+- Open your browser for SSO authentication
+- Complete SAML/TOTP in the browser
+- Establish the VPN tunnel
+- Create a ~gpd0~ network interface
+
+** 2. Verify Connection
+
+#+begin_src bash :exports code
+# Check if the VPN interface exists
+ifconfig gpd0
+
+# Check routing
+netstat -rn | grep gpd0
+
+# Test connectivity to an internal resource
+ping some-internal-host.yourcompany.pvt
+#+end_src
+
+** 3. Check Logs
+
+#+begin_src bash :exports code
+# The connection output goes to stdout
+# For persistent logging, check:
+ls -la ~/.local/share/gpclient/logs/
+#+end_src
+
+** 4. Disconnect
+
+#+begin_src bash :exports code
+gpclient disconnect
+#+end_src
+
+** 5. Test Automatic Reconnection
+
+#+begin_src bash :exports code
+# Connect once (uses GP_SERVER from environment)
+gp-connect
+
+# Wait for connection to establish, then disconnect the interface
+# (simulating a network interruption)
+sudo ifconfig gpd0 down
+
+# Try connecting again - should reuse the cached cookie
+gp-connect
+#+end_src
+
+This second connection should be instant (no browser) if the cookie is still
+valid.
+
+* Testing the Monitor Script
+
+The monitor script runs continuously and checks the connection every 60 seconds.
+
+** 1. Run Monitor Manually (for testing)
+
+#+begin_src bash :exports code
+# GP_SERVER is already set by the system
+# Override check interval for faster testing
+export GP_CHECK_INTERVAL=10  # Check every 10 seconds for testing
+
+# Run the monitor in the foreground
+gp-monitor -v
+#+end_src
+
+Press Ctrl+C to stop it.
+
+** 2. What the Monitor Does
+
+- Checks every N seconds if ~gpd0~ interface exists and has an IP
+- If disconnected, it automatically runs ~gpclient connect~
+- Logs all activity to ~~/.local/share/gpclient/logs/monitor.log~
+
+** 3. Test Automatic Reconnection
+
+In one terminal:
+#+begin_src bash :exports code
+# Run the monitor (uses GP_SERVER from environment)
+gp-monitor -v
+#+end_src
+
+In another terminal:
+#+begin_src bash :exports code
+# Wait for VPN to connect, then force disconnect
+gpclient disconnect
+
+# Watch the monitor log - it should detect disconnection and reconnect
+tail -f ~/.local/share/gpclient/logs/monitor.log
+#+end_src
+
+* Testing the launchd Service
+
+To enable automatic VPN management as a service:
+
+** 1. Add Service Configuration
+
+Add to ~hosts/M-CL64PK702X.nix~:
+
+#+begin_src nix :exports code
+{
+  imports = [
+    ../nixos-modules/globalprotect-monitor.nix
+  ];
+
+  services.globalprotect-monitor = {
+    enable = true;
+    server = "vpn-${org-alias}.gpcloudservice.com";
+    user = username;
+    browser = "default";
+    checkInterval = 60;
+  };
+}
+#+end_src
+
+** 2. Rebuild and Activate
+
+#+begin_src bash :exports code
+nix-darwin-switch
+#+end_src
+
+** 3. Check Service Status
+
+#+begin_src bash :exports code
+# List launchd agents
+launchctl list | grep globalprotect
+
+# View service logs
+tail -f ~/.local/share/gpclient/logs/monitor.log
+tail -f ~/.local/share/gpclient/logs/launchd-stdout.log
+tail -f ~/.local/share/gpclient/logs/launchd-stderr.log
+#+end_src
+
+** 4. Control the Service
+
+#+begin_src bash :exports code
+# Stop the service
+launchctl stop org.nixos.globalprotect-monitor
+
+# Start the service
+launchctl start org.nixos.globalprotect-monitor
+
+# Disable and unload (requires rebuild to re-enable)
+launchctl unload ~/Library/LaunchAgents/org.nixos.globalprotect-monitor.plist
+#+end_src
+
+** 5. Test Service Persistence
+
+The service should:
+- Start automatically when you log in
+- Survive network changes
+- Automatically reconnect if VPN drops
+- Open browser for auth after boot or cookie expiration
+
+To test:
+1. Enable the service and reboot
+2. Log in and check if it starts automatically
+3. Force disconnect the VPN and watch it reconnect
+4. Check logs to see the reconnection activity
+
+* Troubleshooting
+
+** Browser doesn't open
+
+#+begin_src bash :exports code
+# Try specifying a different browser
+gp-connect --browser firefox
+#+end_src
+
+** Connection fails with SSL errors
+
+#+begin_src bash :exports code
+# Use OpenSSL compatibility mode
+gpclient connect --fix-openssl --server $GP_SERVER
+#+end_src
+
+** Cookie expiration
+
+Cookies typically last 24 hours.  After expiration:
+- Manual reconnection will open browser for re-authentication
+- Monitor service will detect failure and wait for you to authenticate manually
+
+To clear cookies and force re-authentication:
+#+begin_src bash :exports code
+gp-connect --clean
+#+end_src
+
+** Service not working
+
+#+begin_src bash :exports code
+# Check if service is loaded
+launchctl list | grep globalprotect
+
+# Check for errors
+tail -100 ~/.local/share/gpclient/logs/launchd-stderr.log
+
+# Run monitor manually to debug (GP_SERVER already set by system)
+gp-monitor -vv  # Very verbose output
+#+end_src
+
+* Expected Behavior Summary
+
+| Scenario                          | Behavior                                          |
+|-----------------------------------+---------------------------------------------------|
+| First connection after boot       | Opens browser for SSO/TOTP authentication         |
+| Reconnect within 24 hours         | Automatic, no prompts                             |
+| VPN disconnects                   | Monitor detects and reconnects automatically      |
+| Cookie expires (24 hours)         | Next connection requires browser authentication   |
+| Network changes (WiFi switch)     | Monitor reconnects automatically                  |
+| System sleep/wake                 | May need reconnection, monitor handles it         |

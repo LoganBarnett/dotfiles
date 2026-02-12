@@ -1,0 +1,336 @@
+#+title:     GlobalProtect VPN Automation
+#+language:  en
+
+* Overview
+
+This configuration provides command-line automation for GlobalProtect VPN using
+~gpclient~ and ~gpauth~, eliminating the need for the GUI client.
+
+** Components
+
+- ~gpclient~ :: The main VPN client (based on OpenConnect).
+- ~gp-connect~ :: Wrapper script for easy connection with SSO authentication.
+- ~gp-monitor~ :: Monitoring script that keeps VPN connected automatically.
+- ~services.globalprotect-monitor~ :: Nix-darwin service for automatic VPN
+  management.
+
+* Quick Start
+
+** Manual Connection
+
+To connect to your VPN manually:
+
+#+begin_src bash :exports code
+# Uses GP_SERVER from your system environment
+gp-connect
+#+end_src
+
+This will open your default browser for SSO authentication, then establish the
+VPN connection.
+
+Note: The ~GP_SERVER~ environment variable is automatically set by your system
+configuration using the obfuscation variables.
+
+** Connection Options
+
+#+begin_src bash :exports code
+# Specify a gateway
+gp-connect --server vpn.company.com --gateway gateway.company.com
+
+# Use a specific browser
+gp-connect --server vpn.company.com --browser firefox
+
+# Clear cached authentication cookies
+gp-connect --server vpn.company.com --clean
+
+# Verbose output
+gp-connect --server vpn.company.com -v
+#+end_src
+
+** Using Environment Variables
+
+The ~GP_SERVER~ environment variable is automatically set by your system
+configuration.  You can override or set additional variables if needed:
+
+#+begin_src bash :exports code
+# GP_SERVER is already set by the system
+# Optionally override or set additional variables:
+export GP_GATEWAY="gateway.company.com"  # Optional
+export GP_USER="your.username"           # Optional
+
+gp-connect
+#+end_src
+
+** Disconnecting
+
+To disconnect from the VPN:
+
+#+begin_src bash :exports code
+gpclient disconnect
+#+end_src
+
+* Automatic Connection Monitoring
+
+The ~globalprotect-monitor~ service keeps your VPN connected automatically,
+checking the connection status periodically and reconnecting if needed.
+
+** Enabling the Service
+
+Add this to your host configuration (e.g., ~hosts/M-CL64PK702X.nix~):
+
+#+begin_src nix :exports code
+{
+  imports = [
+    ../nixos-modules/globalprotect-monitor.nix
+  ];
+
+  services.globalprotect-monitor = {
+    enable = true;
+    server = "vpn-${org-alias}.gpcloudservice.com";
+    user = username;
+    browser = "default";
+    checkInterval = 60;  # Check every 60 seconds
+    reconnectTimeout = 300;  # Reconnect timeout: 5 minutes
+  };
+}
+#+end_src
+
+Note: This uses the ~org-alias~ and ~username~ variables already defined in your
+host configuration's ~let~ block.
+
+** Service Management
+
+After enabling the service and rebuilding your system:
+
+#+begin_src bash :exports code
+# Check service status
+launchctl list | grep globalprotect
+
+# View logs
+tail -f ~/.local/share/gpclient/logs/monitor.log
+
+# View launchd logs
+tail -f ~/.local/share/gpclient/logs/launchd-stdout.log
+tail -f ~/.local/share/gpclient/logs/launchd-stderr.log
+
+# Restart the service (after configuration changes)
+launchctl stop org.nixos.globalprotect-monitor
+launchctl start org.nixos.globalprotect-monitor
+#+end_src
+
+** Configuration Options
+
+| Option              | Type    | Default       | Description                           |
+|---------------------+---------+---------------+---------------------------------------|
+| ~enable~            | bool    | false         | Enable the monitor service.           |
+| ~server~            | string  | (required)    | Portal server URL.                    |
+| ~gateway~           | string  | null          | Gateway to connect to.                |
+| ~user~              | string  | primary user  | Username for authentication.          |
+| ~browser~           | string  | "default"     | Browser for SSO authentication.       |
+| ~checkInterval~     | int     | 60            | Seconds between connection checks.    |
+| ~reconnectTimeout~  | int     | 300           | Reconnection timeout in seconds.      |
+| ~logDir~            | string  | ~/.local/...  | Directory for log files.              |
+
+* Troubleshooting
+
+** Connection Issues
+
+*** Browser doesn't open for SSO
+
+Try specifying a different browser:
+
+#+begin_src bash :exports code
+gp-connect --server vpn.company.com --browser firefox
+#+end_src
+
+*** TLS/SSL Errors
+
+Use the ~--fix-openssl~ flag:
+
+#+begin_src bash :exports code
+gpclient connect --fix-openssl --server vpn.company.com
+#+end_src
+
+Or ignore TLS errors (not recommended for production):
+
+#+begin_src bash :exports code
+gpclient connect --ignore-tls-errors --server vpn.company.com
+#+end_src
+
+** Checking VPN Status
+
+#+begin_src bash :exports code
+# Check if the VPN interface exists
+ifconfig gpd0
+
+# Check routing
+netstat -rn | grep gpd0
+
+# Test connectivity through VPN
+ping some-internal-host
+#+end_src
+
+** Service Not Starting
+
+#+begin_src bash :exports code
+# Check launchd logs
+tail -100 ~/.local/share/gpclient/logs/launchd-stderr.log
+
+# Manually run the monitor script for debugging
+GP_SERVER=vpn.company.com gp-monitor -v
+#+end_src
+
+* Handling Authentication Programmatically
+
+The default SSO flow opens a browser for authentication, which requires user
+interaction.  For automation scenarios, there are several approaches:
+
+** Cookie Reuse
+
+After successful authentication, gpclient caches authentication cookies in
+~~/.config/gpclient/~.  These cookies are automatically reused until
+they expire (typically 24 hours).
+
+To manually manage cookies:
+
+#+begin_src bash :exports code
+# Save the authentication cookie after a successful connection
+# The cookie is stored in ~/.config/gpclient/
+
+# Later, you can provide a cookie directly (if you've saved it elsewhere)
+echo "your-cookie-string" | gpclient connect --cookie-on-stdin --server vpn.company.com
+#+end_src
+
+** Using gpauth Separately
+
+~gpauth~ can be used to authenticate and obtain a cookie without establishing a
+VPN connection:
+
+#+begin_src bash :exports code
+# Authenticate and get the cookie
+gpauth $GP_SERVER
+
+# This will open a browser for SSO, then output authentication details
+# You can capture these and use them with gpclient connect --cookie-on-stdin
+#+end_src
+
+** Password-Based Authentication (if supported)
+
+If your VPN supports password authentication instead of SSO:
+
+#+begin_src bash :exports code
+# Provide password via stdin
+echo "your-password" | gpclient connect --passwd-on-stdin --user your.username --server vpn.company.com
+#+end_src
+
+However, note that most GlobalProtect deployments use SSO/SAML which requires
+browser-based authentication.
+
+** TOTP/MFA Handling
+
+TOTP and MFA challenges are typically handled within the SSO flow in the
+browser.  There is no built-in way to intercept these programmatically with
+~gpclient~.
+
+Options for automation:
+
+1. *Cookie reuse*: Authenticate once per day via browser, then reuse the cached
+   cookie for subsequent connections.
+
+2. *Extended session timeout*: Work with your VPN administrators to extend the
+   authentication cookie lifetime.
+
+3. *User interaction*: Accept that initial authentication requires user
+   interaction, but the service will maintain the connection afterward.
+
+For the launchd service scenario, option 3 is most practical:
+
+- The first connection after boot/login will open a browser for authentication.
+- Once authenticated, the service maintains the connection automatically.
+- If disconnected within the cookie lifetime (24 hours), reconnection is
+  automatic.
+- After cookie expiration, you'll need to authenticate again via browser.
+
+* Advanced Usage
+
+** Custom Reconnection Logic
+
+If you need custom reconnection logic, you can modify
+~scripts/gp-monitor.sh~ or create your own monitor script and reference it in
+the service configuration.
+
+** Integration with Other Tools
+
+The VPN connection can be integrated with other automation:
+
+#+begin_src bash :exports code
+# Check if VPN is connected before running work commands
+if ifconfig gpd0 &>/dev/null; then
+  echo "VPN is connected"
+  # Run your work commands
+else
+  echo "VPN is not connected, connecting..."
+  gp-connect --server vpn.company.com
+fi
+#+end_src
+
+** Certificate-Based Authentication
+
+If your VPN uses certificate authentication instead of SSO:
+
+#+begin_src bash :exports code
+gpclient connect \
+  --certificate /path/to/cert.p12 \
+  --key-password "cert-password" \
+  --server vpn.company.com
+#+end_src
+
+* Implementation Details
+
+** How gpclient Works
+
+~gpclient~ is based on OpenConnect and provides GlobalProtect protocol support.
+It handles:
+
+- SAML/SSO authentication via browser integration.
+- HIP (Host Integrity Protection) reporting.
+- Automatic reconnection on network changes.
+- Both portal and gateway connections.
+
+** Browser Integration
+
+For SSO authentication, ~gpclient~ launches a browser window to handle the SAML
+flow.  After successful authentication, it captures the authentication cookie
+and uses it to establish the VPN tunnel.
+
+** Interface Management
+
+The VPN connection creates a ~gpd0~ network interface (similar to ~tun0~ for
+OpenVPN).  The monitor script checks for this interface's existence and IP
+assignment to determine connection status.
+
+* Security Considerations
+
+** Authentication Cookie Storage
+
+~gpclient~ caches authentication cookies in
+~~/.config/gpclient/~.  These cookies are reused for reconnection
+without requiring re-authentication (until they expire).
+
+Use ~--clean~ to clear cached cookies if needed.
+
+** Running as User Agent
+
+The monitor service runs as a launchd user agent (not a daemon), which means:
+
+- It only runs when you're logged in.
+- It has access to your user keychain and GUI (for browser-based auth).
+- It stops when you log out.
+
+This is appropriate for a VPN that needs browser-based SSO authentication.
+
+* Further Reading
+
+- [[https://github.com/yuezk/GlobalProtect-openconnect][GlobalProtect-openconnect on GitHub]]
+- ~gpclient --help~
+- ~gpauth --help~

@@ -14,7 +14,7 @@ fi
 # Get all tracked files and check git history for each.
 git ls-files | while IFS= read -r file; do
     # Check if Logan Barnett (any variation) has any commits for this file.
-    # Match: "Logan Barnett", "logan-barnett-nwea", "LoganBarnett", etc.
+    # Match: "Logan Barnett", "logan-barnett-<suborg>", "LoganBarnett", etc.
     # Note: Disable pipefail and errexit temporarily. We need to capture the exit
     # code from grep, which may be 0 (match), 1 (no match), or 141 (SIGPIPE).
     set +o pipefail

@@ -1,0 +1,139 @@
+#!/usr/bin/env bash
+
+################################################################################
+# Create a Jira task in the SE project with all required fields pre-filled.
+################################################################################
+
+set -e
+
+# Parse arguments
+ASSIGN_TO_ME=false
+SUMMARY=""
+BODY=""
+
+while [[ $# -gt 0 ]]; do
+  case $1 in
+    --me)
+      ASSIGN_TO_ME=true
+      shift
+      ;;
+    --summary)
+      SUMMARY="$2"
+      shift 2
+      ;;
+    --body)
+      BODY="$2"
+      shift 2
+      ;;
+    -s)
+      SUMMARY="$2"
+      shift 2
+      ;;
+    -b)
+      BODY="$2"
+      shift 2
+      ;;
+    -h|--help)
+      echo "Usage: jira-se-task [OPTIONS]"
+      echo ""
+      echo "Create a Jira task in the SE project with pre-filled required fields."
+      echo ""
+      echo "Options:"
+      echo "  -s, --summary TEXT    Task summary (required)"
+      echo "  -b, --body TEXT       Task description (required)"
+      echo "  --me                  Assign to self and move to 'Ready To Work'"
+      echo "  -h, --help            Show this help message"
+      echo ""
+      echo "Environment Variables:"
+      echo "  JIRA_API_TOKEN        Jira API token (required)"
+      echo "  ORG_NAME              Organization name (required)"
+      echo "  SUBORG_NAME           Sub-organization name (required)"
+      exit 0
+      ;;
+    *)
+      echo "Error: Unknown option $1"
+      echo "Use -h or --help for usage information"
+      exit 1
+      ;;
+  esac
+done
+
+if [ -z "$SUMMARY" ]; then
+  echo "Error: Summary is required"
+  echo "Use -h or --help for usage information"
+  exit 1
+fi
+
+if [ -z "$BODY" ]; then
+  echo "Error: Description is required"
+  echo "Use -h or --help for usage information"
+  exit 1
+fi
+
+if [ -z "$JIRA_API_TOKEN" ]; then
+  echo "Error: JIRA_API_TOKEN environment variable is not set"
+  exit 1
+fi
+
+if [ -z "$ORG_NAME" ]; then
+  echo "Error: ORG_NAME environment variable is not set"
+  exit 1
+fi
+
+if [ -z "$SUBORG_NAME" ]; then
+  echo "Error: SUBORG_NAME environment variable is not set"
+  exit 1
+fi
+
+# Default field values
+PROJECT="SE"
+TYPE="Task"
+COMPONENT="Colo"
+IMPACTED_TEAM="The Goonies"
+IMPACTED_DEPARTMENT="DevOps"
+TSG_THEME="T10 - Operations"
+PLATFORM="No Platform/Product"
+WORK_CATEGORY="Unplanned"
+
+# Create the issue
+echo "Creating issue..."
+ISSUE_OUTPUT=$(jira issue create \
+  --project "$PROJECT" \
+  --type "$TYPE" \
+  --summary "$SUMMARY" \
+  --body "$BODY" \
+  --component "$COMPONENT" \
+  --custom "impacted-team=$IMPACTED_TEAM" \
+  --custom "impacted-department=$IMPACTED_DEPARTMENT" \
+  --custom "tsg-theme=$TSG_THEME" \
+  --custom "platform=$PLATFORM" \
+  --custom "work-category=$WORK_CATEGORY" \
+  --no-input 2>&1)
+
+# Extract issue key from output (format: https://suborg.atlassian.net/browse/SE-XXXXX)
+ISSUE_KEY=$(echo "$ISSUE_OUTPUT" | grep -o 'SE-[0-9]\+' | head -1)
+
+if [ -z "$ISSUE_KEY" ]; then
+  echo "Error: Failed to create issue or extract issue key"
+  echo "$ISSUE_OUTPUT"
+  exit 1
+fi
+
+echo "Issue created: $ISSUE_KEY"
+
+# If --me flag is set, assign to self and move to Ready To Work
+if [ "$ASSIGN_TO_ME" = true ]; then
+  echo "Assigning to self..."
+  jira issue assign "$ISSUE_KEY" "$(jira me)" --no-input 2>&1 || {
+    echo "Warning: Failed to assign issue to self"
+  }
+
+  echo "Moving to 'Ready To Work'..."
+  jira issue move "$ISSUE_KEY" "Ready To Work" --no-input 2>&1 || {
+    echo "Warning: Failed to move issue to 'Ready To Work'"
+    echo "You may need to check the exact status name in your project"
+  }
+fi
+
+# Show the issue URL
+echo "View issue: https://${SUBORG_NAME}.atlassian.net/browse/${ISSUE_KEY}"

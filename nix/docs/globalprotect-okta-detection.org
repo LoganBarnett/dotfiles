@@ -1,0 +1,73 @@
+#+title:     GlobalProtect + Okta Detection Workaround
+#+language:  en
+
+* The Issue
+
+When using headless browser automation, Okta detects it as a "new browser" and
+may reject the login with "Unable to sign in" error.
+
+The screenshot shows:
+- "This is the first time you are connecting to hmhco.okta.com from this browser"
+- "Unable to sign in"
+
+* The Solution
+
+The automation now uses a **visible browser window** instead of headless mode.
+This helps bypass Okta's bot detection.
+
+** What You'll See
+
+When you run ~gp-connect-auto~, you'll see:
+1. A Chrome browser window opens
+2. It navigates to the Okta page
+3. It fills in your credentials automatically
+4. It submits the form
+5. It handles TOTP/MFA
+6. The browser closes after successful authentication
+
+** Why This Works
+
+- Headless browsers have detectable fingerprints
+- Okta blocks them for security reasons
+- A visible browser looks like a real user
+- Anti-detection measures are applied:
+  - ~navigator.webdriver~ is hidden
+  - Realistic user agent
+  - Proper browser context (locale, timezone, etc.)
+
+* Testing
+
+Run the automation and watch it work:
+
+#+begin_src bash :exports code
+gp-connect-auto -vv
+#+end_src
+
+You should see the browser window open and complete the authentication
+automatically!
+
+* Alternative: Manual First Run
+
+If the automation still fails, you can:
+
+1. Connect manually once to establish trust:
+   #+begin_src bash :exports code
+   gp-connect --browser firefox
+   #+end_src
+
+2. After successful manual auth, the cookie is cached for 24 hours
+
+3. Subsequent automated connections will reuse the cookie:
+   #+begin_src bash :exports code
+   gp-connect-auto
+   #+end_src
+
+* For True Headless (Future)
+
+If you need true headless operation (no visible browser):
+- May need to use browser profile persistence
+- Store Okta session cookies
+- Use stealth plugins
+- Or accept that first auth needs to be manual
+
+For now, the visible browser is the most reliable approach.

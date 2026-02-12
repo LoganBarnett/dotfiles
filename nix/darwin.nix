@@ -140,6 +140,8 @@ in {
   # TODO: look up my user first.
   security.sudo.extraConfig = ''
     logan.barnett ALL=(root) NOPASSWD: /run/current-system/sw/bin/darwin-rebuild
+    logan.barnett ALL=(root) NOPASSWD: SETENV: /run/current-system/sw/bin/gp-connect-auto
+    logan.barnett ALL=(root) NOPASSWD: /usr/sbin/scutil
     logan ALL=(root) NOPASSWD: /run/current-system/sw/bin/darwin-rebuild
   '';
   security.pki.keychain.certificateFiles = [

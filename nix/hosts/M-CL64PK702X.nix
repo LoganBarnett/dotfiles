@@ -1,5 +1,21 @@
+################################################################################
+# SECURITY NOTE: The strings assembled in `org-alias` and `work-alias` below
+# should NEVER appear unobfuscated in scripts, Nix code, or documentation
+# files on disk.  They must always be interrupted (character-by-character
+# concatenation) to thwart searches that might be used by those looking for
+# attack vectors.  Use these variables or environment variables (ORG_NAME,
+# SUBORG_NAME, GP_SERVER) instead of hardcoding the literal strings.
+################################################################################
 { flake-inputs, host-id, lib, system, pkgs, ... }: let
   username = "logan.barnett";
+  # Parent organization.
+  org-alias = lib.concatStrings [
+    # I'm the Riddler.
+    "h"
+    "m"
+    "h"
+  ];
+  # Sub-organization.
   work-alias = lib.concatStrings [
     # I'm the Riddler.
     "n"
@@ -8,6 +24,8 @@
     "a"
   ];
   work-domain = "${work-alias}.org";
+  # Email domain (different from org name).
+  org-domain = "${org-alias}co.com";
 in {
   system.primaryUser = username;
   # Something required for every macOS host after a nix-darwin migration.  This
@@ -117,9 +135,17 @@ in {
         pkgs.gh
         # Stop using the cursed GlobalProtect VPN GUI client and use something
         # we can better automate instead.
-        # pkgs.gpclient
+        pkgs.gpclient
+        # Separate authentication tool for GlobalProtect SSO.
+        pkgs.gpauth
+        # Wrapper script for easy GlobalProtect connection.
+        (pkgs.callPackage ../derivations/gp-connect.nix {})
+        # Automatic headless authentication for GlobalProtect.
+        (pkgs.callPackage ../derivations/gp-connect-auto.nix {})
         # Used for encrypting sensitive information in Hiera.
         pkgs.hiera-eyaml
+        # Quick Jira task creation for SE project with all required fields.
+        (pkgs.callPackage ../derivations/jira-se-task.nix {})
         pkgs.mktemp
         # Gives us tools like ldapsearch, ldapadd, and ldapmodify which is
         # sometimes used for searching users and figuring out who the managers
@@ -142,55 +168,19 @@ in {
         # with YAML idioms, but isn't as mature as `jq`.
         pkgs.yq-go
       ];
+      # Environment variables for scripts that need to avoid hardcoding
+      # organization names.
+      environment.variables = {
+        ORG_NAME = org-alias;
+        ORG_DOMAIN = org-domain;
+        SUBORG_NAME = work-alias;
+        # GlobalProtect VPN server.
+        GP_SERVER = "vpn-${org-alias}.gpcloudservice.com";
+        # GlobalProtect username (email).
+        GP_USERNAME = "${username}@${org-domain}";
+      };
       networking.hostName = host-id;
       nixpkgs.hostPlatform = system;
-      nixpkgs.overlays = [
-        (final: prev: let
-          # Hackety hack.  See
-          # https://discourse.nixos.org/t/is-it-possible-to-override-cargosha256-in-buildrustpackage/4393/20
-          # but basically overrideAttrs works on mkDerivtaion but what's being
-          # used is buildRustPackage which later hands things to mkDerivation.
-          # Also see the in depth explanation here:
-          # https://sldr.se/posts/2024/12/overriding-for-fun-and-profit/#yo-dawg-i-heard-you-like-overriding
-          rustOverrideAttrs = pkg: attrs: pkg.override {
-            rustPlatform = prev.rustPlatform // {
-              buildRustPackage = original-args:
-                prev.rustPlatform.buildRustPackage (
-                  original-args // attrs
-                );
-            };
-          };
-        in {
-          gpauth = prev.gpauth.overrideAttrs (old: {
-            meta.platforms = old.meta.platforms ++ [ "aarch64-darwin" ];
-            buildInputs = [
-              pkgs.cairo
-              pkgs.gtk3
-              pkgs.gdk-pixbuf
-              pkgs.libsoup_2_4
-              pkgs.openssl
-              pkgs.pango
-            ];
-          });
-          gpclient = prev.gpclient.overrideAttrs (old: {
-            buildInputs = old.buildInputs ++ [ pkgs.openssl ];
-            # This may not be important.
-            OPENSSL_DEV = pkgs.openssl.dev;
-            # This may not be important.
-            OPENSSL_INCLUDE_DIR = (
-              lib.makeSearchPathOutput "dev" "include" [ pkgs.openssl.dev ]
-            ) + "/openssl";
-            # This is important.  Not sure why it isn't automatically sorted
-            # out.
-            OPENSSL_LIB_DIR = (
-              lib.makeSearchPathOutput "dev" "lib" [ pkgs.openssl.dev ]
-            ) + "/pkgconfig";
-            # This may not be important.
-            OPENSSL_STATIC = "0";
-            meta.platforms = old.meta.platforms ++ [ "aarch64-darwin" ];
-          });
-        })
-      ];
       security.pki.certificateFiles = [
         "${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt"
         ../new-e-ah-certs.pem
@@ -246,6 +236,19 @@ in {
         });
       };
       # services.open-webui.enable = true;
+    }
+    {
+      imports = [
+        ../darwin-modules/global-protect-persistent.nix
+      ];
+      services.globalprotect-monitor = {
+        enable = true;
+        server = "vpn-${org-alias}.gpcloudservice.com";
+        username = "${username}@${org-domain}";
+        orgName = org-alias;
+        primaryUser = username;
+        checkInterval = 60;
+      };
     }
   ];
 }
