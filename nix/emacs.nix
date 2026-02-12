@@ -106,6 +106,9 @@
           # Automatically compile .el files when loading.
           epkgs.auto-compile
           epkgs.browse-at-remote
+          # Read and apply .editorconfig settings for consistent project-wide
+          # formatting (indentation, line endings, charset, etc).
+          epkgs.editorconfig
           epkgs.wgrep
           # epkgs.vertico-multiform
           # Set configuration easily at runtime/interactively.  Helpful for

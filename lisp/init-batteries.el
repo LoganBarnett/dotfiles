@@ -65,6 +65,7 @@
     (init-org-file "debug.org")
     (init-org-file "fundamental-mode.org")
     (init-org-file "prog-mode.org")
+    (load-library "editorconfig-config.el")
     (init-org-file "org-mode.org")
     (init-org-file "file-system.org")
     (init-org-file "direnv.org")
