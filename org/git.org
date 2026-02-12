@@ -73,9 +73,30 @@ hopefully head off having to explain this over and over.
 #+end_src
 ** insert mode when committing
 
+Only enter insert mode if the first line is empty.  This allows for amending
+commits or handling pre-populated commit messages while still entering insert
+mode for fresh commits (even if pre-commit-msg hooks add text below the first
+line).
+
 #+name: config/git-commit-message-evil-insert-state
 #+begin_src emacs-lisp :results none :exports code :tangle no
-(add-hook 'git-commit-setup-hook #'evil-insert-state)
+(defun config/git-commit-setup-maybe-insert ()
+  "Enter insert mode only if the first line of the commit message is empty."
+  (save-excursion
+    (goto-char (point-min))
+    ;; Skip any comment lines at the beginning.
+    (while (and (not (eobp))
+                (or (looking-at "^#")
+                    (looking-at "^[[:space:]]*$")))
+      (forward-line 1))
+    ;; If we're at a blank line or end of buffer, enter insert mode.
+    (when (or (eobp)
+              (looking-at "^[[:space:]]*$"))
+      (evil-insert-state))))
+
+(add-hook 'git-commit-setup-hook #'config/git-commit-setup-maybe-insert)
+#+end_src
+
 #+end_src
 
 
