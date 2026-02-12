@@ -143,7 +143,7 @@ in {
           # ];
           profilesByHosts = pipe facts.network.hosts [
             (mapAttrsToList (name: data: let
-              blockProfiles = data.blockProfiles or [ "child" ];
+              blockProfiles = data.blockProfiles or [ "default" ];
             in [
               {
                 name = "${name}.${facts.network.domain}";
