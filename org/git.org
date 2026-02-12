@@ -97,6 +97,17 @@ line).
 (add-hook 'git-commit-setup-hook #'config/git-commit-setup-maybe-insert)
 #+end_src
 
+** line numbers
+
+Enable relative line numbers in magit buffers to support vim-style navigation
+like ~30j~ and ~3k~.
+
+#+name: config/magit-line-numbers
+#+begin_src emacs-lisp :results none :exports code :tangle no
+(add-hook 'magit-status-mode-hook #'display-line-numbers-mode)
+(add-hook 'magit-diff-mode-hook #'display-line-numbers-mode)
+(add-hook 'magit-log-mode-hook #'display-line-numbers-mode)
+(add-hook 'magit-revision-mode-hook #'display-line-numbers-mode)
 #+end_src
 
 
@@ -356,6 +367,7 @@ of things.
    )
   :config
   <<config/git-commit-message-evil-insert-state>>
+  <<config/magit-line-numbers>>
   (config/connect-git-gutter-and-magit)
   )
 
