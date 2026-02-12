@@ -119,7 +119,11 @@ in {
           ${cfg.package}/bin/grafana-kiosk -URL "${cfg.url}"
         '';
         Restart = "always";
-        Environment = "XDG_RUNTIME_DIR=%t";
+        Environment = [
+          "XDG_RUNTIME_DIR=%t"
+          # Disable GPU to reduce memory usage.
+          "KIOSK_GPU_ENABLED=false"
+        ];
       };
     };
   };
