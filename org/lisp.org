@@ -152,6 +152,58 @@ The before and after looks the same with =lisp-backquote-indentation= set to
 (setq-default lisp-backquote-indentation nil)
 #+end_src
 
+* structural editing
+
+Lispyville provides vim-style structural editing for Lisp code without the
+auto-pairing headaches of smartparens.  It gives us slurp/barf operations and
+sexp-aware text objects.
+
+** slurp and barf
+
+Slurp pulls the next element into the current form.  Barf pushes the last
+element out of the current form.
+
+- ~gs~ slurp forward (pull next element in)
+- ~gS~ slurp backward (pull previous element in)
+- ~gb~ barf forward (push last element out)
+- ~gB~ barf backward (push first element out)
+
+** text objects
+
+- ~f~ form/sexp (works like ~w~ for words, ~p~ for paragraphs)
+- ~daf~ delete a form
+- ~vif~ select inside form
+- ~yaf~ yank a form
+
+#+name: config/lispyville
+#+begin_src emacs-lisp :results none :tangle no
+(use-package lispyville
+  :hook ((emacs-lisp-mode . lispyville-mode)
+         (lisp-mode . lispyville-mode)
+         (scheme-mode . lispyville-mode)
+         (clojure-mode . lispyville-mode))
+  :config
+  ;; Enable key themes.  We use:
+  ;; - operators: adds operator support for structural editing
+  ;; - text-objects: adds 'f' for form text objects
+  ;; We explicitly do NOT enable atom-movement, slurp/barf-cp (which use
+  ;; conflicting keys), or any additional features that might interfere with
+  ;; existing evil bindings.
+  (lispyville-set-key-theme
+   '(operators
+     text-objects))
+
+  ;; Custom slurp/barf bindings using gs/gS and gb/gB.  We use paredit's
+  ;; explicit directional commands for clear forward/backward control.  Paredit
+  ;; is loaded only for these commands; paredit-mode itself is not enabled.
+  (evil-define-key 'normal lispyville-mode-map
+    (kbd "gs") 'paredit-forward-slurp-sexp   ; slurp forward (pull next in)
+    (kbd "gS") 'paredit-backward-slurp-sexp  ; slurp backward (pull previous in)
+    (kbd "gb") 'paredit-forward-barf-sexp    ; barf forward (push last out)
+    (kbd "gB") 'paredit-backward-barf-sexp)  ; barf backward (push first out)
+  )
+#+end_src
+
 * stitch
 
 #+begin_src emacs-lisp :results none :noweb yes
@@ -163,4 +215,5 @@ The before and after looks the same with =lisp-backquote-indentation= set to
   <<config/lisp-file-local-variables-prompt-if-unsafe>>
   <<config/lisp-indentation-align-fix>>
   )
+<<config/lispyville>>
 #+end_src

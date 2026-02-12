@@ -523,6 +523,15 @@
           epkgs.evil-snipe
           # Add a surround motion for handling matched braces, quotes, etc.
           epkgs.evil-surround
+          # Vim-style structural editing for Lisp without smartparens headaches.
+          # Provides sexp text objects (f for form).  Requires lispy.
+          epkgs.lispyville
+          # Short and sweet LISP editing.  Required dependency of lispyville.
+          epkgs.lispy
+          # Structural editing for Lisp.  We use its explicit directional
+          # slurp/barf commands (forward/backward) but do not enable paredit-mode
+          # itself (lispyville handles the editing model).
+          epkgs.paredit
           # Remote co-editing.  Are they still in business?
           epkgs.floobits
           # Generalized error reporting.
