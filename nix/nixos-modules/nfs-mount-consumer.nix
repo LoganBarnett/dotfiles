@@ -212,8 +212,12 @@
             "nfsvers=4.2"
             "proto=tcp"
             "hard"
-            "timeo=5"
-            "retrans=5"
+            # Performance optimizations for single-client over WireGuard.
+            "async"       # Don't wait for server disk commits (10-50x faster).
+            "noatime"     # Don't update access times (reduces write ops).
+            "actimeo=120" # Cache attributes for 2 minutes (fewer metadata calls).
+            "timeo=600"   # 6 second initial timeout (better for loaded systems).
+            "retrans=2"   # Retry twice instead of five times.
           ];
         };
       }

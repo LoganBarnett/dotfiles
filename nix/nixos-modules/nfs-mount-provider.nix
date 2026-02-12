@@ -27,7 +27,9 @@ let
     let
       line = v:
         "${volAbsPath v} 10.100.0.${toString v.peerNumber}/32" +
-        "(rw,sync,no_subtree_check,no_root_squash)";
+        # Use async for better performance. Safe for single-client topology with
+        # application-level integrity (git, nextcloud) and btrfs snapshots.
+        "(rw,async,no_subtree_check,no_root_squash)";
     in concatStringsSep "\n" (map line cfg.volumes);
 in
 {
