@@ -16,6 +16,8 @@
     # git manages my code. Comes with MacOS but no reason to use a dated
     # version.
     pkgs.git
+    # CLI tool for interacting with Gitea servers.
+    pkgs.tea
     # A spell checker.
     pkgs.ispell
     # IBM font that looks good outside of source code contexts.

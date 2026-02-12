@@ -133,6 +133,7 @@ in {
           ../home-configs/ssh-config-container-vm.nix
           ../home-configs/ssh-config-emacs.nix
           ../home-configs/ssh-config-proton.nix
+          ../home-configs/tea.nix
         ];
         # Make machines write the code instead.  What could go wrong? :D
         programs.claude-code = {
