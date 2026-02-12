@@ -137,8 +137,10 @@ in {
   programs.nix-index.enable = true;
   security.pam.services.sudo_local.touchIdAuth = true;
   security.pki.keychain.trustNixTlsCertificates = true;
+  # TODO: look up my user first.
   security.sudo.extraConfig = ''
     logan.barnett ALL=(root) NOPASSWD: /run/current-system/sw/bin/darwin-rebuild
+    logan ALL=(root) NOPASSWD: /run/current-system/sw/bin/darwin-rebuild
   '';
   security.pki.keychain.certificateFiles = [
     ./secrets/proton-ca.crt
