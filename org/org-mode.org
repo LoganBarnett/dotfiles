@@ -1433,6 +1433,32 @@ This is the region of offending code, I think:
    (:prefix ("s" . "search")
       :desc "swiper" "s" #'swiper
      )
+   (:prefix ("b" . "tables")
+    :desc "insert hline" "-" #'org-table-insert-hline
+    :desc "align table" "a" #'org-table-align
+    :desc "blank field" "b" #'org-table-blank-field
+    :desc "create/convert table" "c" #'org-table-create-or-convert-from-region
+    :desc "edit field" "e" #'org-table-edit-field
+    :desc "edit formulas" "f" #'org-table-edit-formulas
+    :desc "field info" "h" #'org-table-field-info
+    :desc "sort lines" "s" #'org-table-sort-lines
+    :desc "recalculate" "r" #'org-table-recalculate
+    :desc "recalculate buffer" "R" #'org-table-recalculate-buffer-tables
+    (:prefix ("d" . "delete")
+     :desc "delete column" "c" #'org-table-delete-column
+     :desc "delete row" "r" #'org-table-kill-row
+     )
+    (:prefix ("i" . "insert")
+     :desc "insert column" "c" #'org-table-insert-column
+     :desc "insert hline" "h" #'org-table-insert-hline
+     :desc "insert row" "r" #'org-table-insert-row
+     :desc "hline and move" "H" #'org-table-hline-and-move
+     )
+    (:prefix ("t" . "toggle")
+     :desc "formula debugger" "f" #'org-table-toggle-formula-debugger
+     :desc "coordinate overlays" "o" #'org-table-toggle-coordinate-overlays
+     )
+    )
    )
   ;; A series of helpers from Doom that we already use.
   ;; Can't use require because it doesn't use `provide'.
