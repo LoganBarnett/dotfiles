@@ -19,7 +19,8 @@ No file lists in documentation.
 *** Formatting and punctuation
 
 Comments must be complete sentences, wrapped at ~80 columns, with standard
-punctuation.
+punctuation.  Use two spaces after sentence-ending punctuation for easier
+sentence matching.
 
 *** Content
 

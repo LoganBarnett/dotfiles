@@ -9,9 +9,11 @@
 # those on demand.
 ################################################################################
 {
-  signal-desktop-bin = {
-    version = "7.85.0";
-    hash = "sha256-oXt4MlSvpj4NHwULg8K0XukaMqnlsF2UPkvBGH3Htko=";
+
+  claude-code = {
+    version = "2.1.39";
+    hash = "sha256-NLLiaJkU91ZnEcQUWIAX9oUTt+C5fnWXFFPelTtWmdo=";
+    npmDepsHash = "sha256-VWw1bYkFch95JDlOwKoTAQYOr8R80ICJ8QUI4E64W7o=";
   };
 
   makemkv = {
@@ -24,4 +26,10 @@
       hash = "sha256-we5yCukbJ2p8ib6GEUbFuTRjGDHo1sj0U0BkNXJOkr0=";
     };
   };
+
+  signal-desktop-bin = {
+    version = "7.85.0";
+    hash = "sha256-oXt4MlSvpj4NHwULg8K0XukaMqnlsF2UPkvBGH3Htko=";
+  };
+
 }
