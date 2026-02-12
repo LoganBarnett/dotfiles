@@ -85,9 +85,10 @@ in
   };
 
   config = mkIf cfg.enable {
-    # Build one mount per matching fact row.
-    services.nfs-mount.mounts =
-      mapAttrs' (_: v:
+    services.nfs-mount = {
+      enable = true;
+      # Build one mount per matching fact row.
+      mounts = mapAttrs' (_: v:
         lib.nameValuePair (mkMountName v) {
           enable = true;
           remoteHost = cfg.provider.remoteHost;
@@ -118,5 +119,6 @@ in
       )
       (lib.listToAttrs
         (map (v: lib.nameValuePair (mkMountName v) v) myVolumes));
+    };
   };
 }

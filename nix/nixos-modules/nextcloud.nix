@@ -47,7 +47,7 @@
   ...
 }: let
   fqdn = "nextcloud.proton";
-  data-dir = "/mnt/nextcloud-data";
+  data-dir = "/mnt/nextcloud";
   nfs-physical-hostname = "silicon.proton";
   nfs-vpn-hostname = "silicon-nas.proton";
 in {
@@ -101,42 +101,19 @@ in {
       '';
     })
   ];
+  nfsConsumerFacts = {
+    enable = true;
+    provider = {
+      remoteHost = "silicon.proton";
+      vpnHost = "silicon-nas.proton";
+      providerHostId = "silicon";
+      wgPort = 51821;
+    };
+  };
   services.https.fqdns."nextcloud.proton" = {
     enable = true;
     proxy = false;
   };
-  services.nfs-mount.mounts.nextcloud = {
-    enable = true;
-    bindToService = "nextcloud";
-    gid = 29971;
-    remoteHost = "silicon.proton";
-    vpnHost = "silicon-nas.proton";
-    share = "/tank/data/nextcloud";
-    mountPoint = data-dir;
-    wgPrivateKeyFile = config.age.secrets."${host-id}-nfs-wireguard-key".path;
-    wgIP = "10.100.0.3/24";
-    wgPeerPublicKeyFile = ../secrets/generated/silicon-nfs-wireguard-key.pub;
-    wgPeerIP = "10.100.0.1/32";
-    wgInterfaceName = "wgfs-silicon";
-  };
-
-  # Configure NFS mount for the shared media directory (uses same WireGuard
-  # tunnel as main nextcloud mount, but different share).
-  services.nfs-mount.mounts.nextcloud-shared-media = {
-    enable = true;
-    bindToService = "nextcloud-shared";
-    gid = 29974;
-    remoteHost = "silicon.proton";
-    vpnHost = "silicon-nas.proton";
-    share = "/tank/data/nextcloud-shared-media";
-    mountPoint = "/mnt/nextcloud-shared-media";
-    wgPrivateKeyFile = config.age.secrets."${host-id}-nfs-wireguard-key".path;
-    wgIP = "10.100.0.3/24";
-    wgPeerPublicKeyFile = ../secrets/generated/silicon-nfs-wireguard-key.pub;
-    wgPeerIP = "10.100.0.1/32";
-    wgInterfaceName = "wgfs-silicon";
-  };
-
   services.nextcloud = {
     enable = true;
     # Be mindful that Nextcloud doesn't support upgrades over multiple versions,
@@ -430,7 +407,10 @@ in {
     # access shared media.
     nextcloud-shared-media-symlink = {
       description = "Create symlink for shared media in Nextcloud";
-      after = [ "nfs-mount-nextcloud-shared-media.service" "nextcloud-setup.service" ];
+      after = [
+        "nfs-mount-nextcloud-shared-media-sanity-check.service"
+        "nextcloud-setup.service"
+      ];
       before = [ "phpfpm-nextcloud.service" ];
       wantedBy = [ "multi-user.target" ];
       serviceConfig = {
@@ -456,10 +436,4 @@ in {
   };
   users.groups.nextcloud = {};
   users.groups."openldap-${host-id}-nextcloud-service" = {};
-  # TODO: Move to `../nixos-modules/nfs-mount-consumer.nix`.
-  networking.hosts = {
-    # Give us a fake hostname so we can ensure traffic flows through the VPN,
-    # otherwise the NFS IP protection will drop the traffic.
-    "10.100.0.1" = [ nfs-vpn-hostname ];
-  };
 }

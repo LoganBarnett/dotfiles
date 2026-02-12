@@ -269,6 +269,16 @@
                   .${system}
                   .nixos-option
                 ;
+                # Override tea to build from PR #897 branch which
+                # fixes TTY prompting in non-interactive environments.
+                tea = prev.tea.overrideAttrs (oldAttrs: {
+                  src = prev.fetchgit {
+                    url = "https://gitea.com/gitea/tea";
+                    rev = "6c5811e4e9241b16376beb8eb9138d7951d6090f";
+                    sha256 =
+                      "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
+                  };
+                });
               })
             ];
           }

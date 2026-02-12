@@ -8,9 +8,6 @@
 ################################################################################
 { config, host-id, lib, pkgs, ... }: {
   imports = [
-    ../nixos-modules/kodi-standalone.nix
-    ../nixos-modules/nfs-consumer-facts.nix
-    ../nixos-modules/nfs-mount-consumer.nix
   ];
 
   # Configure NFS mount for media files.
@@ -26,7 +23,6 @@
   services.kodi-standalone = {
     enable = true;
     package = pkgs.kodi.withPackages (kodiPkgs: with kodiPkgs; [
-      # jellyfin addon removed - reading media files directly from NFS
       inputstream-adaptive
       inputstream-ffmpegdirect
     ]);
@@ -38,7 +34,8 @@
         # Disable authentication for JSON-RPC access.
         webserverauthentication = "false";
 
-        # Allow remote control from applications on other systems (needed for iOS app).
+        # Allow remote control from applications on other systems (needed for
+        # iOS app).
         esallinterfaces = "true";
       };
       addons = {
@@ -46,8 +43,9 @@
         unknownsources = "true";
       };
       audio = {
-        # Boost audio volume by 12dB. Many DVDs are encoded with low audio levels,
-        # and this amplification compensates without distortion. Adjust if needed.
+        # Boost audio volume by 12dB. Many DVDs are encoded with low audio
+        # levels, and this amplification compensates without distortion. Adjust
+        # if needed.
         volumeamplification = "12.0";
       };
     };

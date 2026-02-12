@@ -7,11 +7,12 @@
 # GitLab requires many more resources and revolves around a kind of DevOps
 # management landscape.
 ################################################################################
-{ config, host-id, pkgs, ... }: let
+{ config, host-id, lib, pkgs, ... }: let
   service = "gitea";
   domain = "${service}.proton";
   dataDir = "/mnt/gitea";
-  ldap-enabled = false;
+  ldap-enabled = true;
+  ldapServiceUser = "${host-id}-${service}-service";
 in {
   imports = [
     ../nixos-modules/bindfs.nix
@@ -19,42 +20,26 @@ in {
     ../nixos-modules/nfs-mount-consumer.nix
   ];
   age.secrets = {
-    # gitea-nfs-wireguard-key = {
-    #   generator.script = "wireguard-priv";
-    #   group = "gitea";
-    #   mode = "0440";
-    #   rekeyFile = ../secrets/gitea-nfs-wireguard-key.age;
-    # };
     # Other secrets go in here.
   } // (
     if ldap-enabled
     then config.lib.ldap.ldap-password
-      "openldap-${host-id}-${service}-service"
-      "${host-id}-${service}-service"
+      service
+      ldapServiceUser
     else {}
   );
+  nfsConsumerFacts = {
+    enable = true;
+    provider = {
+      remoteHost = "silicon.proton";
+      vpnHost = "silicon-nas.proton";
+      providerHostId = "silicon";
+      wgPort = 51821;
+    };
+  };
   services.https.fqdns."gitea.proton" = {
     enable = true;
     internalPort = config.services.gitea.settings.server.HTTP_PORT;
-  };
-  services.nfs-mount.mounts.gitea = {
-    enable = true;
-    bindToService = "gitea";
-    remoteHost = "silicon.proton";
-    vpnHost = "silicon-nas.proton";
-    share = "/tank/data/gitea";
-    mountPoint = dataDir;
-    preconditionFile = "nfs-share-working";
-    wgPrivateKeyFile = config.age.secrets."${host-id}-nfs-wireguard-key".path;
-    wgIP = "10.100.0.3/24";
-    wgPeerPublicKeyFile = ../secrets/generated/silicon-nfs-wireguard-key.pub;
-    wgPeerIP = "10.100.0.1/32";
-    wgInterfaceName = "wgfs-silicon";
-    # Optional bindfs mapping if Gitea runs under its own user/group.
-    # bindfs = {
-    #   uid = "994";
-    #   gid = "998";
-    # };
   };
   services.gitea = {
     enable = true;
@@ -93,8 +78,14 @@ in {
             PORT = 636;
             USE_SSL = true;
             START_TLS = false;
-            BIND_DN = "cn=admin,${base-dn}";
-            BIND_PASSWORD = "@${config.age.secrets."${host-id}-gitea-service".path}";
+            BIND_DN = "uid=${host-id}-${service}-service,ou=users,${base-dn}";
+            BIND_PASSWORD = "@${
+              config
+                .age
+                .secrets
+                ."${ldapServiceUser}-ldap-password"
+                .path
+            }";
             USER_BASE = "ou=users,${base-dn}";
             USER_FILTER = "(&(memberOf=cn=gitea-users,ou=groups,${base-dn})(objectClass=person)(uid=%s))";
             ADMIN_FILTER = "(memberOf=cn=gitea-admins,ou=groups,${base-dn})";
@@ -124,6 +115,68 @@ in {
       # LoadCredential = [];
       # Environment = [];
     };
+  };
+  ##############################################################################
+  # Gitea lacks the ability to have a purely configuration driven authentication
+  # solution.  There have to be modifications made to the database.  This
+  # service handles this for us.  We could perhaps consolidate some of these
+  # settings with the actual on-disk configuration above, but for now it seems
+  # to work so let's leave it be.
+  #
+  # Note that if the credentials change, this might need some manual work to
+  # repair.  In addition, this could mean a manual restart is needed of gitea
+  # itself.  Though I feel like if this is connected to the other, it should
+  # restart automatically.  But I don't know.
+  ##############################################################################
+  systemd.services.gitea-ldap-setup = lib.mkIf ldap-enabled {
+    description = "Configure Gitea LDAP authentication source";
+    after = [ "gitea.service" ];
+    wants = [ "gitea.service" ];
+    wantedBy = [ "multi-user.target" ];
+    serviceConfig = {
+      Type = "oneshot";
+      RemainAfterExit = true;
+      User = "gitea";
+      ExecStartPost = "!${pkgs.systemd}/bin/systemctl restart gitea.service";
+    };
+    script = let
+      base-dn = "dc=proton,dc=org";
+      giteaBin = "${config.services.gitea.package}/bin/gitea";
+      appIni = "/mnt/gitea/custom/conf/app.ini";
+    in ''
+      # Check if LDAP auth source already exists.
+      AUTH_ID=$(${giteaBin} --config ${appIni} admin auth list | grep "LDAP" | awk '{print $1}')
+
+      if [ -n "$AUTH_ID" ]; then
+        COMMAND="update-ldap"
+        ID_ARG="--id $AUTH_ID"
+        ACTION="updated"
+      else
+        COMMAND="add-ldap"
+        ID_ARG=""
+        ACTION="created"
+      fi
+
+      echo "LDAP authentication source being ''${ACTION}..."
+      ${giteaBin} --config ${appIni} admin auth $COMMAND \
+        $ID_ARG \
+        --name "LDAP" \
+        --security-protocol ldaps \
+        --host nickel.proton \
+        --port 636 \
+        --bind-dn "uid=${ldapServiceUser},ou=users,${base-dn}" \
+        --bind-password "$(cat ${config.age.secrets."${ldapServiceUser}-ldap-password".path})" \
+        --user-search-base "ou=users,${base-dn}" \
+        --user-filter "(&(memberOf=cn=gitea-users,ou=groups,${base-dn})(objectClass=person)(uid=%s))" \
+        --admin-filter "(memberOf=cn=gitea-admins,ou=groups,${base-dn})" \
+        --username-attribute uid \
+        --firstname-attribute cn \
+        --surname-attribute sn \
+        --email-attribute mail \
+        --skip-tls-verify=false
+
+      echo "LDAP authentication source ''${ACTION} successfully."
+    '';
   };
   services.postgresql = {
     enable = true;

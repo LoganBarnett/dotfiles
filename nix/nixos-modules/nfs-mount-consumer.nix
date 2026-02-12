@@ -307,15 +307,18 @@
     ) {} mountsEnabled;
 
 in {
-  options.services.nfs-mount.mounts = mkOption {
-    type = types.attrsOf (types.submodule nfsMountModule);
-    default = {};
-    description = ''
-      A set of NFS mount definitions handled over WireGuard.
-    '';
+  options.services.nfs-mount = {
+    enable = mkEnableOption "Enable NFS mounts.";
+    mounts = mkOption {
+      type = types.attrsOf (types.submodule nfsMountModule);
+      default = {};
+      description = ''
+        A set of NFS mount definitions handled over WireGuard.
+      '';
+    };
   };
 
-  config = {
+  config = mkIf cfg.enable {
     inherit assertions;
     age.secrets."${host-id}-nfs-wireguard-key" = {
       generator.script = "wireguard-priv";

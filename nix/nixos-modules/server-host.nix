@@ -37,9 +37,12 @@
     #   };
     # }
     ../nixos-modules/environment-file-secrets.nix
+    ../nixos-modules/kodi-standalone.nix
     ../nixos-modules/lib-custom.nix
     ../nixos-modules/nested-submodule-config-proof.nix
     ../nixos-configs/networking-static.nix
+    ../nixos-modules/nfs-consumer-facts.nix
+    ../nixos-modules/nfs-mount-consumer.nix
     # This can safely be included even if the host doesn't expose NFS volumes.
     ../nixos-configs/nfs-mount-provider-from-facts.nix
     ../nixos-configs/nix-store-tools.nix

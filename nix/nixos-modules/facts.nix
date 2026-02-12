@@ -36,8 +36,8 @@
       # delicately functional.
       {
         consumerHostId = "copper";
-        providerHostId = "silicon";
         peerNumber = 3;
+        providerHostId = "silicon";
         service = "nextcloud";
         volume = "nextcloud";
         user = "nextcloud";
@@ -535,6 +535,13 @@
           type = "service";
           description = "Dex-OIDC on Copper.";
           full-name = "copper-dex-oidc-service";
+          devices = [];
+        };
+        copper-gitea-service = {
+          email = "copper-gitea-service@proton";
+          type = "service";
+          description = "Gitea on Copper.";
+          full-name = "copper-gitea-service";
           devices = [];
         };
         copper-nextcloud-service = {
