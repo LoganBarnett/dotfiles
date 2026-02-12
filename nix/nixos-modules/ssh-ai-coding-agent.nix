@@ -12,8 +12,10 @@ let
   cfg = config.services.ssh-ai-coding-agent;
 
   # Generate a Match block for a single environment variable.
+  # Note: ssh_config doesn't support "Match env", so we use "Match exec" with a
+  # test command to check the environment variable value.
   mkEnvMatch = envName: envValue: hosts: user: identityFile: ''
-    Match host ${lib.concatStringsSep "," hosts} env ${envName}=${envValue}
+    Match host ${lib.concatStringsSep "," hosts} exec "test \"''$${envName}\" = \"${envValue}\""
       User ${user}
       IdentityFile ${identityFile}
   '';
