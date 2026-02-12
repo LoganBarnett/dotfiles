@@ -52,8 +52,17 @@ find_repos() {
 # Check if repo has LoganBarnett GitHub remote.
 is_loganbarnett_repo() {
     local repo_dir=$1
-    git -C "$repo_dir" remote get-url origin 2>/dev/null | \
-        grep -q "github.com[:/]${GITHUB_USER}/"
+    # Check origin remote (for unmigrated repos).
+    if git -C "$repo_dir" remote get-url origin 2>/dev/null | \
+        grep -q "github.com[:/]${GITHUB_USER}/"; then
+        return 0
+    fi
+    # Check github remote (for already-migrated repos).
+    if git -C "$repo_dir" remote get-url github 2>/dev/null | \
+        grep -q "github.com[:/]${GITHUB_USER}/"; then
+        return 0
+    fi
+    return 1
 }
 
 # Extract repo name from directory.
@@ -219,6 +228,7 @@ migrate_remotes() {
     if [ "$DRY_RUN" = "1" ]; then
         log "[DRY RUN] Would rename origin -> github"
         log "[DRY RUN] Would rename gitea -> origin"
+        log "[DRY RUN] Would set push remote to origin (gitea)"
         return 0
     fi
 
@@ -244,6 +254,21 @@ migrate_remotes() {
         fi
     else
         log "Remote 'gitea' doesn't exist (might be already renamed to origin)"
+    fi
+
+    # Set push remote to origin (gitea) for all branches.
+    if git -C "$repo_dir" remote get-url origin &>/dev/null; then
+        local origin_url=$(git -C "$repo_dir" remote get-url origin)
+        if [[ "$origin_url" == *"${GITEA_HOST}"* ]]; then
+            log "Setting push remote to origin (gitea) for all branches"
+            # Set default push remote.
+            git -C "$repo_dir" config remote.pushDefault origin
+            # Also set push remote for current branch explicitly.
+            local current_branch=$(git -C "$repo_dir" branch --show-current 2>/dev/null || true)
+            if [ -n "$current_branch" ]; then
+                git -C "$repo_dir" config "branch.${current_branch}.pushRemote" origin
+            fi
+        fi
     fi
 }
 
