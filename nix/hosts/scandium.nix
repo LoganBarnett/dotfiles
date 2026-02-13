@@ -131,7 +131,7 @@ in {
         imports = [
           ../home-configs/ssh-config-general.nix
           ../home-configs/ssh-config-container-vm.nix
-          ../home-configs/ssh-config-emacs.nix
+          flake-inputs.emacs-config.homeModules.ssh-config-emacs
           ../home-configs/ssh-config-proton.nix
           ../home-configs/tea.nix
         ];

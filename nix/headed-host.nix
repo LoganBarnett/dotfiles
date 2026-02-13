@@ -1,6 +1,6 @@
-{ config, lib, pkgs, ... }: {
+{ config, flake-inputs, lib, pkgs, ... }: {
   imports = [
-    ./emacs.nix
+    flake-inputs.emacs-config.darwinModules.default
     ({ pkgs, ... }: {
       environment.systemPackages =
         pkgs.callPackage ./general-packages.nix {};

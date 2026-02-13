@@ -1,3 +1,0 @@
-#+begin_src emacs-lisp
-(message "Skipping private.org.")
-#+end_src

@@ -80,7 +80,7 @@ in {
           ../home-configs/copilot-ache-em-ache.nix
           ../home-configs/ssh-config-general.nix
           ../home-configs/ssh-config-container-vm.nix
-          ../home-configs/ssh-config-emacs.nix
+          flake-inputs.emacs-config.homeModules.ssh-config-emacs
           ../home-configs/ssh-config-new-e-ah.nix
         ];
         home.file.".gemrc".text = (pkgs.callPackage ../gemrc.nix {

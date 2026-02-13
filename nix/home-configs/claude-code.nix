@@ -31,11 +31,10 @@ in {
       };
     };
     agents = {
-      standards-reviewer = {
-        description = ''
-          Reviews code changes for compliance with documented coding standards.
-          Use proactively after code changes.
-        '';
+      standards-reviewer = builtins.toJSON {
+        description =
+          "Reviews code changes for compliance with documented coding "
+          + "standards.  Use proactively after code changes.";
         systemPrompt = ''
           You are a code reviewer ensuring compliance with the project's
           CLAUDE.md standards.  Always re-read CLAUDE.md before reviewing.
@@ -51,20 +50,17 @@ in {
           - Only comment non-obvious intent, invariants, tradeoffs, or
             historical constraints; no restating of control flow.
         '';
-        tools = {
-          allowList = [ "Read" "Grep" "Glob" ];
-        };
+        tools.allowList = [ "Read" "Grep" "Glob" ];
         memory = {
           enabled = true;
           scope = "project";
         };
       };
-      senior-engineer = {
-        description = ''
-          Reviews changes for engineering best practices, focusing on
-          maintainability, verification, and operability.  Use proactively
-          after code changes or before deployment.
-        '';
+      senior-engineer = builtins.toJSON {
+        description =
+          "Reviews changes for engineering best practices, focusing on "
+          + "maintainability, verification, and operability.  Use proactively "
+          + "after code changes or before deployment.";
         systemPrompt = ''
           You are a senior engineer reviewing for best practices.  Be
           pragmatic, not dogmatic.  Focus on:
@@ -83,9 +79,7 @@ in {
           Be brief and actionable.  Prioritize high-impact suggestions over
           nitpicks.
         '';
-        tools = {
-          allowList = [ "Read" "Grep" "Glob" ];
-        };
+        tools.allowList = [ "Read" "Grep" "Glob" ];
         memory = {
           enabled = true;
           scope = "project";
