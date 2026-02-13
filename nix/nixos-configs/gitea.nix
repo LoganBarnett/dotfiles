@@ -115,6 +115,42 @@ in {
     };
     stateDir = dataDir;
   };
+  # Goss health checks for Gitea.
+  services.goss.checks = {
+    # Check that the HTTPS endpoint is responding.
+    http."https://${domain}" = {
+      status = 200;
+      timeout = 5000;
+      body = [ "Gitea" ];
+    };
+    # Check that the API endpoint works.
+    http."https://${domain}/api/v1/version" = {
+      status = 200;
+      timeout = 3000;
+      headers = [ "Content-Type: application/json" ];
+    };
+    # Check that SSH port is listening.  Gitea binds to :: (IPv6 any)
+    # which also accepts IPv4 connections via IPv4-mapped IPv6 addresses.
+    port."tcp6:2222" = {
+      listening = true;
+    };
+    # Check that HTTPS port is listening (handled by reverse proxy).
+    port."tcp:443" = {
+      listening = true;
+      ip = [ "0.0.0.0" ];
+    };
+    # Check that the gitea service is running.
+    service.gitea = {
+      enabled = true;
+      running = true;
+    };
+    # Check that PostgreSQL is running.  We don't check "enabled" because
+    # PostgreSQL is started as a dependency of gitea and shows as "linked"
+    # rather than "enabled" in systemd.
+    service.postgresql = {
+      running = true;
+    };
+  };
   systemd.services.gitea = let
     after = [
       "postgresql.service"

@@ -6,7 +6,7 @@
 # 3. Memory utilization.
 # 4. Network utilization.
 # 5. System uptime.
-# 6. Failed systemd service listings.
+# 6. Service health (systemd status and goss health checks).
 ################################################################################
 { without-socket-port, height, width, ... }: {
   id = null;
@@ -207,7 +207,7 @@
     }
     {
       type = "stat";
-      title = "Failed Service Count";
+      title = "Service Health Issues";
       gridPos = {
         h = 1 * height;
         w = 1 * width;
@@ -217,14 +217,25 @@
       targets = [
         {
           expr = without-socket-port ''
-            sum by (instance) (
-              max_over_time(systemd_unit_state{state="failed"}[1m])
+            (
+              sum by (instance) (
+                max_over_time(systemd_unit_state{state="failed"}[1m])
+              )
+              or
+              on(instance) systemd_unit_state{
+                name="basic.target",
+                state="active"
+              } * 0
             )
-            or
-            on(instance) systemd_unit_state{
-              name="basic.target",
-              state="active"
-            } * 0
+            +
+            (
+              sum by (instance) (goss_check{result="1"})
+              or
+              on(instance) systemd_unit_state{
+                name="basic.target",
+                state="active"
+              } * 0
+            )
           '';
           format = "time_series";
           legendFormat = "{{instance}}";
@@ -245,10 +256,10 @@
     }
     {
       type = "table";
-      title = "Failed Service List";
+      title = "Service Health Status";
       gridPos = {
         h = 1 * height;
-        w = 1 * width;
+        w = 2 * width;
         x = 0 * width;
         y = 2 * height;
       };
@@ -264,46 +275,39 @@
               state="active"
             } == 1)
           '';
-          format = "time_series";
-          # Required for the transformations, I guess.
+          format = "table";
           refId = "A";
-          # legendFormat = "{{instance}}";
+          instant = true;
+        }
+        {
+          expr = without-socket-port ''
+            goss_check{result="1"}
+          '';
+          format = "table";
+          refId = "B";
           instant = true;
         }
       ];
       transformations = [
-        # {
-        #   id = "seriesToRows";
-        #   options = {
-        #     byField = "Value";
-        #   };
-        # }
         {
           id = "labelsToFields";
           options = {
             mode = "columns";
-            keepLabels = [
-              "instance"
-              "name"
-            ];
           };
         }
         {
           id = "filterFieldsByName";
           options = {
-            filters = [
-              { id = ""; value = "instance"; }
-              { id = ""; value = "name"; }
-            ];
-            include.names = [
-              "instance"
-              "name"
-            ];
+            include = {
+              names = [
+                "instance"
+                "name"
+                "test"
+                "type"
+              ];
+            };
           };
         }
-        # This allows us to have a table that is empty, instead of just "No
-        # Data" which kind of makes me feel like there was an error (and
-        # there often is).
         {
           id = "filterByValue";
           options = {
@@ -325,18 +329,12 @@
         {
           id = "organize";
           options = {
-            excludeByName = true;
-            indexByName = false;
             renameByName = {
               "instance" = "Host";
               "name" = "Service";
-              # "Value" = "Status";
+              "test" = "Check";
+              "type" = "Type";
             };
-            fields = [
-              { name = "Host"; }
-              { name = "Service"; }
-              # { name = "Status"; }
-            ];
           };
         }
       ];

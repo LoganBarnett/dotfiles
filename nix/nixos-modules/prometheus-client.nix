@@ -36,6 +36,14 @@
       # might make sense to
     }.${monitor} or {});
   };
+
+  # Filter out monitors that are handled by their own modules instead of via
+  # services.prometheus.exporters.  For example, "goss" is handled by
+  # goss-exporter.nix.
+  exporterMonitors = builtins.filter
+    (m: ! builtins.elem m ["goss"])
+    hostFacts.monitors;
+
 in {
   # TODO: Move this to a gatus specific config which lifts from
   # facts.network.services.  Select a host that runs gatus (probably argon but
@@ -46,7 +54,7 @@ in {
   #   inherit enable;
   #   openFirewall = enable;
   # };
-  services.prometheus.exporters = pipe hostFacts.monitors [
+  services.prometheus.exporters = pipe exporterMonitors [
     (fold (monitor: acc: acc // (monitor-to-exporter monitor)) {})
   ];
 }

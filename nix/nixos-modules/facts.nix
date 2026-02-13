@@ -201,6 +201,7 @@
         controlledHost = true;
         ipv4 = 10;
         monitors = [
+          "goss"
           "node"
           "systemd"
         ];

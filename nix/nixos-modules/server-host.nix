@@ -67,6 +67,7 @@
     ../nixos-modules/narcolepsy.nix
     # See facts.nix for how this is specifically configured per host.
     ../nixos-modules/prometheus-client.nix
+    ../nixos-modules/goss-exporter.nix
     ../nixos-modules/nix-flake-environment.nix
     ../nixos-modules/nix-store-optimize.nix
     ../nixos-modules/restic-shim.nix

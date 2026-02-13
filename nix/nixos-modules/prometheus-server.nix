@@ -59,14 +59,20 @@ in {
         ))
         (lib.attrsets.mapAttrsToList (host: settings:
           "${host}:${
-            toString nodes
-              .${host}
-              .config
-              .services
-              .prometheus
-              .exporters
-              .${pkgs.lib.custom.monitor-to-exporter-name monitor}
-              .port
+            toString (
+              # Goss is handled by its own module, not via
+              # services.prometheus.exporters, so use a hardcoded port.
+              if monitor == "goss"
+              then 8080
+              else nodes
+                .${host}
+                .config
+                .services
+                .prometheus
+                .exporters
+                .${pkgs.lib.custom.monitor-to-exporter-name monitor}
+                .port
+            )
           }"
         ))
       ]
@@ -113,6 +119,10 @@ in {
                 targets = host-targets monitor;
               }
             ];
+          };
+          goss = {
+            metrics_path = "/healthz";
+            scrape_interval = "30s";
           };
         }.${monitor} or { }))
       )
