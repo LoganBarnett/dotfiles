@@ -27,7 +27,8 @@ in {
   services.blocky-lists-updater = {
     enable = true;
     blockyUrl = "http://localhost:4000";
-    webPort = 8081;
+    # Changed from 8081 to 8082 to avoid conflict with goss-exporter.
+    webPort = 8082;
 
     # Remote sources to download and aggregate.
     sources = {
@@ -85,5 +86,5 @@ in {
   };
 
   # Open the updater's web port for local access.
-  networking.firewall.allowedTCPPorts = [ 8081 ];
+  networking.firewall.allowedTCPPorts = [ config.services.blocky-lists-updater.webPort ];
 }

@@ -171,6 +171,7 @@
         };
         ipv4 = 3;
         monitors = [
+          "goss"
           "node"
           "systemd"
         ];
@@ -220,6 +221,7 @@
         };
         ipv4 = 4;
         monitors = [
+          "goss"
           "node"
           "systemd"
         ];
@@ -278,6 +280,7 @@
         };
         ipv4 = 1;
         monitors = [
+          "goss"
           # "openldap"
           "node"
           "systemd"
@@ -356,6 +359,7 @@
         macAddress = "b8:ca:3a:77:a9:2a";
         monitors = [
           "dns-smart-block"
+          "goss"
           "node"
           "systemd"
           "wireguard"

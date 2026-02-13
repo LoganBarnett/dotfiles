@@ -105,4 +105,34 @@ in {
       ];
     };
   };
+  # Goss health checks for Dex.
+  services.goss.checks = {
+    # Check that the HTTPS endpoint is responding.
+    http."https://dex.proton" = {
+      status = 200;
+      timeout = 5000;
+    };
+    # Check that the OIDC discovery endpoint works.  This is the standard
+    # endpoint that OIDC clients use to discover provider configuration.
+    http."https://dex.proton/.well-known/openid-configuration" = {
+      status = 200;
+      timeout = 3000;
+      headers = [ "Content-Type: application/json" ];
+    };
+    # Check that the internal dex port is listening.
+    port."tcp:${toString dex-port}" = {
+      listening = true;
+      ip = [ "0.0.0.0" ];
+    };
+    # Check that HTTPS port is listening (handled by reverse proxy).
+    port."tcp:443" = {
+      listening = true;
+      ip = [ "0.0.0.0" ];
+    };
+    # Check that the dex service is running.
+    service.dex = {
+      enabled = true;
+      running = true;
+    };
+  };
 }

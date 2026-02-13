@@ -65,6 +65,8 @@
       enable = true;
       publicBindHost = "0.0.0.0";
       publicBindPort = 3000;
+      # Changed from default 8080 to 8083 to avoid conflict with goss-exporter.
+      adminBindPort = 8083;
     };
 
     # Use built-in PostgreSQL and NATS.

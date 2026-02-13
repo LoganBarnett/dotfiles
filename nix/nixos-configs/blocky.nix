@@ -169,4 +169,38 @@ in {
       prometheus.enable = true;
     };
   };
+  # Goss health checks for Blocky DNS.
+  services.goss.checks = {
+    # Check that the HTTPS endpoint is responding.
+    http."https://blocky.proton/" = {
+      status = 200;
+      timeout = 5000;
+    };
+    # Check that the Blocky API endpoint works.
+    http."https://blocky.proton/api/blocking/status" = {
+      status = 200;
+      timeout = 3000;
+    };
+    # Check that DNS port is listening (UDP).  DNS is the core functionality
+    # of Blocky.  Blocky binds to :: (IPv6 any) which also accepts IPv4
+    # connections via IPv4-mapped IPv6 addresses.
+    port."udp6:53" = {
+      listening = true;
+    };
+    # Check that DNS port is listening (TCP).  Used for larger DNS responses
+    # and zone transfers.
+    port."tcp6:53" = {
+      listening = true;
+    };
+    # Check that HTTPS port is listening (handled by reverse proxy).
+    port."tcp:443" = {
+      listening = true;
+      ip = [ "0.0.0.0" ];
+    };
+    # Check that the blocky service is running.
+    service.blocky = {
+      enabled = true;
+      running = true;
+    };
+  };
 }

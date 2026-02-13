@@ -524,4 +524,33 @@ in {
   };
   users.users.grafana.extraGroups = [ "openldap-${host-id}-grafana-service" ];
   users.groups."openldap-${host-id}-grafana-service" = {};
+  # Goss health checks for Grafana.
+  services.goss.checks = {
+    # Check that the HTTPS endpoint is responding.
+    http."https://grafana.proton/" = {
+      status = 200;
+      timeout = 5000;
+    };
+    # Check that the API health endpoint works.
+    http."https://grafana.proton/api/health" = {
+      status = 200;
+      timeout = 3000;
+    };
+    # Check that the internal grafana port is listening.  Grafana listens on
+    # loopback only by default.
+    port."tcp:${toString config.services.grafana.settings.server.http_port}" = {
+      listening = true;
+      ip = [ "127.0.0.1" ];
+    };
+    # Check that HTTPS port is listening (handled by reverse proxy).
+    port."tcp:443" = {
+      listening = true;
+      ip = [ "0.0.0.0" ];
+    };
+    # Check that the grafana service is running.
+    service.grafana = {
+      enabled = true;
+      running = true;
+    };
+  };
 }

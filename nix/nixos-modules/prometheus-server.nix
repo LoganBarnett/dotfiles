@@ -128,4 +128,33 @@ in {
       )
       monitors;
   };
+  # Goss health checks for Prometheus.
+  services.goss.checks = {
+    # Check that the HTTPS endpoint is responding.
+    http."https://prometheus.proton/" = {
+      status = 200;
+      timeout = 5000;
+    };
+    # Check that the Prometheus API is responding.
+    http."https://prometheus.proton/api/v1/status/config" = {
+      status = 200;
+      timeout = 3000;
+    };
+    # Check that the internal prometheus port is listening.  Prometheus binds
+    # to :: (IPv6 any) which also accepts IPv4 connections via IPv4-mapped
+    # IPv6 addresses.
+    port."tcp6:9090" = {
+      listening = true;
+    };
+    # Check that HTTPS port is listening (handled by reverse proxy).
+    port."tcp:443" = {
+      listening = true;
+      ip = [ "0.0.0.0" ];
+    };
+    # Check that the prometheus service is running.
+    service.prometheus = {
+      enabled = true;
+      running = true;
+    };
+  };
 }

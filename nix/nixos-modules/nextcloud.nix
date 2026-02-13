@@ -436,4 +436,21 @@ in {
   };
   users.groups.nextcloud = {};
   users.groups."openldap-${host-id}-nextcloud-service" = {};
+
+  # Goss health checks for Nextcloud.
+  services.goss.checks = {
+    # Check that PHP-FPM service is running.
+    service.phpfpm-nextcloud = {
+      running = true;
+    };
+    # Check that Redis is running (used for caching).
+    service.redis-nextcloud = {
+      running = true;
+    };
+    # Check that nginx is running (serves Nextcloud).
+    service.nginx = {
+      enabled = true;
+      running = true;
+    };
+  };
 }

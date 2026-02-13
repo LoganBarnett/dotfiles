@@ -117,4 +117,33 @@
   #     description = "{{$labels.alias}} has been down for more than 5 minutes."
   #   }
   # ''
+  # Goss health checks for Alertmanager.
+  services.goss.checks = {
+    # Check that the HTTPS endpoint is responding.
+    http."https://alertmanager.proton/" = {
+      status = 200;
+      timeout = 5000;
+    };
+    # Check that the Alertmanager API is responding.
+    http."https://alertmanager.proton/api/v2/status" = {
+      status = 200;
+      timeout = 3000;
+    };
+    # Check that the internal alertmanager port is listening.  Alertmanager
+    # binds to :: (IPv6 any) which also accepts IPv4 connections via
+    # IPv4-mapped IPv6 addresses.
+    port."tcp6:9093" = {
+      listening = true;
+    };
+    # Check that HTTPS port is listening (handled by reverse proxy).
+    port."tcp:443" = {
+      listening = true;
+      ip = [ "0.0.0.0" ];
+    };
+    # Check that the alertmanager service is running.
+    service.alertmanager = {
+      enabled = true;
+      running = true;
+    };
+  };
 }

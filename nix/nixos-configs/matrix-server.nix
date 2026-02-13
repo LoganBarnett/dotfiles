@@ -91,4 +91,34 @@ in {
   #   ];
   # };
   users.users.matrix-synapse.extraGroups = [ "matrix" ];
+  # Goss health checks for Matrix Synapse.
+  services.goss.checks = {
+    # Check that the HTTPS endpoint is responding.
+    http."https://${fqdn}/" = {
+      status = 200;
+      timeout = 5000;
+    };
+    # Check that the Matrix server version endpoint works.  This is part of
+    # the Matrix spec and returns server version information.
+    http."https://${fqdn}/_matrix/federation/v1/version" = {
+      status = 200;
+      timeout = 3000;
+    };
+    # Check that the internal matrix-synapse port is listening.  Matrix
+    # Synapse listens on loopback only.
+    port."tcp:8008" = {
+      listening = true;
+      ip = [ "127.0.0.1" ];
+    };
+    # Check that HTTPS port is listening (handled by reverse proxy).
+    port."tcp:443" = {
+      listening = true;
+      ip = [ "0.0.0.0" ];
+    };
+    # Check that the matrix-synapse service is running.
+    service.matrix-synapse = {
+      enabled = true;
+      running = true;
+    };
+  };
 }

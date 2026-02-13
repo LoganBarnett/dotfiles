@@ -327,4 +327,34 @@ in {
   systemd.tmpfiles.rules = [
     "d /var/lib/${service-name} 0750 authelia authelia -"
   ];
+  # Goss health checks for Authelia.
+  services.goss.checks = {
+    # Check that the HTTPS endpoint is responding.  Authelia serves the login
+    # page at the root.
+    http."https://authelia.proton/" = {
+      status = 200;
+      timeout = 5000;
+    };
+    # Check that the API health endpoint works.  This is the standard Authelia
+    # health check endpoint.
+    http."https://authelia.proton/api/health" = {
+      status = 200;
+      timeout = 3000;
+    };
+    # Check that the internal authelia port is listening.
+    port."tcp:${toString port}" = {
+      listening = true;
+      ip = [ "127.0.0.1" ];
+    };
+    # Check that HTTPS port is listening (handled by reverse proxy).
+    port."tcp:443" = {
+      listening = true;
+      ip = [ "0.0.0.0" ];
+    };
+    # Check that the authelia service is running.
+    service.${service-name} = {
+      enabled = true;
+      running = true;
+    };
+  };
 }

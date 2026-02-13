@@ -21,12 +21,14 @@
 ################################################################################
 { config, lib, pkgs, facts, host-id, ... }:
 let
-  inherit (lib) mkOption mkIf types;
+  inherit (lib) mkOption mkIf types mkMerge;
 
   hostFacts = facts.network.hosts.${host-id};
   gossEnabled = builtins.elem "goss" (hostFacts.monitors or []);
 
   # Aggregate all goss check contributions from various services.
+  # The module system should merge these automatically, but we ensure
+  # deep merging by using the final merged value.
   allChecks = config.services.goss.checks;
 
   # Generate the unified goss.yaml configuration file.
@@ -37,7 +39,7 @@ let
 in {
   options.services.goss = {
     checks = mkOption {
-      type = types.attrs;
+      type = types.attrsOf types.attrs;
       default = {};
       description = ''
         Goss health check configuration.  Services contribute their own checks
