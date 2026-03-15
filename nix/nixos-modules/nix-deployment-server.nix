@@ -215,13 +215,22 @@ in {
       '';
     };
 
+    # Webhook receiver script.
+    environment.systemPackages = [
+      (pkgs.writeShellApplication {
+        name = "webhook-receiver";
+        runtimeInputs = with pkgs; [ coreutils jq systemd ];
+        text = builtins.readFile ../scripts/webhook-receiver.sh;
+      })
+    ];
+
     # Webhook receiver service.
     systemd.services.nix-deployment-webhook = {
       description = "Nix deployment webhook receiver";
       wantedBy = [ "multi-user.target" ];
       after = [ "network.target" "nix-deployment-init.service" ];
 
-      path = with pkgs; [ socat bash coreutils jq systemd ];
+      path = with pkgs; [ socat ];
 
       serviceConfig = {
         Type = "simple";
@@ -232,39 +241,9 @@ in {
       };
 
       script = ''
-        SECRET=$(cat "${cfg.webhookSecretFile}")
-
-        # Simple webhook receiver using socat and bash.
-        ${pkgs.socat}/bin/socat TCP-LISTEN:${toString cfg.webhookPort},reuseaddr,fork EXEC:'${pkgs.bash}/bin/bash -c "
-          # Read HTTP headers.
-          while IFS= read -r line; do
-            line=\$(echo \"\$line\" | ${pkgs.coreutils}/bin/tr -d \"\\r\")
-            if [[ -z \"\$line\" ]]; then
-              break
-            fi
-            if [[ \"\$line\" =~ ^X-Gitea-Signature: ]]; then
-              SIGNATURE=\"\''${line#X-Gitea-Signature: }\"
-            fi
-            if [[ \"\$line\" =~ ^Content-Length: ]]; then
-              CONTENT_LENGTH=\"\''${line#Content-Length: }\"
-            fi
-          done
-
-          # Read body.
-          if [[ -n \"\$CONTENT_LENGTH\" ]]; then
-            BODY=\$(${pkgs.coreutils}/bin/head -c \"\$CONTENT_LENGTH\")
-          fi
-
-          # Verify signature (simplified - in production use proper HMAC verification).
-          # For now, just check if we got a push event.
-          if echo \"\$BODY\" | ${pkgs.jq}/bin/jq -e \".ref == \\\"refs/heads/master\\\"\" >/dev/null 2>&1; then
-            echo \"Push to master detected, triggering deployment check...\"
-            ${pkgs.systemd}/bin/systemctl start nix-deployment-check.service
-          fi
-
-          # Send HTTP response.
-          echo -e \"HTTP/1.1 200 OK\\r\\n\\r\\n\"
-        "'
+        # Simple webhook receiver using socat.
+        socat TCP-LISTEN:${toString cfg.webhookPort},reuseaddr,fork \
+          EXEC:webhook-receiver
       '';
     };
 
