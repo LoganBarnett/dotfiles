@@ -34,6 +34,24 @@ constraints; no restating of control flow.
 Use Pascal Initialisms (~Url~) instead of Preserved Initialisms (~URL~) when
 _authoring_ new identifiers in camel case.
 
+** Code Review Workflow
+
+*** Automatic Review Process
+
+When making code changes in this repository, Claude must proactively invoke
+the code review agents:
+
+1. After creating or modifying any files, use the Task tool to invoke
+   ~standards-reviewer~ to check CLAUDE.md compliance.
+2. Use the Task tool to invoke ~senior-engineer~ for engineering best
+   practices review.
+3. Create review reports in ~reviews/{date}-{sequence}/~ directory with
+   org-mode formatting.
+4. Present findings and suggest fixes before continuing with other work.
+
+This review process is mandatory for all code changes unless explicitly told
+to skip reviews.
+
 ** Nix
 
 *** Flake Inputs
