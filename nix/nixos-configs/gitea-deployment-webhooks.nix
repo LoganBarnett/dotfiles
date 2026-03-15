@@ -23,7 +23,7 @@
 
     webhooks = [{
       owner = "logan";
-      repo = "gitea-webhook-test";
+      repo = "dotfiles";
       url = "http://rubidium.proton:9001/webhook";
       events = [ "push" ];
       secretFile = config.age.secrets.deployment-webhook-secret.path;
