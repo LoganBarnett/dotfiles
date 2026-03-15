@@ -23,7 +23,7 @@ in {
       env = {
         CLAUDE_DANGEROUSLY_SKIP_PERMISSIONS = "1";
       };
-      model = "claude-sonnet-4-5-20250929";
+      model = "claude-opus-4-20250514";
       mcp = {
         allowedDirectories = {
           read = [ "/nix/store" ];

@@ -1,7 +1,7 @@
 ################################################################################
 # Make this host consume our various builders.
 ################################################################################
-{ config, lib, pkgs, ... }: let
+{ config, host-id, lib, pkgs, ... }: let
   # sshKey = ../secrets/builder-key.pub;
   # Use the agenix-managed secret path directly.  This avoids conflicts with
   # nix-darwin's environment.etc management.
@@ -15,6 +15,19 @@
   # sshKey = "/etc/nix/remote-builder_ed25519";
   sshUser = "builder";
   toBase64 = (pkgs.callPackage ../base64.nix {}).toBase64;
+  facts = import ./facts.nix;
+
+  # Check if a builder's hostname matches this host or any of its aliases.
+  # This prevents self-loop deadlocks where a host tries to build on itself.
+  isCurrentHost = builderHostName:
+    let
+      # Get all names this host is known by (hostname + aliases).
+      hostAliases = [ host-id ] ++ (facts.network.hosts.${host-id}.aliases or []);
+      # Build FQDNs for all aliases.
+      hostFqdns = map (alias: "${alias}.${facts.network.domain}") hostAliases;
+    in
+      lib.elem builderHostName hostFqdns;
+
   rpi-systems = [
     "aarch64-linux"
     "armv6l-linux"
@@ -57,7 +70,11 @@
     mandatoryFeatures = [];
   };
 in {
-  nix.buildMachines = [
+  # Exclude builders from the list if they refer to the current host.  This
+  # prevents self-loop deadlocks where a host tries to build on itself via SSH,
+  # creating circular dependencies that hang builds indefinitely.
+  # Check both the hostname and any aliases defined in facts.nix.
+  nix.buildMachines = lib.filter (builder: !(isCurrentHost builder.hostName)) [
     rpi-build
     silicon
   ];

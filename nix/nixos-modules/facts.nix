@@ -255,6 +255,7 @@
       };
       "M-CL64PK702X" = {
         controlledHost = true;
+        blockProfiles = [ "adult" ];
         flake-input-overrides = {
           nixpkgs = "nixpkgs-latest";
         };

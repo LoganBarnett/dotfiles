@@ -47,6 +47,8 @@
       url = "github:nix-community/authentik-nix";
     };
     dns-smart-block = {
+      # TODO: Switch to git+ssh once SSH authentication is configured for nix builds.
+      # url = "git+ssh://git@gitea.proton:2222/logan/dns-smart-block";
       url = "path:/Users/logan/dev/dns-smart-block";
       inputs.nixpkgs.follows = "nixpkgs";
     };
@@ -100,6 +102,12 @@
     nix-homebrew.url = "github:zhaofengli/nix-homebrew";
     nix-option-search = {
       url = "github:ciderale/nix-option-search";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    nix-remote-builder-doctor = {
+      # TODO: Switch to git+ssh once SSH authentication is configured for nix builds.
+      # url = "git+ssh://git@gitea.proton:2222/logan/nix-remote-builder-doctor";
+      url = "path:/Users/logan/dev/nix-remote-builder-doctor";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     optnix = {
@@ -263,6 +271,7 @@
         modules = [
           flake-inputs.home-manager.darwinModules.home-manager
           # flake-inputs.nix-option-search.darwinModules.default
+          flake-inputs.nix-remote-builder-doctor.darwinModules.default
           {
             nixpkgs.overlays = [
               (final: prev: {
@@ -274,6 +283,7 @@
                   .nixos-option
                 ;
               })
+              flake-inputs.nix-remote-builder-doctor.overlays.default
             ];
           }
           {
