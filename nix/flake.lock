@@ -910,8 +910,8 @@
         "rust-overlay": "rust-overlay_3"
       },
       "locked": {
-        "lastModified": 1770995567,
-        "narHash": "sha256-NrDoSm4gCxIp/+WCPJseoj8fcWSdO/mSRECUKUDPkp4=",
+        "lastModified": 1771092434,
+        "narHash": "sha256-BibPpVltfT8KGjG4Dv7SGwbU/Egs1WoUDX7B1l2tz+w=",
         "path": "/Users/logan/dev/nix-remote-builder-doctor",
         "type": "path"
       },
