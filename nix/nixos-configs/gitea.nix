@@ -115,6 +115,12 @@ in {
     };
     stateDir = dataDir;
   };
+
+  # Make gitea CLI available for administrative tasks.
+  environment.systemPackages = [
+    config.services.gitea.package
+  ];
+
   # Goss health checks for Gitea.
   services.goss.checks = {
     # Check that the HTTPS endpoint is responding.

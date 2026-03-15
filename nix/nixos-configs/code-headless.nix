@@ -18,5 +18,8 @@
     # headless development work.
     pkgs.tmux
     # Alternative terminal multiplexer if preferred: pkgs.screen
+
+    # Claude deployment status hook for checking deployment progress.
+    (pkgs.callPackage ../packages/claude-deployment-hook.nix {})
   ];
 }

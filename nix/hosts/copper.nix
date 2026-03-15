@@ -13,6 +13,7 @@ in {
     ../nixos-modules/server-host.nix
     # ../nixos-configs/dex-oidc.nix
     ../nixos-configs/gitea.nix
+    ../nixos-configs/gitea-deployment-webhooks.nix
     ../nixos-modules/nextcloud.nix
     ../nixos-modules/notes-sync.nix
     ../nixos-configs/chronicle-proxy.nix

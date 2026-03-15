@@ -16,6 +16,7 @@
   imports = [
     (flake-inputs.nixos-hardware + "/apple/macmini")
     ../nixos-configs/code-headless.nix
+    ../nixos-configs/deployment-server.nix
     ../nixos-modules/server-host.nix
     ({ lib, ... }: {
       boot.initrd.availableKernelModules = [
