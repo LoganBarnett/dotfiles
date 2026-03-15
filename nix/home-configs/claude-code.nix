@@ -23,7 +23,10 @@ in {
       env = {
         CLAUDE_DANGEROUSLY_SKIP_PERMISSIONS = "1";
       };
-      model = "claude-opus-4-20250514";
+      # I tried Opus - it just burns through tokens without really showing much
+      # better use.
+      # model = "claude-opus-4-20250514";
+      model = "claude-sonnet-4-5-20250929";
       mcp = {
         allowedDirectories = {
           read = [ "/nix/store" ];
