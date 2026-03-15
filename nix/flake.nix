@@ -106,8 +106,8 @@
     };
     nix-remote-builder-doctor = {
       # TODO: Switch to git+ssh once SSH authentication is configured for nix builds.
-      # url = "git+ssh://git@gitea.proton:2222/logan/nix-remote-builder-doctor";
-      url = "path:/Users/logan/dev/nix-remote-builder-doctor";
+      url = "git+ssh://git@gitea.proton:2222/logan/nix-remote-builder-doctor";
+      # url = "path:/Users/logan/dev/nix-remote-builder-doctor";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     optnix = {
@@ -247,6 +247,7 @@
         modules = [
           flake-inputs.home-manager.nixosModules.home-manager
           flake-inputs.nix-option-search.nixosModules.default
+          flake-inputs.nix-remote-builder-doctor.nixosModules.default
           ./hosts/${host-id}.nix
           # This is the only way to pull in this dependency.  In the flake it
           # resides in, this is already imported, so importing it again via
@@ -256,6 +257,11 @@
             home-manager.extraSpecialArgs = {
               inherit facts flake-inputs host-id;
             };
+          }
+          {
+            nixpkgs.overlays = [
+              flake-inputs.nix-remote-builder-doctor.overlays.default
+            ];
           }
         ];
       }

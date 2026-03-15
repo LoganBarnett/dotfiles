@@ -910,14 +910,17 @@
         "rust-overlay": "rust-overlay_3"
       },
       "locked": {
-        "lastModified": 1771092434,
-        "narHash": "sha256-BibPpVltfT8KGjG4Dv7SGwbU/Egs1WoUDX7B1l2tz+w=",
-        "path": "/Users/logan/dev/nix-remote-builder-doctor",
-        "type": "path"
+        "lastModified": 1771094301,
+        "narHash": "sha256-5YIZIKeCdD7MHtmJKtilA4Nk6HL8dZvwGFY5nM6rRDw=",
+        "ref": "refs/heads/main",
+        "rev": "5f7de35ba3c4c390fd34a8900968d91e38913d95",
+        "revCount": 44,
+        "type": "git",
+        "url": "ssh://git@gitea.proton:2222/logan/nix-remote-builder-doctor"
       },
       "original": {
-        "path": "/Users/logan/dev/nix-remote-builder-doctor",
-        "type": "path"
+        "type": "git",
+        "url": "ssh://git@gitea.proton:2222/logan/nix-remote-builder-doctor"
       }
     },
     "nixlib": {
