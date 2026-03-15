@@ -64,7 +64,7 @@ INSERT INTO webhook (
   repo_id, url, content_type, secret, events,
   is_active, type, created_unix, updated_unix
 ) VALUES (
-  :'repo_id', :'url', 'json', :'secret', :'events',
+  :'repo_id', :'url', 1, :'secret', :'events',
   true, 'gitea',
   EXTRACT(EPOCH FROM NOW())::BIGINT,
   EXTRACT(EPOCH FROM NOW())::BIGINT
