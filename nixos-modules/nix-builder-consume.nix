@@ -1,32 +1,33 @@
 ################################################################################
 # Make this host consume our various builders.
 ################################################################################
-{ config, host-id, lib, pkgs, ... }: let
+{
+  config,
+  host-id,
+  lib,
+  pkgs,
+  ...
+}:
+let
   # sshKey = ../secrets/builder-key-blue.pub;
   # Use the agenix-managed secret path directly.  This avoids conflicts with
   # nix-darwin's environment.etc management.
   sshKey = config.age.secrets.builder-key-blue.path;
-  # This may be causing conflicts with the darwin linux-builder, since this is
-  # its path.
-  # sshKey = "/etc/nix/builder_ed25519";
-  # Switched on 2025-08-14 for a Raspberry Pi host.  Unsure how this could
-  # impact the linux-builder host (per my notes above), but something I want to
-  # keep an eye out for.
-  # sshKey = "/etc/nix/remote-builder_ed25519";
   sshUser = "builder";
-  toBase64 = (pkgs.callPackage ../base64.nix {}).toBase64;
+  toBase64 = (pkgs.callPackage ../base64.nix { }).toBase64;
   facts = import ./facts.nix;
 
   # Check if a builder's hostname matches this host or any of its aliases.
   # This prevents self-loop deadlocks where a host tries to build on itself.
-  isCurrentHost = builderHostName:
+  isCurrentHost =
+    builderHostName:
     let
       # Get all names this host is known by (hostname + aliases).
-      hostAliases = [ host-id ] ++ (facts.network.hosts.${host-id}.aliases or []);
+      hostAliases = [ host-id ] ++ (facts.network.hosts.${host-id}.aliases or [ ]);
       # Build FQDNs for all aliases.
       hostFqdns = map (alias: "${alias}.${facts.network.domain}") hostAliases;
     in
-      lib.elem builderHostName hostFqdns;
+    lib.elem builderHostName hostFqdns;
 
   rpi-systems = [
     "aarch64-linux"
@@ -51,8 +52,12 @@
     # This is something I got from TLATER here:
     # https://discourse.nixos.org/t/kvm-is-required-error-building-a-docker-image-using-runasroot/22923/2
     # I seem to be unable to build other Raspberry Pi images without it.
-    supportedFeatures = [ "benchmark" "big-parallel" "kvm" ];
-    mandatoryFeatures = [];
+    supportedFeatures = [
+      "benchmark"
+      "big-parallel"
+      "kvm"
+    ];
+    mandatoryFeatures = [ ];
   };
   silicon = {
     inherit sshKey;
@@ -66,10 +71,15 @@
     maxJobs = 2;
     # What's this for?
     speedFactor = 2;
-    supportedFeatures = [ "benchmark" "big-parallel" "kvm" ];
-    mandatoryFeatures = [];
+    supportedFeatures = [
+      "benchmark"
+      "big-parallel"
+      "kvm"
+    ];
+    mandatoryFeatures = [ ];
   };
-in {
+in
+{
   # Exclude builders from the list if they refer to the current host.  This
   # prevents self-loop deadlocks where a host tries to build on itself via SSH,
   # creating circular dependencies that hang builds indefinitely.
@@ -89,7 +99,10 @@ in {
     "rpi-build.proton" = {
       # Include all hostname variations since rpi-build.proton is a CNAME for
       # cobalt.proton, and SSH may check the key against any of these names.
-      hostNames = [ "rpi-build.proton" "cobalt.proton" ];
+      hostNames = [
+        "rpi-build.proton"
+        "cobalt.proton"
+      ];
       publicKeyFile = ../secrets/cobalt-pub-key.pub;
     };
     "silicon.proton" = {
@@ -97,11 +110,6 @@ in {
       publicKeyFile = ../secrets/silicon-pub-key.pub;
     };
   };
-  #   lithium = {
-  #     hostNames = [ "lithium.proton" ];
-  #     publicKeyFile = /etc/nix/builder_ed25519.pub;
-  #   };
-  # };
 
   # This demonstrates that Nix doesn't actually use the data found in
   # /etc/nix/machines but instead relies upon SSH configuration.  Documentation

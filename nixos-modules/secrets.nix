@@ -171,7 +171,6 @@ in
     # management, which causes nix-darwin to rename the file with a
     # .before-nix-darwin suffix.
     # path = "/etc/nix/builder-agenix-key";
-    # path = "/etc/nix/builder_ed25519";
   };
 
   age.secrets.builder-key-green = {
