@@ -5,9 +5,9 @@
 { facts, host-id, ... }:
 let
   hostFacts = facts.network.hosts.${host-id};
+  gossEnabled = builtins.elem "goss" (hostFacts.monitors or [ ]);
 in
 {
-  services.goss.prometheus.enable = builtins.elem "goss" (
-    hostFacts.monitors or [ ]
-  );
+  services.goss.prometheus.enable = gossEnabled;
+  services.goss.prometheus.openFirewall = gossEnabled;
 }

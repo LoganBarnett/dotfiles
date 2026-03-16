@@ -60,6 +60,18 @@ in
         header and listens on this port.
       '';
     };
+
+    openFirewall = lib.mkOption {
+      type = lib.types.bool;
+      default = false;
+      description = ''
+        Register the nginx proxy binary with the macOS Application Firewall so
+        Prometheus can reach the exporter from other hosts on the network.
+
+        The binary path is re-registered on every activation because it changes
+        when the nginx derivation is updated.
+      '';
+    };
   };
 
   config = lib.mkIf cfg.prometheus.enable {
@@ -71,6 +83,13 @@ in
       GOSS_FMT = "prometheus";
       GOSS_LISTEN = ":${toString (gossPort + 1)}";
     };
+
+    system.activationScripts.postActivation.text = lib.mkIf cfg.prometheus.openFirewall ''
+      /usr/libexec/ApplicationFirewall/socketfilterfw \
+        --add ${pkgs.nginx}/bin/nginx >/dev/null 2>&1 || true
+      /usr/libexec/ApplicationFirewall/socketfilterfw \
+        --unblockapp ${pkgs.nginx}/bin/nginx >/dev/null 2>&1 || true
+    '';
 
     launchd.daemons.goss-nginx = {
       serviceConfig = {
