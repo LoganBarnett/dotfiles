@@ -240,7 +240,7 @@
       gateway = {
         controlledHost = false;
         ipv4 = 254;
-        monitors = [];
+        monitors = [ ];
       };
       lithium = {
         controlledHost = true;
@@ -261,7 +261,7 @@
         flake-input-overrides = {
           nixpkgs = "nixpkgs-latest";
         };
-        monitors = [];
+        monitors = [ ];
         roaming = true;
         system = "aarch64-darwin";
       };
@@ -292,7 +292,7 @@
       };
       nucleus = {
         controlledHost = false;
-        monitors = [];
+        monitors = [ ];
         system = "x86_64-linux";
       };
       # rpi-installer = {
@@ -317,7 +317,7 @@
         # pick something I was fairly certain was available.  Find lower IPs if
         # you're adding a new host.
         ipv4 = 20;
-        monitors = [];
+        monitors = [ ];
       };
       rubidium = {
         controlledHost = true;
@@ -335,7 +335,7 @@
           nixpkgs = "nixpkgs";
         };
         ipv4 = 101;
-        monitors = [];
+        monitors = [ ];
         roaming = true;
         system = "aarch64-darwin";
       };
@@ -358,7 +358,7 @@
           "dns-smart-block"
         ];
         controlledHost = true;
-        flake-input-overrides = {};
+        flake-input-overrides = { };
         ipv4 = 9;
         macAddress = "b8:ca:3a:77:a9:2a";
         monitors = [
@@ -399,45 +399,138 @@
       };
 
     }
-      # This is sort of miscellaneous hosts that aren't part of critical
-      # infrastructure.  I want them tracked so I know what kind of block
-      # profiles they are, and I have a handy lookup should I need to identify
-      # them later.
-      # "uih" is short for unidentified host.
+    # This is sort of miscellaneous hosts that aren't part of critical
+    # infrastructure.  I want them tracked so I know what kind of block
+    # profiles they are, and I have a handy lookup should I need to identify
+    # them later.
+    # "uih" is short for unidentified host.
     // {
-      uih0 = { mac = "ac:19:8e:f6:04:a0"; ipv4 = 120; };
-      some-unidentified-iphone = { mac = "ea:c6:99:b2:df:de"; ipv4 = 121; };
-      uih1 = { mac = "f0:a2:25:49:25:c8"; ipv4 = 122; };
-      uih2 = { mac = "32:ca:84:c2:82:7b"; ipv4 = 123; };
-      uih3 = { mac = "66:f2:6e:b8:a5:16"; ipv4 = 124; };
-      uih4 = { mac = "10:2c:b1:a5:ad:68"; ipv4 = 125; };
-      uih5 = { mac = "10:2c:b1:76:68:5d"; ipv4 = 126; };
-      uih6 = { mac = "ac:19:8e:1a:81:19"; ipv4 = 127; };
-      uih7 = { mac = "92:0a:15:a6:00:07"; ipv4 = 128; };
-      uih8 = { mac = "c8:a3:62:84:33:99"; ipv4 = 129; };
-      uih9 = { mac = "5e:8c:33:66:1d:65"; ipv4 = 130; };
-      uih10 = { mac = "76:3c:6c:a6:57:3c"; ipv4 = 131; };
-      uih11 = { mac = "28:cf:51:c9:1d:01"; ipv4 = 132; };
-      uih12 = { mac = "92:8b:79:8a:9e:c4"; ipv4 = 133; };
-      uih13 = { mac = "80:f3:ef:3b:b6:4d"; ipv4 = 134; };
-      uih14 = { mac = "10:2c:b1:8e:0f:ee"; ipv4 = 135; };
-      uih15 = { mac = "06:8a:dc:63:fe:e6"; ipv4 = 136; };
-      Tonal-080300100010266 = { mac = "10:59:17:00:cf:4f"; ipv4 = 137; };
-      Canonc618b2 = { mac = "20:0b:74:9a:21:2b"; ipv4 = 138; };
-      SOUNDPLUS_X_E0A8 = { mac = "02:22:6c:07:e0:a8"; ipv4 = 139; };
-      tasmota-8CFDB2-7602 = { mac = "d8:bc:38:8c:fd:b2"; ipv4 = 140; };
-      wyze-cam-of-some-kind = { mac = "2c:aa:8e:99:58:47"; ipv4 = 175; };
-      nintendo-switch-a = { mac = "28:cf:51:c9:1d:01"; ipv4 = 242; };
-      lwip0 = { mac = "20:f1:b2:26:b0:60"; ipv4 = 185; };
+      uih0 = {
+        mac = "ac:19:8e:f6:04:a0";
+        ipv4 = 120;
+      };
+      some-unidentified-iphone = {
+        mac = "ea:c6:99:b2:df:de";
+        ipv4 = 121;
+      };
+      uih1 = {
+        mac = "f0:a2:25:49:25:c8";
+        ipv4 = 122;
+      };
+      uih2 = {
+        mac = "32:ca:84:c2:82:7b";
+        ipv4 = 123;
+      };
+      uih3 = {
+        mac = "66:f2:6e:b8:a5:16";
+        ipv4 = 124;
+      };
+      uih4 = {
+        mac = "10:2c:b1:a5:ad:68";
+        ipv4 = 125;
+      };
+      uih5 = {
+        mac = "10:2c:b1:76:68:5d";
+        ipv4 = 126;
+      };
+      uih6 = {
+        mac = "ac:19:8e:1a:81:19";
+        ipv4 = 127;
+      };
+      uih7 = {
+        mac = "92:0a:15:a6:00:07";
+        ipv4 = 128;
+      };
+      uih8 = {
+        mac = "c8:a3:62:84:33:99";
+        ipv4 = 129;
+      };
+      uih9 = {
+        mac = "5e:8c:33:66:1d:65";
+        ipv4 = 130;
+      };
+      uih10 = {
+        mac = "76:3c:6c:a6:57:3c";
+        ipv4 = 131;
+      };
+      uih11 = {
+        mac = "28:cf:51:c9:1d:01";
+        ipv4 = 132;
+      };
+      uih12 = {
+        mac = "92:8b:79:8a:9e:c4";
+        ipv4 = 133;
+      };
+      uih13 = {
+        mac = "80:f3:ef:3b:b6:4d";
+        ipv4 = 134;
+      };
+      uih14 = {
+        mac = "10:2c:b1:8e:0f:ee";
+        ipv4 = 135;
+      };
+      uih15 = {
+        mac = "06:8a:dc:63:fe:e6";
+        ipv4 = 136;
+      };
+      Tonal-080300100010266 = {
+        mac = "10:59:17:00:cf:4f";
+        ipv4 = 137;
+      };
+      Canonc618b2 = {
+        mac = "20:0b:74:9a:21:2b";
+        ipv4 = 138;
+      };
+      SOUNDPLUS_X_E0A8 = {
+        mac = "02:22:6c:07:e0:a8";
+        ipv4 = 139;
+      };
+      tasmota-8CFDB2-7602 = {
+        mac = "d8:bc:38:8c:fd:b2";
+        ipv4 = 140;
+      };
+      wyze-cam-of-some-kind = {
+        mac = "2c:aa:8e:99:58:47";
+        ipv4 = 175;
+      };
+      nintendo-switch-a = {
+        mac = "28:cf:51:c9:1d:01";
+        ipv4 = 242;
+      };
+      lwip0 = {
+        mac = "20:f1:b2:26:b0:60";
+        ipv4 = 185;
+      };
       # What is this?
-      ESP_45248A = { mac = "cc:7b:5c:45:24:8a"; ipv4 = 141; };
+      ESP_45248A = {
+        mac = "cc:7b:5c:45:24:8a";
+        ipv4 = 141;
+      };
       # What is this?
-      S380HB = { mac = "90:bf:d9:3e:20:d8"; ipv4 = 142; };
-      WYZEC1-JZ-2CAA8E995847 = { mac = "2c:aa:8e:99:58:47"; ipv4 = 143; };
-      some-unidentified-apple-watch = { mac = "ee:b0:c4:e8:3e:c6"; ipv4 = 144; };
-      some-unidentified-mac-book-pro = { mac = "3e:8f:45:9d:b3:cd"; ipv4 = 145; };
-      iRobot-E49F9CCC561A410AB51B88723BB7BB1E = { mac = "50:14:79:b7:a1:b5"; ipv4 = 146; };
-      amazon-1fa3b1b81 = { mac = "40:b4:cd:35:85:61"; ipv4 = 147; };
+      S380HB = {
+        mac = "90:bf:d9:3e:20:d8";
+        ipv4 = 142;
+      };
+      WYZEC1-JZ-2CAA8E995847 = {
+        mac = "2c:aa:8e:99:58:47";
+        ipv4 = 143;
+      };
+      some-unidentified-apple-watch = {
+        mac = "ee:b0:c4:e8:3e:c6";
+        ipv4 = 144;
+      };
+      some-unidentified-mac-book-pro = {
+        mac = "3e:8f:45:9d:b3:cd";
+        ipv4 = 145;
+      };
+      iRobot-E49F9CCC561A410AB51B88723BB7BB1E = {
+        mac = "50:14:79:b7:a1:b5";
+        ipv4 = 146;
+      };
+      amazon-1fa3b1b81 = {
+        mac = "40:b4:cd:35:85:61";
+        ipv4 = 147;
+      };
       roku3-667 = {
         controlledHost = false;
         # TODO: Find a better IP.
@@ -470,7 +563,7 @@
           email = "cassandra@proton";
           type = "person";
           full-name = "Cassandra Barnett";
-          devices = [];
+          devices = [ ];
           blockProfiles = [
             "adult"
           ];
@@ -481,7 +574,10 @@
           type = "person";
           full-name = "Kai Barnett";
           devices = [
-            { host-id = "arsenic"; vpn = false; }
+            {
+              host-id = "arsenic";
+              vpn = false;
+            }
           ];
           blockProfiles = [
             "child"
@@ -493,8 +589,16 @@
           type = "person";
           full-name = "Logan Barnett";
           devices = [
-            { host-id = "scandium"; ip = "20"; vpn = true; }
-            { host-id = "manganese"; ip = "22"; vpn = true; }
+            {
+              host-id = "scandium";
+              ip = "20";
+              vpn = true;
+            }
+            {
+              host-id = "manganese";
+              ip = "22";
+              vpn = true;
+            }
           ];
           blockProfiles = [
             "adult"
@@ -506,7 +610,11 @@
           type = "person";
           full-name = "Selena";
           devices = [
-            { host-id = "selena-laptop"; ip = "23"; vpn = true; }
+            {
+              host-id = "selena-laptop";
+              ip = "23";
+              vpn = true;
+            }
           ];
           blockProfiles = [
             "adult"
@@ -518,7 +626,10 @@
           type = "person";
           full-name = "Solomon Barnett";
           devices = [
-            { host-id = "lithium"; vpn = false; }
+            {
+              host-id = "lithium";
+              vpn = false;
+            }
           ];
           blockProfiles = [
             "child"
@@ -539,7 +650,7 @@
           type = "service";
           description = "Matrix on Bromine.";
           full-name = "bromine-matrix-service";
-          devices = [];
+          devices = [ ];
         };
         # bromine-authelia-home-assistant-service = {
         #   email = "bromine-authelia-home-assistant-service@proton";
@@ -553,57 +664,58 @@
           type = "service";
           description = "Dex-OIDC on Copper.";
           full-name = "copper-dex-oidc-service";
-          devices = [];
+          devices = [ ];
         };
         copper-gitea-service = {
           email = "copper-gitea-service@proton";
           type = "service";
           description = "Gitea on Copper.";
           full-name = "copper-gitea-service";
-          devices = [];
+          devices = [ ];
         };
         copper-nextcloud-service = {
           email = "copper-nextcloud-service@proton";
           type = "service";
           description = "Nextcloud on Copper.";
           full-name = "copper-nextcloud-service";
-          devices = [];
+          devices = [ ];
         };
         nickel-alertmanager-service = {
           email = "nickel-alertmanager-service@proton";
           type = "service";
           description = "AlertManager on Nickel.  Primarily for posting alerts.";
           full-name = "nickel-alertmanager-service";
-          devices = [];
+          devices = [ ];
         };
         nickel-authelia-service = {
           email = "nickel-authelia-service@proton";
           type = "service";
           description = "Authelia on Nickel.  For SSO authentication via OIDC.";
           full-name = "nickel-authelia-service";
-          devices = [];
+          devices = [ ];
         };
         nickel-grafana-service = {
           email = "nickel-grafana-service@proton";
           type = "service";
           description = "Grafana on Nickel.";
           full-name = "nickel-grafana-service";
-          devices = [];
+          devices = [ ];
         };
         selenium-octoprint-service = {
           email = "selenium-octoprint-service@proton";
           type = "service";
           description = "Octoprint on Selenium.";
           full-name = "selenium-octoprint-service";
-          devices = [];
+          devices = [ ];
         };
-      } // {
+      }
+      // {
         openhab-oidc-client = {
           email = "openhab-oidc-client@proton";
           type = "oidc-client";
           description = "OpenHab OIDC client.";
           full-name = "openhab-oidc-client";
-          devices = [];
+          devices = [ ];
         };
       };
     groups = {
@@ -690,9 +802,7 @@
       };
       screen-addicts = {
         description =
-          "Users who are addicted to screens and require help with "
-          + "self-regulation."
-        ;
+          "Users who are addicted to screens and require help with " + "self-regulation.";
         members = [
           "kai"
           "solomon"
@@ -734,6 +844,54 @@
         };
       };
 
+    };
+
+    monitoring = {
+      # Dashboard definitions shared between the Grafana server and the kiosk
+      # restart trigger.  Centralizing here lets both nickel (which hosts
+      # Grafana) and silicon (which hosts the kiosk) compute the same hash
+      # independently, so a dashboard change causes both to restart on deploy
+      # without either host needing to reference the other.
+      #
+      # Callers invoke this as a function because the wireguard dashboard
+      # requires lib and facts at call time.
+      #
+      # In all honesty, the panel definitions were vibe-coded.  There is
+      # probably a mix of Grafana schema versions in here that is worth
+      # cleaning up at some point.
+      grafanaDashboards =
+        { lib, facts }:
+        let
+          height = 9;
+          # One third of a row.
+          width = 8;
+          without-socket-port =
+            query:
+            ''label_replace(${query}, "instance", "$1", "instance", "^(.*):[0-9]+$")'';
+        in
+        {
+          dhcp = import ../nixos-configs/grafana-dhcp-monitor.nix {
+            inherit height width without-socket-port;
+          };
+          dns-smart-block = import ../nixos-configs/grafana-monitor-dns.nix {
+            inherit height width without-socket-port;
+          };
+          system-monitoring = import ../nixos-configs/grafana-host-monitor.nix {
+            inherit height width without-socket-port;
+          };
+          nvidia-gpu = import ../nixos-configs/grafana-nvidia-gpu.nix {
+            inherit without-socket-port;
+          };
+          uptime-timeseries = import ../nixos-configs/grafana-uptime-timeseries.nix {
+            inherit without-socket-port;
+          };
+          uptime-stat = import ../nixos-configs/grafana-uptime-stat.nix {
+            inherit without-socket-port;
+          };
+          wireguard = import ../nixos-configs/grafana-wireguard.nix {
+            inherit lib facts;
+          };
+        };
     };
 
   };
