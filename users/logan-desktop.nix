@@ -2,7 +2,7 @@
   imports = [
     (import ../nixos-modules/desktop-dark.nix { user = "logan"; })
   ];
-  services.keyd.enable = true;
+  services.keyd.enable = false;
   services.keyd.keyboards = {
     default = {
       ids = [ "*" ];
@@ -51,6 +51,14 @@
   home-manager.users.logan = {
     home.stateVersion = config.system.stateVersion;
     dconf.settings = {
+      "org/gnome/shell/keybindings" = {
+        toggle-overview = [];
+      };
+      # Disable the bare-modifier overview trigger; pressing Alt (or Super,
+      # depending on keyboard mapping) alone was blowing out all windows.
+      "org/gnome/mutter" = {
+        overlay-key = "";
+      };
       "org/gnome/desktop/interface" = {
         clock-format = "24h";
       };
