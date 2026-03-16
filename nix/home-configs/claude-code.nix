@@ -411,7 +411,7 @@ in {
   # manage statically, so we merge in what we want on activation.
   home.activation.claudeConfig = lib.hm.dag.entryAfter ["writeBoundary"] ''
     if [ ! -f ~/.claude.json ]; then
-      echo '{}' > ~/.claude.json
+      run sh -c 'echo "{}" > ~/.claude.json'
     fi
     ${pkgs.jq}/bin/jq '. + {
       "theme": "dark",
@@ -423,6 +423,6 @@ in {
       "autoUpdates": false
     }' \
       ~/.claude.json > ~/.claude.json.tmp \
-      && mv ~/.claude.json.tmp ~/.claude.json
+      && run mv ~/.claude.json.tmp ~/.claude.json
   '';
 }
