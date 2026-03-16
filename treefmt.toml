@@ -1,0 +1,4 @@
+[formatter.nixfmt]
+command = "nixfmt"
+options = ["--width=80"]
+includes = ["*.nix"]
