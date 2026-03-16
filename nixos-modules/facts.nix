@@ -128,19 +128,21 @@
     # There's a lot of silly work I do to fix this stuff.  I should write some
     # validators for this.
     hosts = {
-      argon = {
-        controlledHost = true;
-        flake-input-overrides = {
-          nixpkgs = "nixpkgs-nixos-raspberrypi";
-        };
-        ipv4 = 2;
-        monitors = [
-          "node"
-          "systemd"
-        ];
-        networkInterface = "enu1u1";
-        system = "aarch64-linux";
-      };
+      # This system is having boot issues.  Just take it out while I consider
+      # next steps.
+      # argon = {
+      #   controlledHost = true;
+      #   flake-input-overrides = {
+      #     nixpkgs = "nixpkgs-nixos-raspberrypi";
+      #   };
+      #   ipv4 = 2;
+      #   monitors = [
+      #     "node"
+      #     "systemd"
+      #   ];
+      #   networkInterface = "enu1u1";
+      #   system = "aarch64-linux";
+      # };
       arsenic = {
         aliases = [
           "ollama"
