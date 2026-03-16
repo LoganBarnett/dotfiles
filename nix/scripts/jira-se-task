@@ -6,6 +6,7 @@
 
 set -e
 
+STATUS_READY_FOR_WORK='Ready for Work'
 # Parse arguments
 ASSIGN_TO_ME=false
 SUMMARY=""
@@ -41,7 +42,7 @@ while [[ $# -gt 0 ]]; do
       echo "Options:"
       echo "  -s, --summary TEXT    Task summary (required)"
       echo "  -b, --body TEXT       Task description (required)"
-      echo "  --me                  Assign to self and move to 'Ready To Work'"
+      echo "  --me                  Assign to self and move to '$STATUS_WORK_READY'"
       echo "  -h, --help            Show this help message"
       echo ""
       echo "Environment Variables:"
@@ -121,16 +122,16 @@ fi
 
 echo "Issue created: $ISSUE_KEY"
 
-# If --me flag is set, assign to self and move to Ready To Work
+# If --me flag is set, assign to self and move to $STATUS_WORK_READY
 if [ "$ASSIGN_TO_ME" = true ]; then
   echo "Assigning to self..."
   jira issue assign "$ISSUE_KEY" "$(jira me)" 2>&1 || {
     echo "Warning: Failed to assign issue to self"
   }
 
-  echo "Moving to 'Ready To Work'..."
-  jira issue move "$ISSUE_KEY" "Ready To Work" 2>&1 || {
-    echo "Warning: Failed to move issue to 'Ready To Work'"
+  echo "Moving to '$STATUS_WORK_READY'..."
+  jira issue move "$ISSUE_KEY" "$STATUS_WORK_READY" 2>&1 || {
+    echo "Warning: Failed to move issue to '$STATUS_WORK_READY'"
     echo "You may need to check the exact status name in your project"
   }
 fi
