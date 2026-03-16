@@ -82,6 +82,10 @@
       url = "github:nix-community/home-manager/release-24.11";
       inputs.nixpkgs.follows = "nixpkgs-working-rocm";
     };
+    metalps = {
+      url = "git+ssh://git@gitea.proton:2222/logan/metalps";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     nextcloud-desktop = {
       # What's on master doesn't build with the current settings.  It looks like
       # they've moved onto qt6 but Nix has many components that don't work on
