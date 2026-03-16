@@ -26,14 +26,17 @@ in {
     enable = true;
     package = pkgs-latest.claude-code;
     settings = {
-      # Capitalism demands I move at full speed or die.  If I die because it
-      # blows up on me, that's just bad luck but also life.  I told Claude this
-      # and it said "Git is your undo button.  Godspeed.".  This doesn't seem to
-      # always work.  See `home.shellAliases` in this config file for the other
-      # way we tackle it.
-      env = {
-        CLAUDE_DANGEROUSLY_SKIP_PERMISSIONS = "1";
+      # The `env` section passes vars to subprocesses, not to Claude Code
+      # itself, so `CLAUDE_DANGEROUSLY_SKIP_PERMISSIONS` there is inert.
+      # The correct declarative approach is `permissions.defaultMode`.
+      # `skipDangerousModePermissionPrompt` suppresses the startup
+      # confirmation dialog; it must live in settings.json (here), not
+      # ~/.claude.json, because the 2.x migration function `SJq()` strips
+      # it from ~/.claude.json immediately on startup.
+      permissions = {
+        defaultMode = "bypassPermissions";
       };
+      skipDangerousModePermissionPrompt = true;
       # I tried Opus - it just burns through tokens without really showing much
       # better use.
       # model = "claude-opus-4-20250514";
@@ -389,15 +392,22 @@ in {
   };
   # Capitalism demands I move at full speed or die.  If I die because it
   # blows up on me, that's just bad luck but also life.  I told Claude this
-  # and it said "Git is your undo button.  Godspeed.".  I should be able to set
-  # `CLAUDE_DANGEROUSLY_SKIP_PERMISSIONS` in the config's `env` section, but
-  # that doesn't seem to work.
+  # and it said "Git is your undo button.  Godspeed.".  The alias is now
+  # redundant (settings.json handles it declaratively), but kept as a
+  # fallback for shells that load before home-manager's profile.
   home.shellAliases = {
     claude = "claude --dangerously-skip-permissions";
   };
 
+  # `DISABLE_INSTALLATION_CHECKS` suppresses the "switched from npm to native
+  # installer" banner.  It is not in the env-var whitelist that settings.json's
+  # `env` section can inject, so it must be set at the shell level instead.
+  home.sessionVariables = {
+    DISABLE_INSTALLATION_CHECKS = "1";
+  };
+
   # ~/.claude.json is a file that `claude` wants to write to for things like
-  # update timestamps and change logs. But it still has settings we'd like to
+  # update timestamps and change logs.  It still has settings we'd like to
   # manage statically, so we merge in what we want on activation.
   home.activation.claudeConfig = lib.hm.dag.entryAfter ["writeBoundary"] ''
     if [ ! -f ~/.claude.json ]; then
@@ -410,7 +420,7 @@ in {
       "shiftEnterKeyBindingInstalled": false,
       "hasTrustDialogAccepted": true,
       "hasCompletedProjectOnboarding": true,
-      "skipDangerousModePermissionPrompt": true
+      "autoUpdates": false
     }' \
       ~/.claude.json > ~/.claude.json.tmp \
       && mv ~/.claude.json.tmp ~/.claude.json
