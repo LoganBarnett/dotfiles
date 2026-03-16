@@ -40,6 +40,21 @@
       proxy_set_header Host 127.0.0.1;
     '';
   };
+  # ollama-model-loader starts after ollama.service reaches exec, but CUDA
+  # initialisation means the HTTP port isn't immediately ready.  Poll until
+  # it responds before launching the pull jobs so the unit doesn't fail and
+  # trigger the Restart cycle during deployment activation.
+  systemd.services.ollama-model-loader.serviceConfig.ExecStartPre =
+    let
+      host = config.services.ollama.host;
+      port = toString config.services.ollama.port;
+    in
+    pkgs.writeShellScript "wait-for-ollama" ''
+      until ${pkgs.curl}/bin/curl -sf http://${host}:${port}/ > /dev/null 2>&1; do
+        sleep 1
+      done
+    '';
+
   allowUnfreePackagePredicates = [
     (
       pkg:

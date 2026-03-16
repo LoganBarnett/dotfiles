@@ -29,47 +29,59 @@
   # for this.
   cudaCapabilities,
   flake-inputs,
-}: { config, lib, options, pkgs, ... }: let
+}:
+{
+  config,
+  lib,
+  options,
+  pkgs,
+  ...
+}:
+let
   # linux-packages = pkgs.linuxPackages_latest;
   linux-packages = pkgs.linuxPackages;
-in {
+in
+{
   allowUnfreePackagePredicates = [
     # Zounds!
-    (pkg: builtins.elem (lib.getName pkg) [
-      # Before 23.05.
-      "cudatoolkit"
-      "cudatoolkit-11-cudnn"
-      "cuda_nvprof"
-      "cudatoolkit-11.7-cutensor"
-      # After 23.05.
-      "cuda_cccl"
-      "cuda_cudart"
-      "cuda_cuobjdump"
-      "cuda_cupti"
-      "cuda_cuxxfilt"
-      "cuda_gdb"
-      "cuda-merged"
-      "cuda_nvcc"
-      "cuda_nvdisasm"
-      "cuda_nvprune"
-      "cuda_nvml_dev"
-      "cuda_nvrtc"
-      "cuda_nvtx"
-      "cuda_profiler_api"
-      "cuda_sanitizer_api"
-      "cudnn"
-      "libcublas"
-      "libcufile"
-      "libcufft"
-      "libcurand"
-      "libcusolver"
-      "libcusparse"
-      "libcusparse_lt"
-      "libnpp"
-      "libnvjitlink"
-      "nvidia-settings"
-      "nvidia-x11"
-    ])
+    (
+      pkg:
+      builtins.elem (lib.getName pkg) [
+        # Before 23.05.
+        "cudatoolkit"
+        "cudatoolkit-11-cudnn"
+        "cuda_nvprof"
+        "cudatoolkit-11.7-cutensor"
+        # After 23.05.
+        "cuda_cccl"
+        "cuda_cudart"
+        "cuda_cuobjdump"
+        "cuda_cupti"
+        "cuda_cuxxfilt"
+        "cuda_gdb"
+        "cuda-merged"
+        "cuda_nvcc"
+        "cuda_nvdisasm"
+        "cuda_nvprune"
+        "cuda_nvml_dev"
+        "cuda_nvrtc"
+        "cuda_nvtx"
+        "cuda_profiler_api"
+        "cuda_sanitizer_api"
+        "cudnn"
+        "libcublas"
+        "libcufile"
+        "libcufft"
+        "libcurand"
+        "libcusolver"
+        "libcusparse"
+        "libcusparse_lt"
+        "libnpp"
+        "libnvjitlink"
+        "nvidia-settings"
+        "nvidia-x11"
+      ]
+    )
   ];
   # See https://nixos.wiki/wiki/Linux_kernel for values and options.
   boot.kernelPackages = linux-packages;
@@ -83,7 +95,7 @@ in {
   # happen because a reboot wasn't done.  See
   # https://github.com/NixOS/nixpkgs/issues/16711 someone who had the same
   # problem on a much older NixOS.
-  boot.blacklistedKernelModules = ["nouveau"];
+  boot.blacklistedKernelModules = [ "nouveau" ];
   environment.systemPackages = [
     # Show us library paths used so we can see where errant libcuda
     # installations may be.  It's not in by this package though.
@@ -155,11 +167,7 @@ in {
       # won't exist.  Without this hack, we get `The option `services.comfyui'
       # does not exist.`.  This is a special case and one cannot use null as a
       # key name.
-      services.${
-        if (options.services ? comfyui)
-        then "comfyui"
-        else null
-      } = {
+      services.${if (options.services ? comfyui) then "comfyui" else null} = {
         package = (if pkgs ? comfyui-cuda then pkgs.comfyui-cuda else null);
         cudaSupport = true;
       };
@@ -230,14 +238,13 @@ in {
     # like nvidia-smi to figure out what's wrong, fix, and then enable this
     # again.
     rocmSupport = false;
-    cudaSupport = true;
-    extra-substituters = [
-      "https://nix-community.cachix.org"
-    ];
-    extra-trusted-public-keys = [
-      "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
-      "cuda-maintainers.cachix.org-1:0dq3bujKpuEPMCX6U4WylrUDZ9JyUG0VpVZa7CNfq5E="
-    ];
+    # cudaSupport is intentionally omitted (defaults to false).  Setting it to
+    # true causes nixpkgs to rebuild a wide range of unrelated packages (Firefox,
+    # ffmpeg, etc.) with CUDA variants that are not present in any binary cache,
+    # turning a gaming rig into a multi-hour compile farm.  Enable CUDA support
+    # per-package instead: services.ollama.acceleration = "cuda", pytorch-bin for
+    # Python, etc.
   };
+  services.ollama.acceleration = "cuda";
   services.xserver.videoDrivers = [ "nvidia" ];
 }
