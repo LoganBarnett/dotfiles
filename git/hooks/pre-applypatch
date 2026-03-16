@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+GIT_DIR="${GIT_DIR:-$(git rev-parse --git-dir)}"
 script="$(basename -- "${BASH_SOURCE[0]}")"
 # Run any local hook first.
 if [ -x "$GIT_DIR/hooks/$script" ]; then
