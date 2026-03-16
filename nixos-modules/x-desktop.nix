@@ -1,7 +1,13 @@
 ################################################################################
 # Make this host an X server based desktop.
 ################################################################################
-{ flake-inputs, lib, pkgs, ... }: {
+{
+  flake-inputs,
+  lib,
+  pkgs,
+  ...
+}:
+{
   # Hint to Electron apps to use Wayland.
   environment.sessionVariables.NIXOS_OZONE_WL = "1";
   environment.systemPackages = [
@@ -14,6 +20,7 @@
     pkgs.scrot
     pkgs.wmctrl
     pkgs.wmname
+    pkgs.wezterm
   ];
   # Required for touchpad support, and some managers such as hyprland require
   # it.
@@ -24,9 +31,12 @@
   # any tickets on this and the only documentation I can find about Gnome
   # (https://nixos.wiki/wiki/GNOME) carries no mention of it.
   allowUnfreePackagePredicates = [
-    (pkg: builtins.elem (lib.getName pkg) [
-      "vpnc"
-    ])
+    (
+      pkg:
+      builtins.elem (lib.getName pkg) [
+        "vpnc"
+      ]
+    )
   ];
   services.desktopManager = {
     gnome.enable = true;
