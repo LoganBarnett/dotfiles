@@ -1,10 +1,19 @@
 #!/usr/bin/env bash
 
 ################################################################################
-# Updates static.nix with the new version and hashes for `claude-code`.
+# Updates static.nix and overlays/claude-code-package-lock.json with the new
+# version and hashes for `claude-code`.
+#
+# Claude Code's npm tarball does not include package-lock.json (only bun.lock),
+# so we generate one by running npm inside the extracted source directory, the
+# same way nixpkgs's own update script does.  This lock file is committed
+# alongside the overlay and copied into the build via postPatch.
 ################################################################################
 
 set -euo pipefail
+
+script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+repo_root="$(cd "${script_dir}/.." && pwd)"
 
 # Get latest version from npm.
 version="$(curl --location --silent \
@@ -23,52 +32,47 @@ hash_sri="$(nix hash convert --hash-algo sha256 --to sri "${hash_32}")"
 echo "Version: ${version}"
 echo "Hash: ${hash_sri}"
 
-# Update version and hash in static.nix.
+# Generate package-lock.json from the extracted source directory.  The tarball
+# only ships bun.lock, so npm install --package-lock-only is run inside the
+# source to produce a cross-platform lock file covering all sharp platform
+# bindings.  AUTHORIZED suppresses the publish-guard prepare script.
+echo "Generating package-lock.json..."
+work_dir="$(mktemp -d)"
+trap 'rm -rf "${work_dir}"' EXIT
+
+curl --location --silent \
+  "https://registry.npmjs.org/@anthropic-ai/claude-code/-/claude-code-${version}.tgz" \
+  | tar xz --strip-components=1 -C "${work_dir}"
+
+AUTHORIZED=1 nix shell "nixpkgs#nodejs" \
+  -c npm install --package-lock-only --ignore-scripts --prefix "${work_dir}"
+
+cp "${work_dir}/package-lock.json" "${repo_root}/overlays/claude-code-package-lock.json"
+echo "Wrote overlays/claude-code-package-lock.json"
+
+# Compute npmDepsHash from the generated lock file.
+npmDepsHash="$(nix shell "nixpkgs#prefetch-npm-deps" \
+  -c prefetch-npm-deps "${repo_root}/overlays/claude-code-package-lock.json"
+)"
+echo "npmDepsHash: ${npmDepsHash}"
+
+# Update all three values in static.nix.
+cd "${repo_root}"
 nix-editor \
   static.nix \
   'claude-code.version' \
-  --val "\"$version\"" \
+  --val "\"${version}\"" \
   --inplace
 
 nix-editor \
   static.nix \
   'claude-code.hash' \
-  --val "\"$hash_sri\"" \
+  --val "\"${hash_sri}\"" \
   --inplace
 
-# Compute npmDepsHash by attempting to build with wrong hash and capturing error.
-echo "Computing npmDepsHash..."
-
-# Temporarily set npmDepsHash to empty to trigger hash mismatch error.
 nix-editor \
   static.nix \
   'claude-code.npmDepsHash' \
-  --val '""' \
-  --inplace
-
-# Try to build and capture the expected hash from the error message.
-npmDepsHash="$(nix build .#claude-code 2>&1 \
-  | sed -nE 's/.*got:[[:space:]]*sha256-([A-Za-z0-9+/=-]+).*/sha256-\1/p' \
-  | head -1 \
-  || true)"
-
-if [ -z "$npmDepsHash" ]; then
-  echo "Warning: Could not compute npmDepsHash automatically."
-  echo "Please run: nix build .#claude-code"
-  echo "And update static.nix with the hash from the error message."
-  # Restore the old hash.
-  nix-editor \
-    static.nix \
-    'claude-code.npmDepsHash' \
-    --val '"sha256-VWw1bYkFch95JDlOwKoTAQYOr8R80ICJ8QUI4E64W7o="' \
-    --inplace
-else
-  echo "npmDepsHash: ${npmDepsHash}"
-  # Update with the correct hash.
-  nix-editor \
-    static.nix \
-    'claude-code.npmDepsHash' \
-    --val "\"$npmDepsHash\"" \
-    --inplace \
-    --format
-fi
+  --val "\"${npmDepsHash}\"" \
+  --inplace \
+  --format

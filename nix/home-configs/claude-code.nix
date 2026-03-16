@@ -1,16 +1,27 @@
-{ flake-inputs, lib, pkgs, system, ... }: let
+{ flake-inputs, lib, pkgs, overlays, system, ... }: let
   pkgs-latest = import flake-inputs.nixpkgs-latest {
     inherit system;
-    # TODO: Constrain to signal-desktop-bin to make this precise.  This is
-    # needed to be done separately because each pkgs gets its own unfree
-    # configuration.
+    # TODO: Constrain to this package to make this precise.  This is needed to
+    # be done separately because each pkgs gets its own unfree configuration.
     config.allowUnfree = true;
     # Test it!
     config.allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) [
       "claude-code"
     ];
+    # Since this is our newly instantiated nixpkgs, we need to use our overlays
+    # so we can control the version without necessarily having to bump
+    # nixpkgs-latest all the time.  By keeping on nixpkgs-latest, we can be just
+    # a bit ahead on the derivation definition.
+    overlays = [
+      (import ../overlays/claude-code.nix { inherit flake-inputs system; } )
+    ];
   };
 in {
+  # allowUnfreePackagePredicates = [
+  #   (pkg: builtins.elem (lib.getName pkg) [
+  #     "claude-code"
+  #   ])
+  # ];
   programs.claude-code = {
     enable = true;
     package = pkgs-latest.claude-code;
@@ -26,16 +37,25 @@ in {
       # I tried Opus - it just burns through tokens without really showing much
       # better use.
       # model = "claude-opus-4-20250514";
-      model = "claude-sonnet-4-5-20250929";
+      model = "claude-sonnet-4-6";
       mcp = {
         allowedDirectories = {
           read = [ "/nix/store" ];
         };
       };
       hooks = {
-        PreCompact = {
-          command = "echo '⚠️  REMINDER: After compaction completes, CLAUDE.md instructions are lost. Type: read CLAUDE.md'";
-        };
+        PreCompact = [
+          {
+            hooks = [
+              {
+                type = "command";
+                command = "echo '⚠️  REMINDER: After compaction completes,"
+                  + " CLAUDE.md instructions are lost."
+                  + " Type: read CLAUDE.md'";
+              }
+            ];
+          }
+        ];
       };
     };
     agents = {
@@ -389,7 +409,8 @@ in {
       "hasCompletedOnboarding": true,
       "shiftEnterKeyBindingInstalled": false,
       "hasTrustDialogAccepted": true,
-      "hasCompletedProjectOnboarding": true
+      "hasCompletedProjectOnboarding": true,
+      "skipDangerousModePermissionPrompt": true
     }' \
       ~/.claude.json > ~/.claude.json.tmp \
       && mv ~/.claude.json.tmp ~/.claude.json
