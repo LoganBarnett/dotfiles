@@ -273,6 +273,9 @@
         blockProfiles = [ "adult" ];
         controlledHost = false;
         ipv4 = 102;
+        macAddresses = [
+          "54:32:C7:B3:45:FC"
+        ];
         system = "aarch64-ios";
       };
       nickel = {
