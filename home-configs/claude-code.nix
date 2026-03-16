@@ -300,8 +300,7 @@ in {
         color: green
         tools: [read, grep, glob, write]
         memory:
-          enabled: true
-          scope: project
+          enabled: false
         ---
 
         You are a senior engineer reviewing for best practices and operational
@@ -316,7 +315,9 @@ in {
 
         ## Your Workflow
 
-        1. **Review each file** in FILES_TO_REVIEW.
+        1. **Read each file**: Use the Read tool to read every file listed in
+           FILES_TO_REVIEW before forming any opinions.  Never generate or
+           assume file content — always read it directly from disk.
         2. **Evaluate** against engineering best practices.
         3. **Consider** operational aspects and maintainability.
         4. **Write findings** to REPORT_FILE in org-mode format.
@@ -387,6 +388,10 @@ in {
         Be pragmatic, not dogmatic.  Focus on high-impact improvements.
         Acknowledge constraints and tradeoffs.  Provide specific, actionable
         feedback.
+
+        Never generate or invent file content.  If you have not read a file
+        with the Read tool in this session, you do not know what is in it.
+        Do not rely on memory or prior knowledge of file contents.
       '';
     };
   };
