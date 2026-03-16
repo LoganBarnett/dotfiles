@@ -1,7 +1,14 @@
 ################################################################################
 # This stands up alertmanager and connects it to Prometheus.
 ################################################################################
-{ config, host-id, lib, pkgs, ... }: {
+{
+  config,
+  host-id,
+  lib,
+  pkgs,
+  ...
+}:
+{
   imports = [
     (import ../nixos-modules/https.nix {
       server-port = 9093;
@@ -28,7 +35,7 @@
     alertmanagers = [
       {
         scheme = "http";
-        static_configs = [{ targets = [ "localhost:9093" ]; }];
+        static_configs = [ { targets = [ "localhost:9093" ]; } ];
       }
     ];
     rules = [
@@ -67,6 +74,30 @@
               }
             ];
           }
+          {
+            name = "ollama_alerts";
+            rules = [
+              {
+                # GPU baseline: ~900 classifications/hr.  CPU fallback: ~2/hr.
+                # A threshold of 50/hr sits well clear of both — any sustained
+                # drop below it signals Metal acceleration has been lost.
+                alert = "ollama_gpu_degraded";
+                expr = ''deriv(dns_smart_block_classifications_total[1h]) * 3600 < 50'';
+                for = "30m";
+                labels = {
+                  severity = "page";
+                };
+                annotations = {
+                  summary = "Ollama GPU acceleration degraded on {{ $labels.instance }}.";
+                  description = ''
+                    DNS classification throughput has been below 50/hr for more
+                    than 30 minutes, indicating Ollama has fallen back to CPU
+                    inference.  Current rate: {{ $value | humanize }}/hr.
+                  '';
+                };
+              }
+            ];
+          }
         ];
       })
     ];
@@ -95,7 +126,10 @@
           }
         ];
         route = {
-          group_by = [ "alertname" "alias" ];
+          group_by = [
+            "alertname"
+            "alias"
+          ];
           group_wait = "30s";
           group_interval = "2m";
           repeat_interval = "4h";

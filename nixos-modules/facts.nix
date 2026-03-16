@@ -870,6 +870,7 @@
             ''label_replace(${query}, "instance", "$1", "instance", "^(.*):[0-9]+$")'';
         in
         {
+          active-alerts = import ../nixos-configs/grafana-active-alerts.nix { };
           dhcp = import ../nixos-configs/grafana-dhcp-monitor.nix {
             inherit height width without-socket-port;
           };

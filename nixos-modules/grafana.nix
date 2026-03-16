@@ -70,6 +70,14 @@ in
           access = "proxy";
           isDefault = true;
         }
+        {
+          name = "Alertmanager";
+          uid = "alertmanager";
+          type = "alertmanager";
+          url = "https://alertmanager.proton";
+          access = "proxy";
+          jsonData.handleGrafanaManagedAlerts = false;
+        }
       ];
     };
     settings = {
