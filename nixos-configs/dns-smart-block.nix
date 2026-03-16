@@ -80,6 +80,17 @@
     database.enable = true;
     nats.enable = true;
 
+    # Declarative classification overrides.  These are reconciled into the
+    # database on each service start and never expire.
+    provisionedClassifications = [
+      {
+        domain = "github.com";
+        classificationType = "gaming";
+        isMatchingSite = false;
+        reasoning = "GitHub is a software development platform, not a gaming site.";
+      }
+    ];
+
     # Blocky DNS integration. Automatically map locally enabled classifiers to
     # Blocky blacklist groups.
     integrations.blocky = {
