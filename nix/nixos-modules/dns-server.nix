@@ -41,28 +41,8 @@ in {
   };
   # TODO: Make dynamic some day.  Make it follow "gateway".
   networking.defaultGateway = "${subnet}.254";
-  # Ugh I'm not sure how to make this work with my ISP's DNS.  Do I even want
-  # that?
-  networking.nameservers = let
-    # Just so we know whose these are.
-    cloudflare = "1.1.1.1";
-    opendns = "208.67.222.222";
-    quad9 = "9.9.9.9";
-    # I'd rather give Google the tracking capability than have no DNS.  But the
-    # other three failing is pretty unlikely.
-    google = "8.8.8.8";
-  in [
-    # Order is intentional.
-    opendns
-    quad9
-    cloudflare
-    google
-  ];
-  # networking.nameservers = [ "192.168.254.2" ];
   # Allow actual DNS and DHCP connections.
-  networking.firewall.allowedUDPPorts = [ 53 67 ];
-  # Larger connections (DNSSEC, zone transfers) use TCP for DNS.
-  networking.firewall.allowedTCPPorts = [ 53 ];
+  networking.firewall.allowedUDPPorts = [ 67 ];
   services.dnsmasq = {
     enable = true;
     settings = {

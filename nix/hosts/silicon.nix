@@ -4,14 +4,15 @@
 { config, lib, flake-inputs, host-id, pkgs, system, ... }: let
 in {
   imports = [
-    ../nixos-modules/makemkv-ripper.nix
-    ../nixos-modules/makemkv-updater.nix
-    ../nixos-modules/nix-builder-provide.nix
-    ../nixos-modules/server-host.nix
     ../nixos-configs/blocky-with-updater.nix
+    ../nixos-modules/dhcp-server.nix
     ../nixos-configs/dns-smart-block.nix
     ../nixos-configs/grafana-kiosk-overview.nix
+    ../nixos-modules/makemkv-ripper.nix
+    ../nixos-modules/makemkv-updater.nix
     ../nixos-configs/nfs-mount-provider-from-facts.nix
+    ../nixos-modules/nix-builder-provide.nix
+    ../nixos-modules/server-host.nix
     flake-inputs.dns-smart-block.nixosModules.default
     # TODO: Right now agenix-rekey wants to build wireguard to do the
     # generation.  This fails due to a problem with macOS building wireguard-go
@@ -243,11 +244,6 @@ in {
     user = "root";
     group = "root";
   };
-
-  # Allow unfree MakeMKV package.
-  allowUnfreePackagePredicates = [
-    (pkg: builtins.elem (lib.getName pkg) [ "makemkv" ])
-  ];
 
   # Silicon provides builds to other hosts, so it should not consume builds
   # from itself.  Override the nix-builder-consume module imported by

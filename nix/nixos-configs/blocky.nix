@@ -54,6 +54,7 @@ in {
   networking.firewall.allowedUDPPorts = [ 53 ];
   # Larger connections (DNSSEC, zone transfers) use TCP for DNS.
   networking.firewall.allowedTCPPorts = [ 53 ];
+  networking.nameservers = nameservers;
   services.https.fqdns."blocky.proton" = {
     enable = true;
     internalPort = config.services.blocky.settings.ports.http;
@@ -62,7 +63,7 @@ in {
     enable = true;
     settings = {
       ports = { dns = 53; http = 4000; };
-      upstream = { default = [ "192.168.254.1" ]; };
+      # upstream = { default = [ "192.168.254.1" ]; };
       # Look up hosts by hostname from dnsmasq, which is providing DHCP.
       clientLookup = {
         upstream = "${subnet}.1";

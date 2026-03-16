@@ -16,9 +16,8 @@
 { facts, flake-inputs, host-id, nodes, system, ... }: let
 in {
   imports = [
-    ../nixos-modules/dns-server.nix
+    # ../nixos-modules/dns-server.nix
     ../nixos-modules/raspberry-pi-4.nix
-    ../nixos-modules/raspberry-pi-builder.nix
     ../nixos-modules/server-host.nix
     ../nixos-modules/ldap-server.nix
     ../nixos-modules/prometheus-server.nix
