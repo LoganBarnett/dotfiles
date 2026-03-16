@@ -32,6 +32,7 @@ in
       fqdn = "grafana.proton";
     })
   ];
+  age.secrets = config.lib.ldap.ldap-password "grafana" "${service-user-prefix}-grafana-service";
   environment.systemPackages = [
     # Include sqlite because it's what Grafana uses in the default NixOS setup.
     # This can allow us to chase down database issues if the API isn't
