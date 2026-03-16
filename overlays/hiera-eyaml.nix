@@ -1,3 +1,3 @@
 final: prev: {
-  hiera-eyaml = (prev.callPackage ../../nix-gems/hiera-eyaml/default.nix {});
+  hiera-eyaml = prev.callPackage ../derivations/hiera-eyaml/default.nix {};
 }

@@ -87,18 +87,7 @@ in {
     # need something.
     (pkgs.writeShellApplication {
       name = "nextcloud-clean-for-install";
-      text = ''
-        rm ${data-dir}/config/config.php || true
-        rm ${data-dir}/config/override.config.php || true
-        mv ${data-dir}/data/${
-          config.services.nextcloud.config.adminuser
-        }{,.bak-"$(date '+%s')"} || true
-        # We could wipe the entire server but there might be other services
-        # using PostgreSQL.  So just wipe the nextcloud database.
-        sudo -u postgres psql -c "DROP DATABASE nextcloud;" || true
-        sudo -u postgres psql -c "CREATE DATABASE nextcloud OWNER nextcloud;" \
-          || true
-      '';
+      text = builtins.readFile ../scripts/nextcloud-clean-for-install.sh;
     })
   ];
   nfsConsumerFacts = {

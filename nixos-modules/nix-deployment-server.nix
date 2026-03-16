@@ -14,99 +14,23 @@ with lib;
 let
   cfg = config.services.nixDeploymentServer;
 
-  # Script to check if a host's configuration has changed.
-  checkHostChanged = pkgs.writeScript "check-host-changed" ''
-    #!${pkgs.bash}/bin/bash
-    set -euo pipefail
+  checkHostChanged = pkgs.writeShellApplication {
+    name = "check-host-changed";
+    text = builtins.readFile ../scripts/check-host-changed.sh;
+  };
 
-    HOST="$1"
-    FLAKE_PATH="$2"
+  deployHost = pkgs.writeShellApplication {
+    name = "deploy-host";
+    text = builtins.readFile ../scripts/deploy-host.sh;
+  };
 
-    # Get the current system path for the host.
-    CURRENT_PATH=$(ssh "$HOST" readlink /run/current-system 2>/dev/null || echo "")
-
-    # Build the new system path without activating.
-    NEW_PATH=$(nix build --no-link --print-out-paths "$FLAKE_PATH#nixosConfigurations.$HOST.config.system.build.toplevel" 2>/dev/null || echo "")
-
-    if [[ -z "$CURRENT_PATH" || -z "$NEW_PATH" ]]; then
-      echo "ERROR: Could not determine system paths"
-      exit 1
-    fi
-
-    if [[ "$CURRENT_PATH" != "$NEW_PATH" ]]; then
-      echo "CHANGED"
-      echo "Current: $CURRENT_PATH"
-      echo "New: $NEW_PATH"
-    else
-      echo "UNCHANGED"
-    fi
-  '';
-
-  # Script to deploy to a host.
-  deployHost = pkgs.writeScript "deploy-host" ''
-    #!${pkgs.bash}/bin/bash
-    set -euo pipefail
-
-    HOST="$1"
-    FLAKE_PATH="$2"
-    STATUS_DIR="$3"
-
-    echo "Deploying to $HOST..."
-
-    # Create status file.
-    STATUS_FILE="$STATUS_DIR/$HOST.status"
-    echo "DEPLOYING" > "$STATUS_FILE"
-    date -Iseconds >> "$STATUS_FILE"
-
-    # Perform the deployment.
-    if nixos-rebuild switch --flake "$FLAKE_PATH#$HOST" --target-host "$HOST" --use-remote-sudo 2>&1 | tee -a "$STATUS_FILE.log"; then
-      echo "SUCCESS" > "$STATUS_FILE"
-      date -Iseconds >> "$STATUS_FILE"
-    else
-      echo "FAILED" > "$STATUS_FILE"
-      date -Iseconds >> "$STATUS_FILE"
-    fi
-  '';
-
-  # Main deployment orchestrator.
-  deploymentOrchestrator = pkgs.writeScript "deployment-orchestrator" ''
-    #!${pkgs.bash}/bin/bash
-    set -euo pipefail
-
-    REPO_PATH="${cfg.repositoryPath}"
-    STATUS_DIR="${cfg.statusDirectory}"
-
-    echo "Starting deployment check at $(date -Iseconds)"
-
-    # Update the repository.
-    cd "$REPO_PATH"
-    git fetch origin
-    git reset --hard origin/$(git rev-parse --abbrev-ref HEAD)
-
-    # Get list of hosts to check.
-    HOSTS=(${concatStringsSep " " (map (h: ''"${h}"'') cfg.hosts)})
-
-    # Check each host for changes.
-    for host in "''${HOSTS[@]}"; do
-      echo "Checking $host..."
-
-      if result=$(${checkHostChanged} "$host" "$REPO_PATH"); then
-        if echo "$result" | grep -q "^CHANGED"; then
-          echo "Host $host has changes, deploying..."
-          ${deployHost} "$host" "$REPO_PATH" "$STATUS_DIR" &
-        else
-          echo "Host $host unchanged, skipping."
-        fi
-      else
-        echo "Failed to check $host"
-      fi
-    done
-
-    # Wait for all background deployments to complete.
-    wait
-
-    echo "Deployment check completed at $(date -Iseconds)"
-  '';
+  # Hosts are passed as positional arguments; repository path and status
+  # directory come from the environment.
+  deploymentOrchestrator = pkgs.writeShellApplication {
+    name = "deployment-orchestrator";
+    runtimeInputs = [ checkHostChanged deployHost pkgs.git ];
+    text = builtins.readFile ../scripts/deployment-orchestrator.sh;
+  };
 in {
   options.services.nixDeploymentServer = {
     enable = mkEnableOption "Nix deployment server";
@@ -249,7 +173,12 @@ in {
     systemd.services.nix-deployment-check = {
       description = "Check and deploy Nix configuration changes";
 
-      path = with pkgs; [ git openssh nix coreutils ];
+      environment = {
+        NIX_DEPLOYMENT_REPO_PATH = toString cfg.repositoryPath;
+        NIX_DEPLOYMENT_STATUS_DIR = toString cfg.statusDirectory;
+      };
+
+      path = with pkgs; [ openssh nix coreutils deploymentOrchestrator ];
 
       serviceConfig = {
         Type = "oneshot";
@@ -258,7 +187,8 @@ in {
       };
 
       script = ''
-        exec ${deploymentOrchestrator}
+        exec deployment-orchestrator \
+          ${concatStringsSep " " (map escapeShellArg cfg.hosts)}
       '';
     };
 

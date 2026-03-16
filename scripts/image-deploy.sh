@@ -1,0 +1,219 @@
+#!/usr/bin/env bash
+##
+# Deploys a bootable image with NixOS to a removable storage.  This image
+# should contain the entirety of the configuration.  The image is built and
+# then the removable storage is reformatted to use the built image contents.
+##
+
+set -euo pipefail
+
+noop=false
+cleanup_image=false
+verify_boot=""
+
+while true; do
+  case "${1:-}" in
+    -h | --help)
+      cat <<EOH
+Usage: $0 [opts]
+
+  --image <image-file> Instead of building the image, use the one provided.
+                       Ex: result/iso/*.iso or result/sd-image/*.img
+  --disk  <dev-path>   Instead of auto detecting the disk, use the one
+                       provided.  Must be a fully qualified path.  Defaults to
+                       the disk-detachable output.  Ex: /dev/disk4
+  --host <host>        Create the image first for this host.
+  --noop               Do not perform any operations but output as if it did.
+  --verify-boot <type> Verify the bootability of this image after it is
+                       copied.  Valid values for <type> are: efi.
+
+Deploys a bootable image with NixOS to a removable storage.  This image
+should contain the entirety of the configuration.  The image is built and
+then the removable storage is reformatted to use the built image contents.
+
+EOH
+      exit
+      ;;
+    --image)
+      image_name="${2:-}"
+      shift 2
+      ;;
+    --disk)
+      disk="${2:-}"
+      shift 2
+      ;;
+    --host)
+      host="${2:-}"
+      shift 2
+      ;;
+    --noop)
+      noop=true
+      shift 1
+      ;;
+    --verify-boot)
+      verify_boot="${2:-}"
+      shift 2
+      ;;
+    * ) break ;;
+  esac
+done
+
+if [[ $noop == true ]]; then
+  echo 'WARNING:  This is running with noop!  Nothing will happen!'
+fi
+
+if [ -z ${disk+x} ]; then
+  disk="/dev/$(disk-detachable | head -n 1)"
+fi
+
+if [[ "$disk" == "/dev/" || "$disk" == '/dev/null' ]]; then
+  echo "No disk detected.  Aborting..."
+  exit 1
+else
+  echo "Found disk: '$disk'"
+fi
+
+if [ -z ${image_name+x} ]; then
+  if [[ $noop == false ]]; then
+    if ! image_result="$(image-create --host "$host")"; then
+      echo "ERROR: Failed to create image for host '$host'" >&2
+      exit 1
+    fi
+    if ! image_file="$(ls "$image_result/iso/"*.iso 2>/dev/null)"; then
+      echo "ERROR: Could not find image file in $image_result/iso" >&2
+      exit 1
+    fi
+    image_name="$image_file"
+    echo "Created image '$image_name'."
+  fi
+fi
+
+# Validate that the image file exists.
+if [[ $noop == false ]] && [[ ! -f "$image_name" ]]; then
+  echo "ERROR: Image file '$image_name' does not exist" >&2
+  exit 1
+fi
+
+if [[ "$image_name" =~ \.zst$ ]]; then
+  # TODO: This article (https://wiki.nixos.org/wiki/NixOS_on_ARM/Installation)
+  # shows we can accomplish all of this without an intermediate file.  This
+  # might be a better way to go, and we just use `cat` as the alternate
+  # command.
+  # nix-shell -p zstd --run "zstdcat image.img.zst | dd of=/dev/mmcblk0 status=progress"
+  echo "Image is compressed.  Unzipping image..."
+  uncompressed_image_name=$(basename "$image_name" .zst)
+  if [[ $noop == false ]]; then
+    # I could get this to work, but found it as a recommendation.
+    # tar --use-compress-program=zstd -xvf $image_name
+    # unzstd has a --force but it includes a slew of other behavior.  I
+    # haven't been able to find an "overwrite file" equivalent.  Only needed
+    # if this run was canceled before finishing.
+    if ! unzstd --decompress "$image_name" \
+           -o "$uncompressed_image_name"; then
+      echo "ERROR: Failed to decompress image file" >&2
+      exit 1
+    fi
+  fi
+  image_name=$uncompressed_image_name
+  # These images get pretty big.  We'll need to clean it up afterwards.
+  cleanup_image=true
+  echo "Using '$image_name' going forward."
+fi
+
+if [[ $noop == false ]]; then
+  if ! sudo diskutil unmountDisk force "$disk"; then
+    echo "ERROR: Failed to unmount disk $disk" >&2
+    exit 1
+  fi
+
+  if ! sudo dd \
+   if="$image_name" \
+   iflag=fullblock \
+   of="$disk" \
+   bs=4M \
+   status=progress \
+   conv=fsync; then
+    echo "ERROR: Failed to copy image to disk" >&2
+    exit 1
+  fi
+
+  # This can be faster in some circumstances, I'm told, but observations on
+  # macOS show it running 2x slower.  Unsure what the difference is.
+  # pv "$image_name" | sudo tee "$disk" >/dev/null
+  echo "Unmounting again because it can get mounted again..."
+  # In the new macOS version (Sonoma, 14.4), the behavior seems to have
+  # changed in that the disk is either immediately mounted or it wasn't truly
+  # unmounted to begin with.  Just unmount it again, since we generally want
+  # to put the disk into something else right afterwards.
+  diskutil unmountDisk "$disk" || true
+  echo "Unmounting done."
+fi
+
+if ! sync --file-system "$disk"; then
+  echo "ERROR: Failed to sync filesystem" >&2
+  exit 1
+fi
+
+echo "Image has been copied to disk and it remains unmounted."
+echo "You may remove the disk."
+
+echo
+echo "Here's what we got from the imaging:"
+echo
+
+if ! diskutil list "$disk"; then
+  echo "ERROR: Failed to list disk partitions" >&2
+  exit 1
+fi
+
+# Verify that we have at least one partition on the disk.
+partition_count=$(diskutil list "$disk" | grep -c "^ *[0-9]:" || true)
+if [[ $partition_count -eq 0 ]]; then
+  echo "ERROR: No partitions found on disk after imaging" >&2
+  exit 1
+fi
+echo
+echo "Successfully verified $partition_count partition(s) on disk."
+
+if [[ "$verify_boot" == 'efi' ]]; then
+  echo
+  echo "Verifying EFI boot configuration..."
+  echo
+  # macOS specific - remember to update this when generalizing this script
+  # for Linux.
+  # sudo mkdir -p /Volumes/efi-test
+  # diskutil mount $disk /Volumes/efi-test
+  # ls /Volumes/efi-test/boot
+  # -r is read-only opening.
+  if ! sudo gpt -r show "$disk"; then
+    echo "ERROR: Failed to show GPT partition table" >&2
+    exit 1
+  fi
+  echo
+  # -l displays the labels.
+  if ! sudo gpt -r show -l "$disk"; then
+    echo "ERROR: Failed to show GPT partition labels" >&2
+    exit 1
+  fi
+  echo
+  if ! sudo fdisk --list-details "$disk"; then
+    echo "ERROR: Failed to list disk details with fdisk" >&2
+    exit 1
+  fi
+  # Run the fix:
+  # echo "" | sudo sfdisk $disk
+
+  # Check for EFI System Partition.
+  if ! diskutil list "$disk" | grep -q "EFI"; then
+    echo "WARNING: No EFI System Partition found on disk" >&2
+  else
+    echo
+    echo "EFI System Partition verified."
+  fi
+fi
+
+# Decompressed images are copies and so we can safely remove them and still
+# run the script again.
+if [[ $cleanup_image == true ]]; then
+  rm -f "$image_name"
+fi

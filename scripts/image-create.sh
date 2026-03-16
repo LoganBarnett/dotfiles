@@ -1,0 +1,82 @@
+#!/usr/bin/env bash
+##
+# Creates a bootable Raspberry Pi image with NixOS.  This image should
+# contain the entirety of the configuration, sans password updates (until I
+# can get secret management going).
+#
+# The image file name is printed upon success.
+##
+
+set -euo pipefail
+
+function usage() {
+  cat <<EOH
+Usage: $0
+
+Creates a bootable Raspberry Pi image with NixOS.  This image should contain
+the entirety of the configuration, sans password updates (until I can get
+secret management going).
+
+The image file name is printed upon success.
+EOH
+}
+
+host=
+build_tool='nom'
+
+while true; do
+  case "${1:-}" in
+    -h | --help)
+      usage
+      exit
+      ;;
+    -H | --host)
+      host="${2:-}"
+      shift 2
+      ;;
+    -n | --nix)
+      build_tool='nix'
+      shift 1
+      ;;
+    * ) break ;;
+  esac
+done
+
+if [[ -z ${host+x} ]]; then
+  echo "--host argument missing"
+  usage
+  exit 1
+fi
+
+image_type="$([[ "$host" == 'nucleus' ]] && echo 'isoImage' || echo 'sdImage')"
+output='image'
+system="$(
+  nix eval --raw --file "$FLAKE_ROOT/nixos-modules/facts.nix" \
+    "network.hosts.$host.system"
+)"
+if [[ -z "$system" ]]; then
+  echo 'Error: Could not determine system.' 1>&2
+  exit 1
+fi
+
+if [[ -z "$image_type" ]]; then
+  echo 'Error: Could not determine image type.' 1>&2
+  exit 1
+fi
+
+# Beware the --system arg.  It can make for very difficult to spot errors.
+# Instead if this isn't working, you likely don't have a builder
+# available/working for the system double.
+"$build_tool" \
+  build \
+  "$FLAKE_ROOT#nixosConfigurations.${host}.config.system.build.${image_type}" \
+  --accept-flake-config \
+  --out-link "$output" \
+  --print-build-logs \
+  --show-trace \
+  --verbose
+
+echo "Image built successfully: $output" 1>&2
+# Print the name used so we can use it elsewhere, and scripts needn't be
+# tightly coupled.
+echo "$output"

@@ -1,4 +1,5 @@
-{ pkgs }:
-pkgs.writeShellScriptBin "nix-darwin-switch" ''
-  sudo darwin-rebuild switch --flake "$FLAKE_ROOT" "$@"
-''
+{ writeShellApplication, ... }:
+writeShellApplication {
+  name = "nix-darwin-switch";
+  text = builtins.readFile ../scripts/nix-darwin-switch.sh;
+}
