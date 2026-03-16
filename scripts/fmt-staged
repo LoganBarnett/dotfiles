@@ -8,6 +8,10 @@ if [ -z "$staged" ]; then
 fi
 cd "$root" || exit 1
 # Pass paths NUL-delimited so names containing spaces are handled correctly.
+# Disable errexit around treefmt: it exits non-zero when it modifies files,
+# which would abort the script before re-staging if set -e were active.
+set +e
 git diff --cached --name-only --diff-filter=d -z | xargs -0 treefmt
+set -e
 # Re-stage the formatted files so the commit includes the formatted versions.
 git diff --cached --name-only --diff-filter=d -z | xargs -0 git add
