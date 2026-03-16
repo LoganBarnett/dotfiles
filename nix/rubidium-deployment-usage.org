@@ -1,0 +1,190 @@
+#+title: Rubidium Deployment Server Usage Guide
+#+author: System Documentation
+#+language: en
+
+* Overview
+
+Rubidium has been configured as a coding and deployment server with:
+- Persistent terminal sessions via ~dtach~
+- Automatic deployment watching for the dotfiles repository
+- Status tracking accessible to Claude and other tools
+
+* Remote Access with Persistent Sessions
+
+** Using eat with dtach
+
+The ~dtach~ solution provides persistent sessions without interfering with
+eat's keybindings.  This is ideal because:
+
+1. ~dtach~ only handles detach/attach, not terminal multiplexing
+2. All eat keybindings work normally (scrolling, evil-mode, etc.)
+3. Sessions survive network disconnections
+
+** Basic Usage
+
+From your local machine with Emacs and eat:
+
+#+begin_src shell :exports code
+# SSH to rubidium and create/attach to a session
+ssh rubidium.proton pts attach main
+
+# Or create a named session for a specific task
+ssh rubidium.proton pts new claude-work
+#+end_src
+
+Within eat, you can detach with ~C-\~ (default dtach key).
+
+** Session Management Commands
+
+Once on rubidium:
+
+#+begin_src shell :exports code
+# List active sessions
+pts list
+
+# Create a new session
+pts new session-name
+
+# Attach to existing session (creates if doesn't exist)
+pts attach session-name
+
+# Attach to default session
+pts
+#+end_src
+
+** Automatic Reconnection
+
+To improve reconnection experience, your SSH client should have:
+
+#+begin_src shell :exports code
+Host rubidium.proton
+  ControlMaster auto
+  ControlPath ~/.ssh/control-%h-%p-%r
+  ControlPersist 10m
+#+end_src
+
+This enables connection multiplexing for instant reconnects.
+
+* Deployment Server Features
+
+** Automatic Deployment
+
+Rubidium watches ~gitea.proton~ for changes to the dotfiles repository.
+When commits are pushed to master:
+
+1. Repository is updated locally
+2. Each configured host is checked for changes
+3. Changed hosts are automatically deployed
+4. Status is tracked for monitoring
+
+** Manual Deployment Control
+
+#+begin_src shell :exports code
+# Check deployment status for all hosts
+deploy-status
+
+# Manually trigger deployment check
+deploy-trigger
+
+# Follow deployment logs
+deploy-logs
+
+# Get help on deployment commands
+deploy-help
+#+end_src
+
+** Webhook Configuration
+
+The deployment server manages Gitea webhooks declaratively.  The webhook is
+automatically configured when the deployment server starts.
+
+*** Secret Management
+
+The webhook secret is managed through agenix:
+
+- **Webhook Secret**: Automatically generated via agenix
+  - Generated using ~long-passphrase~ generator
+  - Available at ~config.age.secrets.deployment-webhook-secret.path~
+  - Shared between rubidium (webhook receiver) and copper (Gitea host)
+  - Same secret defined on both hosts, encrypted separately
+
+*** Automatic Management
+
+The webhook is automatically configured via direct database access on the Gitea
+host (copper):
+- Created if it doesn't exist
+- Updated if configuration changes
+- No API tokens needed - uses local PostgreSQL access
+
+The webhook points to: ~http://rubidium.proton:9001/webhook~
+
+** Status API
+
+Deployment status is available via HTTP:
+- ~http://deployment.rubidium.proton/status/~ - Status file listing
+- ~http://deployment.rubidium.proton/status/HOST.status~ - Individual host status
+
+* Claude Integration
+
+** Deployment Hook
+
+After pushing changes, Claude can check deployment status:
+
+#+begin_src shell :exports code
+claude-deployment-hook
+#+end_src
+
+This shows:
+- Current status of all host deployments
+- Whether deployments succeeded, failed, or are in progress
+- Recent deployment activity
+
+** Long-Running Claude Sessions
+
+To run Claude in a persistent session:
+
+#+begin_src shell :exports code
+# Create a dedicated Claude session
+pts new claude-main
+
+# Run Claude Code
+claude-code
+
+# Detach with C-\ to leave it running
+# Reattach later with:
+pts attach claude-main
+#+end_src
+
+* Architecture Notes
+
+** Security Considerations
+
+1. The ~nix-deploy~ user has sudo access to target hosts
+2. Webhook secret is managed via agenix and shared between hosts
+3. Webhook configuration uses parameterized SQL to prevent injection
+4. Status API is read-only
+5. Deployments only trigger on master branch pushes
+
+** Host Management
+
+To add or remove managed hosts, edit the deployment server configuration:
+- Edit ~/nixos-configs/deployment-server.nix~
+- Update the ~hosts~ list
+- Deploy rubidium: ~nixos-rebuild switch --flake .#rubidium --target-host rubidium.proton~
+
+** Troubleshooting
+
+If deployments fail:
+1. Check logs: ~journalctl -u nix-deployment-check -f~
+2. Verify SSH access: ~ssh nix-deploy@HOST~
+3. Test evaluation: ~nix eval .#nixosConfigurations.HOST.config.system.build.toplevel~
+4. Check webhook delivery in Gitea settings
+
+* Benefits of This Setup
+
+1. **Persistent Development**: Close your laptop, go for a walk, resume exactly
+   where you left off
+2. **Automatic Deployments**: Push to git, all hosts update automatically
+3. **Ergonomic Terminal**: eat's evil-mode bindings work perfectly with dtach
+4. **Status Visibility**: Always know what's deploying and whether it succeeded
+5. **Claude Integration**: Long-running Claude sessions with deployment awareness
