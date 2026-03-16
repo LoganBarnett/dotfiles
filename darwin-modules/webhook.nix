@@ -217,7 +217,12 @@ in
         # variable before exec-ing webhook.  This keeps secret values out of
         # the Nix store while making them available to webhook's Go template
         # engine at config load time.
+        #
+        # set -e is intentional: if any secret file is not yet available
+        # (e.g. agenix hasn't placed it yet), the script exits non-zero and
+        # launchd restarts it via KeepAlive until the file appears.
         wrapperScript = pkgs.writeShellScript "webhook-wrapper" ''
+          set -euo pipefail
           ${lib.concatStringsSep "\n" (
             lib.mapAttrsToList (
               name: path: ''export ${name}="$(< ${path})"''
