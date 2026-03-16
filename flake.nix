@@ -2,16 +2,6 @@
 {
   description = "Nix configuration of logan";
 
-  nixConfig = {
-    extra-substituters = [
-      "https://nix-community.cachix.org"
-    ];
-    extra-trusted-public-keys = [
-      # For pytorch-bin.
-      "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
-    ];
-  };
-
   # See https://nixos-and-flakes.thiscute.world/other-usage-of-flakes/inputs for
   # various URL notations.
   inputs = {
