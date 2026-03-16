@@ -10,6 +10,9 @@
   network = {
     # I have a naming theme of periodic elements and particles.
     domain = "proton";
+    # The host-id of the machine that serves DNS for the home network.  Used
+    # by pkgs.lib.custom.networkDnsIp to derive the server's full IP address.
+    dns-host = "silicon";
     # These are just stringly prefixes for IP addresses.  At some point I should
     # turn these into real subnets with masks.
     subnets = {
