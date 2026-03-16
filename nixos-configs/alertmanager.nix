@@ -84,6 +84,30 @@
                   '';
                 };
               }
+              {
+                # The Nix store must be mounted read-only at all times.  A
+                # writable /nix/store allows any root process to corrupt store
+                # paths silently.  This alert fires when the goss mount check
+                # introduced in nixos-modules/goss-exporter.nix detects that
+                # the ro option is absent.
+                alert = "nix_store_writable";
+                expr = ''goss_tests_outcomes_total{outcome="fail",resource_type="Mount",resource_id="/nix/store"} > 0'';
+                for = "5m";
+                labels = {
+                  severity = "page";
+                };
+                annotations = {
+                  summary = "{{ $labels.instance }}: /nix/store is writable.";
+                  description = ''
+                    The /nix/store mount on {{ $labels.instance }} is missing
+                    the ro option.  A writable store allows arbitrary root
+                    processes to corrupt store paths.  Do not use
+                    nix-store-dislodge or any other tool as a pretext to leave
+                    the store writable — terminate any stuck lock holders and
+                    then restore the ro mount.  See docs/nix-store-locks.org.
+                  '';
+                };
+              }
             ];
           }
           {

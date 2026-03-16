@@ -1,0 +1,268 @@
+#!/usr/bin/env bash
+# Dislodge stuck Nix store build locks by terminating the processes that
+# hold them.  Delegates all detection to nix-store-diagnose --porcelain
+# and acts on its output.  Run nix-store-diagnose first to understand
+# the full picture before using --execute.
+#
+# IMPORTANT: Never remount /nix/store read-write to work around stuck locks.
+# The read-only mount is a system integrity guarantee — a writable store
+# allows any root process to corrupt the store silently.  Terminating the
+# lock-holding process (what this script does) is the correct repair
+# procedure.  See docs/nix-store-locks.org for rationale.
+set -euo pipefail
+
+if [ "${EUID:-$(id -u)}" -ne 0 ]; then
+  echo "error: $(basename "$0") must be run as root." >&2
+  exit 1
+fi
+
+OS="$(uname -s)"
+
+case "$OS" in
+  Linux | Darwin) ;;
+  *)
+    printf 'error: unsupported platform: %s\n' "$OS" >&2
+    exit 1
+    ;;
+esac
+
+for _tool in flock nix-store-diagnose; do
+  if ! command -v "$_tool" >/dev/null 2>&1; then
+    printf 'error: required tool not found: %s\n' "$_tool" >&2
+    exit 1
+  fi
+done
+
+# --- Argument parsing ----------------------------------------------------
+
+EXECUTE=false
+
+while true; do
+  case "${1:-}" in
+    --execute)
+      EXECUTE=true
+      shift
+      ;;
+    --help | -h)
+      cat <<'USAGE'
+Usage: nix-store-dislodge [--execute]
+
+Terminates all in-progress Nix builds to return a lodged store to a
+buildable state.  The intent is unconditional: every lock holder and
+every active builder process is killed.  If a build finishes naturally
+before its signal is sent and its lock is already released, it is
+skipped as a happy coincidence — not as an attempt to preserve it.
+
+Without --execute: show what would be killed (dry run).
+With    --execute: kill everything.
+
+Detection is delegated entirely to nix-store-diagnose.
+USAGE
+      exit 0
+      ;;
+    "")
+      break
+      ;;
+    *)
+      printf 'error: unknown argument: %s\n' "$1" >&2
+      exit 2
+      ;;
+  esac
+done
+
+# --- Safety-check helpers ------------------------------------------------
+#
+# These two functions are the only detection logic that lives here.  They
+# are used as safety nets during the kill sequence, not for initial
+# classification (that is diagnose's job).
+
+get_inode() {
+  case "$OS" in
+    Linux)  stat -c '%i' "$1" 2>/dev/null ;;
+    Darwin) stat -f '%i' "$1" 2>/dev/null ;;
+  esac
+}
+
+# Return 0 if the flock on the given file is currently held, 1 if free.
+# Used for the TOCTOU re-verify immediately before signalling.  Uses
+# /proc/locks on Linux to avoid false positives on read-only store mounts.
+is_flock_held() {
+  local path="$1"
+  case "$OS" in
+    Linux)
+      local inode
+      inode="$(get_inode "$path")" || return 1
+      while read -r _seq type _class mode _pid dev_inode _rest; do
+        [ "$type" = "FLOCK" ] || continue
+        [ "$mode" = "WRITE" ] || continue
+        local inode_part="${dev_inode##*:}"
+        [ "$inode_part" = "$inode" ] && return 0
+      done < /proc/locks
+      return 1
+      ;;
+    Darwin)
+      if flock -n "$path" /bin/true 2>/dev/null; then
+        return 1
+      else
+        return 0
+      fi
+      ;;
+  esac
+}
+
+# Print the PID currently holding an exclusive flock on the lock file.
+# Used to guard against PID recycling before escalating to SIGKILL.
+find_flock_holder() {
+  local lock_path="$1"
+  local lock_inode
+  lock_inode="$(get_inode "$lock_path")" || return 1
+
+  case "$OS" in
+    Linux)
+      while read -r _seq type _class mode pid dev_inode _rest; do
+        [ "$type" = "FLOCK" ] || continue
+        [ "$mode" = "WRITE" ] || continue
+        local inode_part
+        inode_part="${dev_inode##*:}"
+        if [ "$inode_part" = "$lock_inode" ]; then
+          echo "$pid"
+          return 0
+        fi
+      done < /proc/locks
+      return 1
+      ;;
+    Darwin)
+      lsof -wFpat -- "$lock_path" 2>/dev/null \
+        | awk '
+            /^p/ { pid = substr($0, 2); is_flock = 0 }
+            /^tFLOCK/ { is_flock = 1 }
+            /^aW/ { if (is_flock) print pid }
+          ' \
+        || true
+      ;;
+  esac
+}
+
+# --- Main loop -----------------------------------------------------------
+
+found_any=false
+
+# nix-store-diagnose exits 1 when held locks are found, which is exactly
+# when we have work to do.  The || true prevents that from aborting us.
+while IFS=' ' read -r status field1 field2; do
+  case "$status" in
+    held)
+      found_any=true
+      lock_path="$field1"
+      holder_pid="$field2"
+
+      if [ "$EXECUTE" = false ]; then
+        printf '[would-kill]   %s\n' "$lock_path"
+        printf '               holder pid=%s\n' "$holder_pid"
+        continue
+      fi
+
+      printf '[killing]      %s  (pid=%s)\n' "$lock_path" "$holder_pid"
+
+      # Re-verify the flock is still held immediately before signalling.
+      # If it was released in the window between the diagnose scan and
+      # here, the build finished on its own — a happy coincidence.
+      # There is no longer a lock to dislodge, so skip it.
+      if ! is_flock_held "$lock_path"; then
+        printf '               Lock released before signal; nothing to dislodge.\n'
+        continue
+      fi
+
+      kill "$holder_pid" 2>/dev/null || true
+
+      # Wait up to 10 seconds for the flock to be released after SIGTERM.
+      wait_count=0
+      while [ "$wait_count" -lt 10 ] && is_flock_held "$lock_path"; do
+        sleep 1
+        wait_count=$((wait_count + 1))
+      done
+
+      if ! is_flock_held "$lock_path"; then
+        printf '               Released after SIGTERM (%ds).\n' "$wait_count"
+        continue
+      fi
+
+      # Re-confirm the original PID still holds the flock before escalating.
+      # Kernel PID recycling could assign it to an unrelated process during
+      # the 10-second wait, and sending SIGKILL to that process would be
+      # incorrect.
+      current_holder="$(find_flock_holder "$lock_path" 2>/dev/null || true)"
+      if [ "$current_holder" != "$holder_pid" ]; then
+        printf '               Holder PID changed after SIGTERM; not escalating.\n'
+        continue
+      fi
+
+      printf '               Sending SIGKILL to pid=%s.\n' "$holder_pid"
+      kill -9 "$holder_pid" 2>/dev/null || true
+      sleep 1
+
+      if ! is_flock_held "$lock_path"; then
+        printf '               Released after SIGKILL.\n'
+      else
+        printf '               WARNING: Still held after SIGKILL.  Manual intervention required.\n'
+      fi
+      ;;
+
+    held-unknown)
+      found_any=true
+      lock_path="$field1"
+      printf '[held-unknown] %s\n' "$lock_path"
+      printf '               Flock is held but the holder process could not be identified; cannot terminate.\n'
+      ;;
+
+    builder)
+      found_any=true
+      builder_pid="$field1"
+      pkg_name="$field2"
+
+      if [ "$EXECUTE" = false ]; then
+        printf '[would-kill]   builder pid=%s  pkg=%s\n' "$builder_pid" "$pkg_name"
+        continue
+      fi
+
+      printf '[killing]      builder pid=%s  pkg=%s\n' "$builder_pid" "$pkg_name"
+
+      kill "$builder_pid" 2>/dev/null || true
+
+      wait_count=0
+      while [ "$wait_count" -lt 10 ] && ps -p "$builder_pid" >/dev/null 2>&1; do
+        sleep 1
+        wait_count=$((wait_count + 1))
+      done
+
+      if ! ps -p "$builder_pid" >/dev/null 2>&1; then
+        printf '               Exited after SIGTERM (%ds).\n' "$wait_count"
+        continue
+      fi
+
+      printf '               Sending SIGKILL to pid=%s.\n' "$builder_pid"
+      kill -9 "$builder_pid" 2>/dev/null || true
+      sleep 1
+
+      if ! ps -p "$builder_pid" >/dev/null 2>&1; then
+        printf '               Exited after SIGKILL.\n'
+      else
+        printf '               WARNING: Still running after SIGKILL.  Manual intervention required.\n'
+      fi
+      ;;
+
+    *)
+      # stale, skip: no action needed.
+      continue
+      ;;
+  esac
+
+done < <(nix-store-diagnose --porcelain || true)
+
+if [ "$found_any" = false ]; then
+  printf 'No actionable locks found.\n'
+fi
+
+if [ "$EXECUTE" = false ] && [ "$found_any" = true ]; then
+  printf '\nRun with --execute to apply.\n'
+fi

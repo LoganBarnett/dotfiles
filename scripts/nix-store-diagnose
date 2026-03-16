@@ -1,0 +1,405 @@
+#!/usr/bin/env bash
+# Diagnose the state of /nix/store build locks.  For each top-level lock
+# file found, classifies it as HELD (a live process holds the flock and
+# is blocking builds), STALE (no holder; an orphaned file that is not
+# blocking anything), or REGISTERED (a legitimate store path whose name
+# ends in .lock, e.g. a fetched Cargo.lock).
+#
+# Always safe to run.  Takes no actions.  Exits 1 if any HELD lock is
+# found, 0 otherwise.
+#
+# With --porcelain: emits one space-separated line per lock instead of
+# human-readable output.  Format: STATUS PATH [PID]
+# This output is consumed by nix-store-dislodge.
+set -euo pipefail
+
+if [ "${EUID:-$(id -u)}" -ne 0 ]; then
+  echo "error: $(basename "$0") must be run as root." >&2
+  exit 1
+fi
+
+OS="$(uname -s)"
+
+case "$OS" in
+  Linux | Darwin) ;;
+  *)
+    printf 'error: unsupported platform: %s\n' "$OS" >&2
+    exit 1
+    ;;
+esac
+
+for _tool in flock nix-store; do
+  if ! command -v "$_tool" >/dev/null 2>&1; then
+    printf 'error: required tool not found: %s\n' "$_tool" >&2
+    exit 1
+  fi
+done
+
+if [ "$OS" = "Darwin" ] && ! command -v lsof >/dev/null 2>&1; then
+  echo "error: lsof is required on macOS but was not found." >&2
+  exit 1
+fi
+
+# --- Argument parsing ----------------------------------------------------
+
+PORCELAIN=false
+
+while true; do
+  case "${1:-}" in
+    --porcelain)
+      PORCELAIN=true
+      shift
+      ;;
+    --help | -h)
+      cat <<'USAGE'
+Usage: nix-store-diagnose [--porcelain]
+
+Scans /nix/store for top-level lock files and classifies each as:
+  [held]       Active flock held by a live process; blocking builds.
+  [stale]      No flock held; orphaned file that is not blocking anything.
+  [skip]       Registered store path (e.g. Cargo.lock); not a build lock.
+
+--porcelain  Emit one line per lock: STATUS PATH [PID]
+             Consumed by nix-store-dislodge.
+
+Exits 1 if any blocking (held) lock is found, 0 otherwise.  Safe to run
+at any time; takes no actions.
+USAGE
+      exit 0
+      ;;
+    "")
+      break
+      ;;
+    *)
+      printf 'error: unknown argument: %s\n' "$1" >&2
+      exit 2
+      ;;
+  esac
+done
+
+# --- Helper functions ----------------------------------------------------
+
+# Return the inode number for a path.  Handles GNU stat (Linux) and BSD
+# stat (macOS), which differ in format flags.
+get_inode() {
+  case "$OS" in
+    Linux)  stat -c '%i' "$1" 2>/dev/null ;;
+    Darwin) stat -f '%i' "$1" 2>/dev/null ;;
+  esac
+}
+
+# Print the PID holding an exclusive flock on the given lock file.  On
+# Linux, reads /proc/locks which is authoritative (returns only the
+# holder, not waiters).  On macOS, parses lsof field output.
+find_flock_holder() {
+  local lock_path="$1"
+  local lock_inode
+  lock_inode="$(get_inode "$lock_path")" || return 1
+
+  case "$OS" in
+    Linux)
+      # /proc/locks format per line:
+      #   seq: TYPE  CLASS  MODE  PID  MAJOR:MINOR:INODE  START  END
+      # Major and minor are hex; inode is decimal.  Nix build locks are
+      # exclusive (WRITE) BSD-style (FLOCK) locks.
+      while read -r _seq type _class mode pid dev_inode _rest; do
+        [ "$type" = "FLOCK" ] || continue
+        [ "$mode" = "WRITE" ] || continue
+        local inode_part
+        inode_part="${dev_inode##*:}"
+        if [ "$inode_part" = "$lock_inode" ]; then
+          echo "$pid"
+          return 0
+        fi
+      done < /proc/locks
+      return 1
+      ;;
+    Darwin)
+      # -F: field output.  Fields: p=pid, a=access mode, t=lock type.
+      # The holder has type FLOCK and access W (exclusive write).
+      lsof -wFpat -- "$lock_path" 2>/dev/null \
+        | awk '
+            /^p/ { pid = substr($0, 2); is_flock = 0 }
+            /^tFLOCK/ { is_flock = 1 }
+            /^aW/ { if (is_flock) print pid }
+          ' \
+        || true
+      ;;
+  esac
+}
+
+# Print PIDs of all processes that have the lock file open, regardless of
+# whether they hold or are waiting for the flock.  On Linux, scans
+# /proc/[0-9]*/fd by inode match (more reliable than path match on bind
+# mounts).  On macOS, delegates to lsof.
+find_all_openers() {
+  local lock_path="$1"
+  local lock_inode
+  lock_inode="$(get_inode "$lock_path")" || return 0
+
+  case "$OS" in
+    Linux)
+      local fd_dir pid inode
+      for fd_dir in /proc/[0-9]*/fd; do
+        [ -d "$fd_dir" ] || continue
+        pid="${fd_dir%/fd}"
+        pid="${pid##*/}"
+        for fd in "$fd_dir"/*; do
+          [ -e "$fd" ] || continue
+          inode="$(stat -c '%i' "$fd" 2>/dev/null)" || continue
+          if [ "$inode" = "$lock_inode" ]; then
+            echo "$pid"
+            break
+          fi
+        done
+      done
+      ;;
+    Darwin)
+      lsof -wt -- "$lock_path" 2>/dev/null || true
+      ;;
+  esac
+}
+
+# Return 0 if an exclusive flock on the given file is currently held, 1 if
+# free.  On Linux, consults /proc/locks by inode so the result is correct
+# even when the store is mounted read-only (flock -n would fail to open the
+# file for writing and produce a false positive).  On macOS, /proc/locks is
+# not available so we fall back to flock -n, which works because the macOS
+# store is not typically bind-mounted read-only.
+is_flock_held() {
+  local path="$1"
+  case "$OS" in
+    Linux)
+      local inode
+      inode="$(get_inode "$path")" || return 1
+      while read -r _seq type _class mode _pid dev_inode _rest; do
+        [ "$type" = "FLOCK" ] || continue
+        [ "$mode" = "WRITE" ] || continue
+        local inode_part="${dev_inode##*:}"
+        [ "$inode_part" = "$inode" ] && return 0
+      done < /proc/locks
+      return 1
+      ;;
+    Darwin)
+      if flock -n "$path" /bin/true 2>/dev/null; then
+        return 1
+      else
+        return 0
+      fi
+      ;;
+  esac
+}
+
+# Print a human-readable description of a process by PID.
+describe_pid() {
+  local pid="$1" label="$2"
+  if ! ps -p "$pid" >/dev/null 2>&1; then
+    printf '    [%s] pid=%s: process no longer running\n' "$label" "$pid"
+    return
+  fi
+  local args etime ppid stat_col ppid_cmd
+  args="$(ps -p "$pid" -o args= 2>/dev/null || echo '(unknown)')"
+  args="${args:0:120}"
+  etime="$(ps -p "$pid" -o etime= 2>/dev/null | tr -d ' ' || echo '?')"
+  ppid="$(ps -p "$pid" -o ppid= 2>/dev/null | tr -d ' ' || echo '?')"
+  stat_col="$(ps -p "$pid" -o stat= 2>/dev/null | tr -d ' ' || echo '?')"
+  ppid_cmd="$(ps -p "$ppid" -o comm= 2>/dev/null || echo 'unknown')"
+  printf '    [%s] pid=%-6s  age=%-10s  status=%s\n' \
+    "$label" "$pid" "$etime" "$stat_col"
+  printf '             command: %s\n' "$args"
+  printf '             parent:  %s (%s)\n' "$ppid" "$ppid_cmd"
+  if [[ "$stat_col" == *Z* ]]; then
+    printf '             NOTE: Process is a zombie.\n'
+  fi
+}
+
+# Read a single variable from a process's environment.  On Linux,
+# /proc/$pid/environ is a NUL-separated sequence of KEY=VALUE pairs.
+# Returns empty string if the variable is absent or the file is
+# inaccessible.
+read_builder_env() {
+  local pid="$1" var="$2"
+  [ -r "/proc/$pid/environ" ] || return 0
+  tr '\0' '\n' < "/proc/$pid/environ" 2>/dev/null \
+    | grep "^${var}=" \
+    | head -1 \
+    | cut -d= -f2-
+}
+
+# Print Nix-specific build context for a builder process by reading its
+# injected environment variables.  Only meaningful on Linux where
+# /proc/$pid/environ is available.  Silently does nothing on other
+# platforms or when the process is not a Nix builder.
+show_build_context() {
+  local pid="$1"
+  [ "$OS" = "Linux" ] || return 0
+  [ -r "/proc/$pid/environ" ] || return 0
+
+  local pkg_name out build_top
+  pkg_name="$(read_builder_env "$pid" name)"
+  [ -n "$pkg_name" ] || return 0
+
+  out="$(read_builder_env "$pid" out)"
+  build_top="$(read_builder_env "$pid" NIX_BUILD_TOP)"
+
+  printf '             pkg:     %s\n' "$pkg_name"
+  [ -n "$out" ]       && printf '             out:     %s\n' "$out"
+  [ -n "$build_top" ] && printf '             build:   %s\n' "$build_top"
+
+  # Nix keeps per-derivation logs under /nix/var/log/nix/drvs/ when the
+  # keep-derivations setting is on.  Match by package name as a heuristic;
+  # multiple matches are possible for packages with similar names.
+  local log_path
+  log_path="$(find /nix/var/log/nix/drvs -name "*-${pkg_name}.drv" \
+    2>/dev/null | head -1)"
+  [ -n "$log_path" ] && printf '             log:     %s\n' "$log_path"
+}
+
+# Scan /proc for active Nix builder processes by looking for NIX_BUILD_TOP
+# in their environment.  Emits PIDs one per line.  Linux-only; silently
+# returns nothing on other platforms.
+find_nix_builders() {
+  [ "$OS" = "Linux" ] || return 0
+  local pid_dir pid build_top
+  for pid_dir in /proc/[0-9]*/; do
+    pid="${pid_dir%/}"
+    pid="${pid##*/proc/}"
+    [ -r "/proc/$pid/environ" ] || continue
+    build_top="$(tr '\0' '\n' < "/proc/$pid/environ" 2>/dev/null \
+      | grep "^NIX_BUILD_TOP=" | cut -d= -f2-)" || continue
+    [ -n "$build_top" ] || continue
+    echo "$pid"
+  done
+}
+
+# Enumerate top-level .lock files in /nix/store without descending into
+# store paths.  Outputs NUL-separated paths.
+lock_stream() {
+  find /nix/store \
+    -type d ! -path /nix/store -prune \
+    -o -type f -name '*.lock' -print0
+}
+
+# --- Main scan -----------------------------------------------------------
+
+count_held=0
+count_stale=0
+count_skip=0
+found_any=false
+
+[ "$PORCELAIN" = true ] || printf '=== Nix Store Lock Diagnostics ===\n\n'
+
+while IFS= read -r -d '' lock_path; do
+  found_any=true
+  store_path="${lock_path%.lock}"
+
+  # A top-level store path whose name ends in .lock is a real derivation
+  # output (e.g. a fetched Cargo.lock or Gemfile.lock), not a build lock.
+  if nix-store --check-validity "$lock_path" 2>/dev/null; then
+    if [ "$PORCELAIN" = true ]; then
+      printf 'skip %s\n' "$lock_path"
+    else
+      printf '[skip]   %s\n' "$lock_path"
+      printf '         Registered store path; not a build lock.\n\n'
+    fi
+    count_skip=$((count_skip + 1))
+    continue
+  fi
+
+  # A non-blocking exclusive flock attempt succeeds only when no process
+  # currently holds the lock.  The kernel releases flocks automatically
+  # when the holding process exits, so a file where flock succeeds is a
+  # genuine orphan that is not blocking any build.
+  if ! is_flock_held "$lock_path"; then
+    if [ "$PORCELAIN" = true ]; then
+      printf 'stale %s\n' "$lock_path"
+    else
+      printf '[stale]  %s\n' "$lock_path"
+      printf '         No flock held.  Orphaned file; not blocking any builds.\n\n'
+    fi
+    count_stale=$((count_stale + 1))
+    continue
+  fi
+
+  count_held=$((count_held + 1))
+  holder_pid="$(find_flock_holder "$lock_path" 2>/dev/null || true)"
+
+  if [ "$PORCELAIN" = true ]; then
+    if [ -n "$holder_pid" ]; then
+      printf 'held %s %s\n' "$lock_path" "$holder_pid"
+    else
+      printf 'held-unknown %s\n' "$lock_path"
+    fi
+    continue
+  fi
+
+  printf '[held]   %s\n' "$lock_path"
+  printf '         Active flock.  Blocking builds of:\n'
+  printf '         %s\n' "$store_path"
+
+  all_pids="$(find_all_openers "$lock_path" 2>/dev/null || true)"
+
+  if [ -n "$holder_pid" ]; then
+    describe_pid "$holder_pid" "holder"
+    show_build_context "$holder_pid"
+  else
+    printf '    [holder] Not found in /proc/locks.  Inspect manually.\n'
+  fi
+
+  # Processes with the file open that are not the flock holder are waiting
+  # to acquire the lock.  They will proceed automatically once the holder
+  # exits; they should not be killed.
+  for pid in $all_pids; do
+    [ "$pid" != "$holder_pid" ] || continue
+    describe_pid "$pid" "waiter"
+  done
+
+  printf '\n'
+
+done < <(lock_stream)
+
+if [ "$PORCELAIN" = false ]; then
+  if [ "$found_any" = false ]; then
+    printf 'No lock files found in /nix/store.\n'
+  else
+    printf '=== Summary ===\n'
+    printf '  Held (blocking):   %d\n' "$count_held"
+    printf '  Stale (orphaned):  %d\n' "$count_stale"
+    printf '  Registered (skip): %d\n' "$count_skip"
+    printf '\n'
+  fi
+fi
+
+# --- Builder process scan ------------------------------------------------
+# Find Nix builder processes regardless of whether their lock files still
+# exist.  Cancelling a client-side deploy leaves daemon-side workers running
+# and holding (or having already dropped) their flocks.
+
+[ "$PORCELAIN" = true ] || printf '=== Active Nix Builder Processes ===\n\n'
+
+count_builders=0
+
+while read -r builder_pid; do
+  count_builders=$((count_builders + 1))
+  pkg_name="$(read_builder_env "$builder_pid" name)"
+
+  if [ "$PORCELAIN" = true ]; then
+    printf 'builder %s %s\n' "$builder_pid" "${pkg_name:--}"
+    continue
+  fi
+
+  describe_pid "$builder_pid" "builder"
+  show_build_context "$builder_pid"
+  printf '\n'
+done < <(find_nix_builders)
+
+if [ "$PORCELAIN" = false ]; then
+  if [ "$count_builders" -eq 0 ]; then
+    printf 'No active Nix builder processes found.\n\n'
+  else
+    printf '  Total builders: %d\n\n' "$count_builders"
+  fi
+fi
+
+# Exit 1 if any blocking lock was found so callers can detect this state.
+[ "$count_held" -eq 0 ]

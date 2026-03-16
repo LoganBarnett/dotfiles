@@ -1,0 +1,113 @@
+#+title:  Nix Store Lock Tooling
+#+language: en
+
+* Overview
+
+Two scripts live in ~scripts/~ for diagnosing and repairing stuck Nix store
+build locks:
+
+- ~nix-store-diagnose~ — pure diagnostic; safe to run at any time.
+- ~nix-store-dislodge~ — action layer; delegates detection to
+  ~nix-store-diagnose~ and terminates lock holders on request.
+
+Both scripts require root.
+
+* The read-only invariant
+
+~**/nix/store must remain mounted read-only at all times.**~
+
+Nix uses filesystem immutability as a correctness guarantee: once a store path
+is built, nothing except the garbage collector should ever change its contents.
+The ~ro~ bind mount enforces this for every process on the host — including
+those running as root — without requiring them to know anything about Nix.
+
+Making the store writable, even temporarily, breaks this guarantee.  Any root
+process can then silently overwrite or corrupt store paths.  The damage may not
+surface until a build produces wrong output, a service starts from a corrupted
+binary, or a signature check fails during deployment.
+
+** Why stuck locks don't justify a remount
+
+A stuck build lock means a process is holding an ~flock(2)~ on a
+~/nix/store/*.lock~ file.  The correct repair is to terminate that process; the
+kernel then releases the flock automatically.  There is no scenario where the
+lock can be cleared by making the store writable that could not be handled more
+safely by ~nix-store-dislodge~.
+
+If you find yourself reaching for ~mount -o remount,rw /nix/store~, stop and
+run ~nix-store-diagnose~ instead.
+
+* Usage
+
+** Diagnosing the store
+
+#+begin_src sh :exports code
+sudo nix-store-diagnose
+#+end_src
+
+The script classifies every top-level ~*.lock~ file as one of:
+
+| Status       | Meaning                                                     |
+|--------------+-------------------------------------------------------------|
+| ~[held]~     | Active flock held by a live process; blocks new builds.     |
+| ~[stale]~    | No flock held; orphaned file not blocking anything.         |
+| ~[skip]~     | Registered store path (e.g. ~Cargo.lock~); not a build lock. |
+
+It also scans ~/proc~ for active Nix builder processes (detected via the
+~NIX_BUILD_TOP~ environment variable), which can persist after a client-side
+deploy cancellation even if their lock files have already been cleaned up.
+
+The script exits 1 if any ~[held]~ lock is found.
+
+** Dislodging stuck locks
+
+#+begin_src sh :exports code
+# Dry run — shows what would be killed without taking action.
+sudo nix-store-dislodge
+
+# Kill all lock holders and stuck builder processes.
+sudo nix-store-dislodge --execute
+#+end_src
+
+The kill sequence for each target:
+
+1. Send ~SIGTERM~.
+2. Wait up to 10 seconds for the flock to be released (or the process to exit).
+3. Before escalating, re-confirm the same PID still holds the lock (guards
+   against kernel PID recycling).
+4. Send ~SIGKILL~ if the process has not exited.
+
+~nix-store-dislodge~ re-verifies the flock is still held immediately before
+each signal (TOCTOU guard), so builds that finish naturally in the window
+between the ~nix-store-diagnose~ scan and the kill are skipped automatically.
+
+* How detection works
+
+** Lock classification (~nix-store-diagnose~)
+
+On Linux, ~/proc/locks~ is the authoritative source for which process holds an
+exclusive BSD flock.  The script cross-references the inode of each ~*.lock~
+file against ~/proc/locks~ entries of type ~FLOCK WRITE~.  This approach is
+correct even when ~/nix/store~ is mounted read-only — the older ~flock -n~
+test-and-release technique silently fails on read-only mounts, producing false
+positives.
+
+On macOS, ~/proc/locks~ is not available; ~lsof~ is used instead.
+
+** Builder process detection (~nix-store-diagnose~)
+
+Nix sets ~NIX_BUILD_TOP~ in the environment of every builder process it spawns.
+The script scans ~/proc/[0-9]*/environ~ for this variable to find builders that
+may still be running even after their lock files have been removed.
+
+This catches the common scenario where a client-side deploy is cancelled
+(~Ctrl-C~ on ~proton-deploy switch~) but the daemon-side build worker continues
+running and holding — or having already released — its flocks.
+
+* Monitoring
+
+A goss health check in ~nixos-modules/goss-exporter.nix~ verifies that
+~/nix/store~ is mounted with the ~ro~ option on every host where goss
+monitoring is active.  An AlertManager rule fires if the check fails for more
+than five minutes.  The alert fires immediately on any host with a writable
+store, regardless of how it got that way.

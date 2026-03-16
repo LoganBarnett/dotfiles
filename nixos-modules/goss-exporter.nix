@@ -104,6 +104,15 @@ in
   };
 
   config = mkIf gossEnabled {
+    # Verify the Nix store is mounted read-only.  A writable /nix/store
+    # allows any root process to silently corrupt store paths; the ro
+    # bind mount is a system integrity guarantee that must never be
+    # relaxed.  See docs/nix-store-locks.org for rationale.
+    services.goss.checks.mount."/nix/store" = {
+      exists = true;
+      opts = [ "ro" ];
+    };
+
     # Install goss package system-wide for debugging.
     environment.systemPackages = [ pkgs.goss ];
 
