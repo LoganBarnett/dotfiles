@@ -276,11 +276,11 @@
         "rust-overlay": "rust-overlay_2"
       },
       "locked": {
-        "lastModified": 1771371114,
-        "narHash": "sha256-vCDR1m2SyB2vVZ695lWNOBiTXdi3E23OPbGOAkLRFJM=",
+        "lastModified": 1771554780,
+        "narHash": "sha256-+/F21Yd6VPfobNzKiQ1YhiWyXpzok0zwXlQjF2IKUfg=",
         "ref": "first-draft",
-        "rev": "42ba4dce91170bf0c6156e56628f381d115a45d9",
-        "revCount": 66,
+        "rev": "ad86707b62532e887c2e95a2870beedfa621caed",
+        "revCount": 77,
         "type": "git",
         "url": "ssh://git@gitea.proton:2222/logan/dns-smart-block"
       },
