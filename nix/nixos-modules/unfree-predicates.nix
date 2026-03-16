@@ -9,7 +9,10 @@
 # functions, which is adapted from the ticket (which just took regular
 # expressions).
 ##
-{ config, lib, pkgs, ... }: {
+{ config, lib, pkgs, options, ... }: let
+  inherit (lib) mkIf;
+  isHomeManager = options ? home;
+in {
   options = {
     allowUnfreePackagePredicates = lib.mkOption {
       type = lib.types.listOf (lib.types.functionTo lib.types.bool);
@@ -34,8 +37,9 @@
         ] ++ config.allowUnfreePackagePredicates
       ))
     );
+  } // (if !isHomeManager then {
     environment.systemPackages = [
       pkgs.hello-unfree
     ];
-  };
+  } else {});
 }
