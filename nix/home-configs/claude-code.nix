@@ -32,6 +32,11 @@ in {
           read = [ "/nix/store" ];
         };
       };
+      hooks = {
+        PreCompact = {
+          command = "echo '⚠️  REMINDER: After compaction completes, CLAUDE.md instructions are lost. Type: read CLAUDE.md'";
+        };
+      };
     };
     agents = {
       work-mode = ''

@@ -294,11 +294,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1770945063,
-        "narHash": "sha256-papyqzpGB5oQNmLn8Nz+55PKd3zrujnvXqkYOn5gmfY=",
-        "ref": "refs/heads/master",
-        "rev": "bbd93398182ac09ec4451c17874bfffc227d404e",
-        "revCount": 725,
+        "lastModified": 1771256539,
+        "narHash": "sha256-FoJPnr041J2tSLK5K2FWAPYgbd6IF4zHpyihL5yZPLk=",
+        "ref": "refs/heads/main",
+        "rev": "3d5de3255ace5d17e4d7ea57a5e38f3b8081fa83",
+        "revCount": 731,
         "type": "git",
         "url": "ssh://git@gitea.proton:2222/logan/emacs-config"
       },
@@ -316,11 +316,11 @@
         "nixpkgs-stable": "nixpkgs-stable_2"
       },
       "locked": {
-        "lastModified": 1770602774,
-        "narHash": "sha256-eRcZ279Oaf8ViHtvdWVTpcD9x7bvJ3ipQ1Xq9bd+qlk=",
+        "lastModified": 1771207599,
+        "narHash": "sha256-VLw03hyJp6mQMl7r1Phv6z+ktHN6jJwDcxDSiZY/fCY=",
         "owner": "nix-community",
         "repo": "emacs-overlay",
-        "rev": "a3d87c21d1464f1069d8125cafe6adb84d200185",
+        "rev": "b6f3379e6f23e2af91a251593226030c442e017f",
         "type": "github"
       },
       "original": {
