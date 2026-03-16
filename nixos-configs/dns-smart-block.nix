@@ -84,6 +84,12 @@
     # database on each service start and never expire.
     provisionedClassifications = [
       {
+        domain = "conjuguemos.com";
+        classificationType = "all";
+        isMatchingSite = false;
+        reasoning = "This is a Spanish edutainment site endorsed by the school district.";
+      }
+      {
         domain = "codeload.github.com";
         classificationType = "all";
         isMatchingSite = false;
