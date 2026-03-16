@@ -1,6 +1,106 @@
 #+title:     Tasks
 #+language:  en
 
+* DNS
+
+** TODO Evaluate replacing Blocky with a purpose-built DNS forwarder for dns-smart-block
+
+*** Background
+
+The current DNS filtering stack is:
+
+- *Blocky* — DNS proxy with per-client block profiles (child, adult, default).
+  Fetches blocklists from HTTP URLs and applies them per-client based on IP,
+  MAC address, or hostname.
+- *dns-smart-block* — LLM-powered dynamic classifier that watches DNS query
+  logs, classifies domains as gaming or video-streaming, and serves the
+  results as HTTP text blocklists that Blocky polls.
+- *blocky-lists-updater* — a third-party shim that downloads those HTTP lists
+  and calls Blocky's reload API, because Blocky has no push-notification
+  interface.
+
+The integration is polling-based.  When a domain's classification changes
+(e.g. a provisioned override marks it as not-a-gaming-site), Blocky does not
+learn about it until the next scheduled poll cycle.  This caused a live
+incident where ~registry.ollama.ai~ was incorrectly classified as gaming,
+sinkhooled to ~0.0.0.0~, and continued to be blocked even after the override
+was applied because the cached list had not yet expired.
+
+*** Why RPZ would fix this
+
+RPZ (Response Policy Zone) is a DNS-native extension designed for exactly
+this use case.  An RPZ zone is a normal DNS zone whose records encode blocking
+policy: a blocked domain ~bad.com~ in a zone named ~rpz.example~ appears as
+~bad.com.rpz.example.~ with a CNAME to ~.~ (meaning NXDOMAIN) or an A record
+pointing to ~0.0.0.0~.
+
+The resolver subscribes to the zone via standard DNS zone transfer.  When the
+authoritative server's zone changes, it sends a DNS ~NOTIFY~ message to all
+subscribers.  Each subscriber then performs an ~IXFR~ (incremental zone
+transfer) to pull only the diff — the added and removed records since its last
+known serial number.  Changes propagate in seconds with no polling interval,
+no scheduled refresh, and no cache expiry problem.  It is a DNS-native
+pub/sub mechanism.
+
+For dns-smart-block, the authoritative side is substantially simpler than
+running a full DNS server: it only needs to serve ~AXFR~/~IXFR~ requests,
+send ~NOTIFY~ on mutation, and maintain a SOA serial.  No recursive
+resolution, no upstream forwarding.
+
+*** Why RPZ is unlikely to be accepted upstream in Blocky
+
+Before pursuing an in-house forwarder, the right first step is to ask the
+Blocky maintainers directly whether an RPZ consumer PR would be welcome.
+That said, several signals suggest it would not be:
+
+1. *No existing interest.* A search of Blocky's issue tracker returns zero
+   issues or PRs mentioning RPZ.  The user base is overwhelmingly pulling
+   community blocklists from GitHub-hosted hosts files; RPZ is a
+   self-hosted-infrastructure use case that barely registers.
+
+2. *The push-notification problem has gone unresolved for years.*
+   [[https://github.com/0xERR0R/blocky/issues/844][Issue #844]] ("Able to refresh an individual group of lists manually or
+   automatically", open since August 2023, milestone: /future/) is the
+   closest analogue — an explicit request for a way to trigger list refreshes
+   from outside Blocky.  It has sat with no maintainer engagement.  This is
+   the exact gap that forced blocky-lists-updater into existence as a
+   workaround.
+
+3. *Feature backlog signals a maintenance posture.*  The /future/ milestone
+   holds a large queue of open enhancements with no apparent velocity.  The
+   project does not appear to be in active feature development.
+
+4. *Surface area concern.*  An RPZ consumer requires implementing DNS zone
+   transfer client logic (~AXFR~/~IXFR~) and ~NOTIFY~ handling.  That is a
+   non-trivial ongoing maintenance surface for maintainers to own if the
+   feature serves a niche audience.
+
+*** What a replacement would actually involve
+
+Blocky operates as a *DNS forwarder*, not a true recursive resolver.  It does
+not walk the delegation tree from root; it forwards queries to upstream
+resolvers (Cloudflare, OpenDNS, etc.) after applying blocking policy.  A
+replacement would need to do the same:
+
+- DNS proxy loop: receive query, check policy, either block (return ~NXDOMAIN~
+  or ~0.0.0.0~) or forward to upstream and return the result.
+- Per-client policy: identify the querying client by IP or MAC address, map
+  to a block profile, apply the corresponding set of blocklists.
+- Blocklist management: fetch community lists from HTTP URLs (hosts format,
+  domain list format), parse them, and reload on a schedule or trigger.
+- RPZ consumer: subscribe to an RPZ zone via ~AXFR~/~IXFR~, handle ~NOTIFY~,
+  maintain an in-memory copy of the zone for fast policy lookup.
+
+The DNS wire-format complexity that makes a full resolver hard is largely
+handled by libraries (~hickory-dns~ in Rust covers ~AXFR~/~IXFR~ and DNS
+framing).  The forwarder model means correctness for the hard parts
+(DNSSEC validation, delegation following, negative caching semantics) remains
+upstream's responsibility.  Blocky itself makes the same assumption.
+
+The realistic scope is: a few months of focused work to reach production
+quality, with the long tail being edge cases in blocklist format parsing and
+DNS framing rather than resolver correctness.
+
 * Nix
 
 ** TODO Consolidate internal derivations out of overlays
