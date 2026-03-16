@@ -299,11 +299,11 @@
         "org-dnd": "org-dnd"
       },
       "locked": {
-        "lastModified": 1771461356,
-        "narHash": "sha256-/xCnvMHvTKtJK84n2cpoagLEyYyBzmqobB2Ict45d7Q=",
+        "lastModified": 1771466064,
+        "narHash": "sha256-iseVzl4rBTuxq6h6kBkgwH4uR6/67cb1QzA65Jwvkow=",
         "ref": "refs/heads/main",
-        "rev": "082a06cbf80ba83a6d0c1b94e40afa3e3e551009",
-        "revCount": 809,
+        "rev": "773f7976927bfa88b79146c13a563bdb7434c2ab",
+        "revCount": 810,
         "type": "git",
         "url": "ssh://git@gitea.proton:2222/logan/emacs-config"
       },
