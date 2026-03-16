@@ -123,9 +123,9 @@ in {
         # on the current version.
         # whiteLists = { ads = [ "allowlist.txt" ]; };
         clientGroupsBlock = let
-          # For a yuck-moment:  This is sort of magical list.  Because these
-          # names resolve to a profile name, Blocky won't treat this as a
-          # hostname.
+          # Maps profile names to the blacklist groups they enforce.  The
+          # "default" key is a Blocky special that applies to any client not
+          # matched by a more specific entry.
           profileGroups = {
             adult = [ "ads" "malware" ];
             child = [ "ads" "adult" "gaming" "malware" ];
@@ -151,27 +151,40 @@ in {
           profilesByHosts = pipe facts.network.hosts [
             (mapAttrsToList (name: data: let
               blockProfiles = data.blockProfiles or [ "default" ];
+              # Profile names must expand to blacklist group names before
+              # reaching Blocky; passing a profile name directly would match
+              # a same-named blacklist instead.  Unknown profile names throw
+              # rather than silently producing an empty (unfiltered) entry.
+              blockLists = pipe blockProfiles [
+                (map (p:
+                  if profileGroups ? ${p}
+                  then profileGroups.${p}
+                  else throw "blocky: unknown block profile '${p}' on host '${name}'"
+                ))
+                flatten
+                unique
+              ];
             in [
               {
                 name = "${name}.${facts.network.domain}";
-                value = blockProfiles;
+                value = blockLists;
               }
               {
                 inherit name;
-                value = blockProfiles;
+                value = blockLists;
               }
             ] ++ (optionals (data.ipv4 or null != null) [{
               name = "${facts.network.subnets.barnett-main}.${toString data.ipv4}";
-              value = blockProfiles;
+              value = blockLists;
             }]) ++ (optionals (data.macs or null != null) [{
               name = data.mac;
-              value = blockProfiles;
+              value = blockLists;
             }])
             ))
             flatten
             builtins.listToAttrs
           ];
-        in profileGroups // profilesByHosts;
+        in { inherit (profileGroups) default; } // profilesByHosts;
       };
       prometheus.enable = true;
     };
