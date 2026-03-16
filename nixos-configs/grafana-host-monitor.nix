@@ -267,6 +267,7 @@ in {
     {
       type = "table";
       title = "Service Health Status";
+      datasource = "Prometheus";
       gridPos = {
         h = 1 * height;
         w = 2 * width;
@@ -377,6 +378,18 @@ in {
         w = 1 * width;
         x = 2 * width;
         y = 1 * height;
+      };
+      fieldConfig = {
+        defaults = {
+          thresholds = {
+            mode = "absolute";
+            steps = [
+              { color = "red"; value = null; }
+              { color = "green"; value = 1; }
+            ];
+          };
+        };
+        overrides = [];
       };
       options = {
         legend = {
