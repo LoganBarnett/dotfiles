@@ -34,7 +34,7 @@
       # url = "github:LoganBarnett/agenix-rekey/paramterize-generators-cherry-pick";
       # url = "github:LoganBarnett/agenix-rekey/parameterize-generators";
       # url = "github:LoganBarnett/agenix-rekey/parameterize-generators-master-identities-fix";
-      # url = "git+file:///Users/logan/dev/agenix-rekey?ref=parameterize-generators";
+      # url = "git+file:///Users/logan/dev/agenix-rekey?ref=rust-runtime";
       # There is a documented gotcha in the readme if this must change.  Review
       # agenix-rekey's README for details.
       inputs.nixpkgs.follows = "nixpkgs";
@@ -438,10 +438,10 @@
           // self.containerGuestHosts;
         # This doesn't seem to actually make the overlays available to secret
         # generators.  I suspect a bug, but cannot yet prove it.
-        pkgs = import flake-inputs.nixpkgs {
-          system = "aarch64-darwin";
-          overlays = import ./overlays/default.nix;
-        };
+        # pkgs = import flake-inputs.nixpkgs {
+        #   system = "aarch64-darwin";
+        #   overlays = import ./overlays/default.nix;
+        # };
       };
 
     };
