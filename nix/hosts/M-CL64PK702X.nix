@@ -152,8 +152,6 @@ in {
         (pkgs.callPackage ../derivations/gp-connect-auto.nix {})
         # Used for encrypting sensitive information in Hiera.
         pkgs.hiera-eyaml
-        # Quick Jira task creation for SE project with all required fields.
-        (pkgs.callPackage ../derivations/jira-se-task.nix {})
         pkgs.mktemp
         # Gives us tools like ldapsearch, ldapadd, and ldapmodify which is
         # sometimes used for searching users and figuring out who the managers
