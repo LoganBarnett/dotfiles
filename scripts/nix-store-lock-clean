@@ -64,6 +64,16 @@ while IFS= read -r -d "" lock_path; do
   found_any="true"
   drv_path="${lock_path%.lock}"
 
+  # Skip files that are registered store paths.  A real Nix build lock is a
+  # temporary file not registered in the store database, whereas legitimate
+  # store paths whose names happen to end in .lock (e.g. Cargo.lock) are
+  # registered.  Calling `nix store break-lock` on the stripped path would
+  # remove the registered path, corrupting the store.
+  if $SUDO nix-store --query --valid "$lock_path" 2>/dev/null; then
+    echo "[skip] $lock_path (registered store path, not a build lock)"
+    continue
+  fi
+
   if [ "$EXECUTE" = "true" ]; then
     echo "[break] $drv_path"
     # Break the lock on the derivation.
