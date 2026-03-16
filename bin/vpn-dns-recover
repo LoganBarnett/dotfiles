@@ -60,17 +60,41 @@ function dnsReset() {
     # -setdnsservers and -setsearchdomains will persist across networks, and the
     # system will not query and use DHCP to get information - this breaks our
     # presence on other networks or even disconnecting from VPN.
-    sudo networksetup -setdhcp "$service"
+    sudo /usr/sbin/networksetup -setdhcp "$service"
     slog "Setting $service DNS to Empty..."
-    sudo networksetup -setdnsservers "$service" Empty
+    sudo /usr/sbin/networksetup -setdnsservers "$service" Empty
     slog "Setting $service search domains to Empty..."
-    sudo networksetup -setsearchdomains "$service" Empty
-    sudo networksetup -setwebproxystate "$service" Off
-    sudo networksetup -setsecurewebproxystate "$service" Off
-    sudo networksetup -setv6automatic "$service"
-    sudo networksetup -setproxybypassdomains "$service" Empty
+    sudo /usr/sbin/networksetup -setsearchdomains "$service" Empty
+    sudo /usr/sbin/networksetup -setwebproxystate "$service" Off
+    sudo /usr/sbin/networksetup -setsecurewebproxystate "$service" Off
+    sudo /usr/sbin/networksetup -setv6automatic "$service"
+    sudo /usr/sbin/networksetup -setproxybypassdomains "$service" Empty
   done
 }
+
+# slog "Killing dnsmasq if running..."
+# sudo killall dnsmasq 2>/dev/null || true
+
+slog "Forcing DHCP on active hardware interfaces..."
+while IFS= read -r iface; do
+  if ifconfig "$iface" 2>/dev/null | grep -q 'status: active'; then
+    slog "  ipconfig set $iface DHCP"
+    sudo /usr/sbin/ipconfig set "$iface" DHCP
+  fi
+done < <(networksetup -listallhardwareports | awk '/^Device:/{print $2}')
+
+slog "Waiting for default route to be restored..."
+for i in $(seq 1 30); do
+  if route -n get default &>/dev/null; then
+    slog "  Default route restored after ${i}s."
+    break
+  fi
+  sleep 1
+done
+
+if ! route -n get default &>/dev/null; then
+  slog "WARNING: No default route after 30s — DHCP may have failed."
+fi
 
 # For reasons beyond me, this must be called twice - once before the reset of
 # the network and once after. This appears to only apply when running vpn-$WORK
@@ -80,20 +104,20 @@ function dnsReset() {
 dnsReset
 slog "Resetting DNS daemon..."
 # dnsflush
-sudo dscacheutil -flushcache
-sudo killall -HUP mDNSResponder
+sudo /usr/bin/dscacheutil -flushcache
+sudo /usr/bin/killall -HUP mDNSResponder
 
 slog "Unfortunately absolutely none of this works without a restart."
 slog "Bringing the network service down. This will interrupt connections."
 for service in $services; do
   slog "Stopping $service..."
-  sudo networksetup -setnetworkserviceenabled "$service" Off
+  sudo /usr/sbin/networksetup -setnetworkserviceenabled "$service" Off
   slog "Restarting $service..."
-  sudo networksetup -setnetworkserviceenabled "$service" On
+  sudo /usr/sbin/networksetup -setnetworkserviceenabled "$service" On
 done
 dnsReset
 slog "Resetting DNS daemon..."
 # dnsflush
-sudo dscacheutil -flushcache
-sudo killall -HUP mDNSResponder
+sudo /usr/bin/dscacheutil -flushcache
+sudo /usr/bin/killall -HUP mDNSResponder
 slog "Done!"
