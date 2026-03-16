@@ -215,22 +215,20 @@ in {
       '';
     };
 
-    # Webhook receiver script.
-    environment.systemPackages = [
-      (pkgs.writeShellApplication {
-        name = "webhook-receiver";
-        runtimeInputs = with pkgs; [ coreutils jq systemd ];
-        text = builtins.readFile ../scripts/webhook-receiver.sh;
-      })
-    ];
-
     # Webhook receiver service.
     systemd.services.nix-deployment-webhook = {
       description = "Nix deployment webhook receiver";
       wantedBy = [ "multi-user.target" ];
       after = [ "network.target" "nix-deployment-init.service" ];
 
-      path = with pkgs; [ socat ];
+      path = with pkgs; [
+        socat
+        (writeShellApplication {
+          name = "webhook-receiver";
+          runtimeInputs = [ coreutils jq systemd ];
+          text = builtins.readFile ../scripts/webhook-receiver.sh;
+        })
+      ];
 
       serviceConfig = {
         Type = "simple";
