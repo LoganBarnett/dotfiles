@@ -79,6 +79,8 @@ in
     }
     ../darwin.nix
     ../darwin-configs/garage-queue-worker.nix
+    flake-inputs.proc-siding.darwinModules.default
+    ../darwin-configs/proc-siding-worker.nix
     ../darwin-configs/goss-ollama-metal-gpu.nix
     ../darwin-configs/ollama.nix
     # M1 Max with 32 GB unified memory: 32 × 0.75 ≈ 24 GB available for

@@ -31,9 +31,9 @@ in
         # ];
       }
     )
-    flake-inputs.garage-queue.nixosModules.worker
-    flake-inputs.home-manager.nixosModules.home-manager
     ../users/logan-desktop.nix
+    flake-inputs.proc-siding.nixosModules.default
+    ../nixos-configs/proc-siding-worker.nix
     ../nixos-configs/airplay-server.nix
     ../nixos-modules/amd-gpu.nix
     ../nixos-modules/discord.nix
@@ -100,6 +100,7 @@ in
     # ../users/eric-desktop.nix
   ];
   services.garage-queue-worker.settings.capabilities.scalars.vram_mb = 12288;
+  services.proc-siding.settings.detector.kind = "amd";
   environment.systemPackages = [
     # Let's be able to consume media.
     pkgs.ffmpeg

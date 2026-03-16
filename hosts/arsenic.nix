@@ -34,8 +34,9 @@
       server-port = 8080;
       fqdn = "${host-id}.proton";
     })
-    flake-inputs.garage-queue.nixosModules.worker
     ../nixos-configs/garage-queue-worker.nix
+    flake-inputs.proc-siding.nixosModules.default
+    ../nixos-configs/proc-siding-worker.nix
     ../nixos-configs/ollama.nix
     ../nixos-configs/ollama-models-8gb-vram.nix
     ../nixos-modules/server-host.nix
@@ -104,4 +105,5 @@
     }
   ];
   services.garage-queue-worker.settings.capabilities.scalars.vram_mb = 8192;
+  services.proc-siding.settings.detector.kind = "nvidia";
 }
