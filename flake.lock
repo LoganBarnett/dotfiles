@@ -40,11 +40,11 @@
         "treefmt-nix": "treefmt-nix"
       },
       "locked": {
-        "lastModified": 1772232213,
-        "narHash": "sha256-lcjrinTGtcJnRIyGUqdXAg8GiU4BBnD0XL4YxaaqjIc=",
+        "lastModified": 1772234121,
+        "narHash": "sha256-6ocR88eieln8i0c78VNskO+8NfojOgIe4j6UQgyI714=",
         "ref": "rust-runtime",
-        "rev": "c480d8c31d3db79c331887ef88ca1ef883e4072c",
-        "revCount": 273,
+        "rev": "933de3e4ed20a04e235b52255083724b87e3e395",
+        "revCount": 275,
         "type": "git",
         "url": "ssh://git@gitea.proton:2222/logan/agenix-rekey.git"
       },

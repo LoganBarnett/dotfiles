@@ -145,6 +145,7 @@ in
   # environment.etc."ssh/ssh_host_ed25519_key".file = config.age.secrets."${host-id}-pub-key".file;
 
   age.secrets.proton-ca = {
+    intermediary = true;
     rekeyFile = ../secrets/proton-ca.age;
     settings = {
       tls = {
