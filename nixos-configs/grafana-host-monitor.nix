@@ -213,6 +213,7 @@ in {
     {
       type = "stat";
       title = "Service Health Issues";
+      datasource = "Prometheus";
       gridPos = {
         h = 1 * height;
         w = 1 * width;
@@ -226,20 +227,24 @@ in {
               sum by (instance) (
                 max_over_time(systemd_unit_state{state="failed"}[1m])
               )
-              or
-              on(instance) systemd_unit_state{
-                name="basic.target",
-                state="active"
-              } * 0
+              or on(instance)
+              sum by (instance) (
+                systemd_unit_state{
+                  name="basic.target",
+                  state="active"
+                }
+              ) * 0
             )
-            +
+            + on(instance)
             (
               sum by (instance) (goss_check{result="1"})
-              or
-              on(instance) systemd_unit_state{
-                name="basic.target",
-                state="active"
-              } * 0
+              or on(instance)
+              sum by (instance) (
+                systemd_unit_state{
+                  name="basic.target",
+                  state="active"
+                }
+              ) * 0
             )
           '';
           format = "time_series";
