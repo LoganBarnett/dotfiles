@@ -1,0 +1,27 @@
+#+title:     Tasks
+#+language:  en
+
+* Nix
+
+** TODO Consolidate internal derivations out of overlays
+
+Overlays should be used for overriding existing nixpkgs packages, not for
+adding new internal ones.  The current pattern of stuffing ~callPackage~ calls
+into a catch-all overlay block in ~overlays/default.nix~ is an anti-pattern.
+
+Consider introducing an ~internal-pkgs~ attrset (e.g. a ~pkgs/default.nix~
+that takes ~pkgs~ and returns all internal derivations) so consumers can
+reference ~internalPkgs.foo~ directly without polluting ~pkgs~.
+
+** TODO Build a Nix cache-miss tracer
+
+There is no first-class tool in Nix for diagnosing why a derivation missed the
+binary cache.  Common causes include:
+
+- An overlay touching a shared dependency, changing hashes all the way up the
+  closure without any visible indication.
+- Hydra not yet having evaluated a recently-bumped nixpkgs rev.
+
+A useful tool would accept a store path and explain why it was not a cache hit:
+diffing its closure against a known-cached equivalent, identifying the first
+ancestor whose hash diverges, and naming the overlay or input responsible.
