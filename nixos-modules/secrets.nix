@@ -148,15 +148,19 @@ in {
     generator.script = "tls-ca-root";
   };
 
-  age.secrets.builder-key = {
+  age.secrets.builder-key-blue = {
     generator.script = "ssh-ed25519-with-pub";
-    rekeyFile = ../secrets/builder-key.age;
+    rekeyFile = ../secrets/builder-key-blue.age;
     # Don't set a custom path - let agenix manage it in /run/agenix.  Setting a
     # custom path in /etc/nix conflicts with nix-darwin's environment.etc
     # management, which causes nix-darwin to rename the file with a
     # .before-nix-darwin suffix.
     # path = "/etc/nix/builder-agenix-key";
     # path = "/etc/nix/builder_ed25519";
+  };
+
+  age.secrets.builder-key-green = {
+    generator.script = "ssh-ed25519-with-pub";
   };
 
   # If you're here because you can't find /run/agenix, you're probably on

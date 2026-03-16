@@ -19,7 +19,8 @@ in {
       createHome = true;
       openssh = {
         authorizedKeys.keys = [
-          (builtins.readFile ../secrets/builder-key.pub)
+          (builtins.readFile ../secrets/builder-key-blue.pub)
+          (builtins.readFile ../secrets/generated/builder-key-green.pub)
         ];
       };
     };

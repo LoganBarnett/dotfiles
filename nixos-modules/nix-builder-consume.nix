@@ -2,10 +2,10 @@
 # Make this host consume our various builders.
 ################################################################################
 { config, host-id, lib, pkgs, ... }: let
-  # sshKey = ../secrets/builder-key.pub;
+  # sshKey = ../secrets/builder-key-blue.pub;
   # Use the agenix-managed secret path directly.  This avoids conflicts with
   # nix-darwin's environment.etc management.
-  sshKey = config.age.secrets.builder-key.path;
+  sshKey = config.age.secrets.builder-key-blue.path;
   # This may be causing conflicts with the darwin linux-builder, since this is
   # its path.
   # sshKey = "/etc/nix/builder_ed25519";
@@ -110,9 +110,9 @@ in {
   #   Host lithium.proton
   #     HostName lithium.proton
   #     User builder
-  #     IdentityFile ${config.age.secrets.builder-key.path}
+  #     IdentityFile ${config.age.secrets.builder-key-blue.path}
   # '';
 
   environment.etc."nix/builder_ed25519.pub".text =
-    builtins.readFile ../secrets/builder-key.pub;
+    builtins.readFile ../secrets/builder-key-blue.pub;
 }
