@@ -164,4 +164,36 @@ key_remap "$internal_keyboards" 'internal' '
 #       }
 #     ]
 #   }'
+# Turn off caps lock unconditionally.  Key remapping can leave it stuck on,
+# and when the key is remapped away from caps lock (as it is here), the
+# usual "press the key" approach cannot clear the OS state.  IOKit's
+# IOHIDSetModifierLockState is the only reliable method in that case.
+python3 << 'PYEOF'
+import ctypes
+
+iokit = ctypes.cdll.LoadLibrary('/System/Library/Frameworks/IOKit.framework/IOKit')
+libc  = ctypes.cdll.LoadLibrary('/usr/lib/libSystem.B.dylib')
+
+iokit.IOServiceMatching.restype = ctypes.c_void_p
+iokit.IOServiceGetMatchingService.argtypes = [ctypes.c_uint32, ctypes.c_void_p]
+iokit.IOServiceGetMatchingService.restype  = ctypes.c_uint32
+iokit.IOServiceOpen.argtypes = [
+    ctypes.c_uint32, ctypes.c_uint32, ctypes.c_uint32,
+    ctypes.POINTER(ctypes.c_uint32)
+]
+iokit.IOServiceOpen.restype = ctypes.c_int
+iokit.IOHIDSetModifierLockState.argtypes = [ctypes.c_uint32, ctypes.c_int, ctypes.c_bool]
+iokit.IOHIDSetModifierLockState.restype  = ctypes.c_int
+iokit.IOServiceClose.argtypes  = [ctypes.c_uint32]
+iokit.IOObjectRelease.argtypes = [ctypes.c_uint32]
+libc.mach_task_self.restype = ctypes.c_uint32
+
+service = iokit.IOServiceGetMatchingService(0, iokit.IOServiceMatching(b'IOHIDSystem'))
+connect = ctypes.c_uint32(0)
+iokit.IOServiceOpen(service, libc.mach_task_self(), 0, ctypes.byref(connect))
+iokit.IOHIDSetModifierLockState(connect.value, 1, False)  # kIOHIDCapsLockState = 1
+iokit.IOServiceClose(connect.value)
+iokit.IOObjectRelease(service)
+PYEOF
+echo "Caps lock cleared."
 echo 'Done!'
