@@ -295,5 +295,16 @@ in {
 
     # Open firewall for webhook.
     networking.firewall.allowedTCPPorts = [ cfg.webhookPort ];
+
+    # Allow nix-deploy user to start deployment service.
+    security.polkit.extraConfig = ''
+      polkit.addRule(function(action, subject) {
+        if (action.id == "org.freedesktop.systemd1.manage-units" &&
+            action.lookup("unit") == "nix-deployment-check.service" &&
+            subject.user == "nix-deploy") {
+          return polkit.Result.YES;
+        }
+      });
+    '';
   };
 }
