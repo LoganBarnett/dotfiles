@@ -23,8 +23,9 @@ let
   # context fully before bringing it back up, which is what forces GPU
   # re-acquisition.
   ollamaRestartScript = pkgs.writeShellScript "ollama-metal-restart" ''
-    launchctl kickstart -k \
-      "gui/$(id -u ${config.system.primaryUser})/org.nixos.ollama"
+    uid=$(id -u ${config.system.primaryUser})
+    launchctl asuser "$uid" launchctl kickstart -k \
+      "gui/$uid/org.nixos.ollama"
   '';
 in
 {
