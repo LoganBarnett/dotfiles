@@ -40,7 +40,7 @@ in
     ../nixos-modules/gaming-android.nix
     ../nixos-modules/lutris-gaming.nix
     ../nixos-modules/lvm-uefi-disk.nix
-    ../nixos-configs/garage-queue-worker-titanium.nix
+    ../nixos-configs/garage-queue-worker.nix
     ../nixos-configs/ollama.nix
     ../nixos-configs/ollama-models-12gb-vram.nix
     ../nixos-modules/steam-gaming.nix
@@ -99,6 +99,7 @@ in
     )
     # ../users/eric-desktop.nix
   ];
+  services.garage-queue-worker.settings.capabilities.scalars.vram_mb = 12288;
   environment.systemPackages = [
     # Let's be able to consume media.
     pkgs.ffmpeg

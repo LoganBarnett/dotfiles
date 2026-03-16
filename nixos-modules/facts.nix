@@ -144,9 +144,6 @@
       #   system = "aarch64-linux";
       # };
       arsenic = {
-        aliases = [
-          "ollama"
-        ];
         controlledHost = true;
         ipv4 = 7;
         monitors = [
@@ -357,6 +354,7 @@
           "blocky"
           "dns-smart-block"
           "ldap"
+          "ollama"
         ];
         controlledHost = true;
         flake-input-overrides = { };

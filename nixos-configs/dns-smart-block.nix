@@ -40,7 +40,7 @@
 
     # Ollama LLM server configuration.
     ollama = {
-      url = "http://M-CL64PK702X.proton:11434";
+      url = "https://ollama.proton";
       model = "llama3.2:3b";
     };
 
@@ -100,6 +100,12 @@
         classificationType = "gaming";
         isMatchingSite = false;
         reasoning = "GitHub is a software development platform, not a gaming site.";
+      }
+      {
+        domain = "registry.ollama.ai";
+        classificationType = "all";
+        isMatchingSite = false;
+        reasoning = "Ollama model registry — AI infrastructure, not a gaming or streaming site.";
       }
     ];
 

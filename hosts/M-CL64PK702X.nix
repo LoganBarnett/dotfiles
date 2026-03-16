@@ -36,6 +36,7 @@ let
   org-domain = "${org-alias}co.com";
 in
 {
+  services.garage-queue-worker.settings.capabilities.scalars.vram_mb = 24576;
   system.primaryUser = username;
   # Something required for every macOS host after a nix-darwin migration.  This
   # value will be different per host.  Perhaps hosts stood up after that point
@@ -59,6 +60,7 @@ in
       }
     )
     ../nixos-modules/secrets.nix
+    flake-inputs.garage-queue.darwinModules.worker
     flake-inputs.home-manager.darwinModules.home-manager
     # the _module.args idiom is how I can ensure these values get passed via the
     # internal callPackage mechanism for darwinSystem on these modules.  We want
@@ -76,6 +78,7 @@ in
       ];
     }
     ../darwin.nix
+    ../darwin-configs/garage-queue-worker.nix
     ../darwin-configs/goss-ollama-metal-gpu.nix
     ../darwin-configs/ollama.nix
     # M1 Max with 32 GB unified memory: 32 × 0.75 ≈ 24 GB available for

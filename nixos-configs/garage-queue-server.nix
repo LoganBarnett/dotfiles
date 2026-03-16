@@ -1,4 +1,4 @@
-{ ... }:
+{ config, ... }:
 let
   # Estimate VRAM requirement in MB from the model name.  Parses the
   # parameter count (e.g. "8b" → 8) and quantisation level (e.g. "q4" →
@@ -18,8 +18,10 @@ let
   '';
 in
 {
-  # Workers connect directly to this port over the internal .proton network.
-  networking.firewall.allowedTCPPorts = [ 9090 ];
+  services.https.fqdns."ollama.proton" = {
+    enable = true;
+    internalPort = config.services.garage-queue-server.settings.server.port;
+  };
 
   services.garage-queue-server = {
     enable = true;

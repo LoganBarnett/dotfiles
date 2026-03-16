@@ -4,7 +4,7 @@
     enable = true;
     settings = {
       worker = {
-        server_url = "http://silicon.proton:9090";
+        server_url = "https://ollama.proton";
         poll_interval_ms = 1000;
       };
       control = {
@@ -13,7 +13,6 @@
       };
       capabilities = {
         tags = config.services.ollama.loadModels;
-        scalars.vram_mb = 12288;
       };
       delegator = {
         kind = "http";
