@@ -188,11 +188,15 @@ in {
         ../new-e-ah-certs.pem
         # Yabba dabba do!
         ../ach-em-ach-flintstones-ca.pem
+        # Trust proton CA for local services.
+        ../secrets/proton-ca.crt
       ];
       security.pki.keychain.certificateFiles = [
         ../new-e-ah-certs.pem
         # Yabba dabba do!
         ../ach-em-ach-flintstones-ca.pem
+        # Trust proton CA for local services.
+        ../secrets/proton-ca.crt
       ];
       # system.activationScripts.postActivation.text = ''
       # '';
