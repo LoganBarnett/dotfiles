@@ -230,7 +230,7 @@
       requiresMerged = lib.unique ((svcOld.requires or []) ++ (svcAdd.requires or []));
       scOld = svcOld.serviceConfig or {};
       scAdd = svcAdd.serviceConfig or {};
-      # For lists inside serviceConfig we keep ‘last wins’ unless you want custom concat.
+      # For lists inside serviceConfig we keep 'last wins' unless you want custom concat.
     in svcOld // svcAdd // {
       after = afterMerged;
       requires = requiresMerged;
@@ -310,6 +310,24 @@
       }
     ) {} mountsEnabled;
 
+  # Automount units don't support the reload verb, so switch-to-configuration
+  # fails with a noisy error whenever the mount definition changes.  Drop-ins
+  # marking X-RestartIfChanged=false tell it to leave the units alone during
+  # switch.  Changes to mount options take effect on manual restart or reboot,
+  # which is preferable to interrupting live mounts mid-playback.
+  automountUnitOverrides =
+    foldlAttrs (acc: _: m:
+      acc // {
+        "${toMountUnit (toString m.mountPoint)}.automount" = {
+          overrideStrategy = "asDropin";
+          text = ''
+            [Unit]
+            X-RestartIfChanged=false
+          '';
+        };
+      }
+    ) {} mountsEnabled;
+
 in {
   options.services.nfs-mount = {
     enable = mkEnableOption "Enable NFS mounts.";
@@ -341,6 +359,7 @@ in {
     # A gotcha: Don't use fileSystems and systemd.mounts.  fileSystems will emit
     # systemd.mounts, in effect.
     fileSystems = fileSystems;
+    systemd.units = automountUnitOverrides;
     systemd.services = servicesFromBinds // servicesSanity // wireguardPeerServices;
     users.groups = mapAttrs' (name: value: {
       name = value.bindToService;
