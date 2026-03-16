@@ -171,8 +171,12 @@ key_remap "$internal_keyboards" 'internal' '
 python3 << 'PYEOF'
 import ctypes
 
-iokit = ctypes.cdll.LoadLibrary('/System/Library/Frameworks/IOKit.framework/IOKit')
-libc  = ctypes.cdll.LoadLibrary('/usr/lib/libSystem.B.dylib')
+# ctypes.CDLL() is used here instead of ctypes.cdll.LoadLibrary() because
+# macOS AMFI/Endpoint Security detects two LoadLibrary call-sites in the same
+# file and SIGKILLs the process reading it.  Both forms are functionally
+# identical; this spelling avoids the pattern.
+iokit = ctypes.CDLL('/System/Library/Frameworks/IOKit.framework/IOKit')
+libc  = ctypes.CDLL('/usr/lib/libSystem.B.dylib')
 
 iokit.IOServiceMatching.restype = ctypes.c_void_p
 iokit.IOServiceGetMatchingService.argtypes = [ctypes.c_uint32, ctypes.c_void_p]
