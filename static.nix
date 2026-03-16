@@ -11,9 +11,9 @@
 {
 
   claude-code = {
-    version = "2.1.45";
-    hash = "sha256-EWpGw/5rX4NBPx4sGnz3uzvUtSQKBzCBZPSCTYarsPI=";
-    npmDepsHash = "sha256-f6MtCHie9SQUYcUw+s0xIN2wgDRwFNYggcsvA3r6TBc=";
+    version = "2.1.59";
+    hash = "sha256-Dam9aJ0qBdqU40ACfzGQHuytW6ur0fMLm8D5fIKd1TE=";
+    npmDepsHash = "sha256-k2ytvmySVD/qBfIOc5i1D1Ge8D/gmO9kjh4eDN9ceZc=";
   };
 
   makemkv = {
