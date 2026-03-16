@@ -20,6 +20,7 @@ in
     ./home-configs/claude-code.nix
     ./home-modules/claude-code.nix
     ./home-configs/gh-cli.nix
+    ./home-configs/gpg-agent.nix
   ];
   # Let Home Manager install and manage itself.
   # programs.home-manager.enable = true;
@@ -28,16 +29,20 @@ in
   # Enabling flakes is implicit now, so don't even enable this, despite advice
   # to the contrary still floating around.
   # programs.direnv.nix-direnv.enableFlakes = true;
-  # Start keychain, which ensures only one ssh-agent and one gpg-agent. The
-  # results print out the standard environment variables much like ssh-agent and
-  # gpg-agent do, so we must eval them to take effect.  Weird things happen if
-  # that is omitted, since it will use the system defaults (which are wrong or
+  # Start keychain, which ensures only one ssh-agent between logins.  The
+  # results print out the standard environment variables much like ssh-agent
+  # does, so we must eval them to take effect.  Weird things happen if that is
+  # omitted, since it will use the system defaults (which are wrong or
   # separate).
   #
   # Without --noask, the SSH_AGENT_PID won't be setup.  Somehow though,
   # identities can be added and used without issue, except via Emacs (and
   # perhaps other tools).  I still have to add the SSH keys by hand with a
   # simple `ssh-add` invocation, but it is a one-time thing.
+  #
+  # Note: gpg-agent is managed separately via services.gpg-agent below.
+  # Keychain dropped support for managing gpg-agent as modern GnuPG handles
+  # its own agent lifecycle.
   programs.keychain = {
     enable = true;
     extraFlags = [ "--noask" "--quiet" ];

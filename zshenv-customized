@@ -2,9 +2,6 @@
 
 # export GEM_PATH="~/.gem/ruby/2.6.0:$GEM_PATH"
 export PATH="$PATH:/Library/TeX/texbin/"
-# Should fix the "gpg: signing failed: Inappropriate ioctl for device" per
-# https://stackoverflow.com/a/57591830
-export GPG_TTY=$(tty)
 
 # Recently while tethered, the `ssh -4` value actually started causing problems
 # for git operations against GitHub.  So it would seem this workaround is no
