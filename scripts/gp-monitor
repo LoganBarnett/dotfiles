@@ -40,7 +40,7 @@ while [[ $# -gt 0 ]]; do
       shift 2
       ;;
     -h|--help)
-      echo "Usage: gp-monitor.sh [OPTIONS]"
+      echo "Usage: gp-monitor [OPTIONS]"
       echo ""
       echo "Monitor GlobalProtect VPN connection and reconnect if disconnected."
       echo "Uses gp-connect-auto for fully automated SSO + TOTP authentication."
@@ -99,15 +99,64 @@ log() {
 
 # Check if VPN is connected
 is_connected() {
-  # Check if gpclient is running and has established a connection
-  # Look for the PID file and verify the process is running
+  # Check if gpclient is running and has established a connection.
+  # Look for the PID file and verify the process is running.
+  # Note: We use ps -o pid= because gpclient runs as root but the monitor runs
+  # as user, and macOS ps with -p flag can exit with non-zero status due to
+  # entitlement warnings even when the process exists.
   if [ -f /var/run/gpclient.lock ]; then
     PID=$(cat /var/run/gpclient.lock 2>/dev/null)
-    if [ -n "$PID" ] && kill -0 "$PID" 2>/dev/null; then
+    if [ -n "$PID" ] && [ -n "$(ps -o pid= -p "$PID" 2>/dev/null)" ]; then
       return 0
     fi
   fi
   return 1
+}
+
+# Check if VPN DNS is working for internal domains
+is_dns_working() {
+  # Try to resolve a known internal domain using the VPN DNS.
+  # This is more reliable than just checking if the tunnel is up.
+  # Pick a domain that should always exist on the VPN.
+  local test_domain="americas.nwea.pvt"
+
+  # Use dig to test DNS resolution with a short timeout.
+  if command -v dig >/dev/null 2>&1; then
+    if dig +short +time=2 +tries=1 "$test_domain" >/dev/null 2>&1; then
+      return 0
+    fi
+  fi
+  return 1
+}
+
+# Restore the default gateway if the VPN tunnel dropped without running the
+# vpnc-script disconnect case (e.g. killed with SIGKILL).  Without this, the
+# machine loses all internet access when the VPN disconnects.
+restore_default_gateway_if_needed() {
+  local gateway_file="/var/run/vpnc-default-gateway"
+  if [ ! -f "$gateway_file" ]; then
+    return 0
+  fi
+
+  # Read the saved gateway before the VPN overrode the default route.
+  read -r SAVED_GW SAVED_IF < "$gateway_file" || return 0
+
+  # Check if the current default route is through a utun interface.
+  local current_if
+  current_if=$(route -n get default 2>/dev/null | awk '/interface:/{print $2}')
+  if echo "$current_if" | grep -q "^utun"; then
+    # Verify the VPN tunnel is actually down.
+    if ! is_connected; then
+      log "WARNING: Default route is via dead tunnel ($current_if) - restoring $SAVED_GW via $SAVED_IF"
+      route delete default 2>/dev/null || true
+      if route add default "$SAVED_GW" 2>/dev/null; then
+        log "Default gateway restored: $SAVED_GW via $SAVED_IF"
+      else
+        log "ERROR: Failed to restore default gateway"
+      fi
+      rm -f "$gateway_file"
+    fi
+  fi
 }
 
 # Disconnect function
@@ -126,9 +175,11 @@ connect() {
   fi
   log "User: $GP_USERNAME"
 
-  # Use gp-connect-auto for fully automated connection
-  # This handles SSO, TOTP, and tunnel creation automatically
-  gp-connect-auto >> "$GP_MONITOR_LOG" 2>&1 &
+  # Use gp-connect-auto for fully automated connection.
+  # This handles SSO, TOTP, and tunnel creation automatically.
+  # Use sudo -E to preserve environment while gaining tunnel creation privileges.
+  # shellcheck disable=SC2024
+  sudo -E gp-connect-auto >> "$GP_MONITOR_LOG" 2>&1 &
   CONNECT_PID=$!
 
   log "Automated connection process started (PID: $CONNECT_PID)"
@@ -143,7 +194,7 @@ connect() {
 
       # Fix DNS scoping on macOS
       log "Fixing DNS scoping for VPN interface..."
-      if fix-vpn-dns-scoping >> "$GP_MONITOR_LOG" 2>&1; then
+      if dns-vpn-scoping-fix >> "$GP_MONITOR_LOG" 2>&1; then
         log "DNS scoping fixed successfully"
       else
         log "WARNING: Failed to fix DNS scoping"
@@ -175,12 +226,37 @@ fi
 while true; do
   sleep "$GP_CHECK_INTERVAL"
 
+  # Safety net: if a prior connection left the default route pointing at a dead
+  # tunnel, restore the original gateway before attempting anything else.
+  restore_default_gateway_if_needed
+
   if ! is_connected; then
     log "VPN connection lost, attempting to reconnect..."
     disconnect
     sleep 2
     connect
+  elif ! is_dns_working; then
+    log "VPN DNS resolution is broken, attempting to fix..."
+    # Try to fix DNS scoping first without full reconnect.
+    if dns-vpn-scoping-fix >> "$GP_MONITOR_LOG" 2>&1; then
+      log "DNS scoping fix applied successfully"
+      # Verify DNS is now working.
+      sleep 2
+      if is_dns_working; then
+        log "DNS resolution restored"
+      else
+        log "DNS still broken after scoping fix, triggering full reconnect..."
+        disconnect
+        sleep 2
+        connect
+      fi
+    else
+      log "DNS scoping fix failed, triggering full reconnect..."
+      disconnect
+      sleep 2
+      connect
+    fi
   else
-    log "VPN connection is active"
+    log "VPN connection and DNS are active"
   fi
 done

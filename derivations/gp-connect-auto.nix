@@ -3,6 +3,7 @@
   coreutils,
   expect,
   gpclient,
+  openconnect,
   pass,
   python3,
   writeShellApplication,
@@ -76,6 +77,12 @@ writeShellApplication {
 
     # Setup cleanup trap
     trap 'rm -f "$AUTH_SCRIPT" "$PTY_SCRIPT" "$VPNC_SCRIPT"' EXIT
+
+    # Path to openconnect's HIP report CSD wrapper, baked in at build time so
+    # that gpclient can submit the host integrity check required to unblock the
+    # VPN data plane.
+    GP_CSD_WRAPPER="${openconnect}/libexec/openconnect/hipreport.sh"
+    export GP_CSD_WRAPPER
 
     # Now run the main script
     ${builtins.readFile ../scripts/gp-connect-auto}

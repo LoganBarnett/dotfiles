@@ -6,10 +6,10 @@
 }:
 
 writeShellApplication {
-  name = "fix-vpn-dns-scoping";
+  name = "vpn-test-harness-recover";
   runtimeInputs = [
     bash
     coreutils
   ];
-  text = builtins.readFile ../scripts/fix-vpn-dns-scoping;
+  text = builtins.readFile ../scripts/vpn-test-harness-recover;
 }

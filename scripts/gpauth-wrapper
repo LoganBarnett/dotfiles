@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+################################################################################
+# Wrapper for gpauth to allow running as root by delegating to PRIMARY_USER.
+# This is used by gpclient when the monitor service runs as root.
+################################################################################
+
+# If running as root and PRIMARY_USER is set, delegate to that user.
+if [ "$(id -u)" -eq 0 ] && [ -n "$PRIMARY_USER" ]; then
+  exec sudo -u "$PRIMARY_USER" gpauth-real "$@"
+else
+  # Running as user, call gpauth directly
+  exec gpauth-real "$@"
+fi

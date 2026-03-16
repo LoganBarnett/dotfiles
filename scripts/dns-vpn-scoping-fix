@@ -1,0 +1,69 @@
+#!/usr/bin/env bash
+################################################################################
+# Fix GlobalProtect VPN DNS scoping for macOS.
+# This script creates /etc/resolver entries to ensure VPN domains are resolved
+# using the VPN DNS servers, not the local DNS. This is more reliable than
+# scutil-based configuration which can be overridden by network changes.
+################################################################################
+
+set -e
+
+# Find the VPN tunnel interface (utun with 10.89.x.x IP).
+VPN_IF=$(ifconfig | grep -B 3 "inet 10.89" | grep "^utun" | head -1 | cut -d: -f1)
+
+if [ -z "$VPN_IF" ]; then
+  echo "Error: No VPN tunnel interface found"
+  exit 1
+fi
+
+echo "Found VPN interface: $VPN_IF"
+
+# Extract DNS configuration from scutil.
+DNS_CONFIG=$(scutil --dns)
+
+# Extract VPN DNS servers (internal IPs in 10.x range, excluding the VPN tunnel
+# IP itself).
+mapfile -t VPN_DNS_SERVERS < <(echo "$DNS_CONFIG" | \
+  grep "nameserver\[" | \
+  awk '{print $3}' | \
+  grep "^10\." | \
+  grep -v "^10\.89\." | \
+  sort -u)
+
+# Extract VPN-specific search domains (exclude local domains like .local,
+# .proton, etc.).
+mapfile -t VPN_SEARCH_DOMAINS < <(echo "$DNS_CONFIG" | \
+  grep -E "domain\[|search domain\[" | \
+  awk '{print $4}' | \
+  grep -E "\.(pvt|hmco\.com|hmhco\.com|hmhpub\.com|heinemann\.com|hegn\.us)$" | \
+  sort -u)
+
+if [ ${#VPN_DNS_SERVERS[@]} -eq 0 ]; then
+  echo "Error: No VPN DNS servers found in current configuration"
+  exit 1
+fi
+
+if [ ${#VPN_SEARCH_DOMAINS[@]} -eq 0 ]; then
+  echo "Warning: No VPN search domains found in current configuration"
+fi
+
+echo "Found VPN DNS servers: ${VPN_DNS_SERVERS[*]}"
+echo "Found VPN search domains: ${VPN_SEARCH_DOMAINS[*]}"
+
+# Create resolver files for each VPN domain using privileged helper.
+# The helper validates all inputs and only operates on /etc/resolver.
+echo "Creating resolver configurations..."
+for domain in "${VPN_SEARCH_DOMAINS[@]}"; do
+  echo "Configuring resolver for $domain..."
+
+  # Call privileged helper to create resolver file
+  sudo dns-resolver-helper.sh create-resolver "$domain" "${VPN_DNS_SERVERS[@]}"
+
+  echo "  Created /etc/resolver/$domain"
+done
+
+# Flush DNS cache to apply changes.
+echo "Flushing DNS cache..."
+sudo dns-resolver-helper.sh flush-cache
+
+echo "DNS scoping configured successfully for ${#VPN_SEARCH_DOMAINS[@]} domains"

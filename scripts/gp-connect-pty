@@ -92,11 +92,44 @@ def run_gpclient_with_pty(gp_cmd, username, password, totp_code, auth_script):
 
                                         # Send callback to gpclient
                                         os.write(master, (callback_url + "\n").encode('utf-8'))
-                                        time.sleep(1)
 
-                                        # Send Enter to select default gateway
-                                        log("Sending Enter to select default gateway...")
-                                        os.write(master, b"\n")
+                                        # Wait for gateway selection prompt to appear.
+                                        # The prompt text is: "Which gateway do you want to connect to?"
+                                        log("Waiting for gateway selection prompt...")
+                                        gateway_prompt_detected = False
+                                        gateway_wait_start = time.time()
+                                        gateway_timeout = 30  # Wait up to 30 seconds for gateway prompt
+
+                                        while time.time() - gateway_wait_start < gateway_timeout:
+                                            # Check if process died
+                                            if process.poll() is not None:
+                                                log("gpclient exited while waiting for gateway prompt")
+                                                break
+
+                                            # Try to read more output
+                                            ready_gw, _, _ = select.select([master], [], [], 0.5)
+                                            if ready_gw:
+                                                try:
+                                                    gw_data = os.read(master, 1024).decode('utf-8', errors='replace')
+                                                    if gw_data:
+                                                        print(gw_data, end='', flush=True)
+                                                        output_buffer += gw_data
+
+                                                        # Check for gateway prompt
+                                                        if "Which gateway" in output_buffer or "gateway do you want" in output_buffer:
+                                                            gateway_prompt_detected = True
+                                                            log("Gateway selection prompt detected")
+                                                            break
+                                                except OSError:
+                                                    pass
+
+                                        if gateway_prompt_detected:
+                                            # Send Enter to select default (first) gateway
+                                            log("Sending Enter to select default gateway...")
+                                            time.sleep(0.5)  # Brief pause for menu to stabilize
+                                            os.write(master, b"\n")
+                                        else:
+                                            log("WARNING: Gateway prompt not detected within timeout")
 
                                     else:
                                         log(f"Authentication script failed: {result.stderr}")

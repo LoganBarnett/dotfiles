@@ -9,7 +9,7 @@
 let
   name = "gp-monitor";
   script = name;
-  fixVpnDnsScoping = callPackage ./fix-vpn-dns-scoping.nix { };
+  dnsVpnScopingFix = callPackage ./dns-vpn-scoping-fix.nix { };
 in
 writeShellApplication {
   inherit name;
@@ -17,7 +17,7 @@ writeShellApplication {
     bash
     gpclient
     coreutils
-    fixVpnDnsScoping
+    dnsVpnScopingFix
   ];
   text = builtins.readFile ../scripts/${script};
 }

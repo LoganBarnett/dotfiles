@@ -123,6 +123,15 @@ fi
 if [ -n "$GP_GATEWAY" ]; then
   GP_CMD="$GP_CMD --gateway \"$GP_GATEWAY\""
 fi
+# Submit the HIP (Host Integrity Protection) report required by the corporate
+# VPN gateway to unlock data-plane traffic.  GP_CSD_WRAPPER is the absolute
+# nix-store path set by the derivation at build time; fall back to the --hip
+# default-wrapper flag when the variable is absent (e.g. in ad-hoc invocations).
+if [ -n "${GP_CSD_WRAPPER:-}" ] && [ -f "$GP_CSD_WRAPPER" ]; then
+  GP_CMD="$GP_CMD --csd-wrapper \"$GP_CSD_WRAPPER\""
+else
+  GP_CMD="$GP_CMD --hip"
+fi
 # Use custom macOS vpnc-script if available
 if [ -n "$GP_VPNC_SCRIPT" ] && [ -f "$GP_VPNC_SCRIPT" ]; then
   GP_CMD="$GP_CMD --script \"$GP_VPNC_SCRIPT\""

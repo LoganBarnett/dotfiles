@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+################################################################################
+# Temporary DNS cleanup script to remove VPN search domains from global config.
+# This allows local domains like .proton to resolve without VPN interference.
+################################################################################
+
+set -e
+
+echo "Cleaning up global DNS search domains..."
+
+# Set global DNS to only use local search domain (.proton) and local DNS server.
+sudo /usr/sbin/scutil << 'EOF'
+d.init
+d.add SearchDomains * proton
+d.add ServerAddresses * 192.168.254.9
+set State:/Network/Global/DNS
+quit
+EOF
+
+# Flush DNS cache.
+sudo dscacheutil -flushcache
+sudo killall -HUP mDNSResponder 2>/dev/null || true
+
+echo "DNS cleanup complete. Local .proton domains should now resolve correctly."
+echo "You may need to reconnect to VPN after running nix-darwin-switch."

@@ -4,7 +4,12 @@
 # Runs as a system daemon (root) to allow VPN tunnel creation while accessing
 # the primary user's gpg keys and pass password store for authentication.
 ################################################################################
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 
 with lib;
 
@@ -23,14 +28,15 @@ let
     export GP_CHECK_INTERVAL="${toString cfg.checkInterval}"
     export GP_LOG_DIR="${cfg.logDir}"
 
-    # Create log directory
+    # Create log directory (running as user, ownership is automatic)
     mkdir -p "$GP_LOG_DIR"
 
     # Run the monitor script
     exec ${cfg.package}/bin/gp-monitor
   '';
 
-in {
+in
+{
   options = {
     services.globalprotect-monitor = {
       enable = mkOption {
@@ -102,39 +108,100 @@ in {
 
       logDir = mkOption {
         type = types.str;
-        default = "/var/log/gpclient";
-        example = "/var/log/gpclient";
+        default = "/Users/${cfg.primaryUser}/.local/share/gpclient/logs";
+        example = "/Users/john.doe/.local/share/gpclient/logs";
         description = "Directory where VPN monitor logs will be stored.";
+      };
+
+      headlessBrowser = mkOption {
+        type = types.bool;
+        default = true;
+        description = ''
+          Whether to run the Chromium browser in headless mode during
+          authentication.  Set to false to show the browser window for
+          debugging SSO flows.
+        '';
       };
 
       package = mkOption {
         type = types.package;
-        default = pkgs.callPackage ../derivations/gp-monitor.nix {};
+        default = pkgs.callPackage ../derivations/gp-monitor.nix { };
         description = "The gp-monitor package to use.";
       };
     };
   };
 
-  config = mkIf cfg.enable {
+  config = {
 
-    # Ensure required packages are available
+    # Packages and sudoers rules are always available when the module is
+    # imported, regardless of whether the daemon is enabled.  This ensures
+    # the VPN tooling is present even when iterating with enable = false.
+
     environment.systemPackages = [
+      (pkgs.callPackage ../derivations/cleanup-vpn.nix { })
+      (pkgs.callPackage ../derivations/dns-resolver-helper.nix { })
+      (pkgs.callPackage ../derivations/dns-vpn-scoping-fix.nix { })
       pkgs.gpclient
-      (pkgs.callPackage ../derivations/gp-connect-auto.nix {})
+      (pkgs.callPackage ../derivations/gp-connect-auto.nix { })
+      (pkgs.callPackage ../derivations/test-vpn-connectivity.nix { })
+      (pkgs.callPackage ../derivations/vpn-test-harness-recover.nix { })
+      (pkgs.callPackage ../derivations/vpn-test-harness.nix { })
     ];
 
-    # Create the launchd system daemon (runs as root for VPN tunnel creation)
-    launchd.daemons.globalprotect-monitor = {
+    # Allow user to run specific commands without password for VPN automation.
+    # 1. dns-resolver-helper: validates inputs and only operates on /etc/resolver
+    # 2. gp-connect-auto: needs elevated privileges for tunnel creation
+    # 3. cleanup-vpn: TEMPORARY for development - TODO: REMOVE BEFORE MERGE
+    # 4. vpn-test-harness-recover: restores default gateway after VPN tunnel collapse
+    security.sudo.extraConfig = ''
+      ${cfg.primaryUser} ALL=(root) NOPASSWD: ${
+        pkgs.callPackage ../derivations/dns-resolver-helper.nix { }
+      }/bin/dns-resolver-helper *
+      ${cfg.primaryUser} ALL=(root) NOPASSWD: SETENV: ${
+        pkgs.callPackage ../derivations/gp-connect-auto.nix { }
+      }/bin/gp-connect-auto
+      ${cfg.primaryUser} ALL=(root) NOPASSWD: ${
+        pkgs.callPackage ../derivations/cleanup-vpn.nix { }
+      }/bin/cleanup-vpn
+      ${cfg.primaryUser} ALL=(root) NOPASSWD: SETENV: ${
+        pkgs.callPackage ../derivations/vpn-test-harness-recover.nix { }
+      }/bin/vpn-test-harness-recover
+      # Allow manual DHCP renewal and network reset for post-VPN-disconnect recovery.
+      ${cfg.primaryUser} ALL=(root) NOPASSWD: /usr/sbin/ipconfig set * DHCP
+      ${cfg.primaryUser} ALL=(root) NOPASSWD: /usr/sbin/networksetup -setdhcp *
+      ${cfg.primaryUser} ALL=(root) NOPASSWD: /usr/sbin/networksetup -setdnsservers * Empty
+      ${cfg.primaryUser} ALL=(root) NOPASSWD: /usr/sbin/networksetup -setsearchdomains * Empty
+      ${cfg.primaryUser} ALL=(root) NOPASSWD: /usr/sbin/networksetup -setwebproxystate * Off
+      ${cfg.primaryUser} ALL=(root) NOPASSWD: /usr/sbin/networksetup -setsecurewebproxystate * Off
+      ${cfg.primaryUser} ALL=(root) NOPASSWD: /usr/sbin/networksetup -setv6automatic *
+      ${cfg.primaryUser} ALL=(root) NOPASSWD: /usr/sbin/networksetup -setproxybypassdomains * Empty
+      ${cfg.primaryUser} ALL=(root) NOPASSWD: /usr/sbin/networksetup -setnetworkserviceenabled * Off
+      ${cfg.primaryUser} ALL=(root) NOPASSWD: /usr/sbin/networksetup -setnetworkserviceenabled * On
+      ${cfg.primaryUser} ALL=(root) NOPASSWD: /usr/bin/dscacheutil -flushcache
+      ${cfg.primaryUser} ALL=(root) NOPASSWD: /usr/bin/killall -HUP mDNSResponder
+      # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+      # !! DO NOT COMMIT - TEMPORARY DEVELOPMENT RULE - REMOVE BEFORE MERGE !!
+      # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+      ${cfg.primaryUser} ALL=(root) NOPASSWD: SETENV: ${
+        pkgs.callPackage ../derivations/vpn-test-harness.nix { }
+      }/bin/vpn-test-harness *
+    '';
+
+    # The launchd daemon is only created when explicitly enabled.
+    launchd.daemons.globalprotect-monitor = mkIf cfg.enable {
       path = [ config.environment.systemPath ];
 
       serviceConfig = {
         KeepAlive = true;
         RunAtLoad = true;
-        ProgramArguments = [ "${pkgs.bash}/bin/bash" "${monitorScript}" ];
+        ProgramArguments = [
+          "${pkgs.bash}/bin/bash"
+          "${monitorScript}"
+        ];
 
-        # Run as root to allow VPN tunnel creation
-        UserName = "root";
-        GroupName = "wheel";
+        # Run as primary user
+        UserName = cfg.primaryUser;
+        GroupName = "staff";
 
         # Environment variables - these match what gp-connect-auto expects
         EnvironmentVariables = {
@@ -143,9 +210,9 @@ in {
           ORG_NAME = cfg.orgName;
           GP_CHECK_INTERVAL = toString cfg.checkInterval;
           GP_LOG_DIR = cfg.logDir;
-          # Use primary user's HOME for gpg/pass access (service runs as root)
-          HOME = "/Users/${cfg.primaryUser}";
-        } // (optionalAttrs (cfg.gateway != null) {
+          GP_BROWSER_HEADLESS = if cfg.headlessBrowser then "true" else "false";
+        }
+        // (optionalAttrs (cfg.gateway != null) {
           GP_GATEWAY = cfg.gateway;
         });
 

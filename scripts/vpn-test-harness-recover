@@ -1,0 +1,155 @@
+#!/usr/bin/env bash
+################################################################################
+# Scorched-earth network recovery after VPN tunnel collapse.
+#
+# Unconditionally:
+#   1. Removes the current default route (whatever it points at).
+#   2. Deletes any utun-based routes left over from the VPN session.
+#   3. Clears scutil DNS state injected by the vpnc-script.
+#   4. Triggers DHCP renewal on every active physical (en*) interface.
+#   5. Waits up to 15s for a usable default route to be re-established.
+#   6. Flushes the DNS cache.
+#
+# No attempt is made to detect the current state; the script always performs
+# all steps so stale state can never cause a missed recovery.
+#
+# Requires root (called via sudo from vpn-test-harness or run manually).
+################################################################################
+
+set -euo pipefail
+
+if [ "$(id -u)" -ne 0 ]; then
+  echo "Error: vpn-test-harness-recover must run as root" >&2
+  exit 1
+fi
+
+echo "========================================================"
+echo "vpn-test-harness-recover: scorched-earth network recovery"
+echo "========================================================"
+echo ""
+
+# Show pre-recovery state for diagnosis.
+echo "Pre-recovery default route:"
+route -n get default 2>&1 || echo "  (none)"
+echo ""
+
+# ---------------------------------------------------------------------------
+# Step 1: Kill any running gpclient instance.
+# ---------------------------------------------------------------------------
+# gpclient must be gone before the next connect attempt; otherwise it reports
+# "Another instance of the client is already running" and exits with code 1.
+# Reading the PID from the lock file is more precise than pkill, and avoids
+# accidentally killing unrelated processes.
+GPCLIENT_LOCK="/var/run/gpclient.lock"
+echo "Killing any running gpclient instance..."
+if [ -f "$GPCLIENT_LOCK" ]; then
+  GPC_PID=$(cat "$GPCLIENT_LOCK" 2>/dev/null || echo "")
+  if [ -n "$GPC_PID" ] && kill -0 "$GPC_PID" 2>/dev/null; then
+    echo "  Sending SIGKILL to gpclient PID $GPC_PID..."
+    kill -9 "$GPC_PID" 2>/dev/null || true
+    sleep 1
+  fi
+  rm -f "$GPCLIENT_LOCK"
+  echo "  Removed gpclient lock file"
+else
+  echo "  (no gpclient lock file found)"
+fi
+
+# ---------------------------------------------------------------------------
+# Step 2: Remove the current default route.
+# ---------------------------------------------------------------------------
+echo "Removing current default route..."
+if route delete default 2>/dev/null; then
+  echo "  ✓ Default route deleted"
+else
+  echo "  (no default route to delete)"
+fi
+
+# ---------------------------------------------------------------------------
+# Step 2: Remove any remaining utun-based routes.
+# ---------------------------------------------------------------------------
+echo "Removing utun routes from routing table..."
+REMOVED=0
+while true; do
+  # Find any route whose gateway interface is a utun device and delete it.
+  UTUN_ROUTE=$(netstat -rn -f inet 2>/dev/null | awk '$6 ~ /^utun/ {print $1; exit}')
+  if [ -z "$UTUN_ROUTE" ]; then
+    break
+  fi
+  if route delete "$UTUN_ROUTE" 2>/dev/null; then
+    REMOVED=$((REMOVED + 1))
+  else
+    break
+  fi
+done
+echo "  Removed $REMOVED utun route(s)"
+
+# ---------------------------------------------------------------------------
+# Step 3: Clear scutil DNS state injected by the vpnc-script.
+# ---------------------------------------------------------------------------
+echo "Clearing VPN DNS state from scutil..."
+# Enumerate State:/Network/Service/utun*/DNS entries and remove them.
+while IFS= read -r key; do
+  [ -z "$key" ] && continue
+  printf 'remove %s\nquit\n' "$key" | scutil 2>/dev/null || true
+  echo "  Removed scutil key: $key"
+done < <(printf 'list\n' | scutil 2>/dev/null | awk '/utun.*DNS/ {print $4}' || true)
+
+# ---------------------------------------------------------------------------
+# Step 4: Clean up gateway save file so the next connect starts fresh.
+# ---------------------------------------------------------------------------
+GATEWAY_FILE="/var/run/vpnc-default-gateway"
+TUNDEV_FILE="/var/run/vpnc-actual-tundev"
+VPN_GW_FILE="/var/run/vpnc-vpn-gateway"
+rm -f "$GATEWAY_FILE" "$TUNDEV_FILE" "$VPN_GW_FILE"
+echo "Cleared VPN state files"
+
+# ---------------------------------------------------------------------------
+# Step 5: Trigger DHCP on every active physical interface.
+# ---------------------------------------------------------------------------
+echo "Triggering DHCP on active physical interfaces..."
+RENEWED=0
+while IFS= read -r iface; do
+  [ -z "$iface" ] && continue
+  # Only renew interfaces that are active (have a link).
+  if ifconfig "$iface" 2>/dev/null | grep -q "status: active"; then
+    echo "  ipconfig set $iface DHCP"
+    if /usr/sbin/ipconfig set "$iface" DHCP 2>/dev/null; then
+      RENEWED=$((RENEWED + 1))
+    else
+      echo "    Warning: DHCP renewal failed for $iface"
+    fi
+  fi
+done < <(networksetup -listallhardwareports 2>/dev/null | awk '/^Device:/{print $2}' || true)
+echo "  Renewed $RENEWED interface(s)"
+
+# ---------------------------------------------------------------------------
+# Step 6: Wait up to 15s for a default route to be established.
+# ---------------------------------------------------------------------------
+echo ""
+echo "Waiting for default route..."
+for i in $(seq 1 15); do
+  if route -n get default >/dev/null 2>&1; then
+    echo "  ✓ Default route restored after ${i}s"
+    route -n get default 2>&1 | grep -E "gateway:|interface:" | sed 's/^/    /'
+    break
+  fi
+  sleep 1
+done
+if ! route -n get default >/dev/null 2>&1; then
+  echo "  ✗ No default route after 15s — DHCP may have failed" >&2
+fi
+
+# ---------------------------------------------------------------------------
+# Step 7: Flush DNS cache.
+# ---------------------------------------------------------------------------
+echo ""
+echo "Flushing DNS cache..."
+dscacheutil -flushcache
+killall -HUP mDNSResponder 2>/dev/null || true
+echo "  ✓ DNS cache flushed"
+
+echo ""
+echo "========================================================"
+echo "vpn-test-harness-recover: done"
+echo "========================================================"

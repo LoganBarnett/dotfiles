@@ -1,0 +1,70 @@
+#!/usr/bin/env bash
+################################################################################
+# Force cleanup and restart of VPN connection.
+# TODO: TEMPORARY SCRIPT - DO NOT MERGE.
+# This script has sudo privileges for development iteration only.
+################################################################################
+
+set -e
+
+echo "============================================================"
+echo "VPN Cleanup and Restart"
+echo "============================================================"
+echo ""
+
+# Kill existing gpclient if running.
+# Use graceful SIGTERM first so gpclient can run the vpnc-script disconnect
+# case and restore the default gateway.  Fall back to SIGKILL after 10 seconds.
+if [ -f /var/run/gpclient.lock ]; then
+  PID=$(cat /var/run/gpclient.lock 2>/dev/null || echo "")
+  if [ -n "$PID" ] && ps -o pid= -p "$PID" >/dev/null 2>&1; then
+    echo "Sending SIGTERM to gpclient (PID: $PID)..."
+    kill "$PID" 2>/dev/null || true
+
+    # Wait up to 10 seconds for graceful shutdown (disconnect script must run
+    # to restore the default gateway before we allow a force kill).
+    WAIT=0
+    while [ $WAIT -lt 10 ] && ps -o pid= -p "$PID" >/dev/null 2>&1; do
+      sleep 1
+      WAIT=$((WAIT + 1))
+    done
+
+    if ps -o pid= -p "$PID" >/dev/null 2>&1; then
+      echo "  Process still alive after ${WAIT}s, sending SIGKILL..."
+      kill -9 "$PID" 2>/dev/null || true
+    fi
+
+    rm -f /var/run/gpclient.lock 2>/dev/null || true
+    echo "✓ Process stopped"
+  else
+    echo "gpclient PID file exists but process not running"
+    rm -f /var/run/gpclient.lock 2>/dev/null || true
+  fi
+else
+  echo "No gpclient PID file found"
+fi
+echo ""
+
+# Wait for monitor to detect disconnection
+echo "Waiting for gp-monitor to detect disconnection..."
+sleep 5
+echo ""
+
+# Monitor will automatically reconnect
+echo "Waiting for automatic reconnection (90 seconds)..."
+sleep 90
+echo ""
+
+# Check status
+if [ -f /var/run/gpclient.lock ] && ps -o pid= -p "$(cat /var/run/gpclient.lock 2>/dev/null)" >/dev/null 2>&1; then
+  NEW_PID=$(cat /var/run/gpclient.lock)
+  echo "✓ VPN reconnected successfully (PID: $NEW_PID)"
+else
+  echo "✗ VPN did not reconnect"
+  exit 1
+fi
+
+echo ""
+echo "============================================================"
+echo "Cleanup Complete"
+echo "============================================================"

@@ -11,10 +11,98 @@ set -e
 # INTERNAL_IP4_ADDRESS - VPN IP address
 # INTERNAL_IP4_DNS - DNS servers (space-separated)
 # CISCO_SPLIT_DNS - DNS search domains (space-separated)
+# CISCO_SPLIT_INC - count of split-include routes
+# CISCO_SPLIT_INC_%d_ADDR/MASK/MASKLEN - per-route details
+
+# File used to save the original default gateway for clean restoration.
+DEFAULT_GATEWAY_FILE="/var/run/vpnc-default-gateway"
+# File used to track the actual tunnel interface name.
+# gpclient passes the wrong TUNDEV (pre-auth interface) so we detect and save the
+# real one during connect and read it back during disconnect.
+ACTUAL_TUNDEV_FILE="/var/run/vpnc-actual-tundev"
+# File used to track the VPN server IP for the gateway host route.
+# In full-tunnel mode a /32 host route is added for the VPN server via the
+# physical interface so gpclient keepalive/ESP packets bypass the tunnel.
+VPN_GATEWAY_FILE="/var/run/vpnc-vpn-gateway"
+# File used to track the pre-VPN physical interface name so the disconnect
+# case can call 'ipconfig set DHCP' to restore DHCP management on it after
+# we disabled DHCP during connect to prevent configd from overriding the VPN
+# default route.
+PRE_VPN_IF_FILE="/var/run/vpnc-pre-vpn-if"
+# State file written during the pre-init reason to capture the physical
+# interface name, IPv4 address, netmask, and default gateway before
+# gpclient strips the interface's IP.  The connect reason reads this file
+# as a fallback when the interface already has no IP by the time it runs.
+PRE_VPN_STATE_FILE="/var/run/vpnc-pre-vpn-state"
 
 case "$reason" in
   connect)
     echo "VPN connecting on $TUNDEV..."
+
+    # Capture the pre-VPN default route interface before gpclient modifies
+    # the routing table.  gpclient often pre-adds a host route for the VPN
+    # server IP through the new tunnel before calling this script, making
+    # 'route -n get $VPNGATEWAY' return the tunnel interface.  The default
+    # route still points to the outer network (e.g., Proton VPN's utun) at
+    # this moment, giving us the correct bypass interface to use later.
+    PRE_VPN_IF=$(route -n get default 2>/dev/null | awk '/interface:/ {print $2; exit}')
+    PRE_VPN_GW=$(route -n get default 2>/dev/null | \
+      awk '/gateway:/ && $2 ~ /^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$/ {print $2; exit}')
+    echo "  Pre-VPN default: interface=${PRE_VPN_IF:-none} gateway=${PRE_VPN_GW:-none}"
+    # Capture the IPv4 address and mask from PRE_VPN_IF NOW, before gpclient
+    # removes them.  gpclient strips en10's IPv4 during tunnel setup; without
+    # the address, macOS rejects all IPv4 route adds via the interface.  We
+    # restore it at route-add time so the bypass host route can be added.
+    PRE_VPN_IP=$(ifconfig "${PRE_VPN_IF:-}" 2>/dev/null | \
+      awk '/inet [0-9]/ {print $2}' | head -1)
+    PRE_VPN_MASK=$(ifconfig "${PRE_VPN_IF:-}" 2>/dev/null | \
+      awk '/inet [0-9]/ {print $4}' | head -1)
+    echo "  Pre-VPN interface addr: ${PRE_VPN_IP:-none} mask ${PRE_VPN_MASK:-none}"
+    # gpclient strips the physical interface's IPv4 before calling the vpnc-
+    # script with reason=connect.  If so, fall back to the state that was
+    # captured during reason=pre-init (which fires before gpclient modifies
+    # the network) and saved to PRE_VPN_STATE_FILE.
+    if [ -z "$PRE_VPN_IP" ] && [ -f "$PRE_VPN_STATE_FILE" ]; then
+      echo "  Falling back to pre-init state (gpclient stripped IP before connect)"
+      IFS=' ' read -r PRE_VPN_IF PRE_VPN_IP PRE_VPN_MASK PRE_VPN_GW \
+        < "$PRE_VPN_STATE_FILE"
+      echo "  Restored from pre-init: interface=${PRE_VPN_IF:-none} ip=${PRE_VPN_IP:-none} mask=${PRE_VPN_MASK:-none} gw=${PRE_VPN_GW:-none}"
+    fi
+
+    # Debug: Show all split-tunnel variables.
+    echo "  Split-tunnel configuration:"
+    echo "    CISCO_SPLIT_INC=${CISCO_SPLIT_INC:-0}"
+    for ((i=0; i<${CISCO_SPLIT_INC:-0}; i++)); do
+      eval ADDR="\${CISCO_SPLIT_INC_${i}_ADDR}"
+      eval MASKLEN="\${CISCO_SPLIT_INC_${i}_MASKLEN}"
+      echo "      [$i] $ADDR/$MASKLEN"
+    done
+
+    # Find the actual tunnel interface with VPN IP.
+    # gpclient calls this script before the final IP is known, so we can't trust
+    # INTERNAL_IP4_ADDRESS or TUNDEV.  Instead, wait for any utun with a 10.x IP.
+    echo "  Waiting for VPN tunnel interface to be ready..."
+    MAX_WAIT=10
+    for i in $(seq 1 $MAX_WAIT); do
+      for iface in $(ifconfig | grep -E "^utun" | awk '{print $1}' | tr -d ':'); do
+        ACTUAL_IP=$(ifconfig "$iface" 2>/dev/null | grep "inet 10\." | awk '{print $2}')
+        if [ -n "$ACTUAL_IP" ]; then
+          echo "  Found VPN on $iface with IP $ACTUAL_IP"
+          TUNDEV="$iface"
+          ACTUAL_TUNDEV="$iface"
+          break 2
+        fi
+      done
+      sleep 1
+    done
+    if [ -z "$ACTUAL_TUNDEV" ]; then
+      echo "  WARNING: Could not find utun interface with 10.x IP after ${MAX_WAIT}s"
+      echo "  Proceeding with TUNDEV=$TUNDEV (may fail)"
+    fi
+
+    # Save the actual tunnel interface so the disconnect case can use the right one.
+    # gpclient passes a different TUNDEV to both connect and disconnect calls.
+    echo "$TUNDEV" > "$ACTUAL_TUNDEV_FILE"
 
     # Set up DNS using scutil
     if [ -n "$INTERNAL_IP4_DNS" ]; then
@@ -22,12 +110,6 @@ case "$reason" in
       DNS_SERVERS=($INTERNAL_IP4_DNS)
       SEARCH_DOMAINS=($CISCO_SPLIT_DNS)
 
-      # Get the interface index for the tunnel device
-      # On macOS, we need to find the if_index programmatically
-      IFINDEX=$(ifconfig $TUNDEV 2>/dev/null | head -1 | sed 's/.*flags=.*//' || echo "")
-
-      # Build scutil commands
-      # First, set DNS for the VPN service
       scutil << EOF
 d.init
 d.add ServerAddresses * ${DNS_SERVERS[@]}
@@ -41,7 +123,6 @@ EOF
       echo "DNS configured: ${DNS_SERVERS[@]}"
       echo "Search domains: ${SEARCH_DOMAINS[@]}"
 
-      # Notify system to reconfigure DNS
       echo "Notifying system of DNS changes..."
       /usr/sbin/scutil << EOF
 notify State:/Network/Global/DNS
@@ -49,22 +130,287 @@ quit
 EOF
     fi
 
-    # Set up routes (handled by gpclient, but log them)
+    # Set up routes.  The server sends a mix of /32 host routes (DNS servers)
+    # and possibly a default route (0.0.0.0/0) for full-tunnel mode.
+    # The default route requires saving the current gateway for later restore.
     if [ -n "$CISCO_SPLIT_INC" ]; then
-      echo "Split tunnel routes configured"
+      echo "Configuring $CISCO_SPLIT_INC routes..."
+      i=0
+      while [ $i -lt $CISCO_SPLIT_INC ]; do
+        eval NETWORK="\${CISCO_SPLIT_INC_${i}_ADDR}"
+        eval NETMASKLEN="\${CISCO_SPLIT_INC_${i}_MASKLEN}"
+
+        if [ -n "$NETWORK" ] && [ -n "$NETMASKLEN" ]; then
+          if [ "$NETWORK" = "0.0.0.0" ]; then
+            # Full-tunnel: server wants all traffic routed through VPN.
+            # Save the current default gateway before overriding it, but only
+            # if it is a valid IPv4 address (not 'index:', 'link#N', or utun*).
+            # An interface-only default route means a previous session left the
+            # VPN as default — don't overwrite whatever was saved earlier.
+            CURRENT_GW=$(route -n get default 2>/dev/null | \
+              awk '/gateway:/ && $2 ~ /^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$/ {print $2; exit}')
+            CURRENT_IF=$(route -n get default 2>/dev/null | \
+              awk '/interface:/ {print $2; exit}')
+            if [ -n "$CURRENT_GW" ] && ! echo "$CURRENT_IF" | grep -q "^utun"; then
+              echo "  Saving current default gateway: $CURRENT_GW via $CURRENT_IF"
+              echo "$CURRENT_GW $CURRENT_IF" > "$DEFAULT_GATEWAY_FILE"
+            elif [ -n "$CURRENT_GW" ]; then
+              echo "  Current default already via VPN ($CURRENT_IF) — not overwriting saved gateway"
+            else
+              echo "  No valid default gateway IP found — saved gateway unchanged"
+            fi
+            # Add a /32 host route for the VPN server so gpclient keepalive and
+            # ESP packets bypass the full-tunnel default route.  Without this,
+            # gpclient's own traffic routes through the tunnel it is trying to
+            # maintain, triggering dead-peer detection after ~24 seconds.
+            # openconnect sets VPNGATEWAY; fall back to resolving GP_GATEWAY or
+            # GP_SERVER from our environment if VPNGATEWAY is absent.
+            VPN_SERVER_IP=""
+            if [ -n "${VPNGATEWAY:-}" ]; then
+              VPN_SERVER_IP="$VPNGATEWAY"
+              echo "  VPN server IP from VPNGATEWAY: $VPN_SERVER_IP"
+            elif [ -n "${GP_GATEWAY:-}" ]; then
+              VPN_SERVER_IP=$(host -t A "$GP_GATEWAY" 2>/dev/null | \
+                awk '/has address/{print $NF; exit}' || true)
+              echo "  Resolved GP_GATEWAY=$GP_GATEWAY to: ${VPN_SERVER_IP:-unresolved}"
+            elif [ -n "${GP_SERVER:-}" ]; then
+              VPN_SERVER_IP=$(host -t A "$GP_SERVER" 2>/dev/null | \
+                awk '/has address/{print $NF; exit}' || true)
+              echo "  Resolved GP_SERVER=$GP_SERVER to: ${VPN_SERVER_IP:-unresolved}"
+            fi
+            if [ -n "$VPN_SERVER_IP" ]; then
+              # Query the current route to the VPN server and lock it in as a
+              # host route.  This preserves the path to the VPN server even
+              # after we point the default route through the tunnel.  Using the
+              # route to the VPN server directly handles the case where the
+              # default route uses interface-only routing (e.g., behind Proton
+              # VPN) and $CURRENT_GW is therefore empty.
+              VPNGW_LOOKUP=$(route -n get "$VPN_SERVER_IP" 2>/dev/null || true)
+              VPNGW_GW=$(echo "$VPNGW_LOOKUP" | \
+                awk '/gateway:/ && $2 ~ /^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$/ {print $2; exit}')
+              VPNGW_IF=$(echo "$VPNGW_LOOKUP" | awk '/interface:/ {print $2; exit}')
+              if [ -n "$VPNGW_GW" ]; then
+                echo "  Locking host route: $VPN_SERVER_IP via gateway $VPNGW_GW ($VPNGW_IF)"
+                # Use 'route add' as primary: it has reliable exit codes (0 on
+                # success, 1 if the route already exists).  'route change' may
+                # return 0 even when it prints "not in table", so using it as
+                # the primary check silently skips the add fallback.
+                if ! route add -host "$VPN_SERVER_IP" "$VPNGW_GW" 2>/dev/null; then
+                  route change -host "$VPN_SERVER_IP" "$VPNGW_GW" 2>/dev/null || \
+                    echo "    Warning: Failed to lock host route for $VPN_SERVER_IP"
+                fi
+                echo "$VPN_SERVER_IP" > "$VPN_GATEWAY_FILE"
+              elif [ -n "$VPNGW_IF" ] && [ "$VPNGW_IF" != "$TUNDEV" ]; then
+                # Interface-only route (e.g., through Proton VPN's utun).  A
+                # host route via another tunnel is still correct — it breaks
+                # the loop as long as the outer tunnel has its own bypass.
+                echo "  Locking host route: $VPN_SERVER_IP via interface $VPNGW_IF"
+                if ! route add -host "$VPN_SERVER_IP" -interface "$VPNGW_IF" 2>/dev/null; then
+                  route change -host "$VPN_SERVER_IP" -interface "$VPNGW_IF" 2>/dev/null || \
+                    echo "    Warning: Failed to lock host route for $VPN_SERVER_IP via $VPNGW_IF"
+                fi
+                echo "$VPN_SERVER_IP" > "$VPN_GATEWAY_FILE"
+              elif [ -n "$PRE_VPN_IF" ] && [ "$PRE_VPN_IF" != "$TUNDEV" ]; then
+                # gpclient pre-added a host route for the VPN server through
+                # the work tunnel before calling this script, so the specific
+                # route to the VPN server IP already points at TUNDEV.
+                # Override it using the pre-VPN default gateway or interface
+                # captured at the start of the script so that gpclient keepalive
+                # packets bypass the inner tunnel.
+                # Prefer a gateway-IP route over interface-only: the kernel
+                # ARPs for the destination on an interface-only route, which
+                # fails for remote addresses not on the local subnet.
+                if [ -n "$PRE_VPN_GW" ]; then
+                  echo "  Overriding gpclient host route: $VPN_SERVER_IP via gateway $PRE_VPN_GW ($PRE_VPN_IF)"
+                  if ! route add -host "$VPN_SERVER_IP" "$PRE_VPN_GW" 2>/dev/null; then
+                    # Fallback: try interface-only host route.
+                    if ! route add -host "$VPN_SERVER_IP" -interface "$PRE_VPN_IF" 2>/dev/null; then
+                      route change -host "$VPN_SERVER_IP" -interface "$PRE_VPN_IF" 2>/dev/null || \
+                        echo "    Warning: Failed to redirect host route for $VPN_SERVER_IP via $PRE_VPN_IF"
+                    fi
+                  fi
+                else
+                  echo "  Overriding gpclient host route: $VPN_SERVER_IP via interface $PRE_VPN_IF (no gateway IP)"
+                  if ! route add -host "$VPN_SERVER_IP" -interface "$PRE_VPN_IF" 2>/dev/null; then
+                    route change -host "$VPN_SERVER_IP" -interface "$PRE_VPN_IF" 2>/dev/null || \
+                      echo "    Warning: Failed to redirect host route for $VPN_SERVER_IP via $PRE_VPN_IF"
+                  fi
+                fi
+                echo "$VPN_SERVER_IP" > "$VPN_GATEWAY_FILE"
+              else
+                echo "  WARNING: No usable pre-VPN route to $VPN_SERVER_IP — keepalives may fail"
+                echo "    gateway=${VPNGW_GW:-empty} interface=${VPNGW_IF:-empty} tundev=$TUNDEV pre-vpn-if=${PRE_VPN_IF:-empty}"
+              fi
+            else
+              echo "  WARNING: VPN server IP unknown — keepalives may fail"
+              echo "    VPNGATEWAY=${VPNGATEWAY:-unset} GP_GATEWAY=${GP_GATEWAY:-unset} GP_SERVER=${GP_SERVER:-unset}"
+            fi
+
+            # Ensure PRE_VPN_IF retains its IPv4 address before we point the
+            # default route through the tunnel.  gpclient removes the physical
+            # interface's address during tunnel setup; without it the kernel
+            # cannot ARP for the VPN server's gateway and ESP packets cannot
+            # egress, causing 100% packet loss in the data plane.  This check
+            # applies regardless of which branch handled the server bypass route
+            # above, because the VPNGW branch fires before the 10-second utun
+            # wait and may have found the interface intact, only for gpclient to
+            # strip it by the time we reach here.
+            # Disabling DHCP (ipconfig set NONE) prevents macOS configd from
+            # re-installing the DHCP default route when the address is restored,
+            # which would override the VPN default we set below.
+            if [ -n "$PRE_VPN_IF" ] && [ -n "$PRE_VPN_IP" ] && [ -n "$PRE_VPN_MASK" ]; then
+              CURRENT_IFIP=$(ifconfig "$PRE_VPN_IF" 2>/dev/null | \
+                awk '/inet [0-9]/ {print $2}' | head -1)
+              echo "  $PRE_VPN_IF inet before default-route change: ${CURRENT_IFIP:-NONE}"
+              # Disable DHCP regardless of whether the IP is currently present;
+              # configd will race with any ifconfig call that brings the address
+              # back unless we stop it first.
+              if [ ! -f "$PRE_VPN_IF_FILE" ]; then
+                echo "  Disabling DHCP on $PRE_VPN_IF"
+                ipconfig set "$PRE_VPN_IF" NONE 2>&1 || \
+                  echo "    Warning: ipconfig set NONE failed (continuing)"
+                echo "$PRE_VPN_IF" > "$PRE_VPN_IF_FILE"
+              fi
+              if [ -z "$CURRENT_IFIP" ]; then
+                h="${PRE_VPN_MASK#0x}"
+                MASK_DEC=$(printf "%d.%d.%d.%d" \
+                  "0x${h:0:2}" "0x${h:2:2}" "0x${h:4:2}" "0x${h:6:2}")
+                echo "  Restoring IPv4 $PRE_VPN_IP/$MASK_DEC on $PRE_VPN_IF"
+                ifconfig "$PRE_VPN_IF" "$PRE_VPN_IP" netmask "$MASK_DEC" up 2>&1 || true
+                sleep 1
+              fi
+            fi
+
+            echo "  Setting default route through VPN ($TUNDEV)"
+            # Delete then add unconditionally.  'route change default -interface
+            # utun' says "not in table" when the existing default has a gateway
+            # IP (like 192.168.x.x) and may return exit code 0 despite this,
+            # silently leaving the old default in place.  Delete + add is
+            # unambiguous and has no meaningful race window here.
+            route delete default 2>/dev/null || true
+            route add default -interface "$TUNDEV" 2>/dev/null || \
+              echo "    Warning: Failed to set default route via $TUNDEV"
+            # Verify the bypass route is still in place after the default
+            # route change.  gpclient may restore the VPN server route to the
+            # tunnel after vpnc-script returns; this diagnostic shows its state.
+            if [ -n "$VPN_SERVER_IP" ]; then
+              echo "  Post-default-route check for $VPN_SERVER_IP:"
+              route -n get "$VPN_SERVER_IP" 2>/dev/null | \
+                awk '/gateway:|interface:/ {print "    " $0}'
+            fi
+          else
+            echo "  Adding route: $NETWORK/$NETMASKLEN via $TUNDEV"
+            # Prefer 'route add': it returns 1 when the route already exists
+            # (reliable), whereas 'route change' may return 0 with "not in
+            # table" on macOS (unreliable as a condition check).
+            if ! route add -net "$NETWORK/$NETMASKLEN" -interface "$TUNDEV" 2>/dev/null; then
+              route change -net "$NETWORK/$NETMASKLEN" -interface "$TUNDEV" 2>/dev/null || \
+                echo "    Warning: Failed to add/change route for $NETWORK/$NETMASKLEN"
+            fi
+          fi
+        fi
+        i=$((i + 1))
+      done
+      echo "Routes configured"
     fi
     ;;
 
   disconnect)
     echo "VPN disconnecting from $TUNDEV..."
 
-    # Remove DNS configuration
+    # Use the actual tunnel interface saved during connect.  gpclient passes
+    # a different (pre-auth) TUNDEV here than it did during connect.
+    DNS_TUNDEV="$TUNDEV"
+    if [ -f "$ACTUAL_TUNDEV_FILE" ]; then
+      DNS_TUNDEV=$(cat "$ACTUAL_TUNDEV_FILE")
+      echo "  Using saved actual TUNDEV=$DNS_TUNDEV for DNS removal (gpclient passed $TUNDEV)"
+    fi
+
+    # Remove routes.  Restore the default gateway if we changed it.
+    if [ -n "$CISCO_SPLIT_INC" ]; then
+      echo "Removing $CISCO_SPLIT_INC routes..."
+      i=0
+      while [ $i -lt $CISCO_SPLIT_INC ]; do
+        eval NETWORK="\${CISCO_SPLIT_INC_${i}_ADDR}"
+        eval NETMASKLEN="\${CISCO_SPLIT_INC_${i}_MASKLEN}"
+
+        if [ -n "$NETWORK" ] && [ -n "$NETMASKLEN" ]; then
+          if [ "$NETWORK" = "0.0.0.0" ]; then
+            # Restore the original default gateway.
+            if [ -f "$DEFAULT_GATEWAY_FILE" ]; then
+              read -r SAVED_GW SAVED_IF < "$DEFAULT_GATEWAY_FILE"
+              echo "  Restoring default gateway: $SAVED_GW via $SAVED_IF"
+              route delete default 2>/dev/null || true
+              route add default "$SAVED_GW" 2>/dev/null || \
+                echo "    Warning: Failed to restore default gateway $SAVED_GW"
+              rm -f "$DEFAULT_GATEWAY_FILE"
+            else
+              # Use the saved tunnel interface; gpclient's TUNDEV is the pre-auth
+              # interface and may differ from the actual tunnel.
+              echo "  Removing VPN default route (no saved gateway to restore)"
+              route delete default -interface "$DNS_TUNDEV" 2>/dev/null || true
+            fi
+            # Remove the VPN server host route that was added during connect.
+            if [ -f "$VPN_GATEWAY_FILE" ]; then
+              SAVED_VPN_GW=$(cat "$VPN_GATEWAY_FILE")
+              echo "  Removing VPN server host route for $SAVED_VPN_GW"
+              route delete -host "$SAVED_VPN_GW" 2>/dev/null || \
+                echo "    Note: Host route for $SAVED_VPN_GW was already gone"
+              rm -f "$VPN_GATEWAY_FILE"
+            fi
+            # Restore DHCP management on the pre-VPN interface that was
+            # disabled during connect to prevent configd from overriding the
+            # VPN default route.  Without this the physical interface stays
+            # with a static IP and no default gateway after disconnect.
+            if [ -f "$PRE_VPN_IF_FILE" ]; then
+              SAVED_PRE_VPN_IF=$(cat "$PRE_VPN_IF_FILE")
+              echo "  Restoring DHCP management on $SAVED_PRE_VPN_IF"
+              ipconfig set "$SAVED_PRE_VPN_IF" DHCP 2>&1 || \
+                echo "    Warning: ipconfig set DHCP failed for $SAVED_PRE_VPN_IF"
+              rm -f "$PRE_VPN_IF_FILE"
+            fi
+          else
+            echo "  Removing route: $NETWORK/$NETMASKLEN"
+            route delete -net "$NETWORK/$NETMASKLEN" 2>/dev/null || \
+              echo "    Warning: Failed to remove route for $NETWORK/$NETMASKLEN"
+          fi
+        fi
+        i=$((i + 1))
+      done
+      echo "Routes removed"
+    fi
+
+    # Remove DNS configuration using the actual tunnel interface from connect.
     scutil << EOF
-remove State:/Network/Service/$TUNDEV/DNS
+remove State:/Network/Service/$DNS_TUNDEV/DNS
 quit
 EOF
 
+    rm -f "$ACTUAL_TUNDEV_FILE"
+    rm -f "$PRE_VPN_STATE_FILE"
     echo "DNS configuration removed"
+    ;;
+
+  pre-init)
+    # openconnect fires pre-init before setting up the tunnel interface and
+    # before gpclient strips the physical interface's IPv4.  Save the current
+    # default route info so that the connect case can recover the interface
+    # IP and gateway even if gpclient has already removed them by then.
+    echo "pre-init: saving pre-VPN interface state"
+    PREINIT_IF=$(route -n get default 2>/dev/null | awk '/interface:/ {print $2; exit}')
+    PREINIT_GW=$(route -n get default 2>/dev/null | \
+      awk '/gateway:/ && $2 ~ /^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$/ {print $2; exit}')
+    PREINIT_IP=$(ifconfig "${PREINIT_IF:-}" 2>/dev/null | \
+      awk '/inet [0-9]/ {print $2}' | head -1)
+    PREINIT_MASK=$(ifconfig "${PREINIT_IF:-}" 2>/dev/null | \
+      awk '/inet [0-9]/ {print $4}' | head -1)
+    echo "  interface=${PREINIT_IF:-none} ip=${PREINIT_IP:-none} mask=${PREINIT_MASK:-none} gw=${PREINIT_GW:-none}"
+    if [ -n "$PREINIT_IF" ] && [ -n "$PREINIT_IP" ]; then
+      printf '%s %s %s %s\n' \
+        "$PREINIT_IF" "$PREINIT_IP" "$PREINIT_MASK" "${PREINIT_GW:-}" \
+        > "$PRE_VPN_STATE_FILE"
+      echo "  Saved to $PRE_VPN_STATE_FILE"
+    fi
     ;;
 
   *)

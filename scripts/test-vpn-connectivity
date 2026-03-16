@@ -1,0 +1,110 @@
+#!/usr/bin/env bash
+################################################################################
+# Test VPN connectivity for all required endpoints.
+# Reports status of each test with aggressive timeouts.
+################################################################################
+
+set -e
+
+TIMEOUT=5
+
+echo "============================================================"
+echo "VPN Connectivity Test"
+echo "============================================================"
+echo ""
+
+# Test 1: VPN tunnel exists
+echo "[1/7] Checking VPN tunnel..."
+if ifconfig | grep -q "utun.*10\.89\."; then
+  TUNNEL=$(ifconfig | grep -A 2 "utun" | grep "inet 10\.89\." | head -1 | awk '{print $2}')
+  echo "✓ VPN tunnel UP: $TUNNEL"
+else
+  echo "✗ VPN tunnel DOWN"
+fi
+echo ""
+
+# Test 2: gpclient process running
+echo "[2/7] Checking gpclient process..."
+if [ -f /var/run/gpclient.lock ] && ps -o pid= -p "$(cat /var/run/gpclient.lock 2>/dev/null)" >/dev/null 2>&1; then
+  PID=$(cat /var/run/gpclient.lock)
+  echo "✓ gpclient running (PID: $PID)"
+else
+  echo "✗ gpclient not running"
+fi
+echo ""
+
+# Test 3: Routes configured
+echo "[3/7] Checking VPN routes..."
+ROUTE_COUNT=$(netstat -rn | grep -c "10\." 2>/dev/null || echo "0")
+if [ "$ROUTE_COUNT" -gt 0 ]; then
+  echo "✓ Found $ROUTE_COUNT routes for 10.x networks"
+  netstat -rn | grep "10\." | head -5
+else
+  echo "✗ No routes found for 10.x networks"
+fi
+echo ""
+
+# Test 4: DNS resolver files
+echo "[4/7] Checking DNS resolver files..."
+RESOLVER_COUNT=$(find /etc/resolver -name "*.pvt" 2>/dev/null | wc -l | tr -d ' ')
+if [ "$RESOLVER_COUNT" -gt 0 ]; then
+  echo "✓ Found $RESOLVER_COUNT resolver files"
+else
+  echo "✗ No resolver files found"
+fi
+echo ""
+
+# Test 5: VPN DNS server reachability
+echo "[5/7] Testing VPN DNS server reachability..."
+if timeout $TIMEOUT ping -c 1 10.198.51.37 >/dev/null 2>&1; then
+  echo "✓ VPN DNS server 10.198.51.37 is reachable"
+else
+  echo "✗ VPN DNS server 10.198.51.37 is NOT reachable"
+fi
+echo ""
+
+# Test 6: Local DNS (gitea.proton)
+echo "[6/7] Testing local DNS: https://gitea.proton"
+RESULT=$(timeout $TIMEOUT curl -s -o /dev/null -w "%{http_code}" https://gitea.proton 2>&1 || echo "TIMEOUT")
+if [ "$RESULT" = "200" ]; then
+  echo "✓ Local DNS working (HTTP 200)"
+elif [ "$RESULT" = "TIMEOUT" ]; then
+  echo "✗ Connection timed out"
+else
+  echo "✗ Failed (HTTP $RESULT)"
+fi
+echo ""
+
+# Test 7: VPN DNS (stash.americas.nwea.pvt)
+echo "[7/7] Testing VPN DNS: https://stash.americas.nwea.pvt"
+RESULT=$(timeout $TIMEOUT curl -s -o /dev/null -w "%{http_code}" https://stash.americas.nwea.pvt 2>&1 || echo "TIMEOUT")
+if [ "$RESULT" = "200" ] || [ "$RESULT" = "301" ] || [ "$RESULT" = "302" ]; then
+  echo "✓ VPN DNS working (HTTP $RESULT)"
+elif [[ "$RESULT" =~ "Could not resolve" ]]; then
+  echo "✗ DNS resolution failed"
+elif [ "$RESULT" = "TIMEOUT" ]; then
+  echo "✗ Connection timed out"
+else
+  echo "✗ Failed (HTTP $RESULT)"
+fi
+echo ""
+
+# Test 8: SSH to gitea.proton
+echo "[8/7] Testing SSH: git@gitea.proton:2222"
+if timeout $TIMEOUT ssh -o ConnectTimeout=$TIMEOUT -o StrictHostKeyChecking=no -p 2222 git@gitea.proton 2>&1 | grep -q "Hi there"; then
+  echo "✓ SSH connection successful"
+else
+  SSH_RESULT=$(timeout $TIMEOUT ssh -o ConnectTimeout=$TIMEOUT -o StrictHostKeyChecking=no -p 2222 git@gitea.proton 2>&1 || echo "TIMEOUT")
+  if [[ "$SSH_RESULT" =~ "TIMEOUT" ]]; then
+    echo "✗ SSH connection timed out"
+  elif [[ "$SSH_RESULT" =~ "Could not resolve" ]]; then
+    echo "✗ DNS resolution failed"
+  else
+    echo "✗ SSH connection failed"
+  fi
+fi
+echo ""
+
+echo "============================================================"
+echo "Test Complete"
+echo "============================================================"

@@ -1,0 +1,70 @@
+#!/usr/bin/env bash
+################################################################################
+# Complete DNS fix - runs both VPN scoping and local domain setup.
+# This creates /etc/resolver entries for both VPN and local domains.
+################################################################################
+
+set -e
+
+echo "Creating /etc/resolver directory if needed..."
+sudo mkdir -p /etc/resolver
+
+echo "Extracting VPN DNS servers from current configuration..."
+DNS_CONFIG=$(scutil --dns)
+
+# Extract VPN DNS servers (internal IPs in 10.x range, excluding VPN tunnel IPs).
+mapfile -t VPN_DNS_SERVERS < <(echo "$DNS_CONFIG" | \
+  grep "nameserver\[" | \
+  awk '{print $3}' | \
+  grep "^10\." | \
+  grep -v "^10\.89\." | \
+  sort -u)
+
+# Extract VPN-specific search domains.
+mapfile -t VPN_SEARCH_DOMAINS < <(echo "$DNS_CONFIG" | \
+  grep -E "domain\[|search domain\[" | \
+  awk '{print $4}' | \
+  grep -E "\.(pvt|hmco\.com|hmhco\.com|hmhpub\.com|heinemann\.com|hegn\.us)$" | \
+  sort -u)
+
+# Local DNS server.
+LOCAL_DNS_SERVER="192.168.254.9"
+
+echo "Found VPN DNS servers: ${VPN_DNS_SERVERS[*]}"
+echo "Found VPN search domains: ${VPN_SEARCH_DOMAINS[*]}"
+
+# Create resolver files for VPN domains.
+if [ ${#VPN_DNS_SERVERS[@]} -gt 0 ]; then
+  for domain in "${VPN_SEARCH_DOMAINS[@]}"; do
+    echo "Creating resolver for VPN domain: $domain"
+    {
+      for server in "${VPN_DNS_SERVERS[@]}"; do
+        echo "nameserver $server"
+      done
+    } | sudo tee "/etc/resolver/$domain" > /dev/null
+  done
+fi
+
+# Create resolver file for local .proton domain.
+echo "Creating resolver for local domain: proton"
+echo "nameserver $LOCAL_DNS_SERVER" | sudo tee /etc/resolver/proton > /dev/null
+
+# Clean up global DNS to remove VPN search domains.
+echo "Cleaning up global DNS configuration..."
+sudo /usr/sbin/scutil << 'EOF'
+d.init
+d.add SearchDomains * proton
+d.add ServerAddresses * 192.168.254.9
+set State:/Network/Global/DNS
+quit
+EOF
+
+# Flush DNS cache.
+echo "Flushing DNS cache..."
+sudo dscacheutil -flushcache
+sudo killall -HUP mDNSResponder 2>/dev/null || true
+
+echo ""
+echo "DNS configuration complete!"
+echo "Created $(ls /etc/resolver/ 2>/dev/null | wc -l) resolver files in /etc/resolver/"
+ls -la /etc/resolver/ 2>/dev/null || true

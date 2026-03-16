@@ -282,7 +282,8 @@ in
         ../darwin-modules/global-protect-persistent.nix
       ];
       services.globalprotect-monitor = {
-        enable = true;
+        # Disabled while debugging routing issues — run gp-connect-auto manually.
+        enable = false;
         server = "vpn-${org-alias}.gpcloudservice.com";
         username = "${username}@${org-domain}";
         orgName = org-alias;

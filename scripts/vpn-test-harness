@@ -1,0 +1,221 @@
+#!/usr/bin/env bash
+################################################################################
+# Run a test script inside a clean VPN connect/disconnect cycle.
+#
+# Usage: vpn-test-harness <script> [args...]
+#
+# Workflow:
+#   1. Gracefully disconnect any existing VPN session.
+#   2. Connect via gp-connect-auto (full auth cycle).
+#   3. Run the test script unconditionally.
+#   4. Check network connectivity; call vpn-test-harness-recover if it is gone.
+#   5. Gracefully disconnect VPN so the vpnc-script restores the default route.
+#   6. Exit with the test script's original exit code.
+#
+# The test script should print everything it wants observed and must exit
+# non-zero on failure.  Do not swallow errors with >/dev/null inside it.
+################################################################################
+
+set -euo pipefail
+
+# Tee all output to a timestamped log file for post-mortem debugging.
+LOG_DIR="${HOME}/.local/state/vpn-test-harness"
+mkdir -p "$LOG_DIR"
+LOG_FILE="$LOG_DIR/$(date +%Y%m%dT%H%M%S).log"
+exec > >(tee "$LOG_FILE") 2>&1
+# Stable symlink so the user can tail -f current.log without knowing the
+# timestamp.  -f on ln overwrites any previous symlink atomically.
+ln -sf "$LOG_FILE" "$LOG_DIR/current.log"
+echo "Logging to: $LOG_FILE"
+echo "Follow live:  tail -f $LOG_DIR/current.log"
+echo ""
+
+PING_HOST="yahoo.com"
+PING_ATTEMPTS=3
+GPCLIENT_LOCK="/var/run/gpclient.lock"
+# Seconds to wait for VPN to come up after gp-connect-auto.
+VPN_CONNECT_TIMEOUT=120
+# Maximum seconds the test script may run before it is killed.  The test
+# script includes several diagnostic commands (dig, ping) in addition to the
+# three endpoint checks; 90 seconds gives ample room for slow VPN tunnels
+# while still bounding a completely hung test.
+TEST_TIMEOUT=90
+
+if [ $# -lt 1 ]; then
+  echo "Usage: vpn-test-harness <script> [args...]" >&2
+  exit 1
+fi
+
+TEST_SCRIPT="$1"
+shift
+
+if [ ! -f "$TEST_SCRIPT" ]; then
+  echo "Error: test script not found: $TEST_SCRIPT" >&2
+  exit 1
+fi
+
+if [ ! -x "$TEST_SCRIPT" ]; then
+  echo "Error: test script is not executable: $TEST_SCRIPT" >&2
+  exit 1
+fi
+
+# ---------------------------------------------------------------------------
+# Helpers
+# ---------------------------------------------------------------------------
+
+vpn_is_connected() {
+  if [ -f "$GPCLIENT_LOCK" ]; then
+    local pid
+    pid=$(cat "$GPCLIENT_LOCK" 2>/dev/null || echo "")
+    [ -n "$pid" ] && ps -o pid= -p "$pid" >/dev/null 2>&1
+  else
+    return 1
+  fi
+}
+
+vpn_disconnect_graceful() {
+  if ! vpn_is_connected; then
+    echo "  (VPN not connected, nothing to disconnect)"
+    return 0
+  fi
+
+  # gpclient disconnect uses its own IPC and does not require root.  It signals
+  # gpclient to run the vpnc-script disconnect case, which restores the default
+  # gateway before the process exits.
+  echo "  Running gpclient disconnect..."
+  gpclient disconnect 2>/dev/null || true
+
+  # Wait for graceful exit so the vpnc disconnect script restores the gateway.
+  local waited=0
+  while [ $waited -lt 10 ] && vpn_is_connected; do
+    sleep 1
+    waited=$((waited + 1))
+  done
+
+  if vpn_is_connected; then
+    echo "  WARNING: gpclient still alive after ${waited}s — recovering gateway and continuing"
+    # The vpnc disconnect script did not run, so restore the gateway manually
+    # to ensure the network survives this iteration.
+    sudo -E vpn-test-harness-recover || true
+  fi
+
+  echo "  VPN disconnected"
+}
+
+# ---------------------------------------------------------------------------
+# Step 1: disconnect any existing session
+# ---------------------------------------------------------------------------
+
+echo "========================================================"
+echo "vpn-test-harness: [1/5] disconnecting existing VPN"
+echo "========================================================"
+echo ""
+vpn_disconnect_graceful
+echo ""
+
+# ---------------------------------------------------------------------------
+# Step 2: connect
+# ---------------------------------------------------------------------------
+
+echo "========================================================"
+echo "vpn-test-harness: [2/5] connecting VPN"
+echo "========================================================"
+echo ""
+
+# Pass -E to preserve ORG_NAME/GP_SERVER/GP_USERNAME; sudoers rule includes SETENV.
+sudo -E gp-connect-auto &
+CONNECT_PID=$!
+
+echo "Waiting up to ${VPN_CONNECT_TIMEOUT}s for VPN to connect..."
+WAITED=0
+while [ $WAITED -lt $VPN_CONNECT_TIMEOUT ]; do
+  if vpn_is_connected; then
+    echo "✓ VPN connected"
+    break
+  fi
+  sleep 1
+  WAITED=$((WAITED + 1))
+done
+
+if ! vpn_is_connected; then
+  echo "✗ VPN did not connect within ${VPN_CONNECT_TIMEOUT}s" >&2
+  # Clean up background connect process.
+  kill "$CONNECT_PID" 2>/dev/null || true
+  exit 1
+fi
+echo ""
+
+# ---------------------------------------------------------------------------
+# Step 3: run test script
+# ---------------------------------------------------------------------------
+
+echo "========================================================"
+echo "vpn-test-harness: [3/5] running $TEST_SCRIPT"
+echo "========================================================"
+echo ""
+
+TEST_EXIT=0
+# Run the test script under a hard timeout so a hung curl, ssh, or browser
+# auth flow cannot stall the harness indefinitely.  timeout exits 124 on
+# expiry; treat that as a test failure so the cleanup steps still run.
+timeout "$TEST_TIMEOUT" "$TEST_SCRIPT" "$@" || TEST_EXIT=$?
+if [ "$TEST_EXIT" -eq 124 ]; then
+  echo "WARNING: test script exceeded ${TEST_TIMEOUT}s timeout — killed" >&2
+fi
+
+echo ""
+echo "========================================================"
+echo "vpn-test-harness: test script exited with code $TEST_EXIT"
+echo "========================================================"
+echo ""
+
+# ---------------------------------------------------------------------------
+# Step 4: check network; recover if needed
+# ---------------------------------------------------------------------------
+
+echo "========================================================"
+echo "vpn-test-harness: [4/5] checking network connectivity"
+echo "========================================================"
+echo ""
+
+NETWORK_OK=false
+for attempt in $(seq 1 $PING_ATTEMPTS); do
+  echo "  Ping $PING_HOST (attempt $attempt/$PING_ATTEMPTS)..."
+  if ping -c 1 -t 3 "$PING_HOST" >/dev/null 2>&1; then
+    echo "  ✓ Network reachable"
+    NETWORK_OK=true
+    break
+  else
+    echo "  ✗ No response"
+  fi
+done
+
+if [ "$NETWORK_OK" = "false" ]; then
+  echo ""
+  echo "WARNING: Network connectivity lost — running vpn-test-harness-recover..."
+  sudo -E vpn-test-harness-recover
+  echo ""
+  if ping -c 1 -t 5 "$PING_HOST" >/dev/null 2>&1; then
+    echo "✓ Network restored"
+  else
+    echo "✗ Network still unavailable after recovery" >&2
+  fi
+fi
+echo ""
+
+# ---------------------------------------------------------------------------
+# Step 5: disconnect cleanly
+# ---------------------------------------------------------------------------
+
+echo "========================================================"
+echo "vpn-test-harness: [5/5] disconnecting VPN"
+echo "========================================================"
+echo ""
+vpn_disconnect_graceful
+echo ""
+
+echo "========================================================"
+echo "vpn-test-harness: done (exit $TEST_EXIT)"
+echo "========================================================"
+
+exit "$TEST_EXIT"

@@ -36,10 +36,15 @@ def authenticate(auth_url, username, password, totp_code):
     log(f"Callback base: {callback_base}")
     log(f"Username: {username}")
 
+    # GP_BROWSER_HEADLESS controls whether Chromium runs with a visible window.
+    # Default true for daemon/automation use; set to "false" to debug auth flows.
+    headless = os.environ.get('GP_BROWSER_HEADLESS', 'true').lower() != 'false'
+    log(f"Browser mode: {'headless' if headless else 'headed'}")
+
     with sync_playwright() as p:
         # Launch browser with args to avoid detection
         browser = p.chromium.launch(
-            headless=False,  # Use headed mode to avoid detection
+            headless=headless,
             args=[
                 '--disable-blink-features=AutomationControlled',
                 '--no-sandbox'
