@@ -1,7 +1,16 @@
 ################################################################################
 # Configuration common to all hosts that are servers.
 ################################################################################
-{ flake-inputs, facts, host-id, lib, pkgs, system, ... }: {
+{
+  flake-inputs,
+  facts,
+  host-id,
+  lib,
+  pkgs,
+  system,
+  ...
+}:
+{
   # Configure SSH known hosts for gitea server (needed for git+ssh flake inputs).
   programs.ssh.knownHosts."gitea.proton" = {
     hostNames = [ "[gitea.proton]:2222" ];
@@ -26,9 +35,11 @@
       #   nohook hostname         # Do not accept hostname from server.
       # '';
       nixpkgs.hostPlatform = system;
-      nixpkgs.overlays = (import ../overlays/default.nix {
-        inherit flake-inputs system;
-      });
+      nixpkgs.overlays = (
+        import ../overlays/default.nix {
+          inherit flake-inputs system;
+        }
+      );
       system.stateVersion = "23.11";
       documentation.enable = lib.mkForce false;
     }
@@ -42,6 +53,7 @@
     #   };
     # }
     ../nixos-modules/environment-file-secrets.nix
+    ../nixos-modules/ldap-server.nix
     ../nixos-modules/kodi-standalone.nix
     ../nixos-modules/lib-custom.nix
     ../nixos-modules/nested-submodule-config-proof.nix
@@ -114,7 +126,7 @@
   environment.systemPackages = [
     # This gives us strings among other things.
     pkgs.binutils
-    (pkgs.callPackage ../packages/ethernet-restart.nix {})
+    (pkgs.callPackage ../packages/ethernet-restart.nix { })
     # Show us details about a file.
     pkgs.file
     # Diagnostic tool for troubleshooting Nix remote build configurations.
@@ -142,10 +154,12 @@
   users.mutableUsers = true;
   # Needed to build large dependencies, which can come from surprising places.
   # Without this, oom-killer will still kill g++ on 32GB (29GB free) hosts.
-  swapDevices = [{
-    device = "/swapfile";
-    size = 16 * 1024; # 16GB.
-  }];
+  swapDevices = [
+    {
+      device = "/swapfile";
+      size = 16 * 1024; # 16GB.
+    }
+  ];
   # Further make life easier for builds by lowering the OOM score of the service
   # used to build.
   systemd.services.nix-daemon.serviceConfig = {

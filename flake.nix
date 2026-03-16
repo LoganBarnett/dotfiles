@@ -86,6 +86,10 @@
       url = "github:nix-community/home-manager/release-24.11";
       inputs.nixpkgs.follows = "nixpkgs-working-rocm";
     };
+    ldap-reconciler = {
+      url = "git+ssh://git@gitea.proton:2222/logan/ldap-reconciler";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     metalps = {
       url = "git+ssh://git@gitea.proton:2222/logan/metalps";
       inputs.nixpkgs.follows = "nixpkgs";
