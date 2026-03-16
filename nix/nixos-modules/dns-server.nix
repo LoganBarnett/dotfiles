@@ -1,100 +1,45 @@
 ################################################################################
-# Due to a combination of just having a lot of physical hosts available as well
-# as employing containers to better utilize those physical hosts, we need some
-# kind of DNS solution that extends beyond a consumer router that provides DNS
-# for only physical hosts.
+# DNS/DHCP Server Integration Module.
 #
-# This solution expects that DNS is no longer provided by the consumer router,
-# and so this must be disabled.
+# This module integrates Blocky (DNS ad-blocking/classification) with dnsmasq
+# (DHCP + local hostname resolution) to provide a complete DNS/DHCP solution.
 #
-# Because we're on Nix and we can statically define everything, there is no need
-# for dynamic DNS on the part of the server for any of our known hosts.  We can
-# simply allow the facts structure to dictate what we need.
+# Architecture:
+# - Blocky (port 53): Primary DNS for all clients with ad-blocking
+# - dnsmasq (port 5353): Local hostname resolution for .proton domain
+# - dnsmasq (port 67): DHCP server
+#
+# This module handles:
+# - Importing and configuring both services
+# - Ensuring proper startup order (dnsmasq before blocky)
+# - Integration testing via goss to verify the services work together
 ################################################################################
-{ lib, facts, host-id, ... }: let
-  inherit (lib) optionalString pipe;
-  inherit (lib.attrsets) filterAttrs mapAttrsToList;
-  inherit (lib.lists) flatten;
-  domain = facts.network.domain;
-  # TODO: Make this a dynamic value on the host.
-  subnet = facts.network.subnets.barnett-main;
-  host-ip = hostname: host: "${subnet}.${toString host.ipv4}";
-  my-ip = host-ip host-id facts.network.hosts.${host-id};
-  # This is because the names vary.  Instead of trying to guess, just set them
-  # all.
-  forced-ip-interface-config = {
-    ipv4.addresses = [{
-      address = my-ip;
-      prefixLength = 24;
-    }];
+{ host-id, facts, ... }: {
+  imports = [
+    ../nixos-configs/blocky-with-updater.nix
+    ../nixos-modules/dhcp-server.nix
+  ];
+
+  # Ensure blocky starts after dnsmasq since it queries dnsmasq for local
+  # hostname resolution.
+  systemd.services.blocky = {
+    after = [ "dnsmasq.service" ];
+    wants = [ "dnsmasq.service" ];
   };
-in {
-  networking.interfaces = {
-    # systemd "predictable".
-    enp3s0 = forced-ip-interface-config;
-    eno1 = forced-ip-interface-config;
-    # Firmware set.
-    end0 = forced-ip-interface-config;
-    ens0 = forced-ip-interface-config;
-    # Sometimes user forced.
-    eth0 = forced-ip-interface-config;
-  };
-  # TODO: Make dynamic some day.  Make it follow "gateway".
-  networking.defaultGateway = "${subnet}.254";
-  # Allow actual DNS and DHCP connections.
-  networking.firewall.allowedUDPPorts = [ 67 ];
-  services.dnsmasq = {
-    enable = true;
-    settings = {
-      # Private addresses that don't resolve anything should return NXDOMAIN
-      # lest we get record pollution elsewhere, I guess?
-      bogus-priv = true;
-      domain = facts.network.domain;
-      local = "/${facts.network.domain}/";
-      # Prevent dnsmasq from reading /etc/hosts.  We don't want this file read,
-      # because it often contains a localhost entry (such as 127.0.0.2) - or at
-      # least that's how NixOS sets it up.
-      no-hosts = true;
-      expand-hosts = true;
-      dhcp-range = "192.168.254.175,192.168.254.250,12h";
-      dhcp-host = pipe facts.network.hosts [
-        (filterAttrs (hostname: host:
-          host ? ipv4 && host.ipv4 != null
-        ))
-        (mapAttrsToList (hostname: host:
-          (optionalString (host.macAddress or null != null) "${host.macAddress or ""},")
-          + "${hostname},${host-ip hostname host}"
-        ))
-      ];
-      host-record = pipe facts.network.hosts [
-        (filterAttrs (hostname: host:
-          host ? ipv4 && host.ipv4 != null
-        ))
-        (mapAttrsToList (hostname: host:
-          "${hostname}.${domain},${host-ip hostname host}"
-        ))
-      ];
-      cname = lib.pipe facts.network.hosts [
-        (mapAttrsToList (hostname: host:
-          builtins.map
-            (alias: "${alias}.${domain},${hostname}.${domain}")
-            (host.aliases or [])
-        ))
-        flatten
-      ];
-      # dhcp-host = [
-      #   # Examples - make these dynamic.
-      #   "nickel,192.168.100.10"
-      #   "grafana,192.168.100.20"
-      #   "prometheus,192.168.100.30"
-      # ];
-      dhcp-option = [
-        "option:domain-search,${domain}"
-        "option:router,192.168.254.254"
-        "option:dns-server,192.168.254.${
-          toString facts.network.hosts.silicon.ipv4
-        }"
-      ];
+
+  # Integration goss checks: Verify blocky and dnsmasq work together.
+  services.goss.checks = {
+    # Test end-to-end DNS resolution through blocky on standard port 53.
+    # Blocky should forward local domain queries to dnsmasq on port 5353.
+    dns."${host-id}.${facts.network.domain}" = {
+      resolvable = true;
+      server = "127.0.0.1";
+      timeout = 3000;
+    };
+    # Verify the HTTPS admin interface is accessible (handled by reverse proxy).
+    port."tcp:443" = {
+      listening = true;
+      ip = [ "0.0.0.0" ];
     };
   };
 }

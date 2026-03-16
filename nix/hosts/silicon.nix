@@ -4,8 +4,7 @@
 { config, lib, flake-inputs, host-id, pkgs, system, ... }: let
 in {
   imports = [
-    ../nixos-configs/blocky-with-updater.nix
-    ../nixos-modules/dhcp-server.nix
+    ../nixos-modules/dns-server.nix
     ../nixos-configs/dns-smart-block.nix
     ../nixos-configs/grafana-kiosk-overview.nix
     ../nixos-modules/makemkv-ripper.nix

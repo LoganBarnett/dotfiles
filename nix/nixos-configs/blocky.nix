@@ -63,10 +63,16 @@ in {
     enable = true;
     settings = {
       ports = { dns = 53; http = 4000; };
-      # upstream = { default = [ "192.168.254.1" ]; };
-      # Look up hosts by hostname from dnsmasq, which is providing DHCP.
+      # Forward external DNS queries to these upstream servers.
+      upstream.default = nameservers;
+      # Conditional forwarding: Forward .proton domain queries to dnsmasq for
+      # local hostname resolution. Dnsmasq runs on port 5353 to avoid conflict
+      # with blocky on port 53.
+      conditional.mapping."proton" = "127.0.0.1:5353";
+      # Look up client hostnames (reverse DNS for identifying who is making
+      # requests) from dnsmasq.
       clientLookup = {
-        upstream = "${subnet}.1";
+        upstream = "127.0.0.1:5353";
         singleNameOrder = [ 1 ];
         # You actually want `blocking.denylists` instead of `clients`.
         # clients = [];
@@ -182,8 +188,8 @@ in {
       status = 200;
       timeout = 3000;
     };
-    # Check that DNS port is listening (UDP).  DNS is the core functionality
-    # of Blocky.  Blocky binds to :: (IPv6 any) which also accepts IPv4
+    # Verify DNS port is listening (UDP).  DNS is the core functionality of
+    # Blocky.  Blocky binds to :: (IPv6 any) which also accepts IPv4
     # connections via IPv4-mapped IPv6 addresses.
     port."udp6:53" = {
       listening = true;
@@ -193,10 +199,12 @@ in {
     port."tcp6:53" = {
       listening = true;
     };
-    # Check that HTTPS port is listening (handled by reverse proxy).
-    port."tcp:443" = {
-      listening = true;
-      ip = [ "0.0.0.0" ];
+    # Functional DNS test: Verify blocky can resolve external domains through
+    # its ad-blocking pipeline and upstream DNS servers.
+    dns."example.com" = {
+      resolvable = true;
+      server = "127.0.0.1";
+      timeout = 3000;
     };
     # Check that the blocky service is running.
     service.blocky = {

@@ -47,9 +47,8 @@
       url = "github:nix-community/authentik-nix";
     };
     dns-smart-block = {
-      # TODO: Switch to git+ssh once SSH authentication is configured for nix builds.
-      # url = "git+ssh://git@gitea.proton:2222/logan/dns-smart-block";
-      url = "path:/Users/logan/dev/dns-smart-block";
+      url = "git+ssh://git@gitea.proton:2222/logan/dns-smart-block";
+      # url = "path:/Users/logan/dev/dns-smart-block";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     # Give us a tool for getting the current system.  See

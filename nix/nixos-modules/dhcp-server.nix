@@ -48,6 +48,9 @@ in {
   services.dnsmasq = {
     enable = true;
     settings = {
+      # Use non-standard DNS port to avoid conflict with blocky on port 53.
+      # Blocky will query this port for local hostname resolution.
+      port = 5353;
       # Private addresses that don't resolve anything should return NXDOMAIN
       # lest we get record pollution elsewhere, I guess?
       bogus-priv = true;
@@ -97,6 +100,31 @@ in {
           toString facts.network.hosts.silicon.ipv4
         }"
       ];
+    };
+  };
+
+  # Goss health checks for dnsmasq DHCP and local DNS.
+  services.goss.checks = {
+    # Verify dnsmasq is running.
+    service.dnsmasq = {
+      enabled = true;
+      running = true;
+    };
+    # Verify dnsmasq is on non-standard DNS port 5353 (not 53 which is used by
+    # blocky).
+    port."udp:5353" = {
+      listening = true;
+    };
+    # Verify dnsmasq is on DHCP port.
+    port."udp:67" = {
+      listening = true;
+    };
+    # Functional test: Query dnsmasq directly for local hostname resolution.
+    # Verifies dnsmasq can resolve the current host's FQDN.
+    dns."${host-id}.${facts.network.domain}" = {
+      resolvable = true;
+      server = "127.0.0.1:5353";
+      timeout = 3000;
     };
   };
 }

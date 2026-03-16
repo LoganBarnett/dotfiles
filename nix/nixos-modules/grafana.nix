@@ -33,6 +33,9 @@
     # versions in here.  It's probably worth learning the structure more
     # tightly, and making sure all of this confirms to latest.
   in {
+    dhcp = import ../nixos-configs/grafana-dhcp-monitor.nix {
+      inherit height width without-socket-port;
+    };
     dns-smart-block = import ../nixos-configs/grafana-monitor-dns.nix {
       inherit height width without-socket-port;
     };
