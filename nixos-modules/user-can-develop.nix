@@ -1,4 +1,4 @@
-{ username }: { pkgs, ... }: {
+{ username }: { flake-inputs, pkgs, system, ... }: {
   imports = [
     ./git-config.nix
   ];
@@ -37,5 +37,9 @@
     # A good mono-spaced font that is largely sans-serif, but uses serifs to
     # disambuguate.
     pkgs.source-code-pro
+    # Check whether each NixOS/nix-darwin host's active generation matches
+    # what the flake would deploy.  Useful for rolling out changes piecemeal
+    # and confirming every host has applied the latest config.
+    flake-inputs.flake-sync-status.packages.${system}.default
   ];
 }

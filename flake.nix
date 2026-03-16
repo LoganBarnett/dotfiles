@@ -71,6 +71,10 @@
     # };
 
     # Allow Flatpak usage, specifically so we can install Roblox via Sober.
+    flake-sync-status = {
+      url = "git+ssh://git@gitea.proton:2222/logan/flake-sync-status";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     flatpaks.url = "github:in-a-dil-emma/declarative-flatpak/latest";
 
     home-manager-working-rocm = {
@@ -302,6 +306,7 @@
     ;
 
     lib = nixpkgs.lib;
+    forAllSystems = lib.genAttrs lib.systems.flakeExposed;
     host-config = name: hostFacts: {
       flake-inputs = flake-inputs // (
         lib.attrsets.mapAttrs
@@ -328,6 +333,22 @@
       (lib.attrsets.mapAttrs (n: f))
     ];
   in  {
+    devShells = forAllSystems (system: let
+      pkgs = import nixpkgs { inherit system; };
+      fmt-staged = pkgs.callPackage ./derivations/fmt-staged.nix {};
+    in {
+      default = pkgs.mkShell {
+        packages = [
+          fmt-staged
+          pkgs.nixfmt-rfc-style
+          pkgs.treefmt
+        ];
+        shellHook = ''
+          mkdir -p .git/hooks
+          ln -sf ${fmt-staged}/bin/fmt-staged .git/hooks/pre-commit
+        '';
+      };
+    });
     darwinConfigurations = host-configs-for-os darwin-host "darwin" facts.network.hosts;
     nixosConfigurations = host-configs-for-os nix-host "linux" facts.network.hosts;
     containerGuestHosts = {};
