@@ -21,6 +21,22 @@ scratch pad though.
 Look up the next element in the periodic table, and then create that under
 ~nix/hosts~.
 
+** deploy tools
+
+~proton-deploy~ is vastly preferred for all deployments.  It uses Nix's
+copy-closure mechanism to transfer store paths to the remote host securely.
+
+~remote-deploy~ is a break-glass script for working around limitations of the
+copy-closure mechanism.  Known cases where it may be necessary are documented
+in [[*Troubleshooting][the troubleshooting section]].  After using
+~remote-deploy~ to recover, return to ~proton-deploy~ for subsequent
+deployments.
+
+~remote-deploy~ works by rsyncing the entire repo to ~~/proton-nix~ on the
+remote host.  Sensitive files from the repo may be present there.  By default,
+~~/proton-nix~ is removed after deployment completes.  Pass ~--no-cleanup~ to
+retain it.
+
 ** by machine type
 
 Instructions across various kinds of machines are not consistent due to
