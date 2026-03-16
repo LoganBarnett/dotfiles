@@ -40,20 +40,23 @@ in
 
         model=$(printf '%s' "$models" | ${pkgs.jq}/bin/jq -r '.models[0].name')
 
-        # Fire a minimal test inference in the background so the runner
-        # subprocess is actively computing during the metalps sample window.
-        # --max-time caps the request so we don't stall forever on CPU, where a
-        # single token can take tens of seconds for this workload.
+        # Fire a test inference in the background so the runner subprocess is
+        # actively computing during the metalps sample window.  num_predict must
+        # be large enough that generation still running at t=1s (after the
+        # sleep below): a fast 3B model on M1 Max produces ~80 t/s, so 200
+        # tokens ≈ 2.5 s of GPU compute, well past the sampling window.
+        # --max-time caps the request in CPU fallback (2 t/s × 200 = 100 s
+        # uncapped) so the check never blocks for more than 6 s.
         ${pkgs.curl}/bin/curl -sf http://localhost:11434/api/generate \
           --max-time 6 \
-          -d "{\"model\":\"$model\",\"prompt\":\"0\",\"stream\":false,\"options\":{\"num_predict\":1}}" \
+          -d "{\"model\":\"$model\",\"prompt\":\"0\",\"stream\":false,\"options\":{\"num_predict\":200}}" \
           -o /dev/null &
 
         # Wait for the runner to register in IOKit before the first sample.
         # metalps computes gpu_percent as a delta between two samples; a
         # process absent from the first sample gets gpu_percent = 0 even while
         # actively computing on the GPU (process-chasing false negative).
-        # Timing: ~0s (api/ps) + 1s (sleep) + 2s (metalps) ≈ 3s < 10s limit.
+        # Timing: ~0s (api/ps) + 1s (sleep) + 2s (metalps) + ≤3s (wait) < 10s.
         sleep 1
 
         # Sample GPU percent while the inference should be running.  On Metal
