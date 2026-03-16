@@ -258,9 +258,9 @@
       "M-CL64PK702X" = {
         controlledHost = true;
         blockProfiles = [ "adult" ];
-        flake-input-overrides = {
-          nixpkgs = "nixpkgs-latest";
-        };
+        # flake-input-overrides = {
+        #   nixpkgs = "nixpkgs-latest";
+        # };
         ipv4 = 103;
         macAddresses = [
           "bc:d0:74:07:50:eb" # WiFi
