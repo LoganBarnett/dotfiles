@@ -22,7 +22,7 @@ shift 2
 # https://discourse.nixos.org/t/deploy-nixos-configurations-on-other-machines/22940/23
 # for more oddities on the topic.
 nixos-rebuild \
-  $verb \
+  "$verb" \
   --flake '.#'"$host" \
   --target-host "$host.proton" \
   --build-host "$host.proton" \
