@@ -15,8 +15,12 @@
 
 set -euo pipefail
 
-scriptDir="$( dirname -- "${BASH_SOURCE[0]}" )"
-secretsDir="$scriptDir/../nix/secrets"
+if [[ -z "${FLAKE_ROOT:-}" ]]; then
+  echo "error: FLAKE_ROOT is not set.  Source your shell profile first." >&2
+  exit 1
+fi
+
+secretsDir="$FLAKE_ROOT/secrets"
 host=$(hostname --short)
 
 # TODO: Query the Nix configuration for age.rekey.masterIdentities[0] for the

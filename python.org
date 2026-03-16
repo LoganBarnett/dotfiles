@@ -1,0 +1,18 @@
+#+title:     Python
+#+author:    Logan Barnett
+#+email:     logustus@gmail.com
+#+date:      <2024-09-20 Fri>
+#+language:  en
+#+file_tags:
+#+tags:
+
+Python in Nix has some quirks to it, some documented and some not.
+
+* optional dependencies
+
+I've heard these called "extras" but I don't know if that's the official name
+(more research needed).  Sometimes you'll see something in ~setup.py~ like this:
+
+#+begin_src python :results none :exports code :tangle no
+
+#+end_src

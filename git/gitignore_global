@@ -1,0 +1,42 @@
+# -*- gitignore -*-
+
+# Ignore Aider (aider.chat) history files.
+.aider.chat.history.md
+.aider.input.history
+# Ignore Aider (aider.chat) cache.
+.aider.tags.cache.*/
+
+# Ignore Claude Code's "settings" which includes recorded decisions made in the
+# prompts.
+.claude/
+
+# Ignore Emacs directory specific configuration.
+.dir-locals.el
+
+# Ignore Emacs swap files.
+.\#*
+\#*
+
+# Ignore macOS finder metadata.
+.DS_Store
+
+# Ignore vim swap files.
+.*.swp
+
+# Ignore Node.js based files.
+yarn-error.log
+
+# Ignore TypeScript Language Server logs.
+.log
+
+# Ignore tmux logs.
+tmux-client-*.log
+
+# Ignore eclim java server stuff.
+.classpath
+.factorypath
+.project
+.settings/
+
+# direnv emitted settings directory.
+.direnv/

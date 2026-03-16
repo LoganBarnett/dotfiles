@@ -1,4 +1,0 @@
-#!/usr/bin/env bash
-
-# Since Alfred won't follow symlinks.
-exec open -a /Applications/Nix\ Apps/Emacs.app --args "$@"

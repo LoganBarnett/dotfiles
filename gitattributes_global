@@ -1,3 +1,0 @@
-# -*- mode: gitattributes; -*-
-npmrc filter=npm-auth-token
-yarnrc filter=yarn-update-check

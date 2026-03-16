@@ -1,5 +1,0 @@
-# -*- mode: snippet; require-file-newline: nil -*-
-# name: stderr to standard out redirection
-# key: stderr2stdout
-# --
-2>&1

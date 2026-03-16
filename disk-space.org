@@ -1,0 +1,64 @@
+#+title:     Disk Space
+#+author:    Logan Barnett
+#+email:     logustus@gmail.com
+#+date:      <2024-08-21 Wed>
+#+language:  en
+#+file_tags:
+#+tags:
+
+* Cleaning
+
+** nix
+
+*** Deleting prior generations
+
+A generation is the result of building a particular Nix expression.
+
+=nix-collect-garbage= removes prior saved packages to an extent.  Nix uses an
+"anchor" system to declare which things should not be garbage collected, such as
+the system packages, or packages for =nix-develop= that exist for a given
+software repository.  Some packages will be removed from these anchors, but only
+prior generations that go far enough back by either dates or the number of
+generations.  This makes running =nix-collect-garbage= safe to run at virtually
+any time.
+
+=nix-collect-garbage -d= removes all prior generations except for the current
+one.  This will reclaim the most space.
+
+During a =nix build=, Nix will automatically detect that space is getting low
+and will initiate a garbage collect as part of the build process.  It appears to
+pause the build until this is done, but the specifics on that are not something
+I know much about.
+*** Managing anchors
+
+This remains to be discovered.
+
+*** Nix (Evaluation?) Cache
+
+A lot of cache accumulates in =~/.cache/nix/=.  At least some of that can be
+removed (last I looked, it was =git3v= that had it).  I'm not sure what removing
+the =journal= files do, and I haven't tried that yet since they are tiny.  I
+have seen this =git3v= directory get close to 10GB large, and I know of no
+processes that automatically prune it.  To my understanding, this is "evaluation
+cache", which is just the act of going through all of the Nix expressions to
+build up the big build tree for everything - so it should be safe to remove even
+in offline scenarios, and the next build will just be more expensive.
+
+*** Download cache
+
+This is less understood.
+** rust
+
+When doing a build of a Rust project using =cargo=, it will default to using
+debug settings, and these get quite large - oftentimes starting at half a GB
+minimum.  These are safe to remove if online, but not safe offline.
+
+The =cargo.toml= file can be configured to make debug builds cease use of debug
+symbols for dependencies (or everything?) which saves significant space.  Place
+this in the =cargo.toml= to achieve this:
+
+#+begin_src toml :results none
+[profile.dev]
+# Prevent 36GB target/debug directories.
+debug = false
+#+end_src

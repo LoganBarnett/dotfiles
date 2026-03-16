@@ -1,9 +1,0 @@
-{
-  "includes": [
-    "https://kobold.club/*"
-  ],
-  "excludes": [],
-  "name": "bootstrap",
-  "enabled": true,
-  "key": "bootstrap"
-}

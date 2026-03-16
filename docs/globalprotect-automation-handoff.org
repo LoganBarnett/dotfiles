@@ -1,0 +1,152 @@
+#+title:     GlobalProtect Automation Handoff - Quick Reference
+#+language:  en
+
+* The Problem You Discovered
+
+When using ~gp-connect~ with default browser mode:
+1. Browser opens for SSO authentication
+2. After completing auth, browser tries to open ~GlobalProtect.app~ (GUI)
+3. This breaks the command-line flow
+4. ~gpclient~ is left waiting while the GUI app handles the connection
+
+* The Solution: Remote Browser Mode
+
+Use ~--browser remote~ to get a clean handoff point for automation.
+
+* The Handoff - Step by Step
+
+** Start gpclient in remote mode
+
+#+begin_src bash :exports code
+gp-connect --browser remote -vv
+#+end_src
+
+Or directly:
+#+begin_src bash :exports code
+gpclient connect --browser remote -vv $GP_SERVER
+#+end_src
+
+** gpclient gives you the handoff URL
+
+Output looks like:
+#+begin_example
+[2026-02-12T16:11:03Z INFO  auth::browser::browser_auth] Determined local IP address: 192.168.254.228
+[2026-02-12T16:11:03Z DEBUG tiny_http] Server listening on 192.168.254.228:63016
+
+    ==== Manual Authentication Required ====
+
+    Please open the following URL in your browser:
+
+    http://192.168.254.228:63016/c7026d8d-48d4-43cc-a638-8961ed60b77a
+
+    After completing the authentication, please paste the authentication data
+    back to this terminal.
+    (The data should start with "globalprotectcallback:...")
+
+[2026-02-12T16:11:03Z INFO  auth::browser::auth_server] auth server started at: http://192.168.254.228:63016/c7026d8d-48d4-43cc-a638-8961ed60b77a
+#+end_example
+
+** This is YOUR injection point
+
+The URL ~http://192.168.254.228:63016/c7026d8d-48d4-43cc-a638-8961ed60b77a~ is
+where you inject your automation.
+
+** What happens at that URL
+
+1. Opening the URL redirects to the GlobalProtect SAML authentication page
+2. Complete SSO authentication (username/password)
+3. Complete TOTP/MFA challenge
+4. SAML callback redirects back to the local server with auth token
+5. ~gpclient~ receives the callback and establishes VPN connection
+
+* Extracting the URL Programmatically
+
+#+begin_src bash :exports code
+# Run gpclient and extract the auth URL
+gpclient connect --browser remote -vv $GP_SERVER 2>&1 | \
+  grep -oE 'http://[0-9.]+:[0-9]+/[a-f0-9-]+' | head -1
+#+end_src
+
+Output:
+#+begin_example
+http://192.168.254.228:63016/c7026d8d-48d4-43cc-a638-8961ed60b77a
+#+end_example
+
+* Automation Options
+
+** Option 1: Headless Browser (Playwright/Selenium/Puppeteer)
+
+#+begin_src python :exports code
+# Extract URL from gpclient
+auth_url = extract_url_from_gpclient()
+
+# Automate in headless browser
+browser.goto(auth_url)
+browser.fill('#username', username)
+browser.fill('#password', password)
+browser.click('button[type=submit]')
+
+# Handle TOTP
+totp_code = generate_totp(secret)
+browser.fill('#mfa-code', totp_code)
+browser.click('button[type=submit]')
+
+# Wait for callback to complete back to local server
+browser.wait_for_url('**/success**')
+#+end_src
+
+** Option 2: Manual First Time, Then Cookie Reuse
+
+#+begin_src bash :exports code
+# First time: authenticate manually in browser
+gpclient connect --browser remote $GP_SERVER
+# Open the URL it gives you, complete auth manually
+
+# Subsequent times: reuse cached cookie (24 hours)
+gpclient connect $GP_SERVER
+# No authentication needed!
+#+end_src
+
+** Option 3: Intercept and Save the Callback
+
+The callback data (format: ~globalprotectcallback:...~) can be saved and
+replayed.
+
+#+begin_src bash :exports code
+# If you have the callback string from a previous session:
+echo "globalprotectcallback:..." | gpclient connect --cookie-on-stdin $GP_SERVER
+#+end_src
+
+* Why This Works
+
+- ~--browser remote~ mode prevents the ~globalprotect://~ protocol handler from
+  being triggered
+- The local web server (running on your machine) receives the SAML callback
+  directly
+- No GUI app involvement
+- Clean separation between authentication (browser) and VPN connection
+  (gpclient)
+
+* Updated gp-connect Usage
+
+#+begin_src bash :exports code
+# For headless automation
+gp-connect --browser remote
+
+# For normal browser-based auth (default)
+gp-connect
+
+# For specific browsers
+gp-connect --browser firefox
+#+end_src
+
+* Next Steps for Full Automation
+
+1. Write a script to extract the auth URL from gpclient output
+2. Choose your automation tool (Playwright, Selenium, etc.)
+3. Implement the SSO flow in your automation
+4. Implement TOTP generation (store secret securely)
+5. Test the full workflow
+6. Integrate with gp-monitor for automatic reconnection
+
+See ~globalprotect-headless-automation.org~ for complete examples.

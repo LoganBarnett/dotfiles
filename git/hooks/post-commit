@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+script="$(basename -- "${BASH_SOURCE[0]}")"
+# Run any local hook first.
+if [ -x "$GIT_DIR/hooks/$script" ]; then
+    "$GIT_DIR/hooks/$script" "$@"
+fi

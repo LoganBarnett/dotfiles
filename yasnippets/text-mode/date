@@ -1,9 +1,0 @@
-# -*- mode: snippet; require-file-newline: nil -*-
-# name: Give us a date stamp using the easily sortable YYYY-MM-DD format.
-#       This will prompt you for a date if you want to pick something
-#       besides today, otherwise just hit RET.
-# key: date
-# group: date
-# condition: t
-# --
-${1:$$(org-time-stamp-string-sans-brackets)}

@@ -1,0 +1,52 @@
+{ pkgs }:
+pkgs.writeShellScriptBin "disk-detachable" ''
+  ##
+  # Finds the device file for the attached SD card (eg. /dev/disk4) or USB
+  # drive.  It will assume /dev as a relative directory to make consumption
+  # easier.
+  #
+  # This has a non-zero exit code if more than one disk is found, or no disks
+  # are found.
+  ##
+
+  set -euo pipefail
+
+  while true; do
+    case "''${1:-}" in
+      -h | --help)
+        printf '%s\n' \
+          "Usage: $0" \
+          "" \
+          "Finds the device file for the attached SD card (eg. /dev/disk4) or USB drive." \
+          "It will assume /dev as a relative directory to make consumption easier."
+        exit
+        ;;
+      * ) break ;;
+    esac
+  done
+
+  IFS=$'\n'
+  sd_results=$(
+    system_profiler SPCardReaderDataType -json \
+      | ${pkgs.jq}/bin/jq -r \
+        '.SPCardReaderDataType[]._items[].bsd_name'
+  )
+  usb_results=$(
+    # At some point we had `and volumes?` in the select below, but that proved
+    # to not work for some partition or media types - particularly a USB hard
+    # drive dock.  If it was needed, we need to figure out what difference is
+    # made.
+    system_profiler SPUSBDataType -json \
+      | ${pkgs.jq}/bin/jq -r \
+        '.. | select(.bsd_name?).bsd_name'
+  )
+  unset IFS
+  array=( "''${sd_results[@]}""''${usb_results[@]}" )
+  count="''${#array[@]}"
+  if [[ $count != 1 ]]; then
+    echo "Error: Query result ''${array[@]} has $count results but we expect exactly 1." 1>&2
+    exit 1
+  else
+    echo -n "''${array[@]}"
+  fi
+''

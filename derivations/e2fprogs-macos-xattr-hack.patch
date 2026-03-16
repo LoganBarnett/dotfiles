@@ -1,0 +1,22 @@
+diff --git a/misc/fuse2fs.c b/misc/fuse2fs.c
+index 0dc77ead..f959f4a5 100644
+--- a/misc/fuse2fs.c
++++ b/misc/fuse2fs.c
+@@ -2413,7 +2413,7 @@ static struct xattr_translate xattr_translators[] = {
+ #undef XATTR_TRANSLATOR
+ 
+ static int op_getxattr(const char *path, const char *key, char *value,
+-		       size_t len)
++size_t len, unsigned int _)
+ {
+ 	struct fuse_context *ctxt = fuse_get_context();
+ 	struct fuse2fs *ff = (struct fuse2fs *)ctxt->private_data;
+@@ -2595,7 +2595,7 @@ out:
+ 
+ static int op_setxattr(const char *path EXT2FS_ATTR((unused)),
+ 		       const char *key, const char *value,
+-		       size_t len, int flags EXT2FS_ATTR((unused)))
++unsigned long len, int _ , unsigned int flags EXT2FS_ATTR((unused)))
+ {
+ 	struct fuse_context *ctxt = fuse_get_context();
+ 	struct fuse2fs *ff = (struct fuse2fs *)ctxt->private_data;

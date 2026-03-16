@@ -1,9 +1,0 @@
-{
-  "includes": [
-    "https://developer.mozilla.org/*"
-  ],
-  "excludes": [],
-  "name": "mozilla",
-  "enabled": true,
-  "key": "mozilla"
-}

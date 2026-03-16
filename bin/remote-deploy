@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 
 ################################################################################
+# Must be run from $FLAKE_ROOT (the repo root containing flake.nix), since
+# rsync uses ./ as the source.  macOS ships a very old rsync; a future
+# derivation should use pkgs.rsync explicitly.
+#
 # This script aims at faking some of the remote build stuff Nix claims to
 # support.
 #
@@ -29,6 +33,13 @@
 ################################################################################
 
 set -euo pipefail
+
+if [[ -z "${FLAKE_ROOT:-}" ]] || [[ ! -f "$FLAKE_ROOT/flake.nix" ]]; then
+  echo "error: FLAKE_ROOT is not set or does not contain flake.nix." >&2
+  echo "Run from the repo root or set FLAKE_ROOT." >&2
+  exit 1
+fi
+cd "$FLAKE_ROOT"
 
 bootstrap_host=''
 build=false

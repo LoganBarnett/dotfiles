@@ -1,9 +1,0 @@
-# -*- mode: snippet -*-
-# name: Start a comment block header for a file for hash based comments.
-# key: ###
-# group: prog-mode
-# condition: t
-# --
-################################################################################
-# $1
-################################################################################

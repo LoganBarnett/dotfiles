@@ -1,6 +1,0 @@
-# -*- mode: snippet; require-file-newline: nil -*-
-# name: import
-# key: imp
-# condition: t
-# --
-import $1 from '$1'

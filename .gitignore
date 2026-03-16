@@ -45,10 +45,10 @@ venv/
 *.test-if-can-be-removed/
 
 # Ignore Nix generated images.
-/nix/image
+/image
 
 # Ignore Nix generated SSH keys for the Darwin Linux-builder.
-/nix/keys
+/keys
 
 # Ignore the Linux-builder image itself.  It's not that big currently (19MB).
-/nix/nixos.qcow2
+/nixos.qcow2

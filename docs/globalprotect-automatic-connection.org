@@ -1,0 +1,221 @@
+#+title:     GlobalProtect Automatic Connection - Complete Automation
+#+language:  en
+
+* Overview
+
+The ~gp-connect-auto~ command provides fully automatic GlobalProtect VPN
+connection with headless browser automation.  No manual intervention required
+after initial setup.
+
+** What It Does
+
+1. Retrieves credentials from ~pass~
+2. Generates current TOTP code
+3. Starts gpclient in remote browser mode
+4. Extracts the authentication URL
+5. Uses headless Chromium to complete SSO authentication
+6. Handles username, password, and TOTP automatically
+7. Waits for VPN connection to establish
+
+* Prerequisites
+
+** pass Setup
+
+You need two entries in ~pass~:
+
+#+begin_src bash :exports code
+# Password entry (the literal string will be constructed from ORG_NAME)
+pass insert <org-name>
+
+# TOTP entry (with OTP secret)
+pass otp insert <org-name>-totp
+#+end_src
+
+The defaults use ~$ORG_NAME~ and ~$ORG_NAME-totp~, which are set by your
+system configuration.
+
+** First Run
+
+The first time you run ~gp-connect-auto~, it will download Playwright browsers
+(~130 MB).  This happens automatically and is stored in
+~~/.cache/ms-playwright~.
+
+* Usage
+
+** Basic Usage
+
+In a new terminal (with environment variables loaded):
+
+#+begin_src bash :exports code
+gp-connect-auto
+#+end_src
+
+That's it! The command will:
+- Retrieve credentials from pass
+- Complete authentication automatically
+- Establish VPN connection
+
+** With Options
+
+#+begin_src bash :exports code
+# Clear cached cookies and re-authenticate
+gp-connect-auto --clean
+
+# Verbose output to see what's happening
+gp-connect-auto -vv
+#+end_src
+
+** Check Connection
+
+#+begin_src bash :exports code
+# Check if VPN interface exists
+ifconfig gpd0
+
+# Test connectivity
+ping some-internal-host.pvt
+#+end_src
+
+* Debugging
+
+** Screenshots
+
+If authentication fails, check the debug screenshots:
+
+#+begin_src bash :exports code
+ls -lt /tmp/gp-auth-*.png
+open /tmp/gp-auth-before-submit.png
+open /tmp/gp-auth-totp-filled.png
+open /tmp/gp-auth-final.png
+open /tmp/gp-auth-error.png
+#+end_src
+
+These show exactly what the headless browser saw at each step.
+
+** Verbose Output
+
+#+begin_src bash :exports code
+gp-connect-auto -vv
+#+end_src
+
+This shows:
+- Credential retrieval
+- gpclient output
+- Authentication URL extraction
+- Headless browser automation steps
+- VPN connection establishment
+
+** Common Issues
+
+*** "ORG_NAME: unbound variable"
+
+Run in a proper shell with environment variables:
+#+begin_src bash :exports code
+# Open a new terminal window, or:
+zsh -l
+gp-connect-auto
+#+end_src
+
+*** "Failed to retrieve password from pass"
+
+Check your pass entry:
+#+begin_src bash :exports code
+pass show $ORG_NAME
+#+end_src
+
+*** "Failed to retrieve TOTP code from pass"
+
+Check your TOTP entry:
+#+begin_src bash :exports code
+pass otp $ORG_NAME-totp
+#+end_src
+
+*** Authentication selectors not found
+
+The script may need updates for changes to the SSO page.  Check the
+screenshots in ~/tmp/gp-auth-*.png~ to see what the page looks like, then
+update the selectors in ~scripts/gp-auth-headless.py~.
+
+* Integration with Monitor Service
+
+To use automatic authentication with the monitor service, you'll need to ensure
+the service can access:
+
+1. Your ~pass~ store (GPG key must be unlocked)
+2. Browser automation (runs in user context)
+
+For now, the monitor service with ~--browser remote~ will still require manual
+authentication.  Full automation via the service requires additional setup to
+handle credentials securely in a background daemon context.
+
+* Environment Variables
+
+| Variable        | Default           | Description                    |
+|-----------------+-------------------+--------------------------------|
+| GP_SERVER       | Set by system     | VPN portal server              |
+| ORG_NAME        | Set by system     | Organization name              |
+| GP_PASS_ENTRY   | $ORG_NAME         | Pass entry for password        |
+| GP_TOTP_ENTRY   | $ORG_NAME-totp    | Pass entry for TOTP            |
+| GP_GATEWAY      | (none)            | Specific gateway to use        |
+| GP_LOG_DIR      | ~/.local/share... | Log directory                  |
+
+* Security Notes
+
+** Credential Storage
+
+- Credentials are stored in ~pass~ (encrypted with GPG)
+- TOTP secrets are stored in ~pass otp~ entries
+- Never hardcoded in scripts or configuration
+
+** Headless Browser
+
+- Runs in your user context (same as manual browsing)
+- Uses Playwright's Chromium (isolated from your main browser)
+- Screenshots saved to ~/tmp~ for debugging (may contain sensitive data)
+
+** Clean Up
+
+After debugging, remove screenshots:
+#+begin_src bash :exports code
+rm /tmp/gp-auth-*.png
+#+end_src
+
+* Advanced Usage
+
+** Custom Pass Entries
+
+#+begin_src bash :exports code
+# Use different pass entries
+GP_PASS_ENTRY=work-vpn GP_TOTP_ENTRY=work-vpn-totp gp-connect-auto
+#+end_src
+
+** One-Time Connection
+
+For one-time use without saving cookies:
+#+begin_src bash :exports code
+gp-connect-auto --clean
+#+end_src
+
+** Scripted Usage
+
+#+begin_src bash :exports code
+#!/usr/bin/env bash
+
+# Ensure VPN is connected before running work commands
+if ! ifconfig gpd0 &>/dev/null; then
+  echo "VPN not connected, connecting..."
+  gp-connect-auto
+fi
+
+# Now run your work commands
+ssh internal-server.company.pvt
+#+end_src
+
+* Next Steps
+
+1. Set up your pass entries with credentials
+2. Run ~gp-connect-auto~ once to download browsers
+3. Test the automatic connection
+4. Integrate into your workflow
+5. Consider scripting or aliasing for daily use
+
+The goal: Never manually authenticate to the VPN again!
