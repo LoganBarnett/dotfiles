@@ -52,7 +52,9 @@ let
 in
 {
   imports = [
+    ./darwin-configs/goss.nix
     ./darwin-configs/optnix.nix
+    ./darwin-modules/goss.nix
     ./darwin-modules/goss-exporter.nix
     ./nixos-modules/nix-flake-environment.nix
     ./nixos-modules/darwin-tls-trust.nix

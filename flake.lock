@@ -308,11 +308,11 @@
         "rust-overlay": "rust-overlay_3"
       },
       "locked": {
-        "lastModified": 1771554780,
-        "narHash": "sha256-+/F21Yd6VPfobNzKiQ1YhiWyXpzok0zwXlQjF2IKUfg=",
+        "lastModified": 1772343667,
+        "narHash": "sha256-48buDlX6WSj1F2Y2bf81+eXBmg3KhF4Se0REuah4MU0=",
         "ref": "first-draft",
-        "rev": "ad86707b62532e887c2e95a2870beedfa621caed",
-        "revCount": 77,
+        "rev": "f1f7ee44f49d4108abad5169ff725f499614f4c3",
+        "revCount": 81,
         "type": "git",
         "url": "ssh://git@gitea.proton:2222/logan/dns-smart-block"
       },
@@ -2038,14 +2038,17 @@
         "rust-overlay": "rust-overlay_7"
       },
       "locked": {
-        "lastModified": 1770064713,
-        "narHash": "sha256-3NiMtm0J42fc4IAxp+epST4n8NXyyZgnZOAzEkGI8rY=",
-        "path": "/Users/logan/dev/sytter",
-        "type": "path"
+        "lastModified": 1769383789,
+        "narHash": "sha256-5aVmCq1uCOwCda8kGCAIY6ej2GrC5DE4Utk0W+IM9IM=",
+        "ref": "refs/heads/add-nix-darwin-module-as-launchctl-service",
+        "rev": "b4e26c53d8264c5b9083c805e4aa0e58f6eda8b1",
+        "revCount": 20,
+        "type": "git",
+        "url": "ssh://git@gitea.proton:2222/logan/sytter"
       },
       "original": {
-        "path": "/Users/logan/dev/sytter",
-        "type": "path"
+        "type": "git",
+        "url": "ssh://git@gitea.proton:2222/logan/sytter"
       }
     },
     "treefmt-nix": {

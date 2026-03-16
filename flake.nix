@@ -194,10 +194,7 @@
     };
 
     sytter = {
-      # TODO: Always keep one path example around.  Don't use file:// unless
-      # you're pointing at a tarball (which should happen just about never).
-      url = "path:/Users/logan/dev/sytter";
-      # url = github:LoganBarnett/sytter/add-nix-darwin-module-as-launchctl-service;
+      url = "git+ssh://git@gitea.proton:2222/logan/sytter";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 

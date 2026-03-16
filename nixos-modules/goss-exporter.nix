@@ -19,12 +19,19 @@
 #     };
 #   };
 ################################################################################
-{ config, lib, pkgs, facts, host-id, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  facts,
+  host-id,
+  ...
+}:
 let
-  inherit (lib) mkOption mkIf types mkMerge;
+  inherit (lib) mkOption mkIf types;
 
   hostFacts = facts.network.hosts.${host-id};
-  gossEnabled = builtins.elem "goss" (hostFacts.monitors or []);
+  gossEnabled = builtins.elem "goss" (hostFacts.monitors or [ ]);
 
   # Aggregate all goss check contributions from various services.
   # The module system should merge these automatically, but we ensure
@@ -36,11 +43,12 @@ let
 
   gossPort = 8080;
 
-in {
+in
+{
   options.services.goss = {
     checks = mkOption {
       type = types.attrsOf types.attrs;
-      default = {};
+      default = { };
       description = ''
         Goss health check configuration.  Services contribute their own checks
         here, which are aggregated into a single goss.yaml file.
@@ -99,7 +107,14 @@ in {
     # Install goss package system-wide for debugging.
     environment.systemPackages = [ pkgs.goss ];
 
-    # Run goss serve as a systemd service on internal port.
+    # Run goss serve as a systemd service on an internal port.  It is exposed
+    # externally via the nginx proxy below rather than directly, because goss
+    # ≤ 0.4.9 serves Content-Type "application/vnd.goss-prometheus" instead of
+    # the standard "text/plain; version=0.0.4" that Prometheus 3.x requires.
+    # The fix is merged in goss master (https://github.com/goss-org/goss/pull/1022)
+    # but has not been included in a release yet.  Once nixpkgs picks up a goss
+    # release that contains that fix, remove this proxy: let goss listen on
+    # gossPort directly and drop the nginx virtualHost below.
     systemd.services.goss-exporter = {
       description = "Goss Health Check Prometheus Exporter";
       wantedBy = [ "multi-user.target" ];
@@ -126,21 +141,31 @@ in {
         # Grant network capabilities for port checking.  This allows goss to
         # see all listening ports on the system, which is necessary for
         # accurate port availability checks.
-        AmbientCapabilities = [ "CAP_NET_ADMIN" "CAP_NET_RAW" ];
-        CapabilityBoundingSet = [ "CAP_NET_ADMIN" "CAP_NET_RAW" ];
+        AmbientCapabilities = [
+          "CAP_NET_ADMIN"
+          "CAP_NET_RAW"
+        ];
+        CapabilityBoundingSet = [
+          "CAP_NET_ADMIN"
+          "CAP_NET_RAW"
+        ];
 
         # Allow network access for HTTP checks.
         PrivateNetwork = false;
       };
     };
 
-    # Nginx reverse proxy to fix content-type header for Prometheus.
-    # Goss uses "application/vnd.goss-prometheus" which Prometheus doesn't
-    # recognize in newer versions.  This proxy changes it to the standard
-    # Prometheus text format content type.
+    # Nginx reverse proxy to rewrite the Content-Type header to the value
+    # Prometheus 3.x requires.  See the comment on goss-exporter above for
+    # when this can be removed.
     services.nginx.enable = true;
     services.nginx.virtualHosts."goss-proxy" = {
-      listen = [ { addr = "0.0.0.0"; port = gossPort; } ];
+      listen = [
+        {
+          addr = "0.0.0.0";
+          port = gossPort;
+        }
+      ];
       locations."/healthz" = {
         proxyPass = "http://127.0.0.1:${toString (gossPort + 1)}/healthz";
         extraConfig = ''
