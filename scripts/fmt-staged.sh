@@ -9,3 +9,5 @@ fi
 cd "$root" || exit 1
 # Pass paths NUL-delimited so names containing spaces are handled correctly.
 git diff --cached --name-only --diff-filter=d -z | xargs -0 treefmt
+# Re-stage the formatted files so the commit includes the formatted versions.
+git diff --cached --name-only --diff-filter=d -z | xargs -0 git add
