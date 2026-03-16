@@ -21,9 +21,41 @@
 #    no longer has a lock icon on it.  Double click it to connect.
 # 9. Enjoy streaming.
 ################################################################################
-{ ... }: {
+{ lib, pkgs, ... }:
+{
   services.sunshine = {
     enable = true;
     openFirewall = true;
+    capSysAdmin = true;
+    # The nixpkgs build omits PipeWire, which is the correct capture backend
+    # for GNOME Wayland.  Adding pipewire and libportal to the build inputs
+    # causes CMake to detect them via pkg-config and enable the portal
+    # screencast path.
+    package = pkgs.sunshine.overrideAttrs (old: {
+      buildInputs = old.buildInputs ++ [
+        pkgs.pipewire
+        pkgs.libportal
+      ];
+    });
   };
+
+  # Auto-login starts the graphical session so Sunshine is always reachable via
+  # Moonlight after a reboot.  The lock service immediately locks the screen, so
+  # physical access to a running machine still requires the password — the
+  # security model is equivalent to a locked, unattended desktop.
+  services.displayManager.autoLogin = {
+    enable = true;
+    user = "logan";
+  };
+  services.displayManager.defaultSession = "gnome";
+  systemd.user.services.lock-on-login = {
+    description = "Lock screen immediately after auto-login";
+    wantedBy = [ "graphical-session.target" ];
+    after = [ "graphical-session.target" ];
+    serviceConfig = {
+      Type = "oneshot";
+      ExecStart = "${pkgs.systemd}/bin/loginctl lock-session";
+    };
+  };
+
 }
