@@ -1,4 +1,33 @@
-{ username }: { flake-inputs, pkgs, system, ... }: {
+{ username }:
+{
+  flake-inputs,
+  pkgs,
+  system,
+  ...
+}:
+let
+  emacs-unfreeze = pkgs.callPackage ../derivations/emacs-unfreeze.nix { };
+  flac2alac = pkgs.callPackage ../derivations/flac2alac.nix { };
+  gif2mp4 = pkgs.callPackage ../derivations/gif2mp4.nix { };
+  git-outstanding-repos =
+    pkgs.callPackage ../derivations/git-outstanding-repos.nix
+      { };
+  host-wait = pkgs.callPackage ../derivations/host-wait.nix { };
+  image-create = pkgs.callPackage ../derivations/image-create.nix { };
+  nix-host-key-install =
+    pkgs.callPackage ../derivations/nix-host-key-install.nix
+      { };
+  nix-host-new = pkgs.callPackage ../derivations/nix-host-new.nix { };
+  remote-deploy = pkgs.callPackage ../derivations/remote-deploy.nix { };
+  rpi-host-new = pkgs.callPackage ../derivations/rpi-host-new.nix {
+    inherit image-create;
+  };
+  secret-server-token-get =
+    pkgs.callPackage ../derivations/secret-server-token-get.nix
+      { };
+  webp2png = pkgs.callPackage ../derivations/webp2png.nix { };
+in
+{
   imports = [
     ./git-config.nix
   ];
@@ -41,5 +70,29 @@
     # what the flake would deploy.  Useful for rolling out changes piecemeal
     # and confirming every host has applied the latest config.
     flake-inputs.flake-sync-status.packages.${system}.default
+    # Send SIGUSR2 to a frozen Emacs process to unfreeze it.
+    emacs-unfreeze
+    # Batch-convert FLAC audio files to ALAC/M4A.
+    flac2alac
+    # Convert an animated GIF to an MP4.
+    gif2mp4
+    # Report git repositories with unstaged changes or unpushed commits.
+    git-outstanding-repos
+    # Poll a host with ping until it responds.
+    host-wait
+    # Build a Raspberry Pi disk image for a named host.
+    image-create
+    # Install the host SSH key from the secrets store via rage.
+    nix-host-key-install
+    # Checklist entrypoint for creating a new Nix-managed host.
+    nix-host-new
+    # Copy the flake to a remote host and run nixos-rebuild switch.
+    remote-deploy
+    # Generate keys and build a disk image for a new Raspberry Pi host.
+    rpi-host-new
+    # Obtain an OAuth2 bearer token from a Secret Server instance.
+    secret-server-token-get
+    # Convert a WebP image to PNG.
+    webp2png
   ];
 }

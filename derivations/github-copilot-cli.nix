@@ -16,22 +16,24 @@
 # And then copy the file as needed to the derivations directory - make sure it
 # is named `copilot-package-lock.json`, which the program should do for you.
 # You can find the script declared here:
-# ../scripts/npm-generate-package-lock-json.sh
+# ../scripts/npm-generate-package-lock-json
 ################################################################################
 {
   lib,
   buildNpmPackage,
   fetchzip,
   nix-update-script,
-}: let
+}:
+let
   version = "0.0.342";
-in buildNpmPackage (finalAttrs: {
+in
+buildNpmPackage (finalAttrs: {
   pname = "github-copilot-cli";
   inherit version;
 
   src = fetchzip {
     url = "https://registry.npmjs.org/@github/copilot/-/copilot-${version}.tgz";
-      hash = "sha256-NY/ledtHdF/9ha+ZjstFRsc3zm5Vy5I8sl5wGt2+A64=";
+    hash = "sha256-NY/ledtHdF/9ha+ZjstFRsc3zm5Vy5I8sl5wGt2+A64=";
   };
 
   npmDepsHash = "sha256-TopIIfO6W3x+gtfGZRSq4BHd+jdI3+8/LaW+eOnMAkY=";
@@ -42,7 +44,9 @@ in buildNpmPackage (finalAttrs: {
 
   dontNpmBuild = true;
 
-  passthru.updateScript = nix-update-script { extraArgs = [ "--generate-lockfile" ]; };
+  passthru.updateScript = nix-update-script {
+    extraArgs = [ "--generate-lockfile" ];
+  };
 
   meta = {
     description = "GitHub Copilot CLI brings the power of Copilot coding agent directly to your terminal";

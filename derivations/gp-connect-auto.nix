@@ -1,29 +1,33 @@
-{ bash
-, coreutils
-, expect
-, gpclient
-, pass
-, python3
-, writeShellApplication
-, ...
+{
+  bash,
+  coreutils,
+  expect,
+  gpclient,
+  pass,
+  python3,
+  writeShellApplication,
+  ...
 }:
 
 let
   # Python with Playwright
-  pythonWithPlaywright = python3.withPackages (ps: with ps; [
-    playwright
-  ]);
+  pythonWithPlaywright = python3.withPackages (
+    ps: with ps; [
+      playwright
+    ]
+  );
 
   # Pass with OTP extension
   passWithOtp = pass.withExtensions (exts: [ exts.pass-otp ]);
 
   # Python scripts and custom vpnc script as separate files in the package
-  authScript = builtins.readFile ../scripts/gp-auth-headless.py;
-  ptyScript = builtins.readFile ../scripts/gp-connect-pty.py;
-  vpncScript = builtins.readFile ../scripts/vpnc-script-macos.sh;
+  authScript = builtins.readFile ../scripts/gp-auth-headless;
+  ptyScript = builtins.readFile ../scripts/gp-connect-pty;
+  vpncScript = builtins.readFile ../scripts/vpnc-script-macos;
 
   name = "gp-connect-auto";
-in writeShellApplication {
+in
+writeShellApplication {
   inherit name;
 
   runtimeInputs = [
@@ -74,6 +78,6 @@ in writeShellApplication {
     trap 'rm -f "$AUTH_SCRIPT" "$PTY_SCRIPT" "$VPNC_SCRIPT"' EXIT
 
     # Now run the main script
-    ${builtins.readFile ../scripts/gp-connect-auto.sh}
+    ${builtins.readFile ../scripts/gp-connect-auto}
   '';
 }

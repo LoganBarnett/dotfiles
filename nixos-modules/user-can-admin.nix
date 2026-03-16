@@ -11,7 +11,11 @@
   ...
 }:
 let
+  greppipe = pkgs.callPackage ../derivations/greppipe.nix { };
+  iso-date = pkgs.callPackage ../derivations/iso-date.nix { };
   passn = pkgs.callPackage ../derivations/passn.nix { };
+  tty-reset = pkgs.callPackage ../derivations/tty-reset.nix { };
+  tzdate = pkgs.callPackage ../derivations/tzdate.nix { };
 in
 {
   environment.variables = {
@@ -126,6 +130,15 @@ in
     pkgs.vim
     # A handy alternative to curl, best suited for downloading content.
     pkgs.wget
+    # Wrap grep to treat exit code 1 (no matches) as success, for use with
+    # set -o pipefail.
+    greppipe
+    # Read a date string from stdin and write an ISO-8601 timestamp to stdout.
+    iso-date
+    # Reset a broken terminal, optionally targeting a specific tty path.
+    tty-reset
+    # Print an ISO-8601 timestamp for a named US timezone abbreviation.
+    tzdate
   ]
   ++ lib.optionals pkgs.stdenv.isDarwin [
     flake-inputs.metalps.packages.${system}.cli

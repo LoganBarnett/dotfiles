@@ -1,4 +1,4 @@
-#! /bin/zsh
+#!/usr/bin/env zsh
 
 # I'm forgetful, so keep this for reference
 # zparseopts -lan=type

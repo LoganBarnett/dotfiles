@@ -1,6 +1,16 @@
-{ disk-detachable, image-create, zstd, writeShellApplication, ... }:
+{
+  disk-detachable,
+  image-create,
+  zstd,
+  writeShellApplication,
+  ...
+}:
 writeShellApplication {
   name = "image-deploy";
-  runtimeInputs = [ disk-detachable image-create zstd ];
-  text = builtins.readFile ../scripts/image-deploy.sh;
+  runtimeInputs = [
+    disk-detachable
+    image-create
+    zstd
+  ];
+  text = builtins.readFile ../scripts/image-deploy;
 }

@@ -5,7 +5,12 @@
 # database access.  This avoids the need for API tokens that become invalid
 # after rebuilds.
 ################################################################################
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 
 with lib;
 
@@ -22,7 +27,7 @@ let
       gnugrep
       coreutils
     ];
-    text = builtins.readFile ../scripts/gitea-setup-webhook.sh;
+    text = builtins.readFile ../scripts/gitea-setup-webhook;
   };
 
   webhookType = types.submodule {
@@ -54,13 +59,14 @@ let
       };
     };
   };
-in {
+in
+{
   options.services.giteaWebhookSetup = {
     enable = mkEnableOption "Gitea webhook setup via local CLI";
 
     webhooks = mkOption {
       type = types.listOf webhookType;
-      default = [];
+      default = [ ];
       description = "List of webhooks to configure";
     };
   };

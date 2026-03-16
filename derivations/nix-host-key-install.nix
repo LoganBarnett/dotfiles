@@ -2,5 +2,5 @@
 writeShellApplication {
   name = "nix-host-key-install";
   runtimeInputs = [ rage ];
-  text = builtins.readFile ../bin/nix-host-key-install;
+  text = builtins.readFile ../scripts/nix-host-key-install;
 }

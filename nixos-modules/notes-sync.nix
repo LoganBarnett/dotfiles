@@ -8,9 +8,18 @@
 # [2025-02-25].  One can force it with:
 # sudo -u nextcloud nextcloud-occ files:scan --all
 ################################################################################
-{ config, flake-inputs, lib, pkgs, system, ... }: let
+{
+  config,
+  flake-inputs,
+  lib,
+  pkgs,
+  system,
+  ...
+}:
+let
   repo-sync = flake-inputs.repo-sync-flake.packages.${system}.default;
-in {
+in
+{
   age.secrets.notes-sync-ssh = {
     rekeyFile = ../secrets/notes-sync-ssh.age;
     generator.script = "ssh-ed25519-with-pub";
@@ -20,7 +29,10 @@ in {
   systemd.timers.notes-sync = {
     # multi-user.target is how we ensure this timer is started on a
     # `nixos-rebuild switch`.
-    wantedBy = [ "multi-user.target" "timers.target" ];
+    wantedBy = [
+      "multi-user.target"
+      "timers.target"
+    ];
     timerConfig = {
       # This is needed to also start the timer at boot.
       OnBootSec = "15m";
@@ -30,37 +42,37 @@ in {
   systemd.services.notes-sync = {
     enable = true;
     serviceConfig = {
-      ExecStart = let
-        # Unfortunately the documentation generators out there are incomplete
-        # for this function.  See
-        # https://github.com/NixOS/nixpkgs/blob/master/pkgs/build-support/trivial-builders/default.nix#L175
-        # for all of the parameters availble.
-        script = pkgs.writeShellApplication {
-          name = "notes-sync";
-          runtimeInputs = [
-            pkgs.bash
-            pkgs.git
-            config.services.nextcloud.occ
-            repo-sync
-          ];
-          # excludeShellChecks = [
-          #   "SC2154"
-          # ];
-          text = ''
-            ${../scripts/notes-sync.sh} \
-              --git-url ${git-url} \
-              --ssh-identity ${config.age.secrets.notes-sync-ssh.path} \
-              --sync-dir ${notes-dir} \
-              --relative-notes-dir ${notes-relative-dir}
-          '';
-        };
-        # TODO: Move hostname and domain into facts.nix.
-        user-dir = "logan";
-        git-url = "git@bitbucket.org:LoganBarnett/notes.git";
-        notes-relative-dir = "/${user-dir}/files/notes";
-        notes-dir =
-          "${config.services.nextcloud.datadir}/data" + notes-relative-dir;
-      in
+      ExecStart =
+        let
+          # Unfortunately the documentation generators out there are incomplete
+          # for this function.  See
+          # https://github.com/NixOS/nixpkgs/blob/master/pkgs/build-support/trivial-builders/default.nix#L175
+          # for all of the parameters availble.
+          script = pkgs.writeShellApplication {
+            name = "notes-sync";
+            runtimeInputs = [
+              pkgs.bash
+              pkgs.git
+              config.services.nextcloud.occ
+              repo-sync
+            ];
+            # excludeShellChecks = [
+            #   "SC2154"
+            # ];
+            text = ''
+              ${../scripts/notes-sync} \
+                --git-url ${git-url} \
+                --ssh-identity ${config.age.secrets.notes-sync-ssh.path} \
+                --sync-dir ${notes-dir} \
+                --relative-notes-dir ${notes-relative-dir}
+            '';
+          };
+          # TODO: Move hostname and domain into facts.nix.
+          user-dir = "logan";
+          git-url = "git@bitbucket.org:LoganBarnett/notes.git";
+          notes-relative-dir = "/${user-dir}/files/notes";
+          notes-dir = "${config.services.nextcloud.datadir}/data" + notes-relative-dir;
+        in
         ''
           ${script}/bin/notes-sync
         '';

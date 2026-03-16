@@ -37,7 +37,7 @@
     # Give us a test program to make sure this works.
     (pkgs.writeShellApplication {
       name = "alert-test";
-      text = builtins.readFile ../scripts/alert-test.sh;
+      text = builtins.readFile ../scripts/alert-test;
       runtimeInputs = [
         pkgs.curl
       ];

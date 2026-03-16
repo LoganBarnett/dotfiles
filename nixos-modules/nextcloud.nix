@@ -45,12 +45,14 @@
   lib,
   pkgs,
   ...
-}: let
+}:
+let
   fqdn = "nextcloud.proton";
   data-dir = "/mnt/nextcloud";
   nfs-physical-hostname = "silicon.proton";
   nfs-vpn-hostname = "silicon-nas.proton";
-in {
+in
+{
   imports = [
     ../nixos-modules/bindfs.nix
     ../nixos-modules/nfs-mount-consumer.nix
@@ -72,11 +74,8 @@ in {
       mode = "0440";
       rekeyFile = ../secrets/nextcloud-admin-pass.age;
     };
-  } // (
-    config.lib.ldap.ldap-password
-      "openldap-${host-id}-nextcloud-service"
-      "${host-id}-nextcloud-service"
-  );
+  }
+  // (config.lib.ldap.ldap-password "openldap-${host-id}-nextcloud-service" "${host-id}-nextcloud-service");
   environment.systemPackages = [
     # If you had to reinstall Nextcloud, you've probably quickly learned that it
     # gets into a lodged state where any number of tiny little things that
@@ -87,7 +86,7 @@ in {
     # need something.
     (pkgs.writeShellApplication {
       name = "nextcloud-clean-for-install";
-      text = builtins.readFile ../scripts/nextcloud-clean-for-install.sh;
+      text = builtins.readFile ../scripts/nextcloud-clean-for-install;
     })
   ];
   nfsConsumerFacts = {
@@ -225,206 +224,224 @@ in {
       }
     ];
   };
-  systemd.services = let
-    preNfsService = "nfs-mount-nextcloud-sanity-check.service";
-  in {
-    phpfpm-nextcloud = let
-      after = [
-        preNfsService
-        "postgresql.service"
-        "run-agenix.d.mount"
-      ];
-    in {
-      # Make it so Nextcloud can always find its admin password.
-      inherit after;
-      requires = after;
-      serviceConfig = {
-        BindPaths = data-dir;
-        LoadCredential = [
-          "nextcloud-service-ldap-password:${
-            config.age.secrets."${host-id}-nextcloud-service-ldap-password".path
-          }"
-        ];
-      };
-    };
-    # This is so sticky, so put a check in place to ensure it's happening
-    # correctly.  We _really_ don't want to be reading and writing to the wrong
-    # directory that doesn't get backed up and doesn't even host our files we
-    # want.
-    # TODO: Rename to nfs from bindfs, since we no longer use bindfs.
-    nextcloud-bindfs-check = let
-      after = [ preNfsService ];
-      # List them all in case we take out the custom config one day.
-      before = [
-        "nextcloud-setup.service"
-        "nextcloud-custom-config.service"
-        "nextcloud.service"
-      ];
-    in {
-      serviceConfig = {
-        AssertPathIsMountPoint = "${data-dir}/data";
-      };
-      after = after;
-      requires = after;
-      before = before;
-      wantedBy = before;
-      # This file was placed to ensure we're looking at the right directory,
-      # regardless of mount settings and all that.
-      script = ''stat "${data-dir}/data/nfs-share-working"'';
-    };
-    # To do "dynamic" configuration like we do here, see:
-    # https://wiki.nixos.org/wiki/Nextcloud#Dynamic_configuration
-    # This is required because we don't have another way to enable user_ldap.
-    # The pkgs/servers/nextcloud/packages/generate.sh script does not generate
-    # `user_ldap`.  `user_ldap` exists in Nextcloud proper as seen here:
-    # https://github.com/nextcloud/server/tree/master/apps/user_ldap
-    # or if you need a specific commit:
-    # https://github.com/nextcloud/server/tree/8886f367e433277cf7aa0c01b93a9d4348db47a8/apps/user_ldap
-    # TODO: Use services.nextcloud.settings to configure this plugin.  I should
-    # be able to copy the values.
-    nextcloud-custom-config = let
-      after = [
-        "run-agenix.d.mount"
-        preNfsService
-        "nextcloud-setup.service"
-      ];
-    in {
-      path = [];
-      serviceConfig = {
-        LoadCredential = [
-          "nextcloud-service-ldap-password:${
-            config.age.secrets."${host-id}-nextcloud-service-ldap-password".path
-          }"
-        ];
-      };
-      # Most of this is set from doing "nextcloud-occ ldap:show-config" after
-      # having clicked around in the UI.
-      script = let
-        uid = "uid=${host-id}-nextcloud-service,ou=users,dc=proton,dc=org";
-        passwordPath = "/run/credentials/nextcloud-custom-config.service/nextcloud-service-ldap-password";
-        ldapHost = "nickel.proton";
-        script = pkgs.writeShellApplication {
-          name = "nextcloud-ldap-configure";
-          runtimeInputs = [
-            config.services.nextcloud.occ
-            pkgs.openldap
+  systemd.services =
+    let
+      preNfsService = "nfs-mount-nextcloud-sanity-check.service";
+    in
+    {
+      phpfpm-nextcloud =
+        let
+          after = [
+            preNfsService
+            "postgresql.service"
+            "run-agenix.d.mount"
           ];
-          text = ''
-            set -e
-            # None of this is going to work if we can't do a simple bind.
-            ldapwhoami -x \
-              -D "${uid}" \
-              -w "$(cat "${passwordPath}")" \
-              -H ldaps://${ldapHost}
-            set="nextcloud-occ ldap:set-config s01"
-            nextcloud-occ app:enable user_ldap
-            if nextcloud-occ ldap:show-config s01 ; then
-              echo "Configuration exists.  But going to set values anyways..."
-            else
-              echo "Prior configuration does not exist.  Creating now..."
-              nextcloud-occ ldap:create-empty-config
-            fi
-            $set ldapHost "ldaps://${ldapHost}"
-            $set ldapPort "636"
-            $set ldapBase "dc=proton,dc=org"
-            $set ldapBaseGroups "dc=proton,dc=org"
-            $set ldapBaseUsers "dc=proton,dc=org"
-            $set ldapAgentName "${uid}"
-            $set ldapAgentPassword "$(cat "${passwordPath}")"
-            $set ldapAttributesForUserSearch "uid"
-            $set ldapExpertUsernameAttr "uid"
-            $set ldapLoginFilter "(&(&(|(objectclass=inetOrgPerson))(|(memberof=cn=nextcloud-users,ou=groups,dc=proton,dc=org)))(uid=%uid))"
-            $set ldapLoginFilterEmail "0"
-            $set ldapLoginFilterMode "1"
-            $set ldapLoginFilterUsername "1"
-            # We probably want to revisit this at some point.
-            $set ldapNestedGroups "0"
-            $set ldapPagingSize "500"
-            $set ldapAdminGroup "nextcloud-admins"
-            $set ldapUserFilter "(&(|(objectclass=inetOrgPerson))(|(memberof=cn=nextcloud-admins,ou=groups,dc=proton,dc=org)(memberof=cn=nextcloud-users,ou=groups,dc=proton,dc=org)))"
-            $set ldapUserFilterGroups "nextcloud-admins;nextcloud-users"
-            $set ldapUserFilterMode "1"
-            $set ldapUserFilterObjectClass "inetOrgPerson"
-            $set ldapUserAvatarRule "default"
-            $set ldapUserDisplayName "cn"
-            $set ldapUuidGroupAttribute "auto"
-            $set ldapUuidUserAttribute "auto"
-            # Prevents NextCloud from using the UUID username form on disk, and
-            # helps keep things very tidy and consistent.
-            $set internalUsernameAttribute "uid"
-            $set markRemnantsAsDisabled "0"
-            $set turnOnPasswordChange "0"
-            $set useMemberOfToDetectMembership "0"
-            $set lastJpegPhotoLookup "0"
-            $set hasMemberOfFilterSupport "1"
-            $set ldapGroupFilter "(&(|(objectclass=groupOfNames))(|(cn=nextcloud-admins)(cn=nextcloud-users)))"
-            $set ldapGroupFilterGroups "nextcloud-admins;nextcloud-users"
-            $set ldapGroupFilterMode "1"
-            $set ldapGroupFilterObjectClass "groupOfNames"
-            $set ldapGroupMemberAssocAttr "member"
-            $set ldapGroupDisplayName "cn"
-            $set ldapCacheTTL "600"
-            $set ldapGidNumber "gidnumber"
-            $set turnOffCertCheck "0"
-            $set ldapExperiencedAdmin "0"
-            $set ldapConnectionTimeout "15"
-            $set ldapConfigurationActive "1"
-            nextcloud-occ ldap:test-config s01
-            nextcloud-occ ldap:show-config s01
-          '';
+        in
+        {
+          # Make it so Nextcloud can always find its admin password.
+          inherit after;
+          requires = after;
+          serviceConfig = {
+            BindPaths = data-dir;
+            LoadCredential = [
+              "nextcloud-service-ldap-password:${
+                config.age.secrets."${host-id}-nextcloud-service-ldap-password".path
+              }"
+            ];
+          };
         };
-      in ''
-        ${script}/bin/nextcloud-ldap-configure
-      '';
-      inherit after;
-      requires = after;
-      before = [ "multi-user.target" "phpfpm-nextcloud.service" ];
-      wantedBy = [ "multi-user.target" "phpfpm-nextcloud.service" ];
-    };
-    "${preNfsService}" = let
-      before = [
-        "nextcloud-setup.service"
-        "nextcloud-update-db.service"
-        "nextcloud-custom-config.service"
-        "nextcloud.service"
-      ];
-    in {
-      before = before;
-      wantedBy = before;
-    };
-    # Create symlink from NFS mount to Nextcloud data directory so users can
-    # access shared media.
-    nextcloud-shared-media-symlink = {
-      description = "Create symlink for shared media in Nextcloud";
-      after = [
-        "nfs-mount-nextcloud-shared-media-sanity-check.service"
-        "nextcloud-setup.service"
-      ];
-      before = [ "phpfpm-nextcloud.service" ];
-      wantedBy = [ "multi-user.target" ];
-      serviceConfig = {
-        Type = "oneshot";
-        RemainAfterExit = true;
+      # This is so sticky, so put a check in place to ensure it's happening
+      # correctly.  We _really_ don't want to be reading and writing to the wrong
+      # directory that doesn't get backed up and doesn't even host our files we
+      # want.
+      # TODO: Rename to nfs from bindfs, since we no longer use bindfs.
+      nextcloud-bindfs-check =
+        let
+          after = [ preNfsService ];
+          # List them all in case we take out the custom config one day.
+          before = [
+            "nextcloud-setup.service"
+            "nextcloud-custom-config.service"
+            "nextcloud.service"
+          ];
+        in
+        {
+          serviceConfig = {
+            AssertPathIsMountPoint = "${data-dir}/data";
+          };
+          after = after;
+          requires = after;
+          before = before;
+          wantedBy = before;
+          # This file was placed to ensure we're looking at the right directory,
+          # regardless of mount settings and all that.
+          script = ''stat "${data-dir}/data/nfs-share-working"'';
+        };
+      # To do "dynamic" configuration like we do here, see:
+      # https://wiki.nixos.org/wiki/Nextcloud#Dynamic_configuration
+      # This is required because we don't have another way to enable user_ldap.
+      # The pkgs/servers/nextcloud/packages/generate.sh script does not generate
+      # `user_ldap`.  `user_ldap` exists in Nextcloud proper as seen here:
+      # https://github.com/nextcloud/server/tree/master/apps/user_ldap
+      # or if you need a specific commit:
+      # https://github.com/nextcloud/server/tree/8886f367e433277cf7aa0c01b93a9d4348db47a8/apps/user_ldap
+      # TODO: Use services.nextcloud.settings to configure this plugin.  I should
+      # be able to copy the values.
+      nextcloud-custom-config =
+        let
+          after = [
+            "run-agenix.d.mount"
+            preNfsService
+            "nextcloud-setup.service"
+          ];
+        in
+        {
+          path = [ ];
+          serviceConfig = {
+            LoadCredential = [
+              "nextcloud-service-ldap-password:${
+                config.age.secrets."${host-id}-nextcloud-service-ldap-password".path
+              }"
+            ];
+          };
+          # Most of this is set from doing "nextcloud-occ ldap:show-config" after
+          # having clicked around in the UI.
+          script =
+            let
+              uid = "uid=${host-id}-nextcloud-service,ou=users,dc=proton,dc=org";
+              passwordPath = "/run/credentials/nextcloud-custom-config.service/nextcloud-service-ldap-password";
+              ldapHost = "nickel.proton";
+              script = pkgs.writeShellApplication {
+                name = "nextcloud-ldap-configure";
+                runtimeInputs = [
+                  config.services.nextcloud.occ
+                  pkgs.openldap
+                ];
+                text = ''
+                  set -e
+                  # None of this is going to work if we can't do a simple bind.
+                  ldapwhoami -x \
+                    -D "${uid}" \
+                    -w "$(cat "${passwordPath}")" \
+                    -H ldaps://${ldapHost}
+                  set="nextcloud-occ ldap:set-config s01"
+                  nextcloud-occ app:enable user_ldap
+                  if nextcloud-occ ldap:show-config s01 ; then
+                    echo "Configuration exists.  But going to set values anyways..."
+                  else
+                    echo "Prior configuration does not exist.  Creating now..."
+                    nextcloud-occ ldap:create-empty-config
+                  fi
+                  $set ldapHost "ldaps://${ldapHost}"
+                  $set ldapPort "636"
+                  $set ldapBase "dc=proton,dc=org"
+                  $set ldapBaseGroups "dc=proton,dc=org"
+                  $set ldapBaseUsers "dc=proton,dc=org"
+                  $set ldapAgentName "${uid}"
+                  $set ldapAgentPassword "$(cat "${passwordPath}")"
+                  $set ldapAttributesForUserSearch "uid"
+                  $set ldapExpertUsernameAttr "uid"
+                  $set ldapLoginFilter "(&(&(|(objectclass=inetOrgPerson))(|(memberof=cn=nextcloud-users,ou=groups,dc=proton,dc=org)))(uid=%uid))"
+                  $set ldapLoginFilterEmail "0"
+                  $set ldapLoginFilterMode "1"
+                  $set ldapLoginFilterUsername "1"
+                  # We probably want to revisit this at some point.
+                  $set ldapNestedGroups "0"
+                  $set ldapPagingSize "500"
+                  $set ldapAdminGroup "nextcloud-admins"
+                  $set ldapUserFilter "(&(|(objectclass=inetOrgPerson))(|(memberof=cn=nextcloud-admins,ou=groups,dc=proton,dc=org)(memberof=cn=nextcloud-users,ou=groups,dc=proton,dc=org)))"
+                  $set ldapUserFilterGroups "nextcloud-admins;nextcloud-users"
+                  $set ldapUserFilterMode "1"
+                  $set ldapUserFilterObjectClass "inetOrgPerson"
+                  $set ldapUserAvatarRule "default"
+                  $set ldapUserDisplayName "cn"
+                  $set ldapUuidGroupAttribute "auto"
+                  $set ldapUuidUserAttribute "auto"
+                  # Prevents NextCloud from using the UUID username form on disk, and
+                  # helps keep things very tidy and consistent.
+                  $set internalUsernameAttribute "uid"
+                  $set markRemnantsAsDisabled "0"
+                  $set turnOnPasswordChange "0"
+                  $set useMemberOfToDetectMembership "0"
+                  $set lastJpegPhotoLookup "0"
+                  $set hasMemberOfFilterSupport "1"
+                  $set ldapGroupFilter "(&(|(objectclass=groupOfNames))(|(cn=nextcloud-admins)(cn=nextcloud-users)))"
+                  $set ldapGroupFilterGroups "nextcloud-admins;nextcloud-users"
+                  $set ldapGroupFilterMode "1"
+                  $set ldapGroupFilterObjectClass "groupOfNames"
+                  $set ldapGroupMemberAssocAttr "member"
+                  $set ldapGroupDisplayName "cn"
+                  $set ldapCacheTTL "600"
+                  $set ldapGidNumber "gidnumber"
+                  $set turnOffCertCheck "0"
+                  $set ldapExperiencedAdmin "0"
+                  $set ldapConnectionTimeout "15"
+                  $set ldapConfigurationActive "1"
+                  nextcloud-occ ldap:test-config s01
+                  nextcloud-occ ldap:show-config s01
+                '';
+              };
+            in
+            ''
+              ${script}/bin/nextcloud-ldap-configure
+            '';
+          inherit after;
+          requires = after;
+          before = [
+            "multi-user.target"
+            "phpfpm-nextcloud.service"
+          ];
+          wantedBy = [
+            "multi-user.target"
+            "phpfpm-nextcloud.service"
+          ];
+        };
+      "${preNfsService}" =
+        let
+          before = [
+            "nextcloud-setup.service"
+            "nextcloud-update-db.service"
+            "nextcloud-custom-config.service"
+            "nextcloud.service"
+          ];
+        in
+        {
+          before = before;
+          wantedBy = before;
+        };
+      # Create symlink from NFS mount to Nextcloud data directory so users can
+      # access shared media.
+      nextcloud-shared-media-symlink = {
+        description = "Create symlink for shared media in Nextcloud";
+        after = [
+          "nfs-mount-nextcloud-shared-media-sanity-check.service"
+          "nextcloud-setup.service"
+        ];
+        before = [ "phpfpm-nextcloud.service" ];
+        wantedBy = [ "multi-user.target" ];
+        serviceConfig = {
+          Type = "oneshot";
+          RemainAfterExit = true;
+        };
+        script = ''
+          mkdir -p "${data-dir}/data"
+          ln -sfn /mnt/nextcloud-shared-media "${data-dir}/data/shared-media"
+          chown nextcloud:nextcloud "${data-dir}/data/shared-media"
+        '';
       };
-      script = ''
-        mkdir -p "${data-dir}/data"
-        ln -sfn /mnt/nextcloud-shared-media "${data-dir}/data/shared-media"
-        chown nextcloud:nextcloud "${data-dir}/data/shared-media"
-      '';
     };
-  };
   users.users.nextcloud = {
     # This is typically _not_ set by the Nextcloud NixOS module, but we're
     # doing a lot of hand-off that requires permissions to align.
     isSystemUser = true;
     extraGroups = [
       "openldap-${host-id}-nextcloud-service"
-      "media-shared"  # For shared media directory access.
+      "media-shared" # For shared media directory access.
     ];
     group = "nextcloud";
   };
-  users.groups.nextcloud = {};
-  users.groups."openldap-${host-id}-nextcloud-service" = {};
+  users.groups.nextcloud = { };
+  users.groups."openldap-${host-id}-nextcloud-service" = { };
 
   # Goss health checks for Nextcloud.
   services.goss.checks = {

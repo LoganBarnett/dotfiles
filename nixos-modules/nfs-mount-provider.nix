@@ -3,10 +3,24 @@
 # with IP-specific access from NFS.
 ################################################################################
 # nixos-modules/nfs-provider.nix
-{ lib, config, host-id, pkgs, ... }:
+{
+  lib,
+  config,
+  host-id,
+  pkgs,
+  ...
+}:
 let
   port = 51821;
-  inherit (lib) mkIf mkEnableOption mkOption types concatStringsSep all unique;
+  inherit (lib)
+    mkIf
+    mkEnableOption
+    mkOption
+    types
+    concatStringsSep
+    all
+    unique
+    ;
   cfg = config.nfsProvider;
   btrfsBin = "${pkgs.btrfs-progs}/bin/btrfs";
   # We use a btrfs snapshot to prevent write locks from fouling up the
@@ -25,12 +39,15 @@ let
 
   exportsText =
     let
-      line = v:
-        "${volAbsPath v} 10.100.0.${toString v.peerNumber}/32" +
-        # Use async for better performance. Safe for single-client topology with
-        # application-level integrity (git, nextcloud) and btrfs snapshots.
-        "(rw,async,no_subtree_check,no_root_squash)";
-    in concatStringsSep "\n" (map line cfg.volumes);
+      line =
+        v:
+        "${volAbsPath v} 10.100.0.${toString v.peerNumber}/32"
+        +
+          # Use async for better performance. Safe for single-client topology with
+          # application-level integrity (git, nextcloud) and btrfs snapshots.
+          "(rw,async,no_subtree_check,no_root_squash)";
+    in
+    concatStringsSep "\n" (map line cfg.volumes);
 in
 {
   options.nfsProvider = {
@@ -43,64 +60,66 @@ in
     '';
 
     volumes = mkOption {
-      type = types.listOf (types.submodule (_: {
-        options = {
-          hostId = mkOption {
-            type = types.str;
-            description = ''
-              Identifier for the consumer host. Used to locate the peer public
-              key at "../secrets/<hostId>-nfs-wireguard-key.pub". Not required
-              to be unique.
-            '';
-            example = "nextcloud";
-          };
+      type = types.listOf (
+        types.submodule (_: {
+          options = {
+            hostId = mkOption {
+              type = types.str;
+              description = ''
+                Identifier for the consumer host. Used to locate the peer public
+                key at "../secrets/<hostId>-nfs-wireguard-key.pub". Not required
+                to be unique.
+              '';
+              example = "nextcloud";
+            };
 
-          gid = mkOption {
-            type = types.int;
-            description = ''
-              The GID to use for the group.  Try to use an arbitrarily high one
-              to avoid collisions (>= 29970).
-            '';
-            example = 29970;
-          };
+            gid = mkOption {
+              type = types.int;
+              description = ''
+                The GID to use for the group.  Try to use an arbitrarily high one
+                to avoid collisions (>= 29970).
+              '';
+              example = 29970;
+            };
 
-          group = mkOption {
-            type = types.str;
-            description = ''
-              Group that will own each exported directory.  Directories are
-              created with mode 0770 and group ownership set to this group.
-            '';
-            example = "nextcloud";
+            group = mkOption {
+              type = types.str;
+              description = ''
+                Group that will own each exported directory.  Directories are
+                created with mode 0770 and group ownership set to this group.
+              '';
+              example = "nextcloud";
+            };
+            volumeRelativeDir = mkOption {
+              type = types.str;
+              description = ''
+                Directory name under ${realPath}. The exported path will be
+                "${realPath}/<volumeRelativeDir>".
+              '';
+              example = "gitea";
+            };
+            peerNumber = mkOption {
+              type = types.ints.u8;
+              description = ''
+                Last octet of the WireGuard peer's IP on 10.100.0.0/24. The peer
+                is granted NFS access as 10.100.0.<peerNumber>/32.  For example, 5
+                gives 10.100.0.5/32.
+              '';
+              example = 4;
+            };
+            backupContents = mkOption {
+              type = types.bool;
+              default = true;
+              description = ''
+                Whether to include this volume in the Restic backup.  Set to false
+                for volumes that are pass-throughs or otherwise don't need backing
+                up (e.g., a Nextcloud directory that Kodi reads from).
+              '';
+              example = false;
+            };
           };
-          volumeRelativeDir = mkOption {
-            type = types.str;
-            description = ''
-              Directory name under ${realPath}. The exported path will be
-              "${realPath}/<volumeRelativeDir>".
-            '';
-            example = "gitea";
-          };
-          peerNumber = mkOption {
-            type = types.ints.u8;
-            description = ''
-              Last octet of the WireGuard peer's IP on 10.100.0.0/24. The peer
-              is granted NFS access as 10.100.0.<peerNumber>/32.  For example, 5
-              gives 10.100.0.5/32.
-            '';
-            example = 4;
-          };
-          backupContents = mkOption {
-            type = types.bool;
-            default = true;
-            description = ''
-              Whether to include this volume in the Restic backup.  Set to false
-              for volumes that are pass-throughs or otherwise don't need backing
-              up (e.g., a Nextcloud directory that Kodi reads from).
-            '';
-            example = false;
-          };
-        };
-      }));
+        })
+      );
       default = [ ];
       description = ''
         List of volumes, each mapped to a WireGuard peer.  Each item provides a
@@ -136,8 +155,11 @@ in
     environment.systemPackages = [
       (pkgs.writeShellApplication {
         name = "snapshots-purge-all";
-        runtimeInputs = [ pkgs.btrfs-progs pkgs.gawk ];
-        text = builtins.readFile ../scripts/snapshots-purge-all.sh;
+        runtimeInputs = [
+          pkgs.btrfs-progs
+          pkgs.gawk
+        ];
+        text = builtins.readFile ../scripts/snapshots-purge-all;
       })
     ];
 
@@ -145,20 +167,25 @@ in
     users.groups = lib.pipe cfg.volumes [
       (builtins.map (v: {
         name = v.group;
-        value = { gid = v.gid; };
+        value = {
+          gid = v.gid;
+        };
       }))
       builtins.listToAttrs
     ];
 
-    systemd.tmpfiles.rules =
-      lib.lists.concatMap (v: let
+    systemd.tmpfiles.rules = lib.lists.concatMap (
+      v:
+      let
         absoluteVolumePath = volAbsPath v;
-      in [
+      in
+      [
         "d ${absoluteVolumePath} 0770 root ${v.group} -"
         # Include this as a sanity check, which the consumer can be configured
         # to look for via `preconditionCheck`.
         "f ${absoluteVolumePath}/nfs-working-share 0555 root root -"
-      ]) cfg.volumes;
+      ]
+    ) cfg.volumes;
 
     #### Provider WireGuard private key via agenix-rekey
     age.secrets.${wgSecretName} = {
@@ -182,23 +209,27 @@ in
         let
           groups = lib.groupBy (v: v.hostId) cfg.volumes;
           # One peer per hostId; take the first entry for pubkey + peerNumber.
-          toPeer = vs:
-            let v0 = builtins.head vs;
-            in {
-              publicKey =
-                builtins.readFile
-                  ../secrets/generated/${v0.hostId}-nfs-wireguard-key.pub;
+          toPeer =
+            vs:
+            let
+              v0 = builtins.head vs;
+            in
+            {
+              publicKey = builtins.readFile ../secrets/generated/${v0.hostId}-nfs-wireguard-key.pub;
               allowedIPs = [ "10.100.0.${toString v0.peerNumber}/32" ];
             };
-        in map toPeer (builtins.attrValues groups);
+        in
+        map toPeer (builtins.attrValues groups);
     };
 
-    systemd.services.wireguard-wgnfs0 = let
-      after = [ "run-agenix.d.mount" ];
-    in {
-      inherit after;
-      requires = after;
-    };
+    systemd.services.wireguard-wgnfs0 =
+      let
+        after = [ "run-agenix.d.mount" ];
+      in
+      {
+        inherit after;
+        requires = after;
+      };
 
     #### NFS server and exports restricted to each peer /32
     services.nfs.server = {
@@ -235,10 +266,14 @@ in
         # done in, and the password would be lifted by easily following the
         # config back to the file the password lived in.
         passwordFile = null;
-        paths = map
-          (v: "/tank/data/${v.volumeRelativeDir}")
-          (builtins.filter (v: v.backupContents) cfg.volumes);
-        pruneOpts = [ "--keep-daily 7" "--keep-weekly 4" "--keep-monthly 6" ];
+        paths = map (v: "/tank/data/${v.volumeRelativeDir}") (
+          builtins.filter (v: v.backupContents) cfg.volumes
+        );
+        pruneOpts = [
+          "--keep-daily 7"
+          "--keep-weekly 4"
+          "--keep-monthly 6"
+        ];
         repository = "/tank/backup/restic";
         timerConfig.OnCalendar = "daily";
         backupPrepareCommand = ''
@@ -247,9 +282,7 @@ in
           whoami
           SNAP_NAME="data-$(date +%Y%m%d-%H%M%S)"
           SNAP_PATH="${snapshotDir}/$SNAP_NAME"
-          echo "$SNAP_PATH" > ${
-            config.services.restic.backups.nfsProvider.repository
-          }/last-snapshot
+          echo "$SNAP_PATH" > ${config.services.restic.backups.nfsProvider.repository}/last-snapshot
           mkdir --parents "$SNAP_PATH"
           # -r is for read-only, but there is no long argument form.
           # Supposedly upstream has a fix!  But not as of 6.14.
@@ -258,9 +291,7 @@ in
         '';
         backupCleanupCommand = ''
           set -euo pipefail
-          SNAP_PATH="$(cat ${
-            config.services.restic.backups.nfsProvider.repository
-          }/last-snapshot)"
+          SNAP_PATH="$(cat ${config.services.restic.backups.nfsProvider.repository}/last-snapshot)"
           # I'm not sure why this needs to be include /data as a subdirectory
           # but it's what btrfs sees for its snapshots.
           ${btrfsBin} subvolume delete "$SNAP_PATH"/data
@@ -333,39 +364,41 @@ in
         message = "nfsProvider.volumes must not be empty.";
       }
       {
-        assertion = all (n: n > 0 && n < 255)
-          (map (v: v.peerNumber) cfg.volumes);
+        assertion = all (n: n > 0 && n < 255) (map (v: v.peerNumber) cfg.volumes);
         message = "Each peerNumber must be between 1 and 254.";
       }
       # Removed volumeRelativeDir uniqueness check to allow multiple hosts
       # to access the same shared directory (e.g., nextcloud-shared-media
       # accessed by both Copper and Krypton).
-      (let
-        # Ensure string keys for groupBy
-        groups = lib.groupBy (v: toString v.hostId) cfg.volumes;
+      (
+        let
+          # Ensure string keys for groupBy
+          groups = lib.groupBy (v: toString v.hostId) cfg.volumes;
 
-        analyzed =
-        lib.mapAttrsToList (hostId: vs:
-          let
-            nums = map (v: v.peerNumber) vs;
-            uniq = lib.unique nums;
-          in {
-            inherit hostId nums uniq;
-            ok = (lib.length uniq) == 1;
-          }
-        ) groups;
+          analyzed = lib.mapAttrsToList (
+            hostId: vs:
+            let
+              nums = map (v: v.peerNumber) vs;
+              uniq = lib.unique nums;
+            in
+            {
+              inherit hostId nums uniq;
+              ok = (lib.length uniq) == 1;
+            }
+          ) groups;
 
-      bad = lib.filter (g: !g.ok) analyzed;
-      in {
-        assertion =
-          bad == [];
+          bad = lib.filter (g: !g.ok) analyzed;
+        in
+        {
+          assertion = bad == [ ];
 
-        message = ''
-          For each hostId, all peerNumber values must be identical across
-          volumes.
-          Failures (per hostId): ${builtins.toJSON bad}
-        '';
-      })
+          message = ''
+            For each hostId, all peerNumber values must be identical across
+            volumes.
+            Failures (per hostId): ${builtins.toJSON bad}
+          '';
+        }
+      )
     ];
   };
 }

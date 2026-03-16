@@ -48,7 +48,14 @@
 }:
 let
   app = pkgs.callPackage ./packages/app.nix { };
+  dnsflush = pkgs.callPackage ./derivations/dnsflush.nix { };
+  get-ip = pkgs.callPackage ./derivations/get-ip.nix { };
+  heic2png = pkgs.callPackage ./derivations/heic2png.nix { };
   macos-keyboard-remap = pkgs.callPackage ./packages/macos-keyboard-remap.nix { };
+  macos-service-id-for-iface =
+    pkgs.callPackage ./derivations/macos-service-id-for-iface.nix
+      { };
+  vpn-dns-recover = pkgs.callPackage ./derivations/vpn-dns-recover.nix { };
 in
 {
   imports = [
@@ -81,6 +88,16 @@ in
       # general purpose some renaming must be done.
       pkgs.zalgo-cli
       flake-inputs.typeypipe-flake.packages.${system}.default
+      # Flush the macOS DNS cache, adapting to the OS version.
+      dnsflush
+      # Show the LAN IP address for a named interface type.
+      get-ip
+      # Convert HEIC images to PNG using ImageMagick.
+      heic2png
+      # Map a network interface name (e.g. en0) to its macOS service ID.
+      macos-service-id-for-iface
+      # Reset DNS and network services after a VPN disconnect.
+      vpn-dns-recover
     ];
   };
   fonts = {

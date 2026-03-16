@@ -1,19 +1,21 @@
-{ config, host-id, lib, pkgs, ... }: let
+{
+  config,
+  host-id,
+  lib,
+  pkgs,
+  ...
+}:
+let
   token-file = "/etc/nixos/secrets/matrix-alertmanager.token";
-in {
+in
+{
   systemd.services.alertmanager = {
     serviceConfig = {
       LoadCredential = [
         # If we do it this way, we don't run into permission issues accessing
         # the secret.  This is basically required because the NixOS module for
         # alertmanager configures the systemd service to use DynamicUser.
-        "matrix-alertmanager-secret:${
-          config
-            .age
-            .secrets
-            .matrix-alertmanager-secret
-            .path
-        }"
+        "matrix-alertmanager-secret:${config.age.secrets.matrix-alertmanager-secret.path}"
       ];
     };
   };
@@ -35,11 +37,7 @@ in {
     ];
     mention = true;
     tokenFile = token-file;
-    secretFile = config
-      .age
-      .secrets
-      .matrix-alertmanager-secret
-      .path;
+    secretFile = config.age.secrets.matrix-alertmanager-secret.path;
   };
   # Activate the timer on a switch/rebuild.
   # system.activationScripts.matrix-alertmanager-token-refresh-activate = let
@@ -71,29 +69,26 @@ in {
       # Synapse can aggressively give 429s.
       Restart = "on-failure";
       RestartSec = "30min";
-      ExecStart = let
-        # Unfortunately the documentation generators out there are incomplete
-        # for this function.  See
-        # https://github.com/NixOS/nixpkgs/blob/master/pkgs/build-support/trivial-builders/default.nix#L175
-        # for all of the parameters availble.
-        script = pkgs.writeShellApplication {
-          name = "matrix-token-refresh";
-          excludeShellChecks = [
-            "SC2154"
-          ];
-          runtimeInputs = [
-            pkgs.curl
-            pkgs.jq
-          ];
-          text = builtins.readFile ../scripts/matrix-token-refresh.sh;
-        };
-        password-file = config
-          .age
-          .secrets
-          ."${host-id}-alertmanager-service-ldap-password"
-          .path
-        ;
-      in
+      ExecStart =
+        let
+          # Unfortunately the documentation generators out there are incomplete
+          # for this function.  See
+          # https://github.com/NixOS/nixpkgs/blob/master/pkgs/build-support/trivial-builders/default.nix#L175
+          # for all of the parameters availble.
+          script = pkgs.writeShellApplication {
+            name = "matrix-token-refresh";
+            excludeShellChecks = [
+              "SC2154"
+            ];
+            runtimeInputs = [
+              pkgs.curl
+              pkgs.jq
+            ];
+            text = builtins.readFile ../scripts/matrix-token-refresh;
+          };
+          password-file =
+            config.age.secrets."${host-id}-alertmanager-service-ldap-password".path;
+        in
         lib.strings.concatStringsSep " " [
           "${script}/bin/matrix-token-refresh"
           "--password-file '${password-file}'"
@@ -103,12 +98,8 @@ in {
       User = "root";
     };
     environment = {
-      password_file = config
-        .age
-        .secrets
-        ."${host-id}-alertmanager-service-ldap-password"
-        .path
-      ;
+      password_file =
+        config.age.secrets."${host-id}-alertmanager-service-ldap-password".path;
       homeserver_url = "https://matrix.proton";
       username = "${host-id}-alertmanager-service";
     };

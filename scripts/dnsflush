@@ -1,4 +1,4 @@
-#! /bin/bash
+#!/usr/bin/env bash
 
 # HT https://support.apple.com/en-us/HT202516
 LONGVERSION=$(sw_vers -productVersion)

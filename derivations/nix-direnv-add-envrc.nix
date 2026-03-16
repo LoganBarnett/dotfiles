@@ -10,5 +10,5 @@ writeShellApplication {
     direnv
     git
   ];
-  text = builtins.readFile ../scripts/nix-direnv-add-envrc.sh;
+  text = builtins.readFile ../scripts/nix-direnv-add-envrc;
 }

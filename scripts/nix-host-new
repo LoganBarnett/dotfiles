@@ -1,4 +1,4 @@
-#!/usr/bin/bash
+#!/usr/bin/env bash
 ################################################################################
 # This is the executable checklist for creating a new host that is Nix managed.
 # This can also apply to a fresh macOS system.  This differs from the

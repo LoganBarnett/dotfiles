@@ -7,7 +7,12 @@
 # 3. Automatically deploys updates to affected hosts
 # 4. Tracks deployment status for external tools (like Claude)
 ################################################################################
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 
 with lib;
 
@@ -16,22 +21,27 @@ let
 
   checkHostChanged = pkgs.writeShellApplication {
     name = "check-host-changed";
-    text = builtins.readFile ../scripts/check-host-changed.sh;
+    text = builtins.readFile ../scripts/check-host-changed;
   };
 
   deployHost = pkgs.writeShellApplication {
     name = "deploy-host";
-    text = builtins.readFile ../scripts/deploy-host.sh;
+    text = builtins.readFile ../scripts/deploy-host;
   };
 
   # Hosts are passed as positional arguments; repository path and status
   # directory come from the environment.
   deploymentOrchestrator = pkgs.writeShellApplication {
     name = "deployment-orchestrator";
-    runtimeInputs = [ checkHostChanged deployHost pkgs.git ];
-    text = builtins.readFile ../scripts/deployment-orchestrator.sh;
+    runtimeInputs = [
+      checkHostChanged
+      deployHost
+      pkgs.git
+    ];
+    text = builtins.readFile ../scripts/deployment-orchestrator;
   };
-in {
+in
+{
   options.services.nixDeploymentServer = {
     enable = mkEnableOption "Nix deployment server";
 
@@ -53,7 +63,7 @@ in {
 
     hosts = mkOption {
       type = types.listOf types.str;
-      default = [];
+      default = [ ];
       description = ''
         List of hostnames to manage deployments for.
       '';
@@ -99,10 +109,11 @@ in {
       home = "/var/lib/nix-deployment";
       createHome = true;
       shell = pkgs.bash;
-      openssh.authorizedKeys.keys = config.users.users.logan.openssh.authorizedKeys.keys;
+      openssh.authorizedKeys.keys =
+        config.users.users.logan.openssh.authorizedKeys.keys;
     };
 
-    users.groups.nix-deploy = {};
+    users.groups.nix-deploy = { };
 
     # Allow nix-deploy user to perform deployments.
     nix.settings.trusted-users = [ "nix-deploy" ];
@@ -120,7 +131,10 @@ in {
       wantedBy = [ "multi-user.target" ];
       after = [ "network.target" ];
 
-      path = with pkgs; [ git openssh ];
+      path = with pkgs; [
+        git
+        openssh
+      ];
 
       serviceConfig = {
         Type = "oneshot";
@@ -143,14 +157,21 @@ in {
     systemd.services.nix-deployment-webhook = {
       description = "Nix deployment webhook receiver";
       wantedBy = [ "multi-user.target" ];
-      after = [ "network.target" "nix-deployment-init.service" ];
+      after = [
+        "network.target"
+        "nix-deployment-init.service"
+      ];
 
       path = with pkgs; [
         socat
         (writeShellApplication {
           name = "webhook-receiver";
-          runtimeInputs = [ coreutils jq systemd ];
-          text = builtins.readFile ../scripts/webhook-receiver.sh;
+          runtimeInputs = [
+            coreutils
+            jq
+            systemd
+          ];
+          text = builtins.readFile ../scripts/webhook-receiver;
         })
       ];
 
@@ -178,7 +199,12 @@ in {
         NIX_DEPLOYMENT_STATUS_DIR = toString cfg.statusDirectory;
       };
 
-      path = with pkgs; [ openssh nix coreutils deploymentOrchestrator ];
+      path = with pkgs; [
+        openssh
+        nix
+        coreutils
+        deploymentOrchestrator
+      ];
 
       serviceConfig = {
         Type = "oneshot";

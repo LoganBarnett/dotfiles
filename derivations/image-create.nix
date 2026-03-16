@@ -2,5 +2,5 @@
 writeShellApplication {
   name = "image-create";
   runtimeInputs = [ nix-output-monitor ];
-  text = builtins.readFile ../scripts/image-create.sh;
+  text = builtins.readFile ../scripts/image-create;
 }

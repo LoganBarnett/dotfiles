@@ -10,5 +10,5 @@ writeShellApplication {
     gnused
     pass
   ];
-  text = builtins.readFile ../scripts/passn.sh;
+  text = builtins.readFile ../scripts/passn;
 }
