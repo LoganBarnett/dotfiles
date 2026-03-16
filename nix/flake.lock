@@ -276,15 +276,16 @@
         "rust-overlay": "rust-overlay_2"
       },
       "locked": {
-        "lastModified": 1771278670,
-        "narHash": "sha256-7uMj+le/L5Zl/DkD1Y1c7wdlWkSnwdh7BX78yzpciiU=",
-        "ref": "refs/heads/first-draft",
-        "rev": "4b06208db80f41f6efd7fdc22e7957b4c91c6e67",
-        "revCount": 63,
+        "lastModified": 1771371114,
+        "narHash": "sha256-vCDR1m2SyB2vVZ695lWNOBiTXdi3E23OPbGOAkLRFJM=",
+        "ref": "first-draft",
+        "rev": "42ba4dce91170bf0c6156e56628f381d115a45d9",
+        "revCount": 66,
         "type": "git",
         "url": "ssh://git@gitea.proton:2222/logan/dns-smart-block"
       },
       "original": {
+        "ref": "first-draft",
         "type": "git",
         "url": "ssh://git@gitea.proton:2222/logan/dns-smart-block"
       }
@@ -294,14 +295,15 @@
         "emacs-overlay": "emacs-overlay",
         "nixpkgs": [
           "nixpkgs"
-        ]
+        ],
+        "org-dnd": "org-dnd"
       },
       "locked": {
-        "lastModified": 1771256539,
-        "narHash": "sha256-FoJPnr041J2tSLK5K2FWAPYgbd6IF4zHpyihL5yZPLk=",
+        "lastModified": 1771461356,
+        "narHash": "sha256-/xCnvMHvTKtJK84n2cpoagLEyYyBzmqobB2Ict45d7Q=",
         "ref": "refs/heads/main",
-        "rev": "3d5de3255ace5d17e4d7ea57a5e38f3b8081fa83",
-        "revCount": 731,
+        "rev": "082a06cbf80ba83a6d0c1b94e40afa3e3e551009",
+        "revCount": 809,
         "type": "git",
         "url": "ssh://git@gitea.proton:2222/logan/emacs-config"
       },
@@ -319,11 +321,11 @@
         "nixpkgs-stable": "nixpkgs-stable_2"
       },
       "locked": {
-        "lastModified": 1771207599,
-        "narHash": "sha256-VLw03hyJp6mQMl7r1Phv6z+ktHN6jJwDcxDSiZY/fCY=",
+        "lastModified": 1771407094,
+        "narHash": "sha256-2p8AhHeKzLvl8JUJhb0iafar02RHzV5+HXXbbD8oxC4=",
         "owner": "nix-community",
         "repo": "emacs-overlay",
-        "rev": "b6f3379e6f23e2af91a251593226030c442e017f",
+        "rev": "0b9d922ef38020d0437dfcf7f922f6eae3cb1327",
         "type": "github"
       },
       "original": {
@@ -1524,6 +1526,22 @@
         "owner": "water-sucks",
         "repo": "optnix",
         "type": "github"
+      }
+    },
+    "org-dnd": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1771454919,
+        "narHash": "sha256-pnh5SDj+8owCZcWCQe+NOgT+HujoNpmWU9KGRGkLSYc=",
+        "ref": "refs/heads/main",
+        "rev": "7e941a65a7f7f5b5dc6df40c1665b44d0feac52e",
+        "revCount": 5,
+        "type": "git",
+        "url": "ssh://git@gitea.proton:2222/logan/org-dnd"
+      },
+      "original": {
+        "type": "git",
+        "url": "ssh://git@gitea.proton:2222/logan/org-dnd"
       }
     },
     "pre-commit-hooks": {
