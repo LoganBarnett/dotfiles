@@ -13,6 +13,7 @@
 ################################################################################
 {
   config,
+  lib,
   lib-custom,
   pkgs,
   ...
@@ -33,6 +34,25 @@ in
 
   age.secrets.ollama-webhook-token = {
     generator.script = "base64";
+  };
+
+  services.ollama = {
+    enable = true;
+    host = "0.0.0.0";
+    # Pull in fix from https://github.com/NixOS/nixpkgs/pull/467197 with
+    # light adaptation.  This didn't make it into the 25.11 release.
+    package = pkgs.ollama.overrideAttrs (old: {
+      postPatch = ''
+        substituteInPlace version/version.go \
+          --replace-fail 0.0.0 '${old.version}'
+        rm -r app
+      ''
+      # disable tests that fail in sandbox due to Metal init failure
+      + lib.optionalString pkgs.stdenv.hostPlatform.isDarwin ''
+        rm ml/backend/ggml/ggml_test.go
+        rm ml/nn/pooling/pooling_test.go
+      '';
+    });
   };
 
   services.webhook = {
