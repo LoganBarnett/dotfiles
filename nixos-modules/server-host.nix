@@ -1,7 +1,7 @@
 ################################################################################
 # Configuration common to all hosts that are servers.
 ################################################################################
-{ flake-inputs, host-id, lib, pkgs, system, ... }: {
+{ flake-inputs, facts, host-id, lib, pkgs, system, ... }: {
   # Configure SSH known hosts for gitea server (needed for git+ssh flake inputs).
   programs.ssh.knownHosts."gitea.proton" = {
     hostNames = [ "[gitea.proton]:2222" ];
@@ -10,7 +10,7 @@
   imports = [
     ../nixos-configs/journalctl-iso8601.nix
     {
-      # Hostname is not an FQDN.
+      networking.domain = facts.network.domain;
       networking.hostName = host-id;
       # Override DHCP - we know who we are.  Not actually used, but if we start
       # using NetworkManager, we'll want this.
