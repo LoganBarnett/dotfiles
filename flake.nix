@@ -336,10 +336,14 @@
     devShells = forAllSystems (system: let
       pkgs = import nixpkgs { inherit system; };
       fmt-staged = pkgs.callPackage ./derivations/fmt-staged.nix {};
+      nix-direnv-add-envrc = pkgs.callPackage ./derivations/nix-direnv-add-envrc.nix {};
+      nix-host-key-install = pkgs.callPackage ./derivations/nix-host-key-install.nix {};
     in {
       default = pkgs.mkShell {
         packages = [
           fmt-staged
+          nix-direnv-add-envrc
+          nix-host-key-install
           pkgs.nixfmt-rfc-style
           pkgs.treefmt
         ];
