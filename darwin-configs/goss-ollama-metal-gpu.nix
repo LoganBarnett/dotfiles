@@ -34,11 +34,13 @@ in
         count=$(printf '%s' "$models" | ${pkgs.jq}/bin/jq '.models | length')
         [ "$count" -eq 0 ] && exit 0
 
-        pid=$(pgrep -x ollama | head -1)
-        [ -z "$pid" ] && exit 1
-
-        result=$(${metalps}/bin/metalps --json --pid "$pid" --interval-ms 500) || exit 1
-        gpu_time=$(printf '%s' "$result" | ${pkgs.jq}/bin/jq '(.processes[0].gpu_time_ns // 0)')
+        # Sample all GPU-active processes.  Do not filter by PID: Ollama spawns
+        # a runner subprocess (ollama runner --model ...) that holds the actual
+        # Metal context.  The main server process (ollama serve) has no GPU time
+        # and would always produce a false failure if targeted directly.
+        result=$(${metalps}/bin/metalps --json --interval-ms 500) || exit 1
+        gpu_time=$(printf '%s' "$result" \
+          | ${pkgs.jq}/bin/jq '[.processes[] | select(.name == "ollama") | .gpu_time_ns] | max // 0')
 
         [ "$gpu_time" -gt 0 ]
       '';
