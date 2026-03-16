@@ -10,6 +10,9 @@
   system,
   ...
 }:
+let
+  passn = pkgs.callPackage ../derivations/passn.nix { };
+in
 {
   environment.variables = {
     # Why this defaults to nano is beyond me.
@@ -83,6 +86,9 @@
     # Use Unix pipes and direct them to a human program.
     # Sometimes pypi just fails to look up the requisite packages.
     # pkgs.percol
+    # A `pass` wrapper that trims the trailing newline from the output,
+    # so secrets can be used directly in shell pipelines.
+    passn
     # Show progress via a pipe, such as with dd.
     pkgs.pv
     # An n-curses based interface to du.  Shows disk usage in a way that makes

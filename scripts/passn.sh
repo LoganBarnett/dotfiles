@@ -3,5 +3,4 @@
 # arguments are forward to `pass`.
 # The -z helps ensure a lack of NUL added (see
 # https://stackoverflow.com/a/58129173).
-# The prefixed dollar is not understood.
-pass $@ | sed -E -z '$ s/\n$//'
+pass "$@" | sed -E -z '$ s/\n$//'
