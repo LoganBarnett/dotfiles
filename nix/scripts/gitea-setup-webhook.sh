@@ -44,10 +44,21 @@ SELECT id FROM repository WHERE owner_name = :'owner' AND name = :'name';
 SQL
 )
 
+# Convert comma-separated events to JSON array format.
+EVENTS_JSON="["
+IFS=',' read -ra EVENT_ARRAY <<< "$EVENTS"
+for i in "${!EVENT_ARRAY[@]}"; do
+  if [ "$i" -gt 0 ]; then
+    EVENTS_JSON+=","
+  fi
+  EVENTS_JSON+="\"${EVENT_ARRAY[$i]}\""
+done
+EVENTS_JSON+="]"
+
 # Upsert the webhook using a simpler two-step approach.
 # First, try to update.
 UPDATED=$(psql -U gitea -d gitea -v repo_id="$REPO_ID" -v url="$WEBHOOK_URL" \
-  -v secret="$WEBHOOK_SECRET" -v events="$EVENTS" -tA <<'SQL'
+  -v secret="$WEBHOOK_SECRET" -v events="$EVENTS_JSON" -tA <<'SQL'
 UPDATE webhook
 SET secret = :'secret', events = :'events', is_active = true,
     updated_unix = EXTRACT(EPOCH FROM NOW())::BIGINT
@@ -59,7 +70,7 @@ SQL
 # If no rows were updated (empty output or "UPDATE 0"), insert.
 if [ -z "$UPDATED" ] || [[ "$UPDATED" == "UPDATE 0" ]]; then
   psql -U gitea -d gitea -v repo_id="$REPO_ID" -v url="$WEBHOOK_URL" \
-    -v secret="$WEBHOOK_SECRET" -v events="$EVENTS" >/dev/null <<'SQL'
+    -v secret="$WEBHOOK_SECRET" -v events="$EVENTS_JSON" >/dev/null <<'SQL'
 INSERT INTO webhook (
   repo_id, url, content_type, secret, events,
   is_active, type, created_unix, updated_unix
