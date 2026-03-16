@@ -25,9 +25,14 @@
   # this host needs to read it to authenticate with the webhook endpoint.
   age.secrets.ollama-webhook-token = {
     rekeyFile = ../secrets/generated/ollama-webhook-token.age;
-    # alertmanager runs as this user and reads the file via credentials_file.
-    owner = "alertmanager";
   };
+  # Bind agenix secrets into alertmanager's credential namespace so the
+  # service reads them from /run/credentials/alertmanager.service/<name>.
+  # This avoids ownership management and works correctly with DynamicUser.
+  systemd.services.alertmanager.serviceConfig.LoadCredential = [
+    "matrix-alertmanager-secret:${config.age.secrets.matrix-alertmanager-secret.path}"
+    "ollama-webhook-token:${config.age.secrets.ollama-webhook-token.path}"
+  ];
   environment.systemPackages = [
     # Give us a test program to make sure this works.
     (pkgs.writeShellApplication {
@@ -164,7 +169,7 @@
                 http_config = {
                   authorization = {
                     type = "Bearer";
-                    credentials_file = config.age.secrets.ollama-webhook-token.path;
+                    credentials_file = "/run/credentials/alertmanager.service/ollama-webhook-token";
                   };
                 };
               }
