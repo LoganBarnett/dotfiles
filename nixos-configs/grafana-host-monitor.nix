@@ -224,35 +224,38 @@ in
       };
       targets = [
         {
-          expr = without-socket-port ''
+          # without-socket-port is applied inside each sum so that label_replace
+          # strips the port before aggregation.  If it were applied outside the
+          # whole expression, copper:9558 and copper:8080 would both rename to
+          # copper after the + on(instance) join, producing duplicate label sets
+          # that PromQL rejects.
+          expr = ''
             (
               sum by (instance) (
-                max_over_time(systemd_unit_state{state="failed"}[1m])
+                ${without-socket-port ''max_over_time(systemd_unit_state{state="failed"}[1m])''}
               )
               or on(instance)
               sum by (instance) (
-                systemd_unit_state{
-                  name="basic.target",
-                  state="active"
-                }
+                ${without-socket-port ''systemd_unit_state{name="basic.target",state="active"}''}
               ) * 0
               or on(instance)
-              sum by (instance) (goss_tests_run_outcomes_total) * 0
+              sum by (instance) (
+                ${without-socket-port ''goss_tests_run_outcomes_total''}
+              ) * 0
             )
             + on(instance)
             (
               sum by (instance) (
-                increase(goss_tests_outcomes_total{outcome="fail"}[2m]) > 0
+                ${without-socket-port ''increase(goss_tests_outcomes_total{outcome="fail"}[2m]) > 0''}
               )
               or on(instance)
               sum by (instance) (
-                systemd_unit_state{
-                  name="basic.target",
-                  state="active"
-                }
+                ${without-socket-port ''systemd_unit_state{name="basic.target",state="active"}''}
               ) * 0
               or on(instance)
-              sum by (instance) (goss_tests_run_outcomes_total) * 0
+              sum by (instance) (
+                ${without-socket-port ''goss_tests_run_outcomes_total''}
+              ) * 0
             )
           '';
           format = "time_series";
