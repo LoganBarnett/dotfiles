@@ -60,6 +60,7 @@ in
 {
   imports = [
     ./darwin-configs/goss.nix
+    ./darwin-configs/proton-network.nix
     ./darwin-configs/optnix.nix
     ./darwin-modules/goss.nix
     ./darwin-modules/goss-exporter.nix
@@ -83,6 +84,9 @@ in
       # Give us the caffeinate command to run long running processes while
       # ensuring the machine stays awake.
       pkgs.darwin.PowerManagement
+      # Wrap GNU sed to catch the BSD idiom `sed -i '' ...` and exit with a
+      # helpful error, since GNU sed does not take a suffix argument after -i.
+      (pkgs.callPackage ./derivations/gnused-wrapper.nix { })
       macos-keyboard-remap
       # TODO: Move this to a general "Logan desktop" Nix file.  I already have a
       # logan-desktop.nix but it is Linux centric.  I want something more
