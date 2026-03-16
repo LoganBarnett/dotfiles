@@ -89,3 +89,24 @@ alongside a specific config file).  For generated secrets, omit ~rekeyFile~
 entirely — agenix-rekey will place them under ~secrets/generated/~
 automatically, which makes it easy to identify which secrets are generated vs.
 manually managed.
+
+**** Secrets for systemd Units
+
+Bind agenix secrets into systemd units using ~LoadCredential~ rather than
+setting ~owner~ on the secret.  Systemd reads the source file as root and
+exposes it under ~/run/credentials/<unit-name>/<credential-name>~, readable
+only by the service — no ownership tuning required.  This is also the only
+correct approach when the service uses ~DynamicUser = true~, where no stable
+uid exists to assign ownership to.
+
+The consuming application config (e.g. ~password_file~, ~credentials_file~)
+must reference the ~/run/credentials/<unit-name>/<credential-name>~ path, not
+the raw agenix path.
+
+#+begin_src nix :exports code
+  age.secrets.my-secret = { };  # no owner needed
+
+  systemd.services.my-service.serviceConfig.LoadCredential = [
+    "my-secret:${config.age.secrets.my-secret.path}"
+  ];
+#+end_src
