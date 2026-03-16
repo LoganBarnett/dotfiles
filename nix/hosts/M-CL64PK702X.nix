@@ -127,6 +127,8 @@ in {
       environment.systemPackages = [
         pkgs.aider-chat
         pkgs.awscli
+        # Interact with our internal Bitbucket Data Center server.
+        pkgs.bitbucket-cli
         pkgs.confluence-markdown-exporter
         # Command line utility to query, search and tail EL (elasticsearch,
         # logstash) logs.
