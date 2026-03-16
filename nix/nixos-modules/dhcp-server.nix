@@ -93,6 +93,7 @@ in {
       #   "grafana,192.168.100.20"
       #   "prometheus,192.168.100.30"
       # ];
+      log-dhcp = true;
       dhcp-option = [
         "option:domain-search,${domain}"
         "option:router,192.168.254.254"

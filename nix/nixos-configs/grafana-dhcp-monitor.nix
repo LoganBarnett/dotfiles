@@ -1,11 +1,14 @@
 ################################################################################
 # DHCP Client Monitoring - Grafana dashboard.
 #
-# Provides panels for monitoring DHCP leases and connected hosts including:
-# 1. Current DHCP leases table (with MAC, hostname, IP, expiration).
-# 2. Recently connected hosts (last 24 hours).
-# 3. Total active leases count.
-# 4. Lease activity timeline.
+# Provides panels for monitoring DHCP leases and connected hosts using
+# per-lease data from the dhcp-lease-textfile config on silicon.
+#
+# 1. Total active lease count.
+# 2. Hosts first seen in the last 24 hours / last hour.
+# 3. Full current lease table (hostname, IP, MAC, expiry) for copy+paste.
+# 4. Recently connected hosts table sorted by first_seen.
+# 5. Lease count over time.
 ################################################################################
 { without-socket-port, height, width, ... }: {
   id = null;
@@ -21,9 +24,7 @@
       datasource = "Prometheus";
       targets = [
         {
-          expr = without-socket-port ''
-            count(dhcp_lease)
-          '';
+          expr = without-socket-port "count(dhcp_lease_expiry)";
           refId = "A";
         }
       ];
@@ -34,7 +35,6 @@
             steps = [
               { color = "green"; value = null; }
               { color = "yellow"; value = 50; }
-              { color = "orange"; value = 70; }
               { color = "red"; value = 75; }
             ];
           };
@@ -60,14 +60,13 @@
     }
     {
       type = "stat";
-      title = "Recently Connected (24h)";
+      title = "New Connections (24h)";
       datasource = "Prometheus";
       targets = [
         {
+          # Count devices whose first_seen falls within the last 24 hours.
           expr = without-socket-port ''
-            count(
-              dhcp_lease > (time() - 86400)
-            )
+            count(dhcp_lease_first_seen > (time() - 86400)) or vector(0)
           '';
           refId = "A";
         }
@@ -102,14 +101,13 @@
     }
     {
       type = "stat";
-      title = "New Hosts (1h)";
+      title = "New Connections (1h)";
       datasource = "Prometheus";
       targets = [
         {
+          # Highlight when a device recently joined the network.
           expr = without-socket-port ''
-            count(
-              dhcp_lease > (time() - 3600)
-            )
+            count(dhcp_lease_first_seen > (time() - 3600)) or vector(0)
           '';
           refId = "A";
         }
@@ -119,7 +117,7 @@
           thresholds = {
             mode = "absolute";
             steps = [
-              { color = "purple"; value = null; }
+              { color = "green"; value = null; }
               { color = "orange"; value = 1; }
             ];
           };
@@ -144,7 +142,7 @@
       };
     }
 
-    # Row 1: All current DHCP leases table (main view for copy+paste).
+    # Row 1: All current leases, full detail for copy+paste.
     {
       type = "table";
       title = "Current DHCP Leases";
@@ -157,9 +155,9 @@
       };
       targets = [
         {
-          expr = without-socket-port ''
-            dhcp_lease
-          '';
+          # Multiply by 1000 to convert seconds to milliseconds, which is what
+          # Grafana's time type and date unit formats expect.
+          expr = without-socket-port "dhcp_lease_expiry * 1000";
           format = "table";
           refId = "A";
           instant = true;
@@ -177,21 +175,23 @@
           options = {
             excludeByName = {
               "Time" = true;
-              "dnsmasq" = true;
               "__name__" = true;
+              "instance" = true;
               "job" = true;
             };
             renameByName = {
               "hostname" = "Hostname";
               "ip" = "IP Address";
               "mac" = "MAC Address";
-              "Value" = "Lease Expiration";
+              "vendor" = "Vendor";
+              "Value" = "Lease Expiry";
             };
             indexByName = {
               "hostname" = 0;
-              "ip" = 1;
-              "mac" = 2;
-              "Value" = 3;
+              "vendor" = 1;
+              "ip" = 2;
+              "mac" = 3;
+              "Value" = 4;
             };
           };
         }
@@ -200,7 +200,7 @@
           options = {
             conversions = [
               {
-                targetField = "Lease Expiration";
+                targetField = "Lease Expiry";
                 destinationType = "time";
               }
             ];
@@ -218,13 +218,10 @@
           {
             matcher = {
               id = "byName";
-              options = "Lease Expiration";
+              options = "Lease Expiry";
             };
             properties = [
-              {
-                id = "unit";
-                value = "dateTimeFromNow";
-              }
+              { id = "unit"; value = "dateTimeFromNow"; }
             ];
           }
         ];
@@ -232,15 +229,12 @@
       options = {
         showHeader = true;
         sortBy = [
-          {
-            displayName = "Lease Expiration";
-            desc = false;
-          }
+          { displayName = "Hostname"; desc = false; }
         ];
       };
     }
 
-    # Row 3: Recently connected hosts (last 24 hours) - detailed table.
+    # Row 3: Recently connected hosts, sorted newest first.
     {
       type = "table";
       title = "Recently Connected Hosts (Last 24h)";
@@ -253,8 +247,11 @@
       };
       targets = [
         {
+          # Filter to devices first seen within the last 24 hours, then
+          # multiply by 1000 to convert epoch seconds to milliseconds for
+          # Grafana's time type.
           expr = without-socket-port ''
-            dhcp_lease > (time() - 86400)
+            (dhcp_lease_first_seen > (time() - 86400)) * 1000
           '';
           format = "table";
           refId = "A";
@@ -273,21 +270,23 @@
           options = {
             excludeByName = {
               "Time" = true;
-              "dnsmasq" = true;
               "__name__" = true;
+              "instance" = true;
               "job" = true;
             };
             renameByName = {
               "hostname" = "Hostname";
               "ip" = "IP Address";
               "mac" = "MAC Address";
+              "vendor" = "Vendor";
               "Value" = "First Seen";
             };
             indexByName = {
               "Value" = 0;
               "hostname" = 1;
-              "ip" = 2;
-              "mac" = 3;
+              "vendor" = 2;
+              "ip" = 3;
+              "mac" = 4;
             };
           };
         }
@@ -317,10 +316,7 @@
               options = "First Seen";
             };
             properties = [
-              {
-                id = "unit";
-                value = "dateTimeFromNow";
-              }
+              { id = "unit"; value = "dateTimeFromNow"; }
             ];
           }
         ];
@@ -328,24 +324,19 @@
       options = {
         showHeader = true;
         sortBy = [
-          {
-            displayName = "First Seen";
-            desc = true;
-          }
+          { displayName = "First Seen"; desc = true; }
         ];
       };
     }
 
-    # Row 5: Lease activity over time.
+    # Row 5: Lease count over time.
     {
       title = "Active Lease Count Over Time";
       type = "timeseries";
       datasource = "Prometheus";
       targets = [
         {
-          expr = without-socket-port ''
-            count(dhcp_lease)
-          '';
+          expr = without-socket-port "count(dhcp_lease_expiry)";
           legendFormat = "Active Leases";
           format = "time_series";
         }

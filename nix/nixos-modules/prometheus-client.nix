@@ -23,9 +23,6 @@
           "logind"
           "systemd"
         ];
-        disabledCollectors = [
-          "textfile"
-        ];
         # TODO: Always use long arguments if possible, or document that they
         # don't exist for the involved tool.  This was yanked directly from the
         # docs, which could possibly use expansion.

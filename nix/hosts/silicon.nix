@@ -4,6 +4,7 @@
 { config, lib, flake-inputs, host-id, pkgs, system, ... }: let
 in {
   imports = [
+    ../nixos-configs/dhcp-lease-textfile.nix
     ../nixos-modules/dns-server.nix
     ../nixos-configs/dns-smart-block.nix
     ../nixos-configs/grafana-kiosk-overview.nix
