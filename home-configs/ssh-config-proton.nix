@@ -1,4 +1,5 @@
-{ ... }: {
+{ ... }:
+{
   programs.ssh = {
 
     matchBlocks = {
@@ -8,6 +9,10 @@
         # on.
         forwardAgent = true;
         extraOptions = {
+          # Prevent SSH from appending work canonical domains (e.g.
+          # dc1.corp.pvt) to .proton hostnames, which causes stalls when the
+          # canonical lookup times out instead of returning NXDOMAIN.
+          CanonicalizeHostname = "no";
           # Unset the LC_CTYPE value to avoid this error, which can confuse
           # Tramp and is just noise:
           #
