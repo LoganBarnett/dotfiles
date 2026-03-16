@@ -110,6 +110,7 @@ in
             ../home-configs/ssh-config-container-vm.nix
             flake-inputs.emacs-config.homeModules.ssh-config-emacs
             ../home-configs/ssh-config-new-e-ah.nix
+            ../home-configs/ssh-config-proton.nix
             ../home-configs/ssh-llm-coding-agent-new-e-ah.nix
           ];
           home.file.".gemrc".text = (
