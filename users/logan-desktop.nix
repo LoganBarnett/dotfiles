@@ -1,4 +1,5 @@
-{ config, lib, ... }: {
+{ config, lib, ... }:
+{
   imports = [
     (import ../nixos-modules/desktop-dark.nix { user = "logan"; })
   ];
@@ -52,7 +53,7 @@
     home.stateVersion = config.system.stateVersion;
     dconf.settings = {
       "org/gnome/shell/keybindings" = {
-        toggle-overview = [];
+        toggle-overview = [ "Menu" ];
       };
       # Disable the bare-modifier overview trigger; pressing Alt (or Super,
       # depending on keyboard mapping) alone was blowing out all windows.
