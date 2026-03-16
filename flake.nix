@@ -382,8 +382,10 @@
               pkgs.treefmt
             ];
             shellHook = ''
-              mkdir -p .git/hooks
-              ln -sf ${fmt-staged}/bin/fmt-staged .git/hooks/pre-commit
+              export FLAKE_ROOT="$PWD"
+              mkdir --parents .git/hooks
+              ln --symbolic --force \
+                ${fmt-staged}/bin/fmt-staged .git/hooks/pre-commit
             '';
           };
         }
