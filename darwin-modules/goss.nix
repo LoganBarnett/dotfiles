@@ -73,7 +73,16 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-    environment.systemPackages = [ cfg.package ];
+    # Wrap the binary so manual invocations (goss validate, etc.) always have
+    # GOSS_USE_ALPHA set.  Without it, goss refuses to run on non-Linux
+    # platforms.  The daemon already gets it via EnvironmentVariables, but the
+    # unwrapped binary in the user's PATH would fail silently.
+    environment.systemPackages = [
+      (pkgs.writeShellScriptBin "goss" ''
+        export GOSS_USE_ALPHA=1
+        exec ${cfg.package}/bin/goss "$@"
+      '')
+    ];
 
     launchd.daemons.goss = {
       serviceConfig = {

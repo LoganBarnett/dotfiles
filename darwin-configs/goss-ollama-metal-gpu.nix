@@ -11,11 +11,15 @@
 # so neither metric can detect GPU eviction after the fact.
 #
 # metalps uses the same IOKit AGXDeviceUserClient interface that Activity
-# Monitor uses to read per-process accumulated GPU time (gpu_time_ns).  When
-# Ollama is loaded on Metal, this counter is non-zero.  When Ollama falls back
-# to CPU (eviction, Metal initialisation failure, etc.) it never acquires a GPU
-# client connection and the counter stays at zero — metalps omits the process
-# from its output entirely, giving us an empty processes array.
+# Monitor uses to read per-process GPU utilisation.  The check fires a minimal
+# test inference so the runner subprocess is actively computing during the
+# sample window, then inspects gpu_percent.  On Metal, gpu_percent will be
+# non-zero during active token generation.  On CPU the process never acquires a
+# Metal context, so gpu_percent stays at 0 even under full CPU load.
+#
+# Checking gpu_time_ns (cumulative) is insufficient: a long-lived process that
+# previously held a GPU context retains a non-zero counter even after eviction,
+# producing a false pass.
 ################################################################################
 {
   flake-inputs,
@@ -34,15 +38,29 @@ in
         count=$(printf '%s' "$models" | ${pkgs.jq}/bin/jq '.models | length')
         [ "$count" -eq 0 ] && exit 0
 
-        # Sample all GPU-active processes.  Do not filter by PID: Ollama spawns
-        # a runner subprocess (ollama runner --model ...) that holds the actual
-        # Metal context.  The main server process (ollama serve) has no GPU time
-        # and would always produce a false failure if targeted directly.
-        result=$(${metalps}/bin/metalps --json --interval-ms 500) || exit 1
-        gpu_time=$(printf '%s' "$result" \
-          | ${pkgs.jq}/bin/jq '[.processes[] | select(.name == "ollama") | .gpu_time_ns] | max // 0')
+        model=$(printf '%s' "$models" | ${pkgs.jq}/bin/jq -r '.models[0].name')
 
-        [ "$gpu_time" -gt 0 ]
+        # Fire a minimal test inference in the background so the runner
+        # subprocess is actively computing during the metalps sample window.
+        # --max-time caps the request so we don't stall forever on CPU, where a
+        # single token can take tens of seconds for this workload.
+        ${pkgs.curl}/bin/curl -sf http://localhost:11434/api/generate \
+          --max-time 6 \
+          -d "{\"model\":\"$model\",\"prompt\":\"0\",\"stream\":false,\"options\":{\"num_predict\":1}}" \
+          -o /dev/null &
+
+        # Sample GPU percent while the inference should be running.  On Metal
+        # the runner holds a live GPU context and gpu_percent will be non-zero
+        # during token generation.  On CPU the process never acquires a Metal
+        # context so gpu_percent stays at 0 regardless of CPU load.
+        result=$(${metalps}/bin/metalps --json --interval-ms 2000) || exit 1
+        wait
+
+        gpu_percent=$(printf '%s' "$result" \
+          | ${pkgs.jq}/bin/jq '[.processes[] | select(.name == "ollama") | .gpu_percent] | max // 0')
+
+        # jq -e exits 1 when the expression is false, which is what goss checks.
+        printf '%s\n' "$gpu_percent" | ${pkgs.jq}/bin/jq -e '. > 0'
       '';
       "exit-status" = 0;
       timeout = 10000;
