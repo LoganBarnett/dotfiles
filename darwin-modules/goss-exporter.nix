@@ -78,11 +78,17 @@ in
     # Ensure the base goss module is active.
     services.goss.enable = lib.mkDefault true;
 
-    # Drive goss into prometheus serve mode on the internal port.
+    # Drive goss into prometheus serve mode on the internal port.  Verbose
+    # format adds a resource_id label to each metric so individual check names
+    # are visible in Prometheus and Grafana.
     services.goss.environment = {
       GOSS_FMT = "prometheus";
       GOSS_LISTEN = ":${toString (gossPort + 1)}";
     };
+    services.goss.extraArgs = [
+      "--format-options"
+      "verbose"
+    ];
 
     system.activationScripts.postActivation.text = lib.mkIf cfg.prometheus.openFirewall ''
       /usr/libexec/ApplicationFirewall/socketfilterfw \

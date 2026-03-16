@@ -38,6 +38,18 @@ in
       '';
     };
 
+    extraArgs = lib.mkOption {
+      type = lib.types.listOf lib.types.str;
+      default = [ ];
+      example = [
+        "--format-options"
+        "verbose"
+      ];
+      description = ''
+        Extra arguments appended to the goss serve invocation.
+      '';
+    };
+
     checks = lib.mkOption {
       type = lib.types.submodule { freeformType = settingsFormat.type; };
       default = { };
@@ -76,7 +88,8 @@ in
         ProgramArguments = [
           "${cfg.package}/bin/goss"
           "serve"
-        ];
+        ]
+        ++ cfg.extraArgs;
         RunAtLoad = true;
         KeepAlive = true;
         StandardOutPath = "/var/log/goss.log";

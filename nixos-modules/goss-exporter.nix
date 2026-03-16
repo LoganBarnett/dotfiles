@@ -127,6 +127,7 @@ in
             --gossfile ${gossConfigFile} \
             serve \
             --format prometheus \
+            --format-options verbose \
             --listen-addr :${toString (gossPort + 1)}
         '';
         Restart = "always";

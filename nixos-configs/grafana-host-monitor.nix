@@ -8,12 +8,18 @@
 # 5. System uptime.
 # 6. Service health (systemd status and goss health checks).
 ################################################################################
-{ without-socket-port, height, width, ... }:
+{
+  without-socket-port,
+  height,
+  width,
+  ...
+}:
 let
   # Ephemeral, virtual, and network filesystems excluded from disk
   # usage accounting.
   excludedFstypes = "tmpfs|proc|sysfs|devtmpfs|overlay|squashfs|nfs|nfs4";
-in {
+in
+{
   id = null;
   uid = "system-monitoring";
   schemaVersion = 16;
@@ -25,15 +31,11 @@ in {
       datasource = "Prometheus";
       targets = [
         {
-          expr =
-            ''
-              (1 -
-                avg by (instance) (${
-                  without-socket-port
-                    ''(rate(node_cpu_seconds_total{mode="idle"}[5m]))''
-                })
-                ) * 100
-            '';
+          expr = ''
+            (1 -
+              avg by (instance) (${without-socket-port ''(rate(node_cpu_seconds_total{mode="idle"}[5m]))''})
+              ) * 100
+          '';
           legendFormat = "{{instance}}";
           format = "time_series";
         }
@@ -189,7 +191,7 @@ in {
           # actually do its job.
           decimals = 3;
         };
-        overrides = [];
+        overrides = [ ];
       };
     }
     {
@@ -234,10 +236,14 @@ in {
                   state="active"
                 }
               ) * 0
+              or on(instance)
+              sum by (instance) (goss_tests_run_outcomes_total) * 0
             )
             + on(instance)
             (
-              sum by (instance) (goss_check{result="1"})
+              sum by (instance) (
+                increase(goss_tests_outcomes_total{outcome="fail"}[2m]) > 0
+              )
               or on(instance)
               sum by (instance) (
                 systemd_unit_state{
@@ -245,6 +251,8 @@ in {
                   state="active"
                 }
               ) * 0
+              or on(instance)
+              sum by (instance) (goss_tests_run_outcomes_total) * 0
             )
           '';
           format = "time_series";
@@ -256,12 +264,18 @@ in {
           thresholds = {
             mode = "absolute";
             steps = [
-              { color = "green"; value = 0; }
-              { color = "red"; value = 1; }
+              {
+                color = "green";
+                value = 0;
+              }
+              {
+                color = "red";
+                value = 1;
+              }
             ];
           };
         };
-        overrides = [];
+        overrides = [ ];
       };
     }
     {
@@ -292,7 +306,7 @@ in {
         }
         {
           expr = without-socket-port ''
-            goss_check{result="1"}
+            increase(goss_tests_outcomes_total{outcome="fail"}[2m]) > 0
           '';
           format = "table";
           refId = "B";
@@ -313,7 +327,8 @@ in {
               names = [
                 "instance"
                 "name"
-                "test"
+                "outcome"
+                "resource_id"
                 "type"
               ];
             };
@@ -343,7 +358,8 @@ in {
             renameByName = {
               "instance" = "Host";
               "name" = "Service";
-              "test" = "Check";
+              "outcome" = "Result";
+              "resource_id" = "Check";
               "type" = "Type";
             };
           };
@@ -354,12 +370,18 @@ in {
           thresholds = {
             mode = "absolute";
             steps = [
-              { color = "green"; value = 0; }
-              { color = "red"; value = 1; }
+              {
+                color = "green";
+                value = 0;
+              }
+              {
+                color = "red";
+                value = 1;
+              }
             ];
           };
         };
-        overrides = [];
+        overrides = [ ];
       };
     }
     {
@@ -384,12 +406,18 @@ in {
           thresholds = {
             mode = "absolute";
             steps = [
-              { color = "red"; value = null; }
-              { color = "green"; value = 1; }
+              {
+                color = "red";
+                value = null;
+              }
+              {
+                color = "green";
+                value = 1;
+              }
             ];
           };
         };
-        overrides = [];
+        overrides = [ ];
       };
       options = {
         legend = {
