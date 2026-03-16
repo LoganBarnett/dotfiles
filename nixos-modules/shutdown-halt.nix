@@ -10,11 +10,11 @@
     # enable = true;
     # You can also have "poweroff", "reboot", "halt", "suspend", "hibernate",
     # and "lock".
-    extraConfig = ''
-      HandlePowerKey=ignore
-      HandleSuspendKey=ignore
-      HandleLidSwitch=ignore
-    '';
+    settings.Login = {
+      HandlePowerKey = "ignore";
+      HandleSuspendKey = "ignore";
+      HandleLidSwitch = "ignore";
+    };
   };
   security.polkit = {
     enable = true;

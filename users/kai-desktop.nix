@@ -1,34 +1,46 @@
-{ config, flake-inputs, lib, pkgs, ... }: {
+{
+  config,
+  flake-inputs,
+  lib,
+  pkgs,
+  ...
+}:
+{
   allowUnfreePackagePredicates = [
-    (pkg: builtins.elem (lib.getName pkg) [
-      "blender"
-      "minecraft"
-      "minecraft-launcher"
-    ])
+    (
+      pkg:
+      builtins.elem (lib.getName pkg) [
+        "blender"
+        "minecraft"
+        "minecraft-launcher"
+      ]
+    )
   ];
   imports = [
     ../nixos-configs/roblox.nix
   ];
   services.userLockoutSchedule.users.kai = {
-    schedule = let
-      weekday = {
-        enableAt = [ "16:30" ];
-        logoutAt = [ "17:30" ];
+    schedule =
+      let
+        weekday = {
+          enableAt = [ "16:30" ];
+          logoutAt = [ "17:30" ];
+        };
+        weekend = {
+          enableAt = [ "08:30" ];
+          logoutAt = [ "09:30" ];
+        };
+      in
+      {
+        # Get them grades up.
+        # mon = weekday;
+        # tue = weekday;
+        # wed = weekday;
+        # thu = weekday;
+        # fri = weekday;
+        sat = weekend;
+        sun = weekend;
       };
-      weekend = {
-        enableAt = [ "08:30" ];
-        logoutAt = [ "09:30" ];
-      };
-    in {
-      # Get them grades up.
-      # mon = weekday;
-      # tue = weekday;
-      # wed = weekday;
-      # thu = weekday;
-      # fri = weekday;
-      sat = weekend;
-      sun = weekend;
-    };
   };
   # Nothing to do here yet.
   # home-manager.users.kai = {};
@@ -48,7 +60,7 @@
     # quick search.
     pkgs.atlauncher
     pkgs.blender
-    pkgs.minetest
+    pkgs.luanti
     pkgs.firefox
   ];
   # This differs from what we have in nvidia.nix, but TLATER says it's
