@@ -11,16 +11,15 @@
 # Hopefully we one day find out what is causing this.
 #
 # See: https://github.com/NixOS/nix/issues/8443
-{ flake-inputs, system, ... }: [
+{ flake-inputs, system, ... }:
+[
   flake-inputs.dns-smart-block.overlays.default
   (import ./test-script.nix)
-  (import ./amdvlk-348903-fix.nix)
   (import ./battlescribe-update-data.nix)
   (import ./blueutil.nix)
   (import ./cacert.nix)
   (import ./proton-deploy.nix)
   # (import ./crystal.nix)
-  (import ./gnupg.nix)
   (import ./hiera-eyaml.nix)
   (import ./lastversion.nix)
   (import ./man-pages-fix.nix)
@@ -30,11 +29,10 @@
   (import ./prusa-slicer.nix)
   # (import ./python-hatch-vcs-fix.nix)
   # (import ./tmux.nix)
-  (import ./wine.nix)
   # Give us rust-docs.
   (import ./rust.nix)
-  (import ./signal-desktop.nix { inherit flake-inputs system; } )
-  (import ./claude-code.nix { inherit flake-inputs system; } )
+  (import ./signal-desktop.nix { inherit flake-inputs system; })
+  (import ./claude-code.nix { inherit flake-inputs system; })
   (import ./makemkv.nix)
   # (import (builtins.fetchTarball
   #   "https://github.com/oxalica/rust-overlay/archive/master.tar.gz"))
@@ -50,7 +48,7 @@
     });
   })
   (final: prev: {
-    dness = final.callPackage ../derivations/dness.nix {};
+    dness = final.callPackage ../derivations/dness.nix { };
   })
   # (final: prev: {
   #   # Earlier my tests didn't give me any info but I found out I'd mispelled
@@ -71,15 +69,17 @@
   # We need to migrate some things here.  Scan above and figure out what to move
   # into this section.
   (final: prev: {
-    chronicle-proxy = final.callPackage ../derivations/chronicle-proxy.nix {};
-    confluence-markdown-exporter = final.callPackage ../derivations/confluence-markdown-exporter.nix {};
-    deadbeef = final.callPackage ../derivations/deadbeef.nix {};
-    elktail = final.callPackage ../derivations/elktail.nix {};
-    mqttpassworder = final.callPackage ../derivations/mqttpassworder.nix {};
-    musicgpt = final.callPackage ../derivations/musicgpt.nix {};
-    mypaint = final.callPackage ../derivations/mypaint.nix {};
+    chronicle-proxy = final.callPackage ../derivations/chronicle-proxy.nix { };
+    confluence-markdown-exporter =
+      final.callPackage ../derivations/confluence-markdown-exporter.nix
+        { };
+    deadbeef = final.callPackage ../derivations/deadbeef.nix { };
+    elktail = final.callPackage ../derivations/elktail.nix { };
+    mqttpassworder = final.callPackage ../derivations/mqttpassworder.nix { };
+    musicgpt = final.callPackage ../derivations/musicgpt.nix { };
+    mypaint = final.callPackage ../derivations/mypaint.nix { };
     # vlc = final.callPackage ../derivations/vlc.nix {};
-    zalgo-cli = final.callPackage ../derivations/zalgo-cli.nix {};
-    zsh-git-prompt = final.callPackage ../derivations/zsh-git-prompt.nix {};
+    zalgo-cli = final.callPackage ../derivations/zalgo-cli.nix { };
+    zsh-git-prompt = final.callPackage ../derivations/zsh-git-prompt.nix { };
   })
 ]
