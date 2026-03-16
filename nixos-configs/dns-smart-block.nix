@@ -4,7 +4,8 @@
 # Provides gaming and video streaming classifiers that watch Blocky DNS logs,
 # classify domains using Ollama LLM, and serve dynamic blocklists via HTTP API.
 ################################################################################
-{ config, ... }: {
+{ config, ... }:
+{
   # Admin interface secrets for HTTP Basic Auth.
   age.secrets = {
     dns-smart-block-admin-password = {
@@ -43,13 +44,13 @@
         enable = true;
         preset = "gaming";
         minConfidence = 0.8;
-        ttlDays = 10;
+        ttlDays = 90;
       };
       video-streaming = {
         enable = true;
         preset = "video-streaming";
         minConfidence = 0.8;
-        ttlDays = 10;
+        ttlDays = 90;
       };
     };
 
