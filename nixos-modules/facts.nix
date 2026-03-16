@@ -261,8 +261,12 @@
         flake-input-overrides = {
           nixpkgs = "nixpkgs-latest";
         };
-        monitors = [ ];
-        roaming = true;
+        ipv4 = 103;
+        macAddresses = [
+          "bc:d0:74:07:50:eb" # WiFi
+          "c8:a3:62:84:33:99" # Ethernet dongle
+        ];
+        monitors = [ "goss" ];
         system = "aarch64-darwin";
       };
       manganese = {
@@ -360,7 +364,7 @@
         controlledHost = true;
         flake-input-overrides = { };
         ipv4 = 9;
-        macAddress = "b8:ca:3a:77:a9:2a";
+        macAddresses = [ "b8:ca:3a:77:a9:2a" ];
         monitors = [
           "dns-smart-block"
           "dnsmasq"
@@ -440,10 +444,6 @@
       uih7 = {
         mac = "92:0a:15:a6:00:07";
         ipv4 = 128;
-      };
-      uih8 = {
-        mac = "c8:a3:62:84:33:99";
-        ipv4 = 129;
       };
       uih9 = {
         mac = "5e:8c:33:66:1d:65";

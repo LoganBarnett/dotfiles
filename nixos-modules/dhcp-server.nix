@@ -13,7 +13,13 @@
 # for dynamic DNS on the part of the server for any of our known hosts.  We can
 # simply allow the facts structure to dictate what we need.
 ################################################################################
-{ lib, facts, host-id, ... }: let
+{
+  lib,
+  facts,
+  host-id,
+  ...
+}:
+let
   inherit (lib) optionalString pipe;
   inherit (lib.attrsets) filterAttrs mapAttrsToList;
   inherit (lib.lists) flatten;
@@ -25,12 +31,15 @@
   # This is because the names vary.  Instead of trying to guess, just set them
   # all.
   forced-ip-interface-config = {
-    ipv4.addresses = [{
-      address = my-ip;
-      prefixLength = 24;
-    }];
+    ipv4.addresses = [
+      {
+        address = my-ip;
+        prefixLength = 24;
+      }
+    ];
   };
-in {
+in
+{
   networking.interfaces = {
     # systemd "predictable".
     enp3s0 = forced-ip-interface-config;
@@ -63,27 +72,28 @@ in {
       expand-hosts = true;
       dhcp-range = "192.168.254.175,192.168.254.250,12h";
       dhcp-host = pipe facts.network.hosts [
-        (filterAttrs (hostname: host:
-          host ? ipv4 && host.ipv4 != null
-        ))
-        (mapAttrsToList (hostname: host:
-          (optionalString (host.macAddress or null != null) "${host.macAddress or ""},")
+        (filterAttrs (hostname: host: host ? ipv4 && host.ipv4 != null))
+        (mapAttrsToList (
+          hostname: host:
+          let
+            macs = host.macAddresses or [ ];
+          in
+          (optionalString (macs != [ ]) "${lib.concatStringsSep "," macs},")
           + "${hostname},${host-ip hostname host}"
         ))
       ];
       host-record = pipe facts.network.hosts [
-        (filterAttrs (hostname: host:
-          host ? ipv4 && host.ipv4 != null
-        ))
-        (mapAttrsToList (hostname: host:
-          "${hostname}.${domain},${host-ip hostname host}"
+        (filterAttrs (hostname: host: host ? ipv4 && host.ipv4 != null))
+        (mapAttrsToList (
+          hostname: host: "${hostname}.${domain},${host-ip hostname host}"
         ))
       ];
       cname = lib.pipe facts.network.hosts [
-        (mapAttrsToList (hostname: host:
-          builtins.map
-            (alias: "${alias}.${domain},${hostname}.${domain}")
-            (host.aliases or [])
+        (mapAttrsToList (
+          hostname: host:
+          builtins.map (alias: "${alias}.${domain},${hostname}.${domain}") (
+            host.aliases or [ ]
+          )
         ))
         flatten
       ];
@@ -97,9 +107,7 @@ in {
       dhcp-option = [
         "option:domain-search,${domain}"
         "option:router,192.168.254.254"
-        "option:dns-server,192.168.254.${
-          toString facts.network.hosts.silicon.ipv4
-        }"
+        "option:dns-server,192.168.254.${toString facts.network.hosts.silicon.ipv4}"
       ];
     };
   };

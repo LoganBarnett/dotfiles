@@ -16,10 +16,23 @@
 # dnsmasq talking to it, and we'd lose Blocky's power to block what we wanted by
 # specific hosts or groups of hosts.
 ################################################################################
-{ config, facts, host-id, lib, pkgs, ... }: let
+{
+  config,
+  facts,
+  host-id,
+  lib,
+  pkgs,
+  ...
+}:
+let
   inherit (lib) optionals optionalAttrs pipe;
   inherit (lib.attrsets) mapAttrs' mapAttrsToList;
-  inherit (lib.lists) any flatten filter unique;
+  inherit (lib.lists)
+    any
+    flatten
+    filter
+    unique
+    ;
   # Just so we know whose these are.
   cloudflare = "1.1.1.1";
   opendns = "208.67.222.222";
@@ -42,12 +55,15 @@
   # This is because the names vary.  Instead of trying to guess, just set them
   # all.
   forced-ip-interface-config = {
-    ipv4.addresses = [{
-      address = my-ip;
-      prefixLength = 24;
-    }];
+    ipv4.addresses = [
+      {
+        address = my-ip;
+        prefixLength = 24;
+      }
+    ];
   };
-in {
+in
+{
   # TODO: Make dynamic some day.  Make it follow "gateway".
   networking.defaultGateway = "${subnet}.254";
   # Allow actual DNS and DHCP connections.
@@ -62,7 +78,10 @@ in {
   services.blocky = {
     enable = true;
     settings = {
-      ports = { dns = 53; http = 4000; };
+      ports = {
+        dns = 53;
+        http = 4000;
+      };
       # Forward external DNS queries to these upstream servers.
       upstream.default = nameservers;
       # Conditional forwarding: Forward .proton domain queries to dnsmasq for
@@ -122,69 +141,93 @@ in {
         # Supposedly this is `allowlists` in the new version, but it doesn't work
         # on the current version.
         # whiteLists = { ads = [ "allowlist.txt" ]; };
-        clientGroupsBlock = let
-          # Maps profile names to the blacklist groups they enforce.  The
-          # "default" key is a Blocky special that applies to any client not
-          # matched by a more specific entry.
-          profileGroups = {
-            adult = [ "ads" "malware" ];
-            child = [ "ads" "adult" "gaming" "malware" ];
-            # TODO: Consider making a guest profile, wherein only a select
-            # allow list is used.  All hosts either use this unless they are
-            # declared somewhere via facts.  This can help some entities from
-            # dialing home.
-            default = [ "ads" "adult" "gaming" "malware" ];
-          };
-          # TODO: The current approach is flawed in that it assumes that the
-          # only way to declare the presence of a host is via the hosts
-          # declaration, but users can have devices which indicate IPs to use
-          # for the VPN.  What we should probably do is move it such that the
-          # host itself declares what sort of VPN IPs it can have and have the
-          # rest of the machinery follow.  This should be more preferable than
-          # having to check a user's device list.
-          # blockProfilesForHost = otherHostId: pipe facts.network.users [
-          #   (filter (u: any (d: d.host-id == otherHostId) u.devices))
-          #   (map (u: u.blockProfiles or []))
-          #   flatten
-          #   unique
-          # ];
-          profilesByHosts = pipe facts.network.hosts [
-            (mapAttrsToList (name: data: let
-              blockProfiles = data.blockProfiles or [ "default" ];
-              # Profile names must expand to blacklist group names before
-              # reaching Blocky; passing a profile name directly would match
-              # a same-named blacklist instead.  Unknown profile names throw
-              # rather than silently producing an empty (unfiltered) entry.
-              blockLists = pipe blockProfiles [
-                (map (p:
-                  if profileGroups ? ${p}
-                  then profileGroups.${p}
-                  else throw "blocky: unknown block profile '${p}' on host '${name}'"
-                ))
-                flatten
-                unique
+        clientGroupsBlock =
+          let
+            # Maps profile names to the blacklist groups they enforce.  The
+            # "default" key is a Blocky special that applies to any client not
+            # matched by a more specific entry.
+            profileGroups = {
+              adult = [
+                "ads"
+                "malware"
               ];
-            in [
-              {
-                name = "${name}.${facts.network.domain}";
-                value = blockLists;
-              }
-              {
-                inherit name;
-                value = blockLists;
-              }
-            ] ++ (optionals (data.ipv4 or null != null) [{
-              name = "${facts.network.subnets.barnett-main}.${toString data.ipv4}";
-              value = blockLists;
-            }]) ++ (optionals (data.macs or null != null) [{
-              name = data.mac;
-              value = blockLists;
-            }])
-            ))
-            flatten
-            builtins.listToAttrs
-          ];
-        in { inherit (profileGroups) default; } // profilesByHosts;
+              child = [
+                "ads"
+                "adult"
+                "gaming"
+                "malware"
+              ];
+              # TODO: Consider making a guest profile, wherein only a select
+              # allow list is used.  All hosts either use this unless they are
+              # declared somewhere via facts.  This can help some entities from
+              # dialing home.
+              default = [
+                "ads"
+                "adult"
+                "gaming"
+                "malware"
+              ];
+            };
+            # TODO: The current approach is flawed in that it assumes that the
+            # only way to declare the presence of a host is via the hosts
+            # declaration, but users can have devices which indicate IPs to use
+            # for the VPN.  What we should probably do is move it such that the
+            # host itself declares what sort of VPN IPs it can have and have the
+            # rest of the machinery follow.  This should be more preferable than
+            # having to check a user's device list.
+            # blockProfilesForHost = otherHostId: pipe facts.network.users [
+            #   (filter (u: any (d: d.host-id == otherHostId) u.devices))
+            #   (map (u: u.blockProfiles or []))
+            #   flatten
+            #   unique
+            # ];
+            profilesByHosts = pipe facts.network.hosts [
+              (mapAttrsToList (
+                name: data:
+                let
+                  blockProfiles = data.blockProfiles or [ "default" ];
+                  # Profile names must expand to blacklist group names before
+                  # reaching Blocky; passing a profile name directly would match
+                  # a same-named blacklist instead.  Unknown profile names throw
+                  # rather than silently producing an empty (unfiltered) entry.
+                  blockLists = pipe blockProfiles [
+                    (map (
+                      p:
+                      if profileGroups ? ${p} then
+                        profileGroups.${p}
+                      else
+                        throw "blocky: unknown block profile '${p}' on host '${name}'"
+                    ))
+                    flatten
+                    unique
+                  ];
+                in
+                [
+                  {
+                    name = "${name}.${facts.network.domain}";
+                    value = blockLists;
+                  }
+                  {
+                    inherit name;
+                    value = blockLists;
+                  }
+                ]
+                ++ (optionals (data.ipv4 or null != null) [
+                  {
+                    name = "${facts.network.subnets.barnett-main}.${toString data.ipv4}";
+                    value = blockLists;
+                  }
+                ])
+                ++ (map (mac: {
+                  name = mac;
+                  value = blockLists;
+                }) (data.macAddresses or [ ]))
+              ))
+              flatten
+              builtins.listToAttrs
+            ];
+          in
+          { inherit (profileGroups) default; } // profilesByHosts;
       };
       prometheus.enable = true;
     };
