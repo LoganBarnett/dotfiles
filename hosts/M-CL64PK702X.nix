@@ -254,7 +254,7 @@ in
     )
     {
       imports = [
-        ../nixos-modules/ollama-nix-darwin.nix
+        ../darwin-modules/ollama.nix
       ];
       services.ollama = {
         enable = true;

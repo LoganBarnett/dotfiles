@@ -1,18 +1,15 @@
-{ config, lib, pkgs, ... }: {
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
+{
   imports = [
-    ./pytorch-bin.nix
+    ../nixos-modules/pytorch-bin.nix
   ];
   services.ollama = {
     enable = true;
-    acceleration =
-      if config.nixpkgs.config.cudaSupport
-      then "cuda"
-      else (
-        if config.nixpkgs.config.rocmSupport
-        then "rocm"
-        else config.services.ollama.acceleration
-      );
-    # package = pkgs.ollama-cuda;
     loadModels = [
       # "gemma"
       # "llama2-uncensored"
@@ -54,19 +51,22 @@
     '';
   };
   allowUnfreePackagePredicates = [
-    (pkg: builtins.elem (lib.getName pkg) [
-      "open-webui"
-    ])
+    (
+      pkg:
+      builtins.elem (lib.getName pkg) [
+        "open-webui"
+      ]
+    )
   ];
-  nixpkgs.overlays = [
-    (final: prev: {
-      pythonPackageExtensions = [(py-final: py-prev: {
-        einops = py-prev.overrideAttrs {
-          doCheck = false;
-        };
-      })];
-    })
-  ];
+  # nixpkgs.overlays = [
+  #   (final: prev: {
+  #     pythonPackageExtensions = [(py-final: py-prev: {
+  #       einops = py-prev.overrideAttrs {
+  #         doCheck = false;
+  #       };
+  #     })];
+  #   })
+  # ];
   # Currently broken, I think.
   # services.open-webui = {
   #   enable = true;

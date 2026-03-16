@@ -1,7 +1,14 @@
 ##
 # arsenic is Kai's gaming computer.
 ##
-{ flake-inputs, host-id, modulesPath, system, ... }: {
+{
+  flake-inputs,
+  host-id,
+  modulesPath,
+  system,
+  ...
+}:
+{
   nixpkgs.hostPlatform = system;
   imports = [
     # Spared for good behavior.
@@ -27,7 +34,7 @@
       server-port = 8080;
       fqdn = "${host-id}.proton";
     })
-    ../nixos-modules/ollama.nix
+    ../nixos-configs/ollama.nix
     ../nixos-modules/server-host.nix
     ../nixos-modules/shutdown-halt.nix
     ../nixos-modules/lvm-uefi-disk.nix
@@ -37,41 +44,56 @@
     ../nixos-modules/x-desktop.nix
     ../users/cassandra-desktop.nix
     ../users/kai-desktop.nix
-    ({ config, lib, pkgs, ... }: {
-      nix.channel.enable = false;
-    })
+    (
+      {
+        config,
+        lib,
+        pkgs,
+        ...
+      }:
+      {
+        nix.channel.enable = false;
+      }
+    )
     # From nixos-generate-config:
-    ({ config, lib, modulesPath, ... }: {
-      imports = [
-        (modulesPath + "/installer/scan/not-detected.nix")
-      ];
-      boot.initrd.availableKernelModules = [
-        "ahci"
-        "ehci_pci"
-        "nvme"
-        "rtsx_usb_sdmmc"
-        "sd_mod"
-        "usb_storage"
-        "usbhid"
-        "xhci_pci"
-      ];
-      # Should really be handled elsewhere, yeah?
-      networking.useDHCP = lib.mkDefault true;
-      boot.initrd.kernelModules = [
-        "dm-snapshot"
-        "nvme"
-      ];
-      boot.kernelModules = [
-        "kvm-amd"
-      ];
-      boot.extraModulePackages = [];
-      # This is AMD, not Intel...
-      # hardware.cpu.intel.updateMicrocode =
-      #   lib.mkDefault config.hardware.enableRedistributableFirmware;
-      hardware.cpu.amd.updateMicrocode =
-        lib.mkDefault config.hardware.enableRedistributableFirmware;
-      swapDevices = [];
-    })
+    (
+      {
+        config,
+        lib,
+        modulesPath,
+        ...
+      }:
+      {
+        imports = [
+          (modulesPath + "/installer/scan/not-detected.nix")
+        ];
+        boot.initrd.availableKernelModules = [
+          "ahci"
+          "ehci_pci"
+          "nvme"
+          "rtsx_usb_sdmmc"
+          "sd_mod"
+          "usb_storage"
+          "usbhid"
+          "xhci_pci"
+        ];
+        # Should really be handled elsewhere, yeah?
+        networking.useDHCP = lib.mkDefault true;
+        boot.initrd.kernelModules = [
+          "dm-snapshot"
+          "nvme"
+        ];
+        boot.kernelModules = [
+          "kvm-amd"
+        ];
+        boot.extraModulePackages = [ ];
+        # This is AMD, not Intel...
+        # hardware.cpu.intel.updateMicrocode =
+        #   lib.mkDefault config.hardware.enableRedistributableFirmware;
+        hardware.cpu.amd.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
+        swapDevices = [ ];
+      }
+    )
     {
       hardware.graphics = {
         enable = true;
