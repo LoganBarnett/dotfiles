@@ -208,17 +208,20 @@
       ];
     })
 
-    # Row 4: Classification Rate (over time).
+    # Row 4: Classification throughput over time.  Uses deriv() over a 1-hour
+    # window rather than a short event count because deriv() fits a regression
+    # line through all samples in the window, giving a stable non-zero reading
+    # even when individual classifications are 15+ minutes apart.  Up means
+    # faster; down means slower.  The window is wide enough that as inference
+    # time improves the line will visibly rise without needing a page refresh.
     {
-      title = "Classification Rate (all classifications/min)";
+      title = "Classification Throughput (classifications/hr)";
       type = "timeseries";
       datasource = "Prometheus";
       targets = [
         {
           expr = without-socket-port ''
-            sum by (classification_type) (
-              dns_smart_block_recent_classifications_5m / 5
-            )
+            deriv(dns_smart_block_classifications_total[1h]) * 3600
           '';
           legendFormat = "{{classification_type}}";
           format = "time_series";
@@ -226,9 +229,8 @@
       ];
       fieldConfig = {
         defaults = {
-          unit = "cpm";
-          decimals = 2;
-          max = 1;
+          unit = "short";
+          decimals = 1;
         };
         overrides = [];
       };
@@ -268,38 +270,7 @@
       };
     }
 
-    # Row 6: Blocklist Request Rate.
-    {
-      title = "Blocklist Requests Rate (req/min)";
-      type = "timeseries";
-      datasource = "Prometheus";
-      targets = [
-        {
-          expr = without-socket-port ''
-            sum by (classification_type, status) (
-              rate(dns_smart_block_blocklist_requests_total[5m]) * 60
-            )
-          '';
-          legendFormat = "{{classification_type}} ({{status}})";
-          format = "time_series";
-        }
-      ];
-      fieldConfig = {
-        defaults = {
-          unit = "rpm";
-          decimals = 2;
-        };
-        overrides = [];
-      };
-      gridPos = {
-        h = height;
-        w = 3 * width;
-        x = 0 * width;
-        y = 6 * height;
-      };
-    }
-
-    # Row 7: Domains Classified Over Time (Positive vs Total).
+    # Row 6: Domains Classified Over Time (Positive vs Total).
     {
       title = "Domains Classified (Current)";
       type = "timeseries";
@@ -344,7 +315,7 @@
         h = height;
         w = 3 * width;
         x = 0 * width;
-        y = 7 * height;
+        y = 6 * height;
       };
     }
   ];
