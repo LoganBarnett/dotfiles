@@ -124,12 +124,12 @@ echo "Issue created: $ISSUE_KEY"
 # If --me flag is set, assign to self and move to Ready To Work
 if [ "$ASSIGN_TO_ME" = true ]; then
   echo "Assigning to self..."
-  jira issue assign "$ISSUE_KEY" "$(jira me)" --no-input 2>&1 || {
+  jira issue assign "$ISSUE_KEY" "$(jira me)" 2>&1 || {
     echo "Warning: Failed to assign issue to self"
   }
 
   echo "Moving to 'Ready To Work'..."
-  jira issue move "$ISSUE_KEY" "Ready To Work" --no-input 2>&1 || {
+  jira issue move "$ISSUE_KEY" "Ready To Work" 2>&1 || {
     echo "Warning: Failed to move issue to 'Ready To Work'"
     echo "You may need to check the exact status name in your project"
   }
