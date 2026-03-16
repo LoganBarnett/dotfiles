@@ -770,11 +770,11 @@
         "rust-overlay": "rust-overlay_5"
       },
       "locked": {
-        "lastModified": 1773361413,
-        "narHash": "sha256-S4RTRyX9r45KcV9/huqpjV4oBy/UwOFMKjVoUkDBsWU=",
+        "lastModified": 1773365974,
+        "narHash": "sha256-FjIMtL8OcOz27s4q2DlWySeR1oy3bT9JtTdzIJrQVTA=",
         "ref": "refs/heads/main",
-        "rev": "8c9a7c38102a896b4293a43b60d36a2fd838e9f6",
-        "revCount": 4,
+        "rev": "2f4138e6979fd6c9bcaed267a09327ed28f5d318",
+        "revCount": 6,
         "type": "git",
         "url": "ssh://git@gitea.proton:2222/logan/garage-queue.git"
       },
