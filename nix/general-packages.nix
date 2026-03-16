@@ -223,6 +223,10 @@
   # > configure: error: *** Need a security framework to use the credentials cache API ***
   # This needs more investigation.  No ticket searching has been done yet.
   # pkgs.openssh_gssapi
+  # Audio synthesis and processing toolkit.  Includes the `play` command for
+  # synthesizing tones directly without needing audio files, useful for
+  # server monitoring sonification experiments.
+  pkgs.sox
   # A lightweight SQL database which requires no server. This also installs
   # CLI tools in which to access SQLite databases.
   pkgs.sqlite
