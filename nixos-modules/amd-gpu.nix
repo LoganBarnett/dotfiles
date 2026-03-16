@@ -3,22 +3,33 @@
 # Unfortunately the guide doesn't speak much as to _when_ you'd want to turn on
 # these various settings, so for which applications these settings are needed is
 # less understood.  That's an exercise left the reader.
-{ lib, options, pkgs, ... }: {
+{
+  lib,
+  options,
+  pkgs,
+  ...
+}:
+let
+  kmsDevice = "/dev/dri/card1";
+in
+{
   boot.initrd.kernelModules = [ "amdgpu" ];
   # Some programs hard-code the path to HIP.
   # systemd.tmpfiles.rules = ["L+ /opt/rocm/hip - - - - ${pkgs.rocmPackages.clr}"];
-  systemd.tmpfiles.rules = let
-    rocmEnv = pkgs.symlinkJoin {
-      name = "rocm-combined";
-      paths = [
-        pkgs.rocmPackages.rocblas
-        pkgs.rocmPackages.hipblas
-        pkgs.rocmPackages.clr
-      ];
-    };
-  in [
-    "L+    /opt/rocm   -    -    -     -    ${rocmEnv}"
-  ];
+  systemd.tmpfiles.rules =
+    let
+      rocmEnv = pkgs.symlinkJoin {
+        name = "rocm-combined";
+        paths = [
+          pkgs.rocmPackages.rocblas
+          pkgs.rocmPackages.hipblas
+          pkgs.rocmPackages.clr
+        ];
+      };
+    in
+    [
+      "L+    /opt/rocm   -    -    -     -    ${rocmEnv}"
+    ];
   environment.systemPackages = [
     # More diagnostics.
     pkgs.clinfo
@@ -58,6 +69,11 @@
     ];
   };
   imports = [
+    # Note: do NOT set services.sunshine.settings.adapter_name here.  Doing so
+    # commits Sunshine to KMS capture, which GNOME blocks via exclusive DRM
+    # master.  The portal screencast path (the only working option on GNOME
+    # Wayland) is only reached when adapter_name is absent.  See
+    # nixos-configs/sunshine.nix for the full capture backend history.
     (lib.mkIf (builtins.hasAttr "comfyui" options.services) {
       # This is kind of magical.  See
       # https://nix.dev/manual/nix/2.17/language/values.html?highlight=coerced#attribute-set
@@ -66,13 +82,12 @@
       # does not exist.`.  This is a special case and one cannot use null as a
       # key name.
       services.${
-        if (builtins.hasAttr "comfyui" options.services)
-        then "comfyui"
-        else null
-      } = {
-        package = pkgs ? comfyui-rocm;
-        rocmSupport = true;
-      };
+        if (builtins.hasAttr "comfyui" options.services) then "comfyui" else null
+      } =
+        {
+          package = pkgs ? comfyui-rocm;
+          rocmSupport = true;
+        };
     })
   ];
   nixpkgs.config.enableRocm = true;
@@ -83,20 +98,22 @@
       # `torchWithRocm` to make this work, since `torch` is marked as broken
       # when evaluated with `rocmSupport = true`.  I haven't been able to get
       # this to work yet though.
-      pythonPackagesExtensions = [(py-final: py-prev: {
-        transformers = py-prev.transformers.override {
-          torch = py-prev.torchWithRocm;
-        };
-        safetensors = py-prev.safetensors.override {
-          torch = py-prev.torchWithRocm;
-        };
-        accelerate = py-prev.accelerate.override {
-          torch = py-prev.torchWithRocm;
-        };
-        torchaudio = py-prev.torchaudio.override {
-          torch = py-prev.torchWithRocm;
-        };
-      })];
+      pythonPackagesExtensions = [
+        (py-final: py-prev: {
+          transformers = py-prev.transformers.override {
+            torch = py-prev.torchWithRocm;
+          };
+          safetensors = py-prev.safetensors.override {
+            torch = py-prev.torchWithRocm;
+          };
+          accelerate = py-prev.accelerate.override {
+            torch = py-prev.torchWithRocm;
+          };
+          torchaudio = py-prev.torchaudio.override {
+            torch = py-prev.torchWithRocm;
+          };
+        })
+      ];
       # python3Packages = prev.python3Packages.override (py-final: py-prev: {
       #   torch = py-prev.torchWithRocm;
       # });
@@ -132,7 +149,7 @@
         Identifier "AMD"
         Driver "modesetting"
         Option "PrimaryGPU" "true"
-        Option "kmsdev" "/dev/dri/card1"
+        Option "kmsdev" "${kmsDevice}"
       EndSection
     '';
   };
