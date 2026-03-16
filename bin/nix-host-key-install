@@ -21,15 +21,15 @@ if [[ -z "${FLAKE_ROOT:-}" ]]; then
 fi
 
 secretsDir="$FLAKE_ROOT/secrets"
-host=$(hostname --short)
+host=$(hostname -s)
 
 # TODO: Query the Nix configuration for age.rekey.masterIdentities[0] for the
 # --identity argument.
 # TODO: Query the Nix configuration for age.rekey.hostPubkey for the
 # --decrypt argument.
 rage \
-  --identity $secretsDir/agenix-master-key-3.age \
-  --decrypt $secretsDir/$host-pub-key.age \
+  --identity "$secretsDir/agenix-master-key-3.age" \
+  --decrypt "$secretsDir/$host-pub-key.age" \
   | sudo tee /etc/ssh/ssh_host_ed25519_key >/dev/null
 
-sudo cp $secretsDir/$host-pub-key.age /etc/ssh/ssh_host_ed25519_key.pub
+sudo cp "$secretsDir/$host-pub-key.age" /etc/ssh/ssh_host_ed25519_key.pub
