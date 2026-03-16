@@ -1,8 +1,8 @@
 ################################################################################
-# SSH configuration for AI coding agents accessing work hosts.
+# SSH configuration for LLM coding agents accessing work hosts.
 #
-# Configures environment-variable-gated SSH access for Claude Code and other AI
-# coding agents to work infrastructure.
+# Configures environment-variable-gated SSH access for Claude Code and other
+# LLM coding agents to work infrastructure.
 ################################################################################
 { config, lib, ... }: let
   work-alias = lib.concatStrings [
@@ -20,12 +20,12 @@ in {
     owner = lib.mkDefault config.system.primaryUser;
   };
 
-  services.ssh-ai-coding-agent = {
+  services.ssh-llm-coding-agent = {
     enable = true;
     user = "llm-coding-agent";
     identityFile = config.age.secrets.llm-coding-agent-ssh.path;
     environmentVariables = {
-      CLAUDECODE = "1";
+      LLM_CODING_AGENT_SSH_PUB_KEY = "${../secrets/llm-coding-agent-ssh.pub}";
     };
     hostMatchers = [
       "*.${work-alias}.pvt"
