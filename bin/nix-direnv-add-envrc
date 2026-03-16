@@ -16,17 +16,11 @@ else
 {
   description = "Populate me!";
   inputs = {
-    nixpkgs.url = github:NixOS/nixpkgs/nixpkgs-unstable;
+    nixpkgs.url = github:NixOS/nixpkgs/25.11;
   };
 
   outputs = { self, nixpkgs }@inputs: let
-    systems = [
-      "aarch64-darwin"
-      "aarch64-linux"
-      "x86_64-darwin"
-      "x86_64-linux"
-    ];
-    forAllSystems = f: nixpkgs.lib.genAttrs systems f;
+    forAllSystems = nixpkgs.lib.genAttrs nixpkgs.lib.systems.flakeExposed;
     overlays = [];
     pkgsFor = system: import nixpkgs { inherit overlays system; };
     packages = (pkgs: let
