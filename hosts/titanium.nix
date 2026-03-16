@@ -32,7 +32,6 @@ in
       }
     )
     ../users/logan-desktop.nix
-    flake-inputs.proc-siding.nixosModules.default
     ../nixos-configs/proc-siding-worker.nix
     ../nixos-configs/airplay-server.nix
     ../nixos-modules/amd-gpu.nix

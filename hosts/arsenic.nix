@@ -35,7 +35,6 @@
       fqdn = "${host-id}.proton";
     })
     ../nixos-configs/garage-queue-worker.nix
-    flake-inputs.proc-siding.nixosModules.default
     ../nixos-configs/proc-siding-worker.nix
     ../nixos-configs/ollama.nix
     ../nixos-configs/ollama-models-8gb-vram.nix

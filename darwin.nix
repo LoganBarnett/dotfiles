@@ -63,6 +63,7 @@ in
     ./darwin-configs/optnix.nix
     ./darwin-modules/goss.nix
     ./darwin-modules/goss-exporter.nix
+    flake-inputs.proc-siding.darwinModules.default
     ./nixos-modules/nix-flake-environment.nix
     ./nixos-modules/darwin-tls-trust.nix
     # NixOS has this built in, but this is our copy for Darwin.  It's needed for

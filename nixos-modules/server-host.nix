@@ -52,6 +52,9 @@
     #     hostPubkey = ../secrets/${host-id}-pub-key.pub;
     #   };
     # }
+    flake-inputs.garage-queue.nixosModules.worker
+    flake-inputs.home-manager.nixosModules.home-manager
+    flake-inputs.proc-siding.nixosModules.default
     ../nixos-modules/environment-file-secrets.nix
     ../nixos-modules/ldap-server.nix
     ../nixos-modules/kodi-standalone.nix
