@@ -80,3 +80,12 @@ itself doesn't change anything for a host's configuration.
 I do have some inconsistencies wherein some ~nixos-modules~ are actually
 ~nixos-configs~, but I didn't have the split pattern at time of authorship of
 those.
+
+*** Secrets
+
+Secrets are managed with agenix-rekey.  Only specify ~rekeyFile~ when there is
+a strong reason to control the output path (e.g. a secret that must live
+alongside a specific config file).  For generated secrets, omit ~rekeyFile~
+entirely — agenix-rekey will place them under ~secrets/generated/~
+automatically, which makes it easy to identify which secrets are generated vs.
+manually managed.
