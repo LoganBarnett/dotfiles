@@ -32,6 +32,12 @@
   services.dns-smart-block = {
     enable = true;
 
+    # Exclude internal .proton hostnames from LLM classification.  These are
+    # private infrastructure names that are never gaming or streaming sites, and
+    # excluding them prevents the classifier from wasting LLM calls on them
+    # while still recording every resolution in the event log.
+    excludeSuffixes = [ ".proton" ];
+
     # Ollama LLM server configuration.
     ollama = {
       url = "http://M-CL64PK702X.proton:11434";
