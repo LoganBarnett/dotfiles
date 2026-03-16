@@ -32,9 +32,16 @@ in
       targets = [
         {
           expr = ''
-            (1 -
-              avg by (instance) (${without-socket-port ''(rate(node_cpu_seconds_total{mode="idle"}[5m]))''})
-              ) * 100
+            # clamp_min prevents negative values caused by rate() spanning a
+            # node exporter restart: the counter reset within the look-back
+            # window produces a momentarily inflated idle rate, driving the
+            # utilisation expression below zero.
+            clamp_min(
+              (1 -
+                avg by (instance) (${without-socket-port ''(rate(node_cpu_seconds_total{mode="idle"}[5m]))''})
+              ) * 100,
+              0
+            )
           '';
           legendFormat = "{{instance}}";
           format = "time_series";
