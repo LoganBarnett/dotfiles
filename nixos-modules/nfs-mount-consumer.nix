@@ -2,338 +2,374 @@
 # Provide a generalized means of consuming an NFS share. Authentication,
 # authorization, and encryption are handled via WireGuard.
 ################################################################################
-{ config, host-id, lib, pkgs, ... }: let
-  inherit (lib) mkEnableOption mkIf mkOption mkMerge types literalExpression;
-  inherit (lib.attrsets) mapAttrsToList mapAttrs mapAttrs' foldlAttrs;
+{
+  config,
+  host-id,
+  lib,
+  pkgs,
+  ...
+}:
+let
+  inherit (lib)
+    mkEnableOption
+    mkIf
+    mkOption
+    mkMerge
+    types
+    literalExpression
+    ;
+  inherit (lib.attrsets)
+    mapAttrsToList
+    mapAttrs
+    mapAttrs'
+    foldlAttrs
+    ;
   inherit (lib) optional;
-  toMountUnit = path: let
-    p = toString path;
-    normalize =
-      s:
-      # Strip a single trailing slash (except root) and the leading slash.
-      let
-        noTrail = if s != "/" && lib.hasSuffix "/" s
-                  then lib.removeSuffix "/"
-                  else s;
-        noLead  = if lib.hasPrefix "/" noTrail
-                  then lib.removePrefix "/" noTrail
-                  else noTrail;
-      in
+  toMountUnit =
+    path:
+    let
+      p = toString path;
+      normalize =
+        s:
+        # Strip a single trailing slash (except root) and the leading slash.
+        let
+          noTrail = if s != "/" && lib.hasSuffix "/" s then lib.removeSuffix "/" else s;
+          noLead =
+            if lib.hasPrefix "/" noTrail then lib.removePrefix "/" noTrail else noTrail;
+        in
         noLead;
-    norm = normalize p;
-    # Escape literal "-" inside a path component (they must become \x2d).
-    escapeDash = s: builtins.replaceStrings [ "-" ] [ "\\x2d" ] s;
+      norm = normalize p;
+      # Escape literal "-" inside a path component (they must become \x2d).
+      escapeDash = s: builtins.replaceStrings [ "-" ] [ "\\x2d" ] s;
 
-    # Split by "/", drop empty bits (handles accidental //), escape, then join
-    # with "-".
-    comps =
-      lib.filter (s: s != "") (lib.splitString "/" norm);
-    stem =
-      lib.concatStringsSep "-" (map escapeDash comps);
-  in
-    if p == "/"
-    then "-"
-    else stem;
+      # Split by "/", drop empty bits (handles accidental //), escape, then join
+      # with "-".
+      comps = lib.filter (s: s != "") (lib.splitString "/" norm);
+      stem = lib.concatStringsSep "-" (map escapeDash comps);
+    in
+    if p == "/" then "-" else stem;
   # Derive a systemd .mount unit name from a path, like `systemd-escape --path
   # --suffix=mount`.
   cfg = config.services.nfs-mount;
   mountsEnabled = lib.filterAttrs (_: m: m.enable or false) cfg.mounts;
-  peerIPv4Of = m: builtins.elemAt
-    (builtins.match "([^/]*)/.*" m.wgPeerIP)
-    0
-  ;
-  nfsMountModule = { name, config, ... }: let
-    defaultInterface = "wgnfs-${config.vpnHost}";
-  in {
-    options = {
-      enable = (mkEnableOption "Enable this NFS mount.") // { default = true; };
+  peerIPv4Of = m: builtins.elemAt (builtins.match "([^/]*)/.*" m.wgPeerIP) 0;
+  nfsMountModule =
+    { name, config, ... }:
+    let
+      defaultInterface = "wgnfs-${config.vpnHost}";
+    in
+    {
+      options = {
+        enable = (mkEnableOption "Enable this NFS mount.") // {
+          default = true;
+        };
 
-      remoteHost = mkOption {
-        type = types.str;
-        example = "silicon.proton";
-        description = ''
-          The remote NFS hostname, used in the WireGuard endpoint.
-        '';
-      };
+        remoteHost = mkOption {
+          type = types.str;
+          example = "silicon.proton";
+          description = ''
+            The remote NFS hostname, used in the WireGuard endpoint.
+          '';
+        };
 
-      gid = mkOption {
-        type = types.int;
-        description = ''
-          The GID to use for the group.  Try to use an arbitrarily high one to
-          avoid collisions (>= 29970).
-        '';
-      };
+        gid = mkOption {
+          type = types.int;
+          description = ''
+            The GID to use for the group.  Try to use an arbitrarily high one to
+            avoid collisions (>= 29970).
+          '';
+        };
 
-      vpnHost = mkOption {
-        type = types.str;
-        example = "silicon-nas.proton";
-        description = ''
-          The hostname used to reach the NFS share once the VPN is up.
-        '';
-      };
+        vpnHost = mkOption {
+          type = types.str;
+          example = "silicon-nas.proton";
+          description = ''
+            The hostname used to reach the NFS share once the VPN is up.
+          '';
+        };
 
-      share = mkOption {
-        type = types.str;
-        example = "/tank/data/foo";
-        description = ''
-          The exported NFS share path on the remote host.
-        '';
-      };
+        share = mkOption {
+          type = types.str;
+          example = "/tank/data/foo";
+          description = ''
+            The exported NFS share path on the remote host.
+          '';
+        };
 
-      mountPoint = mkOption {
-        type = types.path;
-        example = "/mnt/foo";
-        description = ''
-          The local mount point for this NFS share.
-        '';
-      };
+        mountPoint = mkOption {
+          type = types.path;
+          example = "/mnt/foo";
+          description = ''
+            The local mount point for this NFS share.
+          '';
+        };
 
-      wgPrivateKeyFile = mkOption {
-        type = types.path;
-        example = "/run/agenix/nextcloud-nfs-wireguard-key";
-        description = ''
-          Path to the WireGuard private key (use with agenix).
-        '';
-      };
+        wgPrivateKeyFile = mkOption {
+          type = types.path;
+          example = "/run/agenix/nextcloud-nfs-wireguard-key";
+          description = ''
+            Path to the WireGuard private key (use with agenix).
+          '';
+        };
 
-      wgIP = mkOption {
-        type = types.str;
-        example = "10.100.0.3/24";
-        description = ''
-          IP address for the local WireGuard interface.
-        '';
-      };
+        wgIP = mkOption {
+          type = types.str;
+          example = "10.100.0.3/24";
+          description = ''
+            IP address for the local WireGuard interface.
+          '';
+        };
 
-      wgPeerPublicKeyFile = mkOption {
-        type = types.path;
-        example = "../secrets/silicon-nfs-wireguard-key.pub";
-        description = ''
-          Path to the peer's public key file.
-        '';
-      };
+        wgPeerPublicKeyFile = mkOption {
+          type = types.path;
+          example = "../secrets/silicon-nfs-wireguard-key.pub";
+          description = ''
+            Path to the peer's public key file.
+          '';
+        };
 
-      wgPeerIP = mkOption {
-        type = types.str;
-        example = "10.100.0.1/32";
-        description = ''
-          IP address for the remote WireGuard peer.
-        '';
-      };
+        wgPeerIP = mkOption {
+          type = types.str;
+          example = "10.100.0.1/32";
+          description = ''
+            IP address for the remote WireGuard peer.
+          '';
+        };
 
-      wgPort = mkOption {
-        type = types.port;
-        default = 51821;
-        description = ''
-          The WireGuard peer endpoint port.
-        '';
-      };
+        wgPort = mkOption {
+          type = types.port;
+          default = 51821;
+          description = ''
+            The WireGuard peer endpoint port.
+          '';
+        };
 
-      wgInterfaceName = mkOption {
-        type = types.str;
-        default = defaultInterface;
-        example = "wgnfs-myshare";
-        description = ''
-          The name of the WireGuard interface to create. Must be 15 characters
-          or fewer to be accepted by the Linux kernel.
-        '';
-      };
+        wgInterfaceName = mkOption {
+          type = types.str;
+          default = defaultInterface;
+          example = "wgnfs-myshare";
+          description = ''
+            The name of the WireGuard interface to create. Must be 15 characters
+            or fewer to be accepted by the Linux kernel.
+          '';
+        };
 
-      preconditionFile = mkOption {
-        type = types.str;
-        default = "nfs-working-share";
-        description = ''
-          Filename to check as a mount sanity test.
-        '';
-      };
+        preconditionFile = mkOption {
+          type = types.str;
+          default = "nfs-working-share";
+          description = ''
+            Filename to check as a mount sanity test.
+          '';
+        };
 
-      bindToService = mkOption {
-        type = types.nullOr types.str;
-        default = null;
-        example = "gitea";
-        description = ''
-          Optional systemd service to bind this mount to. This ensures the
-          mount is available before the service starts. Also injects
-          BindPaths=''${mountPoint} into the serviceConfig.
-        '';
+        bindToService = mkOption {
+          type = types.nullOr types.str;
+          default = null;
+          example = "gitea";
+          description = ''
+            Optional systemd service to bind this mount to. This ensures the
+            mount is available before the service starts. Also injects
+            BindPaths=''${mountPoint} into the serviceConfig.
+          '';
+        };
       };
     };
-  };
 
-  assertions =
-    mapAttrsToList (_: m: {
-      assertion = builtins.stringLength m.wgInterfaceName <= 15;
-      message = ''
-        WireGuard interface name '${m.wgInterfaceName}' exceeds 15 characters.
-      '';
-    }) mountsEnabled
-  ;
+  assertions = mapAttrsToList (_: m: {
+    assertion = builtins.stringLength m.wgInterfaceName <= 15;
+    message = ''
+      WireGuard interface name '${m.wgInterfaceName}' exceeds 15 characters.
+    '';
+  }) mountsEnabled;
 
   # ----- networking.hosts (merge by IP; collect vpnHost list)
-  networkingHosts =
-    foldlAttrs (acc: _: m:
-      let ip = peerIPv4Of m;
-      in acc // { ${ip} = lib.unique ((acc.${ip} or []) ++ [ m.vpnHost ]); }
-    ) {} mountsEnabled;
+  networkingHosts = foldlAttrs (
+    acc: _: m:
+    let
+      ip = peerIPv4Of m;
+    in
+    acc // { ${ip} = lib.unique ((acc.${ip} or [ ]) ++ [ m.vpnHost ]); }
+  ) { } mountsEnabled;
 
   # ----- wireguard.interfaces (keyed by wgInterfaceName)
-  wgInterfaces =
-    foldlAttrs (acc: name: m:
-      acc // {
-        ${m.wgInterfaceName} = {
-          ips            = [ m.wgIP ];
-          privateKeyFile = m.wgPrivateKeyFile;  # secret path, not read
-          peers = [{
-            name       = "nfs-${m.wgInterfaceName}";
-            publicKey  = builtins.readFile m.wgPeerPublicKeyFile; # public only
-            endpoint   = "${m.remoteHost}:${toString m.wgPort}";
+  wgInterfaces = foldlAttrs (
+    acc: name: m:
+    acc
+    // {
+      ${m.wgInterfaceName} = {
+        ips = [ m.wgIP ];
+        privateKeyFile = m.wgPrivateKeyFile; # secret path, not read
+        peers = [
+          {
+            name = "nfs-${m.wgInterfaceName}";
+            publicKey = builtins.readFile m.wgPeerPublicKeyFile; # public only
+            endpoint = "${m.remoteHost}:${toString m.wgPort}";
             allowedIPs = [ m.wgPeerIP ];
             persistentKeepalive = 25;
-          }];
-        };
-      }
-    ) {} mountsEnabled;
+          }
+        ];
+      };
+    }
+  ) { } mountsEnabled;
 
-  fileSystems =
-    foldlAttrs (acc: name: m:
-      acc // {
-        "${toString m.mountPoint}" = {
-          device = "${m.vpnHost}:${m.share}";
-          fsType = "nfs";
-          options = [
-            "_netdev"
-            "addr=${peerIPv4Of m}"
-            "x-systemd.automount"
-            "noauto"
-            "x-systemd.idle-timeout=600s"
-            "x-systemd.requires=network-online.target"
-            "x-systemd.after=network-online.target"
-            "x-systemd.requires=wireguard-${m.wgInterfaceName}.service"
-            "x-systemd.after=wireguard-${m.wgInterfaceName}.service"
-            "nfsvers=4.2"
-            "proto=tcp"
-            "hard"
-            # Performance optimizations for single-client over WireGuard.
-            "async"       # Don't wait for server disk commits (10-50x faster).
-            "noatime"     # Don't update access times (reduces write ops).
-            "actimeo=120" # Cache attributes for 2 minutes (fewer metadata calls).
-            "timeo=600"   # 6 second initial timeout (better for loaded systems).
-            "retrans=2"   # Retry twice instead of five times.
-          ];
-        };
-      }
-    ) {} mountsEnabled;
+  fileSystems = foldlAttrs (
+    acc: name: m:
+    acc
+    // {
+      "${toString m.mountPoint}" = {
+        device = "${m.vpnHost}:${m.share}";
+        fsType = "nfs";
+        # Do not add x-systemd.automount here.  Automount was previously
+        # suggested as a solution to boot-ordering problems, but it does not
+        # help: the x-systemd.requires/after directives below already handle
+        # ordering correctly.  Automount causes its own problems — idle
+        # timeouts unmount shares that should stay up, and
+        # switch-to-configuration-ng unconditionally reloads .automount units
+        # on any option change without checking X-RestartIfChanged, producing
+        # spurious errors on every deploy.
+        options = [
+          "_netdev"
+          "addr=${peerIPv4Of m}"
+          "x-systemd.requires=network-online.target"
+          "x-systemd.after=network-online.target"
+          "x-systemd.requires=wireguard-${m.wgInterfaceName}.service"
+          "x-systemd.after=wireguard-${m.wgInterfaceName}.service"
+          "nfsvers=4.2"
+          "proto=tcp"
+          "hard"
+          # Performance optimizations for single-client over WireGuard.
+          "async" # Don't wait for server disk commits (10-50x faster).
+          "noatime" # Don't update access times (reduces write ops).
+          "actimeo=120" # Cache attributes for 2 minutes (fewer metadata calls).
+          # timeo is in deciseconds (tenths of a second): 60 = 6 s.  This
+          # only controls how quickly the client retries a completely
+          # unresponsive server.  A hard mount waits indefinitely when the
+          # server is slow but still responding, regardless of this value.
+          "timeo=60"
+          "retrans=2" # Retry twice instead of five times.
+        ];
+      };
+    }
+  ) { } mountsEnabled;
 
   # ----- service merges (handle multi-mount → same service)
-  mergeSvc = svcOld: svcAdd:
+  mergeSvc =
+    svcOld: svcAdd:
     let
-      afterMerged    = lib.unique ((svcOld.after or []) ++ (svcAdd.after or []));
-      requiresMerged = lib.unique ((svcOld.requires or []) ++ (svcAdd.requires or []));
-      scOld = svcOld.serviceConfig or {};
-      scAdd = svcAdd.serviceConfig or {};
+      afterMerged = lib.unique ((svcOld.after or [ ]) ++ (svcAdd.after or [ ]));
+      requiresMerged = lib.unique (
+        (svcOld.requires or [ ]) ++ (svcAdd.requires or [ ])
+      );
+      scOld = svcOld.serviceConfig or { };
+      scAdd = svcAdd.serviceConfig or { };
       # For lists inside serviceConfig we keep 'last wins' unless you want custom concat.
-    in svcOld // svcAdd // {
+    in
+    svcOld
+    // svcAdd
+    // {
       after = afterMerged;
       requires = requiresMerged;
       serviceConfig = scOld // scAdd;
     };
 
-  servicesFromBinds =
-    foldlAttrs (acc: name: m:
-      if m.bindToService == null then acc else
+  servicesFromBinds = foldlAttrs (
+    acc: name: m:
+    if m.bindToService == null then
+      acc
+    else
       let
         svc = m.bindToService;
-        entry = let
-          after = [
-            "${toMountUnit (toString m.mountPoint)}.mount"
-            "nfs-mount-${name}-sanity-check.service"
-          ];
-        in {
-          inherit after;
-          requires = after;
-          serviceConfig = {
-            DynamicUser = true;
-            ProtectSystem = "strict";
-            ReadWritePaths = [ m.mountPoint ];
-            PrivateTmp = true;
-            NoNewPrivileges = true;
-            # Just assume the service name is an appropriate group name.
-            SupplementaryGroups = [ m.bindToService ];
+        entry =
+          let
+            after = [
+              "${toMountUnit (toString m.mountPoint)}.mount"
+              "nfs-mount-${name}-sanity-check.service"
+            ];
+          in
+          {
+            inherit after;
+            requires = after;
+            serviceConfig = {
+              DynamicUser = true;
+              ProtectSystem = "strict";
+              ReadWritePaths = [ m.mountPoint ];
+              PrivateTmp = true;
+              NoNewPrivileges = true;
+              # Just assume the service name is an appropriate group name.
+              SupplementaryGroups = [ m.bindToService ];
+            };
           };
-        };
-        prev = acc.${svc} or {};
-      in acc // { ${svc} = mergeSvc prev entry; }
-    ) {} mountsEnabled;
+        prev = acc.${svc} or { };
+      in
+      acc // { ${svc} = mergeSvc prev entry; }
+  ) { } mountsEnabled;
 
-  servicesSanity =
-    foldlAttrs (acc: name: m:
-      if m.preconditionFile == null then acc else
-      acc // {
-        "nfs-mount-${name}-sanity-check" = let
-          after = [ "${toMountUnit (toString m.mountPoint)}.mount" ];
-        in {
-          inherit after;
-          requires = after;
-          wantedBy = [ "multi-user.target" ]
-                     ++ lib.optional (m.bindToService != null)
-                       "${m.bindToService}.service";
-          serviceConfig.Type = "oneshot";
-          script = ''
-            stat "${m.mountPoint}/${m.preconditionFile}"
-          '';
-        };
+  servicesSanity = foldlAttrs (
+    acc: name: m:
+    if m.preconditionFile == null then
+      acc
+    else
+      acc
+      // {
+        "nfs-mount-${name}-sanity-check" =
+          let
+            after = [ "${toMountUnit (toString m.mountPoint)}.mount" ];
+          in
+          {
+            inherit after;
+            requires = after;
+            wantedBy = [
+              "multi-user.target"
+            ]
+            ++ lib.optional (m.bindToService != null) "${m.bindToService}.service";
+            serviceConfig.Type = "oneshot";
+            script = ''
+              stat "${m.mountPoint}/${m.preconditionFile}"
+            '';
+          };
       }
-    ) {} mountsEnabled;
+  ) { } mountsEnabled;
 
-  tmpfilesRules =
-    mapAttrsToList
-      (_: m: "d ${toString m.mountPoint} 000 root root - -")
-      mountsEnabled;
+  tmpfilesRules = mapAttrsToList (
+    _: m: "d ${toString m.mountPoint} 000 root root - -"
+  ) mountsEnabled;
 
   # Systemd service overrides for wireguard peer services to ensure DNS is
   # available before attempting to resolve hostnames in endpoints. Without
   # this, boot-time startup fails when DNS isn't available yet.
-  wireguardPeerServices =
-    foldlAttrs (acc: name: m:
-      let
-        peerName = "nfs-${m.wgInterfaceName}";
-        serviceName = "wireguard-${m.wgInterfaceName}-peer-${peerName}";
-      in acc // {
-        ${serviceName} = {
-          after = [ "network-online.target" "nss-lookup.target" ];
-          wants = [ "network-online.target" "nss-lookup.target" ];
-          serviceConfig = {
-            # Restart on failure to handle transient DNS issues.
-            Restart = "on-failure";
-            RestartSec = "5";
-          };
+  wireguardPeerServices = foldlAttrs (
+    acc: name: m:
+    let
+      peerName = "nfs-${m.wgInterfaceName}";
+      serviceName = "wireguard-${m.wgInterfaceName}-peer-${peerName}";
+    in
+    acc
+    // {
+      ${serviceName} = {
+        after = [
+          "network-online.target"
+          "nss-lookup.target"
+        ];
+        wants = [
+          "network-online.target"
+          "nss-lookup.target"
+        ];
+        serviceConfig = {
+          # Restart on failure to handle transient DNS issues.
+          Restart = "on-failure";
+          RestartSec = "5";
         };
-      }
-    ) {} mountsEnabled;
+      };
+    }
+  ) { } mountsEnabled;
 
-  # Automount units don't support the reload verb, so switch-to-configuration
-  # fails with a noisy error whenever the mount definition changes.  Drop-ins
-  # marking X-RestartIfChanged=false tell it to leave the units alone during
-  # switch.  Changes to mount options take effect on manual restart or reboot,
-  # which is preferable to interrupting live mounts mid-playback.
-  automountUnitOverrides =
-    foldlAttrs (acc: _: m:
-      acc // {
-        "${toMountUnit (toString m.mountPoint)}.automount" = {
-          overrideStrategy = "asDropin";
-          text = ''
-            [Unit]
-            X-RestartIfChanged=false
-          '';
-        };
-      }
-    ) {} mountsEnabled;
-
-in {
+in
+{
   options.services.nfs-mount = {
     enable = mkEnableOption "Enable NFS mounts.";
     mounts = mkOption {
       type = types.attrsOf (types.submodule nfsMountModule);
-      default = {};
+      default = { };
       description = ''
         A set of NFS mount definitions handled over WireGuard.
       '';
@@ -353,18 +389,73 @@ in {
       pkgs.wireguard-tools
     ];
     networking.hosts = networkingHosts;
-    networking.wireguard.enable =
-      lib.mkIf (mountsEnabled != {}) true;
+    networking.wireguard.enable = lib.mkIf (mountsEnabled != { }) true;
     networking.wireguard.interfaces = wgInterfaces;
     # A gotcha: Don't use fileSystems and systemd.mounts.  fileSystems will emit
     # systemd.mounts, in effect.
     fileSystems = fileSystems;
-    systemd.units = automountUnitOverrides;
     systemd.services = servicesFromBinds // servicesSanity // wireguardPeerServices;
     users.groups = mapAttrs' (name: value: {
       name = value.bindToService;
       value = {
         gid = value.gid;
+      };
+    }) mountsEnabled;
+    # The node exporter's filesystem collector calls statfs(2) on every
+    # mounted filesystem.  Hard NFS mounts block that call indefinitely
+    # while the server computes its answer — even with no packet loss,
+    # a slow btrfs statfs on the server side takes several seconds.  This
+    # pushes the Prometheus scrape past its 10 s timeout and raises false
+    # host-down alerts.  NFS capacity is better monitored server-side anyway.
+    #
+    # This flag overrides the binary's compiled-in defaults entirely, so the
+    # full upstream default set is reproduced here alongside the NFS additions.
+    services.prometheus.exporters.node.extraFlags =
+      let
+        fsTypes = [
+          # Upstream compiled-in defaults.
+          "autofs"
+          "binfmt_misc"
+          "bpf"
+          "cgroup2?"
+          "configfs"
+          "debugfs"
+          "devpts"
+          "devtmpfs"
+          "fusectl"
+          "hugetlbfs"
+          "iso9660"
+          "mqueue"
+          "nsfs"
+          "overlay"
+          "proc"
+          "procfs"
+          "pstore"
+          "rpc_pipefs"
+          "securityfs"
+          "selinuxfs"
+          "squashfs"
+          "sysfs"
+          "tracefs"
+          # NFS types added by this module.  nfs4? matches both nfs and nfs4.
+          "nfs4?"
+        ];
+      in
+      [
+        "--collector.filesystem.fs-types-exclude=^(${lib.concatStringsSep "|" fsTypes})$"
+        # Per-mount NFS operation stats including queue time and RTT.  Used to
+        # alert on DELEGRETURN or STATFS queue buildup via Prometheus rules.
+        "--collector.mountstats"
+      ];
+    # Verify that each NFS mount is still established.  Catches silicon going
+    # down and the hard mount being lost.  Queue-depth degradation is better
+    # monitored via the mountstats Prometheus metrics than via a point-in-time
+    # goss poll.
+    services.goss.checks.mount = lib.mapAttrs' (_: m: {
+      name = toString m.mountPoint;
+      value = {
+        exists = true;
+        filesystem = "nfs4";
       };
     }) mountsEnabled;
   };
