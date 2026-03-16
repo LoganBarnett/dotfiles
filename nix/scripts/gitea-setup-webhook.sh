@@ -44,17 +44,20 @@ SELECT id FROM repository WHERE owner_name = :'owner' AND name = :'name';
 SQL
 )
 
-# Convert comma-separated events to JSON object format.
-# Gitea expects events as a JSON object like {"push": true}.
-EVENTS_JSON="{"
+# Convert comma-separated events to HookEvent JSON format.
+# Gitea expects a full HookEvent struct with nested events.
+EVENTS_OBJ="{"
 IFS=',' read -ra EVENT_ARRAY <<< "$EVENTS"
 for i in "${!EVENT_ARRAY[@]}"; do
   if [ "$i" -gt 0 ]; then
-    EVENTS_JSON+=","
+    EVENTS_OBJ+=","
   fi
-  EVENTS_JSON+="\"${EVENT_ARRAY[$i]}\": true"
+  EVENTS_OBJ+="\"${EVENT_ARRAY[$i]}\": true"
 done
-EVENTS_JSON+="}"
+EVENTS_OBJ+="}"
+
+# Wrap in HookEvent structure.
+EVENTS_JSON="{\"push_only\":false,\"send_everything\":false,\"choose_events\":true,\"branch_filter\":\"\",\"events\":$EVENTS_OBJ}"
 
 # Upsert the webhook using a simpler two-step approach.
 # First, try to update.
