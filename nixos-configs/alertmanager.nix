@@ -21,6 +21,13 @@
     generator.script = "base64";
     rekeyFile = ../secrets/matrix-alertmanager-secret.age;
   };
+  # Shared with darwin-configs/ollama.nix — that host generates the value;
+  # this host needs to read it to authenticate with the webhook endpoint.
+  age.secrets.ollama-webhook-token = {
+    rekeyFile = ../secrets/generated/ollama-webhook-token.age;
+    # alertmanager runs as this user and reads the file via credentials_file.
+    owner = "alertmanager";
+  };
   environment.systemPackages = [
     # Give us a test program to make sure this works.
     (pkgs.writeShellApplication {
@@ -96,6 +103,28 @@
                   '';
                 };
               }
+              {
+                # Fires immediately so alertmanager can attempt remediation
+                # without delay.  The goss check samples via metalps: if the
+                # Ollama process has no accumulated gpu_time_ns (Metal GPU
+                # context never acquired or lost after eviction), the check
+                # fails and this alert fires.
+                alert = "ollama_metal_gpu_evicted";
+                expr = ''increase(goss_tests_outcomes_total{outcome="fail",resource_id="ollama-metal-acceleration"}[5m]) > 0'';
+                for = "0m";
+                labels = {
+                  severity = "page";
+                };
+                annotations = {
+                  summary = "Ollama Metal GPU evicted on {{ $labels.instance }}.";
+                  description = ''
+                    The ollama-metal-acceleration goss check has detected that
+                    Ollama is running on CPU.  Alertmanager will POST to the
+                    webhook endpoint to restart the launchd agent and
+                    re-acquire the Metal GPU context.
+                  '';
+                };
+              }
             ];
           }
         ];
@@ -124,6 +153,23 @@
               }
             ];
           }
+          {
+            name = "ollama-remediation";
+            webhook_configs = [
+              {
+                url = "http://M-CL64PK702X.proton:9000/hooks/ollama-restart";
+                # No resolved notification needed — we only care about kicking
+                # the restart, not about the all-clear.
+                send_resolved = false;
+                http_config = {
+                  authorization = {
+                    type = "Bearer";
+                    credentials_file = config.age.secrets.ollama-webhook-token.path;
+                  };
+                };
+              }
+            ];
+          }
         ];
         route = {
           group_by = [
@@ -134,6 +180,20 @@
           group_interval = "2m";
           repeat_interval = "4h";
           receiver = "team-admins";
+          routes = [
+            {
+              # continue = true sends to ollama-remediation AND falls through
+              # to the parent receiver (team-admins) so humans are still
+              # notified even while remediation is in progress.
+              matchers = [ ''alertname="ollama_metal_gpu_evicted"'' ];
+              receiver = "ollama-remediation";
+              continue = true;
+              # Fire immediately — no batching delay for remediation.
+              group_wait = "0s";
+              # Re-POST every 10 minutes while the alert remains active.
+              repeat_interval = "10m";
+            }
+          ];
         };
       };
     };

@@ -77,6 +77,7 @@ in
     }
     ../darwin.nix
     ../darwin-configs/goss-ollama-metal-gpu.nix
+    ../darwin-configs/ollama.nix
     ../users/logan-new-e-ah.nix
     ../nixos-modules/user-can-admin.nix
     ../nixos-configs/workstation.nix
