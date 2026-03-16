@@ -14,6 +14,9 @@ let
       { };
   host-wait = pkgs.callPackage ../derivations/host-wait.nix { };
   image-create = pkgs.callPackage ../derivations/image-create.nix { };
+  nix-direnv-add-envrc =
+    pkgs.callPackage ../derivations/nix-direnv-add-envrc.nix
+      { };
   nix-host-key-install =
     pkgs.callPackage ../derivations/nix-host-key-install.nix
       { };
@@ -82,6 +85,8 @@ in
     host-wait
     # Build a Raspberry Pi disk image for a named host.
     image-create
+    # Initialize a nix-direnv .envrc and flake.nix in a new project.
+    nix-direnv-add-envrc
     # Install the host SSH key from the secrets store via rage.
     nix-host-key-install
     # Checklist entrypoint for creating a new Nix-managed host.
