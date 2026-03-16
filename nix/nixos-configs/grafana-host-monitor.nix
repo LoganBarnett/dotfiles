@@ -8,7 +8,12 @@
 # 5. System uptime.
 # 6. Service health (systemd status and goss health checks).
 ################################################################################
-{ without-socket-port, height, width, ... }: {
+{ without-socket-port, height, width, ... }:
+let
+  # Ephemeral, virtual, and network filesystems excluded from disk
+  # usage accounting.
+  excludedFstypes = "tmpfs|proc|sysfs|devtmpfs|overlay|squashfs|nfs|nfs4";
+in {
   id = null;
   uid = "system-monitoring";
   schemaVersion = 16;
@@ -119,13 +124,13 @@
           expr = without-socket-port ''
             (1 - (
               sum(node_filesystem_avail_bytes{
-                fstype!~"tmpfs|proc|sysfs|devtmpfs|overlay|squashfs",
+                fstype!~"${excludedFstypes}",
                 device!~"^loop\\d+$|none|ramfs",
                 mountpoint!~"/nix/store.*|.*boot.*"
               }) by (instance, mountpoint)
               /
               sum(node_filesystem_size_bytes{
-                fstype!~"tmpfs|proc|sysfs|devtmpfs|overlay|squashfs",
+                fstype!~"${excludedFstypes}",
                 device!~"^loop\\d+$|none|ramfs",
                 mountpoint!~"/nix/store.*|.*boot.*"
               }) by (instance, mountpoint)
