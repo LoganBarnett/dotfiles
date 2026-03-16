@@ -13,14 +13,24 @@
 # it can support nix-darwin too.
 # https://github.com/NobbZ/nixos-config/blob/99df721f491a6c33a12d7e82e09659935f15ab2b/nixos/modules/flake.nix
 ################################################################################
-{ config, flake-inputs, lib, options, pkgs, system, ... }: let
+{
+  config,
+  flake-inputs,
+  lib,
+  options,
+  pkgs,
+  system,
+  ...
+}:
+let
   base = "/etc/nixpkgs/channels";
   nixpkgsPath = "${base}/nixpkgs";
   inherit (flake-inputs) nixpkgs nix;
   # Additional versions of nixpkgs should be added thusly:
   # nixpkgs2105Path = "${base}/nixpkgs2105";
   # nixpkgs2111Path = "${base}/nixpkgs2111";
-in (lib.mkMerge [
+in
+(lib.mkMerge [
   # mkIf doesn't work for this because of how it recurses or something.
   # While this this is not in nix-darwin (yet), it would be nice to turn it on
   # when it is.  So instead of checking the platform, check the option.
@@ -29,10 +39,10 @@ in (lib.mkMerge [
   # (lib.optionalAttrs (options.programs?command-not-found) {
   #   # Not in nix-darwin yet.
   #   programs.command-not-found.dbPath =
-  #     programsdb.packages.${pkgs.system}.programs-sqlite;
+  #     programsdb.packages.${system}.programs-sqlite;
   # })
   # So systemd in macOS.
-  (lib.optionalAttrs (options?systemd) {
+  (lib.optionalAttrs (options ? systemd) {
     systemd.tmpfiles.rules = [
       "L+ ${nixpkgsPath}     - - - - ${nixpkgs}"
       # "L+ ${nixpkgs2105Path} - - - - ${nixpkgs-2105}"
