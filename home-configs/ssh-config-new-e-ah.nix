@@ -1,4 +1,5 @@
-{ lib, ...  }: let
+{ lib, ... }:
+let
   # I'm the Riddler!
   org-name = lib.concatStrings [
     "n"
@@ -8,7 +9,8 @@
   ];
   org-colo-domain = "${org-name}colo.pvt";
   org-pvt-domain = "${org-name}.pvt";
-in {
+in
+{
   programs.ssh = {
 
     # Global canonical domains and hostname settings.
@@ -71,8 +73,8 @@ in {
           # GSSAPITrustDNS yes
           # Ensure that we are not using our public keys here.
           # Note the "Pub" instead of "Public".
-          # PubKeyAuthentication no
-          PreferredAuthentications = "gssapi-with-mic,gssapi-keyex";
+          PubKeyAuthentication = "yes";
+          # PreferredAuthentications = "gssapi-with-mic,gssapi-keyex";
           # ForwardX11 yes
           # ForwardX11Trusted yes
           UpdateHostKeys = "yes";
