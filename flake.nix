@@ -29,7 +29,8 @@
     # https://github.com/oddlama/agenix-rekey
     # Allows re-keying and bootstrapping of secrets used by agenix.
     agenix-rekey = {
-      url = "github:LoganBarnett/agenix-rekey/parameterize-generators";
+      url = "git+ssh://git@gitea.proton:2222/logan/agenix-rekey.git?ref=rust-runtime";
+      # url = "github:LoganBarnett/agenix-rekey/parameterize-generators";
       # url = "github:LoganBarnett/agenix-rekey/paramterize-generators-cherry-pick";
       # url = "github:LoganBarnett/agenix-rekey/parameterize-generators";
       # url = "github:LoganBarnett/agenix-rekey/parameterize-generators-master-identities-fix";
@@ -150,7 +151,7 @@
     nixpkgs-working-rocm.url = "github:nixos/nixpkgs/master";
     nixpkgs-cuda.url = "github:nixos/nixpkgs/master";
     nixpkgs-25-11.url = "github:nixos/nixpkgs/25.11";
-    nixpkgs-openscad-bin.url = github:LoganBarnett/nixpkgs/openscad-darwin-preserve-cli;
+    nixpkgs-openscad-bin.url = "github:LoganBarnett/nixpkgs/openscad-darwin-preserve-cli";
     # The newest version of Octoprint on nixpkgs 25.11 enters some kind of
     # refresh loop on the UI, and my attempts to debug it have come up empty.
     # It doesn't print any apparent error - I believe it is misidentifying
@@ -208,23 +209,30 @@
     };
   };
 
-  outputs = flake-inputs@{
-    agenix-rekey,
-    nix,
-    nix-darwin,
-    nixpkgs,
-    nixpkgs-latest,
-    nixos-generators,
-    self,
-    ...
-  }: let
-    facts = import ./nixos-modules/facts.nix;
-    nodes =
-      self.containerGuestHosts
-      // self.nixosConfigurations
-      // self.darwinConfigurations
-    ;
-    container-guest-host = args@{ host-id, flake-inputs, system }: nix-host args;
+  outputs =
+    flake-inputs@{
+      agenix-rekey,
+      nix,
+      nix-darwin,
+      nixpkgs,
+      nixpkgs-latest,
+      nixos-generators,
+      self,
+      ...
+    }:
+    let
+      facts = import ./nixos-modules/facts.nix;
+      nodes =
+        self.containerGuestHosts
+        // self.nixosConfigurations
+        // self.darwinConfigurations;
+      container-guest-host =
+        args@{
+          host-id,
+          flake-inputs,
+          system,
+        }:
+        nix-host args;
       # autoStart = true;
       # privateNetwork = false;
       # # This is a critical gotcha with containers in NixOS.  Set `specialArgs`
@@ -238,176 +246,204 @@
       #   host-id = "grafana";
       # };
       # config = import ./hosts/${host-id}.nix;
-    # };
+      # };
 
-    nix-host = args@{ host-id, flake-inputs, system }:
-      flake-inputs.nixpkgs.lib.nixosSystem {
-        specialArgs = {
-          inherit facts flake-inputs host-id nodes system;
-          disko-proper = flake-inputs.disko;
-          lib-custom = import ./lib.nix;
+      nix-host =
+        args@{
+          host-id,
+          flake-inputs,
+          system,
+        }:
+        flake-inputs.nixpkgs.lib.nixosSystem {
+          specialArgs = {
+            inherit
+              facts
+              flake-inputs
+              host-id
+              nodes
+              system
+              ;
+            disko-proper = flake-inputs.disko;
+            lib-custom = import ./lib.nix;
+          };
+          modules = [
+            flake-inputs.home-manager.nixosModules.home-manager
+            flake-inputs.nix-option-search.nixosModules.default
+            flake-inputs.nix-remote-builder-doctor.nixosModules.default
+            ./hosts/${host-id}.nix
+            # This is the only way to pull in this dependency.  In the flake it
+            # resides in, this is already imported, so importing it again via
+            # `imports` just makes Nix barf with an infinite recursion error.
+            # openhab-flake.nixosModules.${system}.openhab
+            {
+              home-manager.extraSpecialArgs = {
+                inherit facts flake-inputs host-id;
+              };
+            }
+            {
+              nixpkgs.overlays = [
+                flake-inputs.nix-remote-builder-doctor.overlays.default
+              ];
+            }
+          ];
         };
-        modules = [
-          flake-inputs.home-manager.nixosModules.home-manager
-          flake-inputs.nix-option-search.nixosModules.default
-          flake-inputs.nix-remote-builder-doctor.nixosModules.default
-          ./hosts/${host-id}.nix
-          # This is the only way to pull in this dependency.  In the flake it
-          # resides in, this is already imported, so importing it again via
-          # `imports` just makes Nix barf with an infinite recursion error.
-          # openhab-flake.nixosModules.${system}.openhab
-          {
-            home-manager.extraSpecialArgs = {
-              inherit facts flake-inputs host-id;
-            };
-          }
-          {
-            nixpkgs.overlays = [
-              flake-inputs.nix-remote-builder-doctor.overlays.default
-            ];
-          }
-        ];
-      }
-    ;
 
-    darwin-host = args@{ host-id, flake-inputs, system }:
-      nix-darwin.lib.darwinSystem {
-        specialArgs = {
-          inherit facts flake-inputs host-id nodes system;
-          lib-custom = import ./lib.nix;
-          disko-proper = flake-inputs.disko;
+      darwin-host =
+        args@{
+          host-id,
+          flake-inputs,
+          system,
+        }:
+        nix-darwin.lib.darwinSystem {
+          specialArgs = {
+            inherit
+              facts
+              flake-inputs
+              host-id
+              nodes
+              system
+              ;
+            lib-custom = import ./lib.nix;
+            disko-proper = flake-inputs.disko;
+          };
+          modules = [
+            flake-inputs.home-manager.darwinModules.home-manager
+            # flake-inputs.nix-option-search.darwinModules.default
+            flake-inputs.nix-remote-builder-doctor.darwinModules.default
+            {
+              nixpkgs.overlays = [
+                (final: prev: {
+                  nixos-option =
+                    flake-inputs.nixos-option-pr-369151.outputs.legacyPackages.${system}.nixos-option;
+                })
+                flake-inputs.nix-remote-builder-doctor.overlays.default
+              ];
+            }
+            {
+              home-manager.extraSpecialArgs = {
+                inherit
+                  facts
+                  flake-inputs
+                  host-id
+                  system
+                  ;
+              };
+            }
+            ./hosts/${host-id}.nix
+          ];
         };
-        modules = [
-          flake-inputs.home-manager.darwinModules.home-manager
-          # flake-inputs.nix-option-search.darwinModules.default
-          flake-inputs.nix-remote-builder-doctor.darwinModules.default
-          {
-            nixpkgs.overlays = [
-              (final: prev: {
-                nixos-option = flake-inputs
-                  .nixos-option-pr-369151
-                  .outputs
-                  .legacyPackages
-                  .${system}
-                  .nixos-option
-                ;
-              })
-              flake-inputs.nix-remote-builder-doctor.overlays.default
-            ];
-          }
-          {
-            home-manager.extraSpecialArgs = {
-              inherit facts flake-inputs host-id system;
-            };
-          }
-          ./hosts/${host-id}.nix
-        ];
-      }
-    ;
 
-    lib = nixpkgs.lib;
-    forAllSystems = lib.genAttrs lib.systems.flakeExposed;
-    host-config = name: hostFacts: {
-      flake-inputs = flake-inputs // (
-        lib.attrsets.mapAttrs
-          (name: input-name: flake-inputs."${input-name}")
-          (hostFacts.flake-input-overrides or {})
+      lib = nixpkgs.lib;
+      forAllSystems = lib.genAttrs lib.systems.flakeExposed;
+      host-config = name: hostFacts: {
+        flake-inputs =
+          flake-inputs
+          // (lib.attrsets.mapAttrs (name: input-name: flake-inputs."${input-name}") (
+            hostFacts.flake-input-overrides or { }
+          ));
+        host-id = name;
+        system = hostFacts.system;
+      };
+      # Only give us converted hosts for given OS (platform?).  This way we can
+      # pick which hosts go to which `*Configurations` attribute
+      # (e.g. nixosConfigurations vs darwinConfigurations).
+      host-configs-for-os =
+        f: os: hostsFacts:
+        lib.pipe hostsFacts [
+          (lib.attrsets.filterAttrs (
+            name: hostFacts:
+            # Perhaps dangerous - we need a better way of parsing these things since
+            # they are known to be inconsistent, and sometimes we're dealing with a
+            # double while other times it might be a triple.
+            hostFacts ? system
+            && (builtins.elemAt (lib.strings.splitString "-" hostFacts.system) 1) == os
+          ))
+          (lib.attrsets.mapAttrs host-config)
+          (lib.attrsets.mapAttrs (n: f))
+        ];
+    in
+    {
+      devShells = forAllSystems (
+        system:
+        let
+          pkgs = import nixpkgs { inherit system; };
+          fmt-staged = pkgs.callPackage ./derivations/fmt-staged.nix { };
+          nix-direnv-add-envrc =
+            pkgs.callPackage ./derivations/nix-direnv-add-envrc.nix
+              { };
+          nix-host-key-install =
+            pkgs.callPackage ./derivations/nix-host-key-install.nix
+              { };
+        in
+        {
+          default = pkgs.mkShell {
+            packages = [
+              fmt-staged
+              nix-direnv-add-envrc
+              nix-host-key-install
+              pkgs.nixfmt-rfc-style
+              pkgs.treefmt
+            ];
+            shellHook = ''
+              mkdir -p .git/hooks
+              ln -sf ${fmt-staged}/bin/fmt-staged .git/hooks/pre-commit
+            '';
+          };
+        }
       );
-      host-id = name;
-      system = hostFacts.system;
-    };
-    # Only give us converted hosts for given OS (platform?).  This way we can
-    # pick which hosts go to which `*Configurations` attribute
-    # (e.g. nixosConfigurations vs darwinConfigurations).
-    host-configs-for-os = f: os: hostsFacts: lib.pipe hostsFacts [
-      (lib.attrsets.filterAttrs (name: hostFacts:
-        # Perhaps dangerous - we need a better way of parsing these things since
-        # they are known to be inconsistent, and sometimes we're dealing with a
-        # double while other times it might be a triple.
-        hostFacts ? system
-        && (
-          builtins.elemAt (lib.strings.splitString "-" hostFacts.system) 1
-        ) == os
-      ))
-      (lib.attrsets.mapAttrs host-config)
-      (lib.attrsets.mapAttrs (n: f))
-    ];
-  in  {
-    devShells = forAllSystems (system: let
-      pkgs = import nixpkgs { inherit system; };
-      fmt-staged = pkgs.callPackage ./derivations/fmt-staged.nix {};
-      nix-direnv-add-envrc = pkgs.callPackage ./derivations/nix-direnv-add-envrc.nix {};
-      nix-host-key-install = pkgs.callPackage ./derivations/nix-host-key-install.nix {};
-    in {
-      default = pkgs.mkShell {
-        packages = [
-          fmt-staged
-          nix-direnv-add-envrc
-          nix-host-key-install
-          pkgs.nixfmt-rfc-style
-          pkgs.treefmt
-        ];
-        shellHook = ''
-          mkdir -p .git/hooks
-          ln -sf ${fmt-staged}/bin/fmt-staged .git/hooks/pre-commit
-        '';
-      };
-    });
-    darwinConfigurations = host-configs-for-os darwin-host "darwin" facts.network.hosts;
-    nixosConfigurations = host-configs-for-os nix-host "linux" facts.network.hosts;
-    containerGuestHosts = {};
-    # containerGuestHosts.grafana = container-guest-host {
-    #   inherit flake-inputs;
-    #   host-id = "grafana";
-    #   system = "aarch64-linux";
-    # };
-    packages.aarch64-darwin.nucleus = self
-      .nixosConfigurations
-      .nucleus
-      .config
-      .system
-      .build
-      .isoImage
-    ;
+      darwinConfigurations =
+        host-configs-for-os darwin-host "darwin"
+          facts.network.hosts;
+      nixosConfigurations = host-configs-for-os nix-host "linux" facts.network.hosts;
+      containerGuestHosts = { };
+      # containerGuestHosts.grafana = container-guest-host {
+      #   inherit flake-inputs;
+      #   host-id = "grafana";
+      #   system = "aarch64-linux";
+      # };
+      packages.aarch64-darwin.nucleus =
+        self.nixosConfigurations.nucleus.config.system.build.isoImage;
 
-    # Kept for reference in case we start using nixos-generators again.
-    # packages.aarch64-darwin.nucleus-ng = let
-    #   system = "x86_64-linux";
-    #   host-id = "nucleus";
-    # in nixos-generators.nixosGenerate {
-    #   inherit system;
-    #   format = "install-iso";
-    #   specialArgs = {
-    #     inherit facts flake-inputs host-id nodes system;
-    #     disko-proper = flake-inputs.disko;
-    #   };
-    #   modules = [
-    #     ./hosts/nucleus.nix
-    #   ];
-    # };
+      # Kept for reference in case we start using nixos-generators again.
+      # packages.aarch64-darwin.nucleus-ng = let
+      #   system = "x86_64-linux";
+      #   host-id = "nucleus";
+      # in nixos-generators.nixosGenerate {
+      #   inherit system;
+      #   format = "install-iso";
+      #   specialArgs = {
+      #     inherit facts flake-inputs host-id nodes system;
+      #     disko-proper = flake-inputs.disko;
+      #   };
+      #   modules = [
+      #     ./hosts/nucleus.nix
+      #   ];
+      # };
 
-    # Just expose Disko in some ways - used by ../bin/remote-deploy.
-    packages.x86_64-linux.disko = flake-inputs.disko.packages.x86_64-linux.disko or flake-inputs.disko.packages.x86_64-linux.default;
-    packages.aarch64-linux.disko = flake-inputs.disko.packages.aarch64-linux.disko or flake-inputs.disko.packages.aarch64-linux.default;
+      # Just expose Disko in some ways - used by ../bin/remote-deploy.
+      packages.x86_64-linux.disko =
+        flake-inputs.disko.packages.x86_64-linux.disko
+          or flake-inputs.disko.packages.x86_64-linux.default;
+      packages.aarch64-linux.disko =
+        flake-inputs.disko.packages.aarch64-linux.disko
+          or flake-inputs.disko.packages.aarch64-linux.default;
 
-
-    agenix-rekey = agenix-rekey.configure {
-      userFlake = self;
-      # nodes = self.nixosConfigurations
-      #         // self.darwinConfigurations;
-      nixosConfigurations =
-        self.nixosConfigurations
+      agenix-rekey = agenix-rekey.configure {
+        userFlake = self;
+        # nodes = self.nixosConfigurations
+        #         // self.darwinConfigurations;
+        nixosConfigurations =
+          self.nixosConfigurations
           // self.darwinConfigurations
-          // self.containerGuestHosts
-      ;
-      # This doesn't seem to actually make the overlays available to secret
-      # generators.  I suspect a bug, but cannot yet prove it.
-      pkgs = import flake-inputs.nixpkgs {
-        system = "aarch64-darwin";
-        overlays = import ./overlays/default.nix;
+          // self.containerGuestHosts;
+        # This doesn't seem to actually make the overlays available to secret
+        # generators.  I suspect a bug, but cannot yet prove it.
+        pkgs = import flake-inputs.nixpkgs {
+          system = "aarch64-darwin";
+          overlays = import ./overlays/default.nix;
+        };
       };
-    };
 
-  };
+    };
 
 }

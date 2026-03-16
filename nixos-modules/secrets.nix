@@ -13,8 +13,18 @@
 # prompted for the master password's key (which is the 3rd one I've create, "-3"
 # as a suffix).  I don't know if the .pub file matters or not.
 ################################################################################
-{ config, flake-inputs, host-id, lib, pkgs, ... }: let
-in {
+{
+  config,
+  flake-inputs,
+  host-id,
+  lib,
+  pkgs,
+  system,
+  ...
+}:
+let
+in
+{
   nixpkgs.overlays = [
     flake-inputs.agenix.overlays.default
     # This lets us include the agenix-rekey package.
@@ -23,20 +33,21 @@ in {
   # Grants us the "long-passphrase" generator.
   # TODO: Help document pre-existing generators listed here:
   # https://github.com/oddlama/agenix-rekey/blob/85df729446fca1b9f22097b03e0ae2427c3246e2/modules/agenix-rekey.nix#L557
-  age.generators.long-passphrase = {pkgs, ...}:
-    "${pkgs.xkcdpass}/bin/xkcdpass --numwords=10 --delimiter=' '"
-  ;
-  age.generators.long-passphrase-hashed = {
-    decrypt,
-    deps,
-    file,
-    name,
-    pkgs,
-    secret,
-    ...
-  }: ''
-    ${decrypt} ${(lib.escapeShellArg (builtins.elemAt deps 0).file)} | \
-       ${pkgs.openssl}/bin/openssl passwd -6 -stdin
+  age.generators.long-passphrase =
+    { pkgs, ... }: "${pkgs.xkcdpass}/bin/xkcdpass --numwords=10 --delimiter=' '";
+  age.generators.long-passphrase-hashed =
+    {
+      decrypt,
+      deps,
+      file,
+      name,
+      pkgs,
+      secret,
+      ...
+    }:
+    ''
+      ${decrypt} ${(lib.escapeShellArg (builtins.elemAt deps 0).file)} | \
+         ${pkgs.openssl}/bin/openssl passwd -6 -stdin
     '';
 
   # Note that SSHA is the default - a _seeded_ SHA.  This doesn't work across
@@ -50,7 +61,8 @@ in {
   # I need to do some more reserach but I'm supposed to use decrypt to decrypt
   # the actual values, which I wasn't doing with any of the hashes, so that
   # might also present an issue I was experiencing.
-  age.generators.slapd-hashed = {
+  age.generators.slapd-hashed =
+    {
       decrypt,
       deps,
       file,
@@ -58,7 +70,7 @@ in {
       pkgs,
       secret,
       ...
-  }:
+    }:
     # slappasswd doesn't do {CLEARTEXT}, but I think the prefix is still needed.
     # It's vitally important that the newline is stripped!!!  Otherwise that
     # gets added to the base64 encoded value (which you can spot with a Cg or
@@ -69,7 +81,7 @@ in {
   #     -h '{CLEARTEXT}' \
   #     -s "$(cat ${(builtins.elemAt deps 0).file})"
   # ''
-    ;
+  ;
 
   age.rekey = {
     # TODO:  This is the host key, and we should call it that instead of the pub
@@ -91,28 +103,30 @@ in {
     storageMode = "local";
   };
 
-  age.generators.ssh-ed25519-with-pub = {
-    file,
-    lib,
-    name,
-    pkgs,
-    ...
-  }: ''
-    mkdir -p "$(dirname "${file}")"
-    (exec 3>&1;
-    ${pkgs.openssh}/bin/ssh-keygen \
-      -q \
-      -t ed25519 \
-      -N "" \
-      -C ${lib.escapeShellArg "${name}"} \
-      -f ${name} \
-      <<<y >/dev/null 2>&1;
-      cp "${name}.pub" "$(dirname "${file}")"
-      echo copied public key ${name}.pub to "$(dirname "${file}")" 1>&2
-      cat "${name}"
-      rm "${name}"{,.pub}
-    true)
-  '';
+  age.generators.ssh-ed25519-with-pub =
+    {
+      file,
+      lib,
+      name,
+      pkgs,
+      ...
+    }:
+    ''
+      mkdir -p "$(dirname "${file}")"
+      (exec 3>&1;
+      ${pkgs.openssh}/bin/ssh-keygen \
+        -q \
+        -t ed25519 \
+        -N "" \
+        -C ${lib.escapeShellArg "${name}"} \
+        -f ${name} \
+        <<<y >/dev/null 2>&1;
+        cp "${name}.pub" "$(dirname "${file}")"
+        echo copied public key ${name}.pub to "$(dirname "${file}")" 1>&2
+        cat "${name}"
+        rm "${name}"{,.pub}
+      true)
+    '';
 
   # TODO: This doesn't quite work as expected.  We need something to sync up
   # with the /etc/ssh/ssh_host_ed25519_key and its .pub sibling.  This will
@@ -180,7 +194,17 @@ in {
     # This should work equally for macOS.  This and the darwinModules version
     # both reference the same file.
     flake-inputs.agenix.nixosModules.default
-    flake-inputs.agenix-rekey.nixosModules.default
+    # agenix-rekey now sets _class on its modules, so we must select the
+    # correct one for the platform to avoid a class mismatch error.  We use
+    # `system` rather than `pkgs.stdenv.isDarwin` because `pkgs` is not fully
+    # resolved during `imports` evaluation — using it here risks infinite
+    # recursion since `pkgs` is shaped by the modules being imported.
+    (
+      if lib.strings.hasSuffix "-darwin" system then
+        flake-inputs.agenix-rekey.darwinModules.default
+      else
+        flake-inputs.agenix-rekey.nixosModules.default
+    )
     ../agenix/agenix-rekey-generator-mosquitto-password-file.nix
     ../agenix/base64-configurable-secret.nix
     ../agenix/environment-file-secret.nix
