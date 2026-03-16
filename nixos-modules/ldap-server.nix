@@ -12,7 +12,6 @@
 ################################################################################
 {
   config,
-  host-id,
   lib,
   pkgs,
   ...
@@ -27,6 +26,11 @@ in
   };
 
   config = lib.mkIf config.services.ldap-server.enable {
+    tls.tls-leafs."ldap.proton" = {
+      fqdn = "ldap.proton";
+      ca = config.age.secrets.proton-ca;
+    };
+
     age.secrets = {
       ldap-root-pass = {
         generator.script = "passphrase";
@@ -57,13 +61,12 @@ in
         attrs = {
           olcLogLevel = "acl any conns config stats stats2 trace";
           olcTLSCACertificateFile = "${../secrets/proton-ca.crt}";
-          olcTLSCertificateFile = "${../secrets/tls-${host-id}.crt}";
-          olcTLSCertificateKeyFile = config.age.secrets."tls-${host-id}.key".path;
+          olcTLSCertificateFile = "${../secrets/tls-ldap.proton.crt}";
+          olcTLSCertificateKeyFile = "/run/credentials/openldap.service/tls-ldap-key";
           olcTLSCipherSuite = "HIGH:MEDIUM:+3DES:+RC4:+aNULL";
           olcTLSCRLCheck = "none";
           olcTLSVerifyClient = "never";
           olcTLSProtocolMin = "3.1";
-          olcPasswordHash = "{ARGON2}";
         };
         children = {
           "cn=schema".includes = [
@@ -88,8 +91,14 @@ in
           };
           "olcDatabase={-1}frontend" = {
             attrs = {
-              objectClass = "olcDatabaseConfig";
+              objectClass = [
+                "olcDatabaseConfig"
+                "olcFrontendConfig"
+              ];
               olcDatabase = "{-1}frontend";
+              # olcPasswordHash must live here (not in cn=config) when the hash
+              # scheme is provided by a loadable module such as argon2.
+              olcPasswordHash = "{ARGON2}";
               olcAccess = [
                 "{0}to * by dn.exact=uidNumber=0+gidNumber=0,cn=peercred,cn=external,cn=auth manage stop by * none stop"
               ];
@@ -183,6 +192,9 @@ in
     networking.firewall.allowedUDPPorts = [ ldap-port ];
     systemd.services.openldap = {
       wants = [ "run-agenix.d.mount" ];
+      serviceConfig.LoadCredential = [
+        "tls-ldap-key:${config.age.secrets."tls-ldap.proton.key".path}"
+      ];
     };
   };
 }

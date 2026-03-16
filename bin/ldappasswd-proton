@@ -16,7 +16,7 @@
 # -S: Prompt for the new password.
 echo 'Warning: The "Enter LDAP Password" prompt means put in the bind DN password!'
 ldappasswd \
-  -H ldaps://nickel.proton \
+  -H ldaps://ldap.proton \
   -x \
   -D "uid=$USER,ou=users,dc=proton,dc=org" \
   -W \

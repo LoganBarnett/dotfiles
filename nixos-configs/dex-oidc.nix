@@ -1,12 +1,19 @@
 ################################################################################
 # Dex handles an OIDC connections for LDAP.
 ################################################################################
-{ config, host-id, lib-custom, ... }: let
+{
+  config,
+  host-id,
+  lib-custom,
+  ...
+}:
+let
   ldap-password-field = "ldap_bind_password";
   home-assistant-client-secret-field = "home_assistant_client_secret";
   dex-port = 5556;
   group = "dex-oidc";
-in {
+in
+{
   age.secrets = {
     dex-oidc-ldap-environment-file = {
       generator = {
@@ -40,12 +47,9 @@ in {
       };
       rekeyFile = ../secrets/dex-oidc-environment-file.age;
     };
-  } // (
-    config.lib.ldap.ldap-password
-      "dex-oidc"
-      "${host-id}-dex-oidc-service"
-  );
-  users.groups.${group} = {};
+  }
+  // (config.lib.ldap.ldap-password "dex-oidc" "${host-id}-dex-oidc-service");
+  users.groups.${group} = { };
   imports = [
     (import ../nixos-modules/https.nix {
       server-port = 5556;
@@ -72,7 +76,7 @@ in {
           ];
           secret = "$''${home-assistant-client-secret-field}";
           name = "Home Assistant";
-          trustedPeers = [];
+          trustedPeers = [ ];
         }
       ];
       issuer = "https://dex.proton";
@@ -88,7 +92,7 @@ in {
           id = "ldap";
           name = "ldap";
           config = {
-            host = "nickel.proton:636";
+            host = "ldap.proton:636";
             insecureNoSSL = false;
             bindDN = "uid=dex-oidc,ou=services,dc=proton,dc=org";
             bindPW = "$''${ldap-password-field}";

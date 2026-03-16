@@ -75,7 +75,7 @@ in
       rekeyFile = ../secrets/nextcloud-admin-pass.age;
     };
   }
-  // (config.lib.ldap.ldap-password "openldap-${host-id}-nextcloud-service" "${host-id}-nextcloud-service");
+  // (config.lib.ldap.ldap-password "root" "${host-id}-nextcloud-service");
   environment.systemPackages = [
     # If you had to reinstall Nextcloud, you've probably quickly learned that it
     # gets into a lodged state where any number of tiny little things that
@@ -310,7 +310,7 @@ in
             let
               uid = "uid=${host-id}-nextcloud-service,ou=users,dc=proton,dc=org";
               passwordPath = "/run/credentials/nextcloud-custom-config.service/nextcloud-service-ldap-password";
-              ldapHost = "nickel.proton";
+              ldapHost = "ldap.proton";
               script = pkgs.writeShellApplication {
                 name = "nextcloud-ldap-configure";
                 runtimeInputs = [
@@ -435,13 +435,11 @@ in
     # doing a lot of hand-off that requires permissions to align.
     isSystemUser = true;
     extraGroups = [
-      "openldap-${host-id}-nextcloud-service"
       "media-shared" # For shared media directory access.
     ];
     group = "nextcloud";
   };
   users.groups.nextcloud = { };
-  users.groups."openldap-${host-id}-nextcloud-service" = { };
 
   # Goss health checks for Nextcloud.
   services.goss.checks = {

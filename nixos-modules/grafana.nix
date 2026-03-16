@@ -97,7 +97,7 @@ in
             (pkgs.formats.toml { }).generate "ldap.toml" {
               servers = [
                 {
-                  host = "nickel.proton";
+                  host = "ldap.proton";
                   port = 636;
                   use_ssl = true;
                   start_tls = false;
@@ -108,9 +108,7 @@ in
                   # system trust.
                   root_ca_cert = ../secrets/proton-ca.crt;
                   bind_dn = "uid=${service-user-prefix}-grafana-service,ou=users,dc=proton,dc=org";
-                  bind_password = "$__file{${
-                    config.age.secrets."${service-user-prefix}-grafana-service-ldap-password".path
-                  }}";
+                  bind_password = "$__file{/run/credentials/grafana.service/ldap-password}";
                   timeout = 10;
                   search_filter = "(uid=%s)";
                   search_base_dns = [ "dc=proton,dc=org" ];
@@ -164,6 +162,11 @@ in
   };
   systemd.services.grafana = {
     wants = [ "run-agenix.d.mount" ];
+    serviceConfig.LoadCredential = [
+      "ldap-password:${
+        config.age.secrets."${service-user-prefix}-grafana-service-ldap-password".path
+      }"
+    ];
     # Use a handy trick seen in
     # https://blog.withsam.org/blog/nixos-path-restart-trigger/ to promote
     # restarts.  Spoiler alert:  `restartTriggers` doesn't work seamlessly, but
@@ -206,8 +209,6 @@ in
       Group = "grafana";
     };
   };
-  users.users.grafana.extraGroups = [ "openldap-${host-id}-grafana-service" ];
-  users.groups."openldap-${host-id}-grafana-service" = { };
   # Goss health checks for Grafana.
   services.goss.checks = {
     # Check that the HTTPS endpoint is responding.

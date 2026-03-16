@@ -211,7 +211,6 @@
         aliases = [
           "authelia"
           "jenkins"
-          "ldap"
           "sso"
         ];
         controlledHost = true;
@@ -357,6 +356,7 @@
         aliases = [
           "blocky"
           "dns-smart-block"
+          "ldap"
         ];
         controlledHost = true;
         flake-input-overrides = { };

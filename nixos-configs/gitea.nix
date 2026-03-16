@@ -7,13 +7,21 @@
 # GitLab requires many more resources and revolves around a kind of DevOps
 # management landscape.
 ################################################################################
-{ config, host-id, lib, pkgs, ... }: let
+{
+  config,
+  host-id,
+  lib,
+  pkgs,
+  ...
+}:
+let
   service = "gitea";
   domain = "${service}.proton";
   dataDir = "/mnt/gitea";
   ldap-enabled = true;
   ldapServiceUser = "${host-id}-${service}-service";
-in {
+in
+{
   imports = [
     ../nixos-modules/bindfs.nix
     ../nixos-modules/https-module.nix
@@ -21,12 +29,12 @@ in {
   ];
   age.secrets = {
     # Other secrets go in here.
-  } // (
-    if ldap-enabled
-    then config.lib.ldap.ldap-password
-      service
-      ldapServiceUser
-    else {}
+  }
+  // (
+    if ldap-enabled then
+      config.lib.ldap.ldap-password service ldapServiceUser
+    else
+      { }
   );
   nfsConsumerFacts = {
     enable = true;
@@ -79,24 +87,20 @@ in {
       #   SCOPES = "openid profile email";
       # };
       "auth.ldap" =
-        if ldap-enabled
-        then
+        if ldap-enabled then
           let
             base-dn = "dc=proton,dc=org";
-          in {
+          in
+          {
             ENABLED = true;
             NAME = "LDAP";
-            HOST = "nickel.proton";
+            HOST = "ldap.proton";
             PORT = 636;
             USE_SSL = true;
             START_TLS = false;
             BIND_DN = "uid=${host-id}-${service}-service,ou=users,${base-dn}";
             BIND_PASSWORD = "@${
-              config
-                .age
-                .secrets
-                ."${ldapServiceUser}-ldap-password"
-                .path
+              config.age.secrets."${ldapServiceUser}-ldap-password".path
             }";
             USER_BASE = "ou=users,${base-dn}";
             USER_FILTER = "(&(memberOf=cn=gitea-users,ou=groups,${base-dn})(objectClass=person)(uid=%s))";
@@ -110,8 +114,7 @@ in {
             SKIP_TLS_VERIFY = false;
           }
         else
-          {}
-      ;
+          { };
     };
     stateDir = dataDir;
   };
@@ -157,19 +160,21 @@ in {
       running = true;
     };
   };
-  systemd.services.gitea = let
-    after = [
-      "postgresql.service"
-      "run-agenix.d.mount"
-    ];
-  in {
-    inherit after;
-    requires = after;
-    serviceConfig = {
-      # LoadCredential = [];
-      # Environment = [];
+  systemd.services.gitea =
+    let
+      after = [
+        "postgresql.service"
+        "run-agenix.d.mount"
+      ];
+    in
+    {
+      inherit after;
+      requires = after;
+      serviceConfig = {
+        # LoadCredential = [];
+        # Environment = [];
+      };
     };
-  };
   ##############################################################################
   # Gitea lacks the ability to have a purely configuration driven authentication
   # solution.  There have to be modifications made to the database.  This
@@ -188,51 +193,58 @@ in {
     wants = [ "gitea.service" ];
     wantedBy = [ "multi-user.target" ];
     # Provide awk and grep for the script.
-    path = [ pkgs.gawk pkgs.gnugrep ];
+    path = [
+      pkgs.gawk
+      pkgs.gnugrep
+    ];
     serviceConfig = {
       Type = "oneshot";
       RemainAfterExit = true;
       User = "gitea";
       ExecStartPost = "!${pkgs.systemd}/bin/systemctl restart gitea.service";
     };
-    script = let
-      base-dn = "dc=proton,dc=org";
-      giteaBin = "${config.services.gitea.package}/bin/gitea";
-      appIni = "/mnt/gitea/custom/conf/app.ini";
-    in ''
-      # Check if LDAP auth source already exists.
-      AUTH_ID=$(${giteaBin} --config ${appIni} admin auth list | grep "LDAP" | awk '{print $1}')
+    script =
+      let
+        base-dn = "dc=proton,dc=org";
+        giteaBin = "${config.services.gitea.package}/bin/gitea";
+        appIni = "/mnt/gitea/custom/conf/app.ini";
+      in
+      ''
+        # Check if LDAP auth source already exists.
+        AUTH_ID=$(${giteaBin} --config ${appIni} admin auth list | grep "LDAP" | awk '{print $1}')
 
-      if [ -n "$AUTH_ID" ]; then
-        COMMAND="update-ldap"
-        ID_ARG="--id $AUTH_ID"
-        ACTION="updated"
-      else
-        COMMAND="add-ldap"
-        ID_ARG=""
-        ACTION="created"
-      fi
+        if [ -n "$AUTH_ID" ]; then
+          COMMAND="update-ldap"
+          ID_ARG="--id $AUTH_ID"
+          ACTION="updated"
+        else
+          COMMAND="add-ldap"
+          ID_ARG=""
+          ACTION="created"
+        fi
 
-      echo "LDAP authentication source being ''${ACTION}..."
-      ${giteaBin} --config ${appIni} admin auth $COMMAND \
-        $ID_ARG \
-        --name "LDAP" \
-        --security-protocol ldaps \
-        --host nickel.proton \
-        --port 636 \
-        --bind-dn "uid=${ldapServiceUser},ou=users,${base-dn}" \
-        --bind-password "$(cat ${config.age.secrets."${ldapServiceUser}-ldap-password".path})" \
-        --user-search-base "ou=users,${base-dn}" \
-        --user-filter "(&(memberOf=cn=gitea-users,ou=groups,${base-dn})(objectClass=person)(uid=%s))" \
-        --admin-filter "(memberOf=cn=gitea-admins,ou=groups,${base-dn})" \
-        --username-attribute uid \
-        --firstname-attribute cn \
-        --surname-attribute sn \
-        --email-attribute mail \
-        --skip-tls-verify=false
+        echo "LDAP authentication source being ''${ACTION}..."
+        ${giteaBin} --config ${appIni} admin auth $COMMAND \
+          $ID_ARG \
+          --name "LDAP" \
+          --security-protocol ldaps \
+          --host ldap.proton \
+          --port 636 \
+          --bind-dn "uid=${ldapServiceUser},ou=users,${base-dn}" \
+          --bind-password "$(cat ${
+            config.age.secrets."${ldapServiceUser}-ldap-password".path
+          })" \
+          --user-search-base "ou=users,${base-dn}" \
+          --user-filter "(&(memberOf=cn=gitea-users,ou=groups,${base-dn})(objectClass=person)(uid=%s))" \
+          --admin-filter "(memberOf=cn=gitea-admins,ou=groups,${base-dn})" \
+          --username-attribute uid \
+          --firstname-attribute cn \
+          --surname-attribute sn \
+          --email-attribute mail \
+          --skip-tls-verify=false
 
-      echo "LDAP authentication source ''${ACTION} successfully."
-    '';
+        echo "LDAP authentication source ''${ACTION} successfully."
+      '';
   };
   services.postgresql = {
     enable = true;

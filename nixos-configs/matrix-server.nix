@@ -1,17 +1,21 @@
-{ config, host-id, pkgs, ... }: let
+{
+  config,
+  host-id,
+  pkgs,
+  ...
+}:
+let
   fqdn = "matrix.proton";
-in {
+in
+{
   imports = [
     (import ../nixos-modules/https.nix {
       inherit fqdn host-id;
       server-port = 8008;
     })
   ];
-  age.secrets = config.lib.ldap.ldap-password
-    "matrix"
-    "${host-id}-matrix-service"
-  ;
-  users.groups.matrix = {};
+  age.secrets = config.lib.ldap.ldap-password "matrix" "${host-id}-matrix-service";
+  users.groups.matrix = { };
   # age.secrets.matrix-synapse-postgres-password = {
   #   chmod = "0440";
   #   group = "matrix-synapse";
@@ -43,16 +47,12 @@ in {
           module = "ldap_auth_provider.LdapAuthProviderModule";
           config = {
             enable = true;
-            uri = "ldaps://nickel.proton";
+            uri = "ldaps://ldap.proton";
             start_tls = false;
             base = "dc=proton,dc=org";
             bind_dn = "uid=${host-id}-matrix-service,ou=users,dc=proton,dc=org";
-            bind_password_file = config
-              .age
-              .secrets
-              ."${host-id}-matrix-service-ldap-password"
-              .path
-            ;
+            bind_password_file =
+              config.age.secrets."${host-id}-matrix-service-ldap-password".path;
             attributes = {
               uid = "uid";
               mail = "mail";
@@ -74,7 +74,13 @@ in {
           type = "http";
           tls = false;
           resources = [
-            { names = [ "client" "federation" ]; compress = false; }
+            {
+              names = [
+                "client"
+                "federation"
+              ];
+              compress = false;
+            }
           ];
         }
       ];

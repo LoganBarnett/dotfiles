@@ -13,7 +13,13 @@
 # service account secrets the same service account coexist on the same host.
 # They are independently accessible by their owning services.
 ################################################################################
-{ config, lib, facts, ... }: let
+{
+  config,
+  lib,
+  facts,
+  ...
+}:
+let
 
   # TODO: This is getting repeated.  Consider moving this to our own custom
   # lib.nix, or in the facts.nix file.
@@ -51,17 +57,16 @@
 
   # Emits an attrset of LDAP password secrets for each user, bound to the group
   # provided.
-  ldap-passwords = group: users:
-    (lib.lists.foldl
-      (a: b: a // b)
+  ldap-passwords =
+    group: users:
+    (lib.lists.foldl (a: b: a // b)
       # foldl's documentation is incorrect - it needs a third argument.
-      {}
-      # Use a computed group to share ownership of this secret.
-      (builtins.map (u: ldap-password "${group}-${u.name}" u.name) (nameds users))
-    )
-  ;
+      { }
+      (builtins.map (u: ldap-password group u.name) (nameds users))
+    );
 
-in {
+in
+{
   lib.ldap = {
     inherit ldap-password ldap-passwords;
   };

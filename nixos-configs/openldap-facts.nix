@@ -36,38 +36,47 @@ let
 
   user-entry =
     username: user:
-    lib.nameValuePair (user-dn username) {
-      objectClass = [
-        "inetOrgPerson"
-        "person"
-        "top"
-      ];
-      cn = user.full-name;
-      uid = username;
-      sn = username;
-      mail = user.email;
-      description = user.description;
-      # Unmanaged: set once on creation, then left to the user to change.
-      # This preserves password changes across reconciliation runs.
-      userPassword = {
-        managed = false;
-        initialPath = credential-path username;
-      };
-    };
+    lib.nameValuePair (user-dn username) (
+      {
+        objectClass = [
+          "inetOrgPerson"
+          "person"
+          "top"
+        ];
+        cn = user.full-name;
+        uid = username;
+        sn = username;
+        mail = user.email;
+        # Unmanaged: set once on creation, then left to the user to change.
+        # This preserves password changes across reconciliation runs.
+        userPassword = {
+          managed = false;
+          initialPath = credential-path username;
+        };
+      }
+      # Omit description when empty — LDAP DirectoryString requires >= 1 char.
+      // lib.optionalAttrs (user.description != "") {
+        description = user.description;
+      }
+    );
 
   group-entry =
     name: group:
-    lib.nameValuePair (group-dn name) {
-      objectClass = [
-        "groupOfNames"
-        "top"
-      ];
-      cn = name;
-      ou = name;
-      description = group.description;
-      # Managed: group membership stays authoritative from facts.
-      member = map user-dn group.members;
-    };
+    lib.nameValuePair (group-dn name) (
+      {
+        objectClass = [
+          "groupOfNames"
+          "top"
+        ];
+        cn = name;
+        ou = name;
+        # Managed: group membership stays authoritative from facts.
+        member = map user-dn group.members;
+      }
+      // lib.optionalAttrs (group.description != "") {
+        description = group.description;
+      }
+    );
 
   desired-state = {
     baseDn = base-dn;
@@ -122,7 +131,7 @@ in
   # Declare hashed password secrets for every LDAP user.  The plaintext
   # variants are declared by facts-secrets.nix and consumed by individual
   # service configs; only the hashed form is needed here.
-  age.secrets = config.lib.ldap.ldap-passwords "openldap" ldap-users;
+  age.secrets = config.lib.ldap.ldap-passwords "root" ldap-users;
 
   systemd.services.ldap-reconciler = {
     description = "LDAP desired-state reconciler";
@@ -138,7 +147,7 @@ in
       # newline, and pass it directly to the reconciler.
       ExecStart = pkgs.writeShellScript "ldap-reconciler-run" ''
         ${ldap-reconciler-pkg}/bin/ldap-reconciler \
-          --ldap-url "ldaps://localhost:${toString 636}" \
+          --ldap-url "ldaps://ldap.proton" \
           --ldap-bind-dn "cn=admin,${base-dn}" \
           --ldap-password "$(tr -d '\n' < /run/credentials/ldap-reconciler.service/ldap-root-pass)" \
           --state-file "${desired-state-file}"

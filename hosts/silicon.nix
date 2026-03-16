@@ -23,6 +23,7 @@ in
     ../nixos-modules/makemkv-ripper.nix
     ../nixos-modules/makemkv-updater.nix
     ../nixos-configs/nfs-mount-provider-from-facts.nix
+    ../nixos-configs/openldap-facts.nix
     ../nixos-modules/nix-builder-provide.nix
     ../nixos-modules/server-host.nix
     flake-inputs.dns-smart-block.nixosModules.default

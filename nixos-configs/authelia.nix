@@ -1,18 +1,31 @@
-{ config, facts, host-id, lib, pkgs, ... }: let
+{
+  config,
+  facts,
+  host-id,
+  lib,
+  pkgs,
+  ...
+}:
+let
   inherit (lib) filter pipe;
-  inherit (lib.attrsets) attrNames attrValues filterAttrs mapAttrs'
-    mapAttrsToList nameValuePair
-  ;
+  inherit (lib.attrsets)
+    attrNames
+    attrValues
+    filterAttrs
+    mapAttrs'
+    mapAttrsToList
+    nameValuePair
+    ;
   inherit (lib.strings) concatLines replaceStrings;
-  inherit (pkgs.callPackage ../lib/yaml.nix {}) indentLines;
+  inherit (pkgs.callPackage ../lib/yaml.nix { }) indentLines;
 
   # The instance service name is authelia (prefix) and (authelia) the instance.
   # I think I'm leaving it this way for now because I expect to support more
   # instances in the future.
   service-name = "authelia-authelia";
 
-  services = facts.network.services or {};
-  users    = facts.network.users or {};
+  services = facts.network.services or { };
+  users = facts.network.users or { };
 
   credName = name: "${name}-oidc-client-secret";
 
@@ -57,48 +70,53 @@
             key:
               path: /var/lib/authelia/jwks.json
         clients:
-    ''
+  ''
   + (pipe oidcServices [
-    (mapAttrsToList (name: svc:
-    let
-      oidcUserName = name;
-      hasConfidential = (users ? ${oidcUserName})
-                        && (users.${oidcUserName}.type or "") == "oidc-client";
-    in ''
-    - client_id: ${if hasConfidential then oidcUserName else name}
-      client_name: ${svc.description or name}
-      redirect_uris:
-        - https://${svc.fqdn}/oauth2/callback
-        - https://${svc.fqdn}/auth/callback
-      scopes:
-        - openid
-        - profile
-        - email
-        - groups
-      authorization_policy: one_factor
-      public: ${toString (!hasConfidential)}
-      require_pkce: ${toString (!hasConfidential)}
-    '' + (
-        if hasConfidential
-        then ''
-          client_secret: %${credName name}%
-          token_endpoint_auth_method: client_secret_basic
+    (mapAttrsToList (
+      name: svc:
+      let
+        oidcUserName = name;
+        hasConfidential =
+          (users ? ${oidcUserName})
+          && (users.${oidcUserName}.type or "") == "oidc-client";
+      in
+      ''
+        - client_id: ${if hasConfidential then oidcUserName else name}
+          client_name: ${svc.description or name}
+          redirect_uris:
+            - https://${svc.fqdn}/oauth2/callback
+            - https://${svc.fqdn}/auth/callback
+          scopes:
+            - openid
+            - profile
+            - email
+            - groups
+          authorization_policy: one_factor
+          public: ${toString (!hasConfidential)}
+          require_pkce: ${toString (!hasConfidential)}
+      ''
+      + (
+        if hasConfidential then
           ''
-        else ""
+            client_secret: %${credName name}%
+            token_endpoint_auth_method: client_secret_basic
+          ''
+        else
+          ""
       )
     ))
     (builtins.map (indentLines 6))
     concatLines
   ]);
 
-  oidcServices = filterAttrs
-    (name: value: (services.${name}.authentication or null) == "oidc")
-    services
-  ;
+  oidcServices = filterAttrs (
+    name: value: (services.${name}.authentication or null) == "oidc"
+  ) services;
 
   # clients = map (name: mkClient name services.${name}) (attrNames oidcServices);
 
-in {
+in
+{
 
   age.secrets =
     (mapAttrs' (name: value: {
@@ -124,8 +142,8 @@ in {
       "${host-id}-authelia-oidc-secrets-config.yaml" = {
         generator = {
           script = "template-file";
-          dependencies = mapAttrsToList (name: _:
-            config.age.secrets."${credName name}"
+          dependencies = mapAttrsToList (
+            name: _: config.age.secrets."${credName name}"
           ) oidcServices;
         };
         settings.template = clientYaml;
@@ -140,19 +158,23 @@ in {
     enable = true;
     # I don't recall why I pinned this to a more current version but let's leave
     # it for now.
-    package = pkgs.authelia.overrideAttrs (old: let
-      version = "4.39.4";
-    in {
-      inherit version;
-      src = pkgs.fetchFromGitHub {
-        owner = "authelia";
-        repo = "authelia";
-        rev = "v${version}";
-        hash = "sha256-OIf7Q84uWk2q+lTBQNHHO11QEl7FBGv2uNx+g2GNHE0=";
-      };
-      vendorHash = "sha256-Vndkts5e3NSdtTk3rVZSjfuGuafQ3eswoSLLFspXTIw=";
-      pnpmDepsHash = "sha256-hA9STLJbFw5pFHx2Wi3X6JFsTvHzCMFVS3HEJApQ9zM=";
-    });
+    package = pkgs.authelia.overrideAttrs (
+      old:
+      let
+        version = "4.39.4";
+      in
+      {
+        inherit version;
+        src = pkgs.fetchFromGitHub {
+          owner = "authelia";
+          repo = "authelia";
+          rev = "v${version}";
+          hash = "sha256-OIf7Q84uWk2q+lTBQNHHO11QEl7FBGv2uNx+g2GNHE0=";
+        };
+        vendorHash = "sha256-Vndkts5e3NSdtTk3rVZSjfuGuafQ3eswoSLLFspXTIw=";
+        pnpmDepsHash = "sha256-hA9STLJbFw5pFHx2Wi3X6JFsTvHzCMFVS3HEJApQ9zM=";
+      }
+    );
     # We're not really going manual.  We're using LoadCredential so we don't
     # need to manage permissions to the secret files.  It also keeps things
     # consistent with the rest of the secrets we're using.
@@ -174,37 +196,37 @@ in {
       authentication_backend = {
         file = {
         };
-      #   ldap = {
-      #     # We have to keep using nickel.proton because currently that's the
-      #     # ceriticate it offers.
-      #     address = "ldaps://nickel.proton";
-      #     timeout = "20 seconds";
-      #     start_tls = false;
-      #     base_dn = "dc=proton,dc=org";
-      #     additional_users_dn = "ou=users";
-      #     additional_groups_dn = "ou=groups";
-      #     users_filter = "(&(|({username_attribute}={input})({mail_attribute}={input})))";
-      #     # Not needed - see access_control section in this file instead.
-      #     # groups_filter = lib.strings.concatStrings [
-      #     #   "(&(|(objectclass=groupOfNames))"
-      #     #   "(|(cn=home-assistant-admins)(cn=home-assistant-users)))"
-      #     # ];
-      #     attributes = {
-      #       username = "uid";
-      #       mail = "mail";
-      #       display_name = "cn";
-      #       group_name = "cn";
-      #       member_of = "memberOf";
-      #     };
-      #     user = "uid=${host-id}-authelia-service,ou=users,dc=proton,dc=org";
-      #   };
-      #   password_reset.disable = true;
+        #   ldap = {
+        #     # We have to keep using ldap.proton because currently that's the
+        #     # ceriticate it offers.
+        #     address = "ldaps://ldap.proton";
+        #     timeout = "20 seconds";
+        #     start_tls = false;
+        #     base_dn = "dc=proton,dc=org";
+        #     additional_users_dn = "ou=users";
+        #     additional_groups_dn = "ou=groups";
+        #     users_filter = "(&(|({username_attribute}={input})({mail_attribute}={input})))";
+        #     # Not needed - see access_control section in this file instead.
+        #     # groups_filter = lib.strings.concatStrings [
+        #     #   "(&(|(objectclass=groupOfNames))"
+        #     #   "(|(cn=home-assistant-admins)(cn=home-assistant-users)))"
+        #     # ];
+        #     attributes = {
+        #       username = "uid";
+        #       mail = "mail";
+        #       display_name = "cn";
+        #       group_name = "cn";
+        #       member_of = "memberOf";
+        #     };
+        #     user = "uid=${host-id}-authelia-service,ou=users,dc=proton,dc=org";
+        #   };
+        #   password_reset.disable = true;
       };
       access_control = {
         default_policy = "deny";
         rules = mapAttrsToList (name: data: {
           domain = data.fqdn;
-          subject = builtins.map (g: "group:${g}") (data.groups or []);
+          subject = builtins.map (g: "group:${g}") (data.groups or [ ]);
           policy = "one_factor";
         }) facts.network.services;
         # rules = [
@@ -270,60 +292,41 @@ in {
   #   }) oidcServices);
   # };
 
-  systemd.services.authelia-authelia = let
-    after = [ "run-agenix.d.mount" ];
-  in {
-    inherit after;
-    requires = after;
-    serviceConfig = {
-      LoadCredential = (
-        map (name:
-          # Surrounding with parenthesis makes it so we can be a little more
-          # permissive with characters here.
-          "(${credName name}):${
-            config.age.secrets."${credName name}".path
-          }"
-        ) (attrNames oidcServices)
-      ) ++ [
-        "storage-encryption-key:${
-          config
-            .age
-            .secrets
-            ."${host-id}-authelia-storage-key"
-            .path
-        }"
-        "jwt-secret:${
-          config
-            .age
-            .secrets
-            ."${host-id}-authelia-jwt-secret"
-            .path
-        }"
-        "session-secret:${
-          config
-            .age
-            .secrets
-            ."${host-id}-authelia-session-secret"
-            .path
-        }"
-        "authelia-oidc-secrets-config:${
-          config
-            .age
-            .secrets
-            ."${host-id}-authelia-oidc-secrets-config.yaml"
-            .path
-        }"
-      ];
-      # Environment = pipe oidcServices [
-      #   (mapAttrs' (name: value: {
-      #     name = "AUTHELIA_IDENTITY_PROVIDERS_OIDC_CLIENTS_${
-      #       replaceStrings ["-"] [ "_"] name
-      #     }_CLIENT_SECRET";
-      #     value = "%d/${credName name}";
-      #   }))
-      # ];
+  systemd.services.authelia-authelia =
+    let
+      after = [ "run-agenix.d.mount" ];
+    in
+    {
+      inherit after;
+      requires = after;
+      serviceConfig = {
+        LoadCredential =
+          (map (
+            name:
+            # Surrounding with parenthesis makes it so we can be a little more
+            # permissive with characters here.
+            "(${credName name}):${config.age.secrets."${credName name}".path}"
+          ) (attrNames oidcServices))
+          ++ [
+            "storage-encryption-key:${
+              config.age.secrets."${host-id}-authelia-storage-key".path
+            }"
+            "jwt-secret:${config.age.secrets."${host-id}-authelia-jwt-secret".path}"
+            "session-secret:${config.age.secrets."${host-id}-authelia-session-secret".path}"
+            "authelia-oidc-secrets-config:${
+              config.age.secrets."${host-id}-authelia-oidc-secrets-config.yaml".path
+            }"
+          ];
+        # Environment = pipe oidcServices [
+        #   (mapAttrs' (name: value: {
+        #     name = "AUTHELIA_IDENTITY_PROVIDERS_OIDC_CLIENTS_${
+        #       replaceStrings ["-"] [ "_"] name
+        #     }_CLIENT_SECRET";
+        #     value = "%d/${credName name}";
+        #   }))
+        # ];
+      };
     };
-  };
   systemd.tmpfiles.rules = [
     "d /var/lib/${service-name} 0750 authelia authelia -"
   ];

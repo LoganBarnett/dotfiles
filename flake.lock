@@ -253,11 +253,11 @@
     },
     "crane_6": {
       "locked": {
-        "lastModified": 1770419512,
-        "narHash": "sha256-o8Vcdz6B6bkiGUYkZqFwH3Pv1JwZyXht3dMtS7RchIo=",
+        "lastModified": 1772560058,
+        "narHash": "sha256-NuVKdMBJldwUXgghYpzIWJdfeB7ccsu1CC7B+NfSoZ8=",
         "owner": "ipetkov",
         "repo": "crane",
-        "rev": "2510f2cbc3ccd237f700bb213756a8f35c32d8d7",
+        "rev": "db590d9286ed5ce22017541e36132eab4e8b3045",
         "type": "github"
       },
       "original": {
@@ -857,11 +857,11 @@
         "rust-overlay": "rust-overlay_6"
       },
       "locked": {
-        "lastModified": 1772828593,
-        "narHash": "sha256-Zcb6RHj1Nv3ixDFjcPe30NiDxh86iQPDtMjGxuKlxeI=",
+        "lastModified": 1772904414,
+        "narHash": "sha256-PvRd2UlqsvUsb5L8wnxSsDqY0HX1mql4PeUSjc/kdio=",
         "ref": "refs/heads/main",
-        "rev": "24f6f98d45e5f93069652b4199464a09e77a5301",
-        "revCount": 7,
+        "rev": "cf76fcc847df48b60ecdd700eddb03b75307fd7d",
+        "revCount": 12,
         "type": "git",
         "url": "ssh://git@gitea.proton:2222/logan/ldap-reconciler"
       },
@@ -2056,11 +2056,11 @@
         "nixpkgs": "nixpkgs_6"
       },
       "locked": {
-        "lastModified": 1770433312,
-        "narHash": "sha256-IaiqGwmLBrR0z67t/oaS6GIFxv9V8mDY7dBTuYVTbKY=",
+        "lastModified": 1772775058,
+        "narHash": "sha256-i+I9RYN8kYb9/9kibkxd0avkkislD1tyWojSVgIy160=",
         "owner": "oxalica",
         "repo": "rust-overlay",
-        "rev": "9922ff9f99a6436756cbe6f5d11f9c3630e58cf0",
+        "rev": "629bbb7f9d02787a54e28398b411da849246253b",
         "type": "github"
       },
       "original": {

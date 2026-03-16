@@ -44,22 +44,31 @@
 # During the time I last ran into this, I had `accessControl = false;` and that
 # could be related, but I haven't done anything to confirm this.
 ################################################################################
-{ config, host-id, pkgs, ... }: {
+{
+  config,
+  host-id,
+  pkgs,
+  ...
+}:
+{
   imports = [
     ../nixos-modules/octoprint-shim.nix
   ];
-  age.secrets = config.lib.ldap.ldap-password
-    "octoprint"
-    "${host-id}-octoprint-service"
-  ;
+  age.secrets = config.lib.ldap.ldap-password "root" "${host-id}-octoprint-service";
+  systemd.services.octoprint = {
+    wants = [ "run-agenix.d.mount" ];
+    serviceConfig.LoadCredential = [
+      "ldap-password:${
+        config.age.secrets."${host-id}-octoprint-service-ldap-password".path
+      }"
+    ];
+  };
   # Used in conjunction with the libraspberrypi library (which provides the
   # vcgencmd command), we should be able to see under-voltage reports in
   # OctoPrint.
   users.users.octoprint.extraGroups = [
     "video"
-    "openldap-${host-id}-octoprint-service"
   ];
-  users.groups."openldap-${host-id}-octoprint-service" = {};
   services.nginx = {
     # Allow large uploads, because we actually do send large files.  This is
     # probably crazy but hey we won't have to adjust it again.
@@ -100,8 +109,14 @@
           defaultExtrusionLength = 5;
           nozzleDiameter = 0.4;
           offsets = [
-            [ 0.0 0.0 ]
-            [ 0.0 0.0 ]
+            [
+              0.0
+              0.0
+            ]
+            [
+              0.0
+              0.0
+            ]
           ];
           sharedNozzle = false;
         };
@@ -170,17 +185,12 @@
         # all of Octoprint can be set to `DEBUG` and we should see more errors.
         # Right now I see nothing.
         auth_ldap = {
-          uri = "ldaps://nickel.proton";
+          uri = "ldaps://ldap.proton";
           auth_user = "uid=${host-id}-octoprint-service,ou=users,dc=proton,dc=org";
           # TODO: Cycle this out once this is securely referenced.  This is
           # supported via my open (as of [2025-02-22]) pull request:
           # https://github.com/gillg/OctoPrint-LDAP/pull/28
-          auth_password_file = config
-            .age
-            .secrets
-            ."${host-id}-octoprint-service-ldap-password"
-            .path
-          ;
+          auth_password_file = "/run/credentials/octoprint.service/ldap-password";
           search_base = "dc=proton,dc=org";
           # (&(ou_filter)(ou_member_filter))
           # (&(cn=%s,ou=groups,dc=proton,dc=org)(member=uid=%s,ou=users,dc=proton,dc=org))
@@ -258,27 +268,30 @@
       # }))
       # A needed PR I submitted has been merged, but there is no release for it
       # that I know of yet.
-      (pg.buildPlugin (let
-        version = "2022-11-10-unstable";
-      in {
-        pname = "octoprint-plugin-authldap";
-        inherit version;
-        format = "setuptools";
-        src = pkgs.fetchFromGitHub {
-          owner = "gillg";
-          repo = "OctoPrint-LDAP";
-          rev = "841504487d7c5e634a93e4bd32c71f06b974ed36";
-          hash = "sha256-xxwkOgQUUt5JmqjFZIXPipH6zvq8ysTbOaU3h6RLNzs=";
-        };
-        propagatedBuildInputs = [
-          pkgs.python3Packages.python-ldap
-        ];
-        meta = {
-          description = "Bring LDAP authentication to OctoPrint.";
-          homepage = "https://github.com/gillg/OctoPrint-LDAP";
-          # maintainers = with lib.maintainers; [ logan-barnett ];
-        };
-      }))
+      (pg.buildPlugin (
+        let
+          version = "2022-11-10-unstable";
+        in
+        {
+          pname = "octoprint-plugin-authldap";
+          inherit version;
+          format = "setuptools";
+          src = pkgs.fetchFromGitHub {
+            owner = "gillg";
+            repo = "OctoPrint-LDAP";
+            rev = "841504487d7c5e634a93e4bd32c71f06b974ed36";
+            hash = "sha256-xxwkOgQUUt5JmqjFZIXPipH6zvq8ysTbOaU3h6RLNzs=";
+          };
+          propagatedBuildInputs = [
+            pkgs.python3Packages.python-ldap
+          ];
+          meta = {
+            description = "Bring LDAP authentication to OctoPrint.";
+            homepage = "https://github.com/gillg/OctoPrint-LDAP";
+            # maintainers = with lib.maintainers; [ logan-barnett ];
+          };
+        }
+      ))
     ];
     # This doesn't work on Raspberry Pi 5 and up.
     raspberryPiVoltageThrottlingCheck = false;

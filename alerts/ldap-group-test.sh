@@ -5,7 +5,7 @@
 set -euo pipefail
 
 debug_level='-1'
-host='nickel.proton'
+host='ldap.proton'
 port='636'
 base_dn='dc=proton,dc=org'
 # For the uninitiated to LDAP, this is effectively a username to log in as, but
