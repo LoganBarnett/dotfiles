@@ -424,6 +424,9 @@
       Canonc618b2 = { mac = "20:0b:74:9a:21:2b"; ipv4 = 138; };
       SOUNDPLUS_X_E0A8 = { mac = "02:22:6c:07:e0:a8"; ipv4 = 139; };
       tasmota-8CFDB2-7602 = { mac = "d8:bc:38:8c:fd:b2"; ipv4 = 140; };
+      wyze-cam-of-some-kind = { mac = "2c:aa:8e:99:58:47"; ipv4 = 175; };
+      nintendo-switch-a = { mac = "28:cf:51:c9:1d:01"; ipv4 = 242; };
+      lwip0 = { mac = "20:f1:b2:26:b0:60"; ipv4 = 185; };
       # What is this?
       ESP_45248A = { mac = "cc:7b:5c:45:24:8a"; ipv4 = 141; };
       # What is this?
