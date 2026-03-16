@@ -1,7 +1,16 @@
 # -*- mode: Nix; dtrt-indent-mode: 0; tab-width: 2; standard-indent: 2; -*-
 # The Emacs file variable line above is requied because dtrt-indent-mode
 # Global system administration tools.
-{ config, flake-inputs, lib, options, pkgs, system, ... }: {
+{
+  config,
+  flake-inputs,
+  lib,
+  options,
+  pkgs,
+  system,
+  ...
+}:
+{
   environment.variables = {
     # Why this defaults to nano is beyond me.
     EDITOR = "vim";
@@ -111,7 +120,11 @@
     pkgs.vim
     # A handy alternative to curl, best suited for downloading content.
     pkgs.wget
-  ] ++ lib.optionals pkgs.stdenv.isLinux [
+  ]
+  ++ lib.optionals pkgs.stdenv.isDarwin [
+    flake-inputs.metalps.packages.${system}.cli
+  ]
+  ++ lib.optionals pkgs.stdenv.isLinux [
     # Allow normal, mortal user sessions to look at disks - it's crazy how hard
     # this is to do.
     pkgs.bindfs
@@ -154,28 +167,27 @@
     # cyme isn't available on all versions of nixpkgs I use.
     (lib.mkIf (builtins.hasAttr "cyme" pkgs) {
       environment.systemPackages =
-        if (builtins.hasAttr "cyme" pkgs)
-        then [
-          # Allows us to query the status of USB devices.  This uses lsusb or
-          # systemprofile -json under the hood in a cross-platform manner.
-          # Unfortunately it does not work on non-USB devices (like SD cards)
-          # like one might think.  This is _not_ for storage devices (many
-          # things imply it will work, but it won't).
-          pkgs.cyme
-        ]
-        else []
-      ;
+        if (builtins.hasAttr "cyme" pkgs) then
+          [
+            # Allows us to query the status of USB devices.  This uses lsusb or
+            # systemprofile -json under the hood in a cross-platform manner.
+            # Unfortunately it does not work on non-USB devices (like SD cards)
+            # like one might think.  This is _not_ for storage devices (many
+            # things imply it will work, but it won't).
+            pkgs.cyme
+          ]
+        else
+          [ ];
     })
     (lib.mkIf (builtins.hasAttr "locate" options.services) {
       # Uses plocate by default, faster than mlocate (which usually is thought
       # of as locate).
       services.${
-        if (builtins.hasAttr "locate" options.services)
-        then "locate"
-        else null
-      } = {
-        enable = true;
-      };
+        if (builtins.hasAttr "locate" options.services) then "locate" else null
+      } =
+        {
+          enable = true;
+        };
     })
   ];
 }
