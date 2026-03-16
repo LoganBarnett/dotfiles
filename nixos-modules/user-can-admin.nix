@@ -149,6 +149,10 @@ in
     pkgs.bindfs
     # Handy DNS lookup tool.
     pkgs.dig
+    # Query hardware information from the BIOS/UEFI via SMBIOS/DMI tables.
+    # Useful for inspecting RAM slots, CPU details, and other firmware-reported
+    # hardware attributes.
+    pkgs.dmidecode
     # Use for debugging network issues such as checking full or half duplex.
     pkgs.ethtool
     # Use for querying available hardware.  See also pciutils which provides
