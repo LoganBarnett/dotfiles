@@ -1,0 +1,190 @@
+#+title:     Storage
+#+language:  en
+
+* Overview
+
+All persistent service data lives under ~/tank/data/<service>/~ on silicon.
+Every service, whether its data is local or remote, uses the same three-level
+layout:
+
+#+begin_example
+/tank/data/<service>/
+  nfs-working-share    ← mount sanity check (NFS consumers look for this)
+  data/                ← the service's data directory
+  exports/             ← database dumps and other periodic exports
+#+end_example
+
+The ~data/~ and ~exports/~ subdirectories are always created, even when a
+service has no database or no NFS consumer.  This keeps the layout uniform and
+leaves room for future use without requiring structural changes.
+
+Services configure their application to use ~/tank/data/<service>/data/~ as
+the data directory.  They never write directly to the volume root.
+
+** tank-volumes module
+
+The ~tank-volumes~ NixOS module is the central registry for all service
+volumes on silicon.  Declaring a volume in this module:
+
+- Creates the volume root and its ~data/~ and ~exports/~ subdirectories via
+  ~systemd.tmpfiles~.
+- Generates a ~tank-export-<service>~ systemd service if a database export is
+  configured.
+- Registers the appropriate paths with the Restic backup job.
+
+~nfsProvider~ uses ~tank-volumes~ to declare its volumes rather than managing
+directories and backup paths itself.  Local services (those running directly
+on silicon with no NFS relationship) declare their volumes in ~tank-volumes~
+directly.
+
+* Databases
+
+Silicon runs a single shared PostgreSQL instance.  Each service gets its own
+database within that instance; by convention the database name matches the
+service name.  PostgreSQL peer authentication is used throughout, so no
+passwords are required for local service connections.
+
+There is no per-service PostgreSQL instance.  Keeping one instance simplifies
+operations (vacuuming, upgrades, connection pooling) and consolidates backup
+into a single dump-per-database pattern.
+
+* Database Backups
+
+Each service with a database declares it in ~tank-volumes~.  The module
+generates a ~tank-export-<service>~ systemd service that runs ~pg_dump~ as the
+~postgres~ user and writes the output to ~/tank/data/<service>/exports/postgres.sql~.
+
+The output file has a fixed name rather than a timestamp.  This keeps Restic's
+incremental deduplication effective: only the changed blocks are stored on each
+backup cycle.  Timestamped files would accumulate distinct snapshots and
+require a separate rotation mechanism.
+
+Export services are ordered before the Restic backup job via systemd
+~After~/~Wants~ declarations.  The Restic job therefore always captures fresh
+exports.
+
+The Restic backup path for each volume is the volume root
+(~/tank/data/<service>/~), not individual subdirectories.  This captures the
+data directory, the database export, and the sanity check file together in a
+single coherent snapshot, making reconstruction straightforward.
+
+** Declaring a database export
+
+#+begin_src nix :exports code
+tankVolumes.volumes.gitea = {
+  pgDatabase = config.services.gitea.database.name;
+};
+#+end_src
+
+The ~pgDatabase~ value is resolved at evaluation time from the service's own
+configuration, so it stays in sync automatically if the database name ever
+changes.
+
+For services that do not use a database, omit ~pgDatabase~ (or leave it at its
+default of ~null~).  The ~data/~ and ~exports/~ directories are still created;
+the export service simply is not generated.
+
+#+begin_src nix :exports code
+tankVolumes.volumes.kodi-media = {
+  backupData = false;
+};
+#+end_src
+
+* Remote Storage (NFS)
+
+NFS shares are provided by silicon via the ~nfsProvider~ module.  Each exported
+volume corresponds to a subdirectory under ~/tank/data/~.  The NFS export
+covers the entire volume root (~/tank/data/<service>/~), not just the ~data/~
+subdirectory.
+
+NFS consumers mount the volume root.  The consuming application is then
+configured to use the ~data/~ subdirectory within that mount as its data
+directory.  The ~exports/~ and ~nfs-working-share~ entries at the volume root
+are visible to the consumer but outside the application's configured path.
+
+The ~nfs-working-share~ file at the volume root serves as a mount sanity check.
+NFS consumer configurations use a ~preconditionCheck~ that verifies this file
+is present before starting dependent services.  If the WireGuard tunnel is down
+or the NFS mount has not completed, the file will not be present and the
+dependent service will not start.
+
+NFS exports are secured via WireGuard.  Each consumer host has a fixed IP on
+the ~10.100.0.0/24~ subnet and is granted access only to its own volumes.  The
+transport is the ~wgnfs0~ interface on UDP port 51821.
+
+** Declaring an NFS volume
+
+NFS volumes are declared in ~nfsProvider~ and automatically registered in
+~tank-volumes~.  The ~backupContents~ flag on an NFS volume maps to
+~backupData~ in ~tank-volumes~.
+
+#+begin_src nix :exports code
+nfsProvider.volumes = [
+  {
+    hostId = "krypton";
+    peerNumber = 4;
+    volumeRelativeDir = "kodi-media";
+    group = "media-shared";
+    gid = 29974;
+    backupContents = false;
+  }
+];
+#+end_src
+
+On the consumer (krypton), the mount is configured via ~nfsConsumerFacts~ and
+the application path points into the ~data/~ subdirectory of the mount:
+
+#+begin_src nix :exports code
+nfsConsumerFacts = {
+  enable = true;
+  provider = {
+    remoteHost = "silicon.proton";
+    vpnHost = "silicon-nas.proton";
+    providerHostId = "silicon";
+    wgPort = 51821;
+  };
+};
+
+# The application data path references the data/ subdirectory.
+services.kodi.datadir = "/mnt/kodi-media/data";
+#+end_src
+
+* Shared Remote Storage
+
+Some volumes are consumed by more than one host.  The ~nextcloud-shared-media~
+volume is one example: Nextcloud accesses it for user media, and Kodi reads
+from it for playback.
+
+Shared volumes are declared as separate ~nfsProvider~ entries, one per
+consumer.  Each consumer gets access via its own WireGuard peer IP.  The
+underlying directory on silicon is the same ~data/~ subdirectory for all
+consumers.
+
+Shared volumes are generally not included in the Restic backup (~backupData =
+false~).  The canonical copy of the media lives in Nextcloud's own storage;
+the shared volume is a read path for other consumers.
+
+#+begin_src nix :exports code
+nfsProvider.volumes = [
+  # Nextcloud writes to this volume; Kodi reads from it.
+  {
+    hostId = "copper";
+    peerNumber = 3;
+    volumeRelativeDir = "nextcloud-shared-media";
+    group = "media-shared";
+    gid = 29974;
+    backupContents = false;
+  }
+  {
+    hostId = "krypton";
+    peerNumber = 4;
+    volumeRelativeDir = "nextcloud-shared-media";
+    group = "media-shared";
+    gid = 29974;
+    backupContents = false;
+  }
+];
+#+end_src
+
+Each consumer mounts the volume root and configures its application to use the
+~data/~ subdirectory, the same as any other NFS volume.

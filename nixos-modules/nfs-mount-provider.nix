@@ -10,6 +10,9 @@
   pkgs,
   ...
 }:
+# tank-volumes provides the shared directory layout and Restic path list.
+# Importing it here ensures the options are available on any host that uses
+# nfs-mount-provider, even if tank-volumes has no volumes declared.
 let
   port = 51821;
   inherit (lib)
@@ -50,6 +53,8 @@ let
     concatStringsSep "\n" (map line cfg.volumes);
 in
 {
+  imports = [ ./tank-volumes.nix ];
+
   options.nfsProvider = {
     enable = mkEnableOption ''
       Enable the NFS provider: ensures a group exists, enforces directory
@@ -163,29 +168,24 @@ in
       })
     ];
 
-    #### Group and directories
-    users.groups = lib.pipe cfg.volumes [
-      (builtins.map (v: {
-        name = v.group;
-        value = {
-          gid = v.gid;
-        };
-      }))
-      builtins.listToAttrs
+    #### Group and directories delegated to tank-volumes.
+    # Each NFS volume is registered as a tank volume.  Duplicate
+    # volumeRelativeDirs (shared volumes with multiple consumers) are collapsed
+    # to a single entry; all duplicates share group/gid/backupContents by
+    # construction (enforced by the peerNumber assertion above).
+    tankVolumes.volumes = lib.pipe cfg.volumes [
+      (lib.groupBy (v: v.volumeRelativeDir))
+      (lib.mapAttrs' (
+        name: vs:
+        let
+          v = builtins.head vs;
+        in
+        lib.nameValuePair name {
+          inherit (v) group gid;
+          backupData = v.backupContents;
+        }
+      ))
     ];
-
-    systemd.tmpfiles.rules = lib.lists.concatMap (
-      v:
-      let
-        absoluteVolumePath = volAbsPath v;
-      in
-      [
-        "d ${absoluteVolumePath} 0770 root ${v.group} -"
-        # Include this as a sanity check, which the consumer can be configured
-        # to look for via `preconditionCheck`.
-        "f ${absoluteVolumePath}/nfs-working-share 0555 root root -"
-      ]
-    ) cfg.volumes;
 
     #### Provider WireGuard private key via agenix-rekey
     age.secrets.${wgSecretName} = {
@@ -266,9 +266,7 @@ in
         # done in, and the password would be lifted by easily following the
         # config back to the file the password lived in.
         passwordFile = null;
-        paths = map (v: "/tank/data/${v.volumeRelativeDir}") (
-          builtins.filter (v: v.backupContents) cfg.volumes
-        );
+        paths = config.tankVolumes.backupPaths;
         pruneOpts = [
           "--keep-daily 7"
           "--keep-weekly 4"
@@ -298,6 +296,13 @@ in
           rmdir "$SNAP_PATH"
         '';
       };
+    };
+
+    # Database exports must complete before the Restic snapshot runs so the
+    # snapshot captures fresh dumps.
+    systemd.services.restic-backups-nfsProvider = {
+      after = config.tankVolumes.exportServiceNames;
+      wants = config.tankVolumes.exportServiceNames;
     };
 
     #### Borg backup covering all volumes (nightly at 03:00 / 10:00 UTC)

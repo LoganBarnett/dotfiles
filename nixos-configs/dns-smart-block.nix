@@ -84,6 +84,12 @@
     # database on each service start and never expire.
     provisionedClassifications = [
       {
+        domain = "codeload.github.com";
+        classificationType = "all";
+        isMatchingSite = false;
+        reasoning = "GitHub code download CDN — never a gaming or streaming site.";
+      }
+      {
         domain = "github.com";
         classificationType = "gaming";
         isMatchingSite = false;
@@ -98,6 +104,14 @@
       blocklistUrl = "http://localhost:3000";
       autoMapAllBlocklists = true;
     };
+  };
+
+  # Register a tank volume so the DNS Smart Block database is exported before
+  # each Restic backup.  There is no application data directory to back up
+  # (the service manages its own storage internally), so backupData is false.
+  tankVolumes.volumes.dns-smart-block = {
+    pgDatabase = config.services.dns-smart-block.database.name;
+    backupData = false;
   };
 
   # TLS termination for admin interface.
