@@ -100,7 +100,7 @@
   # CAD software with a programming language behind it. Declarative models!
   # pkgs.openscad
   # For pairing. But probably not ready.
-  (pkgs.callPackage ./pair-ls.nix { } )
+  (pkgs.callPackage ./pair-ls.nix { })
   # Because sometimes you need something better than grep.
   pkgs.perl
   # Haskell docs say this is necessary for Haskell. See
@@ -116,7 +116,7 @@
   # not useful to me.
   # pkgs.podman
   # Deploy things in my network.
-  pkgs.proton-deploy
+  (pkgs.callPackage ./derivations/proton-deploy.nix { })
   # (pkgs.python2.withPackages (ps: [
   # Run Windows programs (sometimes even I need this).
 

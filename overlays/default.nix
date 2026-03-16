@@ -18,7 +18,6 @@
   (import ./battlescribe-update-data.nix)
   (import ./blueutil.nix)
   (import ./cacert.nix)
-  (import ./proton-deploy.nix)
   # (import ./crystal.nix)
   (import ./hiera-eyaml.nix)
   (import ./lastversion.nix)
