@@ -21,16 +21,49 @@
 #    no longer has a lock icon on it.  Double click it to connect.
 # 9. Enjoy streaming.
 ################################################################################
+# Capture backend selection (GNOME Wayland)
+#
+# Sunshine supports several capture backends on Linux.  Those that do NOT work
+# here are documented to avoid revisiting them:
+#
+# wlr-export-dmabuf
+#   Only implemented by wlroots compositors (Sway, Hyprland, etc.).  GNOME
+#   Shell / Mutter does not expose this protocol.  Sunshine logs:
+#   "Warning: Missing Wayland wire for wlr-export-dmabuf"
+#
+# KMS/DRM  (capSysAdmin = true, with adapter_name)
+#   GNOME holds exclusive DRM master while running, so the KMS connector list
+#   appears empty regardless of CAP_SYS_ADMIN.  Sunshine logs an empty KMS
+#   monitor list, then "Unable to initialize capture method".  Critically,
+#   setting adapter_name commits Sunshine to KMS and prevents it from falling
+#   through to the portal — adapter_name must NOT be set alongside this config.
+#
+# X11 / gnome-xorg session  (defaultSession = "gnome-xorg")
+#   Was tested; caused significant feature regression.  Not viable.
+#
+# XWayland capture  (UnsetEnvironment = ["WAYLAND_DISPLAY"] in service)
+#   Sunshine connects successfully, but the XWayland root window (:0) is black
+#   — it does not mirror Wayland compositor output, only native X11 clients.
+#
+# XDG Desktop Portal (PipeWire screencast)  ← used here
+#   The correct path for GNOME Wayland.  nixpkgs omits pipewire and libportal;
+#   adding them causes CMake to detect them via pkg-config and enable the portal
+#   screencast code path.  Sunshine requests a screencast session via
+#   org.freedesktop.portal.ScreenCast; GNOME shows a one-time permission dialog
+#   and then streams frames over PipeWire.
+#
+#   Limitation: GNOME denies portal screencasts while the session is locked.
+#   See the unlock-session service below for the workaround.
+################################################################################
 { lib, pkgs, ... }:
 {
   services.sunshine = {
     enable = true;
     openFirewall = true;
     capSysAdmin = true;
-    # The nixpkgs build omits PipeWire, which is the correct capture backend
-    # for GNOME Wayland.  Adding pipewire and libportal to the build inputs
-    # causes CMake to detect them via pkg-config and enable the portal
-    # screencast path.
+    # nixpkgs omits pipewire and libportal; adding them here causes CMake to
+    # detect and enable the XDG portal screencast capture path, which is the
+    # only working capture method on GNOME Wayland.
     package = pkgs.sunshine.overrideAttrs (old: {
       buildInputs = old.buildInputs ++ [
         pkgs.pipewire
@@ -55,6 +88,17 @@
     serviceConfig = {
       Type = "oneshot";
       ExecStart = "${pkgs.systemd}/bin/loginctl lock-session";
+    };
+  };
+
+  # Companion to lock-on-login.  Start this over SSH to restore portal
+  # capture access before connecting via Moonlight:
+  #   systemctl --user start unlock-session
+  systemd.user.services.unlock-session = {
+    description = "Unlock screen to restore Sunshine capture access";
+    serviceConfig = {
+      Type = "oneshot";
+      ExecStart = "${pkgs.systemd}/bin/loginctl unlock-session";
     };
   };
 
