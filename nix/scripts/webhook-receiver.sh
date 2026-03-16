@@ -10,13 +10,12 @@
 set -euo pipefail
 
 # Read HTTP headers.
+# TODO: Add HMAC signature verification using X-Gitea-Signature header.
+CONTENT_LENGTH=""
 while IFS= read -r line; do
   line=$(echo "$line" | tr -d '\r')
   if [[ -z "$line" ]]; then
     break
-  fi
-  if [[ "$line" =~ ^X-Gitea-Signature: ]]; then
-    SIGNATURE="${line#X-Gitea-Signature: }"
   fi
   if [[ "$line" =~ ^Content-Length: ]]; then
     CONTENT_LENGTH="${line#Content-Length: }"
