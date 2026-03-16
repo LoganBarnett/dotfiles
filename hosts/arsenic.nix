@@ -34,7 +34,10 @@
       server-port = 8080;
       fqdn = "${host-id}.proton";
     })
+    flake-inputs.garage-queue.nixosModules.worker
+    ../nixos-configs/garage-queue-worker-arsenic.nix
     ../nixos-configs/ollama.nix
+    ../nixos-configs/ollama-models-8gb-vram.nix
     ../nixos-modules/server-host.nix
     ../nixos-modules/shutdown-halt.nix
     ../nixos-modules/lvm-uefi-disk.nix

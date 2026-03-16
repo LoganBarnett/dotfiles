@@ -66,10 +66,42 @@ in
         server for actual inference, this is usually sufficient.
       '';
     };
+
+    loadModels = lib.mkOption {
+      type = lib.types.listOf lib.types.str;
+      default = [ ];
+      description = ''
+        Pull these models via `ollama pull` after the server starts.
+
+        A separate launchd user agent runs once at login, waits for the
+        server to accept connections, then pulls each model in order.
+        Models already present are skipped by ollama automatically.
+      '';
+    };
   };
 
   config = lib.mkIf cfg.enable {
     environment.systemPackages = [ cfg.package ];
+
+    launchd.user.agents.ollama-model-loader = lib.mkIf (cfg.loadModels != [ ]) {
+      serviceConfig = {
+        RunAtLoad = true;
+        KeepAlive = false;
+        ProgramArguments = [
+          "${pkgs.writeShellScript "ollama-model-loader" ''
+            # Wait for the ollama server to accept connections before pulling.
+            until ${cfg.package}/bin/ollama list >/dev/null 2>&1; do
+              sleep 2
+            done
+            ${lib.concatMapStrings (model: ''
+              ${cfg.package}/bin/ollama pull ${lib.escapeShellArg model}
+            '') cfg.loadModels}
+          ''}"
+        ];
+        StandardOutPath = "/tmp/ollama-model-loader.log";
+        StandardErrorPath = "/tmp/ollama-model-loader.log";
+      };
+    };
 
     launchd.user.agents.ollama = {
       path = [ config.environment.systemPath ];

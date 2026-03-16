@@ -148,9 +148,6 @@
           "ollama"
         ];
         controlledHost = true;
-        flake-input-overrides = {
-          nixpkgs = "nixpkgs-cuda";
-        };
         ipv4 = 7;
         monitors = [
           "node"
@@ -244,9 +241,6 @@
       };
       lithium = {
         controlledHost = true;
-        flake-input-overrides = {
-          nixpkgs = "nixpkgs-cuda";
-        };
         ipv4 = 8;
         monitors = [
           "node"

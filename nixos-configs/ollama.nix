@@ -10,17 +10,7 @@
   ];
   services.ollama = {
     enable = true;
-    loadModels = [
-      # "gemma"
-      # "llama2-uncensored"
-      # # Are they good?  Let's see.
-      # "llama3.3"
-      # "deepseek-r1"
-      # # Different from gemma?
-      # "gemma3"
-      # # Try out some reasoning stuff.
-      # "qwq"
-    ];
+    loadModels = [ ];
     environmentVariables = {
       # This is speaking directly about CORS origins but it might also be
       # enforcing server-side CORS, which is just unheard of and frankly

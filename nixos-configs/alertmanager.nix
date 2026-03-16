@@ -130,6 +130,25 @@
                   '';
                 };
               }
+              {
+                # Fires when GPU eviction has persisted for 20 minutes despite
+                # repeated automated restart attempts.  Routes only to
+                # team-admins (not ollama-remediation) to avoid a restart loop.
+                alert = "ollama_metal_gpu_remediation_failed";
+                expr = ''increase(goss_tests_outcomes_total{outcome="fail",resource_id="ollama-metal-acceleration"}[5m]) > 0'';
+                for = "20m";
+                labels = {
+                  severity = "page";
+                };
+                annotations = {
+                  summary = "Ollama Metal GPU remediation failed on {{ $labels.instance }}.";
+                  description = ''
+                    GPU eviction has persisted for more than 20 minutes despite
+                    automated restart attempts.  Manual intervention is
+                    required.
+                  '';
+                };
+              }
             ];
           }
         ];

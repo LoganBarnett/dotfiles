@@ -31,6 +31,7 @@ in
         # ];
       }
     )
+    flake-inputs.garage-queue.nixosModules.worker
     flake-inputs.home-manager.nixosModules.home-manager
     ../users/logan-desktop.nix
     ../nixos-configs/airplay-server.nix
@@ -39,7 +40,9 @@ in
     ../nixos-modules/gaming-android.nix
     ../nixos-modules/lutris-gaming.nix
     ../nixos-modules/lvm-uefi-disk.nix
+    ../nixos-configs/garage-queue-worker-titanium.nix
     ../nixos-configs/ollama.nix
+    ../nixos-configs/ollama-models-12gb-vram.nix
     ../nixos-modules/steam-gaming.nix
     ../nixos-modules/timezone-pacific.nix
     ../nixos-modules/uefi-systemd-boot.nix

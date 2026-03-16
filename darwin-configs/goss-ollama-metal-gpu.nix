@@ -49,6 +49,13 @@ in
           -d "{\"model\":\"$model\",\"prompt\":\"0\",\"stream\":false,\"options\":{\"num_predict\":1}}" \
           -o /dev/null &
 
+        # Wait for the runner to register in IOKit before the first sample.
+        # metalps computes gpu_percent as a delta between two samples; a
+        # process absent from the first sample gets gpu_percent = 0 even while
+        # actively computing on the GPU (process-chasing false negative).
+        # Timing: ~0s (api/ps) + 1s (sleep) + 2s (metalps) ≈ 3s < 10s limit.
+        sleep 1
+
         # Sample GPU percent while the inference should be running.  On Metal
         # the runner holds a live GPU context and gpu_percent will be non-zero
         # during token generation.  On CPU the process never acquires a Metal

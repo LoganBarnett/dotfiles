@@ -1,10 +1,22 @@
 ################################################################################
 # This defines the entirety of the configuration for the silicon host.
 ################################################################################
-{ config, lib, flake-inputs, host-id, pkgs, system, ... }: let
-in {
+{
+  config,
+  lib,
+  flake-inputs,
+  host-id,
+  pkgs,
+  system,
+  ...
+}:
+let
+in
+{
   imports = [
+    flake-inputs.garage-queue.nixosModules.server
     ../nixos-configs/dhcp-lease-textfile.nix
+    ../nixos-configs/garage-queue-server.nix
     ../nixos-modules/dns-server.nix
     ../nixos-configs/dns-smart-block.nix
     ../nixos-configs/grafana-kiosk-overview.nix
@@ -25,19 +37,22 @@ in {
     # However I already have pre-generated secrets so I'm not bumping into the
     # issue currently.
     ../nixos-modules/wireguard-server-standard.nix
-    ({ pkgs, ... }: {
-      # networking.hostId is needed by the filesystem stuffs.
-      # An arbitrary ID needed for zfs so a pool isn't accidentally imported on
-      # a wrong machine (I'm not even sure what that means).  See
-      # https://search.nixos.org/options?channel=24.05&show=networking.hostId&from=0&size=50&sort=relevance&type=packages&query=networking.hostId
-      # for docs.
-      # Get from an existing machine using:
-      # head -c 8 /etc/machine-id
-      # Generate for a new machine using:
-      # head -c4 /dev/urandom | od -A none -t x4 | tr -d ' '
-      networking.hostId = "d88d6477";
-      nixpkgs.hostPlatform = system;
-    })
+    (
+      { pkgs, ... }:
+      {
+        # networking.hostId is needed by the filesystem stuffs.
+        # An arbitrary ID needed for zfs so a pool isn't accidentally imported on
+        # a wrong machine (I'm not even sure what that means).  See
+        # https://search.nixos.org/options?channel=24.05&show=networking.hostId&from=0&size=50&sort=relevance&type=packages&query=networking.hostId
+        # for docs.
+        # Get from an existing machine using:
+        # head -c 8 /etc/machine-id
+        # Generate for a new machine using:
+        # head -c4 /dev/urandom | od -A none -t x4 | tr -d ' '
+        networking.hostId = "d88d6477";
+        nixpkgs.hostPlatform = system;
+      }
+    )
     # Silicon has a main disk for the OS, and then two disks for data.   One for
     # the primary data and one as an incremental backup.
     {
@@ -249,5 +264,5 @@ in {
   # from itself.  Override the nix-builder-consume module imported by
   # server-host.nix to prevent self-referential build loops.
   nix.distributedBuilds = lib.mkForce false;
-  nix.buildMachines = lib.mkForce [];
+  nix.buildMachines = lib.mkForce [ ];
 }

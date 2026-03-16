@@ -77,6 +77,10 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     flatpaks.url = "github:in-a-dil-emma/declarative-flatpak/latest";
+    garage-queue = {
+      url = "git+ssh://git@gitea.proton:2222/logan/garage-queue.git";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
 
     home-manager-working-rocm = {
       url = "github:nix-community/home-manager/release-24.11";
@@ -153,7 +157,6 @@
     # nixpkgs.url = "github:nixos/nixpkgs?ref=f9f59197478b3ec9c954b67ae0d1d5429de23124";
     nixpkgs.url = "github:nixos/nixpkgs/25.11";
     nixpkgs-working-rocm.url = "github:nixos/nixpkgs/master";
-    nixpkgs-cuda.url = "github:nixos/nixpkgs/master";
     nixpkgs-25-11.url = "github:nixos/nixpkgs/25.11";
     nixpkgs-openscad-bin.url = "github:LoganBarnett/nixpkgs/openscad-darwin-preserve-cli";
     # The newest version of Octoprint on nixpkgs 25.11 enters some kind of
