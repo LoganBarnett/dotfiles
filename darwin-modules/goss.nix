@@ -66,8 +66,11 @@ in
     launchd.daemons.goss = {
       serviceConfig = {
         Label = "org.goss.goss";
+        # GOSS_USE_ALPHA is required on macOS: goss treats the serve subcommand
+        # as alpha on non-Linux platforms and refuses to start without it.
         EnvironmentVariables = {
           GOSS_FILE = "${configFile}";
+          GOSS_USE_ALPHA = "1";
         }
         // cfg.environment;
         ProgramArguments = [
