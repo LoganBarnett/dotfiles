@@ -36,11 +36,24 @@
 # Much of this is shamelessly lifted from:
 # https://github.com/nmasur/dotfiles/blob/master/modules/darwin/system.nix
 
-{ config, flake-inputs, host-id, lib, nixpkgs, pkgs, system, ... }: let
-  macos-keyboard-remap = pkgs.callPackage ./packages/macos-keyboard-remap.nix {};
-in {
+{
+  config,
+  flake-inputs,
+  host-id,
+  lib,
+  nixpkgs,
+  pkgs,
+  system,
+  ...
+}:
+let
+  app = pkgs.callPackage ./packages/app.nix { };
+  macos-keyboard-remap = pkgs.callPackage ./packages/macos-keyboard-remap.nix { };
+in
+{
   imports = [
     ./darwin-configs/optnix.nix
+    ./darwin-modules/goss-exporter.nix
     ./nixos-modules/nix-flake-environment.nix
     ./nixos-modules/darwin-tls-trust.nix
     # NixOS has this built in, but this is our copy for Darwin.  It's needed for
@@ -52,6 +65,8 @@ in {
   environment = {
     shells = [ pkgs.zsh ];
     systemPackages = [
+      # Open Nix-managed .app bundles by short name from the command line.
+      app
       # Write certificates out - these aren't present on macOS in a freely
       # available way.
       pkgs.cacert
@@ -128,12 +143,14 @@ in {
       trusted-users = [ "@admin" ];
     };
   };
-  nixpkgs.overlays = (import ./overlays/default.nix {
-    inherit flake-inputs system;
-  });
+  nixpkgs.overlays = (
+    import ./overlays/default.nix {
+      inherit flake-inputs system;
+    }
+  );
   # This has been needed to individually bless some older packages, such
   # as packages depending upon an older OpenSSL.
-  nixpkgs.config.permittedInsecurePackages = [];
+  nixpkgs.config.permittedInsecurePackages = [ ];
   programs.nix-index.enable = true;
   security.pam.services.sudo_local.touchIdAuth = true;
   security.pki.keychain.trustNixTlsCertificates = true;
@@ -168,143 +185,143 @@ in {
   system = {
     # Settings that don't have an option in nix-darwin.
     activationScripts.postActivation.text = ''
-      echo "Set disk image verification..."
-      # I don't know what I want these set to, or what the defaults are, so
-      # skipping for now.
-      # defaults write com.apple.frameworks.diskimages skip-verify -bool true
-      # defaults write com.apple.frameworks.diskimages skip-verify-locked -bool true
-      # defaults write com.apple.frameworks.diskimages skip-verify-remote -bool true
-      echo "Avoid creating .DS_Store files on network volumes..."
-      defaults write com.apple.desktopservices DSDontWriteNetworkStores -bool true
-      echo "Set the warning before emptying the Trash..."
-      defaults write com.apple.finder WarnOnEmptyTrash -bool true
-      echo "Require password immediately after sleep or screen saver begins..."
-      defaults write com.apple.screensaver askForPassword -int 1
-      defaults write com.apple.screensaver askForPasswordDelay -int 0
-      echo "Setting menu bar padding and spacing..."
-      # Spacing for menu bar items.  See also NSStatusItemSelectionPadding.  I
-      # got this from here:
-      # https://www.jessesquires.com/blog/2023/12/16/macbook-notch-and-menu-bar-fixes/
-      defaults write -globalDomain NSStatusItemSpacing -int 3
-      # sudo -u logan.barnett defaults write -globalDomain NSStatusItemSpacing -int 3
-      # Spacing for menu bar items.  See also NSStatusItemSpacing.  I got this
-      # from here:
-      # https://www.jessesquires.com/blog/2023/12/16/macbook-notch-and-menu-bar-fixes/
-      defaults write -globalDomain NSStatusItemSelectionPadding -int 3
-      # sudo -u logan.barnett defaults write -globalDomain NSStatusItemSelectionPadding -int 8
-      killall SystemUIServer
-      defaults read -globalDomain NSStatusItemSpacing
-      defaults read -globalDomain NSStatusItemSelectionPadding
-      echo "$USER"
-      echo "Swapping Option + Command keys on external keyboard..."
-      # This is a custom tool found in this repo's /bin directory.
-      ${macos-keyboard-remap}/bin/macos-keyboard-remap
-      echo "Do not sleep when on AC power."
-      pmset -c sleep 0 # Needs testing - UI not immediately updated.
-      # As of Sequoia (15.5), the option "Allow apps from anywhere" no longer
-      # exists, which makes me wonder how you run anything at all...
-      echo "Allow applications from 'App Store & Known Developers'..."
-      SPCTL=$(spctl --status 2>&1 || true)
-      echo "spctl: $SPCTL"
-      if ! [ "$SPCTL" = "assessments enabled" ]; then
-        echo "Disabling master assessments..."
-        echo 'If this fails, go to Settings.app -> Privacy & Security -> Security -> "Allow application from" and choose "Anywhere".'
-        sudo spctl --master-disable
-        echo "Disabled master assessments."
-      fi
-      # Turn off the text suggestions, since they trigger aggressively (such
-      # as hitting space).
-      # To make it apply immediately.
-      killall cfprefsd
-      # This doesn't necessarily make all changes appear, but it'll get a lot of
-      # them.
-      echo "Invoking activateSettings to make changes stick..."
-      /System/Library/PrivateFrameworks/SystemAdministration.framework/Resources/activateSettings -u
-      echo "activateSettings finished with $?."
-      # User-level settings
-# TODO: Move this to its own script.
-# Detect which users are real, interactive users.
-# TODO: Make a user activation module probably.
-users=$(dscl . list /Users | while read -r user; do
-  home_dir=$(dscl . -read /Users/"$user" NFSHomeDirectory 2>/dev/null | awk '{print $2}')
-  shell=$(dscl . -read /Users/"$user" UserShell 2>/dev/null | awk '{print $2}')
-  if [[ -d "$home_dir" && "$home_dir" != '/var/empty' && "$shell" != '/usr/sbin/uucico' && "$shell" != "/usr/bin/false" && "$shell" != "/usr/bin/nologin" ]]; then
-    echo "$user"
-  fi
-done)
-for user in $users; do
-  echo "Activating for user '$user'..."
-  if [[ "$user" == 'root' ]]; then
-    echo "Skipping root..."
-    continue
-  fi
-  home_dir=$(
-    dscl . -read /Users/"$user" NFSHomeDirectory 2>/dev/null \
-      | awk '{print $2}'
-  )
-      doas() {
-        sudo -u "$user" "$@"
-      }
-      echo "Show the $home_dir/Library folder..."
-      doas chflags nohidden "$home_dir/Library"
-      echo "Disabling text predictions..."
-      # Disable inline text predictions, since they are disruptive to typing.  This is undocumented, and took some searching.  I used this to find the string:
-      # find ~/Library -type f -name "*.plist" -exec grep -aH "InlinePrediction" {} +
-      # And this to find the file it was in:
-      # find ~/Library -type f -name "*.plist" | while read -r file; do
-      #  if strings "$file" | grep -q "InlinePrediction"; then
-      #    echo "$file"
-      #  fi
-      # done
-      # This could probably be done all at once but I'm exhausted from this.
-      defaults write -globalDomain NSAutomaticInlinePredictionEnabled -bool false
-      echo "Set dock magnification..."
-      doas defaults write com.apple.dock magnification -bool false
-      echo "Set dock magnification size..."
-      doas defaults write com.apple.dock largesize -int 48
-      echo "Define dock icon function..."
-      __dock_item() {
-        printf \
-           "%s%s%s%s%s" \
-           "<dict><key>tile-data</key><dict><key>file-data</key><dict>" \
-           "<key>_CFURLString</key><string>" \
-           "$1" \
-           "</string><key>_CFURLStringType</key><integer>0</integer>" \
-           "</dict></dict></dict>"
-      }
-      echo "Choose and order dock icons"
-      doas defaults write com.apple.dock persistent-apps -array \
-          "$(__dock_item /System/Applications/Utilities/Terminal.app)" \
-          "$(__dock_item /System/Applications/System\ Settings.app)"
-      echo "Fixing dictation spam..."
-      # Example invocation can be found at:
-      # https://zameermanji.com/blog/2021/6/8/applying-com-apple-symbolichotkeys-changes-instantaneously/
-      doas defaults write com.apple.symbolichotkeys.plist AppleSymbolicHotKeys -dict-add 164 "
-        <dict>
-          <key>enabled</key><false/>
-          <key>value</key><dict>
-            <key>type</key><string>standard</string>
-            <key>parameters</key>
-            <array>
-              <integer>65535</integer>
-              <integer>65535</integer>
-              <integer>0</integer>
-            </array>
-          </dict>
-        </dict>
-      "
-      # The -int part of this command is critical, or the value won't be
-      # respected.
-      doas defaults write com.apple.HIToolbox.plist AppleDictationAutoEnable -int 0
+            echo "Set disk image verification..."
+            # I don't know what I want these set to, or what the defaults are, so
+            # skipping for now.
+            # defaults write com.apple.frameworks.diskimages skip-verify -bool true
+            # defaults write com.apple.frameworks.diskimages skip-verify-locked -bool true
+            # defaults write com.apple.frameworks.diskimages skip-verify-remote -bool true
+            echo "Avoid creating .DS_Store files on network volumes..."
+            defaults write com.apple.desktopservices DSDontWriteNetworkStores -bool true
+            echo "Set the warning before emptying the Trash..."
+            defaults write com.apple.finder WarnOnEmptyTrash -bool true
+            echo "Require password immediately after sleep or screen saver begins..."
+            defaults write com.apple.screensaver askForPassword -int 1
+            defaults write com.apple.screensaver askForPasswordDelay -int 0
+            echo "Setting menu bar padding and spacing..."
+            # Spacing for menu bar items.  See also NSStatusItemSelectionPadding.  I
+            # got this from here:
+            # https://www.jessesquires.com/blog/2023/12/16/macbook-notch-and-menu-bar-fixes/
+            defaults write -globalDomain NSStatusItemSpacing -int 3
+            # sudo -u logan.barnett defaults write -globalDomain NSStatusItemSpacing -int 3
+            # Spacing for menu bar items.  See also NSStatusItemSpacing.  I got this
+            # from here:
+            # https://www.jessesquires.com/blog/2023/12/16/macbook-notch-and-menu-bar-fixes/
+            defaults write -globalDomain NSStatusItemSelectionPadding -int 3
+            # sudo -u logan.barnett defaults write -globalDomain NSStatusItemSelectionPadding -int 8
+            killall SystemUIServer
+            defaults read -globalDomain NSStatusItemSpacing
+            defaults read -globalDomain NSStatusItemSelectionPadding
+            echo "$USER"
+            echo "Swapping Option + Command keys on external keyboard..."
+            # This is a custom tool found in this repo's /bin directory.
+            ${macos-keyboard-remap}/bin/macos-keyboard-remap
+            echo "Do not sleep when on AC power."
+            pmset -c sleep 0 # Needs testing - UI not immediately updated.
+            # As of Sequoia (15.5), the option "Allow apps from anywhere" no longer
+            # exists, which makes me wonder how you run anything at all...
+            echo "Allow applications from 'App Store & Known Developers'..."
+            SPCTL=$(spctl --status 2>&1 || true)
+            echo "spctl: $SPCTL"
+            if ! [ "$SPCTL" = "assessments enabled" ]; then
+              echo "Disabling master assessments..."
+              echo 'If this fails, go to Settings.app -> Privacy & Security -> Security -> "Allow application from" and choose "Anywhere".'
+              sudo spctl --master-disable
+              echo "Disabled master assessments."
+            fi
+            # Turn off the text suggestions, since they trigger aggressively (such
+            # as hitting space).
+            # To make it apply immediately.
+            killall cfprefsd
+            # This doesn't necessarily make all changes appear, but it'll get a lot of
+            # them.
+            echo "Invoking activateSettings to make changes stick..."
+            /System/Library/PrivateFrameworks/SystemAdministration.framework/Resources/activateSettings -u
+            echo "activateSettings finished with $?."
+            # User-level settings
+      # TODO: Move this to its own script.
+      # Detect which users are real, interactive users.
+      # TODO: Make a user activation module probably.
+      users=$(dscl . list /Users | while read -r user; do
+        home_dir=$(dscl . -read /Users/"$user" NFSHomeDirectory 2>/dev/null | awk '{print $2}')
+        shell=$(dscl . -read /Users/"$user" UserShell 2>/dev/null | awk '{print $2}')
+        if [[ -d "$home_dir" && "$home_dir" != '/var/empty' && "$shell" != '/usr/sbin/uucico' && "$shell" != "/usr/bin/false" && "$shell" != "/usr/bin/nologin" ]]; then
+          echo "$user"
+        fi
+      done)
+      for user in $users; do
+        echo "Activating for user '$user'..."
+        if [[ "$user" == 'root' ]]; then
+          echo "Skipping root..."
+          continue
+        fi
+        home_dir=$(
+          dscl . -read /Users/"$user" NFSHomeDirectory 2>/dev/null \
+            | awk '{print $2}'
+        )
+            doas() {
+              sudo -u "$user" "$@"
+            }
+            echo "Show the $home_dir/Library folder..."
+            doas chflags nohidden "$home_dir/Library"
+            echo "Disabling text predictions..."
+            # Disable inline text predictions, since they are disruptive to typing.  This is undocumented, and took some searching.  I used this to find the string:
+            # find ~/Library -type f -name "*.plist" -exec grep -aH "InlinePrediction" {} +
+            # And this to find the file it was in:
+            # find ~/Library -type f -name "*.plist" | while read -r file; do
+            #  if strings "$file" | grep -q "InlinePrediction"; then
+            #    echo "$file"
+            #  fi
+            # done
+            # This could probably be done all at once but I'm exhausted from this.
+            defaults write -globalDomain NSAutomaticInlinePredictionEnabled -bool false
+            echo "Set dock magnification..."
+            doas defaults write com.apple.dock magnification -bool false
+            echo "Set dock magnification size..."
+            doas defaults write com.apple.dock largesize -int 48
+            echo "Define dock icon function..."
+            __dock_item() {
+              printf \
+                 "%s%s%s%s%s" \
+                 "<dict><key>tile-data</key><dict><key>file-data</key><dict>" \
+                 "<key>_CFURLString</key><string>" \
+                 "$1" \
+                 "</string><key>_CFURLStringType</key><integer>0</integer>" \
+                 "</dict></dict></dict>"
+            }
+            echo "Choose and order dock icons"
+            doas defaults write com.apple.dock persistent-apps -array \
+                "$(__dock_item /System/Applications/Utilities/Terminal.app)" \
+                "$(__dock_item /System/Applications/System\ Settings.app)"
+            echo "Fixing dictation spam..."
+            # Example invocation can be found at:
+            # https://zameermanji.com/blog/2021/6/8/applying-com-apple-symbolichotkeys-changes-instantaneously/
+            doas defaults write com.apple.symbolichotkeys.plist AppleSymbolicHotKeys -dict-add 164 "
+              <dict>
+                <key>enabled</key><false/>
+                <key>value</key><dict>
+                  <key>type</key><string>standard</string>
+                  <key>parameters</key>
+                  <array>
+                    <integer>65535</integer>
+                    <integer>65535</integer>
+                    <integer>0</integer>
+                  </array>
+                </dict>
+              </dict>
+            "
+            # The -int part of this command is critical, or the value won't be
+            # respected.
+            doas defaults write com.apple.HIToolbox.plist AppleDictationAutoEnable -int 0
 
-      # Example of writing using something from Nix itself:
-      # "$(__dock_item \$\{pkgs.slack}/Applications/Slack.app)"
+            # Example of writing using something from Nix itself:
+            # "$(__dock_item \$\{pkgs.slack}/Applications/Slack.app)"
 
-      # Yes this is duplicated, just to be sure.  It completes sub-second
-      # anyways.
-      doas /System/Library/PrivateFrameworks/SystemAdministration.framework/Resources/activateSettings -u
-done
-'';
+            # Yes this is duplicated, just to be sure.  It completes sub-second
+            # anyways.
+            doas /System/Library/PrivateFrameworks/SystemAdministration.framework/Resources/activateSettings -u
+      done
+    '';
     defaults = {
       NSGlobalDomain = {
         # Disable left/right swipe to navigate backwards/forwards.
