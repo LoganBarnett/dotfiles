@@ -43,9 +43,21 @@ cd "$FLAKE_ROOT"
 
 bootstrap_host=''
 build=false
+cleanup=true
 efi=false
 switch=true
 enter_via_host=''
+
+cleanup_remote() {
+  # With --no-switch the user intends to run the deployment manually, so the
+  # working tree must remain.
+  $switch && $cleanup || return 0
+  # sudo is required because nixos-rebuild claims one or more of the .git
+  # files, leaving them root-owned.
+  # || true prevents a transient SSH failure here from masking the exit code
+  # of a successful deployment.
+  ssh "$ssh_user@$host" "sudo rm -rf ~$ssh_user/proton-nix" || true
+}
 
 while true; do
   case "${1:-}" in
@@ -71,8 +83,14 @@ Usage: $0 [opts] <hostname>
                        a nixos-enter and mounting the disks found in
                        fileSystems.
 
+  --no-cleanup         Do not remove ~/proton-nix from the remote after
+                       deployment.  Sensitive files from the repo may be
+                       present there.  Default: remove after deployment.
+
   --no-switch          Do not `nixos-rebuild switch` - just copy the files.
                        This can be helpful for running this session over tmux.
+                       Skips cleanup so the working tree remains for manual
+                       use.
 
   --efi                Write EFI boot entries when formatting with disko.
 
@@ -93,6 +111,10 @@ EOH
     --enter-via)
       enter_via_host="${2:-}"
       shift 2
+      ;;
+    --no-cleanup)
+      cleanup=false
+      shift 1
       ;;
     --no-switch)
       switch=false
@@ -124,6 +146,7 @@ if [[ ! -n ${ssh_user-} ]]; then
   ssh_user="$(ssh -G $host | awk '$1 == "user" { print $2 }')"
 fi
 echo "Deploying $target to $ssh_user@$host..."
+trap cleanup_remote EXIT
 # rsync is ideal, but needs to be present on the remote machine.  We don't have
 # that setup yet - or at least I have old installer without it.  Next time we
 # look, switch.
@@ -142,9 +165,6 @@ rsync \
   --exclude='result' \
   --exclude='.git' \
   ./ "$host"':~/proton-nix'
-# This needs to be sudo because nixos-rebuild claims one or more of the .git
-# files.
-# ssh $host 'sudo rm -rf $HOME/proton-nix'
 echo $build
 if [[ "$enter_via_host" == '' ]]; then
   # No, you can't simplify this because $build is a boolean.
