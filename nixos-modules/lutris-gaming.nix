@@ -6,7 +6,8 @@
 # See also ../home-configs/lutris-gaming.nix for additional configuration, such
 # as providing Lutris with additional versions of Wine.
 ################################################################################
-{ lib, pkgs, ... }: {
+{ lib, pkgs, ... }:
+{
 
   environment.systemPackages = [
     # Provide DirectX libraries... emulation?
@@ -26,5 +27,5 @@
     enable = true;
     enable32Bit = true;
   };
-  # programs.lutris.enable = true;
+  programs.gamemode.enable = true;
 }
