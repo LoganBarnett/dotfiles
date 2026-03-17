@@ -37,12 +37,14 @@ let
     "${username}-ldap-password" = {
       generator.script = "passphrase";
       inherit group;
+      shared = true;
       # Always specify the rekey file or it goes into a weird directory?
       rekeyFile = ../secrets/${username}-ldap-password.age;
       mode = "0440";
     };
     "${username}-ldap-password-hashed" = {
       inherit group;
+      shared = true;
       generator = {
         script = "slapd-hashed";
         dependencies = [
