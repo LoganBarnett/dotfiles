@@ -41,7 +41,7 @@
     # Ollama LLM server configuration.
     ollama = {
       url = "https://ollama.proton";
-      model = "llama3.2:3b";
+      model = "llama3.1:8b";
     };
 
     # Enable gaming and video streaming classifiers.
