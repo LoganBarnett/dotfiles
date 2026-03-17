@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+# Query the current terminal's ANSI 16-color palette via OSC 4 escape
+# sequences and print each entry formatted for use in a Ghostty palette
+# config.  Must be run from within the terminal whose palette you want to
+# query.
+tmpfile=$(mktemp /tmp/terminal-color-query-XXXXXX.py)
+trap 'rm -f "$tmpfile"' EXIT
+
+cat > "$tmpfile" << 'EOF'
+import sys, os, termios, tty, select, time
+
+fd = sys.stdin.fileno()
+old = termios.tcgetattr(fd)
+results = []
+try:
+    tty.setraw(fd)
+    for i in range(16):
+        sys.stdout.write(f"\x1b]4;{i};?\x07")
+        sys.stdout.flush()
+        time.sleep(0.05)
+        data = b""
+        while select.select([sys.stdin], [], [], 0.15)[0]:
+            data += os.read(fd, 256)
+        data = data.decode("ascii", errors="replace")
+        if "rgb:" in data:
+            rgb = data.split("rgb:")[1].split("\x07")[0].split("\x1b")[0]
+            p = rgb.split("/")
+            if len(p) == 3:
+                r, g, b = int(p[0][:2], 16), int(p[1][:2], 16), int(p[2][:2], 16)
+                results.append(f'"{i}=#{r:02x}{g:02x}{b:02x}"')
+finally:
+    termios.tcsetattr(fd, termios.TCSADRAIN, old)
+
+for line in results:
+    print(line)
+EOF
+
+exec python3 "$tmpfile"
