@@ -2577,11 +2577,11 @@
         "rust-overlay": "rust-overlay_12"
       },
       "locked": {
-        "lastModified": 1769383789,
-        "narHash": "sha256-5aVmCq1uCOwCda8kGCAIY6ej2GrC5DE4Utk0W+IM9IM=",
-        "ref": "refs/heads/add-nix-darwin-module-as-launchctl-service",
-        "rev": "b4e26c53d8264c5b9083c805e4aa0e58f6eda8b1",
-        "revCount": 20,
+        "lastModified": 1773599868,
+        "narHash": "sha256-r2eiFgOALJhtcu6DvGQxERajUOqB99qzBYfgMH6gQWs=",
+        "ref": "refs/heads/main",
+        "rev": "24eb8d0c1ca8a1c3ce69b54a1e205bac56eed91e",
+        "revCount": 29,
         "type": "git",
         "url": "ssh://git@gitea.proton:2222/logan/sytter"
       },
