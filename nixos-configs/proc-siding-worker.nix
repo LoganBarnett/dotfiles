@@ -5,8 +5,9 @@
     settings = {
       pressure = {
         threshold = 25;
-        hysteresis = 3;
-        poll_interval_ms = 2000;
+        # 12 × 5 s = 60 s of sustained pressure required before pausing.
+        hysteresis = 12;
+        poll_interval_ms = 5000;
       };
       process_discovery = {
         kind = "systemd_unit";
