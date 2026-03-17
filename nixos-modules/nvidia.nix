@@ -43,7 +43,7 @@ let
 in
 {
   imports = [
-    ../nixos-configs/gpu.nix
+    ../agnostic-configs/gpu.nix
   ];
   allowUnfreePackagePredicates = [
     # Zounds!

@@ -55,11 +55,15 @@ let
   macos-service-id-for-iface =
     pkgs.callPackage ./derivations/macos-service-id-for-iface.nix
       { };
+  terminal-color-query =
+    pkgs.callPackage ./derivations/terminal-color-query.nix
+      { };
   vpn-dns-recover = pkgs.callPackage ./derivations/vpn-dns-recover.nix { };
 in
 {
   imports = [
     ./darwin-configs/goss.nix
+    ./agnostic-configs/gpu.nix
     ./darwin-configs/proton-network.nix
     ./darwin-configs/optnix.nix
     ./darwin-modules/goss.nix
@@ -103,6 +107,8 @@ in
       macos-service-id-for-iface
       # Reset DNS and network services after a VPN disconnect.
       vpn-dns-recover
+      # Query the current terminal's ANSI 16-color palette via OSC 4.
+      terminal-color-query
     ];
   };
   fonts = {
