@@ -1,22 +1,33 @@
-{ flake-inputs, lib, pkgs, overlays, system, ... }: let
+{
+  flake-inputs,
+  lib,
+  pkgs,
+  overlays,
+  system,
+  ...
+}:
+let
   pkgs-latest = import flake-inputs.nixpkgs-latest {
     inherit system;
     # TODO: Constrain to this package to make this precise.  This is needed to
     # be done separately because each pkgs gets its own unfree configuration.
     config.allowUnfree = true;
     # Test it!
-    config.allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) [
-      "claude-code"
-    ];
+    config.allowUnfreePredicate =
+      pkg:
+      builtins.elem (lib.getName pkg) [
+        "claude-code"
+      ];
     # Since this is our newly instantiated nixpkgs, we need to use our overlays
     # so we can control the version without necessarily having to bump
     # nixpkgs-latest all the time.  By keeping on nixpkgs-latest, we can be just
     # a bit ahead on the derivation definition.
     overlays = [
-      (import ../overlays/claude-code.nix { inherit flake-inputs system; } )
+      (import ../overlays/claude-code.nix { inherit flake-inputs system; })
     ];
   };
-in {
+in
+{
   # allowUnfreePackagePredicates = [
   #   (pkg: builtins.elem (lib.getName pkg) [
   #     "claude-code"
@@ -52,7 +63,8 @@ in {
             hooks = [
               {
                 type = "command";
-                command = "echo '⚠️  REMINDER: After compaction completes,"
+                command =
+                  "echo '⚠️  REMINDER: After compaction completes,"
                   + " CLAUDE.md instructions are lost."
                   + " Type: read CLAUDE.md'";
               }
@@ -404,17 +416,19 @@ in {
     claude = "claude --dangerously-skip-permissions";
   };
 
-  # `DISABLE_INSTALLATION_CHECKS` suppresses the "switched from npm to native
-  # installer" banner.  It is not in the env-var whitelist that settings.json's
-  # `env` section can inject, so it must be set at the shell level instead.
   home.sessionVariables = {
+    # Suppresses the "switched from npm to native installer" banner.  Not in
+    # the env-var whitelist that settings.json's `env` section can inject, so
+    # it must be set at the shell level instead.
     DISABLE_INSTALLATION_CHECKS = "1";
+    # Raises the default 32k cap to match Sonnet 4.6's actual 64k output limit.
+    CLAUDE_CODE_MAX_OUTPUT_TOKENS = "64000";
   };
 
   # ~/.claude.json is a file that `claude` wants to write to for things like
   # update timestamps and change logs.  It still has settings we'd like to
   # manage statically, so we merge in what we want on activation.
-  home.activation.claudeConfig = lib.hm.dag.entryAfter ["writeBoundary"] ''
+  home.activation.claudeConfig = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
     if [ ! -f ~/.claude.json ]; then
       run sh -c 'echo "{}" > ~/.claude.json'
     fi
