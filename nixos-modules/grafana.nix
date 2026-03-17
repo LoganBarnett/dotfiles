@@ -26,7 +26,7 @@ let
 in
 {
   imports = [
-    ./https-module.nix
+    ./https.nix
   ];
   services.https.fqdns."grafana.proton" = {
     internalPort = config.services.grafana.settings.server.http_port;

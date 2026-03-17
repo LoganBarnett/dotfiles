@@ -9,7 +9,7 @@ let
 in
 {
   imports = [
-    ../nixos-modules/https-module.nix
+    ../nixos-modules/https.nix
   ];
   services.https.fqdns."${fqdn}" = {
     internalPort = 8008;

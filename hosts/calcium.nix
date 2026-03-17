@@ -26,7 +26,7 @@ in
     (import ../nixos-modules/cache-attic.nix {
       inherit atticd-port;
     })
-    ../nixos-modules/https-module.nix
+    ../nixos-modules/https.nix
     (
       { lib, pkgs, ... }:
       {

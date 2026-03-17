@@ -24,7 +24,7 @@ in
 {
   imports = [
     ../nixos-modules/bindfs.nix
-    ../nixos-modules/https-module.nix
+    ../nixos-modules/https.nix
     ../nixos-modules/nfs-mount-consumer.nix
   ];
   age.secrets = {

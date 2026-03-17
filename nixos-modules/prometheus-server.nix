@@ -44,7 +44,7 @@ let
 in
 {
   imports = [
-    ../nixos-modules/https-module.nix
+    ../nixos-modules/https.nix
   ];
   services.https.fqdns."prometheus.proton" = {
     internalPort = config.services.prometheus.port;

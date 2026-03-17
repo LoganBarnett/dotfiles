@@ -75,7 +75,7 @@
     #     };
     #   };
     # }
-    ../nixos-modules/https-module.nix
+    ../nixos-modules/https.nix
     ../nixos-modules/secrets.nix
     ../nixos-modules/facts-secrets.nix
     # Allow servers to consume builds from other hosts.

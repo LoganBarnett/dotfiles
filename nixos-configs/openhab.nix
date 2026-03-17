@@ -5,9 +5,17 @@
 # Assistant's recent declaration of abandoning a file based configuration in
 # favor of click-ops.
 ################################################################################
-{ config, lib, flake-inputs, pkgs, system, ... }: {
+{
+  config,
+  lib,
+  flake-inputs,
+  pkgs,
+  system,
+  ...
+}:
+{
   imports = [
-    ../nixos-modules/https-module.nix
+    ../nixos-modules/https.nix
     # This doesn't actually work, because this module is already "imported".
     # So it has to be included in the `modules` list for the host.  Alas.
     flake-inputs.openhab-flake.nixosModules.${system}.openhab
@@ -21,11 +29,11 @@
   };
   nixpkgs.overlays = [ flake-inputs.openhab-flake.overlays.default ];
   services.oidc-proxy.fqdns."openhab.proton" = {
-    issuerUrl       = "https://authentik.proton/application/o/openhab/";
-    clientId        = "openhab-proxy";
-    clientSecretName= "authentik-openhab-client-secret";
-    internalPort    = config.services.openhab.ports.http;
-    proxyPort       = 4181;        # if running multiple, give each a unique port
+    issuerUrl = "https://authentik.proton/application/o/openhab/";
+    clientId = "openhab-proxy";
+    clientSecretName = "authentik-openhab-client-secret";
+    internalPort = config.services.openhab.ports.http;
+    proxyPort = 4181; # if running multiple, give each a unique port
   };
   services.openhab = {
     enable = true;

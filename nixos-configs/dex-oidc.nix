@@ -51,7 +51,7 @@ in
   // (config.lib.ldap.ldap-password "dex-oidc" "${host-id}-dex-oidc-service");
   users.groups.${group} = { };
   imports = [
-    ../nixos-modules/https-module.nix
+    ../nixos-modules/https.nix
   ];
   services.https.fqdns."dex.proton" = {
     internalPort = dex-port;

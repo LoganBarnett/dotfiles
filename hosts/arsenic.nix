@@ -28,7 +28,7 @@
       # GeForce RTX 3070
       cudaCapabilities = [ "8.6" ];
     })
-    ../nixos-modules/https-module.nix
+    ../nixos-modules/https.nix
     ../nixos-configs/garage-queue-worker.nix
     ../nixos-configs/proc-siding-worker.nix
     ../nixos-configs/ollama.nix

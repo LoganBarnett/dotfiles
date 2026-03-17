@@ -10,7 +10,7 @@
 }:
 {
   imports = [
-    ../nixos-modules/https-module.nix
+    ../nixos-modules/https.nix
     # ./matrix-alertmanager.nix
   ];
   services.https.fqdns."alertmanager.proton" = {

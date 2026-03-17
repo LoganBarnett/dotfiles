@@ -9,7 +9,7 @@
 { host-id, ... }:
 {
   imports = [
-    ./https-module.nix
+    ./https.nix
   ];
   # Grocy is a PHP app served directly by nginx, not proxied.
   services.https.fqdns."${host-id}.proton" = {
