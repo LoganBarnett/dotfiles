@@ -280,13 +280,13 @@ ZSH_THEME_GIT_PROMPT_CLEAN="✓%{$reset_color%}"
 function timestamp_prompt() {
   echo "%{$fg[blue]%}\
 [$reset_color\
-%D{$fg[green]%H$fg[yellow]:$fg[green]%M$fg[yellow]:$fg[green]%S}\
+%D{$fg[cyan]%H$fg[yellow]:$fg[cyan]%M$fg[yellow]:$fg[cyan]%S}\
 %{$fg[blue]%}]\
 $reset_color"
 }
 
 function exit_status_prompt() {
-   echo "%?"
+  echo "%(?.%{$fg[green]%}.%{$fg[red]%})%?%{$reset_color%}"
 }
 
 function host_prompt() {
