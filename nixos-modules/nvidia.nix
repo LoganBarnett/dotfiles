@@ -42,9 +42,6 @@ let
   linux-packages = pkgs.linuxPackages;
 in
 {
-  imports = [
-    ../agnostic-configs/gpu.nix
-  ];
   allowUnfreePackagePredicates = [
     # Zounds!
     (

@@ -89,7 +89,6 @@ in
           rocmSupport = true;
         };
     })
-    ../agnostic-configs/gpu.nix
   ];
   nixpkgs.config.enableRocm = true;
   nixpkgs.config.rocmSupport = true;

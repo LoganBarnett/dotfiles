@@ -63,7 +63,6 @@ in
 {
   imports = [
     ./darwin-configs/goss.nix
-    ./agnostic-configs/gpu.nix
     ./darwin-configs/proton-network.nix
     ./darwin-configs/optnix.nix
     ./darwin-modules/goss.nix

@@ -1875,11 +1875,11 @@
         "rust-overlay": "rust-overlay_10"
       },
       "locked": {
-        "lastModified": 1773361412,
-        "narHash": "sha256-1HViZTNh4PCN2yxgN9Lmnqp4EGe6O1jxgXERcmE5yBQ=",
+        "lastModified": 1773428296,
+        "narHash": "sha256-NO4+bHs8p5xq9zvxD6hXNF4Q2QHo1R0y7tVi3NgaP1U=",
         "ref": "refs/heads/main",
-        "rev": "e7f8fb922f50f493dd7dfb70f635e3ea39f1e138",
-        "revCount": 3,
+        "rev": "16e6ea6dd5cdfb5701d6271221b99f1d0c8fc400",
+        "revCount": 6,
         "type": "git",
         "url": "ssh://git@gitea.proton:2222/logan/proc-siding.git"
       },
