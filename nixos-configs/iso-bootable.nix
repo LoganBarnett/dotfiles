@@ -1,9 +1,9 @@
-{ disko-proper }: { lib, ... }: {
+{ flake-inputs, lib, ... }:
+{
   imports = [
     # ../raw-image.nix
     # ../iso-image.nix
-    # We can't use `disko` because it's taken, I guess.
-    disko-proper.nixosModules.disko
+    flake-inputs.disko.nixosModules.disko
   ];
   # boot.postBootCommands = ''
   #   ln -s /dev/sda1 /dev/root

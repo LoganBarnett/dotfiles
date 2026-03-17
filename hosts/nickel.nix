@@ -24,7 +24,7 @@ let
 in
 {
   imports = [
-    # ../nixos-modules/dns-server.nix
+    # ../nixos-configs/dns-server.nix
     ../nixos-configs/raspberry-pi-4.nix
     ../nixos-modules/server-host.nix
     ../nixos-modules/prometheus-server.nix

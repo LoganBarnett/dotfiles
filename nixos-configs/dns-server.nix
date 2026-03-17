@@ -14,10 +14,11 @@
 # - Ensuring proper startup order (dnsmasq before blocky)
 # - Integration testing via goss to verify the services work together
 ################################################################################
-{ host-id, facts, ... }: {
+{ host-id, facts, ... }:
+{
   imports = [
     ../nixos-configs/blocky-with-updater.nix
-    ../nixos-modules/dhcp-server.nix
+    ./dhcp-server.nix
   ];
 
   # Ensure blocky starts after dnsmasq since it queries dnsmasq for local

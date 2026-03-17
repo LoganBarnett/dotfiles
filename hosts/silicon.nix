@@ -19,7 +19,7 @@ in
     flake-inputs.garage-queue.nixosModules.server
     ../nixos-configs/dhcp-lease-textfile.nix
     ../nixos-configs/garage-queue-server.nix
-    ../nixos-modules/dns-server.nix
+    ../nixos-configs/dns-server.nix
     ../nixos-configs/dns-smart-block.nix
     ../nixos-modules/makemkv-ripper.nix
     ../nixos-modules/makemkv-updater.nix
