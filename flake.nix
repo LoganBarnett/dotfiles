@@ -79,6 +79,10 @@
       url = "git+ssh://git@gitea.proton:2222/logan/ldap-reconciler";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    mac-app-util = {
+      url = "github:hraban/mac-app-util";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     metalps = {
       url = "git+ssh://git@gitea.proton:2222/logan/metalps";
       inputs.nixpkgs.follows = "nixpkgs";

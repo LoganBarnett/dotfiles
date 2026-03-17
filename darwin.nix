@@ -62,6 +62,7 @@ let
 in
 {
   imports = [
+    ./agnostic-configs/ghostty.nix
     ./darwin-configs/goss.nix
     ./darwin-configs/proton-network.nix
     ./darwin-configs/optnix.nix
@@ -123,9 +124,27 @@ in
       pkgs.source-code-pro
     ];
   };
+  # Workaround for https://github.com/LnL7/nix-darwin/issues/1079 —
+  # remove this block when that issue is resolved upstream.
+  #
+  # nix-darwin's applications activation uses rsync --checksum because Nix
+  # store files all carry epoch-0 mtimes, making size the only distinguishing
+  # field otherwise.  rsync preserves those epoch-0 mtimes on the copies in
+  # /Applications/Nix Apps/, so app launchers like Alfred see a directory
+  # that appears never to have changed and skip rescanning it after a switch
+  # adds new apps.  Touching the directory after rsync stamps it with the
+  # current time, which triggers Alfred's FSEvent watcher to rescan.
+  system.activationScripts.applications.text = lib.mkAfter ''
+    /usr/bin/touch '/Applications/Nix Apps'
+  '';
+
   home-manager = {
     useGlobalPkgs = true;
     useUserPackages = true;
+    # Create trampoline .app bundles in ~/Applications/ so Spotlight and Alfred
+    # can find home-manager managed apps.  Without this, apps land in
+    # ~/Applications/Home Manager Apps/, which launchers don't index.
+    sharedModules = [ flake-inputs.mac-app-util.homeManagerModules.default ];
   };
   # Enable the ability to search packages offline, assuming the index was built
   # ahead of time (need to check if it actually needs Internet access during
