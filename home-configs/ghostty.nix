@@ -3,9 +3,8 @@
 #
 # ghostty-bin is used on macOS because the ghostty package builds all of X
 # Windows as a dependency.  ghostty-bin fetches the official pre-built macOS
-# binary instead.  System-level installation (which puts the app bundle in
-# /Applications/Nix Apps/ for launcher discovery) lives in
-# ../agnostic-configs/ghostty.nix.
+# binary instead.  mac-app-util creates a trampoline in
+# ~/Applications/Home Manager Trampolines/ so Alfred and Spotlight can find it.
 ################################################################################
 {
   config,
