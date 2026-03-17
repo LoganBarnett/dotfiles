@@ -14,7 +14,18 @@ in
   services.https.fqdns."${fqdn}" = {
     internalPort = 8008;
   };
-  age.secrets = config.lib.ldap.ldap-password "matrix" "${host-id}-matrix-service";
+  auth.ldap.users."${host-id}-matrix-service" = {
+    email = "${host-id}-matrix-service@proton";
+    fullName = "${host-id}-matrix-service";
+    description = "Matrix service account on ${host-id}.";
+    group = "matrix";
+  };
+  auth.ldap.groups."matrix-users" = {
+    description = "People who can use Matrix.";
+  };
+  auth.ldap.groups."matrix-admins" = {
+    description = "People who can administer Matrix.";
+  };
   users.groups.matrix = { };
   # age.secrets.matrix-synapse-postgres-password = {
   #   chmod = "0440";

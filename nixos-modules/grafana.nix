@@ -31,7 +31,18 @@ in
   services.https.fqdns."grafana.proton" = {
     internalPort = config.services.grafana.settings.server.http_port;
   };
-  age.secrets = config.lib.ldap.ldap-password "grafana" "${service-user-prefix}-grafana-service";
+  auth.ldap.users."${service-user-prefix}-grafana-service" = {
+    email = "${service-user-prefix}-grafana-service@proton";
+    fullName = "${service-user-prefix}-grafana-service";
+    description = "Grafana service account on ${service-user-prefix}.";
+    group = "grafana";
+  };
+  auth.ldap.groups."grafana-admins" = {
+    description = "People who can administer Grafana.";
+  };
+  auth.ldap.groups."grafana-viewers" = {
+    description = "People who can view dashboards in Grafana.";
+  };
   environment.systemPackages = [
     # Include sqlite because it's what Grafana uses in the default NixOS setup.
     # This can allow us to chase down database issues if the API isn't

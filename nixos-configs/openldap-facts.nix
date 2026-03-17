@@ -1,19 +1,21 @@
 ################################################################################
-# Activates the ldap-server module and populates it from network facts.
+# Activates the ldap-server module and populates it from auth.ldap.* options
+# collected across all hosts in the cluster.
 #
-# Generates a desired-state JSON file from facts.network.{users,groups} and
-# runs ldap-reconciler as a systemd oneshot service on a timer to keep the
-# live directory in sync.
+# Each service host declares its LDAP users and groups inline via the
+# auth.ldap.{users,groups} options (provided by nixos-modules/ldap-auth.nix).
+# This config aggregates those declarations from specialArgs.nodes and feeds
+# them to the ldap-reconciler, which keeps the live directory in sync.
 #
-# Separating this from ldap-server.nix follows the module/config split: the
-# module declares what OpenLDAP can do; this config decides what it actually
-# holds.
+# ldap-auth-facts.nix handles the person accounts (sourced from facts.nix).
+# Service accounts come from each service's own config via nodes.
 ################################################################################
 {
   config,
   facts,
   flake-inputs,
   lib,
+  nodes,
   pkgs,
   system,
   ...
@@ -21,11 +23,28 @@
 let
   base-dn = "dc=proton,dc=org";
 
-  # Only person and service accounts belong in LDAP.  The oidc-client type is
-  # an OIDC client entry managed elsewhere and must not appear as an LDAP user.
-  ldap-users = lib.filterAttrs (
-    _: user: user.type == "person" || user.type == "service"
-  ) facts.network.users;
+  # Collect LDAP users from every host.  Darwin and container hosts that do
+  # not import ldap-auth.nix contribute an empty attrset and are skipped.
+  all-ldap-users = lib.foldlAttrs (
+    acc: _: hostCfg:
+    acc // (lib.attrByPath [ "config" "auth" "ldap" "users" ] { } hostCfg)
+  ) { } nodes;
+
+  # Collect LDAP groups from every host, merging member lists so each group
+  # accumulates members from all contributing hosts.
+  all-ldap-groups = lib.foldlAttrs (
+    acc: _: hostCfg:
+    lib.recursiveUpdate acc (
+      lib.attrByPath [ "config" "auth" "ldap" "groups" ] { } hostCfg
+    )
+  ) { } nodes;
+
+  # Users from other hosts whose secrets are not yet in config.age.secrets.
+  # Silicon's own users are already emitted by ldap-auth.nix; only foreigners
+  # need to be declared here to make them available as LoadCredential paths.
+  foreign-ldap-users = lib.filterAttrs (
+    name: _: !(lib.hasAttr name config.auth.ldap.users)
+  ) all-ldap-users;
 
   user-dn = username: "uid=${username},ou=users,${base-dn}";
   group-dn = name: "cn=${name},ou=groups,${base-dn}";
@@ -35,7 +54,7 @@ let
     name: "/run/credentials/ldap-reconciler.service/${name}-ldap-password-hashed";
 
   user-entry =
-    username: user:
+    username: ucfg:
     lib.nameValuePair (user-dn username) (
       {
         objectClass = [
@@ -43,20 +62,18 @@ let
           "person"
           "top"
         ];
-        cn = user.full-name;
+        cn = ucfg.fullName;
         uid = username;
         sn = username;
-        mail = user.email;
-        # Unmanaged: set once on creation, then left to the user to change.
-        # This preserves password changes across reconciliation runs.
+        mail = ucfg.email;
         userPassword = {
-          managed = false;
+          managed = ucfg.managed;
           initialPath = credential-path username;
         };
       }
       # Omit description when empty — LDAP DirectoryString requires >= 1 char.
-      // lib.optionalAttrs (user.description != "") {
-        description = user.description;
+      // lib.optionalAttrs (ucfg.description != "") {
+        description = ucfg.description;
       }
     );
 
@@ -70,7 +87,7 @@ let
         ];
         cn = name;
         ou = name;
-        # Managed: group membership stays authoritative from facts.
+        # Managed: group membership stays authoritative from declared config.
         member = map user-dn group.members;
       }
       // lib.optionalAttrs (group.description != "") {
@@ -105,10 +122,8 @@ let
         description = "Groups in the proton network.";
       };
     }
-    // builtins.listToAttrs (lib.attrsets.mapAttrsToList user-entry ldap-users)
-    // builtins.listToAttrs (
-      lib.attrsets.mapAttrsToList group-entry facts.network.groups
-    );
+    // builtins.listToAttrs (lib.mapAttrsToList user-entry all-ldap-users)
+    // builtins.listToAttrs (lib.mapAttrsToList group-entry all-ldap-groups);
   };
 
   desired-state-file = pkgs.writeText "ldap-desired-state.json" (
@@ -117,21 +132,47 @@ let
 
   ldap-reconciler-pkg = flake-inputs.ldap-reconciler.packages.${system}.default;
 
-  # Credential name -> agenix secret path, one per LDAP user.
-  user-credentials = lib.attrsets.mapAttrsToList (
+  # Credential name -> agenix secret path, one per LDAP user across all hosts.
+  user-credentials = lib.mapAttrsToList (
     name: _:
     "${name}-ldap-password-hashed"
     + ":${config.age.secrets."${name}-ldap-password-hashed".path}"
-  ) ldap-users;
+  ) all-ldap-users;
 
 in
 {
+  imports = [ ./ldap-auth-facts.nix ];
+
   services.ldap-server.enable = true;
 
-  # Declare hashed password secrets for every LDAP user.  The plaintext
-  # variants are declared by facts-secrets.nix and consumed by individual
-  # service configs; only the hashed form is needed here.
-  age.secrets = config.lib.ldap.ldap-passwords "root" ldap-users;
+  # Emit plaintext and hashed password secrets for users declared on foreign
+  # hosts.  Those hosts' ldap-auth.nix already declared them with shared = true;
+  # this gives silicon the rekeyed copies it needs to pass to the reconciler
+  # via LoadCredential.  Silicon's own users are covered by ldap-auth.nix.
+  age.secrets = lib.mkMerge (
+    lib.mapAttrsToList (
+      name: ucfg:
+      lib.optionalAttrs ucfg.enable {
+        "${name}-ldap-password" = {
+          generator.script = "passphrase";
+          group = "root";
+          shared = true;
+          rekeyFile = ../secrets/${name}-ldap-password.age;
+          mode = "0440";
+        };
+        "${name}-ldap-password-hashed" = {
+          group = "root";
+          shared = true;
+          generator = {
+            script = "slapd-hashed";
+            dependencies = [ config.age.secrets."${name}-ldap-password" ];
+          };
+          rekeyFile = ../secrets/${name}-ldap-password-hashed.age;
+          mode = "0440";
+        };
+      }
+    ) foreign-ldap-users
+  );
 
   systemd.services.ldap-reconciler = {
     description = "LDAP desired-state reconciler";

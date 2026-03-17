@@ -54,7 +54,18 @@
   imports = [
     ../nixos-modules/octoprint-shim.nix
   ];
-  age.secrets = config.lib.ldap.ldap-password "root" "${host-id}-octoprint-service";
+  auth.ldap.users."${host-id}-octoprint-service" = {
+    email = "${host-id}-octoprint-service@proton";
+    fullName = "${host-id}-octoprint-service";
+    description = "OctoPrint service account on ${host-id}.";
+    group = "root";
+  };
+  auth.ldap.groups."3d-printer-printers" = {
+    description = "People who can use 3D printers.";
+  };
+  auth.ldap.groups."3d-printer-admins" = {
+    description = "People who can administer Octoprint.";
+  };
   systemd.services.octoprint = {
     wants = [ "run-agenix.d.mount" ];
     serviceConfig.LoadCredential = [

@@ -56,6 +56,7 @@
     flake-inputs.home-manager.nixosModules.home-manager
     flake-inputs.proc-siding.nixosModules.default
     ../nixos-modules/environment-file-secrets.nix
+    ../nixos-modules/ldap-auth.nix
     ../nixos-modules/ldap-server.nix
     ../nixos-modules/kodi-standalone.nix
     ../nixos-modules/lib-custom.nix
@@ -77,7 +78,6 @@
     # }
     ../nixos-modules/https.nix
     ../nixos-configs/secrets.nix
-    ../nixos-configs/facts-secrets.nix
     # Allow servers to consume builds from other hosts.
     ../nixos-configs/nix-builder-consume.nix
     # TODO: Remove this and only include it on hosts that need it.  Also make it

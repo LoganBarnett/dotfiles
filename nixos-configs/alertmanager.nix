@@ -16,6 +16,15 @@
   services.https.fqdns."alertmanager.proton" = {
     internalPort = config.services.prometheus.alertmanager.port;
   };
+  auth.ldap.users."${host-id}-alertmanager-service" = {
+    email = "${host-id}-alertmanager-service@proton";
+    fullName = "${host-id}-alertmanager-service";
+    description = "AlertManager service account on ${host-id}.  Primarily for posting alerts.";
+    group = "root";
+  };
+  # Alertmanager posts to Matrix via matrix-alertmanager, so its LDAP identity
+  # must be a member of matrix-users for the Matrix server to allow it.
+  auth.ldap.groups."matrix-users".members = [ "${host-id}-alertmanager-service" ];
   age.secrets.matrix-alertmanager-secret = {
     generator.script = "base64";
     rekeyFile = ../secrets/matrix-alertmanager-secret.age;

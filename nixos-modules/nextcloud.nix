@@ -57,6 +57,18 @@ in
     ../nixos-modules/bindfs.nix
     ../nixos-modules/nfs-mount-consumer.nix
   ];
+  auth.ldap.users."${host-id}-nextcloud-service" = {
+    email = "${host-id}-nextcloud-service@proton";
+    fullName = "${host-id}-nextcloud-service";
+    description = "Nextcloud service account on ${host-id}.";
+    group = "root";
+  };
+  auth.ldap.groups."nextcloud-users" = {
+    description = "People who can use Nextcloud.";
+  };
+  auth.ldap.groups."nextcloud-admins" = {
+    description = "People who can administer Nextcloud.";
+  };
   age.secrets = {
     nextcloud-nfs-wireguard-key = {
       generator.script = "wireguard-priv";
@@ -74,8 +86,7 @@ in
       mode = "0440";
       rekeyFile = ../secrets/nextcloud-admin-pass.age;
     };
-  }
-  // (config.lib.ldap.ldap-password "root" "${host-id}-nextcloud-service");
+  };
   environment.systemPackages = [
     # If you had to reinstall Nextcloud, you've probably quickly learned that it
     # gets into a lodged state where any number of tiny little things that

@@ -14,6 +14,12 @@ let
   group = "dex-oidc";
 in
 {
+  auth.ldap.users."${host-id}-dex-oidc-service" = {
+    email = "${host-id}-dex-oidc-service@proton";
+    fullName = "${host-id}-dex-oidc-service";
+    description = "Dex-OIDC service account on ${host-id}.";
+    group = group;
+  };
   age.secrets = {
     dex-oidc-ldap-environment-file = {
       generator = {
@@ -47,8 +53,7 @@ in
       };
       rekeyFile = ../secrets/dex-oidc-environment-file.age;
     };
-  }
-  // (config.lib.ldap.ldap-password "dex-oidc" "${host-id}-dex-oidc-service");
+  };
   users.groups.${group} = { };
   imports = [
     ../nixos-modules/https.nix

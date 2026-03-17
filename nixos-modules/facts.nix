@@ -158,7 +158,6 @@
       };
       bromine = {
         aliases = [
-          "matrix"
           "home-assistant"
           "mosquitto"
           "openhab"
@@ -373,6 +372,7 @@
           "blocky"
           "dns-smart-block"
           "ldap"
+          "matrix"
           "ollama"
         ];
         controlledHost = true;
@@ -573,6 +573,10 @@
           email = "cassandra@proton";
           type = "person";
           full-name = "Cassandra Barnett";
+          ldap-groups = [
+            "home-assistant-users"
+            "openhab-users"
+          ];
           devices = [ ];
           blockProfiles = [
             "adult"
@@ -583,6 +587,9 @@
           email = "kai@proton";
           type = "person";
           full-name = "Kai Barnett";
+          ldap-groups = [
+            "screen-addicts"
+          ];
           devices = [
             {
               host-id = "arsenic";
@@ -598,6 +605,21 @@
           email = "logustus@proton";
           type = "person";
           full-name = "Logan Barnett";
+          ldap-groups = [
+            "3d-printer-admins"
+            "3d-printer-printers"
+            "gitea-admins"
+            "gitea-users"
+            "grafana-admins"
+            "grafana-viewers"
+            "home-assistant-admins"
+            "home-assistant-users"
+            "matrix-admins"
+            "matrix-users"
+            "nextcloud-admins"
+            "nextcloud-users"
+            "openhab-users"
+          ];
           devices = [
             {
               host-id = "scandium";
@@ -619,6 +641,7 @@
           email = "selena@proton";
           type = "person";
           full-name = "Selena";
+          ldap-groups = [ ];
           devices = [
             {
               host-id = "selena-laptop";
@@ -635,6 +658,9 @@
           email = "solomon@proton";
           type = "person";
           full-name = "Solomon Barnett";
+          ldap-groups = [
+            "screen-addicts"
+          ];
           devices = [
             {
               host-id = "lithium";
@@ -646,79 +672,6 @@
           ];
         };
       }
-      # Service / non-interactive users.
-      # TODO: I need a better way of declaring these here and in the modules
-      # where they are used.  If I forget to set up the service account here, it
-      # simply won't get used in the LDAP server, and things just fail without
-      # much indication that I'm missing a declaration here.  Perhaps I need a
-      # service account function that validates the presence here, or gets the
-      # values it needs from here. That way I have a nice error trail that leads
-      # me to the correct conclusion quickly.
-      // {
-        bromine-matrix-service = {
-          email = "bromine-matrix-service@proton";
-          type = "service";
-          description = "Matrix on Bromine.";
-          full-name = "bromine-matrix-service";
-          devices = [ ];
-        };
-        # bromine-authelia-home-assistant-service = {
-        #   email = "bromine-authelia-home-assistant-service@proton";
-        #   type = "service";
-        #   description = "Authelia authentication for Home Assistant on Bromine.";
-        #   full-name = "bromine-authelia-home-assistant-service";
-        #   devices = [];
-        # };
-        copper-dex-oidc-service = {
-          email = "bromine-dex-oidc-service@proton";
-          type = "service";
-          description = "Dex-OIDC on Copper.";
-          full-name = "copper-dex-oidc-service";
-          devices = [ ];
-        };
-        copper-gitea-service = {
-          email = "copper-gitea-service@proton";
-          type = "service";
-          description = "Gitea on Copper.";
-          full-name = "copper-gitea-service";
-          devices = [ ];
-        };
-        copper-nextcloud-service = {
-          email = "copper-nextcloud-service@proton";
-          type = "service";
-          description = "Nextcloud on Copper.";
-          full-name = "copper-nextcloud-service";
-          devices = [ ];
-        };
-        nickel-alertmanager-service = {
-          email = "nickel-alertmanager-service@proton";
-          type = "service";
-          description = "AlertManager on Nickel.  Primarily for posting alerts.";
-          full-name = "nickel-alertmanager-service";
-          devices = [ ];
-        };
-        nickel-authelia-service = {
-          email = "nickel-authelia-service@proton";
-          type = "service";
-          description = "Authelia on Nickel.  For SSO authentication via OIDC.";
-          full-name = "nickel-authelia-service";
-          devices = [ ];
-        };
-        nickel-grafana-service = {
-          email = "nickel-grafana-service@proton";
-          type = "service";
-          description = "Grafana on Nickel.";
-          full-name = "nickel-grafana-service";
-          devices = [ ];
-        };
-        selenium-octoprint-service = {
-          email = "selenium-octoprint-service@proton";
-          type = "service";
-          description = "Octoprint on Selenium.";
-          full-name = "selenium-octoprint-service";
-          devices = [ ];
-        };
-      }
       // {
         openhab-oidc-client = {
           email = "openhab-oidc-client@proton";
@@ -728,97 +681,6 @@
           devices = [ ];
         };
       };
-    groups = {
-      "3d-printer-admins" = {
-        description = "People who can administer Octoprint.";
-        members = [
-          "logan"
-        ];
-      };
-      "3d-printer-printers" = {
-        description = "People who can use 3D printers.";
-        members = [
-          "logan"
-        ];
-      };
-      "gitea-admins" = {
-        description = "People who can administer Gitea.";
-        members = [
-          "logan"
-        ];
-      };
-      "gitea-users" = {
-        description = "People who can user Gitea.";
-        members = [
-          "logan"
-        ];
-      };
-      "grafana-admins" = {
-        description = "People who can administer Grafana.";
-        members = [
-          "logan"
-        ];
-      };
-      "grafana-viewers" = {
-        description = "People who can view dashboards in Grafana.";
-        members = [
-          "logan"
-        ];
-      };
-      "home-assistant-admins" = {
-        description = "People who can administer Home Assistant.";
-        members = [
-          "logan"
-        ];
-      };
-      "home-assistant-users" = {
-        description = "People who can use Home Assistant.";
-        members = [
-          "cassandra"
-          "logan"
-        ];
-      };
-      "matrix-admins" = {
-        description = "People who can administer Matrix.";
-        members = [
-          "logan"
-        ];
-      };
-      "matrix-users" = {
-        description = "People who can use Matrix.";
-        members = [
-          "logan"
-          "nickel-alertmanager-service"
-        ];
-      };
-      "nextcloud-admins" = {
-        description = "People who can administer Nextcloud.";
-        members = [
-          "logan"
-        ];
-      };
-      "nextcloud-users" = {
-        description = "People who can use Nextcloud.";
-        members = [
-          "logan"
-        ];
-      };
-      openhab-users = {
-        description = "People who can use OpenHab.";
-        members = [
-          "logan"
-          "cassandra"
-        ];
-      };
-      screen-addicts = {
-        description =
-          "Users who are addicted to screens and require help with " + "self-regulation.";
-        members = [
-          "kai"
-          "solomon"
-        ];
-      };
-    };
 
     services = {
 

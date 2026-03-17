@@ -27,15 +27,21 @@ in
     ../nixos-modules/https.nix
     ../nixos-modules/nfs-mount-consumer.nix
   ];
+  auth.ldap.users.${ldapServiceUser} = lib.mkIf ldap-enabled {
+    email = "${ldapServiceUser}@proton";
+    fullName = ldapServiceUser;
+    description = "Gitea service account on ${host-id}.";
+    group = service;
+  };
+  auth.ldap.groups."gitea-users" = lib.mkIf ldap-enabled {
+    description = "People who can use Gitea.";
+  };
+  auth.ldap.groups."gitea-admins" = lib.mkIf ldap-enabled {
+    description = "People who can administer Gitea.";
+  };
   age.secrets = {
     # Other secrets go in here.
-  }
-  // (
-    if ldap-enabled then
-      config.lib.ldap.ldap-password service ldapServiceUser
-    else
-      { }
-  );
+  };
   nfsConsumerFacts = {
     enable = true;
     provider = {
