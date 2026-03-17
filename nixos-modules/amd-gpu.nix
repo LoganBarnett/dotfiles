@@ -89,6 +89,7 @@ in
           rocmSupport = true;
         };
     })
+    ../nixos-configs/gpu.nix
   ];
   nixpkgs.config.enableRocm = true;
   nixpkgs.config.rocmSupport = true;

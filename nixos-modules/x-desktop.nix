@@ -21,6 +21,8 @@
     pkgs.wmctrl
     pkgs.wmname
     pkgs.wezterm
+    # Query the current terminal's ANSI 16-color palette via OSC 4.
+    (pkgs.callPackage ../derivations/terminal-color-query.nix { })
   ];
   # Required for touchpad support, and some managers such as hyprland require
   # it.

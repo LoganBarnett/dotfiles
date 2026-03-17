@@ -42,6 +42,9 @@ let
   linux-packages = pkgs.linuxPackages;
 in
 {
+  imports = [
+    ../nixos-configs/gpu.nix
+  ];
   allowUnfreePackagePredicates = [
     # Zounds!
     (
