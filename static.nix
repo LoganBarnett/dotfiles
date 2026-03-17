@@ -28,8 +28,8 @@
   };
 
   signal-desktop-bin = {
-    version = "7.89.0";
-    hash = "sha256-Y2xUCWDRsb+A2GypvxZPc1VChRX3ElgrPOeeu4w4FRU=";
+    version = "8.2.1";
+    hash = "sha256-hZj86neX7WnDzrFV8ONPkeXKAcCVt7iZqAHDTpnEClc=";
   };
 
 }
