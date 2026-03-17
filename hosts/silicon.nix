@@ -14,14 +14,16 @@ let
 in
 {
   imports = [
+    # TODO: Restore this once the hardware is installed here.
+    # ../hardware/aeotec-z-stick-7.nix
     flake-inputs.garage-queue.nixosModules.server
     ../nixos-configs/dhcp-lease-textfile.nix
     ../nixos-configs/garage-queue-server.nix
     ../nixos-modules/dns-server.nix
     ../nixos-configs/dns-smart-block.nix
-    ../nixos-configs/grafana-kiosk-overview.nix
     ../nixos-modules/makemkv-ripper.nix
     ../nixos-modules/makemkv-updater.nix
+    ../nixos-configs/matrix-server.nix
     ../nixos-configs/nfs-mount-provider-from-facts.nix
     ../nixos-configs/openldap-facts.nix
     ../nixos-modules/nix-builder-provide.nix
