@@ -176,6 +176,22 @@
         ];
         system = "aarch64-linux";
       };
+      cassandra-macbook = {
+        blockProfiles = [ "adult" ];
+        controlledHost = false;
+        macAddresses = [
+          "92:8b:79:8a:9e:c4"
+          "bc:d0:74:23:21:1f"
+        ];
+        ipv4 = 224;
+      };
+      cassandra-iphone = {
+        blockProfiles = [ "adult" ];
+        controlledHost = false;
+        macAddresses = [
+          "a4:d2:3e:8f:46:0a"
+        ];
+      };
       cobalt = {
         aliases = [
           "rpi-build"
@@ -454,10 +470,6 @@
       uih11 = {
         mac = "28:cf:51:c9:1d:01";
         ipv4 = 132;
-      };
-      uih12 = {
-        mac = "92:8b:79:8a:9e:c4";
-        ipv4 = 133;
       };
       uih13 = {
         mac = "80:f3:ef:3b:b6:4d";
