@@ -71,7 +71,7 @@ in
     ./nixos-modules/nix-flake-environment.nix
     ./nixos-modules/darwin-tls-trust.nix
     # NixOS has this built in, but this is our copy for Darwin.  It's needed for
-    # ./nixos-modules/user-can-admin.nix.
+    # ./nixos-configs/user-can-admin.nix.
     ./nixos-modules/pay-respects.nix
     ./nixos-modules/unfree-predicates.nix
   ];

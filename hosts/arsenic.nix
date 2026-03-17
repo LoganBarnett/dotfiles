@@ -14,7 +14,7 @@
     # Spared for good behavior.
     # ../nixos-modules/bedtime-for-screen-addicts.nix
     ../nixos-configs/fishnetwork-stockings.nix
-    ../nixos-modules/cpu-frequency.nix
+    ../nixos-configs/cpu-frequency.nix
     (import ../nixos-modules/nvidia.nix {
       inherit flake-inputs;
       bus-id = "PCI:c:0.0";
@@ -34,11 +34,11 @@
     ../nixos-configs/ollama.nix
     ../nixos-configs/ollama-models-8gb-vram.nix
     ../nixos-modules/server-host.nix
-    ../nixos-modules/shutdown-halt.nix
+    ../nixos-configs/shutdown-halt.nix
     ../nixos-modules/lvm-uefi-disk.nix
-    ../nixos-modules/steam-gaming.nix
-    ../nixos-modules/timezone-pacific.nix
-    ../nixos-modules/uefi-systemd-boot.nix
+    ../nixos-configs/steam-gaming.nix
+    ../nixos-configs/timezone-pacific.nix
+    ../nixos-configs/uefi-systemd-boot.nix
     ../nixos-modules/x-desktop.nix
     ../users/cassandra-desktop.nix
     ../users/kai-desktop.nix

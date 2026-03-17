@@ -35,16 +35,16 @@ in
     ../nixos-configs/proc-siding-worker.nix
     ../nixos-configs/airplay-server.nix
     ../nixos-modules/amd-gpu.nix
-    ../nixos-modules/discord.nix
-    ../nixos-modules/gaming-android.nix
-    ../nixos-modules/lutris-gaming.nix
+    ../nixos-configs/discord.nix
+    ../nixos-configs/gaming-android.nix
+    ../nixos-configs/lutris-gaming.nix
     ../nixos-modules/lvm-uefi-disk.nix
     ../nixos-configs/garage-queue-worker.nix
     ../nixos-configs/ollama.nix
     ../nixos-configs/ollama-models-12gb-vram.nix
-    ../nixos-modules/steam-gaming.nix
-    ../nixos-modules/timezone-pacific.nix
-    ../nixos-modules/uefi-systemd-boot.nix
+    ../nixos-configs/steam-gaming.nix
+    ../nixos-configs/timezone-pacific.nix
+    ../nixos-configs/uefi-systemd-boot.nix
     ../nixos-modules/x-desktop.nix
     ../nixos-modules/server-host.nix
     ../nixos-configs/sunshine.nix

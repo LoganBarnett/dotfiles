@@ -1,8 +1,9 @@
-{ pkgs, ... }: {
+{ pkgs, ... }:
+{
   imports = [
-    ../nixos-modules/3d-printing-desktop.nix
-    ../nixos-modules/steam-gaming.nix
-    ../nixos-modules/timezone-pacific.nix
+    ../nixos-configs/3d-printing-desktop.nix
+    ../nixos-configs/steam-gaming.nix
+    ../nixos-configs/timezone-pacific.nix
     ../users/cassandra-desktop.nix
     ../nixos-modules/x-desktop.nix
   ];
@@ -10,25 +11,27 @@
     pkgs.firefox
   ];
   services.userLockoutSchedule.users.solomon = {
-    schedule = let
-      weekday = {
-        enableAt = [ "18:00" ];
-        logoutAt = [ "19:00" ];
+    schedule =
+      let
+        weekday = {
+          enableAt = [ "18:00" ];
+          logoutAt = [ "19:00" ];
+        };
+        weekend = {
+          enableAt = [ "15:00" ];
+          logoutAt = [ "16:00" ];
+        };
+      in
+      {
+        # Get them grades up.
+        # mon = weekday;
+        # tue = weekday;
+        # wed = weekday;
+        # thu = weekday;
+        # fri = weekday;
+        sat = weekend;
+        sun = weekend;
       };
-      weekend = {
-        enableAt = [ "15:00" ];
-        logoutAt = [ "16:00" ];
-      };
-    in {
-      # Get them grades up.
-      # mon = weekday;
-      # tue = weekday;
-      # wed = weekday;
-      # thu = weekday;
-      # fri = weekday;
-      sat = weekend;
-      sun = weekend;
-    };
   };
   # Nothing to do here yet.
   # home-manager.users.solomon = {};

@@ -72,12 +72,12 @@ in
   # won't need it.
   ids.gids.nixbld = 350;
   imports = [
-    ../nixos-modules/nix-builder-consume.nix
+    ../nixos-configs/nix-builder-consume.nix
     ../nixos-configs/nix-store-tools.nix
-    ../nixos-modules/sd-image-raspberrypi.nix
-    ../nixos-modules/secrets.nix
-    ../nixos-modules/software-engineering-networking.nix
-    ../nixos-modules/wireguard-client-standard.nix
+    ../nixos-configs/sd-image-raspberrypi.nix
+    ../nixos-configs/secrets.nix
+    ../nixos-configs/software-engineering-networking.nix
+    ../nixos-configs/wireguard-client-standard.nix
     ../nixos-configs/workstation.nix
     ../darwin-configs/nix-remote-builder-doctor.nix
     flake-inputs.home-manager.darwinModules.home-manager
@@ -104,8 +104,8 @@ in
       networking.hostName = host-id;
     }
     ../darwin-configs/sytter.nix
-    ../nixos-modules/tls-trust.nix
-    ../nixos-modules/user-can-admin.nix
+    ../nixos-configs/tls-trust.nix
+    ../nixos-configs/user-can-admin.nix
     (import ../nixos-modules/user-can-develop.nix {
       inherit username;
     })

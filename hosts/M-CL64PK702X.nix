@@ -59,7 +59,7 @@ in
         ];
       }
     )
-    ../nixos-modules/secrets.nix
+    ../nixos-configs/secrets.nix
     flake-inputs.garage-queue.darwinModules.worker
     flake-inputs.home-manager.darwinModules.home-manager
     # the _module.args idiom is how I can ensure these values get passed via the
@@ -86,7 +86,7 @@ in
     # model weights when the machine is lightly loaded.
     ../nixos-configs/ollama-models-24gb-vram.nix
     ../users/logan-new-e-ah.nix
-    ../nixos-modules/user-can-admin.nix
+    ../nixos-configs/user-can-admin.nix
     ../nixos-configs/workstation.nix
     (import ../nixos-modules/user-can-develop.nix {
       inherit username;

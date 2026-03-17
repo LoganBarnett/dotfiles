@@ -6,9 +6,16 @@
 #
 # Selenium provides an OctoPrint server for the Prusia 3D FFF/FDM printer.
 ################################################################################
-{ config, flake-inputs, host-id, system, ... }: {
+{
+  config,
+  flake-inputs,
+  host-id,
+  system,
+  ...
+}:
+{
   imports = [
-    ../nixos-modules/raspberry-pi-5.nix
+    ../nixos-configs/raspberry-pi-5.nix
     ../nixos-modules/server-host.nix
     ../nixos-configs/octoprint-prusa-xl.nix
   ];

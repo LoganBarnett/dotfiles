@@ -6,7 +6,7 @@
 }:
 {
   imports = [
-    ../nixos-modules/pytorch-bin.nix
+    ../nixos-configs/pytorch-bin.nix
   ];
   services.ollama = {
     enable = true;

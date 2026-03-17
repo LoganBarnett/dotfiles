@@ -7,29 +7,39 @@
 # needs a beefier system to handle it.  There might be old references to
 # gallium, but they are old as of 2025-06-07.
 ################################################################################
-{ flake-inputs, host-id, system, ... }: let
-in {
+{
+  flake-inputs,
+  host-id,
+  system,
+  ...
+}:
+let
+in
+{
   imports = [
     ../nixos-modules/server-host.nix
     # ../nixos-configs/dex-oidc.nix
     ../nixos-configs/gitea.nix
     ../nixos-configs/gitea-deployment-webhooks.nix
     ../nixos-modules/nextcloud.nix
-    ../nixos-modules/notes-sync.nix
+    ../nixos-configs/notes-sync.nix
     ../nixos-configs/chronicle-proxy.nix
-    ({ lib, pkgs, ... }: {
-      # networking.hostId is needed by the filesystem stuffs.
-      # An arbitrary ID needed for zfs so a pool isn't accidentally imported on
-      # a wrong machine (I'm not even sure what that means).  See
-      # https://search.nixos.org/options?channel=24.05&show=networking.hostId&from=0&size=50&sort=relevance&type=packages&query=networking.hostId
-      # for docs.
-      # Get from an existing machine using:
-      # head -c 8 /etc/machine-id
-      # Generate for a new machine using:
-      # head -c4 /dev/urandom | od -A none -t x4 | tr -d ' '
-      networking.hostId = "b310d071";
-      nixpkgs.hostPlatform = system;
-    })
+    (
+      { lib, pkgs, ... }:
+      {
+        # networking.hostId is needed by the filesystem stuffs.
+        # An arbitrary ID needed for zfs so a pool isn't accidentally imported on
+        # a wrong machine (I'm not even sure what that means).  See
+        # https://search.nixos.org/options?channel=24.05&show=networking.hostId&from=0&size=50&sort=relevance&type=packages&query=networking.hostId
+        # for docs.
+        # Get from an existing machine using:
+        # head -c 8 /etc/machine-id
+        # Generate for a new machine using:
+        # head -c4 /dev/urandom | od -A none -t x4 | tr -d ' '
+        networking.hostId = "b310d071";
+        nixpkgs.hostPlatform = system;
+      }
+    )
     ({
       imports = [
         flake-inputs.disko.nixosModules.default
@@ -92,7 +102,10 @@ in {
       # the security issue.  See
       # https://github.com/NixOS/nixpkgs/issues/279362#issuecomment-1913506090
       # for more discussion.
-      fileSystems."/boot".options = [ "umask=0077" "defaults" ];
+      fileSystems."/boot".options = [
+        "umask=0077"
+        "defaults"
+      ];
     })
   ];
 }

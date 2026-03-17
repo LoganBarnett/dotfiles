@@ -18,27 +18,33 @@
   pkgs,
   system,
   ...
-} : let
-in {
+}:
+let
+in
+{
   imports = [
     (import "${flake-inputs.nixpkgs}/nixos/modules/installer/cd-dvd/iso-image.nix")
     (import "${flake-inputs.nixpkgs}/nixos/modules/profiles/minimal.nix")
     (import "${flake-inputs.nixpkgs}/nixos/modules/profiles/base.nix")
     (import "${flake-inputs.nixpkgs}/nixos/modules/profiles/installation-device.nix")
     ../users/logan-server.nix
-    ../nixos-modules/sshd.nix
+    ../nixos-configs/sshd.nix
     ../nixos-configs/nix-store-tools.nix
-    ../nixos-modules/narcolepsy.nix
+    ../nixos-configs/narcolepsy.nix
     ../nixos-modules/nix-flake-environment.nix
-    ../nixos-modules/nix-store-optimize.nix
-    ../nixos-modules/nix-builder-consume.nix
-    ../nixos-modules/user-can-admin.nix
-    ../nixos-modules/secrets.nix
+    ../nixos-configs/nix-store-optimize.nix
+    ../nixos-configs/nix-builder-consume.nix
+    ../nixos-configs/user-can-admin.nix
+    ../nixos-configs/secrets.nix
   ];
   # Make it so we can read the USB device that we booted from.  Otherwise
   # stuff just doesn't work and we get a "timed out waiting for device"
   # error.
-  boot.initrd.availableKernelModules = [ "uas" "usbcore" "usb_storage" ];
+  boot.initrd.availableKernelModules = [
+    "uas"
+    "usbcore"
+    "usb_storage"
+  ];
 
   # Enable all hardware support (from installation-cd-base).
   hardware.enableAllHardware = true;
@@ -106,7 +112,7 @@ in {
     })
   ];
   services.openssh.settings.PasswordAuthentication = lib.mkOverride 50 true;
-  # Settle a conflict with ../nixos-modules/sshd.nix.
+  # Settle a conflict with ../nixos-configs/sshd.nix.
   services.openssh.settings.PermitRootLogin = lib.mkOverride 50 "yes";
 
   # https://nixos.wiki/wiki/FAQ/When_do_I_update_stateVersion

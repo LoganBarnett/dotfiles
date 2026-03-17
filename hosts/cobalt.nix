@@ -16,19 +16,34 @@
 # its only role, other than perhaps providing Nix build caching via external
 # disks (which should take no memory).
 ################################################################################
-{ flake-inputs, lib, nixpkgs, system, ... }: {
+{
+  flake-inputs,
+  lib,
+  nixpkgs,
+  system,
+  ...
+}:
+{
   imports = [
-    ../nixos-modules/raspberry-pi-5.nix
-    ({ config, lib, pkgs, ... }: {
-      nixpkgs.hostPlatform = system;
-      # Just a guessed value.  This was crushed by
-      # `../nixos-modules/raspberry-pi-host.nix`.
-      nix.settings.max-jobs = lib.mkForce 4;
-    })
+    ../nixos-configs/raspberry-pi-5.nix
+    (
+      {
+        config,
+        lib,
+        pkgs,
+        ...
+      }:
+      {
+        nixpkgs.hostPlatform = system;
+        # Just a guessed value.  This was crushed by
+        # `../nixos-configs/raspberry-pi-host.nix`.
+        nix.settings.max-jobs = lib.mkForce 4;
+      }
+    )
     # Add some extra ARM build architectures in case we need them.
-    ../nixos-modules/raspberry-pi-builder.nix
+    ../nixos-configs/raspberry-pi-builder.nix
     # Allow this host to accept build requests from other hosts.
-    ../nixos-modules/nix-builder-provide.nix
+    ../nixos-configs/nix-builder-provide.nix
     ../nixos-modules/server-host.nix
   ];
 }

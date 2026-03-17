@@ -31,7 +31,8 @@
   nixpkgs,
   # pkgs,
   ...
-}: let
+}:
+let
   system = "aarch64-linux";
   # linux-builder-pkgs = import nixpkgs {
   #   system = "aarch64-linux";
@@ -99,10 +100,11 @@
   #     config = "x86_64-unknown-linux-gnu";
   #   };
   # };
-in {
+in
+{
   imports = [
     # ./users/logan-server.nix
-    # (import ./nixos-modules/user-can-admin.nix {
+    # (import ./nixos-configs/user-can-admin.nix {
     #   inherit flake-inputs;
     #   inherit system;
     # })

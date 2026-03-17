@@ -25,7 +25,7 @@ in
 {
   imports = [
     # ../nixos-modules/dns-server.nix
-    ../nixos-modules/raspberry-pi-4.nix
+    ../nixos-configs/raspberry-pi-4.nix
     ../nixos-modules/server-host.nix
     ../nixos-modules/prometheus-server.nix
     ../nixos-modules/grafana.nix
@@ -67,7 +67,7 @@ in
     #     config = import ./grafana.nix;
     #   };
     # }
-    # (import ../nixos-modules/sd-image-raspberrypi.nix {
+    # (import ../nixos-configs/sd-image-raspberrypi.nix {
     #   inherit flake-inputs;
     # })
     # (import ../nixos-modules/hardware-raspberry-pi-main.nix {

@@ -96,6 +96,30 @@
         reasoning = "GitHub code download CDN — never a gaming or streaming site.";
       }
       {
+        domain = "dndbeyond.com";
+        classificationType = "all";
+        isMatchingSite = false;
+        reasoning = "Allow guests to still play D&D.";
+      }
+      {
+        domain = "www.dndbeyond.com";
+        classificationType = "all";
+        isMatchingSite = false;
+        reasoning = "Allow guests to still play D&D.";
+      }
+      {
+        domain = "media.dndbeyond.com";
+        classificationType = "all";
+        isMatchingSite = false;
+        reasoning = "Allow guests to still play D&D.";
+      }
+      {
+        domain = "game-log-rest-live.dndbeyond.com";
+        classificationType = "all";
+        isMatchingSite = false;
+        reasoning = "Allow guests to still play D&D.";
+      }
+      {
         domain = "github.com";
         classificationType = "gaming";
         isMatchingSite = false;

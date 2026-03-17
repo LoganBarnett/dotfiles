@@ -26,7 +26,7 @@ in
     ../nixos-configs/matrix-server.nix
     ../nixos-configs/nfs-mount-provider-from-facts.nix
     ../nixos-configs/openldap-facts.nix
-    ../nixos-modules/nix-builder-provide.nix
+    ../nixos-configs/nix-builder-provide.nix
     ../nixos-modules/server-host.nix
     flake-inputs.dns-smart-block.nixosModules.default
     # TODO: Right now agenix-rekey wants to build wireguard to do the
@@ -39,7 +39,7 @@ in
     # confirmed that commenting this out (at least temporarily) fixes the issue.
     # However I already have pre-generated secrets so I'm not bumping into the
     # issue currently.
-    ../nixos-modules/wireguard-server-standard.nix
+    ../nixos-configs/wireguard-server-standard.nix
     (
       { pkgs, ... }:
       {

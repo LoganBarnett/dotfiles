@@ -13,7 +13,7 @@
   imports = [
     ../nixos-configs/grafana-kiosk-overview.nix
     ../nixos-configs/raspberry-pi-usb-disk.nix
-    ../nixos-modules/raspberry-pi-4.nix
+    ../nixos-configs/raspberry-pi-4.nix
     ../nixos-modules/server-host.nix
     # ../nixos-configs/home-assistant.nix
     # ../nixos-configs/mosquitto.nix

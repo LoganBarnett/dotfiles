@@ -2,12 +2,14 @@
 # argon is the wireguard host.
 # argon used to be an OctoPi server running octo-print.
 ################################################################################
-{ flake-inputs, host-id, ... }: let
+{ flake-inputs, host-id, ... }:
+let
   system = "aarch64-linux";
-in {
+in
+{
   imports = [
-    ../nixos-modules/raspberry-pi-4.nix
-    ../nixos-modules/raspberry-pi-host.nix
+    ../nixos-configs/raspberry-pi-4.nix
+    ../nixos-configs/raspberry-pi-host.nix
     ../nixos-modules/server-host.nix
     ../nixos-modules/dns-dynamic-ip-home.nix
   ];

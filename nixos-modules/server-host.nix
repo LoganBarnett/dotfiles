@@ -76,27 +76,27 @@
     #   };
     # }
     ../nixos-modules/https.nix
-    ../nixos-modules/secrets.nix
-    ../nixos-modules/facts-secrets.nix
+    ../nixos-configs/secrets.nix
+    ../nixos-configs/facts-secrets.nix
     # Allow servers to consume builds from other hosts.
-    ../nixos-modules/nix-builder-consume.nix
+    ../nixos-configs/nix-builder-consume.nix
     # TODO: Remove this and only include it on hosts that need it.  Also make it
     # use the domain.
-    ../nixos-modules/tls-leaf-proton.nix
+    ../nixos-configs/tls-leaf-proton.nix
     # A server should never sleep/suspend unless we have a really good reason.
-    ../nixos-modules/narcolepsy.nix
+    ../nixos-configs/narcolepsy.nix
     # See facts.nix for how this is specifically configured per host.
-    ../nixos-modules/prometheus-client.nix
+    ../nixos-configs/prometheus-client.nix
     ../nixos-modules/goss-exporter.nix
     ../nixos-modules/nix-flake-environment.nix
-    ../nixos-modules/nix-store-optimize.nix
-    ../nixos-modules/restic-shim.nix
+    ../nixos-configs/nix-store-optimize.nix
+    ../nixos-configs/restic-shim.nix
     # Haven't gotten this working yet.
     # ./server-host-pub-key.nix
-    ../nixos-modules/sshd.nix
-    ../nixos-modules/tls-trust.nix
+    ../nixos-configs/sshd.nix
+    ../nixos-configs/tls-trust.nix
     ../nixos-modules/unfree-predicates.nix
-    ../nixos-modules/user-can-admin.nix
+    ../nixos-configs/user-can-admin.nix
     ../nixos-modules/user-lockout-schedule.nix
     ../users/logan-server.nix
   ];

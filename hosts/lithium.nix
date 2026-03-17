@@ -57,7 +57,7 @@ in
     })
     ../nixos-configs/fishnetwork-stockings.nix
     ../nixos-modules/server-host.nix
-    ../nixos-modules/shutdown-halt.nix
+    ../nixos-configs/shutdown-halt.nix
     (
       { lib, pkgs, ... }:
       {
