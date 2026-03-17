@@ -21,6 +21,7 @@ in
     ./home-modules/claude-code.nix
     ./home-configs/gh-cli.nix
     ./home-configs/gpg-agent.nix
+    ./home-configs/rust.nix
   ];
   # Let Home Manager install and manage itself.
   # programs.home-manager.enable = true;
@@ -45,7 +46,10 @@ in
   # its own agent lifecycle.
   programs.keychain = {
     enable = true;
-    extraFlags = [ "--noask" "--quiet" ];
+    extraFlags = [
+      "--noask"
+      "--quiet"
+    ];
     enableZshIntegration = true;
   };
   programs.tmux = import ./tmux.nix;
@@ -57,10 +61,12 @@ in
   # specifically what it was.  nix-darwin manages fonts now.
   # fonts.fontconfig.enable = true;
 
-  home.enableNixpkgsReleaseCheck = (!(
-    config.home.version.full == "25.05"
-    && (lib.strings.hasPrefix "25.11" lib.version)
-  ));
+  home.enableNixpkgsReleaseCheck = (
+    !(
+      config.home.version.full == "25.05"
+      && (lib.strings.hasPrefix "25.11" lib.version)
+    )
+  );
 
   home.activation = {
     # Is there a better way to handle the directory? Relative dir does not work.
@@ -96,8 +102,8 @@ in
   home.file.".zshrc-customized".source = ./zshrc-customized;
 
   # This gets oh-my-zsh where we can find it.
-  home.file.".oh-my-zsh".source = config.lib.file.mkOutOfStoreSymlink
-    "${pkgs.oh-my-zsh.outPath}/share/oh-my-zsh";
+  home.file.".oh-my-zsh".source =
+    config.lib.file.mkOutOfStoreSymlink "${pkgs.oh-my-zsh.outPath}/share/oh-my-zsh";
 
   # For Emacs to prettify JavaScript files, this config must be laid down (or it
   # will not use great defaults).
