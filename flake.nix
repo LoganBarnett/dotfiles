@@ -37,7 +37,7 @@
       url = "github:nix-community/authentik-nix";
     };
     dns-smart-block = {
-      url = "git+ssh://git@gitea.proton:2222/logan/dns-smart-block?ref=first-draft";
+      url = "git+ssh://git@gitea.proton:2222/logan/dns-smart-block";
       # url = "path:/Users/logan/dev/dns-smart-block";
       inputs.nixpkgs.follows = "nixpkgs";
     };
