@@ -26,12 +26,11 @@ let
 in
 {
   imports = [
-    (import ../nixos-modules/https.nix {
-      server-port = config.services.grafana.settings.server.http_port;
-      inherit host-id;
-      fqdn = "grafana.proton";
-    })
+    ./https-module.nix
   ];
+  services.https.fqdns."grafana.proton" = {
+    internalPort = config.services.grafana.settings.server.http_port;
+  };
   age.secrets = config.lib.ldap.ldap-password "grafana" "${service-user-prefix}-grafana-service";
   environment.systemPackages = [
     # Include sqlite because it's what Grafana uses in the default NixOS setup.

@@ -10,13 +10,12 @@
 }:
 {
   imports = [
-    (import ../nixos-modules/https.nix {
-      server-port = 9093;
-      inherit host-id;
-      fqdn = "alertmanager.proton";
-    })
+    ../nixos-modules/https-module.nix
     # ./matrix-alertmanager.nix
   ];
+  services.https.fqdns."alertmanager.proton" = {
+    internalPort = config.services.prometheus.alertmanager.port;
+  };
   age.secrets.matrix-alertmanager-secret = {
     generator.script = "base64";
     rekeyFile = ../secrets/matrix-alertmanager-secret.age;
@@ -274,7 +273,7 @@
     # Check that the internal alertmanager port is listening.  Alertmanager
     # binds to :: (IPv6 any) which also accepts IPv4 connections via
     # IPv4-mapped IPv6 addresses.
-    port."tcp6:9093" = {
+    port."tcp6:${toString config.services.prometheus.alertmanager.port}" = {
       listening = true;
     };
     # Check that HTTPS port is listening (handled by reverse proxy).

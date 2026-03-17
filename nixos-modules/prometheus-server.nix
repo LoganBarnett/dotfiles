@@ -29,104 +29,122 @@
 # module translates that to Prometheus configuration.  Also we might have a
 # monitor differ in name but share the same exporter.
 ################################################################################
-{ config, facts, host-id, lib, nodes, pkgs, ... }: let
+{
+  config,
+  facts,
+  lib,
+  nodes,
+  pkgs,
+  ...
+}:
+let
   inherit (lib) pipe;
   inherit (lib.attrsets) filterAttrs mapAttrsToList;
   inherit (lib.lists) fold;
-in {
+in
+{
   imports = [
-    (import ../nixos-modules/https.nix {
-      server-port = 9090;
-      inherit host-id;
-      fqdn = "prometheus.proton";
-    })
+    ../nixos-modules/https-module.nix
   ];
+  services.https.fqdns."prometheus.proton" = {
+    internalPort = config.services.prometheus.port;
+  };
   services.prometheus = {
     enable = true;
+    retentionTime = "1y";
+    extraFlags = [ "--web.enable-admin-api" ];
     # "1m" is another valid value.
     globalConfig.scrape_interval = "10s";
-    scrapeConfigs = let
-      monitors = lib.pipe facts.network.hosts [
-        (lib.attrsets.mapAttrsToList (host: settings: (settings.monitors or [])))
-        lib.lists.flatten
-        lib.lists.unique
-      ];
-      host-targets = monitor: lib.pipe facts.network.hosts [
-        (lib.attrsets.filterAttrs (host: settings:
-          (settings.controlledHost or false)
-          && (!settings.roaming or false)
-          && (lib.lists.any (m: m == monitor) settings.monitors)
-        ))
-        (lib.attrsets.mapAttrsToList (host: settings:
-          "${host}:${
-            toString (
-              # Goss is handled by its own module, not via
-              # services.prometheus.exporters, so use a hardcoded port.
-              if monitor == "goss"
-              then 8080
-              else nodes
-                .${host}
-                .config
-                .services
-                .prometheus
-                .exporters
-                .${pkgs.lib.custom.monitor-to-exporter-name monitor}
-                .port
-            )
-          }"
-        ))
-      ]
-      ;
-    in lib.lists.map
-      (monitor:
-        ({
-          job_name = monitor;
-          static_configs = [
-            {
-              targets = host-targets monitor;
-            }
+    scrapeConfigs =
+      let
+        monitors = lib.pipe facts.network.hosts [
+          (lib.attrsets.mapAttrsToList (host: settings: (settings.monitors or [ ])))
+          lib.lists.flatten
+          lib.lists.unique
+        ];
+        host-targets =
+          monitor:
+          lib.pipe facts.network.hosts [
+            (lib.attrsets.filterAttrs (
+              host: settings:
+              (settings.controlledHost or false)
+              && (!settings.roaming or false)
+              && (lib.lists.any (m: m == monitor) settings.monitors)
+            ))
+            (lib.attrsets.mapAttrsToList (
+              host: settings:
+              "${host}:${
+                toString (
+                  # Goss is handled by its own module, not via
+                  # services.prometheus.exporters, so use a hardcoded port.
+                  if monitor == "goss" then
+                    8080
+                  else
+                    nodes.${host}.config.services.prometheus.exporters.${pkgs.lib.custom.monitor-to-exporter-name monitor}.port
+                )
+              }"
+            ))
           ];
-        } // ({
-          node = {
-            static_configs = [{
-              targets = host-targets monitor;
-            }];
-          };
-          blackbox-ping = {
-            # metrics_path = "/probe/blackbox-ping";
-            # scrape_interval = "10s";
-            params = {
-              modules = [ "icmp" ];
-            };
-            static_configs = [{
-              targets = host-targets monitor;
-            }];
-            # relabel_configs = [
-            #   {
-            #     source_labels = [ "target" ];
-            #     target_label = "__param_target";
-            #   }
-            # ];
-          };
-          systemd = {
-            # Reduce frequency for systemd because it can cause a dbus clog.  It
-            # doesn't need to be that fast anyways.
-            scrape_interval = "60s";
-          };
-          wireguard = {
+      in
+      lib.lists.map (
+        monitor:
+        (
+          {
+            job_name = monitor;
             static_configs = [
               {
                 targets = host-targets monitor;
               }
             ];
-          };
-          goss = {
-            metrics_path = "/healthz";
-            scrape_interval = "30s";
-          };
-        }.${monitor} or { }))
-      )
-      monitors;
+          }
+          // (
+            {
+              node = {
+                static_configs = [
+                  {
+                    targets = host-targets monitor;
+                  }
+                ];
+              };
+              blackbox-ping = {
+                # metrics_path = "/probe/blackbox-ping";
+                # scrape_interval = "10s";
+                params = {
+                  modules = [ "icmp" ];
+                };
+                static_configs = [
+                  {
+                    targets = host-targets monitor;
+                  }
+                ];
+                # relabel_configs = [
+                #   {
+                #     source_labels = [ "target" ];
+                #     target_label = "__param_target";
+                #   }
+                # ];
+              };
+              systemd = {
+                # Reduce frequency for systemd because it can cause a dbus clog.  It
+                # doesn't need to be that fast anyways.
+                scrape_interval = "60s";
+              };
+              wireguard = {
+                static_configs = [
+                  {
+                    targets = host-targets monitor;
+                  }
+                ];
+              };
+              goss = {
+                metrics_path = "/healthz";
+                scrape_interval = "30s";
+              };
+            }
+            .${monitor} or { }
+          )
+        )
+      ) monitors;
   };
   # Goss health checks for Prometheus.
   services.goss.checks = {
@@ -143,7 +161,7 @@ in {
     # Check that the internal prometheus port is listening.  Prometheus binds
     # to :: (IPv6 any) which also accepts IPv4 connections via IPv4-mapped
     # IPv6 addresses.
-    port."tcp6:9090" = {
+    port."tcp6:${toString config.services.prometheus.port}" = {
       listening = true;
     };
     # Check that HTTPS port is listening (handled by reverse proxy).

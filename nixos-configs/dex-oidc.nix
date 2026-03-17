@@ -51,12 +51,11 @@ in
   // (config.lib.ldap.ldap-password "dex-oidc" "${host-id}-dex-oidc-service");
   users.groups.${group} = { };
   imports = [
-    (import ../nixos-modules/https.nix {
-      server-port = 5556;
-      inherit host-id;
-      fqdn = "dex.proton";
-    })
+    ../nixos-modules/https-module.nix
   ];
+  services.https.fqdns."dex.proton" = {
+    internalPort = dex-port;
+  };
   # The dex NixOS module uses DynamicUser = true and thus requires a little more
   # plumbing to work.
   systemd.services.dex = {

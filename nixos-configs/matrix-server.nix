@@ -9,11 +9,11 @@ let
 in
 {
   imports = [
-    (import ../nixos-modules/https.nix {
-      inherit fqdn host-id;
-      server-port = 8008;
-    })
+    ../nixos-modules/https-module.nix
   ];
+  services.https.fqdns."${fqdn}" = {
+    internalPort = 8008;
+  };
   age.secrets = config.lib.ldap.ldap-password "matrix" "${host-id}-matrix-service";
   users.groups.matrix = { };
   # age.secrets.matrix-synapse-postgres-password = {

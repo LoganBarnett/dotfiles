@@ -28,12 +28,7 @@
       # GeForce RTX 3070
       cudaCapabilities = [ "8.6" ];
     })
-    (import ../nixos-modules/https.nix {
-      inherit host-id;
-      listen-port = 443;
-      server-port = 8080;
-      fqdn = "${host-id}.proton";
-    })
+    ../nixos-modules/https-module.nix
     ../nixos-configs/garage-queue-worker.nix
     ../nixos-configs/proc-siding-worker.nix
     ../nixos-configs/ollama.nix
@@ -103,6 +98,9 @@
       };
     }
   ];
+  services.https.fqdns."${host-id}.proton" = {
+    internalPort = 8080;
+  };
   services.garage-queue-worker.settings.capabilities.scalars.vram_mb = 8192;
   services.proc-siding.settings.detector.kind = "nvidia";
 }
