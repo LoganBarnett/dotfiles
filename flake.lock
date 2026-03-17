@@ -404,11 +404,11 @@
         "rust-overlay": "rust-overlay_3"
       },
       "locked": {
-        "lastModified": 1773460188,
-        "narHash": "sha256-nXk8OnPw5z9odGv0oBX1+THGoNApPX/AgGZID+wlq6c=",
+        "lastModified": 1773587350,
+        "narHash": "sha256-c0DpEdpcl+aBa9Su2gP8sgnYp7fK5M8iqJg7NM+amrg=",
         "ref": "first-draft",
-        "rev": "8e912057be74e1db3090651bd7b0ea3b46bef7fc",
-        "revCount": 104,
+        "rev": "5a3f3f69d6aaed21bf61c00316cb73e0bd20660b",
+        "revCount": 105,
         "type": "git",
         "url": "ssh://git@gitea.proton:2222/logan/dns-smart-block"
       },
@@ -427,11 +427,11 @@
         "org-dnd": "org-dnd"
       },
       "locked": {
-        "lastModified": 1772076884,
-        "narHash": "sha256-voNcw6xCx90k4sHLwgRTi4aPk8pNawPHMxJWtgI02pw=",
+        "lastModified": 1773586891,
+        "narHash": "sha256-IuEGDfXUTRS/6YuItxp+FZZGTdfKMigrlJKrQCFa7nQ=",
         "ref": "refs/heads/main",
-        "rev": "8c1eaea022d2d492894b2bfc6ec786b053b3b854",
-        "revCount": 816,
+        "rev": "33fd6db2dc1a14145f5a7aba2932419e8fbc8a05",
+        "revCount": 832,
         "type": "git",
         "url": "ssh://git@gitea.proton:2222/logan/emacs-config"
       },
@@ -846,11 +846,11 @@
         "rust-overlay": "rust-overlay_5"
       },
       "locked": {
-        "lastModified": 1773365974,
-        "narHash": "sha256-FjIMtL8OcOz27s4q2DlWySeR1oy3bT9JtTdzIJrQVTA=",
+        "lastModified": 1773587350,
+        "narHash": "sha256-HfRQeefyTQRAlRnssWI8VbmGssxjlfV4msyU/eFKJL4=",
         "ref": "refs/heads/main",
-        "rev": "2f4138e6979fd6c9bcaed267a09327ed28f5d318",
-        "revCount": 6,
+        "rev": "d6162bd356235324ba361e207235f8650b42725c",
+        "revCount": 8,
         "type": "git",
         "url": "ssh://git@gitea.proton:2222/logan/garage-queue.git"
       },
@@ -1033,11 +1033,11 @@
         "rust-overlay": "rust-overlay_9"
       },
       "locked": {
-        "lastModified": 1772489844,
-        "narHash": "sha256-JAVqHl10b0y+e2vmx52OTR1yz48WiwJNC4SRRG7nsVY=",
+        "lastModified": 1773605056,
+        "narHash": "sha256-NOqVn6UFilfuzsS1PrVjIOlqxa+yuMS85cZ/zJzxvL0=",
         "ref": "refs/heads/main",
-        "rev": "a603a9e8b570961c9811808527e52ca27ae3bb26",
-        "revCount": 6,
+        "rev": "3f44475ae4bd365ae437d2fea6f92a420e7cfef2",
+        "revCount": 7,
         "type": "git",
         "url": "ssh://git@gitea.proton:2222/logan/metalps"
       },
@@ -2039,11 +2039,11 @@
         "rust-overlay": "rust-overlay_10"
       },
       "locked": {
-        "lastModified": 1773433405,
-        "narHash": "sha256-d3DEct/lovYDNJhs29IX5ZhCxCQplnouF+HGIH1gudU=",
+        "lastModified": 1773605084,
+        "narHash": "sha256-wtaooEGj1rxxKGEw7oWvfId2gmlKF6OYJLw5ihT+eDI=",
         "ref": "refs/heads/main",
-        "rev": "d17c35c54ce232bdcf0f20fd105aac6630671430",
-        "revCount": 7,
+        "rev": "341ded0bb726afd2cd0ac4b3aa8a753fd432799f",
+        "revCount": 9,
         "type": "git",
         "url": "ssh://git@gitea.proton:2222/logan/proc-siding.git"
       },
