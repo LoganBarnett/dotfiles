@@ -26,7 +26,7 @@ let
   ];
   wireguard-client-peer =
     { host-id, ip }:
-    (import ../nixos-modules/wireguard-client-peer.nix {
+    (import ./client-peer.nix {
       inherit host-id;
       inherit ip;
       inherit vpn-subnet-prefix;
@@ -35,10 +35,10 @@ in
 {
   age.secrets."${host-id}-wireguard-server" = {
     generator.script = "wireguard-priv";
-    rekeyFile = ../secrets/${host-id}-wireguard-server.age;
+    rekeyFile = ../../secrets/${host-id}-wireguard-server.age;
   };
   imports = (builtins.map wireguard-client-peer peers) ++ [
-    ../nixos-configs/wireguard-agenix-rekey-generator.nix
+    ../../agenix/wireguard-priv.nix
   ];
   environment.systemPackages = [
     # Allow us to run Wireguard commands to show configuration and diagnose

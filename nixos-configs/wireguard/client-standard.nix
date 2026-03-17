@@ -8,19 +8,19 @@
 }:
 {
   imports = [
-    ../nixos-modules/lib-custom.nix
-    ./wireguard-agenix-rekey-generator.nix
+    ../../nixos-modules/lib-custom.nix
+    ../../agenix/wireguard-priv.nix
   ];
   age.secrets."${host-id}-wireguard-client" = {
     generator.script = "wireguard-priv";
-    rekeyFile = ../secrets/${host-id}-wireguard-client.age;
+    rekeyFile = ../../secrets/${host-id}-wireguard-client.age;
   };
   # At least one host needs to make an accounting for the non-NixOS / nix-darwin
   # hosts that will join the VPN.  This should become a dynamic list, but that
   # will require some legerdemain for another day.
   age.secrets."manganese-wireguard-client" = {
     generator.script = "wireguard-priv";
-    rekeyFile = ../secrets/manganese-wireguard-client.age;
+    rekeyFile = ../../secrets/manganese-wireguard-client.age;
   };
   nixpkgs.overlays = [
     (final: prev: {
@@ -29,7 +29,7 @@
           # Mana from the heavens.  Show us what file Wireguard is complaining
           # about.  Found here:
           # https://lists.zx2c4.com/pipermail/wireguard/2024-April/008535.html
-          ../nixos-modules/wg-file-path-in-errors.patch
+          ../../nixos-modules/wg-file-path-in-errors.patch
         ];
       });
     })
@@ -73,7 +73,7 @@
               endpoint = "vpn.logustus.com:51820";
               persistentKeepalive = null;
               presharedKeyFile = null;
-              publicKey = builtins.readFile ../secrets/silicon-wireguard-server.pub;
+              publicKey = builtins.readFile ../../secrets/silicon-wireguard-server.pub;
             }
           ];
           privateKeyFile = config.age.secrets."${host-id}-wireguard-client".path;
@@ -98,7 +98,7 @@
               endpoint = "vpn.logustus.com:51820";
               persistentKeepalive = null;
               presharedKeyFile = null;
-              publicKey = builtins.readFile ../secrets/silicon-wireguard-server.pub;
+              publicKey = builtins.readFile ../../secrets/silicon-wireguard-server.pub;
             }
           ];
           privateKeyFile = config.age.secrets."${host-id}-wireguard-client".path;

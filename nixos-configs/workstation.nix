@@ -5,7 +5,7 @@
 # like `$WORK` but instead just constructive things.
 #
 # Much consolidation is needed.  Particularly let's also nab what we see on
-# ../nixos-modules/user-can-develop.nix.
+# ../nixos-configs/user-can-develop.nix.
 ################################################################################
 {
   flake-inputs,

@@ -1,7 +1,8 @@
 ################################################################################
-# Declare a Wireguard peer as a client that will connect to our server.
+# Declare a Wireguard peer as a client that will connect to our server.  Uses
+# the "standard" version instead of network.
 #
-# This is intended to be consumed directly via wireguard-server.nix.
+# This is intended to be consumed directly via wireguard-server-standard.nix.
 ################################################################################
 (
   {
@@ -12,11 +13,11 @@
   { config, lib, ... }:
   {
     imports = [
-      ../nixos-configs/wireguard-agenix-rekey-generator.nix
+      ../../agenix/wireguard-priv.nix
     ];
     age.secrets."${host-id}-wireguard-client" = {
       generator.script = "wireguard-priv";
-      rekeyFile = ../secrets/${host-id}-wireguard-client.age;
+      rekeyFile = ../../secrets/${host-id}-wireguard-client.age;
     };
     systemd.network.netdevs."50-wg0" = {
       # Options are not entirely evaluated after all configurations have been

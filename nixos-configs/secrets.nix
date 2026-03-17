@@ -180,8 +180,7 @@ in
     ../agenix/hex-configurable-secret.nix
     ../agenix/secret-template-file.nix
     ../agenix/tls-secret.nix
-    # TODO: Rename and move to join the others in the agenix directory.
-    ./wireguard-agenix-rekey-generator.nix
+    ../agenix/wireguard-priv.nix
     ../agenix/yaml-secret.nix
   ];
   environment.systemPackages = [

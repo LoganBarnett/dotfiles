@@ -39,7 +39,7 @@ in
     # confirmed that commenting this out (at least temporarily) fixes the issue.
     # However I already have pre-generated secrets so I'm not bumping into the
     # issue currently.
-    ../nixos-configs/wireguard-server-standard.nix
+    ../nixos-configs/wireguard/server-standard.nix
     (
       { pkgs, ... }:
       {

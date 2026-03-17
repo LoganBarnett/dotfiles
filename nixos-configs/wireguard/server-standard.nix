@@ -30,13 +30,13 @@ let
     {
       # This demands the actual key and not a path.  Use the ./. idiom to get the
       # path but also put this file in the nix store where we can get to it.
-      publicKey = builtins.readFile ../secrets/${host-id}-wireguard-client.pub;
+      publicKey = builtins.readFile ../../secrets/${host-id}-wireguard-client.pub;
       allowedIPs = [ "${vpn-subnet-prefix}.${ip}/32" ];
     };
   wireguard-client-secret = host-id: {
     "${host-id}-wireguard-client" = {
       generator.script = "wireguard-priv";
-      rekeyFile = ../secrets/${host-id}-wireguard-client.age;
+      rekeyFile = ../../secrets/${host-id}-wireguard-client.age;
     };
   };
 in
@@ -44,14 +44,14 @@ in
   age.secrets = {
     "${host-id}-wireguard-server" = {
       generator.script = "wireguard-priv";
-      rekeyFile = ../secrets/${host-id}-wireguard-server.age;
+      rekeyFile = ../../secrets/${host-id}-wireguard-server.age;
     };
   }
   // (lib.attrsets.mergeAttrsList (
     builtins.map wireguard-client-secret (builtins.map (p: p.host-id) peers)
   ));
   imports = [
-    ./wireguard-agenix-rekey-generator.nix
+    ../../agenix/wireguard-priv.nix
   ];
   environment.systemPackages = [
     # Allow us to run Wireguard commands to show configuration and diagnose

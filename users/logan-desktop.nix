@@ -1,8 +1,5 @@
 { config, lib, ... }:
 {
-  imports = [
-    (import ../nixos-modules/desktop-dark.nix { user = "logan"; })
-  ];
   services.keyd.enable = false;
   services.keyd.keyboards = {
     default = {
@@ -50,6 +47,7 @@
     };
   };
   home-manager.users.logan = {
+    imports = [ ../home-configs/desktop-dark.nix ];
     home.stateVersion = config.system.stateVersion;
     dconf.settings = {
       "org/gnome/shell/keybindings" = {

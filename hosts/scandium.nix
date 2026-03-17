@@ -77,7 +77,7 @@ in
     ../nixos-configs/sd-image-raspberrypi.nix
     ../nixos-configs/secrets.nix
     ../nixos-configs/software-engineering-networking.nix
-    ../nixos-configs/wireguard-client-standard.nix
+    ../nixos-configs/wireguard/client-standard.nix
     ../nixos-configs/workstation.nix
     ../darwin-configs/nix-remote-builder-doctor.nix
     flake-inputs.home-manager.darwinModules.home-manager
@@ -106,9 +106,7 @@ in
     ../darwin-configs/sytter.nix
     ../nixos-configs/tls-trust.nix
     ../nixos-configs/user-can-admin.nix
-    (import ../nixos-modules/user-can-develop.nix {
-      inherit username;
-    })
+    ../nixos-configs/user-can-develop.nix
     ../darwin.nix
     ../users/logan-personal.nix
     ../headed-host.nix

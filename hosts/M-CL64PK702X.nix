@@ -88,9 +88,7 @@ in
     ../users/logan-new-e-ah.nix
     ../nixos-configs/user-can-admin.nix
     ../nixos-configs/workstation.nix
-    (import ../nixos-modules/user-can-develop.nix {
-      inherit username;
-    })
+    ../nixos-configs/user-can-develop.nix
     ../headed-host.nix
     (
       {

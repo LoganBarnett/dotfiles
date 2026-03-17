@@ -1,4 +1,3 @@
-{ username }:
 {
   flake-inputs,
   pkgs,
@@ -32,7 +31,7 @@ let
 in
 {
   imports = [
-    ./git-config.nix
+    ../nixos-modules/git-config.nix
   ];
   environment.systemPackages = [
     # Gives us diff --color support via GNU diff.
