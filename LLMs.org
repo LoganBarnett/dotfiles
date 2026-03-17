@@ -81,6 +81,32 @@ I do have some inconsistencies wherein some ~nixos-modules~ are actually
 ~nixos-configs~, but I didn't have the split pattern at time of authorship of
 those.
 
+*** Scripts
+
+Scripts that ship as part of a derivation are co-located with their
+~default.nix~ in a subdirectory under ~derivations/~, following the same
+convention as ~nixpkgs~.  The directory name, the script file name, and the
+derivation's ~name~ (or ~pname~) must all match.
+
+The script file carries a shebang appropriate to its language so that editors
+recognise it and it can be executed directly outside of Nix (given the right
+interpreter and dependencies on ~PATH~).  Use the appropriate ~writers~ function
+for the script's language — no custom ~installPhase~ needed.  Each writer
+handles the shebang, installs the binary, and runs a linter at build time
+(~shellcheck~ for shell, ~pyflakes~ for Python): ~writeShellApplication~ for
+shell scripts, ~writers.writePython3Bin~ for Python.
+
+#+begin_src
+derivations/
+  my-tool/
+    my-tool       <- script with shebang; runnable directly
+    default.nix   <- derivation; patches shebang, wires runtime deps
+#+end_src
+
+The older pattern of a bare ~.nix~ file in ~derivations/~ reading its script
+from ~../scripts/<name>~ still exists for historical scripts, but new scripts
+should use the co-located layout above.
+
 *** Secrets
 
 Secrets are managed with agenix-rekey.  Only specify ~rekeyFile~ when there is

@@ -15,6 +15,43 @@ My intention is to write these derivations in such a way that they conform to
 build requirements should also be satisfied here too.  In this way, it serves as
 a simpler proving grounds for new packages that I could submit to ~nixpkgs~.
 
+* Scripts
+
+Scripts are co-located with their derivation rather than living in a separate
+~scripts/~ directory.  Each package lives in its own subdirectory, and the
+script file shares the exact name of the package:
+
+#+begin_src
+derivations/
+  my-tool/
+    my-tool       <- the script, with an appropriate shebang
+    default.nix   <- the derivation
+#+end_src
+
+The shebang lets editors apply correct syntax highlighting and lets the script
+be run directly outside of Nix (as long as the required interpreter and any
+runtime dependencies are already on ~PATH~).  Use the appropriate ~writers~ function for the script's language — no custom
+~installPhase~ needed.  Each writer handles the shebang, installs the binary,
+and runs a linter (~shellcheck~ / ~pyflakes~) at build time.
+
+#+begin_src nix :exports code
+  # Shell script.
+  writeShellApplication {
+    name = "my-tool";
+    runtimeInputs = [ someDep ];
+    text = builtins.readFile ./my-tool;
+  }
+
+  # Python script.
+  writers.writePython3Bin "my-tool"
+    { libraries = [ python3Packages.someLib ]; }
+    (builtins.readFile ./my-tool)
+#+end_src
+
+An older convention placed scripts in ~../scripts/<name>~ and read them with
+~builtins.readFile~.  That layout still exists for legacy scripts but should
+not be used for new ones.
+
 * Gotchas
 ** Rust applications
 
