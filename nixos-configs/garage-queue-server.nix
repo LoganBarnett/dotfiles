@@ -33,16 +33,19 @@ in
         nats_url = "nats://127.0.0.1:4222";
         generate_queue = "ollama";
       };
-      queues.ollama.extractors = {
-        model_tag = {
-          kind = "tag";
-          capability = "model";
-          jq_exp = ".model";
-        };
-        vram = {
-          kind = "scalar";
-          capability = "vram_mb";
-          jq_file = "${vramJq}";
+      queues.ollama = {
+        route = "/api/generate";
+        extractors = {
+          model_tag = {
+            kind = "tag";
+            capability = "model";
+            jq_exp = ".model";
+          };
+          vram = {
+            kind = "scalar";
+            capability = "vram_mb";
+            jq_file = "${vramJq}";
+          };
         };
       };
     };
