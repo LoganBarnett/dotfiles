@@ -74,6 +74,7 @@ in
     # NixOS has this built in; import it from nixpkgs for Darwin.  Needed for
     "${flake-inputs.nixpkgs}/nixos/modules/programs/pay-respects.nix"
     ./nixos-modules/unfree-predicates.nix
+    ./agnostic-configs/nix-builder-consume.nix
   ];
   # Global packages that can't be bound to a specific user, such as shells.
   environment = {

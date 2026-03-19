@@ -79,7 +79,7 @@
     ../nixos-modules/https.nix
     ../nixos-configs/secrets.nix
     # Allow servers to consume builds from other hosts.
-    ../nixos-configs/nix-builder-consume.nix
+    ../agnostic-configs/nix-builder-consume.nix
     # TODO: Remove this and only include it on hosts that need it.  Also make it
     # use the domain.
     ../nixos-configs/tls-leaf-proton.nix

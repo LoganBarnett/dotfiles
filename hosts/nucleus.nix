@@ -33,7 +33,7 @@ in
     ../nixos-configs/narcolepsy.nix
     ../nixos-modules/nix-flake-environment.nix
     ../nixos-configs/nix-store-optimize.nix
-    ../nixos-configs/nix-builder-consume.nix
+    ../agnostic-configs/nix-builder-consume.nix
     ../nixos-configs/user-can-admin.nix
     ../nixos-configs/secrets.nix
   ];

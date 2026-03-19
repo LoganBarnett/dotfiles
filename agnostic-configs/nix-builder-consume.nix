@@ -9,12 +9,8 @@
   ...
 }:
 let
-  # sshKey = ../secrets/builder-key-blue.pub;
-  # Use the agenix-managed secret path directly.  This avoids conflicts with
-  # nix-darwin's environment.etc management.
   sshKey = config.age.secrets.builder-key-blue.path;
   sshUser = "builder";
-  toBase64 = (pkgs.callPackage ../base64.nix { }).toBase64;
   facts = import ../nixos-modules/facts.nix;
 
   # Check if a builder's hostname matches this host or any of its aliases.
@@ -78,16 +74,20 @@ let
     ];
     mandatoryFeatures = [ ];
   };
+  # Darwin hosts build natively for aarch64-darwin and don't benefit from the
+  # ARM Linux builders.  Only include rpi-build for NixOS hosts.
+  allBuilders = lib.optionals (!pkgs.stdenv.isDarwin) [ rpi-build ] ++ [
+    silicon
+  ];
 in
 {
   # Exclude builders from the list if they refer to the current host.  This
   # prevents self-loop deadlocks where a host tries to build on itself via SSH,
   # creating circular dependencies that hang builds indefinitely.
   # Check both the hostname and any aliases defined in facts.nix.
-  nix.buildMachines = lib.filter (builder: !(isCurrentHost builder.hostName)) [
-    rpi-build
-    silicon
-  ];
+  nix.buildMachines = lib.filter (
+    builder: !(isCurrentHost builder.hostName)
+  ) allBuilders;
   nix.distributedBuilds = true;
   # Optional.  Useful when the builder has a faster internet connection than
   # yours.
@@ -110,16 +110,6 @@ in
       publicKeyFile = ../secrets/silicon-pub-key.pub;
     };
   };
-
-  # This demonstrates that Nix doesn't actually use the data found in
-  # /etc/nix/machines but instead relies upon SSH configuration.  Documentation
-  # should be addressed.
-  # environment.etc."ssh/ssh_config.d/101-lithium.conf".text = ''
-  #   Host lithium.proton
-  #     HostName lithium.proton
-  #     User builder
-  #     IdentityFile ${config.age.secrets.builder-key-blue.path}
-  # '';
 
   environment.etc."nix/builder_ed25519.pub".text =
     builtins.readFile ../secrets/builder-key-blue.pub;
