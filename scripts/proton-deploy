@@ -4,6 +4,18 @@ set -euo pipefail
 
 # See some quirks to this process here:
 # https://discourse.nixos.org/t/remote-nixos-rebuild-works-with-build-but-not-with-switch/34741
+#
+# The derivation that wraps this script patches nixos-rebuild to copy the build
+# closure using ssh-ng:// rather than ssh://.  The legacy ssh:// protocol pipes
+# NAR data through nix-store --import over SSH, which fails intermittently with
+# "Bad file descriptor" when transferring many paths.  ssh-ng:// uses the Nix
+# daemon protocol and is persistent and reliable.
+#
+# --use-substitutes passes -s to nix copy, instructing the build host to fetch
+# paths it's missing from its own substituters (cache.nixos.org) rather than
+# requiring this machine to push every path.  Without this, any path not
+# locally present (e.g. a Gemfile.lock fetched only from cache, not in this
+# machine's store) causes a hard failure.
 
 # Allow for any verb.  "switch" is typical - it builds and activates the system
 # derivation, and also installs the bootloader.  "test" will build and activate
@@ -27,6 +39,7 @@ nixos-rebuild \
   --target-host "$host.proton" \
   --build-host "$host.proton" \
   --use-remote-sudo \
+  --use-substitutes \
   --accept-flake-config \
   --fast \
   "$@"
