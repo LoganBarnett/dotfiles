@@ -1,36 +1,13 @@
 {
   flake-inputs,
+  host-id,
   modulesPath,
   pkgs,
+  system,
   ...
 }:
-let
-  host-id = "titanium";
-  system = "x86_64-linux";
-in
 {
   imports = [
-    (
-      let
-        # Default ComfyUI port.
-        comfyui-port = 8188;
-      in
-      {
-        # Turn off until we can figure out how to get ROCM and torch to play nice.
-        # imports = [
-        #   (import ../nixos-modules/comfyui-server.nix {
-        #     inherit host-id;
-        #     port = comfyui-port;
-        #   })
-        #   (import ../nixos-modules/https.nix {
-        #     inherit host-id;
-        #     listen-port = 443;
-        #     server-port = comfyui-port;
-        #     fqdn = "${host-id}.proton";
-        #   })
-        # ];
-      }
-    )
     ../users/logan-desktop.nix
     ../nixos-configs/proc-siding-worker.nix
     ../nixos-configs/airplay-server.nix
@@ -84,19 +61,16 @@ in
         };
         hardware.cpu.intel.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
         # Enables DHCP on each ethernet and wireless interface. In case of
-        # scripted networking (the default) this is the recommended approach. When
-        # using systemd-networkd it's still possible to use this option, but it's
-        # recommended to use it in conjunction with explicit per-interface
-        # declarations with `networking.interfaces.<interface>.useDHCP`.
+        # scripted networking (the default) this is the recommended
+        # approach. When using systemd-networkd it's still possible to use this
+        # option, but it's recommended to use it in conjunction with explicit
+        # per-interface declarations with
+        # `networking.interfaces.<interface>.useDHCP`.
         networking.useDHCP = lib.mkDefault true;
         # networking.interfaces.enp5s0.useDHCP = lib.mkDefault true;
         nixpkgs.hostPlatform = system;
-        # I'm not sure why this must be disabled explicitly.  Not doing this
-        # causes `config.cudaSupport` in the ComfyUI package to fail.
-        # nixpkgs.config.cudaSupport = false;
       }
     )
-    # ../users/eric-desktop.nix
   ];
   services.garage-queue-worker.settings.capabilities.scalars.vram_mb = 12288;
   services.proc-siding.settings.detector.kind = "amd";

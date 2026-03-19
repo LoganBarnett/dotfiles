@@ -7,21 +7,16 @@
 #
 # Untested since upgrading to NixOS 25.11.
 ################################################################################
-{ lib, host-id, ... }: {
-  disabledModules = [
-    "services/networking/shairport-sync.nix"
-    "services/desktops/pipewire/pipewire.nix"
-    # "services/audio/pulseaudio.nix"
-  ];
-  imports = [
-    # Doesn't work due to conflicts between nixpkgs versions.
-    # "${flake-inputs.nixpkgs-latest}/nixos/modules/services/networking/shairport-sync.nix"
-    ../nixos-modules/shairport-sync.nix
-    ../nixos-modules/pipewire.nix
-    # ../nixos-modules/pulseaudio.nix
-  ];
-
+{ lib, host-id, ... }:
+{
   users.users.logan.extraGroups = [ "pipewire" ];
+  users.users.shairport.extraGroups = [ "pipewire" ];
+  systemd.services.shairport-sync.environment.PULSE_RUNTIME_PATH = "/run/pulse";
+  services.pipewire = {
+    enable = true;
+    systemWide = true;
+    pulse.enable = true;
+  };
   services.shairport-sync = {
     enable = true;
     settings = {
@@ -33,16 +28,15 @@
     };
     openFirewall = true;
   };
-  # services.pipewire.pulse.systemWide = true;
   # Avahi = mDNS/Bonjour. Needed for discovery.
   services.avahi = {
     enable = true;
     # domainName = "${host-id}.proton";
-    nssmdns4 = true;     # enable .local name resolution (IPv4)
-    nssmdns6 = true;     # enable .local name resolution (IPv6)
+    nssmdns4 = true; # enable .local name resolution (IPv4)
+    nssmdns6 = true; # enable .local name resolution (IPv6)
     publish = {
-      enable = true;     # publish this host
-      addresses = true;  # include addresses
+      enable = true; # publish this host
+      addresses = true; # include addresses
       workstation = true;
     };
     # If your sender is on a different VLAN, Avahi can reflect mDNS:
