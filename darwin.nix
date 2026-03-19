@@ -70,9 +70,9 @@ in
     flake-inputs.proc-siding.darwinModules.default
     ./nixos-modules/nix-flake-environment.nix
     ./nixos-modules/darwin-tls-trust.nix
-    # NixOS has this built in, but this is our copy for Darwin.  It's needed for
     # ./nixos-configs/user-can-admin.nix.
-    ./nixos-modules/pay-respects.nix
+    # NixOS has this built in; import it from nixpkgs for Darwin.  Needed for
+    "${flake-inputs.nixpkgs}/nixos/modules/programs/pay-respects.nix"
     ./nixos-modules/unfree-predicates.nix
   ];
   # Global packages that can't be bound to a specific user, such as shells.
