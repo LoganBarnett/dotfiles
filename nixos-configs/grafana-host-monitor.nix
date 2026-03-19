@@ -239,7 +239,7 @@ in
           expr = ''
             (
               sum by (instance) (
-                ${without-socket-port ''max_over_time(systemd_unit_state{state="failed"}[1m])''}
+                ${without-socket-port ''systemd_unit_state{state="failed"}''}
               )
               or on(instance)
               sum by (instance) (
