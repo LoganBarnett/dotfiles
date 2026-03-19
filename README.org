@@ -2453,6 +2453,45 @@ nix eval \
 ]
 #+end_example
 
+** Developing on Third-Party Repositories
+
+Working in a cloned repo that has no ~flake.nix~ without polluting its git
+history uses two complementary mechanisms:
+
+- ~.git/info/exclude~ is a per-clone gitignore that is never committed.  Add
+  local-only files here so they cannot accidentally be staged or committed
+  upstream.
+- Nix's flake evaluator only requires files to be *staged* (not committed), so
+  ~git add flake.nix flake.lock~ makes them visible to ~nix develop~ without
+  creating a commit.
+
+*** Full per-project devShell
+
+Use this when the project warrants its own pinned ~nixpkgs~ revision or
+project-specific tools.
+
+#+begin_src sh :exports code
+echo "flake.nix" >> .git/info/exclude
+echo "flake.lock" >> .git/info/exclude
+echo ".envrc"    >> .git/info/exclude
+# Write flake.nix, then stage it so Nix can evaluate it.
+git add flake.nix flake.lock
+echo "use flake ." > .envrc
+direnv allow
+#+end_src
+
+*** Reusable devShell from dotfiles
+
+Use this for a quick environment (e.g. "I just need Rust tooling") without
+authoring a per-repo flake at all.  Define named devShells in this flake and
+reference them by name.
+
+#+begin_src sh :exports code
+echo ".envrc" >> .git/info/exclude
+echo "use flake path:/Users/logan/dev/dotfiles#rust" > .envrc
+direnv allow
+#+end_src
+
 * Making Things Nix
 
 Nix is an imperfect system.  While it manages to do a ton of great work to
