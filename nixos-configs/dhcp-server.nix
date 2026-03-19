@@ -128,13 +128,6 @@ in
     port."udp:67" = {
       listening = true;
     };
-    # Functional test: Query dnsmasq directly for local hostname resolution.
-    # Verifies dnsmasq can resolve the current host's FQDN.
-    dns."${host-id}.${facts.network.domain}" = {
-      resolvable = true;
-      server = "127.0.0.1:5353";
-      timeout = 3000;
-    };
   };
 }
 

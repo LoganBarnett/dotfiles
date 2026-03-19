@@ -87,7 +87,9 @@
     ../nixos-configs/narcolepsy.nix
     # See facts.nix for how this is specifically configured per host.
     ../nixos-configs/prometheus-client.nix
+    ../nixos-modules/goss.nix
     ../nixos-modules/goss-exporter.nix
+    ../nixos-modules/goss-checks.nix
     ../nixos-modules/nix-flake-environment.nix
     ../nixos-configs/nix-store-optimize.nix
     ../nixos-configs/restic-shim.nix
@@ -100,6 +102,8 @@
     ../nixos-modules/user-lockout-schedule.nix
     ../users/logan-server.nix
   ];
+  services.goss.prometheusContentTypeFixProxy.enable = true;
+
   # This is just blindly copied from somewhere, but I don't know where.  I
   # should audit them in my Vast Quantities of Space Time™.
   boot.initrd.availableKernelModules = [
