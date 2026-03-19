@@ -404,11 +404,11 @@
         "rust-overlay": "rust-overlay_3"
       },
       "locked": {
-        "lastModified": 1773601132,
-        "narHash": "sha256-olfWhE9AsLfu+aI8Qho+lQLvYakFBNxjlMiM4Au5ufQ=",
+        "lastModified": 1773717048,
+        "narHash": "sha256-UQuHMdnNohLe7LgcIzD1KMxZ0revxoxFZk7MQkFhc6k=",
         "ref": "refs/heads/main",
-        "rev": "de6c796fe7fcece50e519f365daed638dfbf3add",
-        "revCount": 106,
+        "rev": "7eee25ff6aa9e07baa8d8d83a75511dac087e72c",
+        "revCount": 108,
         "type": "git",
         "url": "ssh://git@gitea.proton:2222/logan/dns-smart-block"
       },
@@ -426,11 +426,11 @@
         "org-dnd": "org-dnd"
       },
       "locked": {
-        "lastModified": 1773599049,
-        "narHash": "sha256-iMRpCKivl/iBhw2nq1phHm2QwWwYJeNcHeloGN4OJRU=",
+        "lastModified": 1773723875,
+        "narHash": "sha256-Iuoa3b5gvIqio1VcAhMhIUU+42yJubgJvjewbayMcSI=",
         "ref": "refs/heads/main",
-        "rev": "b8d432c42e22a38db829dfaa509e5b5c2c57b27b",
-        "revCount": 833,
+        "rev": "8f13f2f155fd32bb605a8ad874ef2e8a8be89399",
+        "revCount": 835,
         "type": "git",
         "url": "ssh://git@gitea.proton:2222/logan/emacs-config"
       },
