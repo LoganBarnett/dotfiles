@@ -386,6 +386,7 @@
               fmt-staged
               nix-direnv-add-envrc
               nix-host-key-install
+              pkgs.just
               pkgs.nixfmt-rfc-style
               pkgs.treefmt
             ];

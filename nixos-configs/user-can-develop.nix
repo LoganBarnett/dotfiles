@@ -46,6 +46,8 @@ in
     # git manages my code. Comes with MacOS but no reason to use a dated
     # version.
     pkgs.git
+    # A command runner / task tool that reads a Justfile in the project root.
+    pkgs.just
     # CLI tool for interacting with Gitea servers.
     # Override tea to build from PR #897 branch which fixes TTY prompting in
     # non-interactive environments.

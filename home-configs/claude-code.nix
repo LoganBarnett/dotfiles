@@ -71,6 +71,33 @@ in
             ];
           }
         ];
+        Stop = [
+          {
+            hooks = [
+              {
+                type = "command";
+                # Runs tests before Claude declares completion.  Blocks
+                # stopping (exit 2) if tests fail so Claude keeps working.
+                # Prefers `just test` when a Justfile exposes a test recipe,
+                # falls back to `cargo test` for Rust projects.  The
+                # stop_hook_active guard prevents infinite loops when a
+                # previous hook invocation already triggered a retry.
+                command = ''
+                  input=$(cat)
+                  if echo "$input" | jq -e '.stop_hook_active == true' > /dev/null 2>&1; then
+                    exit 0
+                  fi
+                  if { [ -f Justfile ] || [ -f justfile ]; } \
+                      && just --summary 2>/dev/null | tr ' ' '\n' | grep -qx 'test'; then
+                    just test || printf '{"decision":"block","reason":"Tests failed (just test).  Fix failing tests before finishing."}'
+                  elif [ -f Cargo.toml ]; then
+                    cargo test || printf '{"decision":"block","reason":"Tests failed (cargo test).  Fix failing tests before finishing."}'
+                  fi
+                '';
+              }
+            ];
+          }
+        ];
       };
     };
     agents = {

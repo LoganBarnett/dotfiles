@@ -1,0 +1,2 @@
+test:
+    nix flake check
