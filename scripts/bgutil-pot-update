@@ -1,0 +1,69 @@
+#!/usr/bin/env bash
+
+################################################################################
+# Updates static.nix with the new version and hashes for `bgutil-pot`.
+#
+# Fetches prebuilt binaries from GitHub releases, one per supported platform.
+################################################################################
+
+set -euo pipefail
+
+version="$(curl --location --silent \
+  https://api.github.com/repos/jim60105/bgutil-ytdlp-pot-provider-rs/releases/latest \
+    | jq --raw-output '.tag_name | ltrimstr("v")'
+)"
+
+if [[ -z "$version" ]]; then
+  echo "ERROR: Could not determine latest bgutil-pot version" >&2
+  exit 1
+fi
+
+echo "Latest version: ${version}"
+
+declare -A arches=(
+  [x86_64-linux]=x86_64
+  [aarch64-linux]=aarch64
+)
+
+cd "$(dirname "$0")/.."
+
+nix-editor \
+  static.nix \
+  'bgutil-pot.version' \
+  --val "\"$version\"" \
+  --inplace
+
+for system in "${!arches[@]}"; do
+  arch="${arches[$system]}"
+  url="https://github.com/jim60105/bgutil-ytdlp-pot-provider-rs/releases/download/v${version}/bgutil-pot-linux-${arch}"
+  echo "Fetching ${system} hash from ${url}..."
+  hash_32="$(nix-prefetch-url --type sha256 "$url")"
+  hash_sri="$(nix hash convert --hash-algo sha256 --to sri "${hash_32}")"
+  echo "${system}: ${hash_sri}"
+  nix-editor \
+    static.nix \
+    "bgutil-pot.${system}.hash" \
+    --val "\"$hash_sri\"" \
+    --inplace
+done
+
+plugin_url="https://github.com/jim60105/bgutil-ytdlp-pot-provider-rs/releases/download/v${version}/bgutil-ytdlp-pot-provider-rs.zip"
+echo "Fetching plugin hash from ${plugin_url}..."
+plugin_hash_32="$(nix-prefetch-url --type sha256 "$plugin_url")"
+plugin_hash_sri="$(nix hash convert --hash-algo sha256 --to sri "${plugin_hash_32}")"
+echo "Plugin hash: ${plugin_hash_sri}"
+
+nix-editor \
+  static.nix \
+  'bgutil-pot.plugin.hash' \
+  --val "\"$plugin_hash_sri\"" \
+  --inplace
+
+nix-editor \
+  static.nix \
+  'bgutil-pot.version' \
+  --val "\"$version\"" \
+  --inplace \
+  --format
+
+echo "Updated static.nix successfully"

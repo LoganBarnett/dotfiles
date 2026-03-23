@@ -1,0 +1,45 @@
+#!/usr/bin/env bash
+
+################################################################################
+# Updates static.nix with the new version and hash for `yt-dlp`.
+################################################################################
+
+set -euo pipefail
+
+version="$(curl --location --silent \
+  https://api.github.com/repos/yt-dlp/yt-dlp/releases/latest \
+    | jq --raw-output '.tag_name'
+)"
+
+if [[ -z "$version" ]]; then
+  echo "ERROR: Could not determine latest yt-dlp version" >&2
+  exit 1
+fi
+
+echo "Latest version: ${version}"
+
+hash_32="$(nix-prefetch-url \
+  --type sha256 \
+  --unpack \
+  "https://github.com/yt-dlp/yt-dlp/archive/refs/tags/${version}.tar.gz"
+)"
+hash_sri="$(nix hash convert --hash-algo sha256 --to sri "${hash_32}")"
+
+echo "Hash: ${hash_sri}"
+
+cd "$(dirname "$0")/.."
+
+nix-editor \
+  static.nix \
+  'yt-dlp.version' \
+  --val "\"$version\"" \
+  --inplace
+
+nix-editor \
+  static.nix \
+  'yt-dlp.hash' \
+  --val "\"$hash_sri\"" \
+  --inplace \
+  --format
+
+echo "Updated static.nix successfully"

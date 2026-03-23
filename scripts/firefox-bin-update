@@ -1,0 +1,45 @@
+#!/usr/bin/env bash
+
+################################################################################
+# Updates static.nix with the new version and hash for `firefox-bin`.
+################################################################################
+
+set -euo pipefail
+
+version="$(curl --location --silent \
+  "https://product-details.mozilla.org/1.0/firefox_versions.json" \
+    | jq --raw-output '.LATEST_FIREFOX_VERSION'
+)"
+
+if [[ -z "$version" ]]; then
+  echo "ERROR: Could not determine latest Firefox version" >&2
+  exit 1
+fi
+
+echo "Latest version: ${version}"
+
+hash_32="$(nix-prefetch-url \
+  --type sha256 \
+  --name "Firefox-${version}.dmg" \
+  "https://archive.mozilla.org/pub/firefox/releases/${version}/mac/en-US/Firefox%20${version}.dmg"
+)"
+hash_sri="$(nix hash convert --hash-algo sha256 --to sri "${hash_32}")"
+
+echo "Hash: ${hash_sri}"
+
+cd "$(dirname "$0")/.."
+
+nix-editor \
+  static.nix \
+  'firefox-bin.version' \
+  --val "\"$version\"" \
+  --inplace
+
+nix-editor \
+  static.nix \
+  'firefox-bin.hash' \
+  --val "\"$hash_sri\"" \
+  --inplace \
+  --format
+
+echo "Updated static.nix successfully"

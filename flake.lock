@@ -1036,11 +1036,11 @@
         "rust-overlay": "rust-overlay_8"
       },
       "locked": {
-        "lastModified": 1774152011,
-        "narHash": "sha256-bpg82ZJCKcS/7f9nB6i1F0n66KkOR0TOkxUaElPxRjM=",
+        "lastModified": 1774187237,
+        "narHash": "sha256-zb3DZdUDGevSeYHASwsAyOC3OjOQMID3jUsoeJoxIKY=",
         "ref": "refs/heads/main",
-        "rev": "a53fd779c522e1f3a405b1e321187e4e716246f7",
-        "revCount": 16,
+        "rev": "1394f7f9569054de52200a9577490de248c3d27b",
+        "revCount": 17,
         "type": "git",
         "url": "ssh://git@gitea.proton:2222/logan/loku"
       },
