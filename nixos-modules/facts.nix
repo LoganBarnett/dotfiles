@@ -372,7 +372,9 @@
           "blocky"
           "dns-smart-block"
           "ldap"
+          "loku"
           "matrix"
+          "metube"
           "ollama"
         ];
         controlledHost = true;

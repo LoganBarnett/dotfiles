@@ -83,6 +83,10 @@
       url = "git+ssh://git@gitea.proton:2222/logan/ldap-reconciler";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    loku = {
+      url = "git+ssh://git@gitea.proton:2222/logan/loku";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     mac-app-util = {
       url = "github:hraban/mac-app-util";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -383,6 +387,7 @@
           nix-host-key-install =
             pkgs.callPackage ./derivations/nix-host-key-install.nix
               { };
+          gnused-wrapper = pkgs.callPackage ./derivations/gnused-wrapper.nix { };
         in
         {
           default = pkgs.mkShell {
@@ -390,6 +395,10 @@
               fmt-staged
               nix-direnv-add-envrc
               nix-host-key-install
+              # On Darwin the stdenv injects raw gnused into PATH, which bypasses
+              # our system-wide wrapper.  Including it here ensures the wrapper
+              # wins because mkShell prepends packages before stdenv tools.
+              gnused-wrapper
               pkgs.just
               pkgs.nixfmt-rfc-style
               pkgs.treefmt

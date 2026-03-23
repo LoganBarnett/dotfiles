@@ -17,6 +17,7 @@ in
     # TODO: Restore this once the hardware is installed here.
     # ../hardware/aeotec-z-stick-7.nix
     flake-inputs.garage-queue.nixosModules.server
+    flake-inputs.loku.nixosModules.default
     ../nixos-configs/dhcp-lease-textfile.nix
     ../nixos-configs/garage-queue-server.nix
     ../nixos-configs/dns-server.nix
@@ -26,9 +27,10 @@ in
     ../nixos-configs/matrix-server.nix
     ../nixos-configs/nfs-mount-provider-from-facts.nix
     ../nixos-configs/openldap-facts.nix
+    ../nixos-configs/loku.nix
     ../nixos-configs/metube.nix
     ../nixos-configs/nix-builder-provide.nix
-    ../nixos-modules/server-host.nix
+    ../nixos-modules/linux-host.nix
     flake-inputs.dns-smart-block.nixosModules.default
     # TODO: Right now agenix-rekey wants to build wireguard to do the
     # generation.  This fails due to a problem with macOS building wireguard-go
@@ -283,7 +285,7 @@ in
 
   # Silicon provides builds to other hosts, so it should not consume builds
   # from itself.  Override the nix-builder-consume module imported by
-  # server-host.nix to prevent self-referential build loops.
+  # linux-host.nix to prevent self-referential build loops.
   nix.distributedBuilds = lib.mkForce false;
   nix.buildMachines = lib.mkForce [ ];
 }
