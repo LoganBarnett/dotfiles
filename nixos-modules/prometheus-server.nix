@@ -43,9 +43,7 @@ let
   inherit (lib.lists) fold;
 in
 {
-  imports = [
-    ../nixos-modules/https.nix
-  ];
+  imports = [ ];
   services.https.fqdns."prometheus.proton" = {
     internalPort = config.services.prometheus.port;
   };

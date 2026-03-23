@@ -24,7 +24,6 @@ in
 {
   imports = [
     ../nixos-modules/bindfs.nix
-    ../nixos-modules/https.nix
     ../nixos-modules/nfs-mount-consumer.nix
   ];
   auth.ldap.users.${ldapServiceUser} = lib.mkIf ldap-enabled {

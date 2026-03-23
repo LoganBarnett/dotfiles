@@ -159,7 +159,6 @@
   # Nginx proxy configuration for admin interface with HTTP Basic Auth.
   services.nginx.virtualHosts."dns-smart-block.proton" = {
     locations."/" = {
-      # proxyPass = "http://${config.services.dns-smart-block.blocklistServer.adminBindHost}:${toString config.services.dns-smart-block.blocklistServer.adminBindPort}";
       basicAuth = "DNS Smart Block Admin";
       basicAuthFile = config.age.secrets.dns-smart-block-admin-htpasswd.path;
     };

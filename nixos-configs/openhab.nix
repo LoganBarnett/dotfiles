@@ -15,7 +15,6 @@
 }:
 {
   imports = [
-    ../nixos-modules/https.nix
     # This doesn't actually work, because this module is already "imported".
     # So it has to be included in the `modules` list for the host.  Alas.
     flake-inputs.openhab-flake.nixosModules.${system}.openhab
