@@ -127,6 +127,10 @@
       # url = "path:/Users/logan/dev/nix-remote-builder-doctor";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    nur = {
+      url = "github:nix-community/NUR";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     optnix = {
       url = "github:water-sucks/optnix";
       inputs.nixpkgs.follows = "nixpkgs";

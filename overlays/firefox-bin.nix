@@ -18,9 +18,7 @@ final: prev:
 let
   statics = (import ../static.nix).firefox-bin;
   inherit (statics) version hash;
-in
-{
-  firefox-bin = final.stdenvNoCC.mkDerivation {
+  drv = final.stdenvNoCC.mkDerivation {
     pname = "firefox-bin";
     inherit version;
     src = final.fetchurl {
@@ -53,5 +51,17 @@ in
       ];
       sourceProvenance = [ final.lib.sourceTypes.binaryNativeCode ];
     };
+  };
+in
+{
+  # home-manager's programs.firefox module expects a wrapFirefox-produced
+  # package, which exposes an `override` function to inject policies and prefs.
+  # Our bare stdenvNoCC derivation doesn't get `override` from callPackage, so
+  # we stub it out.  home-manager uses it to pass cfg/extraPolicies, but we
+  # configure those directly via profile settings in home-configs/firefox.nix,
+  # so the no-op is safe.
+  firefox-bin = drv // {
+    override = _: drv;
+    overrideAttrs = _: drv;
   };
 }

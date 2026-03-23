@@ -156,6 +156,7 @@ in
         ];
         home-manager.users.logan = {
           imports = [
+            ../home-configs/firefox.nix
             ../home-configs/ghostty.nix
             ../home-configs/ssh-config-general.nix
             ../home-configs/ssh-config-container-vm.nix
@@ -189,9 +190,8 @@ in
             "alfred"
             "dash"
             "discord"
-            # The firefox-bin package doesn't work on macOS - it immediately
-            # crashes.
-            "firefox"
+            # firefox managed via pkgs.firefox-bin overlay; see
+            # overlays/firefox-bin.nix and static.nix.
             # "doxie"
             "istat-menus"
             "keycastr"
@@ -227,8 +227,7 @@ in
             pkgs.element-desktop
             # Download content from Fanbox.
             pkgs.fanbox-dl
-            # Crashes on open.
-            # pkgs.firefox-bin
+            pkgs.firefox-bin
             pkgs.moonlight-qt
             # Drawing program (Like MS Paint, or more like Gimp/Photoshop?).
             # Linux-only though in Nix.  Probably due to problems with GTK that a
