@@ -700,6 +700,27 @@
         "type": "github"
       }
     },
+    "flake-parts_6": {
+      "inputs": {
+        "nixpkgs-lib": [
+          "nur",
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1733312601,
+        "narHash": "sha256-4pDvzqnegAfRkPwO3wmwBhVi/Sye1mzps0zHWYnP88c=",
+        "owner": "hercules-ci",
+        "repo": "flake-parts",
+        "rev": "205b12d8b7cd4802fbcb8e8ef6a0f1408781a4f9",
+        "type": "github"
+      },
+      "original": {
+        "owner": "hercules-ci",
+        "repo": "flake-parts",
+        "type": "github"
+      }
+    },
     "flake-sync-status": {
       "inputs": {
         "crane": "crane_4",
@@ -1036,11 +1057,11 @@
         "rust-overlay": "rust-overlay_8"
       },
       "locked": {
-        "lastModified": 1774187237,
-        "narHash": "sha256-zb3DZdUDGevSeYHASwsAyOC3OjOQMID3jUsoeJoxIKY=",
+        "lastModified": 1774188402,
+        "narHash": "sha256-hI4VwtIHoPXUKsHyUuzTQNILtiB6/nhXh7y1lAToHcc=",
         "ref": "refs/heads/main",
-        "rev": "1394f7f9569054de52200a9577490de248c3d27b",
-        "revCount": 17,
+        "rev": "b8147ecdb515337fdc8071a4a0f4a17ef5cfe16e",
+        "revCount": 18,
         "type": "git",
         "url": "ssh://git@gitea.proton:2222/logan/loku"
       },
@@ -2051,6 +2072,27 @@
         "type": "github"
       }
     },
+    "nur": {
+      "inputs": {
+        "flake-parts": "flake-parts_6",
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1774187013,
+        "narHash": "sha256-TmCGHRIDsbaeejQC+H94fcy2XtjiU4VDX88tpScfdnE=",
+        "owner": "nix-community",
+        "repo": "NUR",
+        "rev": "b66da7ac4067e88f5cba42b6be2f52b068bb59bb",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nix-community",
+        "repo": "NUR",
+        "type": "github"
+      }
+    },
     "openhab-flake": {
       "inputs": {
         "flake-utils": "flake-utils_5",
@@ -2289,6 +2331,7 @@
         "nixpkgs-nixos-raspberrypi": "nixpkgs-nixos-raspberrypi",
         "nixpkgs-openscad-bin": "nixpkgs-openscad-bin",
         "nixpkgs-working-rocm": "nixpkgs-working-rocm",
+        "nur": "nur",
         "openhab-flake": "openhab-flake",
         "optnix": "optnix",
         "proc-siding": "proc-siding",
