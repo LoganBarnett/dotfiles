@@ -62,8 +62,13 @@ in
     };
     settings = {
       server = {
+        DOMAIN = domain;
+        # This defaults to using HTTP.  Probably because the defaults don't
+        # expect an easy HTTPS reverse proxy configuration.
+        ROOT_URL = "https://${domain}/";
         # Use Gitea's built-in SSH server on port 2222 since the host
         # already uses port 22 for system SSH.
+        SSH_DOMAIN = domain;
         SSH_PORT = 2222;
         START_SSH_SERVER = true;
         DISABLE_SSH = false;
@@ -75,10 +80,6 @@ in
       };
       service = {
         DISABLE_REGISTRATION = true;
-        DOMAIN = domain;
-        # This defaults to using HTTP.  Probably because the defaults don't
-        # expect an easy HTTPS reverse proxy configuration.
-        ROOT_URL = "https://${domain}/";
       };
       # oauth2_client = {
       #   ENABLE_AUTO_REGISTRATION = true;
