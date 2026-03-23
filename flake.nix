@@ -70,6 +70,10 @@
       url = "git+ssh://git@gitea.proton:2222/logan/garage-queue.git";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    hash-color = {
+      url = "git+ssh://git@gitea.proton:2222/logan/hash-color";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
 
     home-manager-working-rocm = {
       url = "github:nix-community/home-manager/release-24.11";

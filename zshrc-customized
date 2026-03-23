@@ -290,7 +290,7 @@ function exit_status_prompt() {
 }
 
 function host_prompt() {
-  echo "%{$fg[yellow]%}%n@%M$reset_color"
+  echo "%n@$(hash-color --value "$HOST" --trim)"
 }
 
 autoload -U add-zsh-hook

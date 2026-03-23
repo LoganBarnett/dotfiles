@@ -1,9 +1,11 @@
 {
   config,
   fetchFromGitHub,
+  flake-inputs,
   home-manager,
   lib,
   pkgs,
+  system,
   ...
 }:
 let
@@ -52,6 +54,9 @@ in
     ];
     enableZshIntegration = true;
   };
+  home.packages = [
+    flake-inputs.hash-color.packages.${system}.default
+  ];
   programs.tmux = import ./tmux.nix;
   programs.zsh = import ./zsh.nix { pkgs = pkgs; };
 
