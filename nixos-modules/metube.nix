@@ -32,7 +32,7 @@ in
 
     port = mkOption {
       type = types.port;
-      default = 8081;
+      default = 8090;
       description = "Internal HTTP port for the metube service.";
     };
 

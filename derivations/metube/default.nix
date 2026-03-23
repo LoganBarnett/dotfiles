@@ -2,6 +2,7 @@
   lib,
   stdenv,
   fetchFromGitHub,
+  file,
   makeWrapper,
   nodejs,
   pnpm,
@@ -14,7 +15,7 @@ let
     owner = "alexta69";
     repo = "metube";
     rev = version;
-    hash = lib.fakeHash;
+    hash = "sha256-HCJEQuvcFRIRQRFDGE9tIHwAUmLkRi6JQ4IWl44mSp4=";
   };
 
   # Python runtime with all backend dependencies.
@@ -43,7 +44,7 @@ let
         sourceRoot
         ;
       fetcherVersion = 2;
-      hash = lib.fakeHash;
+      hash = "sha256-4IJQVaC9mBWbKlygyqcqbnefpYyQWz0wb9y0xU++/9k=";
     };
 
     nativeBuildInputs = [
@@ -77,7 +78,8 @@ stdenv.mkDerivation {
 
     makeWrapper ${pythonEnv}/bin/python3 $out/bin/metube \
       --add-flags "$out/share/metube/app/main.py" \
-      --set BASE_DIR "$out/share/metube"
+      --set BASE_DIR "$out/share/metube" \
+      --prefix PATH : ${lib.makeBinPath [ file ]}
   '';
 
   meta = {
