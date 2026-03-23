@@ -252,7 +252,7 @@ in
             )
             + on(instance)
             (
-              sum by (instance) (
+              count by (instance) (
                 ${without-socket-port ''increase(goss_tests_outcomes_total{outcome="fail"}[2m]) > 0''}
               )
               or on(instance)
