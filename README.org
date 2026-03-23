@@ -1087,6 +1087,37 @@ into.
 Something about the dependencies coming from pypi.
 
 ** secrets
+*** Secret generation (LLM guidance)
+
+This repository uses =agenix-rekey= to generate and manage secrets.  Several
+secret types — TLS leaf certificates, WireGuard keys, hashed passwords, and
+others — are produced by generator scripts that run via:
+
+#+begin_src sh :exports code
+agenix rekey generate --rekey -a
+#+end_src
+
+This repository uses a custom fork of =agenix-rekey= that combines generation
+and rekeying into a single subcommand.  Generating a TLS leaf certificate, for
+example, requires decrypting the internal CA key, which is protected by an
+interactive passphrase prompt.  *This command cannot be run non-interactively.*
+
+*LLMs assisting with this repository must halt and prompt the user* whenever a
+task requires generating or rekeying secrets.  Do not attempt to create
+placeholder =.age= files, dummy certificates, or fake rekeyed entries as a
+workaround.  Instead, stop and instruct the user to run the command above
+themselves, then continue once the generated files have been committed.
+
+The expected post-generation workflow for a new FQDN (e.g. adding a new
+service to a host) is:
+
+1. Author the NixOS module and config normally.
+2. Halt and ask the user to run =agenix rekey generate --rekey -a= (generates
+   =.crt=, =.key.age=, and the per-host rekeyed file in
+   =secrets/rekeyed/<host>/=, and =git add=s them automatically).
+3. The user commits the generated files.
+4. Resume with the build/deploy once the secrets are in git.
+
 *** TODO =agenix-rekey= automatic self-signed TLS CA and leaf certificates
 
 I have some promising progress here for contributing back into =agenix-rekey=.
@@ -1150,6 +1181,38 @@ Yes please.  This is =cobalt= I think.
 Oh boy this is going to be its own project probably.
 
 * Nix
+
+** Rapid Package Updates
+
+Some packages need to be updated independently of nixpkgs — for example, to
+pick up a bug fix that landed upstream before the pinned nixpkgs revision caught
+up.  Bumping all of nixpkgs for a single package is risky, so instead we pin
+just the affected package's version and hash in ~static.nix~ and override it in
+an overlay.
+
+The three parts of this pattern are:
+
+- ~static.nix~ :: Holds the ~version~ and ~hash~ for each pinned package.
+  Both fields are updated together so the overlay always sees a consistent pair.
+
+- ~overlays/<pkg>.nix~ :: Calls ~overrideAttrs~ on the nixpkgs derivation,
+  replacing ~version~ and ~src~ with the values from ~static.nix~.  The overlay
+  is wired into ~overlays/default.nix~.
+
+- ~scripts/<pkg>-update~ :: A shell script that fetches the latest upstream
+  version, prefetches its hash with ~nix-prefetch-url~, converts to SRI with
+  ~nix hash convert~, and writes both values back into ~static.nix~ via
+  ~nix-editor~.
+
+To update a package, run its script and then redeploy:
+
+#+begin_src sh :exports code
+scripts/firefox-bin-update
+nix-darwin-switch
+#+end_src
+
+Current packages using this pattern: ~claude-code~, ~firefox-bin~,
+~makemkv~, ~signal-desktop-bin~, ~yt-dlp~.
 
 ** Generations
 

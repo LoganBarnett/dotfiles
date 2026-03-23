@@ -66,7 +66,21 @@ in
       port = cfg.port;
       mediaLocation = cfg.mediaLocation;
       machine-learning.enable = cfg.machineLearning;
+      # This host's stateVersion predates 25.11, so the NixOS module would
+      # otherwise default to enabling pgvecto.rs (vectors extension).  Immich
+      # 2.x has migrated to VectorChord, so disable the legacy extension
+      # explicitly.  The NixOS module sets up VectorChord as superuser via
+      # postgresql-setup before Immich starts, so Immich never needs to alter
+      # extensions itself.
+      database.enableVectors = false;
     };
+
+    # The NixOS immich module only manages the default /var/lib/immich path via
+    # tmpfiles.  Non-default paths must be created declaratively so the immich
+    # user has ownership before the service starts.
+    systemd.tmpfiles.rules = [
+      "d ${cfg.mediaLocation} 0700 immich immich -"
+    ];
 
     # Allow arbitrarily large uploads; Immich handles multi-gigabyte video
     # files and nginx's default 1 MB body limit would reject them.
@@ -77,6 +91,21 @@ in
     systemd.services.immich-server = {
       after = cfg.mountDependencies;
       requires = cfg.mountDependencies;
+      # Seed an admin user with an empty (permanently unusable) password if no
+      # admin exists yet.  This bypasses the first-run wizard.  The password
+      # field defaults to '' which no bcrypt comparison will ever match, so
+      # local password login is dead on arrival.  OIDC populates oauthId on
+      # first login and is the intended authentication path.
+      postStart = ''
+        ${lib.getExe' config.services.postgresql.package "psql"} \
+          --dbname=immich \
+          --no-password \
+          --command='
+            INSERT INTO "user" (email, name, "isAdmin")
+            SELECT '"'"'admin@proton'"'"', '"'"'Admin'"'"', true
+            WHERE NOT EXISTS (SELECT 1 FROM "user" WHERE "isAdmin" = true);
+          '
+      '';
     };
 
     systemd.services.immich-machine-learning = mkIf cfg.machineLearning {

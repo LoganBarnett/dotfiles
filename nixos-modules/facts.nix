@@ -371,6 +371,7 @@
         aliases = [
           "blocky"
           "dns-smart-block"
+          "immich"
           "ldap"
           "loku"
           "matrix"
@@ -685,6 +686,16 @@
       };
 
     services = {
+
+      immich = {
+        authentication = "oidc";
+        fqdn = "immich.proton";
+        groups = [
+          "immich-admins"
+          "immich-users"
+        ];
+        redirectUris = [ "https://immich.proton/auth/login" ];
+      };
 
       openhab = {
         authentication = "oidc";
