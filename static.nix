@@ -32,4 +32,24 @@
     hash = "sha256-hZj86neX7WnDzrFV8ONPkeXKAcCVt7iZqAHDTpnEClc=";
   };
 
+  bgutil-pot = {
+    version = "0.8.1";
+    x86_64-linux = {
+      hash = "sha256-58JkpXT6JwW25dxiKDqKToATDye51+nfROawmqYVGoc=";
+    };
+    plugin = {
+      hash = "sha256-mf2DuY+pOxk9ajtp3HRBDXbnoriJhoxU0WEhyskGA0Q=";
+    };
+  };
+
+  firefox-bin = {
+    version = "148.0.2";
+    hash = "sha256-h9yQ8JySvc3Jl402L8Q/zF2Ltyf0nxPy43k65wCNoTI=";
+  };
+
+  yt-dlp = {
+    version = "2026.03.17";
+    hash = "sha256-A4LUCuKCjpVAOJ8jNoYaC3mRCiKH0/wtcsle0YfZyTA=";
+  };
+
 }

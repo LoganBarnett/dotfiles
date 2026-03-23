@@ -14,6 +14,7 @@
 { flake-inputs, system, ... }:
 [
   flake-inputs.dns-smart-block.overlays.default
+  flake-inputs.nur.overlays.default
   (import ./test-script.nix)
   (import ./battlescribe-update-data.nix)
   (import ./blueutil.nix)
@@ -30,6 +31,7 @@
   # (import ./tmux.nix)
   # Give us rust-docs.
   (import ./rust.nix)
+  (import ./firefox-bin.nix)
   (import ./signal-desktop.nix { inherit flake-inputs system; })
   (import ./claude-code.nix { inherit flake-inputs system; })
   (import ./makemkv.nix)
@@ -39,6 +41,7 @@
   # Kept as an example of using someone else's overlay remotely.
   # (import "${builtins.fetchTarball https://github.com/vlaci/openconnect-sso/archive/master.tar.gz}/overlay.nix")
   (import ./wireguard.nix)
+  (import ./yt-dlp.nix)
   (import ./zig.nix)
   # Needed until https://github.com/NixOS/nixpkgs/pull/391654 is merged.
   (final: prev: {
@@ -68,6 +71,7 @@
   # We need to migrate some things here.  Scan above and figure out what to move
   # into this section.
   (final: prev: {
+    bgutil-pot = final.callPackage ../derivations/bgutil-pot/default.nix { };
     chronicle-proxy = final.callPackage ../derivations/chronicle-proxy.nix { };
     metube = final.callPackage ../derivations/metube/default.nix { };
     confluence-markdown-exporter =
