@@ -1,4 +1,11 @@
-di@{ config, lib, lib-custom, pkgs, ... }: {
+di@{
+  config,
+  lib,
+  lib-custom,
+  pkgs,
+  ...
+}:
+{
   imports = [
     ../nixos-modules/chronicle-proxy.nix
     ../nixos-modules/environment-file-secrets.nix
@@ -16,7 +23,7 @@ di@{ config, lib, lib-custom, pkgs, ... }: {
     enable = true;
   };
   services.environment-file-secrets.services.chronicle-proxy.secrets = {
-    openai-api-key = {};
+    openai-api-key = { };
   };
   # Goss health checks for Chronicle Proxy.
   services.goss.checks = {
@@ -35,8 +42,10 @@ di@{ config, lib, lib-custom, pkgs, ... }: {
     # Check that HTTPS port is listening (handled by reverse proxy).
     port."tcp:443" = {
       listening = true;
-      ip = [ "0.0.0.0" ];
     };
+    # Confirm the reverse proxy is reachable from all interfaces, not
+    # only on one specific address.
+    command."tcp:443-wildcard-binding" = pkgs.lib.custom.gossWildcardPortCheck 443;
     # Check that the chronicle-proxy service is running.
     service.chronicle-proxy = {
       enabled = true;

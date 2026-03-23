@@ -192,8 +192,10 @@ in
     # Check that HTTPS port is listening (handled by reverse proxy).
     port."tcp:443" = {
       listening = true;
-      ip = [ "0.0.0.0" ];
     };
+    # Confirm the reverse proxy is reachable from all interfaces, not
+    # only on one specific address.
+    command."tcp:443-wildcard-binding" = pkgs.lib.custom.gossWildcardPortCheck 443;
     # Check that the matrix-synapse service is running.
     service.matrix-synapse = {
       enabled = true;

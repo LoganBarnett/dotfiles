@@ -14,7 +14,12 @@
 # - Ensuring proper startup order (dnsmasq before blocky)
 # - Integration testing via goss to verify the services work together
 ################################################################################
-{ host-id, facts, ... }:
+{
+  host-id,
+  facts,
+  pkgs,
+  ...
+}:
 {
   imports = [
     ../nixos-configs/blocky-with-updater.nix
@@ -40,7 +45,9 @@
     # Verify the HTTPS admin interface is accessible (handled by reverse proxy).
     port."tcp:443" = {
       listening = true;
-      ip = [ "0.0.0.0" ];
     };
+    # Confirm the reverse proxy is reachable from all interfaces, not
+    # only on one specific address.
+    command."tcp:443-wildcard-binding" = pkgs.lib.custom.gossWildcardPortCheck 443;
   };
 }
