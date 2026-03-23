@@ -36,7 +36,8 @@ let
   org-domain = "${org-alias}co.com";
 in
 {
-  services.garage-queue-worker.settings.capabilities.scalars.vram_mb = 24576;
+  services.garage-queue-worker.workers.ollama.settings.capabilities.scalars.vram_mb =
+    24576;
   system.primaryUser = username;
   # Something required for every macOS host after a nix-darwin migration.  This
   # value will be different per host.  Perhaps hosts stood up after that point

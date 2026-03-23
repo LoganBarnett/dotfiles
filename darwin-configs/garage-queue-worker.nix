@@ -1,7 +1,8 @@
-{ config, ... }:
+{ ... }:
 {
-  services.garage-queue-worker = {
+  services.garage-queue-worker.workers.ollama = {
     enable = true;
+    integrations.ollama.enable = true;
     settings = {
       worker = {
         server_url = "https://ollama.proton";
@@ -10,13 +11,6 @@
       control = {
         host = "127.0.0.1";
         port = 9091;
-      };
-      capabilities = {
-        tags = config.services.ollama.loadModels;
-      };
-      delegator = {
-        kind = "http";
-        url = "http://127.0.0.1:11434/api/generate";
       };
     };
   };
