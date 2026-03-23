@@ -26,6 +26,7 @@ in
     ../nixos-configs/matrix-server.nix
     ../nixos-configs/nfs-mount-provider-from-facts.nix
     ../nixos-configs/openldap-facts.nix
+    ../nixos-configs/metube.nix
     ../nixos-configs/nix-builder-provide.nix
     ../nixos-modules/server-host.nix
     flake-inputs.dns-smart-block.nixosModules.default
@@ -208,6 +209,23 @@ in
     script = ''
       ${pkgs.acl}/bin/setfacl -d -m g:media-shared:rwx /tank/data/nextcloud-shared-media
       ${pkgs.acl}/bin/setfacl -m g:media-shared:rwx /tank/data/nextcloud-shared-media
+    '';
+  };
+
+  # Create and configure the shared media directory before Metube starts.
+  systemd.services.setup-media-dir = {
+    description = "Create and set ACLs for shared media directory";
+    wantedBy = [ "multi-user.target" ];
+    after = [ "tank-data.mount" ];
+    requires = [ "tank-data.mount" ];
+    serviceConfig = {
+      Type = "oneshot";
+      RemainAfterExit = true;
+    };
+    script = ''
+      mkdir -p /tank/data/media
+      ${pkgs.acl}/bin/setfacl -d -m g:media-shared:rwx /tank/data/media
+      ${pkgs.acl}/bin/setfacl -m g:media-shared:rwx /tank/data/media
     '';
   };
 

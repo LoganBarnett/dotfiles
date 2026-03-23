@@ -69,6 +69,7 @@
   # into this section.
   (final: prev: {
     chronicle-proxy = final.callPackage ../derivations/chronicle-proxy.nix { };
+    metube = final.callPackage ../derivations/metube/default.nix { };
     confluence-markdown-exporter =
       final.callPackage ../derivations/confluence-markdown-exporter.nix
         { };
