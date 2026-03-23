@@ -24,6 +24,7 @@ in
     ./home-configs/gh-cli.nix
     ./home-configs/gpg-agent.nix
     ./home-configs/rust.nix
+    ./home-configs/sccache.nix
   ];
   # Let Home Manager install and manage itself.
   # programs.home-manager.enable = true;
