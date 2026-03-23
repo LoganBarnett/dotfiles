@@ -1,0 +1,46 @@
+#+title:     Global Claude Instructions
+#+language:  en
+
+* Document format
+
+Prefer org-mode (~.org~) for new documents unless markdown is strictly required
+or the project was established by non-org-mode users (e.g. existing repo with a
+~README.md~).
+
+GitHub does not require markdown files for anything - org-mode can be used in
+place of any markdown file.
+
+* Nix
+
+** Explicit ~default.nix~ paths
+
+Always use explicit ~default.nix~ suffixes in import paths (e.g.,
+~callPackage ../derivations/foo/default.nix {}~).  Do not rely on Nix's
+implicit directory-to-~default.nix~ resolution — it adds cognitive burden
+and prevents editors from jumping directly to the file.
+
+This applies to code in this repository.  External sources such as nixpkgs,
+home-manager, and nix-darwin use the implicit form idiomatically; follow
+their conventions when contributing to or copying patterns from those.
+
+* Dev environment
+
+** New projects
+
+Unless stipulated otherwise, non-trivial projects should be built in Rust.  New
+Rust projects must be scaffolded from ~~/dev/rust-template~; follow its
+~README.org~ for setup instructions.
+
+New projects must have a remote repository created on ~gitea.proton~ via ~tea~,
+using ~$USER~ as the Gitea username.
+
+** Global tools
+
+Never use tools that download or install software globally.  This is a Nix
+environment; such tools (~bundler~, ~rustup~, ~brew~, and similar) would
+either fail or cause destructive side-effects outside the Nix-managed
+system.
+
+Project-specific tools (~cargo~, ~go~, language runtimes, etc.) must live
+in the project's ~flake.nix~ under ~devShells~.  The direnv integration
+activates the devshell automatically; just run the tool directly.

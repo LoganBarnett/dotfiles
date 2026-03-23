@@ -7,6 +7,16 @@
   ...
 }:
 let
+  # This is the wrong approach so it's commented out.  This basically is how you
+  # fork bomb your own host, and when Claude tries to help you fix it, it fork
+  # bombs you again.  Glorious.
+  direnv-bash-env = pkgs.writeText "direnv-bash-env.sh" ''
+    # Load direnv into non-interactive bash shells spawned by claude.
+    # if command -v direnv >/dev/null 2>&1; then
+    #   eval "$(direnv export bash 2>/dev/null)"
+    # fi
+  '';
+
   pkgs-latest = import flake-inputs.nixpkgs-latest {
     inherit system;
     # TODO: Constrain to this package to make this precise.  This is needed to
@@ -35,7 +45,15 @@ in
   # ];
   programs.claude-code = {
     enable = true;
-    package = pkgs-latest.claude-code;
+    package = pkgs.symlinkJoin {
+      name = "claude-code-wrapped";
+      paths = [ pkgs-latest.claude-code ];
+      buildInputs = [ pkgs.makeWrapper ];
+      postBuild = ''
+        wrapProgram $out/bin/claude \
+          --set BASH_ENV "${direnv-bash-env}"
+      '';
+    };
     settings = {
       # The `env` section passes vars to subprocesses, not to Claude Code
       # itself, so `CLAUDE_DANGEROUSLY_SKIP_PERMISSIONS` there is inert.
@@ -431,6 +449,8 @@ in
   # and it said "Git is your undo button.  Godspeed.".  The alias is now
   # redundant (settings.json handles it declaratively), but kept as a
   # fallback for shells that load before home-manager's profile.
+  programs.claude-code.memory.source = ./claude-memory.org;
+
   home.shellAliases = {
     claude = "claude --dangerously-skip-permissions";
   };
