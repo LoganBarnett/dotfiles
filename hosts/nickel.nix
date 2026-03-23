@@ -26,7 +26,7 @@ in
   imports = [
     # ../nixos-configs/dns-server.nix
     ../nixos-configs/raspberry-pi-4.nix
-    ../nixos-modules/server-host.nix
+    ../nixos-modules/linux-host.nix
     ../nixos-modules/prometheus-server.nix
     ../nixos-modules/grafana.nix
     ../nixos-configs/alertmanager.nix

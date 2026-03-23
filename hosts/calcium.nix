@@ -26,7 +26,6 @@ in
     (import ../nixos-modules/cache-attic.nix {
       inherit atticd-port;
     })
-    ../nixos-modules/https.nix
     (
       { lib, pkgs, ... }:
       {
@@ -45,7 +44,7 @@ in
         documentation.enable = lib.mkForce false;
       }
     )
-    ../nixos-modules/server-host.nix
+    ../nixos-modules/linux-host.nix
   ];
   services.https.fqdns."calcium.proton" = {
     internalPort = atticd-port;

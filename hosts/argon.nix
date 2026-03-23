@@ -10,7 +10,7 @@ in
   imports = [
     ../nixos-configs/raspberry-pi-4.nix
     ../nixos-configs/raspberry-pi-host.nix
-    ../nixos-modules/server-host.nix
+    ../nixos-modules/linux-host.nix
     ../nixos-modules/dns-dynamic-ip-home.nix
   ];
   nixpkgs.overlays = [

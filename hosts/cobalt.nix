@@ -44,6 +44,6 @@
     ../nixos-configs/raspberry-pi-builder.nix
     # Allow this host to accept build requests from other hosts.
     ../nixos-configs/nix-builder-provide.nix
-    ../nixos-modules/server-host.nix
+    ../nixos-modules/linux-host.nix
   ];
 }

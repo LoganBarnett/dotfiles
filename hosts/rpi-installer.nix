@@ -13,7 +13,7 @@
   imports = [
     # 5 is backwards compatible with 4.
     ../nixos-configs/raspberry-pi-4.nix
-    ../nixos-modules/server-host.nix
+    ../nixos-modules/linux-host.nix
   ];
   environment.systemPackages = [
     pkgs.raspberrypi-eeprom

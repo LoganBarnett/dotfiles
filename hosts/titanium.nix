@@ -23,7 +23,7 @@
     ../nixos-configs/timezone-pacific.nix
     ../nixos-configs/uefi-systemd-boot.nix
     ../nixos-modules/x-desktop.nix
-    ../nixos-modules/server-host.nix
+    ../nixos-modules/linux-host.nix
     ../nixos-configs/sunshine.nix
     # ../nixos-configs/musicgpt-ui.nix
     (
@@ -72,7 +72,8 @@
       }
     )
   ];
-  services.garage-queue-worker.settings.capabilities.scalars.vram_mb = 12288;
+  services.garage-queue-worker.workers.ollama.settings.capabilities.scalars.vram_mb =
+    12288;
   services.proc-siding.settings.detector.kind = "amd";
   environment.systemPackages = [
     # Let's be able to consume media.

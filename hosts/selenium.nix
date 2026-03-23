@@ -16,7 +16,7 @@
 {
   imports = [
     ../nixos-configs/raspberry-pi-5.nix
-    ../nixos-modules/server-host.nix
+    ../nixos-modules/linux-host.nix
     ../nixos-configs/octoprint-prusa-xl.nix
   ];
   nixpkgs.overlays = [

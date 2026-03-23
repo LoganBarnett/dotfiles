@@ -8,26 +8,36 @@
 # This host runs Kodi in standalone kiosk mode for TV media playback, using
 # NFS-mounted media from the silicon host.  It is plugged directly into the TV.
 ################################################################################
-{ flake-inputs, host-id, pkgs, system, ... }: {
+{
+  flake-inputs,
+  host-id,
+  pkgs,
+  system,
+  ...
+}:
+{
   imports = [
     (flake-inputs.nixos-hardware + "/apple/macmini")
-    ../nixos-modules/server-host.nix
+    ../nixos-modules/linux-host.nix
     ../nixos-configs/kodi-media-player.nix
-    ({ lib, ... }: {
-      boot.initrd.availableKernelModules = [
-        "ahci"
-        "xhci_pci"
-        "usbhid"
-        "usb_storage"
-        "sd_mod"
-      ];
-      boot.kernelModules = [ "kvm-intel" ];
-      # This hostId is needed by some filesystems like ZFS.
-      # Generated using: head -c4 /dev/urandom | od -A none -t x4 | tr -d ' '
-      # You'll want to regenerate this on the actual hardware.
-      networking.hostId = "4ead70ae";
-      nixpkgs.hostPlatform = system;
-    })
+    (
+      { lib, ... }:
+      {
+        boot.initrd.availableKernelModules = [
+          "ahci"
+          "xhci_pci"
+          "usbhid"
+          "usb_storage"
+          "sd_mod"
+        ];
+        boot.kernelModules = [ "kvm-intel" ];
+        # This hostId is needed by some filesystems like ZFS.
+        # Generated using: head -c4 /dev/urandom | od -A none -t x4 | tr -d ' '
+        # You'll want to regenerate this on the actual hardware.
+        networking.hostId = "4ead70ae";
+        nixpkgs.hostPlatform = system;
+      }
+    )
     ({
       imports = [
         flake-inputs.disko.nixosModules.default
@@ -88,7 +98,10 @@
       # the security issue. See
       # https://github.com/NixOS/nixpkgs/issues/279362#issuecomment-1913506090
       # for more discussion.
-      fileSystems."/boot".options = [ "umask=0077" "defaults" ];
+      fileSystems."/boot".options = [
+        "umask=0077"
+        "defaults"
+      ];
     })
   ];
 

@@ -18,7 +18,7 @@ in
     # ../nixos-configs/authentik.nix
     # ../nixos-configs/authelia.nix
     ../nixos-configs/raspberry-pi-5.nix
-    ../nixos-modules/server-host.nix
+    ../nixos-modules/linux-host.nix
     # ../nixos-configs/jenkins-github-webhook-test.nix
     (
       { lib, pkgs, ... }:

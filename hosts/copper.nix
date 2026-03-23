@@ -17,7 +17,7 @@ let
 in
 {
   imports = [
-    ../nixos-modules/server-host.nix
+    ../nixos-modules/linux-host.nix
     # ../nixos-configs/dex-oidc.nix
     ../nixos-configs/gitea.nix
     ../nixos-configs/gitea-deployment-webhooks.nix

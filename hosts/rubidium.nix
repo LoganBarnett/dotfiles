@@ -12,27 +12,37 @@
 # The hardware is a Mac Mini 7,1 (Late 2014) with an Intel Core i5-4260U
 # (Haswell) CPU.
 ################################################################################
-{ flake-inputs, host-id, pkgs, system, ... }: {
+{
+  flake-inputs,
+  host-id,
+  pkgs,
+  system,
+  ...
+}:
+{
   imports = [
     (flake-inputs.nixos-hardware + "/apple/macmini")
     ../nixos-configs/code-headless.nix
     ../nixos-configs/deployment-server.nix
-    ../nixos-modules/server-host.nix
-    ({ lib, ... }: {
-      boot.initrd.availableKernelModules = [
-        "ahci"
-        "xhci_pci"
-        "usbhid"
-        "usb_storage"
-        "sd_mod"
-      ];
-      boot.kernelModules = [ "kvm-intel" ];
-      # This hostId is needed by some filesystems like ZFS.
-      # Generated using: head -c4 /dev/urandom | od -A none -t x4 | tr -d ' '
-      # You'll want to regenerate this on the actual hardware.
-      networking.hostId = "4ead70ae";
-      nixpkgs.hostPlatform = system;
-    })
+    ../nixos-modules/linux-host.nix
+    (
+      { lib, ... }:
+      {
+        boot.initrd.availableKernelModules = [
+          "ahci"
+          "xhci_pci"
+          "usbhid"
+          "usb_storage"
+          "sd_mod"
+        ];
+        boot.kernelModules = [ "kvm-intel" ];
+        # This hostId is needed by some filesystems like ZFS.
+        # Generated using: head -c4 /dev/urandom | od -A none -t x4 | tr -d ' '
+        # You'll want to regenerate this on the actual hardware.
+        networking.hostId = "4ead70ae";
+        nixpkgs.hostPlatform = system;
+      }
+    )
     ({
       imports = [
         flake-inputs.disko.nixosModules.default
@@ -93,7 +103,10 @@
       # the security issue. See
       # https://github.com/NixOS/nixpkgs/issues/279362#issuecomment-1913506090
       # for more discussion.
-      fileSystems."/boot".options = [ "umask=0077" "defaults" ];
+      fileSystems."/boot".options = [
+        "umask=0077"
+        "defaults"
+      ];
     })
   ];
 }

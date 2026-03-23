@@ -14,7 +14,7 @@
     ../nixos-configs/grafana-kiosk-overview.nix
     ../nixos-configs/raspberry-pi-usb-disk.nix
     ../nixos-configs/raspberry-pi-4.nix
-    ../nixos-modules/server-host.nix
+    ../nixos-modules/linux-host.nix
     # ../nixos-configs/home-assistant.nix
     # ../nixos-configs/mosquitto.nix
     # ../nixos-configs/openhab.nix
