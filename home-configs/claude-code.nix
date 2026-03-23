@@ -76,24 +76,16 @@ in
             hooks = [
               {
                 type = "command";
-                # Runs tests before Claude declares completion.  Blocks
-                # stopping (exit 2) if tests fail so Claude keeps working.
-                # Prefers `just test` when a Justfile exposes a test recipe,
-                # falls back to `cargo test` for Rust projects.  The
-                # stop_hook_active guard prevents infinite loops when a
-                # previous hook invocation already triggered a retry.
-                command = ''
-                  input=$(cat)
-                  if echo "$input" | jq -e '.stop_hook_active == true' > /dev/null 2>&1; then
-                    exit 0
-                  fi
-                  if { [ -f Justfile ] || [ -f justfile ]; } \
-                      && just --summary 2>/dev/null | tr ' ' '\n' | grep -qx 'test'; then
-                    just test || printf '{"decision":"block","reason":"Tests failed (just test).  Fix failing tests before finishing."}'
-                  elif [ -f Cargo.toml ]; then
-                    cargo test || printf '{"decision":"block","reason":"Tests failed (cargo test).  Fix failing tests before finishing."}'
-                  fi
-                '';
+                # Echoes a reminder into Claude's context rather than
+                # running tests directly.  Claude decides whether to act
+                # based on whether it actually made changes, avoiding
+                # expensive test runs during pure conversation sessions.
+                command =
+                  "echo 'REMINDER: If you made code changes this"
+                  + " session, run the project tests (prefer `just test` if"
+                  + " a Justfile with a test target exists, otherwise"
+                  + " `cargo test`) and print a one-line pass/fail tally."
+                  + " If no changes were made, do nothing.'";
               }
             ];
           }
