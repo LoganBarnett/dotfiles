@@ -111,6 +111,15 @@ in
     systemd.services.immich-machine-learning = mkIf cfg.machineLearning {
       after = cfg.mountDependencies;
       requires = cfg.mountDependencies;
+      # Silicon had ample headroom (7.6 GiB RAM, ~5.6 GiB free, load ~0.00)
+      # at time of writing.  These are safeguards so a large initial library
+      # scan cannot crowd out other services on this shared host.
+      serviceConfig = {
+        CPUWeight = 20;
+        IOWeight = 20;
+        Nice = 10;
+        MemoryHigh = "2G";
+      };
     };
   };
 }
