@@ -52,7 +52,30 @@ in
                   '';
                 };
                 internalPort = mkOption {
-                  type = types.port;
+                  type = types.nullOr types.port;
+                  default = null;
+                  description = "Internal TCP port for the upstream service.";
+                };
+                socket = mkOption {
+                  type = types.nullOr types.path;
+                  default = null;
+                  description = ''
+                    Unix domain socket path for the upstream service.  The service is
+                    responsible for creating the socket with permissions that allow
+                    the nginx-upstream group to connect.
+                  '';
+                };
+                serviceNameForSocket = mkOption {
+                  type = types.nullOr types.str;
+                  default = null;
+                  description = ''
+                    Name of the upstream service that creates its own socket at
+                    /run/<name>/<name>.sock.  https sets UMask = 0007 and
+                    RuntimeDirectoryMode = 0750 on the service so the socket is
+                    group-writable and the directory is traversable.  nginx is
+                    added to the service's primary group (by convention the group
+                    name matches the service name).
+                  '';
                 };
                 externalPort = mkOption {
                   type = types.port;
@@ -74,10 +97,53 @@ in
       fqdns = lib.filter (fqdn-cfg: fqdn-cfg.enable) (
         lib.attrsets.attrValues cfg.fqdns
       );
+
+      # Fqdns that proxy to a Unix domain socket.
+      socketFqdns = lib.filter (
+        fqdn-cfg:
+        fqdn-cfg.proxy
+        && (fqdn-cfg.socket != null || fqdn-cfg.serviceNameForSocket != null)
+      ) fqdns;
+      anySocketFqdns = socketFqdns != [ ];
+
+      # Fqdns using the serviceNameForSocket convention.
+      serviceSocketFqdns = lib.filter (
+        fqdn-cfg: fqdn-cfg.serviceNameForSocket != null
+      ) fqdns;
+
+      # Compute the nginx upstream URL for a given fqdn config.
+      upstreamFor =
+        fqdn-cfg:
+        if fqdn-cfg.internalPort != null then
+          "http://127.0.0.1:${toString fqdn-cfg.internalPort}"
+        else if fqdn-cfg.socket != null then
+          "http://unix:${fqdn-cfg.socket}:"
+        else
+          "http://unix:/run/${fqdn-cfg.serviceNameForSocket}/${fqdn-cfg.serviceNameForSocket}.sock:";
     in
     {
+      assertions = map (fqdn-cfg: {
+        assertion =
+          !fqdn-cfg.proxy
+          || fqdn-cfg.internalPort != null
+          || fqdn-cfg.socket != null
+          || fqdn-cfg.serviceNameForSocket != null;
+        message = "https: ${fqdn-cfg.fqdn} has proxy = true but no upstream is configured; set internalPort, socket, or serviceNameForSocket";
+      }) fqdns;
+
+      # Declare the shared group that grants nginx read access to explicit
+      # socket upstreams (used by the socket option).
+      users.groups.nginx-upstream = mkIf anySocketFqdns { };
+
       users.users.nginx = {
-        extraGroups = [ "tls-leaf" ];
+        extraGroups = [
+          "tls-leaf"
+        ]
+        ++ lib.optionals anySocketFqdns [ "nginx-upstream" ]
+        # For serviceNameForSocket, nginx joins the upstream service's primary
+        # group (by convention the group name matches the service name) so it
+        # can connect to the app-created socket.
+        ++ map (fqdn-cfg: fqdn-cfg.serviceNameForSocket) serviceSocketFqdns;
         group = "nginx";
         isSystemUser = true;
       };
@@ -95,6 +161,22 @@ in
           };
         }) fqdns
       );
+
+      # For serviceNameForSocket fqdns, configure the upstream service so the
+      # socket is created with group-writable permissions:
+      # - UMask 0007 → socket mode 0770 (group can connect)
+      # - RuntimeDirectoryMode 0750 → nginx can traverse /run/<name>/
+      systemd.services = mkMerge (
+        map (fqdn-cfg: {
+          "${fqdn-cfg.serviceNameForSocket}" = {
+            serviceConfig = {
+              RuntimeDirectoryMode = lib.mkDefault "0750";
+              UMask = lib.mkDefault "0007";
+            };
+          };
+        }) serviceSocketFqdns
+      );
+
       services.nginx = {
         enable = true;
         recommendedGzipSettings = true;
@@ -150,7 +232,7 @@ in
                       # "proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;"
                       # "proxy_set_header X-Forwarded-Proto $scheme;"
                     ];
-                    proxyPass = "http://127.0.0.1:${toString fqdn-cfg.internalPort}";
+                    proxyPass = upstreamFor fqdn-cfg;
                     # Needed if you need to use WebSocket.
                     proxyWebsockets = true;
                   }
