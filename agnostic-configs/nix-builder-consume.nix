@@ -95,22 +95,6 @@ in
   #   builders-use-substitutes = true
   # '';
 
-  # Allow wheel users to run nix-remote-builder-doctor without a password.
-  # The tool reads the builder SSH private key at
-  # config.age.secrets.builder-key-blue.path, which is root-owned (mode 0400).
-  # Running as root via sudo grants the necessary access.
-  security.sudo.extraRules = [
-    {
-      groups = [ "wheel" ];
-      commands = [
-        {
-          command = "${pkgs.nix-remote-builder-doctor}/bin/nix-remote-builder-doctor";
-          options = [ "NOPASSWD" ];
-        }
-      ];
-    }
-  ];
-
   programs.ssh.knownHosts = {
     "rpi-build.proton" = {
       # Include all hostname variations since rpi-build.proton is a CNAME for
@@ -129,4 +113,14 @@ in
 
   environment.etc."nix/builder_ed25519.pub".text =
     builtins.readFile ../secrets/builder-key-blue.pub;
+
+  # Allow wheel users to run nix-remote-builder-doctor without a password.
+  # The tool reads the builder SSH private key at
+  # config.age.secrets.builder-key-blue.path, which is root-owned (mode 0400).
+  # Running as root via sudo grants the necessary access.
+  # security.sudo.extraConfig (raw sudoers) is available on both NixOS and
+  # nix-darwin, unlike security.sudo.extraRules which is NixOS-only.
+  security.sudo.extraConfig = ''
+    %wheel ALL=(root) NOPASSWD: ${pkgs.nix-remote-builder-doctor}/bin/nix-remote-builder-doctor
+  '';
 }
