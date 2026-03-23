@@ -23,6 +23,13 @@ in
     internalPort = config.services.garage-queue-server.settings.server.port;
   };
 
+  # LLM inference can run for several minutes; raise nginx's default 60-second
+  # proxy timeout so long-running generate requests are not cut short.
+  services.nginx.virtualHosts."ollama.proton".locations."/".extraConfig = ''
+    proxy_read_timeout 10m;
+    proxy_send_timeout 10m;
+  '';
+
   services.garage-queue-server = {
     enable = true;
     nats.enable = true;
