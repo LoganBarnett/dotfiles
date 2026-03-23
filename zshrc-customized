@@ -290,7 +290,7 @@ function exit_status_prompt() {
 }
 
 function host_prompt() {
-  echo "%n@$(hash-color --value "$HOST" --trim)"
+  echo "$(hash-color --value "$USER" --trim)@$(hash-color --value "$HOST" --trim)"
 }
 
 autoload -U add-zsh-hook
