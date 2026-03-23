@@ -44,3 +44,8 @@ system.
 Project-specific tools (~cargo~, ~go~, language runtimes, etc.) must live
 in the project's ~flake.nix~ under ~devShells~.  The direnv integration
 activates the devshell automatically; just run the tool directly.
+
+** Command-line JSON parsing
+
+Use ~jq~ for command-line JSON parsing.  It is available across all hosts.
+Do not use ~python3~ — it is not reliably on ~PATH~ in this Nix environment.
