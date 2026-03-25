@@ -25,7 +25,6 @@ in
     enable = true;
     contentRepo = contentRepo;
     contentRemote = "origin";
-    pandocBin = pkgs.pandoc;
     cacheDir = "/var/cache/org-wiki-web";
     siteTitle = "Wiki";
     commitAuthorName = "Wiki";
