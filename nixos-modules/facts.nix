@@ -48,16 +48,6 @@
         gid = 29971;
       }
       {
-        consumerHostId = "copper";
-        providerHostId = "silicon";
-        peerNumber = 3;
-        service = "gitea";
-        volume = "gitea";
-        user = "gitea";
-        group = "gitea";
-        gid = 29972;
-      }
-      {
         consumerHostId = "krypton";
         providerHostId = "silicon";
         peerNumber = 4;
@@ -210,7 +200,6 @@
         aliases = [
           "chronicle-proxy"
           "dex"
-          "gitea"
           "nextcloud"
         ];
         controlledHost = true;
@@ -370,6 +359,7 @@
           "authelia"
           "blocky"
           "dns-smart-block"
+          "gitea"
           "immich"
           "ldap"
           "loku"

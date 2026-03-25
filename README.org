@@ -3818,6 +3818,114 @@ running again.
 14. Verify by navigating to a resource such as https://home-assistant.proton -
     it doesn't matter if you can't log in.  You just need the page to load
     without a security warning.
+* Authentication
+
+** Architecture
+
+Authentication is centralized: OpenLDAP holds the identity store, and
+Authelia is the OIDC/OAuth2 provider for browser-based SSO.  Services
+either authenticate directly against LDAP (older pattern) or use Authelia
+as an OIDC identity provider (preferred going forward).
+
+#+begin_src
+  Browser / Client
+       │
+       ▼
+  Authelia (silicon, authelia.proton)
+  ├─ OIDC authorization server
+  ├─ Session management & access-control policy
+  └─ Delegates identity to OpenLDAP
+       │
+       ▼
+  OpenLDAP (silicon, ldap.proton:636, LDAPS only)
+  ├─ dc=proton,dc=org
+  ├─ ou=users  (person accounts + service accounts)
+  └─ ou=groups (groupOfNames; memberOf overlay)
+#+end_src
+
+** Identity Store: OpenLDAP
+
+The LDAP tree is facts-driven.  ~nixos-modules/facts.nix~ is the single
+source of truth for human accounts, group memberships, and service
+endpoints.  A Rust tool (~ldap-reconciler~) runs hourly on silicon,
+reading a JSON projection of ~facts.nix~ and reconciling the live
+directory against it.
+
+- Service accounts are declared inline in each service's NixOS config
+  via ~auth.ldap.users."<host>-<service>-service"~.  agenix-rekey
+  auto-generates plaintext and hashed password secrets.
+- Person account passwords are set once on creation and left alone by
+  the reconciler (~managed = false~).
+- Secrets reach services via systemd ~LoadCredential~, never via
+  filesystem ownership.
+
+** OIDC Provider: Authelia
+
+Authelia is configured at ~nixos-configs/authelia.nix~.  It reads users
+and groups from LDAP and issues OIDC tokens.
+
+OIDC clients are generated dynamically from ~facts.network.services~:
+any service with ~authentication = "oidc"~ gets a client entry.
+Confidential clients receive a ~client_secret_post~ credential; public
+clients (e.g. OpenHAB) use PKCE.
+
+Access-control policy is also facts-driven: each service's ~fqdn~ and
+~groups~ list produce an Authelia rule granting ~one_factor~ to members
+of those groups.
+
+Key limitation: Authelia can copy static LDAP attribute values into
+claims but has no expression engine to compute derived values (e.g.
+"is user in group X? emit role=admin").  Services that need role-in-claim
+must either accept manual post-login promotion or add a custom attribute
+to the LDAP schema.
+
+** Service Authentication Inventory
+
+| Service   | Host    | Auth today | OIDC-capable | Migrate? | Notes                              |
+|-----------+---------+------------+--------------+----------+------------------------------------|
+| Immich    | silicon | OIDC       | ✓            | Done     | Admin promoted manually in UI      |
+| Gitea     | silicon | LDAP       | ✓            | Yes      | Needs per-user DB update [fn:gitea] |
+| Matrix    | silicon | LDAP       | ✓            | Yes      | ldap3 incompatible with MAS [fn:matrix] |
+| Grafana   | nickel  | LDAP       | ✓            | Yes      | groups must be in ID token [fn:grafana] |
+| Nextcloud | copper  | LDAP       | Partial      | Neutral  | Admin group sync bug [fn:nextcloud] |
+| OpenHAB   | bromine | —          | via proxy    | Planned  | Forward-auth; currently disabled   |
+| MeTube    | silicon | None       | via proxy    | N/A      | Forward-auth; mind /socket.io/     |
+
+*** Gitea migration notes
+[fn:gitea] Existing accounts must be linked manually: set ~login_name~ to
+the OIDC ~sub~ value, ~login_type~ to 6 (OAuth), and ~login_source~ to
+the new authentication source ID in the database.  Without this, OIDC
+logins create duplicate accounts.  Upstream bug: admin/restricted status
+from the ~groups~ claim is only applied on the /second/ login
+([[https://github.com/go-gitea/gitea/issues/32566][gitea#32566]]).
+
+*** Matrix/Synapse migration notes
+[fn:matrix] The ~matrix-synapse-ldap3~ plugin is incompatible with Matrix
+Authentication Service (MAS / MSC3861), the direction Synapse is heading.
+Migrate to the built-in ~oidc_providers~ with ~allow_existing_users: true~
+and ~localpart_template: "{{ user.preferred_username }}"~ (Authelia
+exposes LDAP ~uid~ as ~preferred_username~).  Both LDAP and OIDC auth can
+coexist during the transition; remove ldap3 only after all users have
+logged in via OIDC at least once.
+
+*** Grafana migration notes
+[fn:grafana] Grafana evaluates ~role_attribute_path~ (JMESPath) against
+the ID token.  Authelia 4.39+ puts ~groups~ in the UserInfo endpoint by
+default, not the ID token.  If ~groups~ is absent and the JMESPath
+expression has a ~|| 'Viewer'~ fallback, Grafana resolves it as Viewer
+without ever calling UserInfo.  Fix: add a ~claims_policies~ entry for the
+Grafana client in ~authelia.nix~ that explicitly includes ~groups~ in the
+ID token.
+
+*** Nextcloud migration notes
+[fn:nextcloud] The ~user_oidc~ app can provision groups from the ~groups~
+claim, but the ~admin~ group cannot be managed this way — members get
+removed on sync (open upstream issue as of 2025).  A hybrid approach
+(LDAP for identity, OIDC for login) is the most practical path.  Full
+cut-over requires accepting manual admin management.  If Server-Side
+Encryption is ever enabled, OIDC is completely blocked (SSE requires
+cleartext passwords at login time).
+
 * Operations
 ** File syncing
 

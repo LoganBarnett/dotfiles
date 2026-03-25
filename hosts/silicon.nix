@@ -19,6 +19,8 @@ in
     flake-inputs.garage-queue.nixosModules.server
     flake-inputs.loku.nixosModules.default
     ../nixos-configs/dhcp-lease-textfile.nix
+    ../nixos-configs/gitea.nix
+    ../nixos-configs/gitea-deployment-webhooks.nix
     ../nixos-configs/garage-queue-server.nix
     ../nixos-configs/dns-server.nix
     ../nixos-configs/dns-smart-block.nix

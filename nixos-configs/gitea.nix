@@ -18,15 +18,11 @@
 let
   service = "gitea";
   domain = "${service}.${facts.network.domain}";
-  dataDir = "/mnt/gitea";
+  dataDir = "/tank/data/gitea";
   ldap-enabled = true;
   ldapServiceUser = "${host-id}-${service}-service";
 in
 {
-  imports = [
-    ../nixos-modules/bindfs.nix
-    ../nixos-modules/nfs-mount-consumer.nix
-  ];
   auth.ldap.users.${ldapServiceUser} = lib.mkIf ldap-enabled {
     email = "${ldapServiceUser}@${facts.network.domain}";
     fullName = ldapServiceUser;
@@ -42,14 +38,10 @@ in
   age.secrets = {
     # Other secrets go in here.
   };
-  nfsConsumerFacts = {
-    enable = true;
-    provider = {
-      remoteHost = "silicon.${facts.network.domain}";
-      vpnHost = "silicon-nas.${facts.network.domain}";
-      providerHostId = "silicon";
-      wgPort = 51821;
-    };
+  tankVolumes.volumes.${service} = {
+    group = service;
+    pgDatabase = service;
+    backupData = true;
   };
   services.https.fqdns."${domain}" = {
     enable = true;
@@ -216,7 +208,7 @@ in
       let
         base-dn = "dc=proton,dc=org";
         giteaBin = "${config.services.gitea.package}/bin/gitea";
-        appIni = "/mnt/gitea/custom/conf/app.ini";
+        appIni = "${dataDir}/custom/conf/app.ini";
       in
       ''
         # Check if LDAP auth source already exists.
