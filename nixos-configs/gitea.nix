@@ -58,6 +58,8 @@ in
         # This defaults to using HTTP.  Probably because the defaults don't
         # expect an easy HTTPS reverse proxy configuration.
         ROOT_URL = "https://${domain}/";
+        # Port 3000 is taken by dns-smart-block on silicon.
+        HTTP_PORT = 3001;
         # Use Gitea's built-in SSH server on port 2222 since the host
         # already uses port 22 for system SSH.
         SSH_DOMAIN = domain;
