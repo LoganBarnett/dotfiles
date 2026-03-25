@@ -38,6 +38,9 @@
       # CoreText renderer.  On dark backgrounds this makes colored text appear
       # faded and harder to tell apart.  font-thicken compensates (macOS only).
       font-thicken = true;
+      # The paste-protection dialog displays clipboard contents in plain text,
+      # which leaks passwords pasted into prompts with echo disabled.
+      clipboard-paste-protection = false;
       # Mirror the Terminal.app "Pro" profile ANSI palette so prompt colors
       # match between the two terminals.  Indices 4 and 12 (blue and bright
       # blue) come from the exported Pro.terminal profile; the remaining 14
