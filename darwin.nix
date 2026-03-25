@@ -225,28 +225,6 @@ in
             # defaults write com.apple.frameworks.diskimages skip-verify -bool true
             # defaults write com.apple.frameworks.diskimages skip-verify-locked -bool true
             # defaults write com.apple.frameworks.diskimages skip-verify-remote -bool true
-            echo "Avoid creating .DS_Store files on network volumes..."
-            defaults write com.apple.desktopservices DSDontWriteNetworkStores -bool true
-            echo "Set the warning before emptying the Trash..."
-            defaults write com.apple.finder WarnOnEmptyTrash -bool true
-            echo "Require password immediately after sleep or screen saver begins..."
-            defaults write com.apple.screensaver askForPassword -int 1
-            defaults write com.apple.screensaver askForPasswordDelay -int 0
-            echo "Setting menu bar padding and spacing..."
-            # Spacing for menu bar items.  See also NSStatusItemSelectionPadding.  I
-            # got this from here:
-            # https://www.jessesquires.com/blog/2023/12/16/macbook-notch-and-menu-bar-fixes/
-            defaults write -globalDomain NSStatusItemSpacing -int 3
-            # sudo -u logan.barnett defaults write -globalDomain NSStatusItemSpacing -int 3
-            # Spacing for menu bar items.  See also NSStatusItemSpacing.  I got this
-            # from here:
-            # https://www.jessesquires.com/blog/2023/12/16/macbook-notch-and-menu-bar-fixes/
-            defaults write -globalDomain NSStatusItemSelectionPadding -int 3
-            # sudo -u logan.barnett defaults write -globalDomain NSStatusItemSelectionPadding -int 8
-            killall SystemUIServer
-            defaults read -globalDomain NSStatusItemSpacing
-            defaults read -globalDomain NSStatusItemSelectionPadding
-            echo "$USER"
             echo "Swapping Option + Command keys on external keyboard..."
             # This is a custom tool found in this repo's /bin directory.
             ${macos-keyboard-remap}/bin/macos-keyboard-remap
@@ -263,9 +241,8 @@ in
               sudo spctl --master-disable
               echo "Disabled master assessments."
             fi
-            # Turn off the text suggestions, since they trigger aggressively (such
-            # as hitting space).
-            # To make it apply immediately.
+            # Signal the preferences daemon to flush, ensuring all defaults changes
+            # apply immediately.
             killall cfprefsd
             # This doesn't necessarily make all changes appear, but it'll get a lot of
             # them.
@@ -298,35 +275,6 @@ in
             }
             echo "Show the $home_dir/Library folder..."
             doas chflags nohidden "$home_dir/Library"
-            echo "Disabling text predictions..."
-            # Disable inline text predictions, since they are disruptive to typing.  This is undocumented, and took some searching.  I used this to find the string:
-            # find ~/Library -type f -name "*.plist" -exec grep -aH "InlinePrediction" {} +
-            # And this to find the file it was in:
-            # find ~/Library -type f -name "*.plist" | while read -r file; do
-            #  if strings "$file" | grep -q "InlinePrediction"; then
-            #    echo "$file"
-            #  fi
-            # done
-            # This could probably be done all at once but I'm exhausted from this.
-            defaults write -globalDomain NSAutomaticInlinePredictionEnabled -bool false
-            echo "Set dock magnification..."
-            doas defaults write com.apple.dock magnification -bool false
-            echo "Set dock magnification size..."
-            doas defaults write com.apple.dock largesize -int 48
-            echo "Define dock icon function..."
-            __dock_item() {
-              printf \
-                 "%s%s%s%s%s" \
-                 "<dict><key>tile-data</key><dict><key>file-data</key><dict>" \
-                 "<key>_CFURLString</key><string>" \
-                 "$1" \
-                 "</string><key>_CFURLStringType</key><integer>0</integer>" \
-                 "</dict></dict></dict>"
-            }
-            echo "Choose and order dock icons"
-            doas defaults write com.apple.dock persistent-apps -array \
-                "$(__dock_item /System/Applications/Utilities/Terminal.app)" \
-                "$(__dock_item /System/Applications/System\ Settings.app)"
             echo "Fixing dictation spam..."
             # Example invocation can be found at:
             # https://zameermanji.com/blog/2021/6/8/applying-com-apple-symbolichotkeys-changes-instantaneously/
@@ -344,13 +292,6 @@ in
                 </dict>
               </dict>
             "
-            # The -int part of this command is critical, or the value won't be
-            # respected.
-            doas defaults write com.apple.HIToolbox.plist AppleDictationAutoEnable -int 0
-
-            # Example of writing using something from Nix itself:
-            # "$(__dock_item \$\{pkgs.slack}/Applications/Slack.app)"
-
             # Yes this is duplicated, just to be sure.  It completes sub-second
             # anyways.
             doas /System/Library/PrivateFrameworks/SystemAdministration.framework/Resources/activateSettings -u
@@ -406,6 +347,17 @@ in
         NSAutomaticCapitalizationEnabled = false;
         # Disable autocorrect smart dashes.
         NSAutomaticDashSubstitutionEnabled = false;
+        # Disable inline text predictions, since they are disruptive to typing.
+        # This key is undocumented; it took some searching to find.  Use this to
+        # locate the string in preferences:
+        # find ~/Library -type f -name "*.plist" -exec grep -aH "InlinePrediction" {} +
+        # Use this to find which file contains it:
+        # find ~/Library -type f -name "*.plist" | while read -r file; do
+        #   if strings "$file" | grep -q "InlinePrediction"; then
+        #     echo "$file"
+        #   fi
+        # done
+        NSAutomaticInlinePredictionEnabled = false;
         # Disable autocorrect adding periods.
         NSAutomaticPeriodSubstitutionEnabled = false;
         # Disable autocorrect smart quotation marks.
@@ -426,6 +378,12 @@ in
         NSNavPanelExpandedStateForSaveMode2 = true;
         # Whether to enable smooth scrolling.  The default is true.
         NSScrollAnimationEnabled = true;
+        # Padding around selected menu bar items.  See also NSStatusItemSpacing.
+        # https://www.jessesquires.com/blog/2023/12/16/macbook-notch-and-menu-bar-fixes/
+        NSStatusItemSelectionPadding = 3;
+        # Spacing between menu bar items.  See also NSStatusItemSelectionPadding.
+        # https://www.jessesquires.com/blog/2023/12/16/macbook-notch-and-menu-bar-fixes/
+        NSStatusItemSpacing = 3;
         # Sets the size of the finder sidebar icons: 1 (small), 2 (medium) or 3
         # (large).  The default is 3.
         # NSTableViewDefaultSizeMode = 3;
@@ -546,6 +504,11 @@ in
         wvous-br-corner = null;
         wvous-tl-corner = null;
         wvous-tr-corner = null;
+        # Apps pinned to the dock.
+        persistent-apps = [
+          { app = "/System/Applications/Utilities/Terminal.app"; }
+          { app = "/System/Applications/System Settings.app"; }
+        ];
       };
       finder = {
         # Some of these are repeats from the NSGlobalDomain.  I should tie them
@@ -579,6 +542,20 @@ in
       };
       # Where to save screenshots.
       screencapture.location = "~/Desktop";
+      screensaver = {
+        # Require password immediately after sleep or screen saver begins.
+        askForPassword = true;
+        askForPasswordDelay = 0;
+      };
+      CustomUserPreferences = {
+        # Avoid creating .DS_Store files on network volumes.
+        "com.apple.desktopservices".DSDontWriteNetworkStores = true;
+        # Warn before emptying the Trash.
+        "com.apple.finder".WarnOnEmptyTrash = true;
+        # Prevent double-pressing Fn from triggering dictation ("dictation spam").
+        # The integer type is critical here; a boolean value is not respected.
+        "com.apple.HIToolbox".AppleDictationAutoEnable = 0;
+      };
     };
     keyboard = {
       enableKeyMapping = true; # Required to make remapping work.
