@@ -7,7 +7,7 @@
 # logical instead of pertaining to specific systems whenever possible.
 ################################################################################
 {
-  network = {
+  network = rec {
     # I have a naming theme of periodic elements and particles.
     domain = "proton";
     # The host-id of the machine that serves DNS for the home network.  Used
@@ -224,9 +224,7 @@
       };
       gallium = {
         aliases = [
-          "authelia"
           "jenkins"
-          "sso"
         ];
         controlledHost = true;
         flake-input-overrides = {
@@ -369,6 +367,7 @@
       };
       silicon = {
         aliases = [
+          "authelia"
           "blocky"
           "dns-smart-block"
           "immich"
@@ -377,6 +376,7 @@
           "matrix"
           "metube"
           "ollama"
+          "sso"
         ];
         controlledHost = true;
         flake-input-overrides = { };
@@ -617,6 +617,8 @@
             "grafana-viewers"
             "home-assistant-admins"
             "home-assistant-users"
+            "immich-admins"
+            "immich-users"
             "matrix-admins"
             "matrix-users"
             "nextcloud-admins"
@@ -676,6 +678,13 @@
         };
       }
       // {
+        immich = {
+          email = "immich@proton";
+          type = "oidc-client";
+          description = "Immich OIDC client.";
+          full-name = "immich";
+          devices = [ ];
+        };
         openhab-oidc-client = {
           email = "openhab-oidc-client@proton";
           type = "oidc-client";
@@ -689,17 +698,21 @@
 
       immich = {
         authentication = "oidc";
-        fqdn = "immich.proton";
+        fqdn = "immich.${domain}";
         groups = [
           "immich-admins"
           "immich-users"
         ];
-        redirectUris = [ "https://immich.proton/auth/login" ];
+        redirectUris = [
+          "https://immich.${domain}/auth/login"
+          "https://immich.${domain}/user-settings"
+          "app.immich:///oauth-callback"
+        ];
       };
 
       openhab = {
         authentication = "oidc";
-        fqdn = "openhab.proton";
+        fqdn = "openhab.${domain}";
         groups = [
           "openhab-admins"
           "openhab-users"
@@ -711,7 +724,7 @@
 
       nextcloud = {
         authentication = "ldap";
-        fqdn = "nextcloud.proton";
+        fqdn = "nextcloud.${domain}";
         groups = [
           "nextcloud-admins"
           "nextcloud-users"

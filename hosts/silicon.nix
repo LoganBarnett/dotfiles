@@ -28,6 +28,7 @@ in
     ../nixos-configs/nfs-mount-provider-from-facts.nix
     ../nixos-configs/openldap-facts.nix
     ../nixos-configs/loku.nix
+    ../nixos-configs/authelia.nix
     ../nixos-configs/immich.nix
     ../nixos-configs/metube.nix
     ../nixos-configs/nix-builder-provide.nix

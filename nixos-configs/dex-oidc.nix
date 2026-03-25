@@ -1,5 +1,17 @@
 ################################################################################
-# Dex handles an OIDC connections for LDAP.
+# TOMBSTONE — Dex is no longer active.
+#
+# Dex was our original OIDC broker, using LDAP as its identity backend.  It
+# served Home Assistant as its only active client.  We migrated to Authelia
+# (nixos-configs/authelia.nix on silicon) because Authelia provides:
+#
+#   - Password reset flows (Dex has none)
+#   - A foundation for MFA if we ever want it
+#   - A richer access-control model (per-domain policies, group rules)
+#
+# Home Assistant was decommissioned before the migration completed, so Dex
+# never had a live client to migrate.  The import in hosts/copper.nix was
+# already commented out.  This file is kept for historical reference.
 ################################################################################
 {
   config,

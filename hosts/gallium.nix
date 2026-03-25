@@ -3,7 +3,8 @@
 # mercury, due to its low melting point.  It also is a critical element needed
 # for making violet and blue LEDs.  Gallium can be 3D printed.
 #
-# Gallium is an authentication server.
+# Gallium is a build machine and Jenkins host.  Authentication has moved to
+# silicon (nixos-configs/authelia.nix).
 ################################################################################
 {
   flake-inputs,

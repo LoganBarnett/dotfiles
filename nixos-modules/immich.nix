@@ -5,6 +5,7 @@
 ################################################################################
 {
   config,
+  facts,
   lib,
   ...
 }:
@@ -25,7 +26,7 @@ in
 
     fqdn = mkOption {
       type = types.str;
-      default = "immich.proton";
+      default = "immich.${facts.network.domain}";
       description = "FQDN for the HTTPS reverse proxy endpoint.";
     };
 
@@ -54,6 +55,17 @@ in
         both <code>after</code> and <code>requires</code>.
       '';
     };
+
+    oauthConfigFile = mkOption {
+      type = types.nullOr types.path;
+      default = null;
+      description = ''
+        Path to a JSON config file for Immich (IMMICH_CONFIG_FILE).  Use this
+        to inject the OIDC/OAuth configuration at runtime without baking
+        secrets into the Nix store.  When set, the file is delivered to
+        immich-server via LoadCredential and referenced via the env var.
+      '';
+    };
   };
 
   config = mkIf cfg.enable {
@@ -63,6 +75,9 @@ in
 
     services.immich = {
       enable = true;
+      # `localhost` resolves to [::1] on this host; nginx proxies to
+      # 127.0.0.1, so pin to IPv4 explicitly.
+      host = "127.0.0.1";
       port = cfg.port;
       mediaLocation = cfg.mediaLocation;
       machine-learning.enable = cfg.machineLearning;
@@ -91,6 +106,12 @@ in
     systemd.services.immich-server = {
       after = cfg.mountDependencies;
       requires = cfg.mountDependencies;
+      serviceConfig = lib.mkIf (cfg.oauthConfigFile != null) {
+        LoadCredential = [ "immich-oauth-config:${cfg.oauthConfigFile}" ];
+      };
+      environment = lib.mkIf (cfg.oauthConfigFile != null) {
+        IMMICH_CONFIG_FILE = "/run/credentials/immich-server.service/immich-oauth-config";
+      };
       # Seed an admin user with an empty (permanently unusable) password if no
       # admin exists yet.  This bypasses the first-run wizard.  The password
       # field defaults to '' which no bcrypt comparison will ever match, so

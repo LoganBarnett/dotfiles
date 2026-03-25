@@ -66,10 +66,20 @@ let
         uid = username;
         sn = username;
         mail = ucfg.email;
-        userPassword = {
-          managed = ucfg.managed;
-          initialPath = credential-path username;
-        };
+        # managed=true: reconciler always syncs from `path` (service accounts).
+        # managed=false: reconciler sets the password only on initial creation
+        # from `initialPath` (human accounts whose passwords evolve over time).
+        userPassword =
+          if ucfg.managed then
+            {
+              managed = true;
+              path = credential-path username;
+            }
+          else
+            {
+              managed = false;
+              initialPath = credential-path username;
+            };
       }
       # Omit description when empty — LDAP DirectoryString requires >= 1 char.
       // lib.optionalAttrs (ucfg.description != "") {
@@ -188,7 +198,7 @@ in
       # newline, and pass it directly to the reconciler.
       ExecStart = pkgs.writeShellScript "ldap-reconciler-run" ''
         ${ldap-reconciler-pkg}/bin/ldap-reconciler \
-          --ldap-url "ldaps://ldap.proton" \
+          --ldap-url "ldaps://ldap.${facts.network.domain}" \
           --ldap-bind-dn "cn=admin,${base-dn}" \
           --ldap-password "$(tr -d '\n' < /run/credentials/ldap-reconciler.service/ldap-root-pass)" \
           --state-file "${desired-state-file}"
