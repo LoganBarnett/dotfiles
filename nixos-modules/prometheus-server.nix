@@ -44,7 +44,7 @@ let
 in
 {
   imports = [ ];
-  services.https.fqdns."prometheus.proton" = {
+  services.https.fqdns."prometheus.${facts.network.domain}" = {
     internalPort = config.services.prometheus.port;
   };
   services.prometheus = {
@@ -147,12 +147,12 @@ in
   # Goss health checks for Prometheus.
   services.goss.checks = {
     # Check that the HTTPS endpoint is responding.
-    http."https://prometheus.proton/" = {
+    http."https://prometheus.${facts.network.domain}/" = {
       status = 200;
       timeout = 5000;
     };
     # Check that the Prometheus API is responding.
-    http."https://prometheus.proton/api/v1/status/config" = {
+    http."https://prometheus.${facts.network.domain}/api/v1/status/config" = {
       status = 200;
       timeout = 3000;
     };

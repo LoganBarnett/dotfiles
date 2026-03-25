@@ -34,7 +34,7 @@ let
   rpi-build = {
     inherit sshKey;
     inherit sshUser;
-    hostName = "rpi-build.proton";
+    hostName = "rpi-build.${facts.network.domain}";
     systems = rpi-systems;
     protocol = "ssh-ng";
     # Keep this host from being bogged down by builds.
@@ -58,7 +58,7 @@ let
   silicon = {
     inherit sshKey;
     inherit sshUser;
-    hostName = "silicon.proton";
+    hostName = "silicon.${facts.network.domain}";
     systems = [ "x86_64-linux" ];
     protocol = "ssh-ng";
     # Keep this host from being bogged down by builds.
@@ -96,17 +96,17 @@ in
   # '';
 
   programs.ssh.knownHosts = {
-    "rpi-build.proton" = {
-      # Include all hostname variations since rpi-build.proton is a CNAME for
-      # cobalt.proton, and SSH may check the key against any of these names.
+    "rpi-build.${facts.network.domain}" = {
+      # Include all hostname variations since rpi-build.${facts.network.domain} is a CNAME for
+      # cobalt.${facts.network.domain}, and SSH may check the key against any of these names.
       hostNames = [
-        "rpi-build.proton"
-        "cobalt.proton"
+        "rpi-build.${facts.network.domain}"
+        "cobalt.${facts.network.domain}"
       ];
       publicKeyFile = ../secrets/cobalt-pub-key.pub;
     };
-    "silicon.proton" = {
-      hostNames = [ "silicon.proton" ];
+    "silicon.${facts.network.domain}" = {
+      hostNames = [ "silicon.${facts.network.domain}" ];
       publicKeyFile = ../secrets/silicon-pub-key.pub;
     };
   };

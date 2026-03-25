@@ -1,11 +1,11 @@
-{ ... }:
+{ facts, ... }:
 {
   services.garage-queue-worker.workers.ollama = {
     enable = true;
     integrations.ollama.enable = true;
     settings = {
       worker = {
-        server_url = "https://ollama.proton";
+        server_url = "https://ollama.${facts.network.domain}";
         poll_interval_ms = 1000;
       };
       control = {

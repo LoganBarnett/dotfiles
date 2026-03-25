@@ -134,7 +134,7 @@ let
       autoLaunch = false;
       storageLabelClaim = "preferred_username";
       storageQuotaClaim = "";
-      defaultStorageQuota = 0;
+      defaultStorageQuota = null;
       mobileOverrideEnabled = false;
       mobileRedirectUri = "";
       profileImageUrl = "";

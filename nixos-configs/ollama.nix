@@ -1,5 +1,6 @@
 {
   config,
+  facts,
   lib,
   pkgs,
   ...
@@ -22,11 +23,11 @@
     };
   };
   services.https = {
-    fqdns."ollama.proton" = {
+    fqdns."ollama.${facts.network.domain}" = {
       internalPort = config.services.ollama.port;
     };
   };
-  services.nginx.virtualHosts."ollama.proton".locations."/" = {
+  services.nginx.virtualHosts."ollama.${facts.network.domain}".locations."/" = {
     # Turn these off, this made a big difference for me.
     recommendedProxySettings = false;
     recommendedUwsgiSettings = false;

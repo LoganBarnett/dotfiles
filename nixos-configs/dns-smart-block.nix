@@ -4,7 +4,7 @@
 # Provides gaming and video streaming classifiers that watch Blocky DNS logs,
 # classify domains using Ollama LLM, and serve dynamic blocklists via HTTP API.
 ################################################################################
-{ config, ... }:
+{ config, facts, ... }:
 {
   # Admin interface secrets for HTTP Basic Auth.
   age.secrets = {
@@ -36,11 +36,11 @@
     # private infrastructure names that are never gaming or streaming sites, and
     # excluding them prevents the classifier from wasting LLM calls on them
     # while still recording every resolution in the event log.
-    excludeSuffixes = [ ".proton" ];
+    excludeSuffixes = [ ".${facts.network.domain}" ];
 
     # Ollama LLM server configuration.
     ollama = {
-      url = "https://ollama.proton";
+      url = "https://ollama.${facts.network.domain}";
       model = "llama3.1:8b";
     };
 
@@ -151,13 +151,13 @@
   };
 
   # TLS termination for admin interface.
-  services.https.fqdns."dns-smart-block.proton" = {
+  services.https.fqdns."dns-smart-block.${facts.network.domain}" = {
     enable = true;
     internalPort = config.services.dns-smart-block.blocklistServer.adminBindPort;
   };
 
   # Nginx proxy configuration for admin interface with HTTP Basic Auth.
-  services.nginx.virtualHosts."dns-smart-block.proton" = {
+  services.nginx.virtualHosts."dns-smart-block.${facts.network.domain}" = {
     locations."/" = {
       basicAuth = "DNS Smart Block Admin";
       basicAuthFile = config.age.secrets.dns-smart-block-admin-htpasswd.path;

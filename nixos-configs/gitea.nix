@@ -9,6 +9,7 @@
 ################################################################################
 {
   config,
+  facts,
   host-id,
   lib,
   pkgs,
@@ -16,7 +17,7 @@
 }:
 let
   service = "gitea";
-  domain = "${service}.proton";
+  domain = "${service}.${facts.network.domain}";
   dataDir = "/mnt/gitea";
   ldap-enabled = true;
   ldapServiceUser = "${host-id}-${service}-service";
@@ -27,7 +28,7 @@ in
     ../nixos-modules/nfs-mount-consumer.nix
   ];
   auth.ldap.users.${ldapServiceUser} = lib.mkIf ldap-enabled {
-    email = "${ldapServiceUser}@proton";
+    email = "${ldapServiceUser}@${facts.network.domain}";
     fullName = ldapServiceUser;
     description = "Gitea service account on ${host-id}.";
     group = service;
@@ -44,13 +45,13 @@ in
   nfsConsumerFacts = {
     enable = true;
     provider = {
-      remoteHost = "silicon.proton";
-      vpnHost = "silicon-nas.proton";
+      remoteHost = "silicon.${facts.network.domain}";
+      vpnHost = "silicon-nas.${facts.network.domain}";
       providerHostId = "silicon";
       wgPort = 51821;
     };
   };
-  services.https.fqdns."gitea.proton" = {
+  services.https.fqdns."${domain}" = {
     enable = true;
     internalPort = config.services.gitea.settings.server.HTTP_PORT;
   };
@@ -100,7 +101,7 @@ in
           {
             ENABLED = true;
             NAME = "LDAP";
-            HOST = "ldap.proton";
+            HOST = "ldap.${facts.network.domain}";
             PORT = 636;
             USE_SSL = true;
             START_TLS = false;
@@ -236,7 +237,7 @@ in
           $ID_ARG \
           --name "LDAP" \
           --security-protocol ldaps \
-          --host ldap.proton \
+          --host ldap.${facts.network.domain} \
           --port 636 \
           --bind-dn "uid=${ldapServiceUser},ou=users,${base-dn}" \
           --bind-password "$(cat ${

@@ -16,7 +16,7 @@
 # one, but they are also part of neurotransmitters).  Calcium is found in many
 # things, including limestone.
 ################################################################################
-{ flake-inputs, ... }:
+{ facts, flake-inputs, ... }:
 let
   system = "x86_64-linux";
   atticd-port = 8080;
@@ -46,7 +46,7 @@ in
     )
     ../nixos-modules/linux-host.nix
   ];
-  services.https.fqdns."calcium.proton" = {
+  services.https.fqdns."calcium.${facts.network.domain}" = {
     internalPort = atticd-port;
   };
 }

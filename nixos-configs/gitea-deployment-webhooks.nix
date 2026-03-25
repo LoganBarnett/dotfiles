@@ -4,7 +4,13 @@
 # This configuration should be imported on the Gitea host (copper) to set up
 # webhooks that notify the deployment server (rubidium) of repository changes.
 ################################################################################
-{ config, lib, ... }: {
+{
+  config,
+  facts,
+  lib,
+  ...
+}:
+{
   imports = [
     ../nixos-modules/gitea-webhook-setup.nix
   ];
@@ -21,12 +27,14 @@
   services.giteaWebhookSetup = {
     enable = true;
 
-    webhooks = [{
-      owner = "logan";
-      repo = "dotfiles";
-      url = "http://rubidium.proton:9001/webhook";
-      events = [ "push" ];
-      secretFile = config.age.secrets.deployment-webhook-secret.path;
-    }];
+    webhooks = [
+      {
+        owner = "logan";
+        repo = "dotfiles";
+        url = "http://rubidium.${facts.network.domain}:9001/webhook";
+        events = [ "push" ];
+        secretFile = config.age.secrets.deployment-webhook-secret.path;
+      }
+    ];
   };
 }

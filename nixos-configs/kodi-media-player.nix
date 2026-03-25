@@ -6,7 +6,15 @@
 # a dumb display. Kodi manages its own media library declaratively without
 # needing a separate media server.
 ################################################################################
-{ config, host-id, lib, pkgs, ... }: {
+{
+  config,
+  facts,
+  host-id,
+  lib,
+  pkgs,
+  ...
+}:
+{
   imports = [
   ];
 
@@ -14,18 +22,20 @@
   nfsConsumerFacts = {
     enable = true;
     provider = {
-      remoteHost = "silicon.proton";
-      vpnHost = "silicon-nas.proton";
+      remoteHost = "silicon.${facts.network.domain}";
+      vpnHost = "silicon-nas.${facts.network.domain}";
       providerHostId = "silicon";
       wgPort = 51821;
     };
   };
   services.kodi-standalone = {
     enable = true;
-    package = pkgs.kodi.withPackages (kodiPkgs: with kodiPkgs; [
-      inputstream-adaptive
-      inputstream-ffmpegdirect
-    ]);
+    package = pkgs.kodi.withPackages (
+      kodiPkgs: with kodiPkgs; [
+        inputstream-adaptive
+        inputstream-ffmpegdirect
+      ]
+    );
     advancedSettings = {
       services = {
         # Enable web server for remote control via mobile apps.
@@ -84,7 +94,7 @@
 
   # Expose Kodi's web interface for remote control via mobile apps.
   # kodi-lv = Kodi in the living room.
-  services.https.fqdns."kodi-living-room.proton" = {
+  services.https.fqdns."kodi-living-room.${facts.network.domain}" = {
     enable = true;
     internalPort = 8080;
   };
@@ -95,7 +105,9 @@
   networking.firewall.allowedTCPPorts = [ 8080 ];
 
   # Add kodi user to media-shared group (created by nfs-consumer-facts).
-  users.users.${config.services.kodi-standalone.systemUser}.extraGroups = [ "media-shared" ];
+  users.users.${config.services.kodi-standalone.systemUser}.extraGroups = [
+    "media-shared"
+  ];
 
   # Pre-configure Kodi for the kodi user.
   home-manager.users.${config.services.kodi-standalone.systemUser} = {

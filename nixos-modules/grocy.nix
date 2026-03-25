@@ -6,13 +6,13 @@
 # I chose Grocy because I've heard it's got great support for bar-code scanning,
 # which is essential for tracking refrigerator.
 ################################################################################
-{ host-id, ... }:
+{ facts, host-id, ... }:
 {
   imports = [
     ./https.nix
   ];
   # Grocy is a PHP app served directly by nginx, not proxied.
-  services.https.fqdns."${host-id}.proton" = {
+  services.https.fqdns."${host-id}.${facts.network.domain}" = {
     proxy = false;
   };
   services.grocy = {

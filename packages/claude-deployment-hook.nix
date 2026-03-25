@@ -4,7 +4,13 @@
 # This creates a hook script that Claude can use to check deployment status
 # after pushing changes to the repository.
 ################################################################################
-{ lib, writeScriptBin, curl, jq }:
+{
+  curl,
+  domain,
+  jq,
+  lib,
+  writeScriptBin,
+}:
 
 writeScriptBin "claude-deployment-hook" ''
   #!/usr/bin/env bash
@@ -15,7 +21,7 @@ writeScriptBin "claude-deployment-hook" ''
 
   set -euo pipefail
 
-  DEPLOYMENT_SERVER="rubidium.proton"
+  DEPLOYMENT_SERVER="rubidium.${domain}"
   STATUS_URL="http://deployment.$DEPLOYMENT_SERVER/status"
 
   # Colors for output.

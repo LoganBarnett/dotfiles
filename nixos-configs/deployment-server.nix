@@ -5,7 +5,15 @@
 # deployment server.  It provides automatic Git repository watching and
 # deployment orchestration.
 ################################################################################
-{ config, host-id, lib, pkgs, ... }: {
+{
+  config,
+  facts,
+  host-id,
+  lib,
+  pkgs,
+  ...
+}:
+{
   imports = [
     ../nixos-modules/persistent-terminal.nix
     ../nixos-modules/nix-deployment-server.nix
@@ -29,7 +37,7 @@
   # Configure automatic deployment server.
   services.nixDeploymentServer = {
     enable = true;
-    repositoryUrl = "git+ssh://git@gitea.proton:2222/logan/dotfiles.git";
+    repositoryUrl = "git+ssh://git@gitea.${facts.network.domain}:2222/logan/dotfiles.git";
 
     # List of hosts to manage.  Add more hosts as needed.
     hosts = [
@@ -84,7 +92,7 @@
   # This makes the status available at a nice URL instead of just a port.
   services.nginx = {
     enable = true;
-    virtualHosts."deployment.${host-id}.proton" = {
+    virtualHosts."deployment.${host-id}.${facts.network.domain}" = {
       locations."/status" = {
         proxyPass = "http://127.0.0.1:9002";
         extraConfig = ''

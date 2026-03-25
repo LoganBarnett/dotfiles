@@ -7,10 +7,11 @@
 # Instead of requiring the explicit port format:
 #   git clone ssh://git@gitea.proton:2222/logan/repo.git
 ################################################################################
-{ ... }: {
+{ facts, ... }:
+{
   programs.ssh = {
     matchBlocks = {
-      "gitea.proton" = {
+      "gitea.${facts.network.domain}" = {
         port = 2222;
         user = "git";
       };

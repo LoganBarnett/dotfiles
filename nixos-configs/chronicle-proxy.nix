@@ -1,5 +1,6 @@
 di@{
   config,
+  facts,
   lib,
   lib-custom,
   pkgs,
@@ -15,7 +16,7 @@ di@{
       rekeyFile = ../secrets/chronicle-proxy-openai-api-key.age;
     };
   };
-  services.https.fqdns."chronicle-proxy.proton" = {
+  services.https.fqdns."chronicle-proxy.${facts.network.domain}" = {
     enable = true;
     internalPort = config.services.chronicle-proxy.port;
   };
@@ -30,7 +31,7 @@ di@{
     # Check that the HTTPS endpoint is responding.  We use the root endpoint
     # as a basic health check since Chronicle Proxy doesn't implement all
     # OpenAI API endpoints.
-    http."https://chronicle-proxy.proton/" = {
+    http."https://chronicle-proxy.${facts.network.domain}/" = {
       status = 200;
       timeout = 5000;
     };

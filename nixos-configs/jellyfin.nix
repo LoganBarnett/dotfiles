@@ -3,10 +3,10 @@
 # /tank/data/media, which Metube populates via yt-dlp downloads.
 #
 # NOTE: First boot requires a one-time interactive setup via the web UI at
-# https://jellyfin.proton.  When prompted for a media library, point it at
+# https://jellyfin.${facts.network.domain}.  When prompted for a media library, point it at
 # /tank/data/media.
 ################################################################################
-{ config, ... }:
+{ config, facts, ... }:
 let
   port = 8096;
 in
@@ -16,7 +16,7 @@ in
     openFirewall = false;
   };
 
-  services.https.fqdns."jellyfin.proton" = {
+  services.https.fqdns."jellyfin.${facts.network.domain}" = {
     enable = false;
     internalPort = port;
   };

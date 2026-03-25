@@ -1,10 +1,10 @@
-{ ... }:
+{ facts, ... }:
 {
   programs.ssh = {
 
     matchBlocks = {
 
-      "*.proton" = {
+      "*.${facts.network.domain}" = {
         # This way we needn't manage identities on the various servers I work
         # on.
         forwardAgent = true;
@@ -34,7 +34,7 @@
 
       # This is our USB thumb drive host for bootstrapping installation.  Its
       # fingerprint is essentially dynamic, so ignore it.
-      "nucleus.proton" = {
+      "nucleus.${facts.network.domain}" = {
         extraOptions = {
           StrictHostKeyChecking = "no";
         };

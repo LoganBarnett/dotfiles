@@ -4,44 +4,51 @@
 # This config manages non-sensitive settings for tea. The authentication token
 # must be configured separately through `tea logins add`.
 ################################################################################
-{ lib, pkgs, config, ... }:
+{
+  config,
+  facts,
+  lib,
+  pkgs,
+  ...
+}:
 let
   teaConfigPath = "${config.home.homeDirectory}/Library/Application Support/tea/config.yml";
-in {
+in
+{
   imports = [
     ../agnostic-modules/configuration-lens.nix
   ];
 
   # Ensure the tea config directory and minimal file exist before augeas runs.
-#   home.activation.teaConfigInit = lib.hm.dag.entryBefore ["fileLenses"] ''
-#     config_dir="${config.home.homeDirectory}/Library/Application Support/tea"
-#     config_file="${teaConfigPath}"
+  #   home.activation.teaConfigInit = lib.hm.dag.entryBefore ["fileLenses"] ''
+  #     config_dir="${config.home.homeDirectory}/Library/Application Support/tea"
+  #     config_file="${teaConfigPath}"
 
-#     # Ensure the config directory exists.
-#     mkdir -p "$config_dir"
+  #     # Ensure the config directory exists.
+  #     mkdir -p "$config_dir"
 
-#     # Create minimal config if it doesn't exist.
-#     if [ ! -f "$config_file" ]; then
-#       cat > "$config_file" <<'EOF'
-# logins:
-#   - name: gitea
-#     url: https://gitea.proton
-#     default: true
-#     ssh_host: gitea.proton
-#     ssh_key: $HOME/.ssh/id_rsa
-#     insecure: false
-#     ssh_certificate_principal: ""
-#     ssh_agent: false
-#     ssh_key_agent_pub: ""
-#     version_check: true
-#     user: logan
-# preferences:
-#   editor: false
-#   flag_defaults:
-#     remote: gitea
-# EOF
-#     fi
-#   '';
+  #     # Create minimal config if it doesn't exist.
+  #     if [ ! -f "$config_file" ]; then
+  #       cat > "$config_file" <<'EOF'
+  # logins:
+  #   - name: gitea
+  #     url: https://gitea.proton
+  #     default: true
+  #     ssh_host: gitea.proton
+  #     ssh_key: $HOME/.ssh/id_rsa
+  #     insecure: false
+  #     ssh_certificate_principal: ""
+  #     ssh_agent: false
+  #     ssh_key_agent_pub: ""
+  #     version_check: true
+  #     user: logan
+  # preferences:
+  #   editor: false
+  #   flag_defaults:
+  #     remote: gitea
+  # EOF
+  #     fi
+  #   '';
 
   # Use yq to ensure non-sensitive settings are present.
   # yq only touches the specified paths, preserving token and other
@@ -58,7 +65,7 @@ in {
       filePath = teaConfigPath;
       documentPath = ".logins[0].url";
       operation = "set";
-      value = ''"https://gitea.proton"'';
+      value = ''"https://gitea.${facts.network.domain}"'';
       transform = "yaml";
     };
     tea-gitea-default = {
@@ -72,7 +79,7 @@ in {
       filePath = teaConfigPath;
       documentPath = ".logins[0].ssh_host";
       operation = "set";
-      value = ''"gitea.proton"'';
+      value = ''"gitea.${facts.network.domain}"'';
       transform = "yaml";
     };
     tea-gitea-ssh-key = {

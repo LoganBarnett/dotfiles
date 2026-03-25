@@ -41,16 +41,17 @@
 ################################################################################
 {
   config,
+  facts,
   host-id,
   lib,
   pkgs,
   ...
 }:
 let
-  fqdn = "nextcloud.proton";
+  fqdn = "nextcloud.${facts.network.domain}";
   data-dir = "/mnt/nextcloud";
-  nfs-physical-hostname = "silicon.proton";
-  nfs-vpn-hostname = "silicon-nas.proton";
+  nfs-physical-hostname = "silicon.${facts.network.domain}";
+  nfs-vpn-hostname = "silicon-nas.${facts.network.domain}";
 in
 {
   imports = [
@@ -103,13 +104,13 @@ in
   nfsConsumerFacts = {
     enable = true;
     provider = {
-      remoteHost = "silicon.proton";
-      vpnHost = "silicon-nas.proton";
+      remoteHost = nfs-physical-hostname;
+      vpnHost = nfs-vpn-hostname;
       providerHostId = "silicon";
       wgPort = 51821;
     };
   };
-  services.https.fqdns."nextcloud.proton" = {
+  services.https.fqdns."${fqdn}" = {
     enable = true;
     proxy = false;
   };
@@ -321,7 +322,7 @@ in
             let
               uid = "uid=${host-id}-nextcloud-service,ou=users,dc=proton,dc=org";
               passwordPath = "/run/credentials/nextcloud-custom-config.service/nextcloud-service-ldap-password";
-              ldapHost = "ldap.proton";
+              ldapHost = "ldap.${facts.network.domain}";
               script = pkgs.writeShellApplication {
                 name = "nextcloud-ldap-configure";
                 runtimeInputs = [

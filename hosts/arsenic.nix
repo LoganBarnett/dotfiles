@@ -2,6 +2,7 @@
 # arsenic is Kai's gaming computer.
 ##
 {
+  facts,
   flake-inputs,
   host-id,
   modulesPath,
@@ -97,7 +98,7 @@
       };
     }
   ];
-  services.https.fqdns."${host-id}.proton" = {
+  services.https.fqdns."${host-id}.${facts.network.domain}" = {
     internalPort = 8080;
   };
   services.garage-queue-worker.workers.ollama.settings.capabilities.scalars.vram_mb =

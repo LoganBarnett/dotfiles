@@ -21,14 +21,22 @@
 # At some point I should make a read-only mode to lock things down, but I expect
 # I'll be tweaking it for a while.
 ################################################################################
-{ config, host-id, lib, pkgs, ... }: {
+{
+  config,
+  facts,
+  host-id,
+  lib,
+  pkgs,
+  ...
+}:
+{
   disabledModules = [
     "services/home-automation/zwave-js-ui.nix"
   ];
   imports = [
     ../nixos-modules/zwave-js-ui.nix
   ];
-  https.fqdns."zwave-js-ui.proton" = {
+  https.fqdns."zwave-js-ui.${facts.network.domain}" = {
     enable = true;
     internalPort = 8091;
   };
@@ -46,27 +54,30 @@
   };
   services.zwave-js-ui = {
     enable = true;
-    package = pkgs.zwave-js-ui.overrideAttrs (let
-      version = "10.9.0";
-    in old: rec {
-      inherit version;
-      src = pkgs.fetchFromGitHub {
-        owner = "LoganBarnett";
-        repo = "zwave-js-ui";
-        rev = "fix-settings-circular-on-logging-override";
-        # hash = lib.fakeHash;
-        hash = "sha256-QYIfrkirCdIvuvy8vqEB+NgwijTWFUGWlvHcNucjtwo=";
-      };
-      # overrideAttrs and buildNpmPackage don't play together.  This has to be
-      # overridden in npmDeps as well.
-      # Don't actually worry about setting this.
-      # npmDepsHash = lib.fakeHash;
-      npmDeps = pkgs.fetchNpmDeps {
-        inherit src;
-        # hash = lib.fakeHash;
-        hash = "sha256-E3+6N04R02Re/AIMQu1l5PlZrwpnfEQJGVf7CzXo8zw=";
-      };
-    });
+    package = pkgs.zwave-js-ui.overrideAttrs (
+      let
+        version = "10.9.0";
+      in
+      old: rec {
+        inherit version;
+        src = pkgs.fetchFromGitHub {
+          owner = "LoganBarnett";
+          repo = "zwave-js-ui";
+          rev = "fix-settings-circular-on-logging-override";
+          # hash = lib.fakeHash;
+          hash = "sha256-QYIfrkirCdIvuvy8vqEB+NgwijTWFUGWlvHcNucjtwo=";
+        };
+        # overrideAttrs and buildNpmPackage don't play together.  This has to be
+        # overridden in npmDeps as well.
+        # Don't actually worry about setting this.
+        # npmDepsHash = lib.fakeHash;
+        npmDeps = pkgs.fetchNpmDeps {
+          inherit src;
+          # hash = lib.fakeHash;
+          hash = "sha256-E3+6N04R02Re/AIMQu1l5PlZrwpnfEQJGVf7CzXo8zw=";
+        };
+      }
+    );
     secretsConfigFile = "/run/credentials/zwave-js-ui.service/zwave-js-secret";
     settings = {
       # See
@@ -109,10 +120,11 @@
           };
         };
       };
-    } // {
+    }
+    // {
       # This section has settings that are set by the UI on startup.  We'll set
       # them first.
-      securityKeysLongRange = {};
+      securityKeysLongRange = { };
       deviceConfigPriorityDir = "/var/lib/zwave-js-ui/config";
       enableSoftReset = true;
       disableChangelog = false;

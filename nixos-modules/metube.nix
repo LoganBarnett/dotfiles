@@ -5,6 +5,7 @@
 ################################################################################
 {
   config,
+  facts,
   lib,
   pkgs,
   ...
@@ -106,7 +107,7 @@ in
 
     fqdn = mkOption {
       type = types.str;
-      default = "metube.proton";
+      default = "metube.${facts.network.domain}";
       description = "FQDN for the HTTPS reverse proxy endpoint.";
     };
 

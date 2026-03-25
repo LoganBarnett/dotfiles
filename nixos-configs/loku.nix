@@ -3,14 +3,14 @@
 # /tank/data/media (the same directory Metube populates via yt-dlp downloads),
 # providing a web UI for browsing and playing video files without a database.
 ################################################################################
-{ ... }:
+{ facts, ... }:
 {
   services.loku-web = {
     enable = true;
     libraryPath = "/tank/data/media";
   };
 
-  services.https.fqdns."loku.proton" = {
+  services.https.fqdns."loku.${facts.network.domain}" = {
     enable = true;
     # loku-web uses systemd socket activation; the socket lives at
     # /run/loku-web/loku-web.sock, which matches the serviceNameForSocket

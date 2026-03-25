@@ -4,6 +4,7 @@
 ################################################################################
 {
   config,
+  facts,
   host-id,
   pkgs,
   ...
@@ -21,7 +22,7 @@
     mode = "0440";
     settings = {
       root-certificate = config.age.secrets.proton-ca;
-      fqdn = "${host-id}.proton";
+      fqdn = "${host-id}.${facts.network.domain}";
     };
     rekeyFile = ../secrets/tls-${host-id}.key.age;
   };

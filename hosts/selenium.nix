@@ -8,6 +8,7 @@
 ################################################################################
 {
   config,
+  facts,
   flake-inputs,
   host-id,
   system,
@@ -35,7 +36,7 @@
       # });
     })
   ];
-  services.https.fqdns."selenium.proton" = {
+  services.https.fqdns."selenium.${facts.network.domain}" = {
     enable = true;
     internalPort = config.services.octoprint.port;
   };

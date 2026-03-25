@@ -12,6 +12,7 @@
 ################################################################################
 {
   config,
+  facts,
   lib,
   pkgs,
   ...
@@ -26,8 +27,8 @@ in
   };
 
   config = lib.mkIf config.services.ldap-server.enable {
-    tls.tls-leafs."ldap.proton" = {
-      fqdn = "ldap.proton";
+    tls.tls-leafs."ldap.${facts.network.domain}" = {
+      fqdn = "ldap.${facts.network.domain}";
       ca = config.age.secrets.proton-ca;
     };
 

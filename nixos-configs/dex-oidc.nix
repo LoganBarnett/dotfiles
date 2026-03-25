@@ -15,6 +15,7 @@
 ################################################################################
 {
   config,
+  facts,
   host-id,
   lib-custom,
   pkgs,
@@ -69,7 +70,7 @@ in
   };
   users.groups.${group} = { };
   imports = [ ];
-  services.https.fqdns."dex.proton" = {
+  services.https.fqdns."dex.${facts.network.domain}" = {
     internalPort = dex-port;
   };
   # The dex NixOS module uses DynamicUser = true and thus requires a little more
@@ -87,14 +88,14 @@ in
         {
           id = "home-assistant";
           redirectURIs = [
-            "https://home-assistant.proton/auth/external/callback"
+            "https://home-assistant.${facts.network.domain}/auth/external/callback"
           ];
           secret = "$''${home-assistant-client-secret-field}";
           name = "Home Assistant";
           trustedPeers = [ ];
         }
       ];
-      issuer = "https://dex.proton";
+      issuer = "https://dex.${facts.network.domain}";
       storage.type = "memory";
       web.http = "0.0.0.0:${toString dex-port}";
       # storage = {
@@ -107,7 +108,7 @@ in
           id = "ldap";
           name = "ldap";
           config = {
-            host = "ldap.proton:636";
+            host = "ldap.${facts.network.domain}:636";
             insecureNoSSL = false;
             bindDN = "uid=dex-oidc,ou=services,dc=proton,dc=org";
             bindPW = "$''${ldap-password-field}";
@@ -127,13 +128,13 @@ in
   # Goss health checks for Dex.
   services.goss.checks = {
     # Check that the HTTPS endpoint is responding.
-    http."https://dex.proton" = {
+    http."https://dex.${facts.network.domain}" = {
       status = 200;
       timeout = 5000;
     };
     # Check that the OIDC discovery endpoint works.  This is the standard
     # endpoint that OIDC clients use to discover provider configuration.
-    http."https://dex.proton/.well-known/openid-configuration" = {
+    http."https://dex.${facts.network.domain}/.well-known/openid-configuration" = {
       status = 200;
       timeout = 3000;
       headers = [ "Content-Type: application/json" ];

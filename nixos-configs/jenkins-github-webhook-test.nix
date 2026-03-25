@@ -2,7 +2,13 @@
 # Give me a Jenkins instance to test things like jj and
 # github-to-jenkins-webhook.
 ################################################################################
-{ config, flake-inputs, ... }: {
+{
+  config,
+  facts,
+  flake-inputs,
+  ...
+}:
+{
 
   imports = [
     flake-inputs.github-to-jenkins-webhook.nixosModules.default
@@ -29,7 +35,7 @@
     enable = true;
   };
 
-  services.https.fqdns."jenkins.proton" = {
+  services.https.fqdns."jenkins.${facts.network.domain}" = {
     enable = true;
     internalPort = config.services.jenkins.port;
   };
@@ -45,15 +51,16 @@
       forceSSL = true;
       enableACME = true;
       locations."/" = {
-        proxyPass = "http://127.0.0.1:${
-          toString config.services.github-to-jenkins-webhook.port
-        }";
+        proxyPass = "http://127.0.0.1:${toString config.services.github-to-jenkins-webhook.port}";
         # proxyWebsockets = true;
       };
     };
   };
 
   # 80 needed by ACME.
-  networking.firewall.allowedTCPPorts = [ 80 443 ];
+  networking.firewall.allowedTCPPorts = [
+    80
+    443
+  ];
 
 }

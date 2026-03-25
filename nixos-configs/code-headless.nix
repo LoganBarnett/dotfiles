@@ -5,7 +5,13 @@
 # for running Claude Code and other coding tools in a headless server context.
 # Includes tmux for terminal multiplexing to manage multiple coding sessions.
 ################################################################################
-{ lib, pkgs, ... }: {
+{
+  facts,
+  lib,
+  pkgs,
+  ...
+}:
+{
   allowUnfreePackagePredicates = [
     (pkg: builtins.elem (lib.getName pkg) [ "claude-code" ])
   ];
@@ -20,6 +26,8 @@
     # Alternative terminal multiplexer if preferred: pkgs.screen
 
     # Claude deployment status hook for checking deployment progress.
-    (pkgs.callPackage ../packages/claude-deployment-hook.nix {})
+    (pkgs.callPackage ../packages/claude-deployment-hook.nix {
+      domain = facts.network.domain;
+    })
   ];
 }

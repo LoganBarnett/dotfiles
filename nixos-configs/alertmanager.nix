@@ -3,6 +3,7 @@
 ################################################################################
 {
   config,
+  facts,
   host-id,
   lib,
   pkgs,
@@ -12,11 +13,11 @@
   imports = [
     # ./matrix-alertmanager.nix
   ];
-  services.https.fqdns."alertmanager.proton" = {
+  services.https.fqdns."alertmanager.${facts.network.domain}" = {
     internalPort = config.services.prometheus.alertmanager.port;
   };
   auth.ldap.users."${host-id}-alertmanager-service" = {
-    email = "${host-id}-alertmanager-service@proton";
+    email = "${host-id}-alertmanager-service@${facts.network.domain}";
     fullName = "${host-id}-alertmanager-service";
     description = "AlertManager service account on ${host-id}.  Primarily for posting alerts.";
     group = "root";
@@ -196,7 +197,7 @@
               {
                 # Default webhook path is /alerts per:
                 # https://github.com/jaywink/matrix-alertmanager
-                url = "http://${host-id}.proton:3001/alerts";
+                url = "http://${host-id}.${facts.network.domain}:3001/alerts";
                 send_resolved = true;
                 http_config = {
                   basic_auth = {
@@ -212,7 +213,7 @@
             name = "ollama-remediation";
             webhook_configs = [
               {
-                url = "http://M-CL64PK702X.proton:9000/hooks/ollama-restart";
+                url = "http://M-CL64PK702X.${facts.network.domain}:9000/hooks/ollama-restart";
                 # No resolved notification needed — we only care about kicking
                 # the restart, not about the all-clear.
                 send_resolved = false;
@@ -269,12 +270,12 @@
   # Goss health checks for Alertmanager.
   services.goss.checks = {
     # Check that the HTTPS endpoint is responding.
-    http."https://alertmanager.proton/" = {
+    http."https://alertmanager.${facts.network.domain}/" = {
       status = 200;
       timeout = 5000;
     };
     # Check that the Alertmanager API is responding.
-    http."https://alertmanager.proton/api/v2/status" = {
+    http."https://alertmanager.${facts.network.domain}/api/v2/status" = {
       status = 200;
       timeout = 3000;
     };

@@ -1,18 +1,19 @@
 {
   config,
+  facts,
   host-id,
   pkgs,
   ...
 }:
 let
-  fqdn = "matrix.proton";
+  fqdn = "matrix.${facts.network.domain}";
 in
 {
   services.https.fqdns."${fqdn}" = {
     serviceNameForSocket = "matrix-synapse";
   };
   auth.ldap.users."${host-id}-matrix-service" = {
-    email = "${host-id}-matrix-service@proton";
+    email = "${host-id}-matrix-service@${facts.network.domain}";
     fullName = "${host-id}-matrix-service";
     description = "Matrix service account on ${host-id}.";
     group = "matrix";
@@ -32,7 +33,7 @@ in
       matrix-synapse-ldap3
     ];
     settings = {
-      server_name = "matrix.proton";
+      server_name = "matrix.${facts.network.domain}";
       # Uncomment to disable the damned burst settings - it's so sensitive!  I
       # can't debug anything like this.
       # rc_login = {
@@ -52,7 +53,7 @@ in
           module = "ldap_auth_provider.LdapAuthProviderModule";
           config = {
             enable = true;
-            uri = "ldaps://ldap.proton";
+            uri = "ldaps://ldap.${facts.network.domain}";
             start_tls = false;
             base = "dc=proton,dc=org";
             bind_dn = "uid=${host-id}-matrix-service,ou=users,dc=proton,dc=org";

@@ -13,7 +13,7 @@
   ];
   services.grafana-kiosk = {
     enable = true;
-    url = "https://grafana.proton/d/system-monitoring/system-monitoring?orgId=1&from=now-6h&to=now&timezone=America/Los_Angeles&kiosk=fullscreen&refresh=1m";
+    url = "https://grafana.${facts.network.domain}/d/system-monitoring/system-monitoring?orgId=1&from=now-6h&to=now&timezone=America/Los_Angeles&kiosk=fullscreen&refresh=1m";
   };
   # Not sure if this is doing anything.
   services.xserver.displayManager.sessionCommands = ''

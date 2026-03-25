@@ -111,24 +111,27 @@ in
     ../headed-host.nix
     # Turn this on if I can't use rpi-build.proton for some reason.
     # ../darwin-linux-builder-module.nix
-    {
-      # Sometimes we run into DNS issues locally, so provide this as an escape
-      # hatch.
-      environment.etc."ssh/ssh_config.d/102-nickel-escape-hatch.conf".text = ''
-        Host nickel.proton
-          HostName 192.168.254.1
-      '';
-      environment.etc."ssh/ssh_config.d/103-${work-alias}-workstation.conf".text = ''
-        Host M-CL64PK702X
-          User logan.barnett
-        Host M-CL64PK702X.proton
-          User logan.barnett
-        Host m-cl64pk702x
-          User logan.barnett
-        Host m-cl64pk702x.proton
-          User logan.barnett
-      '';
-    }
+    (
+      { facts, ... }:
+      {
+        # Sometimes we run into DNS issues locally, so provide this as an escape
+        # hatch.
+        environment.etc."ssh/ssh_config.d/102-nickel-escape-hatch.conf".text = ''
+          Host nickel.${facts.network.domain}
+            HostName 192.168.254.1
+        '';
+        environment.etc."ssh/ssh_config.d/103-${work-alias}-workstation.conf".text = ''
+          Host M-CL64PK702X
+            User logan.barnett
+          Host M-CL64PK702X.${facts.network.domain}
+            User logan.barnett
+          Host m-cl64pk702x
+            User logan.barnett
+          Host m-cl64pk702x.${facts.network.domain}
+            User logan.barnett
+        '';
+      }
+    )
     (
       {
         flake-inputs,

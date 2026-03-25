@@ -1,5 +1,6 @@
 {
   config,
+  facts,
   host-id,
   lib,
   pkgs,
@@ -24,14 +25,14 @@ in
     # For some reason this defaults to the same port as alertmanager.  This also
     # means the webhook URL in alertmanager-proper needs to follow too.
     port = 3001;
-    homeserverUrl = "https://matrix.proton";
+    homeserverUrl = "https://matrix.${facts.network.domain}";
     matrixUser = "${host-id}-alertmanager-service";
     matrixRooms = [
       {
         # Alerts room.
         # Be mindful that this is a private room, and so invites must be sent
         # out.  I might just want to make it public.
-        roomId = "!qCtJEBShlKlBhZWqLd:matrix.proton";
+        roomId = "!qCtJEBShlKlBhZWqLd:matrix.${facts.network.domain}";
         receivers = [ "team-admins" ];
       }
     ];
@@ -100,7 +101,7 @@ in
     environment = {
       password_file =
         config.age.secrets."${host-id}-alertmanager-service-ldap-password".path;
-      homeserver_url = "https://matrix.proton";
+      homeserver_url = "https://matrix.${facts.network.domain}";
       username = "${host-id}-alertmanager-service";
     };
     wants = [ "run-agenix.d.mount" ];

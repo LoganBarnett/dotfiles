@@ -11,40 +11,66 @@
 # configuration of users, because if this fails, my infrastructure is unusable.
 # This is the sole reason I have stepped away from Authentik.
 ################################################################################
-{ config, facts, flake-inputs, lib, ... }: let
+{
+  config,
+  facts,
+  flake-inputs,
+  lib,
+  ...
+}:
+let
   inherit (lib) optionalAttrs pipe;
-  inherit (lib.attrsets) filterAttrs mapAttrs mapAttrsToList mapAttrs';
+  inherit (lib.attrsets)
+    filterAttrs
+    mapAttrs
+    mapAttrsToList
+    mapAttrs'
+    ;
   inherit (lib.generators) toYAML;
   inherit (lib.lists) flatten;
-  inherit (lib.strings) concatLines concatStringsSep replaceStrings splitString;
+  inherit (lib.strings)
+    concatLines
+    concatStringsSep
+    replaceStrings
+    splitString
+    ;
 
-  indentLines = spaces: s:
+  indentLines =
+    spaces: s:
     let
       prefix = concatStringsSep "" (builtins.genList (_: " ") spaces);
-      lines  = splitString "\n" s;
-      ind    = builtins.map (l: if l == "" then l else prefix + l) lines;
-    in builtins.concatStringsSep "\n" ind;
+      lines = splitString "\n" s;
+      ind = builtins.map (l: if l == "" then l else prefix + l) lines;
+    in
+    builtins.concatStringsSep "\n" ind;
 
   # A helper to create the fancy !Find references in YAML documents.
-  Find = (model: key: value: { __ref__ = [ model [key value] ]; });
-  snake-case = s: replaceStrings ["-"] ["_"] s;
+  Find = (
+    model: key: value: {
+      __ref__ = [
+        model
+        [
+          key
+          value
+        ]
+      ];
+    }
+  );
+  snake-case = s: replaceStrings [ "-" ] [ "_" ] s;
   service-user-password-env-var = name: "authentik_${snake-case name}_password";
   service-user-secret-password = name: "authentik-${name}-password";
-  service-users = filterAttrs
-    (user: data: data.type == "service")
-    facts.network.users
-  ;
+  service-users = filterAttrs (
+    user: data: data.type == "service"
+  ) facts.network.users;
   oidc-client-secret-name = name: "authentik-${name}-client-secret";
   oidc-client-env-var = name: "authentik_${snake-case name}_client_secret";
-  oidc-clients = filterAttrs
-    (user: data: data.authentication == "oidc")
-    facts.network.services
-  ;
+  oidc-clients = filterAttrs (
+    user: data: data.authentication == "oidc"
+  ) facts.network.services;
   # Remotely edit to validate via LSP, maybe.
   yaml-lsp-schema = ''
     # yaml-language-server: $schema=https://goauthentik.io/blueprints/schema.json
   '';
-
 
   # Why are we using YAML templates here instead of serializing Nix expressions?
   # Sit down for a moment, and let us tell you a tale of sadness and treachery.
@@ -93,93 +119,93 @@
           attrs:
             is_active: false
             is_superuser: false
-      ''
-    ;
+    '';
 
     "10-groups".text = ''
       ${yaml-lsp-schema}
       version: 1
       entries:
       ${pipe facts.network.groups [
-        (mapAttrsToList
-          (name: data: ''
+        (mapAttrsToList (
+          name: data: ''
             - model: authentik_core.group
               state: present
               identifiers:
                 name: ${name}
               attributes:
                 name: ${name}
-            ''
-          )
-        )
+          ''
+        ))
         (builtins.map (indentLines 2))
         concatLines
       ]}
-      ''
-    ;
-      # entries = [
-      #   # App access group, where "app" is some arbitrary application.
-      #   {
-      #     model = "authentik_core.group";
-      #     state = "present";
-      #     identifiers.name = "app-users";
-      #     attributes.name = "app-users";
-      #   }
-      # ];
+    '';
+    # entries = [
+    #   # App access group, where "app" is some arbitrary application.
+    #   {
+    #     model = "authentik_core.group";
+    #     state = "present";
+    #     identifiers.name = "app-users";
+    #     attributes.name = "app-users";
+    #   }
+    # ];
 
     "20-users".text = ''
       ${yaml-lsp-schema}
       version: 1
       entries:
       ${pipe facts.network.users [
-        (mapAttrsToList (name: data: ''
-          - model: authentik_core.user
-            state: present
-            identifiers:
-              slug: ${name}
-            attrs:
-              username: ${name}
-              name: ${data.full-name}
-              email: ${data.email}
-              is_active: true
-              is_superuser: false
-              ${if data.type == "service"
-                then ''password: !Env ${service-user-password-env-var name}''
-                else ""}
+        (mapAttrsToList (
+          name: data: ''
+            - model: authentik_core.user
+              state: present
+              identifiers:
+                slug: ${name}
+              attrs:
+                username: ${name}
+                name: ${data.full-name}
+                email: ${data.email}
+                is_active: true
+                is_superuser: false
+                ${
+                  if data.type == "service" then
+                    ''password: !Env ${service-user-password-env-var name}''
+                  else
+                    ""
+                }
           ''
         ))
         (builtins.map (indentLines 2))
         concatLines
       ]}
-      ''
-    ;
+    '';
 
     "30-membership".text = ''
       ${yaml-lsp-schema}
       version: 1
       entries:
-      ${(pipe facts.network.groups [
-        (mapAttrsToList (name: data:
-          builtins.map (member: {
-            group = name;
-            inherit member;
-          })
-          data.members
-        ))
-        flatten
-        (builtins.map (membership: ''
-          - model: "authentik_core.membership"
-            state: "present"
-            identifiers:
-              user__username: ${membership.member}
-              group__name: ${membership.group}
-          ''
-        ))
-        (builtins.map (indentLines 2))
-        concatLines
-      ])}
-      ''
-    ;
+      ${
+        (pipe facts.network.groups [
+          (mapAttrsToList (
+            name: data:
+            builtins.map (member: {
+              group = name;
+              inherit member;
+            }) data.members
+          ))
+          flatten
+          (builtins.map (membership: ''
+            - model: "authentik_core.membership"
+              state: "present"
+              identifiers:
+                user__username: ${membership.member}
+                group__name: ${membership.group}
+          ''))
+          (builtins.map (indentLines 2))
+          concatLines
+        ])
+      }
+    '';
 
     # "50-application" = {
     #   ${yaml-lsp-schema}
@@ -211,72 +237,73 @@
       version: 1
       entries:
       ${pipe facts.network.services [
-        (lib.mapAttrsToList (name: data: ''
-          - model: authentik_providers_oidc.oidcprovider
-            id: prov_${name}
-            state: present
-            attrs:
-              name: "${name}-oidc"
-              client_type: confidential
-              client_id: "${name}-client-id"
-              client_secret: !Env ${oidc-client-env-var name}
-              redirect_uris:
-          ${pipe data.redirectUris [
-            (builtins.map (uri: "- ${uri}"))
-            (builtins.map (indentLines 6))
-            concatLines
-          ]}
-              response_types: [code]
-              subject_mode: pairwise
-              access_token_validity: 3600
-              refresh_token_validity: 1209600
-              scopes: [openid, email, profile, offline_access]
-              # Built-in consent/authorization flow
-              authorization_flow: !Find
-              - authentik_flows.flow
-              - [slug, default-provider-authorization-implicit-consent]
-              # Provider's server-side signing keypair (tokens RS256 by default)
-              signing_key: !Find
-              - authentik_crypto.certificatekeypair
-              - [name, "ak-default"]
-          - model: authentik_core.application
-            id: app_${name}
-            state: present
-            attrs:
-              name: "${name}"
-              slug: "${name}"
-              # Link the app to the OIDC provider above
-              protocol_provider: !KeyOf prov_${name}
-          - model: authentik_policies.policybinding
-            state: present
-            identifiers:
-              target: !Find
-              - authentik_core.application
-              - [slug, ${name}]
-              order: 0
-              policy: !Find
-              - authentik_policies_expression.expressionpolicy
-              - [name, allow-${name}-users]
-          # Expression policy: allow if user in "app-users".
-          # TODO: Develop a model for "apps" so we can create app+group
-          # associations and then build this policy list automatically.
-          - model: authentik_policies_expression.expressionpolicy
-            state: present
-            identifiers:
-              name: allow-${name}-users
-            attributes:
-              name: allow-${name}-users
-              expression: |
-                return (
-                  user is not None and "openhab-users"
-                  in [g.name for g in user.groups.all()]
-                )
-          '')
-        )
+        (lib.mapAttrsToList (
+          name: data: ''
+            - model: authentik_providers_oidc.oidcprovider
+              id: prov_${name}
+              state: present
+              attrs:
+                name: "${name}-oidc"
+                client_type: confidential
+                client_id: "${name}-client-id"
+                client_secret: !Env ${oidc-client-env-var name}
+                redirect_uris:
+            ${pipe data.redirectUris [
+              (builtins.map (uri: "- ${uri}"))
+              (builtins.map (indentLines 6))
+              concatLines
+            ]}
+                response_types: [code]
+                subject_mode: pairwise
+                access_token_validity: 3600
+                refresh_token_validity: 1209600
+                scopes: [openid, email, profile, offline_access]
+                # Built-in consent/authorization flow
+                authorization_flow: !Find
+                - authentik_flows.flow
+                - [slug, default-provider-authorization-implicit-consent]
+                # Provider's server-side signing keypair (tokens RS256 by default)
+                signing_key: !Find
+                - authentik_crypto.certificatekeypair
+                - [name, "ak-default"]
+            - model: authentik_core.application
+              id: app_${name}
+              state: present
+              attrs:
+                name: "${name}"
+                slug: "${name}"
+                # Link the app to the OIDC provider above
+                protocol_provider: !KeyOf prov_${name}
+            - model: authentik_policies.policybinding
+              state: present
+              identifiers:
+                target: !Find
+                - authentik_core.application
+                - [slug, ${name}]
+                order: 0
+                policy: !Find
+                - authentik_policies_expression.expressionpolicy
+                - [name, allow-${name}-users]
+            # Expression policy: allow if user in "app-users".
+            # TODO: Develop a model for "apps" so we can create app+group
+            # associations and then build this policy list automatically.
+            - model: authentik_policies_expression.expressionpolicy
+              state: present
+              identifiers:
+                name: allow-${name}-users
+              attributes:
+                name: allow-${name}-users
+                expression: |
+                  return (
+                    user is not None and "openhab-users"
+                    in [g.name for g in user.groups.all()]
+                  )
+          ''
+        ))
         (builtins.map (indentLines 2))
         concatLines
       ]}
-      '';
+    '';
 
     "90-password-reset-on-empty-password".text = ''
       ${yaml-lsp-schema}
@@ -362,64 +389,61 @@
             - authentik_policies_expression.expressionpolicy
             - [name, "Needs password enrollment"]
             order: 1
-      '';
+    '';
 
   };
 
   environment-file-service = {
     enable = true;
-    secrets = (mapAttrs'
-      (name: data: {
+    secrets =
+      (mapAttrs' (name: data: {
         name = service-user-secret-password name;
         value.environmentVariable = service-user-password-env-var name;
-      })
-      service-users
-    ) // (mapAttrs'
-      (name: data: {
+      }) service-users)
+      // (mapAttrs' (name: data: {
         name = oidc-client-secret-name name;
         value.environmentVariable = oidc-client-env-var name;
-      })
-      oidc-clients
-    ) // {
-      authentik-secret-key.environmentVariable = "AUTHENTIK_SECRET_KEY";
-    };
+      }) oidc-clients)
+      // {
+        authentik-secret-key.environmentVariable = "AUTHENTIK_SECRET_KEY";
+      };
   };
 
-in {
+in
+{
   imports = [
     flake-inputs.authentik-nix.nixosModules.default
   ];
 
-  age.secrets = (mapAttrs'
-    (name: data: {
+  age.secrets =
+    (mapAttrs' (name: data: {
       name = service-user-secret-password name;
       value = {
         generator.script = "long-passphrase";
         rekeyFile = ../secrets/authentik-${name}-password.age;
       };
-    })
-    service-users
-  ) // (mapAttrs'
-    (name: data: {
+    }) service-users)
+    // (mapAttrs' (name: data: {
       name = oidc-client-secret-name name;
       value = {
         generator.script = "hex";
         settings.length = 60;
       };
-    })
-    oidc-clients
-  ) // {
-    authentik-secret-key = {
-      generator.script = "hex";
-      settings.length = 60;
+    }) oidc-clients)
+    // {
+      authentik-secret-key = {
+        generator.script = "hex";
+        settings.length = 60;
+      };
     };
-  };
 
   services.environment-file-secrets.services.authentik = environment-file-service;
-  services.environment-file-secrets.services.authentik-migrate = environment-file-service;
-  services.environment-file-secrets.services.authentik-worker = environment-file-service;
+  services.environment-file-secrets.services.authentik-migrate =
+    environment-file-service;
+  services.environment-file-secrets.services.authentik-worker =
+    environment-file-service;
 
-  services.https.fqdns."authentik.proton" = {
+  services.https.fqdns."authentik.${facts.network.domain}" = {
     enable = true;
     # It doesn't look like they expose the port config field yet.
     internalPort = config.services.authentik.port or 9000;

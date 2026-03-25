@@ -46,6 +46,7 @@
 ################################################################################
 {
   config,
+  facts,
   host-id,
   pkgs,
   ...
@@ -55,7 +56,7 @@
     ../nixos-modules/octoprint-shim.nix
   ];
   auth.ldap.users."${host-id}-octoprint-service" = {
-    email = "${host-id}-octoprint-service@proton";
+    email = "${host-id}-octoprint-service@${facts.network.domain}";
     fullName = "${host-id}-octoprint-service";
     description = "OctoPrint service account on ${host-id}.";
     group = "root";
@@ -196,7 +197,7 @@
         # all of Octoprint can be set to `DEBUG` and we should see more errors.
         # Right now I see nothing.
         auth_ldap = {
-          uri = "ldaps://ldap.proton";
+          uri = "ldaps://ldap.${facts.network.domain}";
           auth_user = "uid=${host-id}-octoprint-service,ou=users,dc=proton,dc=org";
           # TODO: Cycle this out once this is securely referenced.  This is
           # supported via my open (as of [2025-02-22]) pull request:

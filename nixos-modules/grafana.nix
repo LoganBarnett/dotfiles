@@ -28,7 +28,7 @@ in
   imports = [
     ./https.nix
   ];
-  services.https.fqdns."grafana.proton" = {
+  services.https.fqdns."grafana.${facts.network.domain}" = {
     internalPort = config.services.grafana.settings.server.http_port;
   };
   auth.ldap.users."${service-user-prefix}-grafana-service" = {
@@ -77,7 +77,7 @@ in
         {
           name = "Prometheus";
           type = "prometheus";
-          url = "https://prometheus.proton";
+          url = "https://prometheus.${facts.network.domain}";
           access = "proxy";
           isDefault = true;
         }
@@ -85,7 +85,7 @@ in
           name = "Alertmanager";
           uid = "alertmanager";
           type = "alertmanager";
-          url = "https://alertmanager.proton";
+          url = "https://alertmanager.${facts.network.domain}";
           access = "proxy";
           jsonData.handleGrafanaManagedAlerts = false;
         }
@@ -108,7 +108,7 @@ in
             (pkgs.formats.toml { }).generate "ldap.toml" {
               servers = [
                 {
-                  host = "ldap.proton";
+                  host = "ldap.${facts.network.domain}";
                   port = 636;
                   use_ssl = true;
                   start_tls = false;
@@ -223,12 +223,12 @@ in
   # Goss health checks for Grafana.
   services.goss.checks = {
     # Check that the HTTPS endpoint is responding.
-    http."https://grafana.proton/" = {
+    http."https://grafana.${facts.network.domain}/" = {
       status = 200;
       timeout = 5000;
     };
     # Check that the API health endpoint works.
-    http."https://grafana.proton/api/health" = {
+    http."https://grafana.${facts.network.domain}/api/health" = {
       status = 200;
       timeout = 3000;
     };

@@ -7,8 +7,9 @@
 ################################################################################
 {
   config,
-  lib,
+  facts,
   flake-inputs,
+  lib,
   pkgs,
   system,
   ...
@@ -27,8 +28,8 @@
     settings.length = 60;
   };
   nixpkgs.overlays = [ flake-inputs.openhab-flake.overlays.default ];
-  services.oidc-proxy.fqdns."openhab.proton" = {
-    issuerUrl = "https://authentik.proton/application/o/openhab/";
+  services.oidc-proxy.fqdns."openhab.${facts.network.domain}" = {
+    issuerUrl = "https://authentik.${facts.network.domain}/application/o/openhab/";
     clientId = "openhab-proxy";
     clientSecretName = "authentik-openhab-client-secret";
     internalPort = config.services.openhab.ports.http;
@@ -46,7 +47,7 @@
       }
     ];
   };
-  services.https.fqdns."openhab.proton" = {
+  services.https.fqdns."openhab.${facts.network.domain}" = {
     enable = true;
     internalPort = config.services.openhab.ports.http;
   };

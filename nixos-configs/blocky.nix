@@ -71,7 +71,7 @@ in
   # Larger connections (DNSSEC, zone transfers) use TCP for DNS.
   networking.firewall.allowedTCPPorts = [ 53 ];
   networking.nameservers = nameservers;
-  services.https.fqdns."blocky.proton" = {
+  services.https.fqdns."blocky.${facts.network.domain}" = {
     enable = true;
     internalPort = config.services.blocky.settings.ports.http;
   };
@@ -235,12 +235,12 @@ in
   # Goss health checks for Blocky DNS.
   services.goss.checks = {
     # Check that the HTTPS endpoint is responding.
-    http."https://blocky.proton/" = {
+    http."https://blocky.${facts.network.domain}/" = {
       status = 200;
       timeout = 5000;
     };
     # Check that the Blocky API endpoint works.
-    http."https://blocky.proton/api/blocking/status" = {
+    http."https://blocky.${facts.network.domain}/api/blocking/status" = {
       status = 200;
       timeout = 3000;
     };
