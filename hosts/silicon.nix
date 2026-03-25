@@ -14,14 +14,19 @@ let
 in
 {
   imports = [
-    # TODO: Restore this once the hardware is installed here.
-    # ../hardware/aeotec-z-stick-7.nix
+    ../hardware/aeotec-z-stick-7.nix
+    ../nixos-configs/openhab.nix
     flake-inputs.garage-queue.nixosModules.server
     flake-inputs.loku.nixosModules.default
+    flake-inputs.org-wiki.nixosModules.web
+    ../nixos-configs/org-wiki.nix
     ../nixos-configs/dhcp-lease-textfile.nix
+    ../nixos-configs/chronicle-proxy.nix
     ../nixos-configs/gitea.nix
     ../nixos-configs/gitea-deployment-webhooks.nix
     ../nixos-configs/garage-queue-server.nix
+    ../nixos-modules/nextcloud.nix
+    ../nixos-configs/notes-sync.nix
     ../nixos-configs/dns-server.nix
     ../nixos-configs/dns-smart-block.nix
     ../nixos-modules/makemkv-ripper.nix

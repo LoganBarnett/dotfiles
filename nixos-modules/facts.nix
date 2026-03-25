@@ -34,40 +34,6 @@
     # - volume is the name of the volume to share, which will expand to
     #   "/tank/data/${volume}".
     nfsVolumes = [
-      # Currently, nextcloud "works", so don't mess with it until we have solid
-      # verification on a system that is not yet critical or known to be
-      # delicately functional.
-      {
-        consumerHostId = "copper";
-        peerNumber = 3;
-        providerHostId = "silicon";
-        service = "nextcloud";
-        volume = "nextcloud";
-        user = "nextcloud";
-        group = "nextcloud";
-        gid = 29971;
-      }
-      {
-        consumerHostId = "krypton";
-        providerHostId = "silicon";
-        peerNumber = 4;
-        service = "media-shared";
-        volume = "kodi-media";
-        user = "kodi";
-        group = "media-shared";
-        gid = 29974;
-      }
-      {
-        consumerHostId = "copper";
-        providerHostId = "silicon";
-        peerNumber = 3;
-        service = "nextcloud-shared";
-        volume = "nextcloud-shared-media";
-        user = "nextcloud";
-        group = "media-shared";
-        gid = 29974;
-        backupContents = false;
-      }
       {
         consumerHostId = "krypton";
         providerHostId = "silicon";
@@ -198,9 +164,7 @@
       };
       copper = {
         aliases = [
-          "chronicle-proxy"
           "dex"
-          "nextcloud"
         ];
         controlledHost = true;
         ipv4 = 10;
@@ -358,6 +322,7 @@
         aliases = [
           "authelia"
           "blocky"
+          "chronicle-proxy"
           "dns-smart-block"
           "gitea"
           "immich"
@@ -365,8 +330,10 @@
           "loku"
           "matrix"
           "metube"
+          "nextcloud"
           "ollama"
           "sso"
+          "wiki"
         ];
         controlledHost = true;
         flake-input-overrides = { };
@@ -614,6 +581,8 @@
             "nextcloud-admins"
             "nextcloud-users"
             "openhab-users"
+            "wiki-admins"
+            "wiki-users"
           ];
           devices = [
             {
@@ -682,6 +651,13 @@
           full-name = "openhab-oidc-client";
           devices = [ ];
         };
+        wiki = {
+          email = "wiki@proton";
+          type = "oidc-client";
+          description = "Org-wiki OIDC client.";
+          full-name = "wiki";
+          devices = [ ];
+        };
       };
 
     services = {
@@ -710,6 +686,15 @@
         # redirectUris = [
         #   "https://openhab.proton/outpost.goauthentik.io/callback"
         # ];
+      };
+
+      wiki = {
+        authentication = "oidc";
+        fqdn = "wiki.${domain}";
+        groups = [
+          "wiki-admins"
+          "wiki-users"
+        ];
       };
 
       nextcloud = {

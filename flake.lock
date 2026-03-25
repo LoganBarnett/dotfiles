@@ -236,6 +236,21 @@
         "type": "github"
       }
     },
+    "crane_12": {
+      "locked": {
+        "lastModified": 1770419512,
+        "narHash": "sha256-o8Vcdz6B6bkiGUYkZqFwH3Pv1JwZyXht3dMtS7RchIo=",
+        "owner": "ipetkov",
+        "repo": "crane",
+        "rev": "2510f2cbc3ccd237f700bb213756a8f35c32d8d7",
+        "type": "github"
+      },
+      "original": {
+        "owner": "ipetkov",
+        "repo": "crane",
+        "type": "github"
+      }
+    },
     "crane_2": {
       "inputs": {
         "nixpkgs": [
@@ -1119,12 +1134,12 @@
     },
     "metalps_2": {
       "inputs": {
-        "crane": "crane_11",
+        "crane": "crane_12",
         "nixpkgs": [
           "proc-siding",
           "nixpkgs"
         ],
-        "rust-overlay": "rust-overlay_11"
+        "rust-overlay": "rust-overlay_12"
       },
       "locked": {
         "lastModified": 1773605056,
@@ -1911,6 +1926,22 @@
     },
     "nixpkgs_20": {
       "locked": {
+        "lastModified": 1744536153,
+        "narHash": "sha256-awS2zRgF4uTwrOKwwiJcByDzDOdo3Q1rPZbiHQg/N38=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "18dd725c29603f582cf1900e0d25f9f1063dbf11",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "ref": "nixpkgs-unstable",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
+    "nixpkgs_21": {
+      "locked": {
         "lastModified": 1754340878,
         "narHash": "sha256-lgmUyVQL9tSnvvIvBp7x1euhkkCho7n3TMzgjdvgPoU=",
         "owner": "NixOS",
@@ -1925,7 +1956,7 @@
         "type": "github"
       }
     },
-    "nixpkgs_21": {
+    "nixpkgs_22": {
       "locked": {
         "lastModified": 1744536153,
         "narHash": "sha256-awS2zRgF4uTwrOKwwiJcByDzDOdo3Q1rPZbiHQg/N38=",
@@ -2153,6 +2184,28 @@
         "url": "ssh://git@gitea.proton:2222/logan/org-dnd"
       }
     },
+    "org-wiki": {
+      "inputs": {
+        "crane": "crane_10",
+        "nixpkgs": [
+          "nixpkgs"
+        ],
+        "rust-overlay": "rust-overlay_11"
+      },
+      "locked": {
+        "lastModified": 1774363674,
+        "narHash": "sha256-GmJsCiaxQlLXAVHq3jZXXXlJiBq2I5CLQ3jtKTlcmgs=",
+        "ref": "refs/heads/main",
+        "rev": "cfc95e2f6889f5ecb104854d131b44b086babe40",
+        "revCount": 6,
+        "type": "git",
+        "url": "ssh://git@gitea.proton:2222/logan/org-wiki"
+      },
+      "original": {
+        "type": "git",
+        "url": "ssh://git@gitea.proton:2222/logan/org-wiki"
+      }
+    },
     "pre-commit-hooks": {
       "inputs": {
         "flake-compat": "flake-compat",
@@ -2178,12 +2231,12 @@
     },
     "proc-siding": {
       "inputs": {
-        "crane": "crane_10",
+        "crane": "crane_11",
         "metalps": "metalps_2",
         "nixpkgs": [
           "nixpkgs"
         ],
-        "rust-overlay": "rust-overlay_12"
+        "rust-overlay": "rust-overlay_13"
       },
       "locked": {
         "lastModified": 1773695015,
@@ -2276,7 +2329,7 @@
         "nixpkgs": [
           "nixpkgs"
         ],
-        "rust-overlay": "rust-overlay_13"
+        "rust-overlay": "rust-overlay_14"
       },
       "locked": {
         "lastModified": 1765831047,
@@ -2334,6 +2387,7 @@
         "nur": "nur",
         "openhab-flake": "openhab-flake",
         "optnix": "optnix",
+        "org-wiki": "org-wiki",
         "proc-siding": "proc-siding",
         "programsdb": "programsdb",
         "repo-sync-flake": "repo-sync-flake",
@@ -2421,6 +2475,24 @@
         "nixpkgs": "nixpkgs_18"
       },
       "locked": {
+        "lastModified": 1770433312,
+        "narHash": "sha256-IaiqGwmLBrR0z67t/oaS6GIFxv9V8mDY7dBTuYVTbKY=",
+        "owner": "oxalica",
+        "repo": "rust-overlay",
+        "rev": "9922ff9f99a6436756cbe6f5d11f9c3630e58cf0",
+        "type": "github"
+      },
+      "original": {
+        "owner": "oxalica",
+        "repo": "rust-overlay",
+        "type": "github"
+      }
+    },
+    "rust-overlay_14": {
+      "inputs": {
+        "nixpkgs": "nixpkgs_19"
+      },
+      "locked": {
         "lastModified": 1765766816,
         "narHash": "sha256-m2au5a2x9L3ikyBi0g3/NRJSjmHVDvT42mn+O6FlyPs=",
         "owner": "oxalica",
@@ -2434,9 +2506,9 @@
         "type": "github"
       }
     },
-    "rust-overlay_14": {
+    "rust-overlay_15": {
       "inputs": {
-        "nixpkgs": "nixpkgs_19"
+        "nixpkgs": "nixpkgs_20"
       },
       "locked": {
         "lastModified": 1765593578,
@@ -2452,9 +2524,9 @@
         "type": "github"
       }
     },
-    "rust-overlay_15": {
+    "rust-overlay_16": {
       "inputs": {
-        "nixpkgs": "nixpkgs_21"
+        "nixpkgs": "nixpkgs_22"
       },
       "locked": {
         "lastModified": 1754448563,
@@ -2760,7 +2832,7 @@
         "nixpkgs": [
           "nixpkgs"
         ],
-        "rust-overlay": "rust-overlay_14"
+        "rust-overlay": "rust-overlay_15"
       },
       "locked": {
         "lastModified": 1773599868,
@@ -2857,8 +2929,8 @@
     "typeypipe-flake": {
       "inputs": {
         "flake-utils": "flake-utils_7",
-        "nixpkgs": "nixpkgs_20",
-        "rust-overlay": "rust-overlay_15"
+        "nixpkgs": "nixpkgs_21",
+        "rust-overlay": "rust-overlay_16"
       },
       "locked": {
         "lastModified": 1754521137,

@@ -7,3 +7,42 @@
 #+tags:
 
 Here is where to place agenix-rekey secret generators and other supporting work.
+
+* Secret generation
+
+Secrets that need to be created at first deploy are declared with a
+~generator.script~ attribute.  Running the following command generates any
+missing secrets and rekeys them for all hosts in one step:
+
+#+begin_src sh
+agenix rekey generate --rekey -a
+#+end_src
+
+Generated secrets land in ~secrets/generated/~ automatically (unless
+~rekeyFile~ is set explicitly).
+
+** Available generators
+
+| Generator                   | Declared in                         | Output                                         |
+|-----------------------------+-------------------------------------+------------------------------------------------|
+| ~long-passphrase~           | ~nixos-configs/secrets.nix~         | 10-word xkcdpass passphrase                    |
+| ~long-passphrase-hashed~    | ~nixos-configs/secrets.nix~         | bcrypt hash of a ~long-passphrase~ dependency  |
+| ~ssh-ed25519-with-pub~      | ~nixos-configs/secrets.nix~         | Ed25519 private key; copies ~.pub~ alongside   |
+| ~tls-ca-root~               | ~agenix/tls-secret.nix~             | Self-signed CA certificate + key               |
+| ~hex~                       | ~agenix/hex-configurable-secret.nix~| Random hex string of configurable length       |
+| ~template-file~             | ~agenix/secret-template-file.nix~   | Text file with ~%dep-name%~ placeholders filled|
+| ~htpasswd~                  | ~agenix/htpasswd.nix~               | htpasswd entry for a username + password       |
+| ~slapd-hashed~              | ~agenix/slapd-hashed.nix~           | SSHA-hashed password for OpenLDAP              |
+| ~base64~                    | ~agenix/base64-configurable-secret.nix~ | Random base64 string                       |
+| ~wireguard-priv~            | ~agenix/wireguard-priv.nix~         | WireGuard private key                          |
+| ~mosquitto-password-file~   | ~agenix/agenix-rekey-generator-mosquitto-password-file.nix~ | Mosquitto password file entry |
+| ~environment-file~          | ~agenix/environment-file-secret.nix~| Shell ~KEY=value~ environment file             |
+| ~yaml~                      | ~agenix/yaml-secret.nix~            | YAML file with generated values                |
+
+** ~ssh-ed25519-with-pub~ note
+
+This generator writes the encrypted private key at the secret's path and
+copies the ~.pub~ file to the same directory under the same base name.  The
+public key file is plain text and safe to commit.  It is useful for
+registering deploy keys with Gitea or other git hosts without needing to
+decrypt the private key locally.

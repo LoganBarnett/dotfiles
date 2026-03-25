@@ -200,6 +200,10 @@
       url = "github:LoganBarnett/openhab-flake/add-darwin-devshell-support";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    org-wiki = {
+      url = "git+ssh://git@gitea.proton:2222/logan/org-wiki";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     proc-siding = {
       url = "git+ssh://git@gitea.proton:2222/logan/proc-siding.git";
       inputs.nixpkgs.follows = "nixpkgs";
