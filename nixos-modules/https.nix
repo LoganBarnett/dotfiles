@@ -73,8 +73,20 @@ in
                     /run/<name>/<name>.sock.  https sets UMask = 0007 and
                     RuntimeDirectoryMode = 0750 on the service so the socket is
                     group-writable and the directory is traversable.  nginx is
-                    added to the service's primary group (by convention the group
-                    name matches the service name).
+                    added to the socket's owning group (socketGroup if set,
+                    otherwise the service name).
+                  '';
+                };
+                socketGroup = mkOption {
+                  type = types.nullOr types.str;
+                  default = null;
+                  description = ''
+                    Override the group that owns the socket created by
+                    serviceNameForSocket.  Defaults to serviceNameForSocket when
+                    null.  Set this when the socket unit sets SocketGroup to a
+                    name that differs from the service name, such as when systemd
+                    socket activation manages the socket rather than the service
+                    process itself.
                   '';
                 };
                 externalPort = mkOption {
@@ -140,10 +152,16 @@ in
           "tls-leaf"
         ]
         ++ lib.optionals anySocketFqdns [ "nginx-upstream" ]
-        # For serviceNameForSocket, nginx joins the upstream service's primary
-        # group (by convention the group name matches the service name) so it
-        # can connect to the app-created socket.
-        ++ map (fqdn-cfg: fqdn-cfg.serviceNameForSocket) serviceSocketFqdns;
+        # For serviceNameForSocket, nginx joins the socket's owning group so it
+        # can connect.  socketGroup overrides the group name when the socket
+        # unit sets SocketGroup to something other than the service name.
+        ++ map (
+          fqdn-cfg:
+          if fqdn-cfg.socketGroup != null then
+            fqdn-cfg.socketGroup
+          else
+            fqdn-cfg.serviceNameForSocket
+        ) serviceSocketFqdns;
         group = "nginx";
         isSystemUser = true;
       };

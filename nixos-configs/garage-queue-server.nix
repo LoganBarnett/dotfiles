@@ -1,4 +1,4 @@
-{ config, ... }:
+{ config, facts, ... }:
 let
   # Estimate VRAM requirement in MB from the model name.  Parses the
   # parameter count (e.g. "8b" → 8) and quantisation level (e.g. "q4" →
@@ -18,17 +18,19 @@ let
   '';
 in
 {
-  services.https.fqdns."ollama.proton" = {
+  services.https.fqdns."ollama.${facts.network.domain}" = {
     enable = true;
-    internalPort = config.services.garage-queue-server.settings.server.port;
+    serviceNameForSocket = "garage-queue-server";
+    socketGroup = "garage-queue";
   };
 
   # LLM inference can run for several minutes; raise nginx's default 60-second
   # proxy timeout so long-running generate requests are not cut short.
-  services.nginx.virtualHosts."ollama.proton".locations."/".extraConfig = ''
-    proxy_read_timeout 10m;
-    proxy_send_timeout 10m;
-  '';
+  services.nginx.virtualHosts."ollama.${facts.network.domain}".locations."/".extraConfig =
+    ''
+      proxy_read_timeout 10m;
+      proxy_send_timeout 10m;
+    '';
 
   services.garage-queue-server = {
     enable = true;
