@@ -1,10 +1,14 @@
 ################################################################################
-# Jellyfin is a free and open-source media server.  It serves the contents of
+# TOMBSTONE — Jellyfin is no longer hosted.
+#
+# Jellyfin is a free and open-source media server.  It served the contents of
 # /tank/data/media, which Metube populates via yt-dlp downloads.
 #
-# NOTE: First boot requires a one-time interactive setup via the web UI at
-# https://jellyfin.${facts.network.domain}.  When prompted for a media library, point it at
-# /tank/data/media.
+# Jellyfin requires manual administration via its web UI to become operable
+# after a fresh installation (initial user creation, library setup, etc.),
+# which is incompatible with a fully declarative NixOS deployment.
+#
+# This file is not imported by any host and is kept for historical reference.
 ################################################################################
 { config, facts, ... }:
 let

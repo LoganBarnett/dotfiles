@@ -1,15 +1,17 @@
 ################################################################################
-# Config a zwave-js-server for managing a Z-Wave controller.
+# TOMBSTONE — zwave-js-server is no longer hosted.
 #
-# See the hardware directory for including a controller.
+# Configures zwave-js-server (aka node-zwave-server) for managing a Z-Wave
+# controller.  It produces very verbose logs but has fallen out of active
+# maintenance, and is more strict about pairing and interviewing in ways that
+# are unhelpful.
 #
-# zwave-js-server, aka node-zwave-server, seems to have fallen out of
-# maintenance.  It does have very verbose logs that can be useful.  That said,
-# zwave-js-ui might produce similar logs if the log level is set to "silly", but
-# I haven't tried it yet.  Compared to zwave-js-ui, zwave-js-server tends to be
-# more strict about pairing and interviewing in a way that is unhelpful.
+# Z-Wave JS tooling is designed as a companion to Home Assistant.  We are no
+# longer running Home Assistant.  Hardware secrets are retained in
+# hardware/aeotec-z-stick-7.nix.  This file is kept for historical reference.
 ################################################################################
-{ ... }: {
+{ ... }:
+{
   services.zwave-js = {
     enable = true;
     secretsConfigFile = "/run/credentials/zwave-js.service/zwave-js-secret";

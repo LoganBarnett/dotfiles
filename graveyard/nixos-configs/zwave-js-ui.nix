@@ -1,5 +1,16 @@
 ################################################################################
-# Configure zwave-js-ui for managing a Z-Wave controller.
+# TOMBSTONE — zwave-js-ui is no longer hosted.
+#
+# Configures zwave-js-ui for managing a Z-Wave controller.  zwave-js-ui
+# provides a web-based interface and WebSocket API for Z-Wave device management,
+# and was preferred over zwave-js-server for its active maintenance and saner
+# defaults.
+#
+# Z-Wave JS tooling is designed as a companion to Home Assistant.  We are no
+# longer running Home Assistant.  Hardware secrets are retained in
+# hardware/aeotec-z-stick-7.nix.  This file is kept for historical reference.
+#
+# ---- original notes ----
 #
 # See the hardware directory for including a controller.
 #

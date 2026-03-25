@@ -1,3 +1,14 @@
+################################################################################
+# TOMBSTONE — The zwave-js-ui NixOS module is no longer in use.
+#
+# A custom NixOS module for running zwave-js-ui as a hardened systemd service.
+# It fills gaps in the upstream nixpkgs module: settings.json management via a
+# pre-start merge step, and stricter systemd sandboxing.
+#
+# Tombstoned alongside zwave-js-ui.  Z-Wave JS tooling is designed as a
+# companion to Home Assistant, which we are no longer running.  This file is
+# kept for historical reference.
+################################################################################
 {
   config,
   lib,
@@ -79,15 +90,17 @@ in
         freeformType = lib.types.attrsOf lib.types.anything;
         options = {
           logLevel = mkOption {
-            type = (types.enum [
-              # In order of ascending verbosity.
-              "error"
-              "warn"
-              "info"
-              "verbose"
-              "debug"
-              "silly"
-            ]);
+            type = (
+              types.enum [
+                # In order of ascending verbosity.
+                "error"
+                "warn"
+                "info"
+                "verbose"
+                "debug"
+                "silly"
+              ]
+            );
             default = "info";
           };
           # Should be serial.port, so this doesn't work.
@@ -141,70 +154,69 @@ in
     };
   };
   config = mkIf cfg.enable {
-    systemd.services.zwave-js-ui = let
-      settingsFile = (pkgs.formats.json {}).generate
-        "settings.json"
-        cfg.settings2
-      ;
-      settingsPath = "%S/zwave-js-ui/settings.json";
-    in {
-      environment = cfg.settings;
-      wantedBy = [ "multi-user.target" ];
-      serviceConfig = {
-        ExecStart = getExe cfg.package;
-        ExecStartPre = [
-          # Merge the secrets file and the settings file together.
-          (lib.strings.concatStrings [
-            "${pkgs.runtimeShell} -c "
-            ''"${pkgs.jq}/bin/jq --slurp ''
-            "'.[0] * .[1]' ${settingsFile} ${cfg.secretsConfigFile} "
-            ''  > ${settingsPath}"''
-          ])
-          ''
-            ${pkgs.coreutils}/bin/chmod 600 ${settingsPath}
-          ''
-        ];
-        RuntimeDirectory = "zwave-js-ui";
-        StateDirectory = "zwave-js-ui";
-        RootDirectory = "%t/zwave-js-ui";
-        BindReadOnlyPaths = [
-          "/nix/store"
-        ];
-        DeviceAllow = [ cfg.serialPort ];
-        DynamicUser = true;
-        SupplementaryGroups = [ "dialout" ];
-        CapabilityBoundingSet = [ "" ];
-        RestrictAddressFamilies = "AF_INET AF_INET6";
-        DevicePolicy = "closed";
-        LockPersonality = true;
-        MemoryDenyWriteExecute = false;
-        NoNewPrivileges = true;
-        PrivateUsers = true;
-        PrivateTmp = true;
-        ProtectClock = true;
-        ProtectControlGroups = true;
-        ProtectHome = true;
-        ProtectHostname = true;
-        ProtectKernelLogs = true;
-        ProtectKernelModules = true;
-        # Pending: https://github.com/NixOS/nixpkgs/pull/418537
-        ProtectKernelTunables = true;
-        ProtectProc = "invisible";
-        ProcSubset = "pid";
-        RemoveIPC = true;
-        RestrictNamespaces = true;
-        RestrictRealtime = true;
-        RestrictSUIDSGID = true;
-        SystemCallArchitectures = "native";
-        SystemCallFilter = [
-          "@system-service @pkey"
-          "~@privileged @resources"
-          "@chown"
-        ];
-        UMask = "0077";
-        WorkingDirectory = "%S/zwave-js-ui";
+    systemd.services.zwave-js-ui =
+      let
+        settingsFile = (pkgs.formats.json { }).generate "settings.json" cfg.settings2;
+        settingsPath = "%S/zwave-js-ui/settings.json";
+      in
+      {
+        environment = cfg.settings;
+        wantedBy = [ "multi-user.target" ];
+        serviceConfig = {
+          ExecStart = getExe cfg.package;
+          ExecStartPre = [
+            # Merge the secrets file and the settings file together.
+            (lib.strings.concatStrings [
+              "${pkgs.runtimeShell} -c "
+              ''"${pkgs.jq}/bin/jq --slurp ''
+              "'.[0] * .[1]' ${settingsFile} ${cfg.secretsConfigFile} "
+              ''> ${settingsPath}"''
+            ])
+            ''
+              ${pkgs.coreutils}/bin/chmod 600 ${settingsPath}
+            ''
+          ];
+          RuntimeDirectory = "zwave-js-ui";
+          StateDirectory = "zwave-js-ui";
+          RootDirectory = "%t/zwave-js-ui";
+          BindReadOnlyPaths = [
+            "/nix/store"
+          ];
+          DeviceAllow = [ cfg.serialPort ];
+          DynamicUser = true;
+          SupplementaryGroups = [ "dialout" ];
+          CapabilityBoundingSet = [ "" ];
+          RestrictAddressFamilies = "AF_INET AF_INET6";
+          DevicePolicy = "closed";
+          LockPersonality = true;
+          MemoryDenyWriteExecute = false;
+          NoNewPrivileges = true;
+          PrivateUsers = true;
+          PrivateTmp = true;
+          ProtectClock = true;
+          ProtectControlGroups = true;
+          ProtectHome = true;
+          ProtectHostname = true;
+          ProtectKernelLogs = true;
+          ProtectKernelModules = true;
+          # Pending: https://github.com/NixOS/nixpkgs/pull/418537
+          ProtectKernelTunables = true;
+          ProtectProc = "invisible";
+          ProcSubset = "pid";
+          RemoveIPC = true;
+          RestrictNamespaces = true;
+          RestrictRealtime = true;
+          RestrictSUIDSGID = true;
+          SystemCallArchitectures = "native";
+          SystemCallFilter = [
+            "@system-service @pkey"
+            "~@privileged @resources"
+            "@chown"
+          ];
+          UMask = "0077";
+          WorkingDirectory = "%S/zwave-js-ui";
+        };
       };
-    };
   };
   meta.maintainers = with lib.maintainers; [ cdombroski ];
 }

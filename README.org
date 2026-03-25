@@ -15,6 +15,31 @@ This helps me close the many tabs I have open.  This is very incomplete and I
 have many more tabs to go.  I think I like this as a general "wut I do in Nix"
 scratch pad though.
 
+* Graveyard
+
+The ~graveyard/~ directory preserves configurations for services that are no
+longer active.  Files land here when the configuration could be useful as a
+future reference, when the service might be revisited, or when the history of
+how something was set up is worth retaining.
+
+The directory structure mirrors the root of the repository.  For example, a
+NixOS config that lived at ~nixos-configs/foo.nix~ moves to
+~graveyard/nixos-configs/foo.nix~.
+
+Every file in the graveyard must have a ~TOMBSTONE~ comment block at the top of
+the file explaining why it was retired.  The format is:
+
+#+begin_src nix :exports code
+################################################################################
+# TOMBSTONE — Short description of why this is no longer active.
+#
+# What the service was and what it did.
+#
+# Reason for decommission.  Where its import was removed from, if applicable.
+# This file is kept for historical reference.
+################################################################################
+#+end_src
+
 * creating new hosts
 ** create Nix host file
 

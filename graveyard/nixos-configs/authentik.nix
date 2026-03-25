@@ -1,15 +1,17 @@
 ################################################################################
-# Authentik is a Python based attempt at being an identity manager.  I'm not
-# sure where the exact boundaries are with the terminology, but it does
-# centralized authentication not unlike Keycloak, but I'm told it's not as
-# featureful as Keycloak in terms of boarder management.
+# TOMBSTONE — Authentik is no longer active.
 #
-# This is sort of a graveyard.  It emits a somewhat coherent configuration, but
-# Authentik doesn't record the users.  There's probably an error somewhere, but
-# _by design_ it doesn't show up in the Journal.  From a operational
-# perspective, this breaks trust.  I must know if something is wrong with my
-# configuration of users, because if this fails, my infrastructure is unusable.
-# This is the sole reason I have stepped away from Authentik.
+# Authentik is a Python-based identity manager providing centralized
+# authentication similar to Keycloak.
+#
+# Authentik was abandoned because it silently fails to record users.  By
+# design, errors do not surface in the systemd journal, making it impossible
+# to know when user configuration is broken — an infrastructure-level trust
+# failure.  We migrated to Authelia, which surfaces errors clearly and provides
+# password reset flows and richer access-control policies.
+#
+# The import in hosts/gallium.nix was already commented out.  This file is
+# kept for historical reference.
 ################################################################################
 {
   config,

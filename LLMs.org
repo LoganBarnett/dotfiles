@@ -3,7 +3,8 @@
 
 * General code guidelines
 
-These are instructions for LLMs to write code more to my liking.
+These are instructions for LLMs to write code more to my liking.  For general
+project layout, design, and desires, see [[./README.org]].
 
 ** Documents
 
