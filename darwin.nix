@@ -72,7 +72,7 @@ in
     ./nixos-modules/darwin-tls-trust.nix
     # ./nixos-configs/user-can-admin.nix.
     # NixOS has this built in; import it from nixpkgs for Darwin.  Needed for
-    "${flake-inputs.nixpkgs}/nixos/modules/programs/pay-respects.nix"
+    # "${flake-inputs.nixpkgs}/nixos/modules/programs/pay-respects.nix"
     ./nixos-modules/unfree-predicates.nix
     ./agnostic-configs/nix-builder-consume.nix
   ];

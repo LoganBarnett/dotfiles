@@ -155,6 +155,8 @@ in
     pkgs.dmidecode
     # Use for debugging network issues such as checking full or half duplex.
     pkgs.ethtool
+    # Provides fuser - identify which processes are using a file or socket.
+    pkgs.psmisc
     # Use for querying available hardware.  See also pciutils which provides
     # lspci.
     pkgs.lshw
@@ -184,8 +186,9 @@ in
   ];
   # Make suggestions for a failed command.  Similar to "thefuck", but in Rust
   # instead of Python, so it's really zippy.  It defaults to being aliased to
-  # "f".
-  programs.pay-respects.enable = true;
+  # "f".  Disabled until I can figure out why it seems to inject stalls into our
+  # tooling (like opening files in Emacs).
+  # programs.pay-respects.enable = true;
   imports = [
     # cyme isn't available on all versions of nixpkgs I use.
     (lib.mkIf (builtins.hasAttr "cyme" pkgs) {
