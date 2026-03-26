@@ -1239,6 +1239,45 @@ nix-darwin-switch
 Current packages using this pattern: ~claude-code~, ~firefox-bin~,
 ~makemkv~, ~signal-desktop-bin~, ~yt-dlp~, ~zoom-us~.
 
+** Adding Services
+
+Short of any community standing on what these should be called, we have two
+rough categories of Nix files we use for host configurations:  A "module" and a
+"config".
+
++ module :: A module has ~options~ and ~config~ attributes, and declares its own
+  options.  The ~config~ section interprets those options into a configuration.
+  Generally speaking, these modules will be ready to get contributed to
+  ~nixpkgs~.  Importing such a module, sans any configuration for it, does
+  nothing but makes the options available.  So we gather up all modules and
+  include them in the relevant host.  ~nixos-modules~ contains all modules for
+  NixOS, and should be imported in ~./nixos-modules/linux-host.nix~.  There is
+  also a ~darwin-modules~ which gets included in ~./darwin.nix~.
++ config :: A config is relative inert, and it contains settings.  It could
+  dynamically determine settings and that's fine, but it doesn't declare
+  options.  Generally, a config is a place where we put the specifics for a
+  service.  Oftentimes a module will have an accompanying config.  There is a
+  series of ~config~ directories: ~darwin-configs~, ~home-configs~, and
+  ~nixos-configs~.  They should go in there, and hosts or home profiles should
+  pull them in as needed.  Importing such a config applies its settings.  You
+  can find a sample ~nixos-config~ in ~./nixos-configs/sample.nix~.  It contains
+  patterns we typically find in our configs.
+
+** Secrets
+
+Secrets are managed via ~agenix~ and ~agenix-rekey~.
+
+To generate secrets, and rekey them, use:
+
+#+begin_src sh :results none :exports code
+agenix rekey generate --rekey -a
+#+end_src
+
+This must be run by a human.  If you're not a human, ask the human to run it.
+
+If you must regenerate secrets, remove the base secret file, and then ask your
+human to run the above invocation.
+
 ** Generations
 
 *** List generations
