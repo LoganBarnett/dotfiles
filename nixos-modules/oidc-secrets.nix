@@ -7,6 +7,14 @@
 # needs only its own secret to configure its OIDC client.  By expressing this
 # logic centrally, individual service configs stay self-contained without
 # manually re-declaring shared secrets.
+#
+# When a service is running locally, its systemd unit is also given a
+# restartTrigger on the secret's rekeyed .age file.  The file lives in the Nix
+# store and its path changes on every rekey, so NixOS treats the unit as
+# changed and restarts it — ensuring the service always picks up rotated
+# secrets without a manual intervention.  Authelia handles its own triggers
+# (it restarts on any client-secret change); this covers only the service-side
+# units.
 ################################################################################
 {
   config,
@@ -36,6 +44,20 @@ in
           generator.script = "hex";
           settings.length = 64;
         };
+      }
+    ) oidcServices
+  );
+
+  systemd.services = lib.mkMerge (
+    lib.mapAttrsToList (
+      name: svc:
+      let
+        nixosService = svc.nixosService or name;
+      in
+      lib.mkIf (serviceEnabled name svc) {
+        ${nixosService}.restartTriggers = [
+          config.age.secrets.${credName name}.file
+        ];
       }
     ) oidcServices
   );

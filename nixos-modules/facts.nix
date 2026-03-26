@@ -319,6 +319,7 @@
       silicon = {
         aliases = [
           "authelia"
+          "avatar"
           "blocky"
           "chronicle-proxy"
           "dns-smart-block"
@@ -696,6 +697,13 @@
           "wiki-admins"
           "wiki-users"
         ];
+      };
+
+      ivatar = {
+        fqdn = "avatar.${domain}";
+        # NixOS service name differs from the facts key.
+        nixosService = "ivatar-host";
+        groups = [ "ivatar-users" ];
       };
 
       nextcloud = {

@@ -37,6 +37,7 @@ in
     ../nixos-configs/loku.nix
     ../nixos-configs/authelia.nix
     ../nixos-configs/immich.nix
+    ../nixos-configs/ivatar.nix
     ../nixos-configs/metube.nix
     ../nixos-configs/nix-builder-provide.nix
     ../nixos-modules/linux-host.nix
