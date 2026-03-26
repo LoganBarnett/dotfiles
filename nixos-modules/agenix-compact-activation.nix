@@ -25,6 +25,20 @@
 #
 # Importing this module is a no-op on Darwin (agenix uses launchd there, not
 # system.activationScripts) and when no secrets are defined.
+#
+# ## Upstream status (as of 2026-03)
+#
+# This bug is unresolved upstream.  ryantm/agenix issue #227 ("error:
+# executing '.../bin/bash': Argument list too long", filed Dec 2023) was
+# closed by the reporter after 2+ years with no maintainer response.  PR #228
+# ("Introduce installSecretFn to shorten script when many secrets are used")
+# took the same approach as this module — hoisting IDENTITIES out of the
+# per-secret loop — but was abandoned in Aug 2025 due to maintainer inactivity;
+# the author released the code to the public domain.  A broader nixpkgs fix
+# (NixOS/nixpkgs PR #274765, passing activation scripts as files rather than
+# env vars) has been open since Dec 2023 and is also stalled.
+#
+# Until one of those lands, this module must remain in place.
 ################################################################################
 {
   config,

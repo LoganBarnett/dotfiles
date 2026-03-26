@@ -172,6 +172,9 @@ in
       else
         flake-inputs.agenix-rekey.nixosModules.default
     )
+    # The installSecretFn fork (flake input agenix) makes this unnecessary.
+    # Re-enable if the fork is dropped and MAX_ARG_STRLEN problems return.
+    # ../nixos-modules/agenix-compact-activation.nix
     ../agenix/agenix-rekey-generator-mosquitto-password-file.nix
     ../agenix/slapd-hashed.nix
     ../agenix/base64-configurable-secret.nix

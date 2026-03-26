@@ -6,7 +6,14 @@
   # various URL notations.
   inputs = {
     agenix = {
-      url = "github:ryantm/agenix";
+      # Fork with installSecretFn fix (upstream ryantm/agenix PR #228, rebased).
+      # Replaces per-secret IDENTITIES inlining with a single shell function,
+      # keeping the activation script under MAX_ARG_STRLEN.  The compact
+      # activation module in nixos-modules/agenix-compact-activation.nix is
+      # still present (commented out in nixos-configs/secrets.nix) as a
+      # fallback should this fork diverge or be dropped.
+      url = "git+ssh://git@gitea.proton:2222/logan/agenix.git?ref=installSecretFn";
+      # url = "github:ryantm/agenix";
       inputs.darwin.follows = "nix-darwin";
       inputs.home-manager.follows = "home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
