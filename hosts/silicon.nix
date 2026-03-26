@@ -3,6 +3,7 @@
 ################################################################################
 {
   config,
+  facts,
   lib,
   flake-inputs,
   host-id,
@@ -14,6 +15,7 @@ let
 in
 {
   imports = [
+    ../nixos-configs/acme.nix
     ../hardware/aeotec-z-stick-7.nix
     ../nixos-configs/openhab.nix
     flake-inputs.garage-queue.nixosModules.server
@@ -54,6 +56,7 @@ in
     # confirmed that commenting this out (at least temporarily) fixes the issue.
     # However I already have pre-generated secrets so I'm not bumping into the
     # issue currently.
+    ../nixos-configs/silicon-public.nix
     ../nixos-configs/wireguard/server-standard.nix
     (
       { pkgs, ... }:
@@ -209,6 +212,15 @@ in
       };
     }
   ];
+
+  # Add secondary IPs from facts.network.hosts.silicon.extraAddresses to eno1.
+  # dhcp-server.nix contributes the primary /24 address (.9); each /32 here
+  # adds an extra address without introducing a duplicate subnet route.  NixOS
+  # merges list attributes across modules, so all addresses coexist.
+  networking.interfaces.eno1.ipv4.addresses = builtins.map (ipv4: {
+    address = "${facts.network.subnets.barnett-main}.${toString ipv4}";
+    prefixLength = 32;
+  }) (builtins.attrValues facts.network.hosts.silicon.extraAddresses);
 
   # Configure ACLs for shared media directory so both nextcloud and kodi can
   # read/write.

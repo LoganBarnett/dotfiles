@@ -337,6 +337,11 @@
           "wiki"
         ];
         controlledHost = true;
+        # Secondary addresses: additional IPs bound to the same interface.
+        # Each entry generates a DNS A record; no DHCP reservation is created.
+        extraAddresses = {
+          silicon-external = 100;
+        };
         flake-input-overrides = { };
         ipv4 = 9;
         macAddresses = [ "b8:ca:3a:77:a9:2a" ];
