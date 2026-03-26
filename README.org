@@ -1216,10 +1216,10 @@ is configured to port-forward external traffic only to that address.
 
 The two addresses serve completely separate roles:
 
-| Address        | Role    | Reachable from   | Certificate source |
-|----------------+---------+------------------+--------------------|
-| ~192.168.254.9~  | Private | LAN only         | Internal CA        |
-| ~192.168.254.100~ | Public  | LAN + Internet   | ACME (DNS-01)      |
+| Address           | Role    | Reachable from | Certificate source |
+|-------------------+---------+----------------+--------------------|
+| ~192.168.254.9~   | Private | LAN only       | Internal CA        |
+| ~192.168.254.100~ | Public  | LAN + Internet | ACME (DNS-01)      |
 
 nginx listens on each address independently.  A virtual host bound to the
 private address is unreachable from the internet even if the router were
