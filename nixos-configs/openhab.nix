@@ -100,10 +100,36 @@ in
       ];
       ExecStart = pkgs.writeShellScript "openhab-admin-auth" ''
         set -euo pipefail
-        users_file=/var/lib/openhab/userdata/jsondb/users.json
+        jsondb=/var/lib/openhab/userdata/jsondb
         override=/run/credentials/openhab-admin-auth.service/users-override
-        mkdir -p "$(dirname "$users_file")"
-        cp "$override" "$users_file"
+        mkdir -p "$jsondb"
+        cp "$override" "$jsondb/users.json"
+        # Pre-create the overview page so the MainUI setup wizard does not
+        # redirect to /auth on first load.  The wizard fires exactly when
+        # this page is absent from the JSONDB; writing it here means
+        # OpenHAB is fully usable after first boot with no manual login.
+        if [ ! -e "$jsondb/uicomponents_ui_page.json" ]; then
+          install -Dm644 ${
+            pkgs.writeText "uicomponents_ui_page.json" (
+              builtins.toJSON {
+                overview = {
+                  class = "org.openhab.core.ui.components.RootUIComponent";
+                  value = {
+                    uid = "overview";
+                    component = "oh-layout-page";
+                    config = {
+                      label = "Overview";
+                    };
+                    slots = {
+                      default = [ ];
+                      masonry = null;
+                    };
+                  };
+                };
+              }
+            )
+          } "$jsondb/uicomponents_ui_page.json"
+        fi
       '';
     };
   };
@@ -208,6 +234,13 @@ in
     # Avoid conflict with the goss prometheusContentTypeFixProxy, which
     # occupies port 8080 on all linux hosts via linux-host.nix.
     ports.http = 8085;
+    # Restart openhab whenever the Nix-generated config derivation changes.
+    # Without this, nixos-rebuild switch updates config files on disk but
+    # openhab keeps running with stale in-memory state (JSONDB, Felix
+    # ConfigAdmin, etc.).  The module omits cfgDrv from restartTriggers by
+    # default for OH 3+ because Felix can hot-reload most settings, but
+    # JSONDB files are only read at startup.
+    workarounds.restart.onDeploy = true;
     # Grant implicit user role to requests from the oauth2-proxy host.  All
     # external traffic reaches OpenHAB through nginx, which is gated by
     # oauth2-proxy and Authelia SSO.
@@ -216,6 +249,11 @@ in
     conf.services.runtime."org.openhab.restauth:implicitUserRole" = "true";
     # Accept Basic auth so nginx can inject admin credentials on every request.
     conf.services.runtime."org.openhab.restauth:allowBasicAuth" = "true";
+    # Disable backend auth entirely — security is enforced by oauth2-proxy.
+    # All REST requests are treated as administrator, which lets the MainUI
+    # operate in full admin mode once noAuth is set by the frontend (via the
+    # sub_filter that removes the auth link from /rest).
+    conf.services.runtime."org.openhab.restauth:noSecurity" = "true";
   };
 
   services.https.fqdns."openhab.${domain}" = {
