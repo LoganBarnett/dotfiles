@@ -1,7 +1,5 @@
 ################################################################################
-# Configuration for an Aeotec Z-Stick 7.
-#
-# This is centric to zwave-js-ui and should be renamed as such.
+# Hardware configuration for the Aeotec Z-Stick 7 USB Z-Wave controller.
 ################################################################################
 { config, pkgs, ... }:
 let
@@ -80,44 +78,4 @@ in
   environment.systemPackages = [
     pkgs.minicom
   ];
-  systemd.services.zwave-js = {
-    serviceConfig = {
-      LoadCredential = [
-        "zwave-js-secret:${config.age.secrets.aeotec-z-stick-7-zwave-js-security-file.path}"
-      ];
-    };
-    wants = [
-      "run-agenix.d.mount"
-    ];
-    after = [
-      "run-agenix.d.mount"
-    ];
-  };
-  systemd.services.zwave-js-ui = {
-    serviceConfig = {
-      # LoadCredential = builtins.map
-      #   (key:
-      #     "${key}:${
-      #       config.age.secrets."aeotec-z-stick-7-zwave-js-${key}-key".path
-      #     }"
-      #   ) keys
-      # ;
-      LoadCredential = [
-        "zwave-js-secret:${config.age.secrets.aeotec-z-stick-7-zwave-js-ui-security-file.path}"
-      ];
-    };
-    wants = [
-      "run-agenix.d.mount"
-    ];
-    after = [
-      "run-agenix.d.mount"
-    ];
-  };
-  # services.zwave-js-ui.serialPort and settings were declared here; removed
-  # when nixos-modules/zwave-js-ui.nix was moved to the graveyard.
-  services.zwave-js = {
-    serialPort = device-path;
-    settings.serial.port = device-path;
-  };
-
 }

@@ -55,6 +55,7 @@
     flake-inputs.garage-queue.nixosModules.worker
     flake-inputs.home-manager.nixosModules.home-manager
     flake-inputs.proc-siding.nixosModules.default
+    ../nixos-modules/agenix-compact-activation.nix
     ../nixos-modules/environment-file-secrets.nix
     ../nixos-modules/ldap-auth.nix
     ../nixos-modules/ldap-server.nix
