@@ -176,22 +176,6 @@
         "type": "github"
       }
     },
-    "comfyui-pr": {
-      "locked": {
-        "lastModified": 1742484673,
-        "narHash": "sha256-IJIoQIfeGwpk4pKY1aj03ETJxbDd9FNYvSleTPZYU4A=",
-        "owner": "LoganBarnett",
-        "repo": "nixpkgs",
-        "rev": "b685c5512f36dfe115932680232ef9280de2ae31",
-        "type": "github"
-      },
-      "original": {
-        "owner": "LoganBarnett",
-        "ref": "comfyui-fetch-model-hide-rebase",
-        "repo": "nixpkgs",
-        "type": "github"
-      }
-    },
     "crane": {
       "locked": {
         "lastModified": 1771796463,
@@ -1021,27 +1005,6 @@
         "type": "github"
       }
     },
-    "home-manager-working-rocm": {
-      "inputs": {
-        "nixpkgs": [
-          "nixpkgs-working-rocm"
-        ]
-      },
-      "locked": {
-        "lastModified": 1747688870,
-        "narHash": "sha256-ypL9WAZfmJr5V70jEVzqGjjQzF0uCkz+AFQF7n9NmNc=",
-        "owner": "nix-community",
-        "repo": "home-manager",
-        "rev": "d5f1f641b289553927b3801580598d200a501863",
-        "type": "github"
-      },
-      "original": {
-        "owner": "nix-community",
-        "ref": "release-24.11",
-        "repo": "home-manager",
-        "type": "github"
-      }
-    },
     "ldap-reconciler": {
       "inputs": {
         "crane": "crane_7",
@@ -1591,22 +1554,6 @@
         "type": "github"
       }
     },
-    "nixpkgs-latest": {
-      "locked": {
-        "lastModified": 1761868985,
-        "narHash": "sha256-T6F6Qui99tffLrRZIP2GJenuLquBqtszJCCY0wq0Cio=",
-        "owner": "nixos",
-        "repo": "nixpkgs",
-        "rev": "66ecb8d36143f21a553d0824005ebfc12e303ede",
-        "type": "github"
-      },
-      "original": {
-        "owner": "nixos",
-        "ref": "master",
-        "repo": "nixpkgs",
-        "type": "github"
-      }
-    },
     "nixpkgs-lib": {
       "locked": {
         "lastModified": 1748740939,
@@ -1731,22 +1678,6 @@
       "original": {
         "owner": "NixOS",
         "ref": "nixos-25.05",
-        "repo": "nixpkgs",
-        "type": "github"
-      }
-    },
-    "nixpkgs-working-rocm": {
-      "locked": {
-        "lastModified": 1734298405,
-        "narHash": "sha256-IWIVFqx5FxZiPTfqpkfFC+OBq0YU3kvnPxyNKWEmYSc=",
-        "owner": "nixos",
-        "repo": "nixpkgs",
-        "rev": "8893464d45794958e4832647040f130e517f76f4",
-        "type": "github"
-      },
-      "original": {
-        "owner": "nixos",
-        "ref": "master",
         "repo": "nixpkgs",
         "type": "github"
       }
@@ -2352,7 +2283,6 @@
         "agenix-rekey": "agenix-rekey",
         "attic": "attic",
         "authentik-nix": "authentik-nix",
-        "comfyui-pr": "comfyui-pr",
         "current-system": "current-system",
         "disko": "disko",
         "dns-smart-block": "dns-smart-block",
@@ -2362,7 +2292,6 @@
         "garage-queue": "garage-queue",
         "hash-color": "hash-color",
         "home-manager": "home-manager",
-        "home-manager-working-rocm": "home-manager-working-rocm",
         "ldap-reconciler": "ldap-reconciler",
         "loku": "loku",
         "mac-app-util": "mac-app-util",
@@ -2381,10 +2310,8 @@
         "nixos-raspberrypi": "nixos-raspberrypi",
         "nixpkgs": "nixpkgs_15",
         "nixpkgs-25-11": "nixpkgs-25-11",
-        "nixpkgs-latest": "nixpkgs-latest",
         "nixpkgs-nixos-raspberrypi": "nixpkgs-nixos-raspberrypi",
         "nixpkgs-openscad-bin": "nixpkgs-openscad-bin",
-        "nixpkgs-working-rocm": "nixpkgs-working-rocm",
         "nur": "nur",
         "openhab-flake": "openhab-flake",
         "optnix": "optnix",

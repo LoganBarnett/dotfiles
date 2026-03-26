@@ -16,26 +16,6 @@ let
     #   eval "$(direnv export bash 2>/dev/null)"
     # fi
   '';
-
-  pkgs-latest = import flake-inputs.nixpkgs-latest {
-    inherit system;
-    # TODO: Constrain to this package to make this precise.  This is needed to
-    # be done separately because each pkgs gets its own unfree configuration.
-    config.allowUnfree = true;
-    # Test it!
-    config.allowUnfreePredicate =
-      pkg:
-      builtins.elem (lib.getName pkg) [
-        "claude-code"
-      ];
-    # Since this is our newly instantiated nixpkgs, we need to use our overlays
-    # so we can control the version without necessarily having to bump
-    # nixpkgs-latest all the time.  By keeping on nixpkgs-latest, we can be just
-    # a bit ahead on the derivation definition.
-    overlays = [
-      (import ../overlays/claude-code.nix { inherit flake-inputs system; })
-    ];
-  };
 in
 {
   # allowUnfreePackagePredicates = [
@@ -47,7 +27,7 @@ in
     enable = true;
     package = pkgs.symlinkJoin {
       name = "claude-code-wrapped";
-      paths = [ pkgs-latest.claude-code ];
+      paths = [ pkgs.claude-code ];
       buildInputs = [ pkgs.makeWrapper ];
       postBuild = ''
         wrapProgram $out/bin/claude \

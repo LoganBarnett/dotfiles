@@ -49,21 +49,6 @@ let
   pkgs-openscad-bin = import flake-inputs.nixpkgs-openscad-bin {
     inherit system;
   };
-  pkgs-latest = import flake-inputs.nixpkgs-latest {
-    inherit system;
-    # TODO: Constrain to signal-desktop-bin to make this precise.  This is
-    # needed to be done separately because each pkgs gets its own unfree
-    # configuration.
-    config.allowUnfree = true;
-    # Test it!
-    config.allowUnfreePredicate =
-      pkg:
-      builtins.elem (lib.getName pkg) [
-        "signal-desktop-bin"
-        "zoom-us"
-      ];
-  };
-
 in
 {
   system.primaryUser = username;
@@ -116,10 +101,10 @@ in
       {
         # Sometimes we run into DNS issues locally, so provide this as an escape
         # hatch.
-        environment.etc."ssh/ssh_config.d/102-nickel-escape-hatch.conf".text = ''
-          Host nickel.${facts.network.domain}
-            HostName 192.168.254.1
-        '';
+        # environment.etc."ssh/ssh_config.d/102-silicon-escape-hatch.conf".text = ''
+        #   Host silicon.${facts.network.domain}
+        #     HostName 192.168.254.${facts.network.hosts.silicon.ipv4}
+        # '';
         environment.etc."ssh/ssh_config.d/103-${work-alias}-workstation.conf".text = ''
           Host M-CL64PK702X
             User logan.barnett
@@ -148,12 +133,14 @@ in
           (
             pkg:
             builtins.elem (lib.getName pkg) [
+              "claude-code"
               "firefox-bin"
               "firefox"
               "firefox-bin-unwrapped"
               "ngrok"
               "signal-desktop-bin"
               "unrar"
+              "zoom"
             ]
           )
         ];
@@ -218,7 +205,7 @@ in
           ++ [
             # Use latest to benefit from work done here:
             # https://github.com/Aider-AI/aider/issues/2318
-            pkgs-latest.aider-chat
+            # pkgs.aider-chat
             # A less dial-home-to-an-ad-company way of running Chrome extensions.
             # Not working because it's a Linux only build.
             # pkgs.ungoogled-chromium
@@ -320,7 +307,7 @@ in
             pkgs.whisper-cpp
             # Let's be able to view media.
             pkgs.vlc-bin
-            pkgs-latest.zoom-us
+            pkgs.zoom-us
           ];
         # A cloud VPN provider.  It breaks my self hosted proclivities, but
         # others can give me links to go into their VPNs.

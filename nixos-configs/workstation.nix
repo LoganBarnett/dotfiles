@@ -15,9 +15,6 @@
   ...
 }:
 let
-  pkgs-latest = import flake-inputs.nixpkgs-latest {
-    inherit system;
-  };
   npm-generate-package-lock-json = pkgs.writeShellApplication {
     name = "npm-generate-package-lock-json";
     text = builtins.readFile ../scripts/npm-generate-package-lock-json;
@@ -83,10 +80,10 @@ in
     # Effectively a plantuml replacement.  Write flow charts and similar
     # diagrams using a text based language.  Supports a variety of outputs
     # including SVG, PNG, and ASCII text.
-    pkgs-latest.d2
+    pkgs.d2
     github-copilot-cli
     # Manage Jira from the command line, like a scholar.
-    pkgs-latest.jira-cli-go
+    pkgs.jira-cli-go
     # An interactive LLM runner with MCP support.  Written in Go, so no runtime
     # and weird build dependencies.  It supports various debugging options as
     # well.  See https://github.com/mark3labs/mcphost for details.
