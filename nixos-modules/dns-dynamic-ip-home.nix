@@ -83,6 +83,16 @@ in
                 domain = "logustus.com";
                 records = [
                   "vpn"
+                  "*"
+                ];
+              }
+              {
+                type = "porkbun";
+                key = "{{API_KEY}}";
+                secret = "{{API_SECRET}}";
+                domain = "meshward.com";
+                records = [
+                  "*"
                 ];
               }
             ];
