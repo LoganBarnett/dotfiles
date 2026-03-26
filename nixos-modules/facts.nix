@@ -319,14 +319,15 @@
       silicon = {
         aliases = [
           "authelia"
-          "avatar"
           "blocky"
           "chronicle-proxy"
           "dns-smart-block"
           "gitea"
           "immich"
+          "ivatar"
           "ldap"
           "loku"
+          "mail"
           "matrix"
           "metube"
           "nextcloud"
@@ -644,6 +645,13 @@
           full-name = "immich";
           devices = [ ];
         };
+        ivatar = {
+          email = "ivatar@proton";
+          type = "oidc-client";
+          description = "ivatar OIDC client.";
+          full-name = "ivatar";
+          devices = [ ];
+        };
         openhab = {
           email = "openhab@proton";
           type = "oidc-client";
@@ -700,10 +708,14 @@
       };
 
       ivatar = {
-        fqdn = "avatar.${domain}";
+        authentication = "oidc";
+        fqdn = "ivatar.${domain}";
         # NixOS service name differs from the facts key.
         nixosService = "ivatar-host";
         groups = [ "ivatar-users" ];
+        redirectUris = [
+          "https://ivatar.${domain}/social/complete/oidc/"
+        ];
       };
 
       nextcloud = {

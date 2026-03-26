@@ -100,7 +100,10 @@ let
       rev = "8effe253b447442ffd220ca8c5eba6201660e8e4";
       hash = "sha256-2nbfMyExIZrR3MhLXZXQ6DWTgwrmCxoA4bSRwvN+Ge8=";
     };
-    propagatedBuildInputs = with python3.pkgs; [ pillow ];
+    propagatedBuildInputs = with python3.pkgs; [
+      pillow
+      natsort
+    ];
   };
 
   # pydenticon5 is a Python 3 port of pydenticon.  nixpkgs carries `pydenticon`
@@ -116,6 +119,27 @@ let
       hash = "sha256-4KQgc5e5ycvX+rvzaRNx2M/xcZAiwD5iLbLlkozkd6g=";
     };
     propagatedBuildInputs = with python3.pkgs; [ pillow ];
+  };
+
+  # social-auth-app-django 5.4.3 is the last release that supports Django 4.x;
+  # 5.5.0 bumped the floor to Django 5.1.  nixpkgs carries 5.5.1+, so we
+  # package 5.4.3 inline until nixpkgs Django is upgraded.
+  social-auth-app-django = buildPythonPackage rec {
+    pname = "social-auth-app-django";
+    version = "5.4.3";
+    format = "pyproject";
+    src = fetchPypi {
+      # PyPI sdist filename uses underscores; pname uses hyphens.
+      pname = "social_auth_app_django";
+      inherit version;
+      hash = "sha256-0fQobVyh5RLJsvaG5+yyoBKBSPGjPYU7adwHtYUINi4=";
+    };
+    build-system = with python3.pkgs; [ setuptools ];
+    propagatedBuildInputs = with python3.pkgs; [
+      django
+      social-auth-core
+    ];
+    doCheck = false;
   };
 
   # ── Auth / account packages not in nixpkgs ─────────────────────────────────
@@ -134,6 +158,7 @@ let
     propagatedBuildInputs = with python3.pkgs; [
       django
       python3-openid
+      six
     ];
   };
 
@@ -211,6 +236,7 @@ buildPythonApplication {
     # ── Authentication ────────────────────────────────────────────────────────
     django-openid-auth
     python3-openid
+    social-auth-app-django
     # ── Account management / federation ──────────────────────────────────────
     django-user-accounts
     pyLibravatar
@@ -241,6 +267,12 @@ buildPythonApplication {
 
     ALLOWED_HOSTS = os.environ.get("IVATAR_ALLOWED_HOSTS", "localhost").split(",")
 
+    # nginx forwards the original Host header correctly; the upstream
+    # USE_X_FORWARDED_HOST = True causes Django to read X-Forwarded-Host
+    # instead, which ends up as the server hostname.  Disable it so Django
+    # uses the Host header that nginx sets to the virtual-host FQDN.
+    USE_X_FORWARDED_HOST = False
+
     if "IVATAR_STATIC_ROOT" in os.environ:
         STATIC_ROOT = os.environ["IVATAR_STATIC_ROOT"]
 
@@ -260,6 +292,45 @@ buildPythonApplication {
         EMAIL_PORT = int(os.environ.get("DJANGO_EMAIL_PORT", "587"))
         EMAIL_HOST_USER = os.environ.get("DJANGO_EMAIL_HOST_USER", "")
         EMAIL_USE_TLS = os.environ.get("DJANGO_EMAIL_USE_TLS", "1") == "1"
+    # ── ssl: clear VERIFY_X509_STRICT ────────────────────────────────────────
+    # urllib3 2.5+ explicitly ORs ssl.VERIFY_X509_STRICT into every context it
+    # creates for Python 3.13+.  The internal proton CA lacks a Key Usage
+    # extension and is rejected under strict mode.  Patch urllib3's context
+    # factory to clear the flag after construction; REQUESTS_CA_BUNDLE still
+    # pins the exact CA bundle.
+    import ssl as _ssl
+    import urllib3.util.ssl_ as _urllib3_ssl
+    _orig_urllib3_ctx = _urllib3_ssl.create_urllib3_context
+    def _patched_urllib3_ctx(*args, **kwargs):
+        ctx = _orig_urllib3_ctx(*args, **kwargs)
+        if hasattr(_ssl, "VERIFY_X509_STRICT"):
+            ctx.verify_flags &= ~_ssl.VERIFY_X509_STRICT
+        return ctx
+    _urllib3_ssl.create_urllib3_context = _patched_urllib3_ctx
+    del _orig_urllib3_ctx, _patched_urllib3_ctx, _urllib3_ssl, _ssl
+    # ── social-auth OIDC ──────────────────────────────────────────────────────
+    # Wire social-auth-app-django for OIDC login.  All settings are gated on
+    # the relevant env var being set so the service starts cleanly even if OIDC
+    # is not yet configured on a host.
+    INSTALLED_APPS.append("social_django")
+
+    AUTHENTICATION_BACKENDS = (
+        ["social_core.backends.open_id_connect.OpenIdConnectAuth"]
+        + list(AUTHENTICATION_BACKENDS)
+    )
+
+    if os.environ.get("IVATAR_OIDC_ENDPOINT"):
+        SOCIAL_AUTH_OIDC_OIDC_ENDPOINT = os.environ["IVATAR_OIDC_ENDPOINT"]
+    if os.environ.get("IVATAR_OIDC_CLIENT_ID"):
+        SOCIAL_AUTH_OIDC_KEY = os.environ["IVATAR_OIDC_CLIENT_ID"]
+    _oidc_cred = os.path.join(
+        os.environ.get("CREDENTIALS_DIRECTORY", ""), "oidc-client-secret"
+    )
+    if os.path.isfile(_oidc_cred):
+        with open(_oidc_cred) as _f:
+            SOCIAL_AUTH_OIDC_SECRET = _f.read().strip()
+    del _oidc_cred
+
     NIXOS_OVERRIDES
 
         # ── ivatar/settings.py: read SECRET_KEY from credential file ─────────────
@@ -279,6 +350,26 @@ buildPythonApplication {
                 SECRET_KEY = _f.read().strip()
     del _nix_os, _creds_dir
     NIXOS_SECRET
+
+        # ── login.html: add SSO button ───────────────────────────────────────────
+        # Write the SSO button to a fragment file and splice it in with sed's r
+        # command.  This keeps the Nix-string minimum indentation at ≥4 spaces
+        # so the heredoc terminators above remain at column 0 after stripping.
+        cat > sso-button.html << 'SSO_EOF'
+      &nbsp;
+      <a href="/social/login/oidc/" class="button">{% trans 'Login with SSO' %}</a>
+    SSO_EOF
+        sed -i "/openid-login/r sso-button.html" \
+          ivatar/ivataraccount/templates/login.html
+
+        # ── ivatar/urls.py: add social-auth URL routes ───────────────────────────
+        # social_django serves /social/login/<backend>/ and
+        # /social/complete/<backend>/ — the OIDC callback lands at
+        # /social/complete/oidc/ which must match the redirect_uri registered
+        # with Authelia.
+        sed -i \
+          '/path("openid\/", include("django_openid_auth.urls")),/ a\    path("social\/", include("social_django.urls", namespace="social")),' \
+          ivatar/urls.py
 
         # ── pyproject.toml: build configuration ──────────────────────────────────
         # The upstream source ships as a Docker/develop deployment with no build
@@ -330,6 +421,11 @@ buildPythonApplication {
     # (directories with __init__.py).  Copy it explicitly so it is importable
     # once the application is installed outside the source tree.
     cp config.py "$out/${python3.sitePackages}/config.py"
+    # The root templates/ directory is not inside the ivatar Python package
+    # so setuptools skips it.  config.py adds BASE_DIR/templates to DIRS
+    # where BASE_DIR is the parent of ivatar/ = site-packages.  Copy the
+    # directory there so Django can find the top-level templates.
+    cp -r templates "$out/${python3.sitePackages}/templates"
   '';
 
   meta = {

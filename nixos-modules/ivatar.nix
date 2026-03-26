@@ -29,8 +29,6 @@ let
   stateDir = "/var/lib/ivatar";
 in
 {
-  imports = [ ./https.nix ];
-
   options.services.ivatar-host = {
     enable = mkEnableOption "ivatar Libravatar-compatible avatar service";
 
@@ -42,8 +40,28 @@ in
 
     fqdn = mkOption {
       type = types.str;
-      default = "avatar.${facts.network.domain}";
+      default = "ivatar.${facts.network.domain}";
       description = "FQDN for the HTTPS reverse proxy endpoint.";
+    };
+
+    oidc = {
+      enable = mkOption {
+        type = types.bool;
+        default = false;
+        description = "Enable OIDC login via social-auth-app-django.";
+      };
+
+      endpoint = mkOption {
+        type = types.str;
+        default = "https://authelia.${facts.network.domain}";
+        description = "Base URL of the OIDC provider (discovery at <endpoint>/.well-known/openid-configuration).";
+      };
+
+      clientId = mkOption {
+        type = types.str;
+        default = "ivatar";
+        description = "OIDC client ID registered with the provider.";
+      };
     };
 
     siteName = mkOption {
@@ -92,10 +110,6 @@ in
   };
 
   config = mkIf cfg.enable {
-    services.https.fqdns.${cfg.fqdn} = {
-      internalPort = cfg.port;
-    };
-
     services.postgresql = {
       enable = true;
       ensureDatabases = [ "ivatar" ];
@@ -142,9 +156,18 @@ in
         IVATAR_STATIC_ROOT = "${stateDir}/static";
         IVATAR_CACHE_DIR = "${stateDir}/cache";
         # Site identity.
+        IVATAR_ALLOWED_HOSTS = cfg.fqdn;
         SITE_NAME = cfg.siteName;
         SECURE_BASE_URL = "https://${cfg.fqdn}/avatar/";
         BASE_URL = "https://${cfg.fqdn}/avatar/";
+        # OIDC (only populated when cfg.oidc.enable = true; empty strings are
+        # ignored by the Python config.py overrides).
+        IVATAR_OIDC_ENDPOINT = if cfg.oidc.enable then cfg.oidc.endpoint else "";
+        IVATAR_OIDC_CLIENT_ID = if cfg.oidc.enable then cfg.oidc.clientId else "";
+        # Python's requests library uses certifi by default and does not read
+        # the system trust store.  Point it at the NixOS bundle so our
+        # internal CA is trusted when fetching the OIDC discovery document.
+        REQUESTS_CA_BUNDLE = "/etc/ssl/certs/ca-bundle.crt";
         # Email.
         EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend";
         SERVER_EMAIL = cfg.email.fromAddress;
@@ -164,6 +187,9 @@ in
 
         LoadCredential = [
           "secret-key:${config.age.secrets.ivatar-secret-key.path}"
+        ]
+        ++ lib.optionals cfg.oidc.enable [
+          "oidc-client-secret:${config.age.secrets."ivatar-oidc-client-secret".path}"
         ];
 
         # Create sub-directories, apply pending migrations, then collect static
