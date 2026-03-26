@@ -39,6 +39,8 @@ in
     ../nixos-configs/immich.nix
     ../nixos-configs/ivatar.nix
     ../nixos-configs/metube.nix
+    ../nixos-modules/stalwart.nix
+    ../nixos-configs/stalwart.nix
     ../nixos-configs/nix-builder-provide.nix
     ../nixos-modules/linux-host.nix
     flake-inputs.dns-smart-block.nixosModules.default
