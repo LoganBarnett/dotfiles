@@ -450,10 +450,10 @@
         "rust-overlay": "rust-overlay_3"
       },
       "locked": {
-        "lastModified": 1773942764,
+        "lastModified": 1774154158,
         "narHash": "sha256-YOuZOXpOYgaHWO+fBGzb+LhbybAbZSbfmJCxs9yEVtg=",
         "ref": "refs/heads/main",
-        "rev": "7b478edaae8f270916338399c392b9cbdb665233",
+        "rev": "0fadbffc289c3276d3d538cf1bd45d0016a068c6",
         "revCount": 110,
         "type": "git",
         "url": "ssh://git@gitea.proton:2222/logan/dns-smart-block"
@@ -472,10 +472,10 @@
         "org-dnd": "org-dnd"
       },
       "locked": {
-        "lastModified": 1774014831,
+        "lastModified": 1774154082,
         "narHash": "sha256-6uPEsAUJhkLVu6NHHIKtw7LFPlHwDfgxo/v438/Qdco=",
         "ref": "refs/heads/main",
-        "rev": "74054e839dc08ef84db2b2f653310e3d1517e24a",
+        "rev": "2a57ef7ac5b921cff5c82b81af2d5d93a48a16b7",
         "revCount": 838,
         "type": "git",
         "url": "ssh://git@gitea.proton:2222/logan/emacs-config"
@@ -912,10 +912,10 @@
         "rust-overlay": "rust-overlay_5"
       },
       "locked": {
-        "lastModified": 1773982541,
+        "lastModified": 1774154302,
         "narHash": "sha256-wG2TQItT2U8NoWD1IdlwO9NAL/BwO92P7yhw/qVf6ao=",
         "ref": "refs/heads/main",
-        "rev": "515852eb500ed0a164b8b16a215f0de6281d4c2e",
+        "rev": "fb766cc27fad584e079de337607b21a2d0bc92a5",
         "revCount": 10,
         "type": "git",
         "url": "ssh://git@gitea.proton:2222/logan/garage-queue.git"
@@ -987,10 +987,10 @@
         "rust-overlay": "rust-overlay_6"
       },
       "locked": {
-        "lastModified": 1773587354,
+        "lastModified": 1774250972,
         "narHash": "sha256-c7oDNi9iMo87UonpcBExO7okBgXFxLGBKpIhtSqhS+0=",
         "ref": "refs/heads/main",
-        "rev": "ed78c460c3e8a92d9b759d1b00b33eb68b5c50cd",
+        "rev": "bf539bfa37c4514123343c76060a834c9f2f5ff1",
         "revCount": 2,
         "type": "git",
         "url": "ssh://git@gitea.proton:2222/logan/hash-color"
@@ -1120,11 +1120,11 @@
         "rust-overlay": "rust-overlay_9"
       },
       "locked": {
-        "lastModified": 1772489844,
-        "narHash": "sha256-JAVqHl10b0y+e2vmx52OTR1yz48WiwJNC4SRRG7nsVY=",
+        "lastModified": 1773605056,
+        "narHash": "sha256-NOqVn6UFilfuzsS1PrVjIOlqxa+yuMS85cZ/zJzxvL0=",
         "ref": "refs/heads/main",
-        "rev": "a603a9e8b570961c9811808527e52ca27ae3bb26",
-        "revCount": 6,
+        "rev": "3f44475ae4bd365ae437d2fea6f92a420e7cfef2",
+        "revCount": 7,
         "type": "git",
         "url": "ssh://git@gitea.proton:2222/logan/metalps"
       },
@@ -1344,10 +1344,10 @@
         "rust-overlay": "rust-overlay_10"
       },
       "locked": {
-        "lastModified": 1771094301,
+        "lastModified": 1773606716,
         "narHash": "sha256-5YIZIKeCdD7MHtmJKtilA4Nk6HL8dZvwGFY5nM6rRDw=",
         "ref": "refs/heads/main",
-        "rev": "5f7de35ba3c4c390fd34a8900968d91e38913d95",
+        "rev": "491c96a72adcb18eaa66c25ca8b592068041367b",
         "revCount": 44,
         "type": "git",
         "url": "ssh://git@gitea.proton:2222/logan/nix-remote-builder-doctor"
@@ -2194,11 +2194,11 @@
         "rust-overlay": "rust-overlay_11"
       },
       "locked": {
-        "lastModified": 1774383160,
-        "narHash": "sha256-eqKGUYTWMcp+m1vp4oPhpIozQpOqYFTJwHvKKZPrbPg=",
+        "lastModified": 1774449762,
+        "narHash": "sha256-JvC7smMJJJQBj6pcWXr2ZZnzm0BItXabJYsI2kM0i0g=",
         "ref": "refs/heads/main",
-        "rev": "eaf821ec34f1a4294f651ae7968f56b51a91d425",
-        "revCount": 16,
+        "rev": "404693556e3146cb0edc658e334a08bf32538be4",
+        "revCount": 19,
         "type": "git",
         "url": "ssh://git@gitea.proton:2222/logan/org-wiki"
       },
@@ -2240,11 +2240,11 @@
         "rust-overlay": "rust-overlay_13"
       },
       "locked": {
-        "lastModified": 1773695015,
-        "narHash": "sha256-g2jbVgrZOXMEHoltVTQpM+IHlxWD6exWirK710YjppU=",
+        "lastModified": 1774154229,
+        "narHash": "sha256-q53hhBdE9dbgXDUH5+TZCNPKCxozPijyk0RgAyCyZ5k=",
         "ref": "refs/heads/main",
-        "rev": "9fb28cf50cc487c038d5bdafc945ef75adcea7e5",
-        "revCount": 11,
+        "rev": "638eb1ce706f90fc75b0ab70aedb3530abfad260",
+        "revCount": 13,
         "type": "git",
         "url": "ssh://git@gitea.proton:2222/logan/proc-siding.git"
       },
