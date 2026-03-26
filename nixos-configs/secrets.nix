@@ -177,10 +177,12 @@ in
     # ../nixos-modules/agenix-compact-activation.nix
     ../agenix/agenix-rekey-generator-mosquitto-password-file.nix
     ../agenix/slapd-hashed.nix
+    ../agenix/stalwart-dkim-key.nix
     ../agenix/base64-configurable-secret.nix
     ../agenix/environment-file-secret.nix
     ../agenix/htpasswd.nix
     ../agenix/hex-configurable-secret.nix
+    ../agenix/openhab-pbkdf2.nix
     ../agenix/secret-template-file.nix
     ../agenix/tls-secret.nix
     ../agenix/wireguard-priv.nix
