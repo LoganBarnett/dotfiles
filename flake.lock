@@ -14,17 +14,18 @@
         "systems": "systems"
       },
       "locked": {
-        "lastModified": 1736955230,
-        "narHash": "sha256-uenf8fv2eG5bKM8C/UvFaiJMZ4IpUFaQxk9OH5t/1gA=",
-        "owner": "ryantm",
-        "repo": "agenix",
-        "rev": "e600439ec4c273cf11e06fe4d9d906fb98fa097c",
-        "type": "github"
+        "lastModified": 1774374894,
+        "narHash": "sha256-Xiry31/KB+U7IV1cNUPsKbfdiuhAxqIY/ldMdnGy0Fk=",
+        "ref": "installSecretFn",
+        "rev": "f28a2dae2cef51a1ffb858b5729fe959acfdb90d",
+        "revCount": 360,
+        "type": "git",
+        "url": "ssh://git@gitea.proton:2222/logan/agenix.git"
       },
       "original": {
-        "owner": "ryantm",
-        "repo": "agenix",
-        "type": "github"
+        "ref": "installSecretFn",
+        "type": "git",
+        "url": "ssh://git@gitea.proton:2222/logan/agenix.git"
       }
     },
     "agenix-rekey": {
@@ -2193,11 +2194,11 @@
         "rust-overlay": "rust-overlay_11"
       },
       "locked": {
-        "lastModified": 1774374729,
-        "narHash": "sha256-JPnEbwXBcQ8YehxCB6zSiMSd3D5AFRpeBLUE16ZzUgU=",
+        "lastModified": 1774375272,
+        "narHash": "sha256-4mhecVaiDkCKQr1qx3Enq6xlFe1zTiQUwK9Mp0WCFq4=",
         "ref": "refs/heads/main",
-        "rev": "84b7746fb1033b61d6768c4a002c4abd07c8ca94",
-        "revCount": 10,
+        "rev": "50673f88f3274c3bbe24eb8bbabf852048cdd276",
+        "revCount": 11,
         "type": "git",
         "url": "ssh://git@gitea.proton:2222/logan/org-wiki"
       },
