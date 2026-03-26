@@ -102,6 +102,33 @@ in
           default = { };
         }
       );
+      domains = mkOption {
+        type = types.attrsOf (
+          types.submodule {
+            options = {
+              addr = mkOption {
+                type = types.str;
+                description = "IP address nginx should listen on for this domain suffix.";
+              };
+              certSource = mkOption {
+                type = types.enum [
+                  "internal-ca"
+                  "acme"
+                ];
+                description = "Certificate source: internal CA or ACME DNS-01.";
+              };
+            };
+          }
+        );
+        default = { };
+        description = ''
+          Domain-suffix policies mapping a suffix (e.g. "proton", "example.com")
+          to a listen address and certificate source.  Every FQDN in fqdns
+          inherits its policy via longest-suffix match.  When empty the module
+          falls back to the pre-domains behaviour: listen on all interfaces,
+          internal-CA cert for every FQDN.
+        '';
+      };
     };
   };
   config = mkIf config.services.https.enable (
@@ -132,6 +159,37 @@ in
           "http://unix:${fqdn-cfg.socket}:"
         else
           "http://unix:/run/${fqdn-cfg.serviceNameForSocket}/${fqdn-cfg.serviceNameForSocket}.sock:";
+
+      # True when at least one domain policy has been declared.
+      hasDomains = cfg.domains != { };
+
+      # Return the domain policy for an fqdn config, or null when no domains
+      # are configured (backward-compat: treat everything as internal-CA).
+      domainPolicyFor =
+        fqdn-cfg:
+        if !hasDomains then
+          null
+        else
+          let
+            matches = lib.filter (k: lib.hasSuffix ".${k}" fqdn-cfg.fqdn) (
+              lib.attrNames cfg.domains
+            );
+            best = lib.head (
+              lib.sort (a: b: lib.stringLength a > lib.stringLength b) matches
+            );
+          in
+          assert lib.assertMsg (
+            matches != [ ]
+          ) "https: no domain policy found for ${fqdn-cfg.fqdn}";
+          cfg.domains.${best};
+
+      # One default-deny server block per distinct listen address so that
+      # unmatched SNI receives a TLS rejection rather than a stale cert.
+      uniqueAddrs =
+        if hasDomains then
+          lib.unique (map (d: d.addr) (lib.attrValues cfg.domains))
+        else
+          [ ];
     in
     {
       assertions = map (fqdn-cfg: {
@@ -171,13 +229,25 @@ in
       networking.firewall.allowedUDPPorts = mkMerge (
         map (fqdn-config: [ fqdn-config.externalPort ]) fqdns
       );
+      # Only generate internal-CA leaf certs for FQDNs that use internal-ca.
+      # FQDNs with certSource = "acme" get their cert from the ACME module.
       tls.tls-leafs = mkMerge (
-        map (fqdn-cfg: {
-          "${fqdn-cfg.fqdn}" = {
-            inherit (fqdn-cfg) fqdn;
-            ca = config.age.secrets.proton-ca;
-          };
-        }) fqdns
+        map
+          (fqdn-cfg: {
+            "${fqdn-cfg.fqdn}" = {
+              inherit (fqdn-cfg) fqdn;
+              ca = config.age.secrets.proton-ca;
+            };
+          })
+          (
+            lib.filter (
+              fqdn-cfg:
+              let
+                policy = domainPolicyFor fqdn-cfg;
+              in
+              policy == null || policy.certSource == "internal-ca"
+            ) fqdns
+          )
       );
 
       # For serviceNameForSocket fqdns, configure the upstream service so the
@@ -230,36 +300,92 @@ in
         # '';
 
         virtualHosts = mkMerge (
-          map (fqdn-cfg: {
-            "${fqdn-cfg.fqdn}" = {
-              forceSSL = true;
-              locations."/" =
-                if fqdn-cfg.proxy then
+          # One server block per declared FQDN.
+          (map (
+            fqdn-cfg:
+            let
+              policy = domainPolicyFor fqdn-cfg;
+              useInternalCa = policy == null || policy.certSource == "internal-ca";
+            in
+            {
+              "${fqdn-cfg.fqdn}" = {
+                forceSSL = true;
+                # When a domain policy is present, bind to the policy address
+                # only.  An empty list signals nginx to use its defaults (all
+                # interfaces), preserving pre-domains behaviour.
+                #
+                # Both the SSL entry and the plain-HTTP entry are required.
+                # forceSSL = true splits this virtual host into two nginx
+                # server blocks: one for HTTPS (uses ssl = true entries) and
+                # one for the HTTP → HTTPS redirect (uses ssl = false entries).
+                # Omitting the plain-HTTP entry leaves the redirect block with
+                # no listen directive; nginx then defaults to port 8000 for
+                # non-root workers, causing a conflict with other services.
+                listen = lib.optionals (policy != null) [
                   {
-                    extraConfig = lib.strings.concatLines [
-                      # Required when the target is also TLS server with multiple
-                      # hosts.
-                      "proxy_ssl_server_name on;"
-                      # Required when the server wants to use HTTP Authentication.
-                      "proxy_pass_header Authorization;"
-                      # Sometimes you'll get advice to add the following headers.
-                      # Do not do that.  It's already included in a separate conf
-                      # file that the NixOS nginx module includes automatically.
-                      # "proxy_set_header Host $host;"
-                      # "proxy_set_header X-Real-IP $remote_addr;"
-                      # "proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;"
-                      # "proxy_set_header X-Forwarded-Proto $scheme;"
-                    ];
-                    proxyPass = upstreamFor fqdn-cfg;
-                    # Needed if you need to use WebSocket.
-                    proxyWebsockets = true;
+                    addr = policy.addr;
+                    port = fqdn-cfg.externalPort;
+                    ssl = true;
+                  }
+                  {
+                    addr = policy.addr;
+                    port = 80;
+                  }
+                ];
+                locations."/" =
+                  if fqdn-cfg.proxy then
+                    {
+                      extraConfig = lib.strings.concatLines [
+                        # Required when the target is also TLS server with multiple
+                        # hosts.
+                        "proxy_ssl_server_name on;"
+                        # Required when the server wants to use HTTP Authentication.
+                        "proxy_pass_header Authorization;"
+                        # Sometimes you'll get advice to add the following headers.
+                        # Do not do that.  It's already included in a separate conf
+                        # file that the NixOS nginx module includes automatically.
+                        # "proxy_set_header Host $host;"
+                        # "proxy_set_header X-Real-IP $remote_addr;"
+                        # "proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;"
+                        # "proxy_set_header X-Forwarded-Proto $scheme;"
+                      ];
+                      proxyPass = upstreamFor fqdn-cfg;
+                      # Needed if you need to use WebSocket.
+                      proxyWebsockets = true;
+                    }
+                  else
+                    { };
+              }
+              // (
+                if useInternalCa then
+                  {
+                    sslCertificateKey = config.age.secrets."tls-${fqdn-cfg.fqdn}.key".path;
+                    sslCertificate = ../secrets/tls-${fqdn-cfg.fqdn}.crt;
                   }
                 else
-                  { };
-              sslCertificateKey = config.age.secrets."tls-${fqdn-cfg.fqdn}.key".path;
-              sslCertificate = ../secrets/tls-${fqdn-cfg.fqdn}.crt;
+                  {
+                    # DNS-01 ACME; security.acme must be configured on the host.
+                    enableACME = true;
+                  }
+              );
+            }
+          ) fqdns)
+          # One default-deny block per listen address so that unmatched SNI
+          # on either IP gets a hard TLS rejection rather than serving a
+          # stale or mismatched certificate.
+          ++ (map (addr: {
+            "_default-deny-${builtins.replaceStrings [ "." ] [ "-" ] addr}" = {
+              listen = [
+                {
+                  inherit addr;
+                  port = 443;
+                  ssl = true;
+                  extraParameters = [ "default_server" ];
+                }
+              ];
+              extraConfig = "ssl_reject_handshake on;";
             };
-          }) fqdns
+          }) uniqueAddrs)
         );
       };
     }

@@ -82,12 +82,22 @@ in
           + "${hostname},${host-ip hostname host}"
         ))
       ];
-      host-record = pipe facts.network.hosts [
-        (filterAttrs (hostname: host: host ? ipv4 && host.ipv4 != null))
-        (mapAttrsToList (
-          hostname: host: "${hostname}.${domain},${host-ip hostname host}"
-        ))
-      ];
+      host-record =
+        pipe facts.network.hosts [
+          (filterAttrs (hostname: host: host ? ipv4 && host.ipv4 != null))
+          (mapAttrsToList (
+            hostname: host: "${hostname}.${domain},${host-ip hostname host}"
+          ))
+        ]
+        ++ pipe facts.network.hosts [
+          (mapAttrsToList (
+            _hostname: host:
+            mapAttrsToList (
+              extraName: extraIpv4: "${extraName}.${domain},${subnet}.${toString extraIpv4}"
+            ) (host.extraAddresses or { })
+          ))
+          flatten
+        ];
       cname = lib.pipe facts.network.hosts [
         (mapAttrsToList (
           hostname: host:

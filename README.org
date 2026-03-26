@@ -1205,6 +1205,91 @@ Yes please.  This is =cobalt= I think.
 
 Oh boy this is going to be its own project probably.
 
+* Topology
+
+** Public/Private Service Split
+
+All services, public and private, run on a single physical host (~silicon~) with
+a single network interface.  Rather than exposing the host's primary IP to the
+internet, a secondary IP address is bound to the same interface and the router
+is configured to port-forward external traffic only to that address.
+
+The two addresses serve completely separate roles:
+
+| Address        | Role    | Reachable from   | Certificate source |
+|----------------+---------+------------------+--------------------|
+| ~192.168.254.9~  | Private | LAN only         | Internal CA        |
+| ~192.168.254.100~ | Public  | LAN + Internet   | ACME (DNS-01)      |
+
+nginx listens on each address independently.  A virtual host bound to the
+private address is unreachable from the internet even if the router were
+misconfigured, because an nftables rule drops any packet arriving from a
+non-RFC-1918 source address destined for port 443 on ~.9~.  The rule runs at a
+higher priority than the default NixOS firewall chain, so it takes effect
+before any ~ACCEPT~ rule could apply.
+
+The port-forward mapping on the router is maintained automatically via UPnP.
+A systemd timer fires shortly after boot and every twelve hours thereafter,
+re-registering the mapping so it survives router reboots.
+
+The diagram below illustrates the traffic paths.  The named source block is
+tangled to ~docs/topology.d2~; the two shell blocks that follow it regenerate
+the light and dark SVGs in ~docs/~ — execute those to refresh the diagram after
+any topology change.
+
+#+name: topology-d2
+#+begin_src d2 :exports none :tangle docs/topology.d2
+direction: down
+
+internet: Internet
+lan: "LAN Clients"
+
+router: "Router\n(port-forward WAN:443 → .100)"
+
+internet -> router
+lan -> silicon.priv_listener
+lan -> silicon.pub_listener
+
+silicon: {
+  label: "silicon — single NIC (eno1)"
+
+  nftables: "nftables guard\n(drop non-RFC1918 src → .9:443)"
+  pub_listener: "nginx :443\n192.168.254.100 (public)"
+  priv_listener: "nginx :443\n192.168.254.9 (private)"
+  pub_cert: "ACME certificate\n(DNS-01 via Porkbun)"
+  priv_cert: "Internal CA certificate"
+  pub_svc: "Public Services"
+  priv_svc: "Private Services"
+
+  nftables -> priv_listener
+  pub_listener -> pub_cert -> pub_svc
+  priv_listener -> priv_cert -> priv_svc
+}
+
+router -> silicon.pub_listener
+internet -> silicon.nftables: "blocked ✕" {style.stroke-dash: 3}
+#+end_src
+
+#+begin_src sh :noweb yes :results none :exports none
+d2 --theme 0 - docs/topology-light.svg << 'EOF'
+<<topology-d2>>
+EOF
+#+end_src
+
+#+begin_src sh :noweb yes :results none :exports none
+d2 --theme 200 - docs/topology-dark.svg << 'EOF'
+<<topology-d2>>
+EOF
+#+end_src
+
+#+begin_export html
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/topology-dark.svg">
+  <source media="(prefers-color-scheme: light)" srcset="docs/topology-light.svg">
+  <img alt="Public/Private Service Split topology diagram" src="docs/topology-light.svg">
+</picture>
+#+end_export
+
 * Nix
 
 ** Rapid Package Updates
@@ -1262,6 +1347,94 @@ rough categories of Nix files we use for host configurations:  A "module" and a
   pull them in as needed.  Importing such a config applies its settings.  You
   can find a sample ~nixos-config~ in ~./nixos-configs/sample.nix~.  It contains
   patterns we typically find in our configs.
+
+** Exposing External Services Safely
+
+Some services are meant to be reachable from the public internet, while others
+should stay private to the LAN.  Both categories run on the same host, but the
+configuration described here keeps them completely separated at the network
+level.  For the big picture of how the two IPs are structured, see [[*Public/Private Service Split][Public/Private Service Split]].
+
+*** Configuring the Host
+
+The split relies on two distinct IP addresses bound to the same network
+interface.  The primary address carries private services; a secondary address
+is reserved for anything that should be externally reachable.  The secondary
+address is declared directly on the host's facts entry so that the DNS server
+and interface configuration both derive from a single source of truth:
+
+#+begin_src nix :exports code
+silicon = {
+  ipv4 = 9;                  # primary, private
+  extraAddresses = {
+    silicon-external = 100;  # secondary, public — gets a DNS A record
+  };
+  # ...
+};
+#+end_src
+
+With the secondary IP in place, declare a domain-suffix policy that maps a
+real TLD to the public address.  Every FQDN registered under that suffix
+inherits the address and certificate source automatically:
+
+#+begin_src nix :exports code
+services.https.domains = {
+  # Private services — all *.proton FQDNs listen on the LAN-only IP.
+  "proton" = {
+    addr       = "192.168.254.9";
+    certSource = "internal-ca";
+  };
+  # Public services — all *.example.com FQDNs listen on the public IP.
+  "example.com" = {
+    addr       = "192.168.254.100";
+    certSource = "acme";
+  };
+};
+#+end_src
+
+Using ~certSource = "acme"~ requires the ACME module to be configured with a
+DNS provider capable of DNS-01 challenges (we use Porkbun).  With DNS-01 the
+host does not need to be reachable on port 80 to obtain a certificate, which
+means certs can be provisioned before the domain is publicly live.
+
+The router's port-forward mapping needs to stay registered.  We use the UPnP
+port-forward module to automate this; it registers the mapping on boot and
+refreshes it on a timer so it survives router reboots:
+
+#+begin_src nix :exports code
+services.upnp-portforward = {
+  enable       = true;
+  addr         = "192.168.254.100";  # secondary IP to forward to
+  externalPort = 443;
+  localPort    = 443;
+};
+#+end_src
+
+If the router does not support UPnP IGD, the port forward must be created
+manually in the router's administration UI instead.
+
+*** Configuring the Service
+
+Once the domain policy is in place, adding a service for public access looks
+identical to adding a private one.  Declare the FQDN under ~services.https.fqdns~;
+the domain-suffix policy determines which IP and certificate source to use:
+
+#+begin_src nix :exports code
+services.https.fqdns."myapp.example.com" = {
+  internalPort = 8080;
+};
+#+end_src
+
+Because the FQDN ends in ~.example.com~, the system uses the policy declared
+above: nginx listens on ~192.168.254.100:443~, and an ACME certificate is
+requested automatically via DNS-01 the next time the ACME renewal runs.
+
+Two external steps remain outside of NixOS configuration:
+
+1. Create a DNS A record at the registrar pointing ~myapp.example.com~ to the
+   router's WAN IP address.
+2. Ensure the router forwards TCP 443 to ~192.168.254.100~ — either through the
+   UPnP module above or by a static rule in the router's UI.
 
 ** Secrets
 
