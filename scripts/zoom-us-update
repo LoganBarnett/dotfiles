@@ -1,0 +1,51 @@
+#!/usr/bin/env bash
+
+################################################################################
+# Updates static.nix with the new version and hash for `zoom-us` (Darwin).
+#
+# Zoom has no public version API.  The version is extracted from the redirect
+# URL returned when requesting the generic "latest" download link.
+################################################################################
+
+set -euo pipefail
+
+version="$(curl --silent --head \
+  'https://zoom.us/client/latest/zoomus.pkg' \
+    | grep -i '^location:' \
+    | head -1 \
+    | sed 's|.*/prod/\([^/]*\)/.*|\1|' \
+    | tr -d $'\r'
+)"
+
+if [[ -z "$version" ]]; then
+  echo "ERROR: Could not determine latest zoom-us version" >&2
+  exit 1
+fi
+
+echo "Latest version: ${version}"
+
+hash_32="$(nix-prefetch-url \
+  --type sha256 \
+  --name 'zoomusInstallerFull.pkg' \
+  "https://zoom.us/client/${version}/zoomusInstallerFull.pkg?archType=arm64"
+)"
+hash_sri="$(nix hash convert --hash-algo sha256 --to sri "${hash_32}")"
+
+echo "Hash: ${hash_sri}"
+
+cd "$(dirname "$0")/.."
+
+nix-editor \
+  static.nix \
+  'zoom-us.version' \
+  --val "\"$version\"" \
+  --inplace
+
+nix-editor \
+  static.nix \
+  'zoom-us.hash' \
+  --val "\"$hash_sri\"" \
+  --inplace \
+  --format
+
+echo "Updated static.nix successfully"

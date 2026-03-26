@@ -1237,7 +1237,7 @@ nix-darwin-switch
 #+end_src
 
 Current packages using this pattern: ~claude-code~, ~firefox-bin~,
-~makemkv~, ~signal-desktop-bin~, ~yt-dlp~.
+~makemkv~, ~signal-desktop-bin~, ~yt-dlp~, ~zoom-us~.
 
 ** Generations
 
