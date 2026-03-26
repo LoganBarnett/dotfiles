@@ -12,23 +12,23 @@
       # activation module in nixos-modules/agenix-compact-activation.nix is
       # still present (commented out in nixos-configs/secrets.nix) as a
       # fallback should this fork diverge or be dropped.
-      url = "git+ssh://git@gitea.proton:2222/logan/agenix.git?ref=installSecretFn";
-      # url = "github:LoganBarnett/agenix?ref=installSecretFn";
+      # url = "git+ssh://git@gitea.proton:2222/logan/agenix.git?ref=installSecretFn";
+      url = "github:LoganBarnett/agenix?ref=installSecretFn";
       # url = "github:ryantm/agenix";
       inputs.darwin.follows = "nix-darwin";
       inputs.home-manager.follows = "home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     emacs-config = {
-      # url = "github:LoganBarnett/emacs-config";
-      url = "git+ssh://git@gitea.proton:2222/logan/emacs-config";
+      url = "github:LoganBarnett/emacs-config";
+      # url = "git+ssh://git@gitea.proton:2222/logan/emacs-config";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     # https://github.com/oddlama/agenix-rekey
     # Allows re-keying and bootstrapping of secrets used by agenix.
     agenix-rekey = {
-      # url = "github:LoganBarnett/agenix-rekey?ref=rust-runtime";
-      url = "git+ssh://git@gitea.proton:2222/logan/agenix-rekey.git?ref=rust-runtime";
+      url = "github:LoganBarnett/agenix-rekey?ref=rust-runtime";
+      # url = "git+ssh://git@gitea.proton:2222/logan/agenix-rekey.git?ref=rust-runtime";
       # url = "git+file:///Users/logan/dev/agenix-rekey?ref=rust-runtime";
       # There is a documented gotcha in the readme if this must change.  Review
       # agenix-rekey's README for details.
@@ -43,8 +43,8 @@
       url = "github:nix-community/authentik-nix";
     };
     dns-smart-block = {
-      # url = "github:LoganBarnett/dns-smart-block";
-      url = "git+ssh://git@gitea.proton:2222/logan/dns-smart-block";
+      url = "github:LoganBarnett/dns-smart-block";
+      # url = "git+ssh://git@gitea.proton:2222/logan/dns-smart-block";
       # url = "path:/Users/logan/dev/dns-smart-block";
       inputs.nixpkgs.follows = "nixpkgs";
     };
@@ -69,30 +69,30 @@
 
     # Allow Flatpak usage, specifically so we can install Roblox via Sober.
     flake-sync-status = {
-      # url = "github:LoganBarnett/flake-sync-status";
-      url = "git+ssh://git@gitea.proton:2222/logan/flake-sync-status";
+      url = "github:LoganBarnett/flake-sync-status";
+      # url = "git+ssh://git@gitea.proton:2222/logan/flake-sync-status";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     flatpaks.url = "github:in-a-dil-emma/declarative-flatpak/latest";
     garage-queue = {
-      # url = "github:LoganBarnett/garage-queue";
-      url = "git+ssh://git@gitea.proton:2222/logan/garage-queue.git";
+      url = "github:LoganBarnett/garage-queue";
+      # url = "git+ssh://git@gitea.proton:2222/logan/garage-queue.git";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     hash-color = {
-      # url = "github:LoganBarnett/hash-color";
-      url = "git+ssh://git@gitea.proton:2222/logan/hash-color";
+      url = "github:LoganBarnett/hash-color";
+      # url = "git+ssh://git@gitea.proton:2222/logan/hash-color";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
     ldap-reconciler = {
-      # url = "github:LoganBarnett/ldap-reconciler";
-      url = "git+ssh://git@gitea.proton:2222/logan/ldap-reconciler";
+      url = "github:LoganBarnett/ldap-reconciler";
+      # url = "git+ssh://git@gitea.proton:2222/logan/ldap-reconciler";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     loku = {
-      # url = "github:LoganBarnett/loku";
-      url = "git+ssh://git@gitea.proton:2222/logan/loku";
+      url = "github:LoganBarnett/loku";
+      # url = "git+ssh://git@gitea.proton:2222/logan/loku";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     mac-app-util = {
@@ -100,8 +100,8 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     metalps = {
-      # url = "github:LoganBarnett/metalps";
-      url = "git+ssh://git@gitea.proton:2222/logan/metalps";
+      url = "github:LoganBarnett/metalps";
+      # url = "git+ssh://git@gitea.proton:2222/logan/metalps";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     nextcloud-desktop = {
@@ -131,8 +131,8 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     nix-remote-builder-doctor = {
-      # url = "github:LoganBarnett/nix-remote-builder-doctor";
-      url = "git+ssh://git@gitea.proton:2222/logan/nix-remote-builder-doctor";
+      url = "github:LoganBarnett/nix-remote-builder-doctor";
+      # url = "git+ssh://git@gitea.proton:2222/logan/nix-remote-builder-doctor";
       # url = "path:/Users/logan/dev/nix-remote-builder-doctor";
       inputs.nixpkgs.follows = "nixpkgs";
     };
@@ -203,13 +203,13 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     org-wiki = {
-      # url = "github:LoganBarnett/org-wiki";
-      url = "git+ssh://git@gitea.proton:2222/logan/org-wiki";
+      url = "github:LoganBarnett/org-wiki";
+      # url = "git+ssh://git@gitea.proton:2222/logan/org-wiki";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     proc-siding = {
-      # url = "github:LoganBarnett/proc-siding";
-      url = "git+ssh://git@gitea.proton:2222/logan/proc-siding.git";
+      url = "github:LoganBarnett/proc-siding";
+      # url = "git+ssh://git@gitea.proton:2222/logan/proc-siding.git";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     programsdb = {
@@ -222,8 +222,8 @@
     };
 
     sytter = {
-      # url = "github:LoganBarnett/sytter";
-      url = "git+ssh://git@gitea.proton:2222/logan/sytter";
+      url = "github:LoganBarnett/sytter";
+      # url = "git+ssh://git@gitea.proton:2222/logan/sytter";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
