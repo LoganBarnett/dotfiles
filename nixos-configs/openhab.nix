@@ -206,10 +206,9 @@ in
     '';
 
     # Strip the "auth" link from REST API JSON responses so the MainUI sets
-    # noAuth = true, bypassing its own login dialog.  Access control is
-    # handled by oauth2-proxy; OpenHAB's session auth layer is redundant.
-    # Basic auth (above) still grants admin role for each individual REST
-    # request.
+    # noAuth = true, hiding the login button.  Access control is handled by
+    # oauth2-proxy; OpenHAB's session auth layer is redundant.  Basic auth
+    # (above) still grants admin role for each individual REST request.
     #
     # Cache-Control: no-store prevents the browser and service worker from
     # serving a stale pre-filter response that still contains the auth link.
@@ -225,6 +224,34 @@ in
         sub_filter_once on;
         sub_filter '{"type":"auth","url"' '{"type":"x-auth","url"';
         add_header Cache-Control "no-store" always;
+      '';
+    };
+
+    # Intercept OpenHAB's PKCE authorization redirect and immediately return
+    # the callback URL with a synthetic code.  The $arg_state variable
+    # preserves the state token that authorize() stored in sessionStorage, so
+    # the SPA's CSRF check passes.  The /rest/auth/token location (below)
+    # then exchanges that code for a synthetic user object without involving
+    # OpenHAB's authorization server, which would require interactive login.
+    locations."/auth" = {
+      extraConfig = ''
+        return 302 /?code=openhab_noauth&state=$arg_state;
+      '';
+    };
+
+    # Return a synthetic token response so the SPA sets store.state.user to
+    # an administrator object.  enforceAdminForRoute() in auth.js checks
+    # store.getters.user (not the noAuth flag), so a real user object with
+    # the administrator role is required before admin routes resolve.
+    # Actual API calls authenticate via the nginx-injected Basic auth header;
+    # the fake access_token is never presented to OpenHAB.  expires_in is
+    # set to one year so the scheduled token-refresh timer never fires during
+    # normal usage.
+    locations."= /rest/auth/token" = {
+      extraConfig = ''
+        default_type application/json;
+        add_header Cache-Control "no-store" always;
+        return 200 '{"access_token":"openhab_noauth","token_type":"bearer","expires_in":31536000,"refresh_token":"openhab_noauth","user":{"name":"admin","roles":["administrator"],"apiTokens":[],"sessions":[]}}';
       '';
     };
   };
@@ -249,11 +276,6 @@ in
     conf.services.runtime."org.openhab.restauth:implicitUserRole" = "true";
     # Accept Basic auth so nginx can inject admin credentials on every request.
     conf.services.runtime."org.openhab.restauth:allowBasicAuth" = "true";
-    # Disable backend auth entirely — security is enforced by oauth2-proxy.
-    # All REST requests are treated as administrator, which lets the MainUI
-    # operate in full admin mode once noAuth is set by the frontend (via the
-    # sub_filter that removes the auth link from /rest).
-    conf.services.runtime."org.openhab.restauth:noSecurity" = "true";
   };
 
   services.https.fqdns."openhab.${domain}" = {
