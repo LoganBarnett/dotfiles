@@ -85,10 +85,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    home-manager-working-rocm = {
-      url = "github:nix-community/home-manager/release-24.11";
-      inputs.nixpkgs.follows = "nixpkgs-working-rocm";
-    };
     ldap-reconciler = {
       # url = "github:LoganBarnett/ldap-reconciler";
       url = "git+ssh://git@gitea.proton:2222/logan/ldap-reconciler";
@@ -178,7 +174,6 @@
     # into flake.lock and I want that to stabilize before I pin it here.
     # nixpkgs.url = "github:nixos/nixpkgs?ref=f9f59197478b3ec9c954b67ae0d1d5429de23124";
     nixpkgs.url = "github:nixos/nixpkgs/25.11";
-    nixpkgs-working-rocm.url = "github:nixos/nixpkgs/master";
     nixpkgs-25-11.url = "github:nixos/nixpkgs/25.11";
     nixpkgs-openscad-bin.url = "github:LoganBarnett/nixpkgs/openscad-darwin-preserve-cli";
     # The newest version of Octoprint on nixpkgs 25.11 enters some kind of
@@ -187,12 +182,6 @@
     # authentication issues.  This issue exists even when all of the
     # authentication settings are removed.
     # nixpkgs-octoprint.url = "github:nixos/nixpkgs/24.11";
-    # We need a version of nixpkgs for things that want to constantly
-    # auto-update themselves in a forceful (yet asinine) manner.  Culprits
-    # include Signal Desktop, but I should add more to the shame list as I find
-    # them.
-    nixpkgs-latest.url = "github:nixos/nixpkgs/master";
-    comfyui-pr.url = "github:LoganBarnett/nixpkgs?ref=comfyui-fetch-model-hide-rebase";
     nixos-option-pr-369151.url = "github:nixos/nixpkgs?ref=pull/369151/head";
     # This is the Nix runtime itself, so be real careful about bumping this.
     # But at least now I can bump it without having to reinstall everything.
@@ -252,7 +241,6 @@
       nix,
       nix-darwin,
       nixpkgs,
-      nixpkgs-latest,
       nixos-generators,
       self,
       ...
@@ -419,9 +407,10 @@
               fmt-staged
               nix-direnv-add-envrc
               nix-host-key-install
-              # On Darwin the stdenv injects raw gnused into PATH, which bypasses
-              # our system-wide wrapper.  Including it here ensures the wrapper
-              # wins because mkShell prepends packages before stdenv tools.
+              # On Darwin the stdenv injects raw gnused into PATH, which
+              # bypasses our system-wide wrapper.  Including it here ensures the
+              # wrapper wins because mkShell prepends packages before stdenv
+              # tools.
               gnused-wrapper
               pkgs.just
               pkgs.nixfmt-rfc-style
@@ -441,11 +430,6 @@
           facts.network.hosts;
       nixosConfigurations = host-configs-for-os nix-host "linux" facts.network.hosts;
       containerGuestHosts = { };
-      # containerGuestHosts.grafana = container-guest-host {
-      #   inherit flake-inputs;
-      #   host-id = "grafana";
-      #   system = "aarch64-linux";
-      # };
       packages.aarch64-darwin.nucleus =
         self.nixosConfigurations.nucleus.config.system.build.isoImage;
 
@@ -481,12 +465,6 @@
           self.nixosConfigurations
           // self.darwinConfigurations
           // self.containerGuestHosts;
-        # This doesn't seem to actually make the overlays available to secret
-        # generators.  I suspect a bug, but cannot yet prove it.
-        # pkgs = import flake-inputs.nixpkgs {
-        #   system = "aarch64-darwin";
-        #   overlays = import ./overlays/default.nix;
-        # };
       };
 
     };
