@@ -9,6 +9,7 @@
   config,
   facts,
   flake-inputs,
+  pkgs,
   system,
   ...
 }:
@@ -50,6 +51,24 @@ in
         OAUTH2_PROXY_COOKIE_SECRET=%openhab-oauth2-proxy-cookie-secret%
       '';
     };
+    # Plaintext admin password used to construct the Basic auth header nginx
+    # injects into every proxied request.  OpenHAB validates the header against
+    # the PBKDF2 hash stored in users.json, granting administrator role so the
+    # MainUI never shows the "sign in to grant admin access" prompt.
+    openhab-admin-password = {
+      generator.script = "hex";
+      settings.length = 16;
+    };
+    # PBKDF2WithHmacSHA512 hash of openhab-admin-password, formatted as the
+    # users.json entry for the admin user.  Written to
+    # /var/lib/openhab/jsondb/users.json by openhab-admin-auth.service after
+    # openhab-setup.service runs so the correct hash is always in place.
+    openhab-admin-users-override = {
+      generator = {
+        script = "openhab-pbkdf2";
+        dependencies = [ config.age.secrets.openhab-admin-password ];
+      };
+    };
   };
 
   # Ensure oauth2-proxy starts after agenix secrets are decrypted.
@@ -57,6 +76,67 @@ in
     after = [ "run-agenix.d.mount" ];
     requires = [ "run-agenix.d.mount" ];
   };
+
+  # Merge the real admin password hash into users.json after openhab-setup
+  # writes the Nix-generated placeholder.  LoadCredential lets the DynamicUser
+  # service read the agenix secret without an ownership change on the age file.
+  systemd.services.openhab-admin-auth = {
+    description = "OpenHAB admin user hash setup";
+    after = [
+      "run-agenix.d.mount"
+      "openhab-setup.service"
+    ];
+    requires = [ "run-agenix.d.mount" ];
+    before = [ "openhab.service" ];
+    restartTriggers = [ config.age.secrets.openhab-admin-users-override.file ];
+    serviceConfig = {
+      Type = "oneshot";
+      RemainAfterExit = true;
+      DynamicUser = true;
+      User = "openhab";
+      StateDirectory = "openhab";
+      LoadCredential = [
+        "users-override:${config.age.secrets.openhab-admin-users-override.path}"
+      ];
+      ExecStart = pkgs.writeShellScript "openhab-admin-auth" ''
+        set -euo pipefail
+        users_file=/var/lib/openhab/userdata/jsondb/users.json
+        override=/run/credentials/openhab-admin-auth.service/users-override
+        mkdir -p "$(dirname "$users_file")"
+        cp "$override" "$users_file"
+      '';
+    };
+  };
+
+  # openhab must start after admin auth so users.json has the real hash.
+  # The restartTrigger ensures openhab restarts whenever the users-override
+  # secret is rekeyed, so it never runs with a stale in-memory hash.
+  systemd.services.openhab = {
+    wants = [ "openhab-admin-auth.service" ];
+    after = [ "openhab-admin-auth.service" ];
+    restartTriggers = [ config.age.secrets.openhab-admin-users-override.file ];
+  };
+
+  # Write the nginx auth snippet from the admin password at activation time so
+  # the file exists before nginx starts.  The snippet injects Basic auth
+  # credentials into every proxied request to OpenHAB, granting admin role.
+  system.activationScripts.openhabNginxAuth = {
+    text = ''
+      mkdir -p /run/nginx-openhab
+      password=$(cat ${config.age.secrets.openhab-admin-password.path})
+      auth=$(printf '%s' "admin:$password" \
+        | ${pkgs.coreutils}/bin/base64 -w 0)
+      printf 'proxy_set_header Authorization "Basic %s";\n' "$auth" \
+        > /run/nginx-openhab/auth.conf
+      chmod 644 /run/nginx-openhab/auth.conf
+    '';
+    deps = [ "agenixInstall" ];
+  };
+
+  # Reload nginx when the admin password rotates so it picks up the new header.
+  systemd.services.nginx.restartTriggers = [
+    config.age.secrets.openhab-admin-password.file
+  ];
 
   # oauth2-proxy authenticates users via Authelia OIDC and sets a session
   # cookie scoped to openhab.${domain}.  The nginx auth_request integration
@@ -92,29 +172,50 @@ in
     };
   };
 
+  services.nginx.virtualHosts."openhab.${domain}" = {
+    # Inject the Basic auth header into every proxied request so OpenHAB
+    # grants admin role without prompting for credentials in the MainUI.
+    locations."/".extraConfig = ''
+      include /run/nginx-openhab/auth.conf;
+    '';
+
+    # Strip the "auth" link from REST API JSON responses so the MainUI sets
+    # noAuth = true, bypassing its own login dialog.  Access control is
+    # handled by oauth2-proxy; OpenHAB's session auth layer is redundant.
+    # Basic auth (above) still grants admin role for each individual REST
+    # request.
+    #
+    # Cache-Control: no-store prevents the browser and service worker from
+    # serving a stale pre-filter response that still contains the auth link.
+    #
+    # Accept-Encoding is cleared so nginx receives uncompressed JSON and
+    # sub_filter can rewrite it before forwarding to the browser.
+    locations."/rest/" = {
+      proxyPass = "http://127.0.0.1:${toString config.services.openhab.ports.http}";
+      extraConfig = ''
+        include /run/nginx-openhab/auth.conf;
+        proxy_set_header Accept-Encoding "";
+        sub_filter_types application/json;
+        sub_filter_once on;
+        sub_filter '{"type":"auth","url"' '{"type":"x-auth","url"';
+        add_header Cache-Control "no-store" always;
+      '';
+    };
+  };
+
   services.openhab = {
     enable = true;
     # Avoid conflict with the goss prometheusContentTypeFixProxy, which
     # occupies port 8080 on all linux hosts via linux-host.nix.
     ports.http = 8085;
-    users = {
-      enable = true;
-      users.admin = {
-        # All-zero PBKDF2WithHmacSHA512 hash: base64(zeroes(64)).  This will
-        # never match any real password derivation, so local password auth is
-        # permanently disabled.  Auth is handled by Authelia OIDC via
-        # oauth2-proxy; trustedNetworks grants implicit user role to nginx's
-        # proxy requests once the user is authenticated.
-        passwordHash = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==";
-        passwordSalt = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==";
-        roles = [ "administrator" ];
-      };
-    };
     # Grant implicit user role to requests from the oauth2-proxy host.  All
     # external traffic reaches OpenHAB through nginx, which is gated by
     # oauth2-proxy and Authelia SSO.
     conf.services.runtime."org.openhab.restauth:trustedNetworks" =
       "${proxyHost}/32";
+    conf.services.runtime."org.openhab.restauth:implicitUserRole" = "true";
+    # Accept Basic auth so nginx can inject admin credentials on every request.
+    conf.services.runtime."org.openhab.restauth:allowBasicAuth" = "true";
   };
 
   services.https.fqdns."openhab.${domain}" = {
