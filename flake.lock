@@ -16,16 +16,16 @@
       "locked": {
         "lastModified": 1774374894,
         "narHash": "sha256-Xiry31/KB+U7IV1cNUPsKbfdiuhAxqIY/ldMdnGy0Fk=",
-        "ref": "installSecretFn",
+        "owner": "LoganBarnett",
+        "repo": "agenix",
         "rev": "f28a2dae2cef51a1ffb858b5729fe959acfdb90d",
-        "revCount": 360,
-        "type": "git",
-        "url": "ssh://git@gitea.proton:2222/logan/agenix.git"
+        "type": "github"
       },
       "original": {
+        "owner": "LoganBarnett",
         "ref": "installSecretFn",
-        "type": "git",
-        "url": "ssh://git@gitea.proton:2222/logan/agenix.git"
+        "repo": "agenix",
+        "type": "github"
       }
     },
     "agenix-rekey": {
@@ -41,18 +41,18 @@
         "treefmt-nix": "treefmt-nix"
       },
       "locked": {
-        "lastModified": 1774244502,
+        "lastModified": 1774404559,
         "narHash": "sha256-/uZhShWAojKfMTq9/OUVPNoGuxGptampHvLDa/hGzHg=",
-        "ref": "rust-runtime",
-        "rev": "b87716bb8e3ecb2b93e503fabcd11ab4b11fe68f",
-        "revCount": 282,
-        "type": "git",
-        "url": "ssh://git@gitea.proton:2222/logan/agenix-rekey.git"
+        "owner": "LoganBarnett",
+        "repo": "agenix-rekey",
+        "rev": "a471420fc8ba9dfa0433801786628234b5db5723",
+        "type": "github"
       },
       "original": {
+        "owner": "LoganBarnett",
         "ref": "rust-runtime",
-        "type": "git",
-        "url": "ssh://git@gitea.proton:2222/logan/agenix-rekey.git"
+        "repo": "agenix-rekey",
+        "type": "github"
       }
     },
     "argononed": {
@@ -222,6 +222,21 @@
       }
     },
     "crane_12": {
+      "locked": {
+        "lastModified": 1770419512,
+        "narHash": "sha256-o8Vcdz6B6bkiGUYkZqFwH3Pv1JwZyXht3dMtS7RchIo=",
+        "owner": "ipetkov",
+        "repo": "crane",
+        "rev": "2510f2cbc3ccd237f700bb213756a8f35c32d8d7",
+        "type": "github"
+      },
+      "original": {
+        "owner": "ipetkov",
+        "repo": "crane",
+        "type": "github"
+      }
+    },
+    "crane_13": {
       "locked": {
         "lastModified": 1770419512,
         "narHash": "sha256-o8Vcdz6B6bkiGUYkZqFwH3Pv1JwZyXht3dMtS7RchIo=",
@@ -434,17 +449,17 @@
         "rust-overlay": "rust-overlay_3"
       },
       "locked": {
-        "lastModified": 1774154158,
-        "narHash": "sha256-YOuZOXpOYgaHWO+fBGzb+LhbybAbZSbfmJCxs9yEVtg=",
-        "ref": "refs/heads/main",
-        "rev": "0fadbffc289c3276d3d538cf1bd45d0016a068c6",
-        "revCount": 110,
-        "type": "git",
-        "url": "ssh://git@gitea.proton:2222/logan/dns-smart-block"
+        "lastModified": 1776313844,
+        "narHash": "sha256-nzNcIfsGMdsNQB3aGP+2qgFn1xfo3YFsc7isfHPkk3U=",
+        "owner": "LoganBarnett",
+        "repo": "dns-smart-block",
+        "rev": "3acfd509e6d8b8350e593f5d782dcde51dcc6ccb",
+        "type": "github"
       },
       "original": {
-        "type": "git",
-        "url": "ssh://git@gitea.proton:2222/logan/dns-smart-block"
+        "owner": "LoganBarnett",
+        "repo": "dns-smart-block",
+        "type": "github"
       }
     },
     "emacs-config": {
@@ -456,17 +471,17 @@
         "org-dnd": "org-dnd"
       },
       "locked": {
-        "lastModified": 1774154082,
-        "narHash": "sha256-6uPEsAUJhkLVu6NHHIKtw7LFPlHwDfgxo/v438/Qdco=",
-        "ref": "refs/heads/main",
-        "rev": "2a57ef7ac5b921cff5c82b81af2d5d93a48a16b7",
-        "revCount": 838,
-        "type": "git",
-        "url": "ssh://git@gitea.proton:2222/logan/emacs-config"
+        "lastModified": 1774803787,
+        "narHash": "sha256-Hba8xdCnrIIjwWA9aqYkIW1xI38D154HNyvawB1LGuo=",
+        "owner": "LoganBarnett",
+        "repo": "emacs-config",
+        "rev": "b9ab5861953c030d55d3e567b2d90131082e97bd",
+        "type": "github"
       },
       "original": {
-        "type": "git",
-        "url": "ssh://git@gitea.proton:2222/logan/emacs-config"
+        "owner": "LoganBarnett",
+        "repo": "emacs-config",
+        "type": "github"
       }
     },
     "emacs-overlay": {
@@ -730,17 +745,17 @@
         "rust-overlay": "rust-overlay_4"
       },
       "locked": {
-        "lastModified": 1773606446,
-        "narHash": "sha256-/Znx5ah+bgU5zbYMuDM79UaHfJ2dyX/7OAbOl6gvwic=",
-        "ref": "refs/heads/main",
-        "rev": "fcef1c05e035f5a1293172e4b6da95c3a0b863dc",
-        "revCount": 15,
-        "type": "git",
-        "url": "ssh://git@gitea.proton:2222/logan/flake-sync-status"
+        "lastModified": 1776313844,
+        "narHash": "sha256-AqLGCY9vc5B54ihzr7/g9yu1P1GCg6oUAkRkNhe0IN4=",
+        "owner": "LoganBarnett",
+        "repo": "flake-sync-status",
+        "rev": "f4b031f72c8dc0f7ac63005aa0ff24dad06de571",
+        "type": "github"
       },
       "original": {
-        "type": "git",
-        "url": "ssh://git@gitea.proton:2222/logan/flake-sync-status"
+        "owner": "LoganBarnett",
+        "repo": "flake-sync-status",
+        "type": "github"
       }
     },
     "flake-utils": {
@@ -896,17 +911,17 @@
         "rust-overlay": "rust-overlay_5"
       },
       "locked": {
-        "lastModified": 1774154302,
-        "narHash": "sha256-wG2TQItT2U8NoWD1IdlwO9NAL/BwO92P7yhw/qVf6ao=",
-        "ref": "refs/heads/main",
-        "rev": "fb766cc27fad584e079de337607b21a2d0bc92a5",
-        "revCount": 10,
-        "type": "git",
-        "url": "ssh://git@gitea.proton:2222/logan/garage-queue.git"
+        "lastModified": 1775320147,
+        "narHash": "sha256-9acC/v1z5jys/eU1Hxn87IeXOjiGQ55eGTzvnYyO1Dw=",
+        "owner": "LoganBarnett",
+        "repo": "garage-queue",
+        "rev": "498ff411f249af36336fad024b2874ec665bc304",
+        "type": "github"
       },
       "original": {
-        "type": "git",
-        "url": "ssh://git@gitea.proton:2222/logan/garage-queue.git"
+        "owner": "LoganBarnett",
+        "repo": "garage-queue",
+        "type": "github"
       }
     },
     "git-hooks-nix": {
@@ -971,17 +986,17 @@
         "rust-overlay": "rust-overlay_6"
       },
       "locked": {
-        "lastModified": 1774250972,
-        "narHash": "sha256-c7oDNi9iMo87UonpcBExO7okBgXFxLGBKpIhtSqhS+0=",
-        "ref": "refs/heads/main",
-        "rev": "bf539bfa37c4514123343c76060a834c9f2f5ff1",
-        "revCount": 2,
-        "type": "git",
-        "url": "ssh://git@gitea.proton:2222/logan/hash-color"
+        "lastModified": 1776313845,
+        "narHash": "sha256-pgbAO9mQV5Y7sQh76PQLTFMVvNQdZ3xc2x0zUDZUuT8=",
+        "owner": "LoganBarnett",
+        "repo": "hash-color",
+        "rev": "f469840c7e2dd97751f7afb899c66b68611f2111",
+        "type": "github"
       },
       "original": {
-        "type": "git",
-        "url": "ssh://git@gitea.proton:2222/logan/hash-color"
+        "owner": "LoganBarnett",
+        "repo": "hash-color",
+        "type": "github"
       }
     },
     "home-manager": {
@@ -1014,17 +1029,17 @@
         "rust-overlay": "rust-overlay_7"
       },
       "locked": {
-        "lastModified": 1773606640,
-        "narHash": "sha256-PRcYgEtPE2v7892O/frNLzje0t/X5wkKV/ow9tBuV5s=",
-        "ref": "refs/heads/main",
-        "rev": "97213824ffd0430bf919e5e053a87099a1e69230",
-        "revCount": 14,
-        "type": "git",
-        "url": "ssh://git@gitea.proton:2222/logan/ldap-reconciler"
+        "lastModified": 1774742331,
+        "narHash": "sha256-BWoVuE7vTHGviOOV/oMGqqvAEkNDShq1519uKqX2NBc=",
+        "owner": "LoganBarnett",
+        "repo": "ldap-reconciler",
+        "rev": "4f1d163a71f523975b699ea99c2b9379e6425d82",
+        "type": "github"
       },
       "original": {
-        "type": "git",
-        "url": "ssh://git@gitea.proton:2222/logan/ldap-reconciler"
+        "owner": "LoganBarnett",
+        "repo": "ldap-reconciler",
+        "type": "github"
       }
     },
     "loku": {
@@ -1036,17 +1051,17 @@
         "rust-overlay": "rust-overlay_8"
       },
       "locked": {
-        "lastModified": 1774531162,
-        "narHash": "sha256-zM2iwSB0yVVae7GO0HzfSqSgbQGbwgEwqvuCj2v6z28=",
-        "ref": "refs/heads/main",
-        "rev": "77e916b1eda34cdb75cb2af49caf34a64a8a125c",
-        "revCount": 30,
-        "type": "git",
-        "url": "ssh://git@gitea.proton:2222/logan/loku"
+        "lastModified": 1775108788,
+        "narHash": "sha256-Q7x9wdkQ1hdkHpRPKhOeE1v70HvU+aTP9SsOBvwVlaM=",
+        "owner": "LoganBarnett",
+        "repo": "loku",
+        "rev": "decb93902ad895e71f26b2c0f1f3f94e13474dd5",
+        "type": "github"
       },
       "original": {
-        "type": "git",
-        "url": "ssh://git@gitea.proton:2222/logan/loku"
+        "owner": "LoganBarnett",
+        "repo": "loku",
+        "type": "github"
       }
     },
     "mac-app-util": {
@@ -1083,27 +1098,27 @@
         "rust-overlay": "rust-overlay_9"
       },
       "locked": {
-        "lastModified": 1773605056,
-        "narHash": "sha256-NOqVn6UFilfuzsS1PrVjIOlqxa+yuMS85cZ/zJzxvL0=",
-        "ref": "refs/heads/main",
-        "rev": "3f44475ae4bd365ae437d2fea6f92a420e7cfef2",
-        "revCount": 7,
-        "type": "git",
-        "url": "ssh://git@gitea.proton:2222/logan/metalps"
+        "lastModified": 1777791163,
+        "narHash": "sha256-PBRTrgEhzkm74vX59fTr1bUCSvPK4ga+sqrZrJYzVqo=",
+        "owner": "LoganBarnett",
+        "repo": "metalps",
+        "rev": "97f2d9fb70ac52b5f5334de654ae5323baff1894",
+        "type": "github"
       },
       "original": {
-        "type": "git",
-        "url": "ssh://git@gitea.proton:2222/logan/metalps"
+        "owner": "LoganBarnett",
+        "repo": "metalps",
+        "type": "github"
       }
     },
     "metalps_2": {
       "inputs": {
-        "crane": "crane_12",
+        "crane": "crane_13",
         "nixpkgs": [
           "proc-siding",
           "nixpkgs"
         ],
-        "rust-overlay": "rust-overlay_12"
+        "rust-overlay": "rust-overlay_13"
       },
       "locked": {
         "lastModified": 1773605056,
@@ -1307,17 +1322,17 @@
         "rust-overlay": "rust-overlay_10"
       },
       "locked": {
-        "lastModified": 1773606716,
-        "narHash": "sha256-5YIZIKeCdD7MHtmJKtilA4Nk6HL8dZvwGFY5nM6rRDw=",
-        "ref": "refs/heads/main",
-        "rev": "491c96a72adcb18eaa66c25ca8b592068041367b",
-        "revCount": 44,
-        "type": "git",
-        "url": "ssh://git@gitea.proton:2222/logan/nix-remote-builder-doctor"
+        "lastModified": 1776313845,
+        "narHash": "sha256-Ix1ftIiEOuD3dGPmC5GoLONINprLTDgFSi7jRGQyXUc=",
+        "owner": "LoganBarnett",
+        "repo": "nix-remote-builder-doctor",
+        "rev": "2cb86f1d4a7a78c52b5f04a7c688ae710047010e",
+        "type": "github"
       },
       "original": {
-        "type": "git",
-        "url": "ssh://git@gitea.proton:2222/logan/nix-remote-builder-doctor"
+        "owner": "LoganBarnett",
+        "repo": "nix-remote-builder-doctor",
+        "type": "github"
       }
     },
     "nixlib": {
@@ -1780,16 +1795,16 @@
     },
     "nixpkgs_16": {
       "locked": {
-        "lastModified": 1744536153,
-        "narHash": "sha256-awS2zRgF4uTwrOKwwiJcByDzDOdo3Q1rPZbiHQg/N38=",
+        "lastModified": 1764521362,
+        "narHash": "sha256-M101xMtWdF1eSD0xhiR8nG8CXRlHmv6V+VoY65Smwf4=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "18dd725c29603f582cf1900e0d25f9f1063dbf11",
+        "rev": "871b9fd269ff6246794583ce4ee1031e1da71895",
         "type": "github"
       },
       "original": {
         "owner": "NixOS",
-        "ref": "nixpkgs-unstable",
+        "ref": "25.11",
         "repo": "nixpkgs",
         "type": "github"
       }
@@ -1874,6 +1889,38 @@
     },
     "nixpkgs_21": {
       "locked": {
+        "lastModified": 1744536153,
+        "narHash": "sha256-awS2zRgF4uTwrOKwwiJcByDzDOdo3Q1rPZbiHQg/N38=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "18dd725c29603f582cf1900e0d25f9f1063dbf11",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "ref": "nixpkgs-unstable",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
+    "nixpkgs_22": {
+      "locked": {
+        "lastModified": 1744536153,
+        "narHash": "sha256-awS2zRgF4uTwrOKwwiJcByDzDOdo3Q1rPZbiHQg/N38=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "18dd725c29603f582cf1900e0d25f9f1063dbf11",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "ref": "nixpkgs-unstable",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
+    "nixpkgs_23": {
+      "locked": {
         "lastModified": 1754340878,
         "narHash": "sha256-lgmUyVQL9tSnvvIvBp7x1euhkkCho7n3TMzgjdvgPoU=",
         "owner": "NixOS",
@@ -1888,7 +1935,7 @@
         "type": "github"
       }
     },
-    "nixpkgs_22": {
+    "nixpkgs_24": {
       "locked": {
         "lastModified": 1744536153,
         "narHash": "sha256-awS2zRgF4uTwrOKwwiJcByDzDOdo3Q1rPZbiHQg/N38=",
@@ -2116,26 +2163,47 @@
         "url": "ssh://git@gitea.proton:2222/logan/org-dnd"
       }
     },
+    "org-fmt": {
+      "inputs": {
+        "crane": "crane_11",
+        "nixpkgs": "nixpkgs_16",
+        "rust-overlay": "rust-overlay_11"
+      },
+      "locked": {
+        "lastModified": 1774813831,
+        "narHash": "sha256-n+AvoHIuX4otXgtLHOzVI+d7YE91rCc0pLqO//A8N08=",
+        "owner": "LoganBarnett",
+        "repo": "org-fmt",
+        "rev": "fd496be69f115f2146024315ca2c2f8cab289a55",
+        "type": "github"
+      },
+      "original": {
+        "owner": "LoganBarnett",
+        "repo": "org-fmt",
+        "type": "github"
+      }
+    },
     "org-wiki": {
       "inputs": {
         "crane": "crane_10",
         "nixpkgs": [
           "nixpkgs"
         ],
-        "rust-overlay": "rust-overlay_11"
+        "org-fmt": "org-fmt",
+        "rust-overlay": "rust-overlay_12"
       },
       "locked": {
-        "lastModified": 1774452978,
-        "narHash": "sha256-HJYFToXVwDFvsO9OlFU7FBIqkBt6h1zO5LzQeLWcUJM=",
-        "ref": "refs/heads/main",
-        "rev": "05904974a6de7c524dfee447775e18b13cb1bc53",
-        "revCount": 25,
-        "type": "git",
-        "url": "ssh://git@gitea.proton:2222/logan/org-wiki"
+        "lastModified": 1775108805,
+        "narHash": "sha256-8Bc87fUth05OQaDCRM3o+Wp0YX+/REE6cQaBb5dvN4A=",
+        "owner": "LoganBarnett",
+        "repo": "org-wiki",
+        "rev": "6a60809e7a627e35b3505931f6d0db90eaad4869",
+        "type": "github"
       },
       "original": {
-        "type": "git",
-        "url": "ssh://git@gitea.proton:2222/logan/org-wiki"
+        "owner": "LoganBarnett",
+        "repo": "org-wiki",
+        "type": "github"
       }
     },
     "pre-commit-hooks": {
@@ -2163,25 +2231,25 @@
     },
     "proc-siding": {
       "inputs": {
-        "crane": "crane_11",
+        "crane": "crane_12",
         "metalps": "metalps_2",
         "nixpkgs": [
           "nixpkgs"
         ],
-        "rust-overlay": "rust-overlay_13"
+        "rust-overlay": "rust-overlay_14"
       },
       "locked": {
         "lastModified": 1775322405,
         "narHash": "sha256-Qh5LoQhdGMqgy9NIoGgbCntDtGP7v+IkBLfa1hnQAlQ=",
-        "ref": "refs/heads/main",
+        "owner": "LoganBarnett",
+        "repo": "proc-siding",
         "rev": "9da918de4c0c92475c2bf45e2827ee81855ccd11",
-        "revCount": 15,
-        "type": "git",
-        "url": "ssh://git@gitea.proton:2222/logan/proc-siding.git"
+        "type": "github"
       },
       "original": {
-        "type": "git",
-        "url": "ssh://git@gitea.proton:2222/logan/proc-siding.git"
+        "owner": "LoganBarnett",
+        "repo": "proc-siding",
+        "type": "github"
       }
     },
     "programsdb": {
@@ -2261,7 +2329,7 @@
         "nixpkgs": [
           "nixpkgs"
         ],
-        "rust-overlay": "rust-overlay_14"
+        "rust-overlay": "rust-overlay_15"
       },
       "locked": {
         "lastModified": 1765831047,
@@ -2364,7 +2432,7 @@
     },
     "rust-overlay_11": {
       "inputs": {
-        "nixpkgs": "nixpkgs_16"
+        "nixpkgs": "nixpkgs_17"
       },
       "locked": {
         "lastModified": 1770433312,
@@ -2382,7 +2450,7 @@
     },
     "rust-overlay_12": {
       "inputs": {
-        "nixpkgs": "nixpkgs_17"
+        "nixpkgs": "nixpkgs_18"
       },
       "locked": {
         "lastModified": 1770433312,
@@ -2400,7 +2468,7 @@
     },
     "rust-overlay_13": {
       "inputs": {
-        "nixpkgs": "nixpkgs_18"
+        "nixpkgs": "nixpkgs_19"
       },
       "locked": {
         "lastModified": 1770433312,
@@ -2418,7 +2486,25 @@
     },
     "rust-overlay_14": {
       "inputs": {
-        "nixpkgs": "nixpkgs_19"
+        "nixpkgs": "nixpkgs_20"
+      },
+      "locked": {
+        "lastModified": 1770433312,
+        "narHash": "sha256-IaiqGwmLBrR0z67t/oaS6GIFxv9V8mDY7dBTuYVTbKY=",
+        "owner": "oxalica",
+        "repo": "rust-overlay",
+        "rev": "9922ff9f99a6436756cbe6f5d11f9c3630e58cf0",
+        "type": "github"
+      },
+      "original": {
+        "owner": "oxalica",
+        "repo": "rust-overlay",
+        "type": "github"
+      }
+    },
+    "rust-overlay_15": {
+      "inputs": {
+        "nixpkgs": "nixpkgs_21"
       },
       "locked": {
         "lastModified": 1765766816,
@@ -2434,9 +2520,9 @@
         "type": "github"
       }
     },
-    "rust-overlay_15": {
+    "rust-overlay_16": {
       "inputs": {
-        "nixpkgs": "nixpkgs_20"
+        "nixpkgs": "nixpkgs_22"
       },
       "locked": {
         "lastModified": 1765593578,
@@ -2452,9 +2538,9 @@
         "type": "github"
       }
     },
-    "rust-overlay_16": {
+    "rust-overlay_17": {
       "inputs": {
-        "nixpkgs": "nixpkgs_22"
+        "nixpkgs": "nixpkgs_24"
       },
       "locked": {
         "lastModified": 1754448563,
@@ -2760,20 +2846,20 @@
         "nixpkgs": [
           "nixpkgs"
         ],
-        "rust-overlay": "rust-overlay_15"
+        "rust-overlay": "rust-overlay_16"
       },
       "locked": {
-        "lastModified": 1773599868,
-        "narHash": "sha256-r2eiFgOALJhtcu6DvGQxERajUOqB99qzBYfgMH6gQWs=",
-        "ref": "refs/heads/main",
-        "rev": "24eb8d0c1ca8a1c3ce69b54a1e205bac56eed91e",
-        "revCount": 29,
-        "type": "git",
-        "url": "ssh://git@gitea.proton:2222/logan/sytter"
+        "lastModified": 1776313845,
+        "narHash": "sha256-2Uib0VhNqQY0PPuaCWOBLhN2N7f3IPAIEjhAalYKCXM=",
+        "owner": "LoganBarnett",
+        "repo": "sytter",
+        "rev": "a16a61f67709fec4d811b3fd2d23b9c5349f6dcc",
+        "type": "github"
       },
       "original": {
-        "type": "git",
-        "url": "ssh://git@gitea.proton:2222/logan/sytter"
+        "owner": "LoganBarnett",
+        "repo": "sytter",
+        "type": "github"
       }
     },
     "treefmt-nix": {
@@ -2857,8 +2943,8 @@
     "typeypipe-flake": {
       "inputs": {
         "flake-utils": "flake-utils_7",
-        "nixpkgs": "nixpkgs_21",
-        "rust-overlay": "rust-overlay_16"
+        "nixpkgs": "nixpkgs_23",
+        "rust-overlay": "rust-overlay_17"
       },
       "locked": {
         "lastModified": 1754521137,
