@@ -84,6 +84,7 @@ let
     + "    - email\n"
     + "    - groups\n"
     + "  authorization_policy: one_factor\n"
+    + "  consent_mode: implicit\n"
     + "  public: ${lib.boolToString (!hasConfidential)}\n"
     + "  require_pkce: ${lib.boolToString (!hasConfidential)}\n"
     + (
