@@ -34,9 +34,13 @@ let
   compatDownloadExecScript = pkgs.writeShellScript "metube-compat-download-exec" ''
     set -euo pipefail
     input="$1"
-    # Only WebM files need post-processing; skip everything else.
-    [[ "$input" == *.webm ]] || exit 0
-    stem="''${input%.webm}"
+    # Skip files already in a Safari-compatible container, and non-video
+    # sidecars (thumbnails, info JSON, subtitles, in-progress temp files).
+    case "$input" in
+      *.mp4) exit 0 ;;
+      *.json|*.jpg|*.jpeg|*.webp|*.png|*.vtt|*.srt|*.part|*.ytdl) exit 0 ;;
+    esac
+    stem="''${input%.*}"
     info_json="$stem.info.json"
     [[ -f "$info_json" ]] || exit 0
     url=$(${pkgs.jq}/bin/jq -r '.webpage_url // empty' "$info_json")
@@ -71,12 +75,13 @@ let
     fi
   '';
   # Scans the entire download directory and calls compatDownloadExecScript for
-  # each WebM file that is missing a companion compat copy.  Errors for
-  # individual files are logged but do not abort the scan.
+  # each non-MP4 video file that is missing a companion compat copy.  Errors
+  # for individual files are logged but do not abort the scan.
   compatDownloadScript = pkgs.writeShellScript "metube-compat-download" ''
     set -uo pipefail
     shopt -s globstar nullglob
-    for f in ${lib.escapeShellArg cfg.downloadDir}/**/*.webm; do
+    for f in ${lib.escapeShellArg cfg.downloadDir}/**/*; do
+      [[ -f "$f" ]] || continue
       ${compatDownloadExecScript} "$f" \
         || echo "Compat download failed for $f; skipping." >&2
     done
@@ -131,9 +136,9 @@ in
       default = true;
       description = ''
         After each download, fetch an H.264+AAC MP4 copy of the video
-        alongside the original file (e.g. foo.compat.mp4 next to foo.webm).
+        alongside the original file (e.g. foo.compat.mp4 next to foo.mkv).
         Enables playback on Safari (M1/M2/Intel) and other browsers that
-        lack AV1 or WebM support.
+        cannot play non-MP4 containers such as WebM or MKV.
 
         The copy is downloaded directly from the source rather than
         transcoded, so it completes in roughly the same time as the original
