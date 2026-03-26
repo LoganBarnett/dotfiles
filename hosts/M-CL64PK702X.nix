@@ -167,7 +167,6 @@ in
             }
         '';
         environment.systemPackages = [
-          pkgs.aider-chat
           pkgs.awscli
           # Interact with our internal Bitbucket Data Center server.
           pkgs.bitbucket-cli
