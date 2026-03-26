@@ -2194,11 +2194,11 @@
         "rust-overlay": "rust-overlay_11"
       },
       "locked": {
-        "lastModified": 1774451228,
-        "narHash": "sha256-6IbgfQDk8HcyclMD3HQUgS8TJbpgESyLaUtwQthwklY=",
+        "lastModified": 1774452681,
+        "narHash": "sha256-/5a75AvHRgnQRlh/wCy6Ly36Yc2RbWZFFJ9O6Hl7DH4=",
         "ref": "refs/heads/main",
-        "rev": "1910b6c992b6442ad859270ccc09ade1b687fba7",
-        "revCount": 23,
+        "rev": "f9ec8754b507a82b036147a60fcf8fa34225247f",
+        "revCount": 24,
         "type": "git",
         "url": "ssh://git@gitea.proton:2222/logan/org-wiki"
       },
