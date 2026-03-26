@@ -51,7 +51,7 @@
     # "${hostname}" = {
     #  controlledHost = boolean;
     #  flake-input-overrides = {
-    #    nixpkgs = "nixpkgs-working-rocm";
+    #    nixpkgs = "nixpkgs-some-pr-or-variant";
     #  };
     #  ipv4 = 123;
     #  monitors = [
@@ -116,8 +116,6 @@
         aliases = [
           "home-assistant"
           "mosquitto"
-          "openhab"
-          "zwave-js-ui"
         ];
         controlledHost = true;
         flake-input-overrides = {
@@ -332,6 +330,7 @@
           "metube"
           "nextcloud"
           "ollama"
+          "openhab"
           "sso"
           "wiki"
         ];
@@ -644,11 +643,11 @@
           full-name = "immich";
           devices = [ ];
         };
-        openhab-oidc-client = {
-          email = "openhab-oidc-client@proton";
+        openhab = {
+          email = "openhab@proton";
           type = "oidc-client";
           description = "OpenHab OIDC client.";
-          full-name = "openhab-oidc-client";
+          full-name = "openhab";
           devices = [ ];
         };
         wiki = {
@@ -691,6 +690,8 @@
       wiki = {
         authentication = "oidc";
         fqdn = "wiki.${domain}";
+        # NixOS service name differs from the facts key.
+        nixosService = "org-wiki-web";
         groups = [
           "wiki-admins"
           "wiki-users"

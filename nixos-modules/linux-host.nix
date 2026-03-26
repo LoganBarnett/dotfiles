@@ -63,6 +63,7 @@
     ../nixos-modules/nested-submodule-config-proof.nix
     ../nixos-configs/networking-static.nix
     ../nixos-modules/nfs-consumer-facts.nix
+    ../nixos-modules/oidc-secrets.nix
     ../nixos-modules/nfs-mount-consumer.nix
     # This can safely be included even if the host doesn't expose NFS volumes.
     ../nixos-configs/nfs-mount-provider-from-facts.nix
