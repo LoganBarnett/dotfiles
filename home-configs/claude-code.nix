@@ -16,6 +16,21 @@ let
     #   eval "$(direnv export bash 2>/dev/null)"
     # fi
   '';
+
+  # Block ephemeral 'nix run <external-flake-ref>' invocations.  Tools should
+  # be installed via the project flake or system packages, not run transiently.
+  # Local refs (.#app, ./path, /abs/path) are allowed.
+  block-nix-run = pkgs.writeShellScript "block-nix-run" ''
+    input=$(cat)
+    cmd=$(printf '%s' "$input" | ${pkgs.jq}/bin/jq --raw-output '.tool_input.command // ""')
+
+    if printf '%s' "$cmd" | grep --quiet --extended-regexp 'nix run'; then
+      if ! printf '%s' "$cmd" | grep --quiet --extended-regexp 'nix run[[:space:]]+(\.#|\./|/)'; then
+        printf 'Blocked: Do not use nix run with external flake refs (nixpkgs#, github:, etc.).  Install the tool via the project flake or system packages instead.\n' >&2
+        exit 2
+      fi
+    fi
+  '';
 in
 {
   # allowUnfreePackagePredicates = [
@@ -56,6 +71,17 @@ in
         };
       };
       hooks = {
+        PreToolUse = [
+          {
+            matcher = "Bash";
+            hooks = [
+              {
+                type = "command";
+                command = "${block-nix-run}";
+              }
+            ];
+          }
+        ];
         PreCompact = [
           {
             hooks = [
