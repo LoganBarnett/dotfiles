@@ -17,7 +17,6 @@ let
 in
 {
   imports = [
-    # ./home-modules/aider-chat.nix
     ./home-configs/btop.nix
     ./home-configs/claude-code.nix
     ./home-modules/claude-code.nix
