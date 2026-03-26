@@ -21,7 +21,6 @@ let
   inherit (lib.attrsets)
     attrNames
     filterAttrs
-    mapAttrs'
     mapAttrsToList
     ;
   inherit (lib.strings) concatLines concatMapStrings;
@@ -119,29 +118,6 @@ let
     concatLines
   ]);
 
-  # JSON template for the Immich system config file (IMMICH_CONFIG_FILE).
-  # The %..% placeholder is replaced at rekey time by the template-file
-  # generator with the decrypted client secret.
-  immichOauthConfigTemplate = builtins.toJSON {
-    oauth = {
-      enabled = true;
-      issuerUrl = "https://authelia.${facts.network.domain}";
-      clientId = "immich";
-      clientSecret = "%${credName "immich"}%";
-      scope = "openid profile email groups";
-      signingAlgorithm = "RS256";
-      buttonText = "Login with SSO";
-      autoRegister = true;
-      autoLaunch = false;
-      storageLabelClaim = "preferred_username";
-      storageQuotaClaim = "";
-      defaultStorageQuota = null;
-      mobileOverrideEnabled = false;
-      mobileRedirectUri = "";
-      profileImageUrl = "";
-    };
-  };
-
 in
 {
   # LDAP service account for Authelia's bind DN.  Declaring the user here
@@ -191,51 +167,33 @@ in
         | ${pkgs.gnused}/bin/sed ':a;N;$!ba;s/\n/\\n/g'
     '';
 
-  age.secrets =
-    (mapAttrs' (name: _: {
-      name = credName name;
-      value = {
-        generator.script = "hex";
-        settings.length = 64;
-      };
-    }) oidcServices)
-    // {
-      "${host-id}-authelia-oidc-private-key" = {
-        generator.script = "rsa-private-key";
-      };
-      "${host-id}-authelia-storage-key" = {
-        generator.script = "hex";
-        settings.length = 64;
-      };
-      "${host-id}-authelia-jwt-secret" = {
-        generator.script = "hex";
-        settings.length = 64;
-      };
-      "${host-id}-authelia-session-secret" = {
-        generator.script = "hex";
-        settings.length = 64;
-      };
-      "${host-id}-authelia-oidc-secrets-config.yaml" = {
-        generator = {
-          script = "template-file";
-          dependencies = [
-            config.age.secrets."${host-id}-authelia-oidc-private-key"
-          ]
-          ++ mapAttrsToList (name: _: config.age.secrets."${credName name}") oidcServices;
-        };
-        settings.template = clientYaml;
-      };
-      # JSON config file for Immich's OIDC setup, delivered to immich-server
-      # via LoadCredential + IMMICH_CONFIG_FILE (see nixos-modules/immich.nix
-      # and nixos-configs/immich.nix).
-      "immich-oauth-config" = {
-        generator = {
-          script = "template-file";
-          dependencies = [ config.age.secrets."${credName "immich"}" ];
-        };
-        settings.template = immichOauthConfigTemplate;
-      };
+  age.secrets = {
+    "${host-id}-authelia-oidc-private-key" = {
+      generator.script = "rsa-private-key";
     };
+    "${host-id}-authelia-storage-key" = {
+      generator.script = "hex";
+      settings.length = 64;
+    };
+    "${host-id}-authelia-jwt-secret" = {
+      generator.script = "hex";
+      settings.length = 64;
+    };
+    "${host-id}-authelia-session-secret" = {
+      generator.script = "hex";
+      settings.length = 64;
+    };
+    "${host-id}-authelia-oidc-secrets-config.yaml" = {
+      generator = {
+        script = "template-file";
+        dependencies = [
+          config.age.secrets."${host-id}-authelia-oidc-private-key"
+        ]
+        ++ mapAttrsToList (name: _: config.age.secrets."${credName name}") oidcServices;
+      };
+      settings.template = clientYaml;
+    };
+  };
 
   services.https.fqdns."authelia.${facts.network.domain}" = {
     enable = true;
@@ -371,7 +329,7 @@ in
       # 3. Uncomment the identity_providers block below.
       # 4. Add `"claims_policy": "immich-role-policy"` to the Immich entry
       #    in mkClientYaml (or the clientYaml settingsFile template).
-      # 5. Add `"roleClaim": "immich_role"` to immichOauthConfigTemplate.
+      # 5. Add `"roleClaim": "immich_role"` to immichOauthConfigTemplate in nixos-configs/immich.nix.
       # 6. Run `agenix rekey generate --rekey -a` to regenerate secrets.
       # 7. Grant admin manually in the Immich UI for the bootstrap user
       #    (one-time, before step 3 is deployed).
