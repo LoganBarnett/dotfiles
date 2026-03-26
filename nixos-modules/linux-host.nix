@@ -56,18 +56,20 @@
     flake-inputs.home-manager.nixosModules.home-manager
     flake-inputs.proc-siding.nixosModules.default
     ../nixos-modules/environment-file-secrets.nix
+    ../nixos-modules/https.nix
+    ../nixos-modules/ivatar.nix
+    ../nixos-modules/kodi-standalone.nix
     ../nixos-modules/ldap-auth.nix
     ../nixos-modules/ldap-server.nix
-    ../nixos-modules/kodi-standalone.nix
     ../nixos-modules/lib-custom.nix
     ../nixos-modules/nested-submodule-config-proof.nix
     ../nixos-configs/networking-static.nix
     ../nixos-modules/nfs-consumer-facts.nix
-    ../nixos-modules/oidc-secrets.nix
     ../nixos-modules/nfs-mount-consumer.nix
     # This can safely be included even if the host doesn't expose NFS volumes.
     ../nixos-configs/nfs-mount-provider-from-facts.nix
     ../nixos-configs/nix-store-tools.nix
+    ../nixos-modules/oidc-secrets.nix
     # TODO: Test this - I think I put this in to solve remote build issues, but
     # I don't know if it actually did anything.
     # {
@@ -77,7 +79,6 @@
     #     };
     #   };
     # }
-    ../nixos-modules/https.nix
     ../nixos-configs/secrets.nix
     # Allow servers to consume builds from other hosts.
     ../agnostic-configs/nix-builder-consume.nix
