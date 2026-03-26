@@ -78,6 +78,9 @@ in
     pkgs.libossp_uuid
     # Let us see ports and file handles held by processes.
     pkgs.lsof
+    # Discover and query UPnP IGD routers.  The upnpc command can list
+    # existing port mappings and register new ones.
+    pkgs.miniupnpc
     # A union of ping and traceroute - ping all hosts along a route.
     pkgs.mtr
     # Provides a series of networking tools, including arp.  On macOS this can
