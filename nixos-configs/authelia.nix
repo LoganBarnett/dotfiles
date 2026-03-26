@@ -367,6 +367,21 @@ in
     {
       inherit after;
       requires = after;
+      # Restart whenever any loaded credential's .age file changes (i.e. after
+      # rekeying).  The .file attribute is the Nix store path to the rekeyed
+      # .age file; it changes every time the secret is regenerated, which
+      # causes NixOS to treat this unit as new and restart it.
+      restartTriggers =
+        (builtins.map (name: config.age.secrets."${credName name}".file) (
+          attrNames oidcServices
+        ))
+        ++ [
+          config.age.secrets."${host-id}-authelia-storage-key".file
+          config.age.secrets."${host-id}-authelia-jwt-secret".file
+          config.age.secrets."${host-id}-authelia-session-secret".file
+          config.age.secrets."${host-id}-authelia-oidc-secrets-config.yaml".file
+          config.age.secrets.${ldapCredName}.file
+        ];
       environment = {
         # The NixOS authelia module has no ldapAdminPasswordFile option.
         # Deliver the LDAP bind password via LoadCredential and point
