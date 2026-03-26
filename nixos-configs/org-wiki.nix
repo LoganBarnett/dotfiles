@@ -76,7 +76,7 @@ in
         + " -o UserKnownHostsFile=/var/lib/org-wiki-web/.ssh/known_hosts";
     };
     script = ''
-      mkdir -p /var/lib/org-wiki-web/.ssh
+      mkdir --parents /var/lib/org-wiki-web/.ssh
       if [ ! -d ${lib.escapeShellArg contentRepo}/.git ]; then
         if ${pkgs.git}/bin/git clone \
             ${lib.escapeShellArg gitea-url} \
