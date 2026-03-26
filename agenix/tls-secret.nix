@@ -87,7 +87,15 @@ in
                 -nodes \
                 -out "$crt_file" \
                 -subj "/CN=${settings.tls.domain}${subject-string settings.tls.subject}" \
-                -days "${toString settings.tls.validity}"
+                -days "${toString settings.tls.validity}" \
+                -addext "basicConstraints = critical, CA:TRUE, pathlen:0" \
+                -addext "keyUsage = critical, keyCertSign, cRLSign"
+             # keyUsage is formally required on CA certificates by RFC 5280
+             # §4.2.1.3 (https://www.rfc-editor.org/rfc/rfc5280#section-4.2.1.3).
+             # Most TLS stacks ignored this for years; Python 3.13 + urllib3 2.5
+             # do not.  keyCertSign permits signing certificates; cRLSign permits
+             # signing revocation lists.  pathlen:0 prevents this root from being
+             # used to mint intermediate CAs.
              ${gitAdd} "$crt_file"
              cat root.key
              rm root.key
