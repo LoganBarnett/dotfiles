@@ -116,6 +116,26 @@ in
           }
         else
           { };
+      # Allow <picture> and <source> elements so that org-mode READMEs can use
+      # prefers-color-scheme to serve different diagrams for dark and light mode.
+      # Each section supports exactly one ALLOW_ATTR (single string in the Go
+      # struct), so one numbered section is required per element/attribute pair.
+      "markup.sanitizer.1" = {
+        ELEMENT = "picture";
+        ALLOW_ATTR = "class";
+      };
+      "markup.sanitizer.2" = {
+        ELEMENT = "source";
+        ALLOW_ATTR = "srcset";
+      };
+      "markup.sanitizer.3" = {
+        ELEMENT = "source";
+        ALLOW_ATTR = "media";
+      };
+      "markup.sanitizer.4" = {
+        ELEMENT = "source";
+        ALLOW_ATTR = "type";
+      };
     };
     stateDir = dataDir;
   };
