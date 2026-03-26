@@ -52,4 +52,9 @@
     hash = "sha256-A4LUCuKCjpVAOJ8jNoYaC3mRCiKH0/wtcsle0YfZyTA=";
   };
 
+  zoom-us = {
+    version = "7.0.0.77593";
+    hash = "sha256-YSUaM8YAJHigm4M9W34/bD164M8f/hbhtcmHyUwFN20=";
+  };
+
 }
