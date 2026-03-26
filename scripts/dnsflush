@@ -2,23 +2,29 @@
 
 # HT https://support.apple.com/en-us/HT202516
 LONGVERSION=$(sw_vers -productVersion)
-#Why do people grep | awk ? awk has pattern matching; please stop!
+# macOS 11+ uses a new versioning scheme (11.x, 12.x, ...) where the first
+# component is the major version.  Earlier versions used 10.x.y where the
+# second component was meaningful.  Parse the major version to branch
+# correctly rather than the old minor-version logic.
+MAJOR=$(echo $LONGVERSION | cut -d. -f1)
 MINOR=$(echo $LONGVERSION | cut -d. -f2)
 UPDATE=$(echo $LONGVERSION | cut -d. -f3)
 
-if (( $MINOR < 7 )) ; then
-  FLUSH="dscacheutil -flushcache"
+if (( $MAJOR >= 11 )) ; then
+  FLUSH="sudo killall -HUP mDNSResponder"
+elif (( $MINOR < 7 )) ; then
+  FLUSH="sudo dscacheutil -flushcache"
 elif (( $MINOR < 10 )) ; then
-  FLUSH="killall -HUP mDNSResponder"
-elif (( $MINOR => 10 )) ; then
+  FLUSH="sudo killall -HUP mDNSResponder"
+elif (( $MINOR >= 10 )) ; then
   if (( $MINOR == 10 && UPDATE < 4 )) ; then
-    FLUSH="discoveryutil mdnsflushcache"
+    FLUSH="sudo discoveryutil mdnsflushcache"
   else
-    FLUSH="killall -HUP mDNSResponder"
+    FLUSH="sudo killall -HUP mDNSResponder"
   fi
 else
   echo VERSION $LONGVERSION
-  FLUSH="killall -HUP mDNSResponder"
+  FLUSH="sudo killall -HUP mDNSResponder"
   echo "¯\_(ツ)_/¯"
 fi
 
@@ -26,7 +32,7 @@ echo "Flushing DNS Cache for $LONGVERSION"
 echo "$FLUSH #(งツ)ว"
 $FLUSH
 # This seems to be all the works sometimes.
-OTHER_FLUSH='killall -HUP mDNSResponder'
+OTHER_FLUSH='sudo killall -HUP mDNSResponder'
 if [[ "$FLUSH" != "$OTHER_FLUSH" ]]; then
   echo "That doesn't always work so running $OTHER_FLUSH..."
   $OTHER_FLUSH
