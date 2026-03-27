@@ -1,0 +1,129 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# vpn-safe-run.sh - Safely run a VPN command with connectivity recovery
+# Usage: vpn-safe-run.sh <timeout_seconds> <vpn_command> [args...]
+# Example: vpn-safe-run.sh 60 networksetup -connectpppoeservice "MyVPN"
+
+TIMEOUT="${1:?Usage: vpn-safe-run.sh <timeout_seconds> <vpn_command> [args...]}"
+shift
+VPN_CMD=("$@")
+
+# Hosts to probe - edit these to match your network
+INTERNAL_HOSTS=(
+  "192.168.254.9"
+  "silicon.proton"
+)
+EXTERNAL_HOSTS=(
+  "api.anthropic.com"
+  "8.8.8.8"
+)
+
+RESET_SCRIPT="vpn-dns-recover"
+EXTRA_TESTS="$(pwd)/vpn-test.sh"
+
+PROBE_INTERVAL=5
+PROBE_TIMEOUT=120
+
+# ── helpers ────────────────────────────────────────────────────────────────
+
+log() { echo "[vpn-safe-run] $*" 1>&2; }
+
+probe_host() {
+  local host="$1"
+  if ping -c 1 -W 2 "$host" &>/dev/null 2>&1; then
+    echo "  OK   $host"
+    return 0
+  else
+    echo "  FAIL $host"
+    return 1
+  fi
+}
+
+probe_all() {
+  local failed=0
+  log "--- connectivity probe ---"
+  log "internal:"
+  for h in "${INTERNAL_HOSTS[@]}"; do
+    probe_host "$h" || failed=1
+  done
+  log "external:"
+  for h in "${EXTERNAL_HOSTS[@]}"; do
+    probe_host "$h" || failed=1
+  done
+  return $failed
+}
+
+reset_network() {
+  log "triggering network reset..."
+  if [[ -x "$RESET_SCRIPT" ]]; then
+    "$RESET_SCRIPT" || log "reset script exited non-zero (continuing)"
+  else
+    log "WARNING: no executable reset script found at $RESET_SCRIPT - skipping hard reset"
+  fi
+}
+
+wait_for_connectivity() {
+  local deadline=$(( $(date +%s) + PROBE_TIMEOUT ))
+  log "waiting for connectivity to restore (timeout: ${PROBE_TIMEOUT}s)..."
+  while true; do
+    if ping -c 1 -W 2 "api.anthropic.com" &>/dev/null 2>&1; then
+      log "claude API reachable - proceeding"
+      return 0
+    fi
+    if (( $(date +%s) >= deadline )); then
+      log "FATAL: timed out waiting for connectivity after ${PROBE_TIMEOUT}s"
+      return 1
+    fi
+    sleep "$PROBE_INTERVAL"
+  done
+}
+
+run_extra_tests() {
+  if [[ -x "$EXTRA_TESTS" ]]; then
+    log "running extra tests from $EXTRA_TESTS..."
+    if "$EXTRA_TESTS"; then
+      log "extra tests passed"
+    else
+      log "extra tests failed (non-fatal)"
+    fi
+  else
+    log "no vpn-test.sh found in $(pwd), skipping"
+  fi
+}
+
+# ── main ───────────────────────────────────────────────────────────────────
+
+log "running: ${VPN_CMD[*]} (timeout: ${TIMEOUT}s)"
+
+vpn_exit=0
+timeout "$TIMEOUT" "${VPN_CMD[@]}" || vpn_exit=$?
+
+if (( vpn_exit == 124 )); then
+  log "VPN command timed out after ${TIMEOUT}s"
+elif (( vpn_exit != 0 )); then
+  log "VPN command exited with code $vpn_exit"
+else
+  log "VPN command completed successfully"
+fi
+
+# give the network a moment to settle
+sleep 3
+
+if ! probe_all; then
+  log "connectivity degraded - initiating reset"
+  reset_network
+  wait_for_connectivity || {
+    log "FATAL: could not restore connectivity"
+    probe_all
+    exit 1
+  }
+fi
+
+# final probe to show full state
+probe_all
+
+run_extra_tests
+
+log "done - network healthy, claude session preserved"
+exit 0
