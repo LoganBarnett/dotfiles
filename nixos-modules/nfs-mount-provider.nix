@@ -273,7 +273,8 @@ in
           "--keep-monthly 6"
         ];
         repository = "/tank/backup/restic";
-        timerConfig.OnCalendar = "daily";
+        # 11:00 UTC = 03:00 PST.  Hardcoded in UTC so DST never shifts it.
+        timerConfig.OnCalendar = "11:00";
         backupPrepareCommand = ''
           set -euo pipefail
           set -x
