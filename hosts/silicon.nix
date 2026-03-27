@@ -40,6 +40,7 @@ in
     ../nixos-configs/authelia.nix
     ../nixos-configs/immich.nix
     ../nixos-configs/ivatar.nix
+    ../nixos-configs/mastodon.nix
     ../nixos-configs/metube.nix
     ../nixos-modules/stalwart.nix
     ../nixos-configs/stalwart.nix
@@ -283,7 +284,7 @@ in
     description = "Weekly deduplication of /tank/data";
     wantedBy = [ "timers.target" ];
     timerConfig = {
-      # Run Sundays at 2:00 AM (before the 3:00 AM backup).
+      # Run Sundays at 02:00 UTC (before the 11:00 UTC / 03:00 PST backup).
       OnCalendar = "Sun *-*-* 02:00:00";
       Persistent = true;
     };
