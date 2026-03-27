@@ -28,12 +28,29 @@ let
     mkIf
     mkMerge
     mkOption
+    splitString
+    take
+    toInt
     types
     ;
   cfg = config.services.stalwart-host;
   internalFqdn = "mail.${cfg.internalDomain}";
   # Credential name delivered via LoadCredential for the LDAP bind password.
   ldapCredential = "${cfg.ldap.serviceAccountName}-ldap-password";
+
+  # Derive a starts_with prefix from a CIDR for relay network matching.
+  # Stalwart 0.14 has no CIDR matching function; starts_with is the closest
+  # approximation for octet-aligned prefixes (/8, /16, /24).
+  cidrPrefix =
+    cidr:
+    let
+      parts = splitString "/" cidr;
+      ip = builtins.head parts;
+      maskBits = toInt (builtins.elemAt parts 1);
+      octets = splitString "." ip;
+      numOctets = maskBits / 8;
+    in
+    "${concatStringsSep "." (take numOctets octets)}.";
 in
 {
   options.services.stalwart-host = {
@@ -160,7 +177,7 @@ in
             # the service account is used only for lookups.
             directory."ldap" = {
               type = "ldap";
-              address = cfg.ldap.url;
+              url = cfg.ldap.url;
               base-dn = cfg.ldap.baseDn;
               bind = {
                 dn = "uid=${cfg.ldap.serviceAccountName},ou=users,${cfg.ldap.baseDn}";
@@ -225,15 +242,26 @@ in
             };
 
             # Allow relay for authenticated users, loopback, and configured
-            # LAN networks.  Expression syntax may need verification against
-            # the installed Stalwart version.
-            session.rcpt.relay = concatStringsSep " || " (
-              [
-                "!is_empty(authenticated_as)"
-                "matches(remote_ip, '127.0.0.0/8')"
-              ]
-              ++ map (cidr: "matches(remote_ip, '${cidr}')") cfg.relayNetworks
-            );
+            # LAN networks.  Stalwart 0.14 uses an array of {if, then} rules;
+            # there is no CIDR matching function so starts_with is used for
+            # octet-aligned prefixes (/8, /16, /24).
+            session.rcpt.relay = [
+              {
+                "if" = "!is_empty(authenticated_as)";
+                "then" = true;
+              }
+            ]
+            ++ [
+              {
+                "if" = "starts_with(remote_ip, '127.')";
+                "then" = true;
+              }
+            ]
+            ++ map (cidr: {
+              "if" = "starts_with(remote_ip, '${cidrPrefix cidr}')";
+              "then" = true;
+            }) cfg.relayNetworks
+            ++ [ { "else" = false; } ];
           }
         ]
         # Per external domain: Let's Encrypt TLS certificate + DKIM signing.
@@ -266,28 +294,39 @@ in
 
     systemd.services.stalwart-mail = {
       after = [
+        "ldap-reconciler.service"
         "run-agenix.d.mount"
         "tank-data.mount"
       ];
+      wants = [ "ldap-reconciler.service" ];
       requires = [
         "run-agenix.d.mount"
         "tank-data.mount"
       ];
-      serviceConfig.LoadCredential = [
-        "${ldapCredential}:${config.age.secrets.${ldapCredential}.path}"
-        "tls-key:${config.age.secrets.${cfg.internalTls.keySecretName}.path}"
-      ]
-      ++ concatMap (d: [
-        "${d.dkimSecretName}:${config.age.secrets.${d.dkimSecretName}.path}"
-        "acme-key-${d.domain}:/var/lib/acme/${d.domain}/key.pem"
-      ]) cfg.externalDomains;
+      serviceConfig = {
+        # ProtectSystem=strict (set by the upstream module) makes the
+        # filesystem read-only.  The tank RocksDB path is outside the
+        # StateDirectory so it needs an explicit exemption.
+        ReadWritePaths = [ "/tank/data/stalwart-mail" ];
+        LoadCredential = [
+          "${ldapCredential}:${config.age.secrets.${ldapCredential}.path}"
+          "tls-key:${config.age.secrets.${cfg.internalTls.keySecretName}.path}"
+        ]
+        ++ concatMap (d: [
+          "${d.dkimSecretName}:${config.age.secrets.${d.dkimSecretName}.path}"
+          "acme-key-${d.domain}:/var/lib/acme/${d.domain}/key.pem"
+        ]) cfg.externalDomains;
+      };
     };
 
     # Mail data lives on the tank volume so it participates in the existing
     # btrfs + restic backup pipeline.  No quiesce needed — RocksDB's WAL
     # ensures every btrfs snapshot of a live instance is recoverable.
+    # group = "stalwart-mail" ensures tmpfiles creates the tank directory with
+    # the right ownership so the service user can write to the RocksDB path.
     tankVolumes.volumes.stalwart-mail = {
       backupData = true;
+      group = "stalwart-mail";
     };
 
     networking.firewall.allowedTCPPorts = [

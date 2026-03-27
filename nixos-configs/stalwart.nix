@@ -88,22 +88,18 @@ in
     };
   };
 
-  # Let's Encrypt certificate for mail.meshward.com via DNS challenge.
-  # DNS challenge is preferred over HTTP because it does not require port 80
-  # to be reachable from the internet.
-  #
-  # TODO: Set dnsProvider and credentialsFile once the Porkbun API key secret
-  # is created.  The credentials file should contain:
-  #   PORKBUN_API_KEY=pk1_...
-  #   PORKBUN_SECRET_API_KEY=sk1_...
-  # security.acme = {
-  #   acceptTerms = true;
-  #   defaults.email = "admin@meshward.com";
-  #   certs."mail.meshward.com" = {
-  #     # dnsProvider = "porkbun";
-  #     # credentialsFile = config.age.secrets.porkbun-api-keys.path;
-  #     # Reload Stalwart after certificate renewal so the new cert is used.
-  #     postRun = "systemctl reload-or-restart stalwart-mail.service || true";
-  #   };
-  # };
+  # Let's Encrypt certificates for the external mail domains via Porkbun
+  # DNS-01 challenge.  Stalwart uses SNI to select the cert matching the
+  # connecting client's domain, so the cert name must match d.domain exactly
+  # (the same value used in the module's certificate.${d.domain} stanza).
+  # dnsProvider and credentialsFiles are inherited from security.acme.defaults
+  # (configured in acme.nix).
+  security.acme.certs."meshward.com" = {
+    group = "stalwart-mail";
+    postRun = "systemctl reload-or-restart stalwart-mail.service || true";
+  };
+  security.acme.certs."logustus.com" = {
+    group = "stalwart-mail";
+    postRun = "systemctl reload-or-restart stalwart-mail.service || true";
+  };
 }
