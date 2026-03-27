@@ -395,7 +395,13 @@ let
       systemd.targets."mastodon-${name}" = {
         description = "Target for all Mastodon ${name} services";
         wantedBy = [ "multi-user.target" ];
-        after = [ "network.target" ];
+        # Soft dependency: wait for LDAP accounts to be provisioned so SMTP
+        # auth works on first boot, but don't fail if the reconciler errors.
+        after = [
+          "network.target"
+          "ldap-reconciler.service"
+        ];
+        wants = [ "ldap-reconciler.service" ];
       };
 
       systemd.targets."mastodon-${name}-streaming" = {
