@@ -1,9 +1,10 @@
 ################################################################################
 # Stalwart mail server configuration for silicon.
 #
-# Two mail domains:
+# Mail domains:
 #   proton        Internal LAN-only; no external MX.
 #   meshward.com  Business domain; external MX, DKIM-signed.
+#   logustus.com  Personal domain; external MX, DKIM-signed, catch-all.
 #
 # Authentication is LDAP-backed against OpenLDAP on silicon.  The stalwart
 # service account is declared here; ldap-auth.nix auto-emits its password
@@ -13,9 +14,9 @@
 #   agenix rekey generate --rekey -a
 # Then commit the generated secrets/tls-mail.proton.crt to the repository.
 #
-# After the DKIM secret is generated, extract the public key for the DNS TXT
-# record at default._domainkey.meshward.com:
-#   openssl pkey -in <(rage --decrypt secrets/generated/stalwart-dkim-meshward.age) \
+# After a DKIM secret is generated, extract the public key for the DNS TXT
+# record at default._domainkey.<domain>:
+#   openssl pkey -in <(rage --decrypt secrets/generated/stalwart-dkim-<domain>.age) \
 #     -pubout | grep -v '^-----' | tr -d '\n'
 ################################################################################
 { facts, ... }:
@@ -35,9 +36,12 @@ in
     managed = true;
   };
 
-  # Ed25519 DKIM private key for meshward.com.  rekeyFile is omitted so
-  # agenix-rekey places it in secrets/generated/ automatically.
+  # Ed25519 DKIM private keys.  rekeyFile is omitted so agenix-rekey places
+  # them in secrets/generated/ automatically.
   age.secrets.stalwart-dkim-meshward = {
+    generator.script = "stalwart-dkim-key";
+  };
+  age.secrets.stalwart-dkim-logustus = {
     generator.script = "stalwart-dkim-key";
   };
 
@@ -52,6 +56,12 @@ in
         dkimSelector = "default";
         dkimSecretName = "stalwart-dkim-meshward";
         catchAll = false;
+      }
+      {
+        domain = "logustus.com";
+        dkimSelector = "default";
+        dkimSecretName = "stalwart-dkim-logustus";
+        catchAll = true;
       }
     ];
 
