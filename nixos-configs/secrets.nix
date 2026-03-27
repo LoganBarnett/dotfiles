@@ -144,10 +144,6 @@ in
     generator.script = "ssh-ed25519-with-pub";
   };
 
-  # Ensure agenix secrets are decrypted before NixOS sets up user accounts,
-  # so that hashedPasswordFile references are available during activation.
-  system.activationScripts.users.deps = [ "agenixInstall" ];
-
   # If you're here because you can't find /run/agenix, you're probably on
   # darwin/macOS and you don't have any host keys in /etc/ssh.  You will have to
   # generate them for this host (which can be done with `agenix-rekey
