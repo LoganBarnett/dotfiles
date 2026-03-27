@@ -91,7 +91,9 @@ let
         # 2-space prefix → 8 spaces after indentLines 6, aligning with the
         # other mapping keys (client_name, redirect_uris, etc.).
         "  client_secret: %${credName name}%\n"
-        + "  token_endpoint_auth_method: client_secret_post\n"
+        + "  token_endpoint_auth_method: ${
+            svc.tokenEndpointAuthMethod or "client_secret_post"
+          }\n"
       else
         ""
     );

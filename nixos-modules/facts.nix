@@ -328,6 +328,7 @@
           "ldap"
           "loku"
           "mail"
+          "mastodon"
           "matrix"
           "metube"
           "nextcloud"
@@ -582,6 +583,9 @@
             "home-assistant-users"
             "immich-admins"
             "immich-users"
+            "mastodon-logustus-users"
+            "mastodon-meshward-users"
+            "mastodon-proton-users"
             "matrix-admins"
             "matrix-users"
             "nextcloud-admins"
@@ -664,6 +668,27 @@
           full-name = "openhab";
           devices = [ ];
         };
+        mastodon-logustus = {
+          email = "mastodon-logustus@proton";
+          type = "oidc-client";
+          description = "Mastodon (logustus.com) OIDC client.";
+          full-name = "mastodon-logustus";
+          devices = [ ];
+        };
+        mastodon-meshward = {
+          email = "mastodon-meshward@proton";
+          type = "oidc-client";
+          description = "Mastodon (meshward.com) OIDC client.";
+          full-name = "mastodon-meshward";
+          devices = [ ];
+        };
+        mastodon-proton = {
+          email = "mastodon-proton@proton";
+          type = "oidc-client";
+          description = "Mastodon (proton) OIDC client.";
+          full-name = "mastodon-proton";
+          devices = [ ];
+        };
         wiki = {
           email = "wiki@proton";
           type = "oidc-client";
@@ -721,6 +746,36 @@
         redirectUris = [
           "https://ivatar.${domain}/social/complete/oidc/"
         ];
+      };
+
+      mastodon-logustus = {
+        authentication = "oidc";
+        fqdn = "mastodon.logustus.com";
+        groups = [ "mastodon-logustus-users" ];
+        redirectUris = [
+          "https://mastodon.logustus.com/auth/auth/openid_connect/callback"
+        ];
+        tokenEndpointAuthMethod = "client_secret_basic";
+      };
+
+      mastodon-meshward = {
+        authentication = "oidc";
+        fqdn = "mastodon.meshward.com";
+        groups = [ "mastodon-meshward-users" ];
+        redirectUris = [
+          "https://mastodon.meshward.com/auth/auth/openid_connect/callback"
+        ];
+        tokenEndpointAuthMethod = "client_secret_basic";
+      };
+
+      mastodon-proton = {
+        authentication = "oidc";
+        fqdn = "mastodon.${domain}";
+        groups = [ "mastodon-proton-users" ];
+        redirectUris = [
+          "https://mastodon.${domain}/auth/auth/openid_connect/callback"
+        ];
+        tokenEndpointAuthMethod = "client_secret_basic";
       };
 
       nextcloud = {
