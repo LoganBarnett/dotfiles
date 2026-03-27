@@ -1,0 +1,982 @@
+#+title:     Nix Projects
+#+author:    Logan Barnett
+#+email:     logustus@gmail.com
+#+date:      <2026-03-26 Thu>
+#+language:  en
+#+file_tags:
+#+tags:
+
+
+* projects
+
+This is all the Nix related projects I have.  Much of this is dated and I think
+much of it I've overcome.  But I need a moment to groom it all.
+
+** comfyui
+
+*** setting up lithium
+
+This is largely done.
+
+*** TODO finishing the =comfyui= NixOS module [0/7]
+
+I am working on helping finish a pull request started by @fazo96 here:
+https://github.com/NixOS/nixpkgs/pull/268378/
+
+I was able to get things running locally and have been enjoying the
+functionality there for some time, as well as putting it through its paces.  My
+most notable improvement was getting the model stuff more or less sorted out,
+and declarative in a clean way.  There remains some feedback items to address,
+but everything works.
+
+In addition to the work left, there is a lingering question about some similar
+work done by @lboklin on [[https://github.com/nixified-ai/flake/pull/94][nixified-ai#94]].  I've brought in some of the work, but
+many commits have been added to it since then and I haven't taken a look yet.
+
+In addition to feedback items, but as part of a separate pull request, I feel
+the need to also add a wiki or documentation entry showing how one could run
+=comfyui= using Nix.
+
+My tasks that remain for the pull request:
+
++ [ ] Document the justification for =fetchModel=.
++ [ ] Fix issue where the URL changing for =fetchModel= causes a re-fetch.
++ [ ] Do we still need =fetchModel=?
++ [ ] See if we can use =buildPythonApplication= to build a Python application
+      out of =comfyui=.
++ [ ] Check for other feedback items.
++ [ ] Link the feedback items in the pull requests to these tasks.
++ [ ] There's a suggestion to bring in a =pyproject.toml= but I don't know if
+  comfyui has it, but this reviewer has gotten it working regardless:
+  https://github.com/SomeoneSerge/pkgs/blob/f28af3c0d60500697a987794b2b1e64f70cfd3b7/python-packages/by-name/co/comfy-ui/pyproject.toml
+**** TODO Fix pytorch-bin overrides
+
+I have this error when using this override in my overlays:
+
+#+begin_src nix :results none
+      pythonPackagesExtensions = [(py-final: py-prev: {
+        torch = py-final.pytorch-bin;
+      })];
+#+end_src
+
+The error:
+
+#+begin_example
+trace: warning: cudaPackages.autoAddDriverRunpath is deprecated, use pkgs.autoAddDriverRunpath instead
+error:
+       … while calling anonymous lambda
+
+         at /nix/store/58g9mmyj8ja8i0cp4s4j367h1kgjdabw-source/lib/attrsets.nix:1571:24:
+
+         1570|     let f = attrPath:
+         1571|       zipAttrsWith (n: values:
+             |                        ^
+         1572|         let here = attrPath ++ [n]; in
+
+       … while calling anonymous lambda
+
+         at /nix/store/58g9mmyj8ja8i0cp4s4j367h1kgjdabw-source/lib/attrsets.nix:1205:18:
+
+         1204|         mapAttrs
+         1205|           (name: value:
+             |                  ^
+         1206|             if isAttrs value && cond value
+
+       … from call site
+
+         at /nix/store/58g9mmyj8ja8i0cp4s4j367h1kgjdabw-source/lib/attrsets.nix:1208:18:
+
+         1207|             then recurse (path ++ [ name ]) value
+         1208|             else f (path ++ [ name ]) value);
+             |                  ^
+         1209|     in
+
+       … while calling anonymous lambda
+
+         at /nix/store/58g9mmyj8ja8i0cp4s4j367h1kgjdabw-source/lib/modules.nix:242:72:
+
+          241|           # For definitions that have an associated option
+          242|           declaredConfig = mapAttrsRecursiveCond (v: ! isOption v) (_: v: v.value) options;
+             |                                                                        ^
+          243|
+
+       … while evaluating the option `system.build.toplevel':
+
+       … while calling anonymous lambda
+
+         at /nix/store/58g9mmyj8ja8i0cp4s4j367h1kgjdabw-source/lib/modules.nix:824:28:
+
+          823|         # Process mkMerge and mkIf properties.
+          824|         defs' = concatMap (m:
+             |                            ^
+          825|           map (value: { inherit (m) file; inherit value; }) (builtins.addErrorContext "while evaluating definitions from `${m.file}':" (dischargeProperties m.value))
+
+       … while evaluating definitions from `/nix/store/58g9mmyj8ja8i0cp4s4j367h1kgjdabw-source/nixos/modules/system/activation/top-level.nix':
+
+       … from call site
+
+         at /nix/store/58g9mmyj8ja8i0cp4s4j367h1kgjdabw-source/lib/modules.nix:825:137:
+
+          824|         defs' = concatMap (m:
+          825|           map (value: { inherit (m) file; inherit value; }) (builtins.addErrorContext "while evaluating definitions from `${m.file}':" (dischargeProperties m.value))
+             |                                                                                                                                         ^
+          826|         ) defs;
+
+       … while calling 'dischargeProperties'
+
+         at /nix/store/58g9mmyj8ja8i0cp4s4j367h1kgjdabw-source/lib/modules.nix:896:25:
+
+          895|   */
+          896|   dischargeProperties = def:
+             |                         ^
+          897|     if def._type or "" == "merge" then
+
+       … from call site
+
+         at /nix/store/58g9mmyj8ja8i0cp4s4j367h1kgjdabw-source/nixos/modules/system/activation/top-level.nix:71:12:
+
+           70|   # Replace runtime dependencies
+           71|   system = foldr ({ oldDependency, newDependency }: drv:
+             |            ^
+           72|       pkgs.replaceDependency { inherit oldDependency newDependency drv; }
+
+       … while calling 'foldr'
+
+         at /nix/store/58g9mmyj8ja8i0cp4s4j367h1kgjdabw-source/lib/lists.nix:121:20:
+
+          120|   */
+          121|   foldr = op: nul: list:
+             |                    ^
+          122|     let
+
+       … from call site
+
+         at /nix/store/58g9mmyj8ja8i0cp4s4j367h1kgjdabw-source/lib/lists.nix:128:8:
+
+          127|         else op (elemAt list n) (fold' (n + 1));
+          128|     in fold' 0;
+             |        ^
+          129|
+
+       … while calling 'fold''
+
+         at /nix/store/58g9mmyj8ja8i0cp4s4j367h1kgjdabw-source/lib/lists.nix:124:15:
+
+          123|       len = length list;
+          124|       fold' = n:
+             |               ^
+          125|         if n == len
+
+       … from call site
+
+         at /nix/store/58g9mmyj8ja8i0cp4s4j367h1kgjdabw-source/nixos/modules/system/activation/top-level.nix:68:10:
+
+           67|     then throw "\nFailed assertions:\n${concatStringsSep "\n" (map (x: "- ${x}") failedAssertions)}"
+           68|     else showWarnings config.warnings baseSystem;
+             |          ^
+           69|
+
+       … while calling 'showWarnings'
+
+         at /nix/store/58g9mmyj8ja8i0cp4s4j367h1kgjdabw-source/lib/trivial.nix:867:28:
+
+          866|
+          867|   showWarnings = warnings: res: lib.foldr (w: x: warn w x) res warnings;
+             |                            ^
+          868|
+
+       … from call site
+
+         at /nix/store/58g9mmyj8ja8i0cp4s4j367h1kgjdabw-source/lib/trivial.nix:867:33:
+
+          866|
+          867|   showWarnings = warnings: res: lib.foldr (w: x: warn w x) res warnings;
+             |                                 ^
+          868|
+
+       … while calling 'foldr'
+
+         at /nix/store/58g9mmyj8ja8i0cp4s4j367h1kgjdabw-source/lib/lists.nix:121:20:
+
+          120|   */
+          121|   foldr = op: nul: list:
+             |                    ^
+          122|     let
+
+       … from call site
+
+         at /nix/store/58g9mmyj8ja8i0cp4s4j367h1kgjdabw-source/lib/lists.nix:128:8:
+
+          127|         else op (elemAt list n) (fold' (n + 1));
+          128|     in fold' 0;
+             |        ^
+          129|
+
+       … while calling 'fold''
+
+         at /nix/store/58g9mmyj8ja8i0cp4s4j367h1kgjdabw-source/lib/lists.nix:124:15:
+
+          123|       len = length list;
+          124|       fold' = n:
+             |               ^
+          125|         if n == len
+
+       … while calling anonymous lambda
+
+         at /nix/store/58g9mmyj8ja8i0cp4s4j367h1kgjdabw-source/lib/attrsets.nix:1205:18:
+
+         1204|         mapAttrs
+         1205|           (name: value:
+             |                  ^
+         1206|             if isAttrs value && cond value
+
+       … from call site
+
+         at /nix/store/58g9mmyj8ja8i0cp4s4j367h1kgjdabw-source/lib/attrsets.nix:1208:18:
+
+         1207|             then recurse (path ++ [ name ]) value
+         1208|             else f (path ++ [ name ]) value);
+             |                  ^
+         1209|     in
+
+       … while calling anonymous lambda
+
+         at /nix/store/58g9mmyj8ja8i0cp4s4j367h1kgjdabw-source/lib/modules.nix:242:72:
+
+          241|           # For definitions that have an associated option
+          242|           declaredConfig = mapAttrsRecursiveCond (v: ! isOption v) (_: v: v.value) options;
+             |                                                                        ^
+          243|
+
+       … while evaluating the option `warnings':
+
+       … while calling anonymous lambda
+
+         at /nix/store/58g9mmyj8ja8i0cp4s4j367h1kgjdabw-source/lib/modules.nix:824:28:
+
+          823|         # Process mkMerge and mkIf properties.
+          824|         defs' = concatMap (m:
+             |                            ^
+          825|           map (value: { inherit (m) file; inherit value; }) (builtins.addErrorContext "while evaluating definitions from `${m.file}':" (dischargeProperties m.value))
+
+       … while evaluating definitions from `/nix/store/58g9mmyj8ja8i0cp4s4j367h1kgjdabw-source/nixos/modules/system/boot/systemd.nix':
+
+       … from call site
+
+         at /nix/store/58g9mmyj8ja8i0cp4s4j367h1kgjdabw-source/lib/modules.nix:825:137:
+
+          824|         defs' = concatMap (m:
+          825|           map (value: { inherit (m) file; inherit value; }) (builtins.addErrorContext "while evaluating definitions from `${m.file}':" (dischargeProperties m.value))
+             |                                                                                                                                         ^
+          826|         ) defs;
+
+       … while calling 'dischargeProperties'
+
+         at /nix/store/58g9mmyj8ja8i0cp4s4j367h1kgjdabw-source/lib/modules.nix:896:25:
+
+          895|   */
+          896|   dischargeProperties = def:
+             |                         ^
+          897|     if def._type or "" == "merge" then
+
+       … while calling anonymous lambda
+
+         at /nix/store/58g9mmyj8ja8i0cp4s4j367h1kgjdabw-source/lib/attrsets.nix:1096:10:
+
+         1095|     attrs:
+         1096|     map (name: f name attrs.${name}) (attrNames attrs);
+             |          ^
+         1097|
+
+       … from call site
+
+         at /nix/store/58g9mmyj8ja8i0cp4s4j367h1kgjdabw-source/lib/attrsets.nix:1096:16:
+
+         1095|     attrs:
+         1096|     map (name: f name attrs.${name}) (attrNames attrs);
+             |                ^
+         1097|
+
+       … while calling anonymous lambda
+
+         at /nix/store/58g9mmyj8ja8i0cp4s4j367h1kgjdabw-source/nixos/modules/system/boot/systemd.nix:443:16:
+
+          442|       mapAttrsToList
+          443|         (name: service:
+             |                ^
+          444|           let
+
+       … from call site
+
+         at /nix/store/58g9mmyj8ja8i0cp4s4j367h1kgjdabw-source/nixos/modules/system/boot/systemd.nix:450:16:
+
+          449|             concatLists [
+          450|               (optional (type == "oneshot" && (restart == "always" || restart == "on-success"))
+             |                ^
+          451|                 "Service '${name}.service' with 'Type=oneshot' cannot have 'Restart=always' or 'Restart=on-success'"
+
+       … while calling 'optional'
+
+         at /nix/store/58g9mmyj8ja8i0cp4s4j367h1kgjdabw-source/lib/lists.nix:784:20:
+
+          783|   */
+          784|   optional = cond: elem: if cond then [elem] else [];
+             |                    ^
+          785|
+
+       … while calling anonymous lambda
+
+         at /nix/store/58g9mmyj8ja8i0cp4s4j367h1kgjdabw-source/lib/attrsets.nix:1205:18:
+
+         1204|         mapAttrs
+         1205|           (name: value:
+             |                  ^
+         1206|             if isAttrs value && cond value
+
+       … from call site
+
+         at /nix/store/58g9mmyj8ja8i0cp4s4j367h1kgjdabw-source/lib/attrsets.nix:1208:18:
+
+         1207|             then recurse (path ++ [ name ]) value
+         1208|             else f (path ++ [ name ]) value);
+             |                  ^
+         1209|     in
+
+       … while calling anonymous lambda
+
+         at /nix/store/58g9mmyj8ja8i0cp4s4j367h1kgjdabw-source/lib/modules.nix:242:72:
+
+          241|           # For definitions that have an associated option
+          242|           declaredConfig = mapAttrsRecursiveCond (v: ! isOption v) (_: v: v.value) options;
+             |                                                                        ^
+          243|
+
+       … while evaluating the option `systemd.services.comfyui.serviceConfig':
+
+       … while calling anonymous lambda
+
+         at /nix/store/58g9mmyj8ja8i0cp4s4j367h1kgjdabw-source/lib/modules.nix:824:28:
+
+          823|         # Process mkMerge and mkIf properties.
+          824|         defs' = concatMap (m:
+             |                            ^
+          825|           map (value: { inherit (m) file; inherit value; }) (builtins.addErrorContext "while evaluating definitions from `${m.file}':" (dischargeProperties m.value))
+
+       … while evaluating definitions from `/nix/store/58g9mmyj8ja8i0cp4s4j367h1kgjdabw-source/nixos/modules/system/boot/systemd.nix':
+
+       … from call site
+
+         at /nix/store/58g9mmyj8ja8i0cp4s4j367h1kgjdabw-source/lib/modules.nix:825:137:
+
+          824|         defs' = concatMap (m:
+          825|           map (value: { inherit (m) file; inherit value; }) (builtins.addErrorContext "while evaluating definitions from `${m.file}':" (dischargeProperties m.value))
+             |                                                                                                                                         ^
+          826|         ) defs;
+
+       … while calling 'dischargeProperties'
+
+         at /nix/store/58g9mmyj8ja8i0cp4s4j367h1kgjdabw-source/lib/modules.nix:896:25:
+
+          895|   */
+          896|   dischargeProperties = def:
+             |                         ^
+          897|     if def._type or "" == "merge" then
+
+       … while calling anonymous lambda
+
+         at /nix/store/58g9mmyj8ja8i0cp4s4j367h1kgjdabw-source/lib/attrsets.nix:1205:18:
+
+         1204|         mapAttrs
+         1205|           (name: value:
+             |                  ^
+         1206|             if isAttrs value && cond value
+
+       … from call site
+
+         at /nix/store/58g9mmyj8ja8i0cp4s4j367h1kgjdabw-source/lib/attrsets.nix:1208:18:
+
+         1207|             then recurse (path ++ [ name ]) value
+         1208|             else f (path ++ [ name ]) value);
+             |                  ^
+         1209|     in
+
+       … while calling anonymous lambda
+
+         at /nix/store/58g9mmyj8ja8i0cp4s4j367h1kgjdabw-source/lib/modules.nix:242:72:
+
+          241|           # For definitions that have an associated option
+          242|           declaredConfig = mapAttrsRecursiveCond (v: ! isOption v) (_: v: v.value) options;
+             |                                                                        ^
+          243|
+
+       … while evaluating the option `systemd.services.comfyui.preStart':
+
+       … while calling anonymous lambda
+
+         at /nix/store/58g9mmyj8ja8i0cp4s4j367h1kgjdabw-source/lib/modules.nix:824:28:
+
+          823|         # Process mkMerge and mkIf properties.
+          824|         defs' = concatMap (m:
+             |                            ^
+          825|           map (value: { inherit (m) file; inherit value; }) (builtins.addErrorContext "while evaluating definitions from `${m.file}':" (dischargeProperties m.value))
+
+       … while evaluating definitions from `/nix/store/58g9mmyj8ja8i0cp4s4j367h1kgjdabw-source/nixos/modules/services/web-apps/comfyui.nix':
+
+       … from call site
+
+         at /nix/store/58g9mmyj8ja8i0cp4s4j367h1kgjdabw-source/lib/modules.nix:825:137:
+
+          824|         defs' = concatMap (m:
+          825|           map (value: { inherit (m) file; inherit value; }) (builtins.addErrorContext "while evaluating definitions from `${m.file}':" (dischargeProperties m.value))
+             |                                                                                                                                         ^
+          826|         ) defs;
+
+       … while calling 'dischargeProperties'
+
+         at /nix/store/58g9mmyj8ja8i0cp4s4j367h1kgjdabw-source/lib/modules.nix:896:25:
+
+          895|   */
+          896|   dischargeProperties = def:
+             |                         ^
+          897|     if def._type or "" == "merge" then
+
+       … while evaluating derivation 'comfyui-unstable-2024-04-15'
+         whose name attribute is located at /nix/store/58g9mmyj8ja8i0cp4s4j367h1kgjdabw-source/pkgs/stdenv/generic/make-derivation.nix:331:7
+
+       … while evaluating attribute 'installPhase' of derivation 'comfyui-unstable-2024-04-15'
+
+         at /nix/store/58g9mmyj8ja8i0cp4s4j367h1kgjdabw-source/pkgs/by-name/co/comfyui/package.nix:110:3:
+
+          109|
+          110|   installPhase = ''
+             |   ^
+          111|     runHook preInstall
+
+       … from call site
+
+         at /nix/store/58g9mmyj8ja8i0cp4s4j367h1kgjdabw-source/pkgs/by-name/co/comfyui/package.nix:86:16:
+
+           85|
+           86|   executable = writers.writeDashBin "comfyui" ''
+             |                ^
+           87|     cd $out && \
+
+       … while calling 'writeDash'
+
+         at /nix/store/58g9mmyj8ja8i0cp4s4j367h1kgjdabw-source/pkgs/build-support/writers/scripts.nix:233:21:
+
+          232|   #     ''
+          233|   writeDash = name: argsOrScript:
+             |                     ^
+          234|     if lib.isAttrs argsOrScript && ! lib.isDerivation argsOrScript
+
+       … while evaluating derivation 'python3-3.11.9-env'
+         whose name attribute is located at /nix/store/58g9mmyj8ja8i0cp4s4j367h1kgjdabw-source/pkgs/stdenv/generic/make-derivation.nix:331:7
+
+       … while evaluating attribute 'passAsFile' of derivation 'python3-3.11.9-env'
+
+         at /nix/store/58g9mmyj8ja8i0cp4s4j367h1kgjdabw-source/pkgs/build-support/trivial-builders/default.nix:69:9:
+
+           68|         inherit buildCommand name;
+           69|         passAsFile = [ "buildCommand" ]
+             |         ^
+           70|           ++ (derivationArgs.passAsFile or [ ]);
+
+       … from call site
+
+         at /nix/store/58g9mmyj8ja8i0cp4s4j367h1kgjdabw-source/pkgs/development/interpreters/python/wrapper.nix:20:13:
+
+           19|   env = let
+           20|     paths = requiredPythonModules (extraLibs ++ [ python ] ) ;
+             |             ^
+           21|     pythonPath = "${placeholder "out"}/${python.sitePackages}";
+
+       … while calling 'requiredPythonModules'
+
+         at /nix/store/58g9mmyj8ja8i0cp4s4j367h1kgjdabw-source/pkgs/development/interpreters/python/python-packages-base.nix:54:27:
+
+           53|   # Get list of required Python modules given a list of derivations.
+           54|   requiredPythonModules = drvs: let
+             |                           ^
+           55|     modules = lib.filter hasPythonModule drvs;
+
+       … while calling anonymous lambda
+
+         at /nix/store/58g9mmyj8ja8i0cp4s4j367h1kgjdabw-source/lib/lists.nix:1793:25:
+
+         1792|   */
+         1793|   unique = foldl' (acc: e: if elem e acc then acc else acc ++ [ e ]) [];
+             |                         ^
+         1794|
+
+       … while evaluating derivation 'python3.11-torchaudio-2.3.1'
+         whose name attribute is located at /nix/store/58g9mmyj8ja8i0cp4s4j367h1kgjdabw-source/pkgs/stdenv/generic/make-derivation.nix:331:7
+
+       … while evaluating attribute 'TORCH_CUDA_ARCH_LIST' of derivation 'python3.11-torchaudio-2.3.1'
+
+         at «none»:0: (source not available)
+
+       … while calling anonymous lambda
+
+         at /nix/store/58g9mmyj8ja8i0cp4s4j367h1kgjdabw-source/pkgs/stdenv/generic/make-derivation.nix:576:11:
+
+          575|     mapAttrs
+          576|       (n: v: assert assertMsg (isString v || isBool v || isInt v || isDerivation v)
+             |           ^
+          577|         "The ‘env’ attribute set can only contain derivation, string, boolean or integer attributes. The ‘${n}’ attribute is of type ${builtins.typeOf v}."; v)
+
+       … from call site
+
+         at /nix/store/58g9mmyj8ja8i0cp4s4j367h1kgjdabw-source/pkgs/stdenv/generic/make-derivation.nix:576:21:
+
+          575|     mapAttrs
+          576|       (n: v: assert assertMsg (isString v || isBool v || isInt v || isDerivation v)
+             |                     ^
+          577|         "The ‘env’ attribute set can only contain derivation, string, boolean or integer attributes. The ‘${n}’ attribute is of type ${builtins.typeOf v}."; v)
+
+       … while calling 'assertMsg'
+
+         at /nix/store/58g9mmyj8ja8i0cp4s4j367h1kgjdabw-source/lib/asserts.nix:41:5:
+
+           40|     pred:
+           41|     msg:
+             |     ^
+           42|     pred || builtins.throw msg;
+
+       error: attribute 'cudaCapabilities' missing
+
+       at /nix/store/58g9mmyj8ja8i0cp4s4j367h1kgjdabw-source/pkgs/development/python-modules/torchaudio/default.nix:100:56:
+
+           99|   env = {
+          100|     TORCH_CUDA_ARCH_LIST = "${lib.concatStringsSep ";" torch.cudaCapabilities}";
+             |                                                        ^
+          101|   };
+#+end_example
+
+I'm trying a pytorch build once again (getting away from the cachix stuff would
+be great.
+
+** ldap
+
+https://nixos.wiki/wiki/OpenLDAP
+
+*** [2024-06-08 Sat]
+
+I have =nickel= building.  I was dumbly copying over the =.zst= file which can
+never boot because it's a compressed archive.  After decompressing it, I was
+able to boot =nickel= just fine.  Questions remain on how I got it to that
+state, and what purpose exists for all the other fancy stuff I have found
+regarding Raspberry Pi and Nix.
+
+My knowledge about LDAP is weak.  I've had trouble setting it up, and I've been
+copying examples from the NixOS Wiki in hopes of making things work.  So far the
+snippets are not working because the =options= validation is failing - it's not
+even getting to LDAP yet.  This is while declaring the password policy for LDAP.
+The current error is:
+
+#+begin_example
+       error: A definition for option `services.openldap.settings.children."olcDatabase={1}mdb".attrs."olcOverlay={2}ppolicy"' is not of type `(LDAP value - either a string, or an attrset containing
+       `path` or `base64` for included
+       values or base-64 encoded values respectively.
+       ) or list of (LDAP value - either a string, or an attrset containing
+       `path` or `base64` for included
+       values or base-64 encoded values respectively.
+       )'. Definition values:
+       - In `/nix/store/v24qicc8f4h1xafv4qzbn49crg6h2nvb-source/flake.nix':
+           {
+             attrs = {
+               objectClass = [
+                 "olcOverlayConfig"
+                 "olcPPolicyConfig"
+           ...
+#+end_example
+
+And the code for that is:
+
+#+begin_src nix :results none
+          "olcOverlay={2}ppolicy".attrs = {
+            objectClass = [ "olcOverlayConfig" "olcPPolicyConfig" "top" ];
+            olcOverlay = "{2}ppolicy";
+            olcPPolicyHashCleartext = "TRUE";
+          };
+#+end_src
+
+Put in greater context:
+
+#+begin_src nix :results none
+  services.openldap = {
+    enable = true;
+    urlList = [
+      "ldaps:///"
+    ];
+    declarativeContents = {
+      "dc=proton,dc=org" = ''
+      ...
+          '';
+    };
+    settings = {
+      attrs = {
+        # ...
+      };
+      children = {
+        "cn=schema".includes = [
+          "${pkgs.openldap}/etc/schema/core.ldif"
+          "${pkgs.openldap}/etc/schema/cosine.ldif"
+          "${pkgs.openldap}/etc/schema/inetorgperson.ldif"
+        ];
+        "olcDatabase={1}mdb".attrs = {
+          objectClass = [ "olcDatabaseConfig" "olcMdbConfig" ];
+          olcDatabase = "{1}mdb";
+          olcDbDirectory = "/var/lib/openldap/data";
+          olcSuffix = "dc=proton,dc=org";
+          /* your admin account, do not use writeText on a production system */
+          olcRootDN = "cn=admin,dc=proton,dc=org";
+          # Untested.  Should work but no run done yet.
+          olcRootPW.path = config.age.secrets.ldap-root-pass.path;
+          olcAccess = [
+            /* custom access rules for userPassword attributes */
+            ''{0}to attrs=userPassword
+                by self write
+                by anonymous auth
+                by * none''
+            /* allow read on anything else */
+            ''{1}to *
+                by * read''
+          ];
+
+          # TODO: This doesn't validate in Nix for some reason.  Need to
+          # investigate.
+          "olcOverlay={2}ppolicy".attrs = {
+            objectClass = [ "olcOverlayConfig" "olcPPolicyConfig" "top" ];
+            olcOverlay = "{2}ppolicy";
+            olcPPolicyHashCleartext = "TRUE";
+          };
+
+          "olcOverlay={3}memberof".attrs = {
+            objectClass = [ "olcOverlayConfig" "olcMemberOf" "top" ];
+            olcOverlay = "{3}memberof";
+            olcMemberOfRefInt = "TRUE";
+            olcMemberOfDangling = "ignore";
+            olcMemberOfGroupOC = "groupOfNames";
+            olcMemberOfMemberAD = "member";
+            olcMemberOfMemberOfAD = "memberOf";
+          };
+
+          "olcOverlay={4}refint".attrs = {
+            objectClass = [ "olcOverlayConfig" "olcRefintConfig" "top" ];
+            olcOverlay = "{4}refint";
+            olcRefintAttribute = "memberof member manager owner";
+          };
+        };
+      };
+    };
+  };
+#+end_src
+
+This makes me wonder if this stuff is actually recursively nested even though
+the =settings= declaration in =nixpkgs=' =openldap.nix= suggests otherwise.
+
+I have found no tickets in =nixpkgs= yet.
+
+Upon further reading for the OpenLDAP Nix Wiki page, I can see this is not
+placed correctly.  The =ppolicy= and other sections must be under
+=olcDatabase={1}mdb=.  I have applied the edits but cannot test it yet.
+
+*** [2024-06-05 Wed]
+
+I want to run LDAP on =nickel=, which is a Raspberry Pi version 4 model B.  I
+have built for the 3 or 4 before with great success (see my Nix Adventures blog
+post).  However it hasn't been building lately due to things moving around.  So
+I have some work via [[raspberry pi builds]] that I need to complete first.
+
+There is a big deprecated section I copied unwittingly.
+
+** raspberry pi
+*** TODO raspberry pi builds via =raspberry-pi-nix=
+
+#+begin_src shell :results none
+nix build '.#nixosConfigurations.cobalt-pi.config.system.build.sdImage' --system 'aarch64-linux' --no-eval-cache
+#+end_src
+
+[[https://github.com/NixOS/nixpkgs/issues/260754][nixpkgs#260754]] led me to using =raspberry-pi-nix= for building Raspberry Pi
+images.  I would like to tie that in with =nixos-generators= if at all
+reasonable.
+
+Example of =raspberry-pi-nix=:
+https://github.com/tstat/raspberry-pi-nix-example/blob/master/flake.nix
+
+The documentation on the [[https://wiki.nixos.org/wiki/NixOS_on_ARM/Raspberry_Pi][official Wiki for Raspberry Pi]] is outdated, as is
+typical.  I might want to update it when I get everything working.
+
+Out of the box, =raspberry-pi-nix= didn't work for me.  I filed
+[[https://github.com/tstat/raspberry-pi-nix/issues/17][raspberry-pi-nix#17]] for the issue I was having with patches to the kernel not
+applying properly.  I have since then done a lot of pinning on my flake inputs,
+and now it's building.  I don't have success yet, but it's still going after
+5-ish hours - I am well past the patching phase.  I've closed out the ticket
+with those notes.
+
+From that ticket, @tstat did show me how to do this to look at a derivation's
+output metadata:
+
+#+begin_src shell :results none
+nix derivation show '.#nixosConfigurations.nickel.config.boot.kernelPackages.kernel'
+#+end_src
+
+
+I tried using the Cachix builds, but couldn't get them to work.  It's not
+obvious how to debug it.  The [[https://docs.cachix.org/faq#why-is-nix-not-picking-up-on-any-of-the-pre-built-artifacts][Cachix FAQ]] has some things to try there but
+nothing seemed to work for me.  I couldn't get the [[https://nix.dev/guides/troubleshooting.html#how-to-force-nix-to-re-check-if-something-exists-in-the-binary-cache][negative caching]] to work (as
+in it just seemed to do nothing).  The [[https://discourse.nixos.org/t/nix-rebuilds-instead-of-downloading-from-substituters/11928/8][Cachix folks seem eager to help]] with
+this, but I just haven't pursued that yet.
+
+When building an older version, I ran into a "NAR mismatch".  =raspberry-pi-nix=
+is pinned to [[https://github.com/raspberrypi/linux/tree/stable_20231123][raspberrypi/linux#stable_20231123]].  I don't know why this is.  I
+did find @lilyball ran into that same issue with [[https://github.com/tstat/raspberry-pi-nix/issues/2][raspberry-pi-nix#2]] building on
+=aarch64-darwin=.  I'd run into it there too.  She moved her =/nix= partition to
+case-sensitive APFS.  I asked and she said she moved everything to a new
+partition, and replaced the old partition with the new.  Some folks have done
+this via a [[https://github.com/cr/MacCaseSensitiveConversion][Time Machine backup and restore]].  Rightly, @lilyball [[https://github.com/NixOS/nix/issues/2415#issuecomment-1574731526][asked in
+nix#2415]] if we can't just make that the default since APFS is the default
+filesystem for Nix nowadays.  There is no reply yet.  Other possible reasons for
+a NAR mismatch is Flake inputs using =follows= improperly/inconsistently, or the
+lock file being borked per [[https://github.com/NixOS/nix/issues/6061][nix#6061]].  There is some [[https://github.com/NixOS/nix/issues/10649][prior work]] on preventing
+mismatches, but I don't think this is what's affecting me.
+
+I'd tried less extreme options.  Building via =linux-builder= directly didn't
+work, because =linux-builder= is a slimmed down NixOS, and isn't a fully
+operational NixOS VM.  I can't run =nix build= or =nixos-rebuild switch=.
+
++ The original =tstat= repository: https://github.com/tstat/raspberry-pi-nix
++ My fork: https://github.com/LoganBarnett/raspberry-pi-nix
++ Someone's notes on building for the Raspberry Pi with Nix:
+  https://github.com/lucernae/nixos-pi
++ [[https://app.cachix.org/cache/raspberry-pi-nix#pins][Pins of the kernel on cachix]] - note that it's just one, and it's older than
+  what's on =master=.
++ [[https://nixos.wiki/wiki/Linux_kernel][NixOS wiki on the Linux kernel]] - This shows how to set the kernel.  Notably:
+  #+begin_src nix :results none
+  boot.kernelPackages = pkgs.linuxPackages_latest;
+  #+end_src
+
+My build of the kernel on =lithium= has been running for over 24 hours...
+
+*** TODO raspberry pi builds via =nixos-generators=
+
+**** [2024-06-05 Wed]
+
+#+begin_src shell :results none
+nix build '.#cobalt-nixos-generate' --system 'aarch64-linux' --no-eval-cache
+#+end_src
+
+Date is guessed - this is the earliest entry.
+
+I'm paused on this in favor of [[raspberry pi builds via =raspberry-pi-nix=]].
+
+https://github.com/nix-community/nixos-generators
+
+This is mostly a light wrapper about images in =nixpkgs= that allow directly
+building images.  I don't quite understand why this is needed and one cannot
+build directly via =nixpkgs=.
+
+This is a GitHub [[https://github.com/search?q=path%3A*.nix+formatConfigs&type=code][search of other people using =formatConfigs=]].
+
+[[https://github.com/nix-community/nixos-generators/pull/203][nixos-generators#203]] simplifies the building of Raspberry Pi images by removing
+all of the local configuration and instead leaning on what's in =nixpkgs=, since
+it's being handled there now.  Unfortunately =sd-aarch64= has recently been
+migrated to just be an SD card for =aarch64= in a general sense, and now there's
+=sd-aarch64-raspberrypi= file/image for Raspberry Pi but =nixos-generators= has
+not followed it.  I have been trying to make this work via =formatConfigs= but I
+had some trouble with it.  Eventually I found out that the identifiers like
+=sdImage= are hard coded somewhere.  I don't know why or where, but I feel this
+should be documented in =nixos-generators= and I would like contribute to this.
+
+I think =customFormats= is the old way of doing this.  There is an [[https://discourse.nixos.org/t/using-nixos-generators-in-a-flake-with-customformats/35115/7][example of it
+in Discourse]].
+
+[[https://github.com/nix-community/nixos-generators/issues/168][nixos-generators#168]] remains as an issue - I noticed both the
+=sd-aarch64-installer= and =sd-aarch64= both refer to the same =nixpkgs= entity
+(file/module?).  Because of this, it seems like there's no difference between
+the two.  Some of the work I was thinking about contributing might relate to
+this.  The findings of the last comment are now outdated because of the move to
+=sd-aarch-raspberrypi= et. al,.
+
+One thing I haven't tried in this journey is looking at image compression.  I've
+seen mention (link?) that the image needs to be decompressed - I don't want to
+just =dd= a =zst= file over to the SD card.  There's something that can be done
+to emit a raw image, but I don't know what it is - I think there is a mechanism
+for it.  I believe most of my tests were done against =zst=, which would render
+virtually all of my testing here invalid.
+
+**** [2024-06-10 Mon]
+
+I continue to run into this issue:
+
+#+begin_example
+error: Package ‘linux-6.1.63-stable_20231123’ in /nix/store/v24qicc8f4h1xafv4qzbn49crg6h2nvb-source/pkgs/os-specific/linux/kernel/linux-rpi.nix:9 is not available on the requested hostPlatform:
+         hostPlatform.config = "aarch64-unknown-linux-gnu"
+         package.meta.platforms = [
+           "armv7a-darwin"
+           "armv5tel-linux"
+           "armv6l-linux"
+           "armv7a-linux"
+           "armv7l-linux"
+           "armv6l-netbsd"
+           "armv7a-netbsd"
+           "armv7l-netbsd"
+           "arm-none"
+           "armv6l-none"
+         ]
+         package.meta.badPlatforms = [ ]
+       , refusing to evaluate.
+
+       a) To temporarily allow packages that are unsupported for this system, you can use an environment variable
+          for a single invocation of the nix tools.
+
+            $ export NIXPKGS_ALLOW_UNSUPPORTED_SYSTEM=1
+
+          Note: When using `nix shell`, `nix build`, `nix develop`, etc with a flake,
+                then pass `--impure` in order to allow use of environment variables.
+
+       b) For `nixos-rebuild` you can set
+         { nixpkgs.config.allowUnsupportedSystem = true; }
+       in configuration.nix to override this.
+
+       c) For `nix-env`, `nix-build`, `nix-shell` or any other Nix command you can add
+         { allowUnsupportedSystem = true; }
+       to ~/.config/nixpkgs/config.nix.
+#+end_example
+
+This is the case when using the following invocation:
+
+#+begin_example
+nix build '.#cobalt-nixos-generate' --system 'aarch64-linux' --no-eval-cache
+#+end_example
+
+I've tried excluding all modules, but still no joy.  I don't know if the
+builders are setup properly at all.  I don't know how to test it.  I used to be
+able to see it about 6 months ago, but not anymore.  That this is the same exact
+issue with =raspberry-pi-nix= and even the _standard_ means of doing this makes
+me think that my builders are not working at all.  But also there could be other
+issues going on with the kernel package.
+
+*** TODO raspberry pi builds to =zstd=
+
+I don't know how these builds were working.  One of the above perhaps?  This
+emits an image in =zstd= format.  I've been using =dd= on that file directly,
+like an idiot.  If I decompress that file and then copy it, well, it just works!
+So how did I do that?  And can I use that method and document it down the road?
+
+Some issues I've had:
+
+1. When trying out =nixos-generators=, I now run into an issue where
+   =linux-builder= won't build the image due to =uboot= not building for
+   =armv7l-linux= (the target I should use for the Pi, I guess) - it wants
+   =armv6l-linux=.  But I'm supposed to use =armv7l-linux= I think?
+2. the issue something up with supported build platforms / =qemu= emulation.  I
+   think I've moved past that mostly, onto the specific =uboot= issue above.
+
+I don't know how this image got emitted, what its hardware support looks like,
+and if there's anything additional I will want to do with it.  I suppose if I
+can do a pure =nixpkgs= setup then all the work going into =nixos-generators=
+and =raspberry-pi-nix= must do something _extra_, right?  Or is it just a bunch
+of people working on the same problems but not coordinating with each other?  My
+experience with my own open source work indicates it _might_ be the latter, but
+also me doing things incorrectly is a constant factor in every problem I run
+into.
+
+** TODO =percol= doesn't consistently build
+
+Something about the dependencies coming from pypi.
+
+** secrets
+*** Secret generation (LLM guidance)
+
+This repository uses =agenix-rekey= to generate and manage secrets.  Several
+secret types — TLS leaf certificates, WireGuard keys, hashed passwords, and
+others — are produced by generator scripts that run via:
+
+#+begin_src sh :exports code
+agenix rekey generate --rekey -a
+#+end_src
+
+This repository uses a custom fork of =agenix-rekey= that combines generation
+and rekeying into a single subcommand.  Generating a TLS leaf certificate, for
+example, requires decrypting the internal CA key, which is protected by an
+interactive passphrase prompt.  *This command cannot be run non-interactively.*
+
+*LLMs assisting with this repository must halt and prompt the user* whenever a
+task requires generating or rekeying secrets.  Do not attempt to create
+placeholder =.age= files, dummy certificates, or fake rekeyed entries as a
+workaround.  Instead, stop and instruct the user to run the command above
+themselves, then continue once the generated files have been committed.
+
+The expected post-generation workflow for a new FQDN (e.g. adding a new
+service to a host) is:
+
+1. Author the NixOS module and config normally.
+2. Halt and ask the user to run =agenix rekey generate --rekey -a= (generates
+   =.crt=, =.key.age=, and the per-host rekeyed file in
+   =secrets/rekeyed/<host>/=, and =git add=s them automatically).
+3. The user commits the generated files.
+4. Resume with the build/deploy once the secrets are in git.
+
+*** TODO =agenix-rekey= automatic self-signed TLS CA and leaf certificates
+
+I have some promising progress here for contributing back into =agenix-rekey=.
+See [[./nixos-modules/secrets.nix]] for details.
+
+*** TODO help error message for =agenix-rekey= if =agenix= is incorrectly included
+
+I said I would work on this per my two tickets I filed.
+
+*** TODO look into a =security.pki.extraTrustedCertificates= in =nix-darwin= [0/2]
+**** TODO fix my work machine always prompts for a password
+
+Using the command line invocation to add the trust (see [[./darwin.nix]]), a
+password prompt always comes up.  This doesn't happen on my personal.  What's
+the difference?  More importantly: Can we avoid it?
+**** TODO NixOS module for =nix-darwin=
+
+I need to check if this exists already, but I don't think it does.
+*** external CA
+
+Get a domain for public hosting.  Get a wildcard certificate probably, because I
+just don't want to mess with it.
+
+** mail server
+
+A long way away, but I want this done too.  I was going to use some pre-built
+mail server image (I forgot the name), but now that I'm on the Nix boat, I want
+it in Nix.
+** octoprint
+*** Ender 3 Pro
+
+Convert this to Nix.  Currently uses OctoPrint.
+
+=argon.proton= is the current host.
+
+*** laser engraver
+
+Convert this to Nix.  Currently uses OctoPrint with a plugin.
+
+** wireguard
+
+*** replace old host
+
+It's been down for some time.  I want to spin up a new copy entirely.
+
+*** Japan bridge
+
+This is a Pi I send home to the Japan family to setup a regional bridge between
+this network and theirs.
+** nextcloud
+
+Migrate my existing nextcloud to a Nix based one.  =silicon.proton= is the
+current host.
+
+** gitea
+
+Yes please.  This is =cobalt= I think.
+
+** incremental backups
+
+Oh boy this is going to be its own project probably.
