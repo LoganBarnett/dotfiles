@@ -1,0 +1,74 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Monitor a list of hosts and sound a local alert after all have been
+# continuously unreachable for DOWNTIME_THRESHOLD seconds.
+#
+# Reachability is tested with ping, which covers both DNS resolution and ICMP
+# in a single call.  Any single host responding is enough to suppress the
+# alarm — the intent is to detect total connectivity loss rather than an
+# individual host going down.
+#
+# Usage: host-connectivity-monitor HOST [HOST ...]
+#
+# Environment variables:
+#   DOWNTIME_THRESHOLD  seconds before alerting (default: 300)
+#   CHECK_INTERVAL      seconds between polls (default: 15)
+
+DOWNTIME_THRESHOLD="${DOWNTIME_THRESHOLD:-300}"
+CHECK_INTERVAL="${CHECK_INTERVAL:-15}"
+
+if [[ $# -eq 0 ]]; then
+    echo "Usage: $(basename "$0") HOST [HOST ...]" >&2
+    exit 1
+fi
+
+hosts=("$@")
+down_since=""
+alert_pid=""
+
+any_reachable() {
+    for host in "${hosts[@]}"; do
+        # -t 2: macOS ping timeout flag (seconds).  -c 1: single probe.
+        if ping -c 1 -t 2 "${host}" >/dev/null 2>&1; then
+            return 0
+        fi
+    done
+    return 1
+}
+
+stop_alert() {
+    if [[ -n "${alert_pid}" ]]; then
+        kill "${alert_pid}" 2>/dev/null || true
+        wait "${alert_pid}" 2>/dev/null || true
+        alert_pid=""
+    fi
+}
+
+trap 'stop_alert; exit 0' INT TERM
+
+echo "Monitoring: ${hosts[*]}"
+echo "Alert threshold: ${DOWNTIME_THRESHOLD}s, check interval: ${CHECK_INTERVAL}s"
+
+while true; do
+    if any_reachable; then
+        if [[ -n "${down_since}" ]]; then
+            echo "$(date): hosts reachable again — stopping alert."
+            stop_alert
+            down_since=""
+        fi
+    else
+        now="$(date +%s)"
+        if [[ -z "${down_since}" ]]; then
+            down_since="${now}"
+            echo "$(date): all hosts unreachable."
+        fi
+        downtime=$(( now - down_since ))
+        if [[ "${downtime}" -ge "${DOWNTIME_THRESHOLD}" ]] && [[ -z "${alert_pid}" ]]; then
+            echo "$(date): ${downtime}s continuous downtime — starting alert."
+            alert-me-locally &
+            alert_pid="$!"
+        fi
+    fi
+    sleep "${CHECK_INTERVAL}"
+done
