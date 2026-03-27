@@ -1,0 +1,92 @@
+#+title: Security
+#+language: en
+
+* Threat Model
+
+** Layered Defense
+
+Current layers protecting Linux hosts:
+
+- SSH password authentication disabled (key pairs only)
+- Hosts behind NAT, not directly exposed
+- VPN uses key pairs not publicly visible
+
+** Wheel Account Without Password
+
+~wheelNeedsPassword = false~ effectively collapses "has your password" into
+"has root" — no additional barriers to ~sudo~.  This is acceptable on hosts
+where the password is never used as an authentication factor, but warrants
+revisiting as password management matures.
+
+* Rootkit Detection
+
+** Fundamental Limitation
+
+A kernel rootkit mediates every observation made from userspace.  Process
+lists, file reads, and network queries all pass through attacker-controlled
+code.  No userspace tool running on a compromised kernel can be trusted to
+give accurate results.
+
+** Nix Store Integrity
+
+NixOS has a structural advantage over traditional distributions: the store is
+content-addressed and read-only.  A modified system binary breaks its store
+path hash.  ~nix store verify~ can detect this — but only if run from a
+trusted environment, not the potentially compromised host.
+
+** External Observation
+
+A network tap or router-level logging that the host never touches can confirm
+suspicious traffic even when a rootkit is hiding the responsible process.
+This instrumentation must be in place before a compromise occurs to be useful.
+
+** Recovery Over Forensics
+
+If a kernel rootkit is suspected, the practical response is to treat the host
+as unrecoverable and rebuild from the Nix configuration.  Investigate how
+access was obtained rather than what was done.  NixOS's declarative rebuild
+makes this more tractable than on traditional distributions.
+
+* Ideas
+
+** Thumb Drive Integrity Verifier
+
+A NixOS thumb drive that boots independently and verifies the host's on-disk
+Nix store against a closure pushed from a trusted build machine.
+
+*** Threat model
+
+- Thumb drive provides a trusted execution environment (its own kernel,
+  its own Nix daemon).
+- Host store is mounted read-only as a passive filesystem — the host's
+  kernel is never entered, the host's ~nix-daemon~ is never contacted,
+  and the host's store metadata (~nix/var/nix/db~) is not trusted.
+- Expected closure + hashes originate from the build machine, signed with
+  a key whose public half is baked into the thumb drive.
+
+*** Verification approach
+
+1. Build machine produces a signed manifest: store path → NAR hash for the
+   full system closure.
+2. Thumb drive boots, mounts host store read-only at e.g. ~/mnt/host~.
+3. Verification tool validates the manifest signature against the baked-in
+   public key.
+4. For each expected store path, the thumb drive's Nix computes
+   ~nix nar dump-path /mnt/host/nix/store/<path>~ and compares the hash.
+5. Any missing or mismatched path is reported.
+
+*** Limitations
+
+- Only covers store paths — writable areas (~/var~, home directories) and
+  loaded kernel modules are out of scope.
+- Does not detect malicious content that was always there (compromised
+  upstream package or substituter) — but that affects all NixOS users
+  equally.
+- A memory-only rootkit with no on-disk store presence would survive a
+  clean verify; it would also vanish on reboot.
+
+*** Prior art
+
+This does not appear to exist as packaged tooling yet.  The primitives are
+all present in Nix (~nix store verify --store~, ~nix nar dump-path~, store
+signing).
