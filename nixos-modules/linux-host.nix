@@ -104,7 +104,6 @@
     ../nixos-modules/user-lockout-schedule.nix
     ../users/logan-server.nix
   ];
-  services.goss.prometheusContentTypeFixProxy.enable = true;
 
   # This is just blindly copied from somewhere, but I don't know where.  I
   # should audit them in my Vast Quantities of Space Time™.
@@ -161,6 +160,9 @@
   # unclear.  Disable.
   # Wipes passwords, so don't use.
   users.mutableUsers = true;
+
+  services.goss.prometheusContentTypeFixProxy.enable = true;
+
   # Needed to build large dependencies, which can come from surprising places.
   # Without this, oom-killer will still kill g++ on 32GB (29GB free) hosts.
   swapDevices = [
@@ -169,6 +171,11 @@
       size = 16 * 1024; # 16GB.
     }
   ];
+
+  # Ensure agenix secrets are decrypted before NixOS sets up user accounts,
+  # so that hashedPasswordFile references are available during activation.
+  system.activationScripts.users.deps = [ "agenixInstall" ];
+
   # Further make life easier for builds by lowering the OOM score of the service
   # used to build.
   systemd.services.nix-daemon.serviceConfig = {
