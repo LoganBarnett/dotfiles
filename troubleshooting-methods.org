@@ -1,0 +1,1128 @@
+#+title:     Troubleshooting methods
+#+author:    Logan Barnett
+#+email:     logustus@gmail.com
+#+date:      <2026-03-26 Thu>
+#+language:  en
+#+file_tags:
+#+tags:
+
+* Troubleshooting Methods
+
+Common troubleshooting issues should be documented here.
+
+Try to keep log spew very minimal here to avoid clutter.  Move troubleshooting
+_sessions_ to [[./toil-log.org]].
+
+** General Build Troubleshooting Tips
+
+Since Nix can run arbitrary build scripts, the area for things can be quite
+infinite.  But still there's some things we can check on.
+
+*** Is the Build Issue Consistent?
+
+This might sound obvious, but what happens if the same build is run again?
+
+Sometimes this happens because ~oomkiller~ struck at a bad time for a big source
+build.  Other times it could be some issue with networking.  While some of these
+issues "shouldn't" happen with Nix, it doesn't mean there aren't lingering ways
+in which a build can fail inconsistently.
+
+Although in all likelihood, if you have an intermittent build issue, it could be
+resulting from something about the system itself, rather than something with the
+build.
+
+*** Upgrading ~nixpkgs~
+
+While you can upgrade ~nixpkgs~ (and other things as well), this is kind of a
+scorched earth operation.  Since we follow unstable, this generally means
+exchanging one problem for another, or just getting new problems.  You might
+think you've moved on from the problem because it got fixed, only to find
+something _earlier_ in the build chain now fails instead.  Once that's fixed,
+you're back to square one.
+
+That said, sometimes it does actually fix things.
+
+Try to setup a new Flake input so other machines needn't join you on this risky
+journey.  It's a bit tedious, and there's perhaps something we could do better
+to address that.  It will make our ~flake.nix~ look rather ugly though, I bet.
+
+*** Remove Hacks
+
+Oftentimes there are things sitting in [[file:./overlays/default.nix]] which cause
+issues against the current version of ~nixpkgs~ or some other input.  We pinned
+something to an older version, and now the build with that older version no
+longer works.
+
+Be mindful that backing out an overlay for one system might break another one.
+Making some conditional overlays is a good idea.  The generic overlays are
+rather harmful in this way, and going forward we should bind an overlay either
+to a host or a ~nixos-module~ so the overlay is both local to the problem it's
+trying to solve.  This makes it discoverable and also only gets applied if the
+module or host in question is involved.
+
+*** Finding Issues in ~nixpkgs~
+
+Sometimes finding issues out there using the parts of the error message you see
+can be helpful.  If doing [[Upgrading ~nixpkgs~]], this could be helpful in knowing
+which commit to advance to.  Just be sure that it's a future commit.
+
+*** Pin to an older, working version
+
+Knowing what the older, working version is can be a challenge, but the first
+step in finding out is just trying the prior version (check the git commit
+history).  Oftentimes to do this without stepping all of ~nixpkgs~ back in time
+(and thus screwing up other things), I'll create an overlay that replaces the
+derivation with a hard copy of the old derivation.  This also lets me try things
+out if I want to try debugging the old derivation itself.
+
+It would be nice if we had a Flake input based ~git bisect~.  I've thought about
+making a program to help with this, since there doesn't seem to be anything out
+there already.  Then we could easily create issues in ~nixpkgs~ as well as flip
+to an old version.
+
+*** File a ticket
+
+This might seem like the first thing most people do, but for me this is the last
+thing.  Maybe that's not great in some ways, but I like to keep my issues I file
+very complete.  Sometimes creating these kinds of things in isolation can be
+difficult.  I know not everyone needs that level of detail, but I like to give
+it, and following the other steps usually solves the issue for me, or through
+[[Finding Issues in ~nixpkgs~]] I find the issue already exists.
+
+** DONE ~age~ attribute missing
+CLOSED: [2024-11-29 Fri 13:45]
+
+Fixed via PR: https://github.com/oddlama/agenix-rekey/pull/56
+
+This error appears when running ~agenix rekey -a~.
+
+The exact error is:
+
+#+begin_example
+       error: attribute 'age' missing
+       at /nix/store/zy9vgszqqqh51wmk8cjj6hghx6fydwbi-source/apps/rekey.nix:41:43:
+           40|
+           41|   nodesWithDerivationStorage = filter (x: x.config.age.rekey.storageMode == "derivation") (attrValues nodes);
+             |                                           ^
+           42|
+#+end_example
+
+This means there is a host that doesn't have ~agenix~ on it as a module.  Find
+the host in your ~flake.nix~ and remove the entry, then run again.
+
+If we could somehow print the ~x~ on the error, we'd be in a great spot to find
+the issue.
+** ~agenix~ or ~agenix rekey~ throws ~expected a set but found a string:~
+
+When this happens you'll see the value is the path to an element inside of the
+~agenix.rekey.masterIdentities~ list.
+
+The full error:
+
+#+begin_example
+error:
+       … while calling the 'derivationStrict' builtin
+         at <nix/derivation-internal.nix>:34:12:
+           33|
+           34|   strict = derivationStrict drvAttrs;
+             |            ^
+           35|
+
+       … while evaluating derivation 'agenix-rekey'
+         whose name attribute is located at /nix/store/l1bdj49xb3rj3d24s7m58qmr5i3dwrb2-source/pkgs/stdenv/generic/make-derivation.nix:336:7
+
+       … while evaluating attribute 'text' of derivation 'agenix-rekey'
+         at /nix/store/l1bdj49xb3rj3d24s7m58qmr5i3dwrb2-source/pkgs/build-support/trivial-builders/default.nix:102:17:
+          101|       ({
+          102|         inherit text executable checkPhase allowSubstitutes preferLocalBuild;
+             |                 ^
+          103|         passAsFile = [ "text" ]
+
+       (stack trace truncated; use '--show-trace' to show the full, detailed trace)
+
+       error: expected a set but found a string: "/nix/store/hjxw6pyqs2f6s8xm2zr8aynciar35zsy-source/nix/secrets/agenix-master-key-3.age"
+#+end_example
+
+This happens even when running something incredibly fundamental like ~agenix
+rekey --help~.
+
+One of the only outputs we see is this:
+
+#+begin_example
+Collecting information about hosts. This may take a while...
+#+end_example
+
+I also saw warnings about not using ~nodes~ anymore and favoring
+~nixosConfigurations~ in the ~agenix-rekey.configure~ parameters.  This was a
+trivial change I affected, and made no difference in behavior.
+
+This can be traced to ~package.nix~ in ~agenix-rekey~.  The next line is where
+it runs ~nix run ... #agenix-rekey.${system}.$APP~.  It doesn't seem to matter
+what ~$APP~ resolves to.  I believe this is the Nix invocation that is failing.
+The error itself seems to be in building a derivation, which is probably this
+run script.
+
+I looked through the configuration more to verify things.  ~pkgs~ seemed to be a
+culprit of prior problems I've experienced, so I set that.  I assumed my build
+host's platform of ~aarch64-darwin~ and included my overlays, but still no
+change in behavior.
+
+The next part of this seems to point at ~./apps/${app}.nix~.
+
+The ~text~ attribute is what is complaining, but there is no mention of it in
+the ~apps/rekey.nix~ file.  None of the other files under ~apps~ have it either.
+None of the files have mention of ~masterIdentities~ either.
+
+Apparently, if one uses ~--show-trace~ in all the right places (or just
+everywhere), a more detailed stack can be found:
+
+#+begin_example
+agenix --show-trace rekey --show-trace generate --show-trace
+
+Collecting information about hosts. This may take a while...
+warning: Git tree '/Users/logan/dev/dotfiles' is dirty
+error:
+       … while calling the 'derivationStrict' builtin
+         at <nix/derivation-internal.nix>:34:12:
+           33|
+           34|   strict = derivationStrict drvAttrs;
+             |            ^
+           35|
+
+       … while evaluating derivation 'agenix-generate'
+         whose name attribute is located at /nix/store/l1bdj49xb3rj3d24s7m58qmr5i3dwrb2-source/pkgs/stdenv/generic/make-derivation.nix:336:7
+
+       … while evaluating attribute 'text' of derivation 'agenix-generate'
+         at /nix/store/l1bdj49xb3rj3d24s7m58qmr5i3dwrb2-source/pkgs/build-support/trivial-builders/default.nix:102:17:
+          101|       ({
+          102|         inherit text executable checkPhase allowSubstitutes preferLocalBuild;
+             |                 ^
+          103|         passAsFile = [ "text" ]
+
+       … while calling the 'concatStringsSep' builtin
+         at /nix/store/4jjvcww3gdkvahwcvbmd5cwn7pndbn9h-source/apps/generate.nix:246:7:
+          245|   KNOWN_SECRETS=(
+          246|     ${concatStringsSep "\n" (map (x: escapeShellArg x.sourceFile) (attrValues secretsWithContext))}
+             |       ^
+          247|   )
+
+       … while calling the 'map' builtin
+         at /nix/store/4jjvcww3gdkvahwcvbmd5cwn7pndbn9h-source/apps/generate.nix:246:30:
+          245|   KNOWN_SECRETS=(
+          246|     ${concatStringsSep "\n" (map (x: escapeShellArg x.sourceFile) (attrValues secretsWithContext))}
+             |                              ^
+          247|   )
+
+       … while calling the 'attrValues' builtin
+         at /nix/store/4jjvcww3gdkvahwcvbmd5cwn7pndbn9h-source/apps/generate.nix:246:68:
+          245|   KNOWN_SECRETS=(
+          246|     ${concatStringsSep "\n" (map (x: escapeShellArg x.sourceFile) (attrValues secretsWithContext))}
+             |                                                                    ^
+          247|   )
+
+       … while calling the 'foldl'' builtin
+         at /nix/store/4jjvcww3gdkvahwcvbmd5cwn7pndbn9h-source/apps/generate.nix:113:24:
+          112|   # Deduplicates secrets if the generator is the same, otherwise throws an error.
+          113|   secretsWithContext = foldl' (
+             |                        ^
+          114|     set: host: foldl' (addGeneratedSecretChecked host) set (attrNames nodes.${host}.config.age.secrets)
+
+       … while calling anonymous lambda
+         at /nix/store/4jjvcww3gdkvahwcvbmd5cwn7pndbn9h-source/apps/generate.nix:114:10:
+          113|   secretsWithContext = foldl' (
+          114|     set: host: foldl' (addGeneratedSecretChecked host) set (attrNames nodes.${host}.config.age.secrets)
+             |          ^
+          115|   ) { } (attrNames nodes);
+
+       … while calling the 'foldl'' builtin
+         at /nix/store/4jjvcww3gdkvahwcvbmd5cwn7pndbn9h-source/apps/generate.nix:114:16:
+          113|   secretsWithContext = foldl' (
+          114|     set: host: foldl' (addGeneratedSecretChecked host) set (attrNames nodes.${host}.config.age.secrets)
+             |                ^
+          115|   ) { } (attrNames nodes);
+
+       … while calling 'addGeneratedSecretChecked'
+         at /nix/store/4jjvcww3gdkvahwcvbmd5cwn7pndbn9h-source/apps/generate.nix:62:16:
+           61|   addGeneratedSecretChecked =
+           62|     host: set: secretName:
+             |                ^
+           63|     let
+
+       … in the condition of the assert statement
+         at /nix/store/4jjvcww3gdkvahwcvbmd5cwn7pndbn9h-source/apps/generate.nix:94:7:
+           93|       # Assert that the generator is the same if it was defined on multiple hosts
+           94|       assert assertMsg (hasAttr sourceFile set -> script == set.${sourceFile}.script)
+             |       ^
+           95|         "Generator definition of ${secretName} on ${host} differs from definitions on other hosts: ${
+
+       … from call site
+         at /nix/store/4jjvcww3gdkvahwcvbmd5cwn7pndbn9h-source/apps/generate.nix:94:14:
+           93|       # Assert that the generator is the same if it was defined on multiple hosts
+           94|       assert assertMsg (hasAttr sourceFile set -> script == set.${sourceFile}.script)
+             |              ^
+           95|         "Generator definition of ${secretName} on ${host} differs from definitions on other hosts: ${
+
+       … while calling 'assertMsg'
+         at /nix/store/l1bdj49xb3rj3d24s7m58qmr5i3dwrb2-source/lib/asserts.nix:41:5:
+           40|     pred:
+           41|     msg:
+             |     ^
+           42|     pred || builtins.throw msg;
+
+       … in the left operand of the OR (||) operator
+         at /nix/store/l1bdj49xb3rj3d24s7m58qmr5i3dwrb2-source/lib/asserts.nix:42:10:
+           41|     msg:
+           42|     pred || builtins.throw msg;
+             |          ^
+           43|
+
+       … in the right operand of the IMPL (->) operator
+         at /nix/store/4jjvcww3gdkvahwcvbmd5cwn7pndbn9h-source/apps/generate.nix:94:48:
+           93|       # Assert that the generator is the same if it was defined on multiple hosts
+           94|       assert assertMsg (hasAttr sourceFile set -> script == set.${sourceFile}.script)
+             |                                                ^
+           95|         "Generator definition of ${secretName} on ${host} differs from definitions on other hosts: ${
+
+       … from call site
+         at /nix/store/4jjvcww3gdkvahwcvbmd5cwn7pndbn9h-source/apps/generate.nix:70:16:
+           69|         relativeToFlake secret.rekeyFile;
+           70|       script = secret.generator._script {
+             |                ^
+           71|         inherit secret pkgs;
+
+       … while calling 'merge'
+         at /nix/store/l1bdj49xb3rj3d24s7m58qmr5i3dwrb2-source/lib/types.nix:773:9:
+          772|       merge = loc: defs:
+          773|         fnArgs: (mergeDefinitions (loc ++ [ "<function body>" ]) elemType (map (fn: { inherit (fn) file; value = fn.value fnArgs; }) defs)).mergedValue;
+             |         ^
+          774|       getSubOptions = prefix: elemType.getSubOptions (prefix ++ [ "<function body>" ]);
+
+       … while evaluating the attribute 'mergedValue'
+         at /nix/store/l1bdj49xb3rj3d24s7m58qmr5i3dwrb2-source/lib/modules.nix:851:5:
+          850|     # Type-check the remaining definitions, and merge them. Or throw if no definitions.
+          851|     mergedValue =
+             |     ^
+          852|       if isDefined then
+
+       … while evaluating a branch condition
+         at /nix/store/l1bdj49xb3rj3d24s7m58qmr5i3dwrb2-source/lib/modules.nix:852:7:
+          851|     mergedValue =
+          852|       if isDefined then
+             |       ^
+          853|         if all (def: type.check def.value) defsFinal then type.merge loc defsFinal
+
+       … while evaluating the attribute 'values'
+         at /nix/store/l1bdj49xb3rj3d24s7m58qmr5i3dwrb2-source/lib/modules.nix:845:9:
+          844|       in {
+          845|         values = defs''';
+             |         ^
+          846|         inherit (defs'') highestPrio;
+
+       … while evaluating a branch condition
+         at /nix/store/l1bdj49xb3rj3d24s7m58qmr5i3dwrb2-source/lib/modules.nix:841:11:
+          840|           # Avoid sorting if we don't have to.
+          841|           if any (def: def.value._type or "" == "order") defs''.values
+             |           ^
+          842|           then sortProperties defs''.values
+
+       … while calling the 'any' builtin
+         at /nix/store/l1bdj49xb3rj3d24s7m58qmr5i3dwrb2-source/lib/modules.nix:841:14:
+          840|           # Avoid sorting if we don't have to.
+          841|           if any (def: def.value._type or "" == "order") defs''.values
+             |              ^
+          842|           then sortProperties defs''.values
+
+       … while evaluating the attribute 'values'
+         at /nix/store/l1bdj49xb3rj3d24s7m58qmr5i3dwrb2-source/lib/modules.nix:944:7:
+          943|     in {
+          944|       values = concatMap (def: if getPrio def == highestPrio then [(strip def)] else []) defs;
+             |       ^
+          945|       inherit highestPrio;
+
+       … while calling the 'concatMap' builtin
+         at /nix/store/l1bdj49xb3rj3d24s7m58qmr5i3dwrb2-source/lib/modules.nix:944:16:
+          943|     in {
+          944|       values = concatMap (def: if getPrio def == highestPrio then [(strip def)] else []) defs;
+             |                ^
+          945|       inherit highestPrio;
+
+       … while calling the 'concatMap' builtin
+         at /nix/store/l1bdj49xb3rj3d24s7m58qmr5i3dwrb2-source/lib/modules.nix:831:17:
+          830|         # Process mkMerge and mkIf properties.
+          831|         defs' = concatMap (m:
+             |                 ^
+          832|           map (value: { inherit (m) file; inherit value; }) (addErrorContext "while evaluating definitions from `${m.file}':" (dischargeProperties m.value))
+
+       … while calling anonymous lambda
+         at /nix/store/l1bdj49xb3rj3d24s7m58qmr5i3dwrb2-source/lib/modules.nix:831:28:
+          830|         # Process mkMerge and mkIf properties.
+          831|         defs' = concatMap (m:
+             |                            ^
+          832|           map (value: { inherit (m) file; inherit value; }) (addErrorContext "while evaluating definitions from `${m.file}':" (dischargeProperties m.value))
+
+       … while calling the 'map' builtin
+         at /nix/store/l1bdj49xb3rj3d24s7m58qmr5i3dwrb2-source/lib/modules.nix:832:11:
+          831|         defs' = concatMap (m:
+          832|           map (value: { inherit (m) file; inherit value; }) (addErrorContext "while evaluating definitions from `${m.file}':" (dischargeProperties m.value))
+             |           ^
+          833|         ) defs;
+
+       … while evaluating definitions from `/nix/store/l1bdj49xb3rj3d24s7m58qmr5i3dwrb2-source/flake.nix':
+
+       … from call site
+         at /nix/store/l1bdj49xb3rj3d24s7m58qmr5i3dwrb2-source/lib/modules.nix:832:128:
+          831|         defs' = concatMap (m:
+          832|           map (value: { inherit (m) file; inherit value; }) (addErrorContext "while evaluating definitions from `${m.file}':" (dischargeProperties m.value))
+             |                                                                                                                                ^
+          833|         ) defs;
+
+       … while calling 'dischargeProperties'
+         at /nix/store/l1bdj49xb3rj3d24s7m58qmr5i3dwrb2-source/lib/modules.nix:903:25:
+          902|   */
+          903|   dischargeProperties = def:
+             |                         ^
+          904|     if def._type or "" == "merge" then
+
+       … while evaluating a branch condition
+         at /nix/store/l1bdj49xb3rj3d24s7m58qmr5i3dwrb2-source/lib/modules.nix:904:5:
+          903|   dischargeProperties = def:
+          904|     if def._type or "" == "merge" then
+             |     ^
+          905|       concatMap dischargeProperties def.contents
+
+       … while evaluating the attribute 'value'
+         at /nix/store/l1bdj49xb3rj3d24s7m58qmr5i3dwrb2-source/lib/types.nix:773:106:
+          772|       merge = loc: defs:
+          773|         fnArgs: (mergeDefinitions (loc ++ [ "<function body>" ]) elemType (map (fn: { inherit (fn) file; value = fn.value fnArgs; }) defs)).mergedValue;
+             |                                                                                                          ^
+          774|       getSubOptions = prefix: elemType.getSubOptions (prefix ++ [ "<function body>" ]);
+
+       … from call site
+         at /nix/store/l1bdj49xb3rj3d24s7m58qmr5i3dwrb2-source/lib/types.nix:773:114:
+          772|       merge = loc: defs:
+          773|         fnArgs: (mergeDefinitions (loc ++ [ "<function body>" ]) elemType (map (fn: { inherit (fn) file; value = fn.value fnArgs; }) defs)).mergedValue;
+             |                                                                                                                  ^
+          774|       getSubOptions = prefix: elemType.getSubOptions (prefix ++ [ "<function body>" ]);
+
+       … while calling 'tls-signed-certificate'
+         at /nix/store/nvwwcv0awllc55sjg148l28zvy7i40rk-source/nix/nixos-modules/secrets.nix:92:45:
+           91|     # won't use the same one twice.  This should be checked in.
+           92|     age.generators.tls-signed-certificate = {
+             |                                             ^
+           93|       decrypt,
+
+       … from call site
+         at /nix/store/nvwwcv0awllc55sjg148l28zvy7i40rk-source/nix/nixos-modules/secrets.nix:106:7:
+          105|     in
+          106|       throwIfNot (isAttrs settings) "Secret '${name}' must have a `settings` attrset."
+             |       ^
+          107|       throwIfNot (isString settings.fqdn) "Secret '${name}' is missing a `fqdn` string."
+
+       … while calling anonymous lambda
+         at /nix/store/l1bdj49xb3rj3d24s7m58qmr5i3dwrb2-source/lib/trivial.nix:868:40:
+          867|   */
+          868|   throwIfNot = cond: msg: if cond then x: x else throw msg;
+             |                                        ^
+          869|
+
+       … while evaluating the attribute 'ageMasterDecrypt'
+         at /nix/store/4jjvcww3gdkvahwcvbmd5cwn7pndbn9h-source/nix/lib.nix:174:3:
+          173|   ageMasterEncrypt = "${ageWrapperScript}/bin/ageWrapper encrypt";
+          174|   ageMasterDecrypt = "${ageWrapperScript}/bin/ageWrapper decrypt";
+             |   ^
+          175|   ageHostEncrypt =
+
+       … while calling the 'getAttr' builtin
+         at <nix/derivation-internal.nix>:44:19:
+           43|       value = commonAttrs // {
+           44|         outPath = builtins.getAttr outputName strict;
+             |                   ^
+           45|         drvPath = strict.drvPath;
+
+       … while calling the 'derivationStrict' builtin
+         at <nix/derivation-internal.nix>:34:12:
+           33|
+           34|   strict = derivationStrict drvAttrs;
+             |            ^
+           35|
+
+       … while evaluating derivation 'ageWrapper'
+         whose name attribute is located at /nix/store/l1bdj49xb3rj3d24s7m58qmr5i3dwrb2-source/pkgs/stdenv/generic/make-derivation.nix:336:7
+
+       … while evaluating attribute 'text' of derivation 'ageWrapper'
+         at /nix/store/l1bdj49xb3rj3d24s7m58qmr5i3dwrb2-source/pkgs/build-support/trivial-builders/default.nix:102:17:
+          101|       ({
+          102|         inherit text executable checkPhase allowSubstitutes preferLocalBuild;
+             |                 ^
+          103|         passAsFile = [ "text" ]
+
+       … while calling the 'concatStringsSep' builtin
+         at /nix/store/4jjvcww3gdkvahwcvbmd5cwn7pndbn9h-source/nix/lib.nix:60:9:
+           59|       # Master identities that have a pubkey can be added without further treatment.
+           60|       ${concatStringsSep "\n" (
+             |         ^
+           61|         map (
+
+       … while calling the 'map' builtin
+         at /nix/store/4jjvcww3gdkvahwcvbmd5cwn7pndbn9h-source/nix/lib.nix:61:9:
+           60|       ${concatStringsSep "\n" (
+           61|         map (
+             |         ^
+           62|           x:
+
+       … while calling the 'filter' builtin
+         at /nix/store/4jjvcww3gdkvahwcvbmd5cwn7pndbn9h-source/nix/lib.nix:64:12:
+           63|           ''masterIdentityMap[${escapeShellArg (removeSuffix "\n" x.pubkey)}]=${escapeShellArg x.identity}''
+           64|         ) (filter (x: x.pubkey != null) mergedMasterIdentities)
+             |            ^
+           65|       )}
+
+       … while calling anonymous lambda
+         at /nix/store/4jjvcww3gdkvahwcvbmd5cwn7pndbn9h-source/nix/lib.nix:64:20:
+           63|           ''masterIdentityMap[${escapeShellArg (removeSuffix "\n" x.pubkey)}]=${escapeShellArg x.identity}''
+           64|         ) (filter (x: x.pubkey != null) mergedMasterIdentities)
+             |                    ^
+           65|       )}
+
+       … while selecting an attribute
+         at /nix/store/4jjvcww3gdkvahwcvbmd5cwn7pndbn9h-source/nix/lib.nix:64:23:
+           63|           ''masterIdentityMap[${escapeShellArg (removeSuffix "\n" x.pubkey)}]=${escapeShellArg x.identity}''
+           64|         ) (filter (x: x.pubkey != null) mergedMasterIdentities)
+             |                       ^
+           65|       )}
+
+       error: expected a set but found a string: "/nix/store/nvwwcv0awllc55sjg148l28zvy7i40rk-source/nix/secrets/agenix-master-key-3.age"
+#+end_example
+
+With that, we're able to find the broken line:
+
+#+begin_example
+       … while calling the 'filter' builtin
+         at /nix/store/4jjvcww3gdkvahwcvbmd5cwn7pndbn9h-source/nix/lib.nix:64:12:
+           63|           ''masterIdentityMap[${escapeShellArg (removeSuffix "\n" x.pubkey)}]=${escapeShellArg x.identity}''
+           64|         ) (filter (x: x.pubkey != null) mergedMasterIdentities)
+             |            ^
+           65|       )}
+
+       … while calling anonymous lambda
+         at /nix/store/4jjvcww3gdkvahwcvbmd5cwn7pndbn9h-source/nix/lib.nix:64:20:
+           63|           ''masterIdentityMap[${escapeShellArg (removeSuffix "\n" x.pubkey)}]=${escapeShellArg x.identity}''
+           64|         ) (filter (x: x.pubkey != null) mergedMasterIdentities)
+             |                    ^
+           65|       )}
+
+       … while selecting an attribute
+         at /nix/store/4jjvcww3gdkvahwcvbmd5cwn7pndbn9h-source/nix/lib.nix:64:23:
+           63|           ''masterIdentityMap[${escapeShellArg (removeSuffix "\n" x.pubkey)}]=${escapeShellArg x.identity}''
+           64|         ) (filter (x: x.pubkey != null) mergedMasterIdentities)
+             |                       ^
+           65|       )}
+#+end_example
+
+Which is line 64 of ~agenix-rekey/nix/lib.nix~.  The expression in question is:
+
+#+begin_src nix :results none :exports code :tangle no
+(filter (x: x.pubkey != null) mergedMasterIdentities)
+#+end_src
+
+And my ~masterIdentities~ has no ~pubkey~.  That said, I did try the ~pubkey~
+and ~identity~ form and found a new error.  I am starting to think this is a bug.
+
+Here's the error when trying the attrset form:
+
+#+begin_example
+       error: A definition for option `age.rekey.masterIdentities."[definition 1-entry 1]"' is not of type `string or path convertible to it'. Definition values:
+       - In `<unknown-file>':
+           {
+             identity = /nix/store/1gd1hrr3wjvz7mk4h9rbhzss4yaqrsw2-source/nix/secrets/agenix-master-key-3.age;
+             pubkey = null;
+           }
+#+end_example
+
+Where the declaration is now this:
+
+#+begin_src nix :results none :exports code
+    masterIdentities = [
+      {
+        identity = ../secrets/agenix-master-key-3.age;
+        pubkey = null;
+      }
+    ];
+#+end_src
+
+I also tried this:
+
+#+begin_src nix :results none :exports code
+    masterIdentities = [
+      {
+        identity = ../secrets/agenix-master-key-3.age;
+      }
+    ];
+#+end_src
+
+Because I have no ~.pub~ file.  No change in behavior.
+
+For fun I even made up a value for ~pubkey~:
+
+#+begin_src nix :results none :exports code
+    masterIdentities = [
+      {
+        identity = ../secrets/agenix-master-key-3.age;
+        pubkey = "foobar";
+      }
+    ];
+#+end_src
+
+Is there a mechanism somewhere that's supposed to coerce direct file references
+into something that has a ~pubkey~ entry?
+
+I started a manual bisect on ~agenix-rekey~.  Unfortunately code formatting
+tools have made this a bit difficult.  I managed to get things working again by
+going by several months, all the way back to my last contribution.
+
+3137e9b1df0724d0af8dbeb8c36f8eee4a26869a
+
+The last time I saw it broken was d6de009fba42ac7f7e9c356142220570c6c07877,
+"allow rekeying 0 secrets".  So it might be somewhere in between those.
+
+Next iteration: The commit "fix: show an error when no recipients are set in a
+master identity file" is broken too. c071067f7d972552f5170cf8665643ed0ec19a6d
+
+Well this is unanticipated.  I narrowed down the issue to this commit:
+
+c6c1ca5b9ceaaa40fd979fb25bb7043adf4554ad
+
+fix: correctly remove apps from exposed path
+
+The error changes a little, but is ultimately the same I think:
+
+#+begin_example
+error:
+       … while calling the 'derivationStrict' builtin
+         at <nix/derivation-internal.nix>:34:12:
+           33|
+           34|   strict = derivationStrict drvAttrs;
+             |            ^
+           35|
+
+       … while evaluating derivation 'agenix-generate'
+         whose name attribute is located at /nix/store/l1bdj49xb3rj3d24s7m58qmr5i3dwrb2-source/pkgs/stdenv/generic/make-derivation.nix:336:7
+
+       … while evaluating attribute 'text' of derivation 'agenix-generate'
+         at /nix/store/l1bdj49xb3rj3d24s7m58qmr5i3dwrb2-source/pkgs/build-support/trivial-builders/default.nix:102:17:
+          101|       ({
+          102|         inherit text executable checkPhase allowSubstitutes preferLocalBuild;
+             |                 ^
+          103|         passAsFile = [ "text" ]
+
+       … while evaluating definitions from `/nix/store/l1bdj49xb3rj3d24s7m58qmr5i3dwrb2-source/flake.nix':
+
+       (stack trace truncated; use '--show-trace' to show the full, detailed trace)
+
+       error: cannot coerce a set to a string: { identity = "/nix/store/zidq8pvpbd7g3hpl5qi2v3awy0si1x8a-source/nix/secrets/agenix-master-key-3.age"; pubkey = null; }
+
+#+end_example
+
+The diff:
+
+#+begin_src diff :results none :exports code
+@@ -57,13 +57,14 @@
+         # pkgs.age and pkgs.rage.
+         agePackage ? (p: p.rage),
+       }:
+-        flake-utils.lib.eachDefaultSystem (system: {
++        (flake-utils.lib.eachDefaultSystem (system: {
+           apps = pkgs.${system}.lib.genAttrs allApps (app:
+             import ./apps/${app}.nix {
+               inherit nodes userFlake agePackage;
+               pkgs = pkgs.${system};
+             });
+-        });
++        }))
++        .apps;
+
+       # XXX: deprecated, scheduled for removal in late 2024. Use the package instead of
+       # defining apps. This is just a compatibility wrapper that defines apps with
+#+end_src
+
+And this just blows my mind.  How could that be causing the issue?!
+
+This change doesn't seem to have directly permeated back to what's at the HEAD
+of ~main~.  That said, there seems to be some refactors done that might make the
+current state less obvious that this is causing the issue.
+
+I can also see here why there would be an issue with overlays not being
+respected.  It does its own import of nixpkgs which doesn't get any overlays
+added to it.  That's a separate issue for another day.
+
+** Raspberry Pi startup issues
+
+When cooking a brand new host image for a Raspberry Pi (which is just a most
+impressive way to use Nix), one may notice some issues with the host on its
+first boot.
+
+I've seen only with some number of reboots later did it decide to create the
+swap file.  ~agenix~ may not lay down its secrets immediately and so services
+may fail to boot.  I think there is an issue describing this for ~agenix~.  I
+can't speak to the others.
+
+I've also noticed it has trouble with my small display sometimes.  But in the
+flicker it makes, sometimes I can make out what seems to be a very small version
+of a boot or login screen, with its telltale gray and green on black.
+
+This might be indicative of issues with the Raspberry Pi 5 settings.  I have
+seen many issues crop up in the issue trackers, but I haven't really looked into
+them since I haven't gotten that far yet.
+
+I've seen this issue when trying to move down in ~systemctl list-units~:
+
+#+begin_example
+/*** stack smashing detected ***: terminated
+#+end_example
+
+I don't know what it means yet.
+
+This ticket is indicative of trouble, and suggests turning off uboot:
+https://github.com/nix-community/raspberry-pi-nix/issues/16
+
+Another is to use the rpi4 kernel, which I guess is supposed to work just as
+well?
+
+I turned off uboot, and rebooted the pi.  The screen was blank.  I moved the
+power to the screen from the Pi to a dedicated USB power source, and then
+replugged the HDMI cable to the screen.  The screen immediately showed me a
+Linux-staged boot sequence, but it's still going and the print is far too small
+for me to read.
+
+This makes me think under-voltage caused by the screen could've been causing
+some issues, but it's hard to say which caused which.  This last experimentation
+was done on ~selenium~ but I could fall back to ~gallium~ if it's still having
+boot issues.  For now, ~gallium~ is running and seems fairly healthy.
+
+** signature by a trusted key error
+
+The general error is of the form:
+copying path <nix-drv-path> to <host> error: cannot add path <nix-drv-path>
+because it lacks a signature by a trusted key.
+
+#+begin_example
+copying path '/nix/store/rp3ac35r3pfb3fqh3rdqzlzsq67jpnws-source' to 'ssh://gallium.proton'error: cannot add path '/nix/store/rp3ac35r3pfb3fqh3rdqzlzsq67jpnws-source' because it lacks a signature by a trusted key
+#+end_example
+
+** building painful things
+*** torch
+**** opencv2
+
+These builds take forever and I'm not sure if it's always dying in the same place.
+
+#+begin_example
+[ 63%] Building NVCC (Device) object modules/cudaimgproc/CMakeFiles/cuda_compile_1.dir/src/cuda/cuda_compile_1_generated_hough_segments.cu.o
+[ 63%] Building CXX object modules/dnn/CMakeFiles/opencv_test_dnn.dir/test/test_main.cpp.o
+during RTL pass: dse1
+In file included from /build/source/modules/ts/include/opencv2/ts.hpp:126,
+                 from /build/source/modules/features2d/test/test_precomp.hpp:7,
+                 from /build/source/modules/features2d/test/test_drawing.cpp:7:
+/build/source/modules/ts/include/opencv2/ts/ts_gtest.h: In member function 'void testing::internal::ParameterizedTestCaseInfo<TestCase>::RegisterTests() [with TestCase = testing::TestWithParam<std::tuple<perf::Mat>
+/build/source/modules/ts/include/opencv2/ts/ts_gtest.h:12117:3: internal compiler error: Segmentation fault
+12117 |   }  // RegisterTests
+      |   ^
+0x17b29be diagnostic_impl(rich_location*, diagnostic_metadata const*, int, char const*, __va_list_tag (*) [1], diagnostic_t)
+        ???:0
+0x17b2d97 internal_error(char const*, ...)
+        ???:0
+0xd20acf crash_signal(int)
+        ???:0
+0x96adcd df_note_compute(bitmap_head*)
+        ???:0
+0x965831 df_analyze_problem(dataflow*, bitmap_head*, int*, int)
+        ???:0
+0x965929 df_analyze_1()
+        ???:0
+0x161f432 (anonymous namespace)::pass_rtl_dse1::execute(function*)
+        ???:0
+Please submit a full bug report,
+with preprocessed source if appropriate.
+Please include the complete backtrace with any bug report.
+See <https://gcc.gnu.org/bugs/> for instructions.
+make[2]: *** [modules/features2d/CMakeFiles/opencv_test_features2d.dir/build.make:230: modules/features2d/CMakeFiles/opencv_test_features2d.dir/test/test_drawing.cpp.o] Error 1
+make[1]: *** [CMakeFiles/Makefile2:4866: modules/features2d/CMakeFiles/opencv_test_features2d.dir/all] Error 2
+make[1]: *** Waiting for unfinished jobs....
+#+end_example
+
+I noticed that ~oomd~ is running.  I've turned it off and am trying again.
+Furthermore, I have forced this to be off for future generations of ~lithium~.
+
+After that:
+
+#+begin_example
+nvcc error   : 'cudafe++' died due to signal 11 (Invalid memory reference)
+nvcc error   : 'cudafe++' core dumped
+CMake Error at cuda_compile_1_generated_reduce.cu.o.Release.cmake:280 (message):
+  Error generating file
+  /build/source/build/modules/cudaarithm/CMakeFiles/cuda_compile_1.dir/src/cuda/./cuda_compile_1_generated_reduce.cu.o
+#+end_example
+
+I confirmed ~oomd~ is disabled.
+
+This is exhausting.  Can I just use ~torch-bin~?
+
+Another attempt:
+
+#+begin_example
+[  9%] Building CXX object modules/imgproc/CMakeFiles/opencv_imgproc.dir/src/emd.cpp.o
+[  9%] Building CXX object modules/imgproc/CMakeFiles/opencv_imgproc.dir/src/featureselect.cpp.o
+[  9%] Building NVCC (Device) object modules/cudaarithm/CMakeFiles/cuda_compile_1.dir/src/cuda/cuda_compile_1_generated_div_mat.cu.o
+[  9%] Building NVCC (Device) object modules/cudaarithm/CMakeFiles/cuda_compile_1.dir/src/cuda/cuda_compile_1_generated_div_scalar.cu.o
+during GIMPLE pass: dom
+/build/source/modules/imgproc/src/drawing.cpp: In function 'void cv::polylines(cv::InputOutputArray, cv::InputArrayOfArrays, bool, const Scalar&, int, int, int)':
+/build/source/modules/imgproc/src/drawing.cpp:2409:6: internal compiler error: Segmentation fault
+ 2409 | void cv::polylines(InputOutputArray img, InputArrayOfArrays pts,
+      |      ^~
+0x17b29be diagnostic_impl(rich_location*, diagnostic_metadata const*, int, char const*, __va_list_tag (*) [1], diagnostic_t)
+        ???:0
+0x17b2d97 internal_error(char const*, ...)
+        ???:0
+0xd20acf crash_signal(int)
+        ???:0
+0xeb3110 expr_hash_elt::~expr_hash_elt()
+        ???:0
+0xe13271 (anonymous namespace)::pass_dominator::execute(function*)
+        ???:0
+Please submit a full bug report,
+with preprocessed source if appropriate.
+Please include the complete backtrace with any bug report.
+See <https://gcc.gnu.org/bugs/> for instructions.
+#+end_example
+
+Months later, even more:
+
+#+begin_example
+error: builder for '/nix/store/6di1ra9djnk7fa5sbv2yyy2q0q52cs8r-opencv-4.9.0.drv' failed with exit code 2;
+       last 25 log lines:
+       >       |                             ^~~
+       > /build/source/modules/core/include/opencv2/core/cvstd.inl.hpp: In function 'std::ostream& cv::operator<<(std::ostream&, const std::vector<Point_<_Tp> >&)':
+       > /build/source/modules/core/include/opencv2/core/cvstd.inl.hpp:107:29: error: 'get' is not a member of 'Formatter'
+       >   107 |     return out << Formatter::get()->format(Mat(vec));
+       >       |                             ^~~
+       > /build/source/modules/core/include/opencv2/core/cvstd.inl.hpp: In function 'std::ostream& cv::operator<<(std::ostream&, const std::vector<Point3_<_Tp> >&)':
+       > /build/source/modules/core/include/opencv2/core/cvstd.inl.hpp:114:29: error: 'get' is not a member of 'Formatter'
+       >   114 |     return out << Formatter::get()->format(Mat(vec));
+       >       |                             ^~~
+       > /build/source/modules/core/include/opencv2/core/cvstd.inl.hpp: In function 'std::ostream& cv::operator<<(std::ostream&, const Matx<_Tp, m, n>&)':
+       > /build/source/modules/core/include/opencv2/core/cvstd.inl.hpp:121:29: error: 'get' is not a member of 'Formatter'
+       >   121 |     return out << Formatter::get()->format(Mat(matx));
+       >       |                             ^~~
+       > CMake Error at cuda_compile_1_generated_gpu_mat_nd.cu.o.Release.cmake:280 (message):
+       >   Error generating file
+       >   /build/source/build/modules/core/CMakeFiles/cuda_compile_1.dir/src/cuda/./cuda_compile_1_generated_gpu_mat_nd.cu.o
+       >
+       >
+       > make[2]: *** [modules/core/CMakeFiles/opencv_core.dir/build.make:84: modules/core/CMakeFiles/cuda_compile_1.dir/src/cuda/cuda_compile_1_generated_gpu_mat_nd.cu.o] Error 1
+       > make[2]: *** Waiting for unfinished jobs....
+       > [  0%] Building CXX object CMakeFiles/ade.dir/3rdparty/ade/ade-0.1.2d/sources/ade/source/topological_sort.cpp.o
+       > [  0%] Linking CXX static library 3rdparty/lib/libade.a
+       > [  0%] Built target ade
+       > make[1]: *** [CMakeFiles/Makefile2:3727: modules/core/CMakeFiles/opencv_core.dir/all] Error 2
+       > make: *** [Makefile:166: all] Error 2
+       For full logs, run 'nix log /nix/store/6di1ra9djnk7fa5sbv2yyy2q0q52cs8r-opencv-4.9.0.drv'.
+#+end_example
+
+** ~switch~ or ~test~ is stalled
+
+If you can ~ssh~ to the host, there might be some other issues.  You could try
+restarting the ~nix-daemon~, but make sure it actually stops (as in you see no
+processes for it) before starting it back up.  If it gets lodged, you'll have to
+reboot.  I don't know what can be done to bring it back up without rebooting
+when it reaches this state.
+
+Even after the reboot, you might also try using ~remote-deploy~ instead of
+~proton-deploy~.  While ~proton-deploy~ should be preferred for security
+reasons, ~remote-deploy~ seems to involve less "fancy" that can break in a way
+that stalls the system.  Even just doing it once can sometimes dislodge whatever
+was going on.  I suspect there's some bugs with it, or ~nix copy~.
+
+** ~dig~ and ~nslookup~ resolve, but ~curl~, ~ping~, and ~ssh~ fail to resolve
+
+You might see something like this:
+
+#+begin_example
+$ dig bromine.proton
+
+; <<>> DiG 9.18.33 <<>> bromine.proton
+;; global options: +cmd
+;; Got answer:
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 48355
+;; flags: qr aa rd ra; QUERY: 1, ANSWER: 1, AUTHORITY: 0, ADDITIONAL: 1
+
+;; OPT PSEUDOSECTION:
+; EDNS: version: 0, flags:; udp: 4096
+;; QUESTION SECTION:
+;bromine.proton.			IN	A
+
+;; ANSWER SECTION:
+bromine.proton.		0	IN	A	192.168.254.178
+
+;; Query time: 8 msec
+;; SERVER: 192.168.254.254#53(192.168.254.254) (UDP)
+;; WHEN: Tue Apr 22 16:01:20 PDT 2025
+;; MSG SIZE  rcvd: 59
+#+end_example
+
+Or similarly:
+
+#+begin_example
+$ nslookup bromine.proton
+Server:		192.168.254.254
+Address:	192.168.254.254#53
+
+Name:	bromine.proton
+Address: 192.168.254.178
+#+end_example
+
+Success!  Right?  Except you see this:
+
+#+begin_example
+$ ssh bromine.proton
+ssh: Could not resolve hostname bromine.proton: nodename nor servname provided, or not known
+#+end_example
+
+And:
+
+#+begin_example
+$ ping bromine.proton
+ping: unknown host
+#+end_example
+
+And:
+
+#+begin_example
+$ curl bromine.proton
+curl: (6) Could not resolve host: bromine.proton
+#+end_example
+
+You can make sure all of the tools involved are using the Nix variety, in hopes
+that maybe the share the same ARP table or local cache.
+#+begin_src sh :results output :exports code
+which dig
+which nslookup
+which ping
+which curl
+which ssh
+#+end_src
+
+#+RESULTS:
+: /run/current-system/sw/bin/dig
+: /run/current-system/sw/bin/nslookup
+: /run/current-system/sw/bin/ping
+: /run/current-system/sw/bin/curl
+: /run/current-system/sw/bin/ssh
+
+Solution?
+
+Just wait :\
+
+#+begin_quote
+Welcome to DNS.
+
+-Matt Buckley
+#+end_quote
+
+This could be an issue with macOS's DNS cache.  I did use ~~/bin/dnsflush~ to no
+avail.  But not with ~sudo~ so who knows.
+
+** ~switch~ cannot find an old systemd unit
+
+You'll see something like this when doing a ~switch~, and the resulting error
+will halt any progression you have.
+
+#+begin_src text :results none :exports code
+restarting sysinit-reactivation.target
+Error: Failed to open unit file /nix/store/1rfg3jjqsqk2rvxyyxfc38pcphnkpj6m-nixos-system-copper-25.11.20250516.e56e0be/etc/systemd/system/mnt-nextcloud\x2ddata.mount
+#+end_src
+
+I found this to be a issue of the mount I was using wasn't working, but since
+it's a systemd generated mount (which springs from or to ~fstab~, I don't know
+which), it can get lost when the mount is down.  Fixing the mount (which was
+having trouble communicating over NFS) fixed the issue.
+
+*** is the store busted?
+
+This is a path I attempted, but didn't bear fruit.
+
+If you check for that path, you'll see it indeed doesn't exist.
+
+My first inclination was that perhaps there was a derivation where the store was
+incomplete, busted, or otherwise mutated.  Very bad.  TLDR; that wasn't the
+issue.  It's a derived path that's canonicalized incorrectly.
+
+-----
+
+First, let's check to see if that store path reference exists anywhere.  The
+~nixos-system-...~ bit tells us that this is the system generations.  On the
+host we can do:
+
+#+begin_src sh :results none :exports code
+narhash='1rfg3jjqsqk2rvxyyxfc38pcphnkpj6m'
+sudo grep \
+     --recursive \
+     --fixed-strings \
+     --with-filename \
+     --line-number \
+     --color=always \
+     "$narhash" \
+     /boot/loader/entries
+#+end_src
+
+You'll see something like this:
+
+#+begin_example
+/boot/loader/entries/nixos-generation-138.conf:6:options init=/nix/store/1rfg3jjqsqk2rvxyyxfc38pcphnkpj6m-nixos-system-copper-25.11.20250516.e56e0be/init loglevel=4
+#+end_example
+
+That ~138~ is our generation number.  We can look for that.
+
+#+begin_src sh :results none :exports code
+nixos-rebuild list-generations
+#+end_src
+
+#+begin_example
+Generation   Build-date           NixOS version           Kernel   Configuration Revision  Specialisation
+138 current  2025-10-19 19:43:47  25.11.20250516.e56e0be  6.12.28                          *
+137          2025-10-12 22:31:24  25.11.20250516.e56e0be  6.12.28                          *
+136          2025-10-12 22:27:00  25.11.20250516.e56e0be  6.12.28                          *
+135          2025-10-12 22:22:39  25.11.20250516.e56e0be  6.12.28                          *
+134          2025-10-12 21:33:20  25.11.20250516.e56e0be  6.12.28                          *
+...
+#+end_example
+
+In this case, ~138~ is current.
+
+So all this really tells us is the error is elsewhere, but it's printing the
+canonical path.
+
+
+
+
+** ~Cargo.lock~ does not exist error from random file
+
+There are two forms of this.  One is the remote deploy version, which generally
+can be traced back to another Rust package that is maintained upstream.  The
+other is a self-maintained Rust package is failing to build for legitimate
+reasons, regardless of locality.
+
+*** via remote deploy
+Here's an example spew:
+
+#+begin_example
+$ caffeinate proton-deploy switch titanium --show-trace
+
+building the system configuration...
+warning: Git tree '/Users/logan/dev/dotfiles' is dirty
+trace: 25.11.20251130.871b9fd
+error (ignored): error: interrupted by the user
+error: path '//nix/store/gfnv9n4h835fggiv4frwm1jvcpqn4nkr-Cargo.lock' does not exist
+#+end_example
+
+The ~interrupted by user~ message typically appears when once manually cancels
+the deployment, but this is not the case here.
+
+The fix is to use ~remote-deploy~ and see if it works there.  The hypothesis is
+that the file sought is referenced in a way that breaks sandboxing, and later
+versions of ~nixpkgs~ tightened the sandboxing.  After the ~remote-deploy~, you
+should be able to do ~proton-deploy~ invocations again.
+
+
+
+*** via self maintained Rust packages
+
+Generally the cause is this:
+
+#+begin_src nix :results none :exports code
+rustPlatform.buildRustPackage {
+  src = lib.cleanSource (../.);
+  cargoLock = {
+    lockFile = ../Cargo.lock;
+    outputHashes = { };
+  };
+  # ... other derivation stuff.
+}
+#+end_src
+
+The fix is to hinge it off of ~src~.
+
+#+begin_src nix :results none :exports code
+rustPlatform.buildRustPackage (let
+  src = lib.cleanSource (../.);
+in {
+  inherit src;
+  cargoLock = {
+    lockFile = "${src}/Cargo.lock";
+    outputHashes = { };
+  };
+  # ... other derivation stuff.
+})
+#+end_src
+
+** Global ~.gitignore~ file is ignored
+
+The symptom is that you see files appearing in your ~git status~ or equivalent
+invocations, even though they should clearly be ignored based on the contents of
+your global git ignore file.
+
+You can run:
+
+#+begin_src sh :results output :exports both
+git config --get core.excludesFile
+#+end_src
+
+#+RESULTS:
+: /etc/gitignore
+
+I've found this is because the symlink was destroyed by ~nix-collect-garbage~
+because somehow that file doesn't exist anymore and the symlink is dead.  It
+could be the garbage collection, or perhaps a failed ~switch~, or both.
+
+Get things up and running again re: ~switch~, and if the issue still persists,
+get a better reproduction.  This does make me wonder if anything we place under
+~etc~ via ~environment.etc~ is to be trusted in ~nix-darwin~.  This might be
+worth filing a bug.
+
+** Raspberry Pi ~/boot/firmware~ out of disk space
+
+I think this is resulting from moving to ~raspberry-pi-nix~ to
+~nixos-raspberrypi~.  There's different boot methodology and the files are
+managed a little differently.  This requires some pruning based on the Pi in
+question.
+
+The offending files can be found in ~/boot/firmware~ and
+~/boot/firmware/nixos/default~.  Adjacent to ~default~ might be other boot
+generations with their own copies of files that must be pruned.
+
+Keep an eye out for whatever system you are using that it doesn't lay down a
+bunch of extra ~dtb~ files you don't need.
+
+1. For an PRi 3, _keep_ ~bcm2710-*~ files.
+2. For an RPi 4, _keep_ ~bcm2711-*~ files.
+3. For an RPi 5, _keep_ ~bcm2712-*~ files.
+
+They may exist in _all_ of the directories above.  Prune them from all
+locations.
+
+If I do this again, capture some commands I can run thoughtlessly.
+
+** Remote builder unreachable, so we can't deploy
+
+If the remote builder becomes unreachable, or something about the remote build
+machinery is misconfigured, you can run into a chicken+egg problem, where you
+need to deploy a fix, but you can't deploy anything because that would be
+delegated to the builder, which you can't reach.
+
+You can troubleshoot specific issues with ~nix-remote-builder-doctor~, but when
+you go to affect a change, you will find you cannot manually edit the files
+involved because they all reside within the Nix store.
+
+The trick is that the files involved (typically things like ~/etc/nix/machines~
+and ~/etc/ssh/ssh_known_hosts~) are symlinks to the real files.  You can simply
+remove the symlinks and place a file of your choosing in its place.  This is
+your break-glass.  On NixOS, these files will be replaced when you switch to a
+new system profile.  You can even edit files with ~/run/agenix/~.
