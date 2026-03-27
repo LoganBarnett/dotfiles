@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Sound a repeating alarm tone locally until killed.  The tone is a rapid
+# three-burst wail (rising then falling sine sweep) designed to be distinct
+# from the short, clean bell sounds typical of macOS notifications.
+#
+# Usage: alert-me-locally [interval_seconds]
+#
+# interval_seconds defaults to 30.
+
+INTERVAL="${1:-30}"
+
+play_alarm() {
+    for _burst in 1 2 3; do
+        play -n synth 0.2 sine 880:1600 fade q 0.01 0.2 0.03 vol 0.7
+        play -n synth 0.2 sine 1600:880 fade q 0.01 0.2 0.03 vol 0.7
+    done
+}
+
+trap 'echo; echo "Alert stopped."; exit 0' INT TERM
+
+echo "Alerting every ${INTERVAL}s — Ctrl-C to stop."
+
+while true; do
+    play_alarm
+    sleep "${INTERVAL}"
+done
