@@ -51,9 +51,10 @@ in
           (
             pkg:
             builtins.elem (lib.getName pkg) [
+              "claude-code"
               "example-unfree-package"
-              "unrar"
               "terraform"
+              "unrar"
               "windsurf"
             ]
           )
@@ -80,6 +81,7 @@ in
     }
     ../darwin.nix
     ../darwin-configs/garage-queue-worker.nix
+    ../darwin-configs/host-connectivity-monitor.nix
     ../darwin-configs/proc-siding-worker.nix
     ../darwin-configs/goss-ollama-metal-gpu.nix
     ../darwin-configs/ollama.nix
