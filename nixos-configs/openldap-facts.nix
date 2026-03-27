@@ -186,14 +186,22 @@ in
 
   systemd.services.ldap-reconciler = {
     description = "LDAP desired-state reconciler";
-    # Run after openldap is up so the socket is ready.
-    after = [ "openldap.service" ];
+    # Run after openldap is up so the socket is ready.  wantedBy multi-user
+    # ensures this fires at every boot and on nixos-switch (the ExecStart path
+    # is content-addressed, so systemd detects the unit changed and re-runs it
+    # when the desired state changes).
+    after = [
+      "openldap.service"
+      "run-agenix.d.mount"
+    ];
     wants = [
       "openldap.service"
       "run-agenix.d.mount"
     ];
+    wantedBy = [ "multi-user.target" ];
     serviceConfig = {
       Type = "oneshot";
+      RemainAfterExit = true;
       # Read the admin bind password from the credential, strip any trailing
       # newline, and pass it directly to the reconciler.
       ExecStart = pkgs.writeShellScript "ldap-reconciler-run" ''
@@ -214,12 +222,14 @@ in
     };
   };
 
+  # Periodic timer as a drift-correction backstop.  The primary run is handled
+  # by the service's wantedBy = multi-user.target above; this catches any
+  # out-of-band LDAP mutations that need to be corrected over time.
   systemd.timers.ldap-reconciler = {
     wantedBy = [ "timers.target" ];
     timerConfig = {
-      # Allow openldap to settle on boot before the first run.
-      OnBootSec = "1min";
       OnUnitActiveSec = "1h";
+      Persistent = true;
     };
   };
 }
