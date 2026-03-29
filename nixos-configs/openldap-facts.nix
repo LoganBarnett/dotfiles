@@ -67,7 +67,7 @@ let
 in
 {
   imports = [ ./ldap-auth-facts.nix ];
-  networking.dnsAliases = [ "ldap" ];
+  networking.dns.aliases = [ "ldap" ];
 
   services.ldap-server.enable = true;
 
