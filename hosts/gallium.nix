@@ -41,4 +41,5 @@ in
   # Jenkins is not currently running; alias is pre-declared for when it
   # is re-enabled.
   networking.dnsAliases = [ "jenkins" ];
+  networking.monitors = [ "goss" ];
 }

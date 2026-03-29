@@ -42,6 +42,7 @@ let
   };
 in
 {
+  networking.monitors = [ "dnsmasq" ];
   networking.interfaces = {
     # systemd "predictable".
     enp3s0 = forced-ip-interface-config;

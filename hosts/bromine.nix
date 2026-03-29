@@ -26,4 +26,5 @@
       nixpkgs.hostPlatform = system;
     }
   ];
+  networking.monitors = [ "goss" ];
 }

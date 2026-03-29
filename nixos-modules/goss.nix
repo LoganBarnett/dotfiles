@@ -1,22 +1,16 @@
 ################################################################################
-# Enables the goss health-check service on hosts that list "goss" in their
-# facts.network.hosts monitors entry.
+# Enables the goss health-check service on hosts that declare "goss" in
+# networking.monitors.
 ################################################################################
 {
   config,
-  facts,
-  host-id,
   lib,
   ...
 }:
-let
-  hostFacts = facts.network.hosts.${host-id};
-  gossEnabled = builtins.elem "goss" (hostFacts.monitors or [ ]);
-in
 {
   options = { };
 
-  config = lib.mkIf gossEnabled {
+  config = lib.mkIf (builtins.elem "goss" config.networking.monitors) {
     services.goss.enable = true;
   };
 }

@@ -56,6 +56,7 @@
     flake-inputs.home-manager.nixosModules.home-manager
     flake-inputs.proc-siding.nixosModules.default
     ../nixos-modules/dns-aliases.nix
+    ../nixos-modules/monitors.nix
     ../nixos-modules/environment-file-secrets.nix
     ../nixos-modules/https.nix
     ../nixos-modules/ivatar.nix
@@ -88,7 +89,6 @@
     ../nixos-configs/tls-leaf-proton.nix
     # A server should never sleep/suspend unless we have a really good reason.
     ../nixos-configs/narcolepsy.nix
-    # See facts.nix for how this is specifically configured per host.
     ../nixos-configs/prometheus-client.nix
     ../nixos-modules/goss.nix
     ../nixos-modules/goss-exporter.nix
@@ -104,6 +104,12 @@
     ../nixos-configs/user-can-admin.nix
     ../nixos-modules/user-lockout-schedule.nix
     ../users/logan-server.nix
+  ];
+
+  # Every controlled Linux host exports node and systemd metrics.
+  networking.monitors = [
+    "node"
+    "systemd"
   ];
 
   # This is just blindly copied from somewhere, but I don't know where.  I

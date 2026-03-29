@@ -58,6 +58,7 @@ in
     # issues.
     pkgs.wireguard-tools
   ];
+  networking.monitors = [ "wireguard" ];
   networking.nat.enable = true;
   networking.nat.externalInterface = network-interface;
   networking.nat.internalInterfaces = [ "wg0" ];
