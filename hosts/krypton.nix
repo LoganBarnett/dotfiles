@@ -108,7 +108,7 @@
   # Additional packages useful for a media server.
   # kodi-media-player.nix registers "kodi-krypton" generically.  This
   # host additionally gets a location-specific alias for the living room.
-  networking.dns.aliases = [ "kodi-living-room" ];
+  networking.dnsAliases = [ "kodi-living-room" ];
   environment.systemPackages = [
     # Let's be able to work with media files if needed.
     pkgs.ffmpeg

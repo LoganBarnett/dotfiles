@@ -66,7 +66,7 @@ in
   imports = [
     ../nixos-modules/mastodon.nix
   ];
-  networking.dns.aliases = [ "mastodon" ];
+  networking.dnsAliases = [ "mastodon" ];
 
   # ── LDAP service accounts for SMTP authentication ──────────────────────────
   # One account per instance so credentials are isolated.  ldap-auth.nix

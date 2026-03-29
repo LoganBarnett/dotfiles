@@ -110,7 +110,7 @@ in
   };
 
   config = mkIf cfg.enable {
-    networking.dns.aliases = [ "ivatar" ];
+    networking.dnsAliases = [ "ivatar" ];
     services.postgresql = {
       enable = true;
       ensureDatabases = [ "ivatar" ];

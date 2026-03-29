@@ -5,7 +5,7 @@
 { ... }:
 {
   imports = [ ../nixos-modules/metube.nix ];
-  networking.dns.aliases = [ "metube" ];
+  networking.dnsAliases = [ "metube" ];
 
   services.metube-host = {
     enable = true;
