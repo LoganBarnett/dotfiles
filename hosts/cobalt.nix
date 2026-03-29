@@ -46,5 +46,5 @@
     ../nixos-configs/nix-builder-provide.nix
     ../nixos-modules/linux-host.nix
   ];
-  networking.dnsAliases = [ "rpi-build" ];
+  networking.dns.aliases = [ "rpi-build" ];
 }

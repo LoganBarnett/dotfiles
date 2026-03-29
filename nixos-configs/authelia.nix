@@ -122,7 +122,7 @@ let
 
 in
 {
-  networking.dnsAliases = [
+  networking.dns.aliases = [
     "authelia"
     "sso"
   ];
