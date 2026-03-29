@@ -7,8 +7,8 @@
 #   <name>-ldap-password         — plaintext passphrase
 #   <name>-ldap-password-hashed  — slapd-ready hash derived from the above
 #
-# The openldap reconciler on silicon aggregates these from all hosts in the
-# cluster via specialArgs.nodes and populates the live directory accordingly.
+# nix-hapi on silicon aggregates these from all hosts in the cluster via
+# specialArgs.nodes and populates the live directory accordingly.
 ################################################################################
 {
   config,

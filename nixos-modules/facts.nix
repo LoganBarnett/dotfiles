@@ -236,11 +236,6 @@
         system = "aarch64-ios";
       };
       nickel = {
-        aliases = [
-          "alertmanager"
-          "grafana"
-          "prometheus"
-        ];
         controlledHost = true;
         flake-input-overrides = {
           nixpkgs = "nixpkgs-nixos-raspberrypi";
@@ -318,11 +313,13 @@
       };
       silicon = {
         aliases = [
+          "alertmanager"
           "authelia"
           "blocky"
           "chronicle-proxy"
           "dns-smart-block"
           "gitea"
+          "grafana"
           "immich"
           "ivatar"
           "ldap"
@@ -334,6 +331,7 @@
           "nextcloud"
           "ollama"
           "openhab"
+          "prometheus"
           "sso"
           "wiki"
         ];
@@ -802,8 +800,8 @@
 
     monitoring = {
       # Dashboard definitions shared between the Grafana server and the kiosk
-      # restart trigger.  Centralizing here lets both nickel (which hosts
-      # Grafana) and silicon (which hosts the kiosk) compute the same hash
+      # restart trigger.  Centralizing here lets both silicon (which hosts
+      # Grafana) and bromine (which hosts the kiosk) compute the same hash
       # independently, so a dashboard change causes both to restart on deploy
       # without either host needing to reference the other.
       #

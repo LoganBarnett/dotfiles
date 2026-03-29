@@ -85,11 +85,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    ldap-reconciler = {
-      url = "github:LoganBarnett/ldap-reconciler";
-      # url = "git+ssh://git@gitea.proton:2222/logan/ldap-reconciler";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
     loku = {
       url = "github:LoganBarnett/loku";
       # url = "git+ssh://git@gitea.proton:2222/logan/loku";
@@ -123,6 +118,14 @@
     # like bumping a version and hash automatically.
     nix-editor = {
       url = "github:snowfallorg/nix-editor";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    nix-hapi = {
+      url = "github:LoganBarnett/nix-hapi";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    nix-hapi-provider-ldap = {
+      url = "github:LoganBarnett/nix-hapi-provider-ldap";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     nix-homebrew.url = "github:zhaofengli/nix-homebrew";
