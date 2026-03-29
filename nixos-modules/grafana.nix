@@ -28,7 +28,7 @@ in
   imports = [
     ./https.nix
   ];
-  networking.dns.aliases = [ "grafana" ];
+  networking.dnsAliases = [ "grafana" ];
   services.https.fqdns."grafana.${facts.network.domain}" = {
     internalPort = config.services.grafana.settings.server.http_port;
   };
@@ -56,8 +56,6 @@ in
       text = builtins.toJSON value;
     };
   }) dashboards;
-  networking.firewall.allowedTCPPorts = [ 3000 ];
-  networking.firewall.allowedUDPPorts = [ 3000 ];
   services.grafana = {
     enable = true;
     declarativePlugins = with pkgs.grafanaPlugins; [ ];
@@ -93,6 +91,8 @@ in
       ];
     };
     settings = {
+      # Avoid port conflict with dns-smart-block on hosts that run both.
+      server.http_port = 3002;
       # Enable anonymous access to the dashboards.  Everything is exposed
       # publicly via Prometheus exporters anyways.
       "auth.anonymous" = {

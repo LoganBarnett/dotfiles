@@ -5,7 +5,7 @@
 ################################################################################
 { facts, ... }:
 {
-  networking.dns.aliases = [ "loku" ];
+  networking.dnsAliases = [ "loku" ];
   services.loku-web = {
     enable = true;
     libraryPath = "/tank/data/media";
