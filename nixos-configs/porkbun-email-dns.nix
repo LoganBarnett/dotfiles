@@ -8,10 +8,11 @@
 #   TXT/default._domainkey  — DKIM public key (Ed25519, from generated .pub)
 #   TXT/_dmarc              — DMARC policy
 #
-# Records excluded via ignore patterns:
-#   ^TXT/_acme-challenge  — Let's Encrypt DNS-01 (managed by security.acme)
-#   ^A/\*$                — wildcard A (managed by dns-dynamic-ip-home/dness)
-#   ^A/vpn$               — VPN A record (managed by dness, logustus.com only)
+# Records excluded via ignore expressions (jq, keyed on TYPE/name):
+#   TXT/_acme-challenge*  — Let's Encrypt DNS-01 (managed by security.acme)
+#   A/*                   — wildcard A (managed by dns-dynamic-ip-home/dness)
+#   A/vpn                 — VPN A record (managed by dness, logustus.com only)
+#   NS/*                  — apex NS records (managed by the registrar)
 #
 # Credentials: reuses the same Porkbun API key/secret already declared by
 # acme.nix.  The nix-hapi-porkbun service binds them via LoadCredential.
@@ -32,10 +33,13 @@ let
   api-key = mkManagedFromPath (cred-path "porkbun-api-key");
   api-secret = mkManagedFromPath (cred-path "porkbun-api-secret");
 
-  # Regex patterns for records to leave alone on every reconciliation.
-  ignore-acme = "^TXT/_acme-challenge";
-  ignore-wildcard-a = "^A/\\*$";
-  ignore-vpn-a = "^A/vpn$";
+  # jq expressions for records to leave alone on every reconciliation.
+  # Each expression receives . = {"key": "TYPE/name", "resource_id": "TYPE/name"}.
+  ignore-acme = ".key | startswith(\"TXT/_acme-challenge\")";
+  ignore-wildcard-a = ".key == \"A/*\"";
+  ignore-vpn-a = ".key == \"A/vpn\"";
+  # NS records at the apex are managed by the registrar; never delete them.
+  ignore-ns = ".key | startswith(\"NS/\")";
 
   # Email DNS records common to any externally-hosted domain.
   emailRecords = domain: dkimPub: {
@@ -74,6 +78,7 @@ in
           ignore = [
             ignore-acme
             ignore-wildcard-a
+            ignore-ns
           ];
           records = emailRecords "meshward.com" meshward-dkim-pub;
         };
@@ -85,6 +90,7 @@ in
             ignore-acme
             ignore-wildcard-a
             ignore-vpn-a
+            ignore-ns
           ];
           records = emailRecords "logustus.com" logustus-dkim-pub;
         };
