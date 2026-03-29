@@ -9,7 +9,7 @@
   imports = [
     ../nixos-configs/pytorch-bin.nix
   ];
-  networking.dns.aliases = [ "ollama" ];
+  networking.dnsAliases = [ "ollama" ];
   services.ollama = {
     enable = true;
     loadModels = [ ];

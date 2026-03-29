@@ -101,32 +101,57 @@ in
           flatten
         ];
       cname =
-        # The DNS host reads its own aliases from local config to avoid
-        # infinite recursion through nodes.${host-id}.
-        (map (
-          alias: "${alias}.${domain},${host-id}.${domain}"
-        ) config.networking.dns.aliases)
-        # All other Nix-managed hosts declare their aliases via the module.
-        ++ lib.pipe (lib.filterAttrs (name: _: name != host-id) nodes) [
-          (lib.mapAttrsToList (
-            name: node:
-            map (alias: "${alias}.${domain},${name}.${domain}") (
-              node.config.networking.dns.aliases or [ ]
+        let
+          allCnames =
+            # The DNS host reads its own aliases from local config to avoid
+            # infinite recursion through nodes.${host-id}.
+            (map (
+              alias: "${alias}.${domain},${host-id}.${domain}"
+            ) config.networking.dnsAliases)
+            # All other Nix-managed hosts declare their aliases via the module.
+            ++ lib.pipe (lib.filterAttrs (name: _: name != host-id) nodes) [
+              (lib.mapAttrsToList (
+                name: node:
+                map (alias: "${alias}.${domain},${name}.${domain}") (
+                  node.config.networking.dnsAliases or [ ]
+                )
+              ))
+              flatten
+            ]
+            # Non-Nix hosts use the aliases field in facts directly.  Nix-managed
+            # hosts already declare aliases via networking.dnsAliases above, so
+            # skip them here to avoid duplicate CNAMEs.
+            ++ lib.pipe facts.network.hosts [
+              (lib.filterAttrs (
+                hostname: host: !(builtins.hasAttr hostname nodes) && hostname != host-id
+              ))
+              (mapAttrsToList (
+                hostname: host:
+                builtins.map (alias: "${alias}.${domain},${hostname}.${domain}") (
+                  host.aliases or [ ]
+                )
+              ))
+              flatten
+            ];
+          # Deduplicate by CNAME source name.  If multiple hosts declare the
+          # same alias, the last one wins.  dnsmasq rejects duplicate source
+          # names even when the targets differ.
+          deduped = builtins.attrValues (
+            builtins.listToAttrs (
+              map (
+                entry:
+                let
+                  source = builtins.head (lib.splitString "," entry);
+                in
+                {
+                  name = source;
+                  value = entry;
+                }
+              ) allCnames
             )
-          ))
-          flatten
-        ]
-        # Non-Nix hosts (and any remaining facts entries) use the aliases
-        # field in facts directly, no filtering applied.
-        ++ lib.pipe facts.network.hosts [
-          (mapAttrsToList (
-            hostname: host:
-            builtins.map (alias: "${alias}.${domain},${hostname}.${domain}") (
-              host.aliases or [ ]
-            )
-          ))
-          flatten
-        ];
+          );
+        in
+        deduped;
       # dhcp-host = [
       #   # Examples - make these dynamic.
       #   "nickel,192.168.100.10"

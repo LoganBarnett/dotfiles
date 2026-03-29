@@ -23,7 +23,7 @@ let
   ldapServiceUser = "${host-id}-${service}-service";
 in
 {
-  networking.dns.aliases = [ "gitea" ];
+  networking.dnsAliases = [ "gitea" ];
   auth.ldap.users.${ldapServiceUser} = lib.mkIf ldap-enabled {
     email = "${ldapServiceUser}@${facts.network.domain}";
     fullName = ldapServiceUser;
