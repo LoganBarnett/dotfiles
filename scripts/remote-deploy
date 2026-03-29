@@ -34,6 +34,15 @@
 
 set -euo pipefail
 
+if [[ "${CLAUDECODE:-0}" == "1" ]] && [[ "${CLAUDE_WAS_TOLD_TO_USE_REMOTE_DEPLOY_EXPLICITLY:-0}" != "1" ]]; then
+  echo "The remote-deploy script should only be run if the user granted" >&2
+  echo "you explicit instruction to run it.  If you were not given explicit" >&2
+  echo "permission, use \`caffeinate proton-deploy switch <host>\`.  If you" >&2
+  echo "are running into problems with that invocation, halt and ask the" >&2
+  echo "user for instruction." >&2
+  exit 1
+fi
+
 if [[ -z "${FLAKE_ROOT:-}" ]] || [[ ! -f "$FLAKE_ROOT/flake.nix" ]]; then
   echo "error: FLAKE_ROOT is not set or does not contain flake.nix." >&2
   echo "Run from the repo root or set FLAKE_ROOT." >&2
