@@ -58,7 +58,11 @@ let
   ) all-ldap-users;
 
   inherit (flake-inputs.nix-hapi.lib) mkManagedFromPath mkInitialFromPath;
-  inherit (flake-inputs.nix-hapi-provider-ldap.lib) mkLdapProvider mkLdapUser;
+  inherit (flake-inputs.nix-hapi-provider-ldap.lib)
+    mkLdapGroup
+    mkLdapProvider
+    mkLdapUser
+    ;
 
 in
 {
@@ -119,10 +123,13 @@ in
               description = if ucfg.description != "" then ucfg.description else null;
             }
           ) all-ldap-users;
-          groups = lib.mapAttrs (_name: group: {
-            description = if group.description != "" then group.description else null;
-            members = group.members;
-          }) all-ldap-groups;
+          groups = lib.mapAttrs (
+            _name: group:
+            mkLdapGroup {
+              description = if group.description != "" then group.description else null;
+              members = group.members;
+            }
+          ) all-ldap-groups;
         };
       };
       providers.ldap =
