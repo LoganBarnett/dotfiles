@@ -1,10 +1,11 @@
 { lib, ... }:
 {
-  # The nested namespace networking.dns.aliases is intentional.  NixOS
-  # convention allows both flat camelCase (networking.dnsAliases) and
-  # sub-namespace styles; we use the latter to group cleanly under
-  # networking.dns alongside any future DNS-related options.
-  options.networking.dns.aliases = lib.mkOption {
+  # networking.dns is already defined as `list of string` (DNS server
+  # addresses) by the nix-darwin networking module, so a nested
+  # networking.dns.aliases sub-option is not possible — the module system
+  # requires the parent to be an attrset option.  We use flat camelCase
+  # instead.
+  options.networking.dnsAliases = lib.mkOption {
     type = lib.types.listOf lib.types.str;
     default = [ ];
     description = ''

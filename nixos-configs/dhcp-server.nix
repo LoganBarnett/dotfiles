@@ -107,19 +107,19 @@ in
             # infinite recursion through nodes.${host-id}.
             (map (
               alias: "${alias}.${domain},${host-id}.${domain}"
-            ) config.networking.dns.aliases)
+            ) config.networking.dnsAliases)
             # All other Nix-managed hosts declare their aliases via the module.
             ++ lib.pipe (lib.filterAttrs (name: _: name != host-id) nodes) [
               (lib.mapAttrsToList (
                 name: node:
                 map (alias: "${alias}.${domain},${name}.${domain}") (
-                  node.config.networking.dns.aliases or [ ]
+                  node.config.networking.dnsAliases or [ ]
                 )
               ))
               flatten
             ]
             # Non-Nix hosts use the aliases field in facts directly.  Nix-managed
-            # hosts already declare aliases via networking.dns.aliases above, so
+            # hosts already declare aliases via networking.dnsAliases above, so
             # skip them here to avoid duplicate CNAMEs.
             ++ lib.pipe facts.network.hosts [
               (lib.filterAttrs (

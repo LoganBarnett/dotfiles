@@ -17,7 +17,7 @@ let
   gitea-url = "ssh://git@gitea.${facts.network.domain}:2222/logan/wiki.git";
 in
 {
-  networking.dns.aliases = [ "wiki" ];
+  networking.dnsAliases = [ "wiki" ];
   age.secrets.org-wiki-web-ssh-key = {
     generator.script = "ssh-ed25519-with-pub";
   };
