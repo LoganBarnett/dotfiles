@@ -316,6 +316,7 @@ in
   # Silicon provides builds to other hosts, so it should not consume builds
   # from itself.  Override the nix-builder-consume module imported by
   # linux-host.nix to prevent self-referential build loops.
+  networking.monitors = [ "goss" ];
   nix.distributedBuilds = lib.mkForce false;
   nix.buildMachines = lib.mkForce [ ];
 }

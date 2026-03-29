@@ -83,6 +83,7 @@ in
       ]
     )
   ];
+  networking.monitors = [ "nvidia-gpu" ];
   # See https://nixos.wiki/wiki/Linux_kernel for values and options.
   boot.kernelPackages = linux-packages;
   boot.kernelModules = [

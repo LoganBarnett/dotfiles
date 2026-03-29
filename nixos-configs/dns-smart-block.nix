@@ -7,6 +7,7 @@
 { config, facts, ... }:
 {
   networking.dnsAliases = [ "dns-smart-block" ];
+  networking.monitors = [ "dns-smart-block" ];
   # Admin interface secrets for HTTP Basic Auth.
   age.secrets = {
     dns-smart-block-admin-password = {

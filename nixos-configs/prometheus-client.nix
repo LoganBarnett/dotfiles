@@ -6,8 +6,6 @@
 {
   config,
   lib,
-  facts,
-  host-id,
   pkgs,
   ...
 }:
@@ -15,11 +13,6 @@ let
   inherit (lib) pipe;
   inherit (lib.attrsets) filterAttrs mapAttrsToList;
   inherit (lib.lists) fold;
-  hostFacts = facts.network.hosts.${host-id};
-  # monitors = lib.attrsets.mapAttrsToList
-  #   (settings: settings.monitors )
-  #   facts.network.hosts
-  # ;
   monitor-to-exporter = monitor: {
     ${pkgs.lib.custom.monitor-to-exporter-name monitor} = {
       enable = true;
@@ -53,7 +46,7 @@ let
   # goss-exporter.nix.
   exporterMonitors = builtins.filter (
     m: !builtins.elem m [ "goss" ]
-  ) hostFacts.monitors;
+  ) config.networking.monitors;
 
 in
 {

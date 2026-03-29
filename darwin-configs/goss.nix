@@ -1,11 +1,10 @@
 ################################################################################
 # Enables the Goss Prometheus exporter on darwin hosts that declare "goss" in
-# their monitors list in facts.
+# networking.monitors.
 ################################################################################
-{ facts, host-id, ... }:
+{ config, ... }:
 let
-  hostFacts = facts.network.hosts.${host-id};
-  gossEnabled = builtins.elem "goss" (hostFacts.monitors or [ ]);
+  gossEnabled = builtins.elem "goss" config.networking.monitors;
 in
 {
   services.goss.prometheus.enable = gossEnabled;

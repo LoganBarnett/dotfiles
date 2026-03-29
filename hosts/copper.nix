@@ -102,4 +102,5 @@ in
       ];
     })
   ];
+  networking.monitors = [ "goss" ];
 }
