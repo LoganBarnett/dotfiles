@@ -14,9 +14,11 @@
 # simply allow the facts structure to dictate what we need.
 ################################################################################
 {
+  config,
   lib,
   facts,
   host-id,
+  nodes,
   ...
 }:
 let
@@ -98,15 +100,33 @@ in
           ))
           flatten
         ];
-      cname = lib.pipe facts.network.hosts [
-        (mapAttrsToList (
-          hostname: host:
-          builtins.map (alias: "${alias}.${domain},${hostname}.${domain}") (
-            host.aliases or [ ]
-          )
-        ))
-        flatten
-      ];
+      cname =
+        # The DNS host reads its own aliases from local config to avoid
+        # infinite recursion through nodes.${host-id}.
+        (map (
+          alias: "${alias}.${domain},${host-id}.${domain}"
+        ) config.networking.dns.aliases)
+        # All other Nix-managed hosts declare their aliases via the module.
+        ++ lib.pipe (lib.filterAttrs (name: _: name != host-id) nodes) [
+          (lib.mapAttrsToList (
+            name: node:
+            map (alias: "${alias}.${domain},${name}.${domain}") (
+              node.config.networking.dns.aliases or [ ]
+            )
+          ))
+          flatten
+        ]
+        # Non-Nix hosts (and any remaining facts entries) use the aliases
+        # field in facts directly, no filtering applied.
+        ++ lib.pipe facts.network.hosts [
+          (mapAttrsToList (
+            hostname: host:
+            builtins.map (alias: "${alias}.${domain},${hostname}.${domain}") (
+              host.aliases or [ ]
+            )
+          ))
+          flatten
+        ];
       # dhcp-host = [
       #   # Examples - make these dynamic.
       #   "nickel,192.168.100.10"
