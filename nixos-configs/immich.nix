@@ -25,7 +25,7 @@ let
 in
 {
   imports = [ ../nixos-modules/immich.nix ];
-  networking.dns.aliases = [ "immich" ];
+  networking.dnsAliases = [ "immich" ];
 
   age.secrets."immich-oauth-config" = {
     generator = {
