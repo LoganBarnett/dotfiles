@@ -113,10 +113,6 @@
         system = "x86_64-linux";
       };
       bromine = {
-        aliases = [
-          "home-assistant"
-          "mosquitto"
-        ];
         controlledHost = true;
         flake-input-overrides = {
           nixpkgs = "nixpkgs-nixos-raspberrypi";
