@@ -1,6 +1,6 @@
 { lib, ... }:
 {
-  options.networking.dns.aliases = lib.mkOption {
+  options.networking.dnsAliases = lib.mkOption {
     type = lib.types.listOf lib.types.str;
     default = [ ];
     description = ''
