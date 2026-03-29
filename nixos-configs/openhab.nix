@@ -25,6 +25,7 @@ in
   imports = [
     flake-inputs.openhab-flake.nixosModules.${system}.openhab
   ];
+  networking.dns.aliases = [ "openhab" ];
   nixpkgs.overlays = [ flake-inputs.openhab-flake.overlays.default ];
 
   age.secrets = {

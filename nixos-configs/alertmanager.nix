@@ -13,6 +13,7 @@
   imports = [
     # ./matrix-alertmanager.nix
   ];
+  networking.dns.aliases = [ "alertmanager" ];
   services.https.fqdns."alertmanager.${facts.network.domain}" = {
     internalPort = config.services.prometheus.alertmanager.port;
   };

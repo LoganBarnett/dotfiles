@@ -144,6 +144,7 @@ in
   };
 
   config = mkIf cfg.enable {
+    networking.dns.aliases = [ "mail" ];
     # Declare the internal TLS leaf cert.  agenix-rekey generates
     # secrets/tls-mail.<internalDomain>.key.age and the plain .crt file.
     tls.tls-leafs.${internalFqdn} = {

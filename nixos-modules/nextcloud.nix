@@ -52,6 +52,7 @@ let
   data-dir = "/tank/data/nextcloud";
 in
 {
+  networking.dns.aliases = [ "nextcloud" ];
   auth.ldap.users."${host-id}-nextcloud-service" = {
     email = "${host-id}-nextcloud-service@proton";
     fullName = "${host-id}-nextcloud-service";

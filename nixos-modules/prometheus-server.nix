@@ -44,6 +44,7 @@ let
 in
 {
   imports = [ ];
+  networking.dns.aliases = [ "prometheus" ];
   services.https.fqdns."prometheus.${facts.network.domain}" = {
     internalPort = config.services.prometheus.port;
   };
