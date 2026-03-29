@@ -312,29 +312,6 @@
         system = "aarch64-linux";
       };
       silicon = {
-        aliases = [
-          "alertmanager"
-          "authelia"
-          "blocky"
-          "chronicle-proxy"
-          "dns-smart-block"
-          "gitea"
-          "grafana"
-          "immich"
-          "ivatar"
-          "ldap"
-          "loku"
-          "mail"
-          "mastodon"
-          "matrix"
-          "metube"
-          "nextcloud"
-          "ollama"
-          "openhab"
-          "prometheus"
-          "sso"
-          "wiki"
-        ];
         controlledHost = true;
         # Secondary addresses: additional IPs bound to the same interface.
         # Each entry generates a DNS A record; no DHCP reservation is created.
