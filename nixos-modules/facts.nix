@@ -146,9 +146,6 @@
         ];
       };
       cobalt = {
-        aliases = [
-          "rpi-build"
-        ];
         controlledHost = true;
         flake-input-overrides = {
           nixpkgs = "nixpkgs-nixos-raspberrypi";
@@ -161,9 +158,6 @@
         system = "aarch64-linux";
       };
       copper = {
-        aliases = [
-          "dex"
-        ];
         controlledHost = true;
         ipv4 = 10;
         monitors = [
@@ -174,9 +168,6 @@
         system = "x86_64-linux";
       };
       gallium = {
-        aliases = [
-          "jenkins"
-        ];
         controlledHost = true;
         flake-input-overrides = {
           nixpkgs = "nixpkgs-nixos-raspberrypi";
@@ -333,9 +324,6 @@
         system = "x86_64-linux";
       };
       krypton = {
-        aliases = [
-          "kodi-living-room"
-        ];
         controlledHost = true;
         ipv4 = 12;
         monitors = [
@@ -345,9 +333,6 @@
         system = "x86_64-linux";
       };
       titanium = {
-        aliases = [
-          "musicgpt"
-        ];
         blockProfiles = [ "adult" ];
         controlledHost = true;
         ipv4 = 6;

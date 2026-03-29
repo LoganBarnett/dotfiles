@@ -17,6 +17,11 @@
 {
   imports = [
   ];
+  # Kodi deployments are location and hardware sensitive; every host that
+  # runs Kodi registers a host-specific alias.  Location-specific aliases
+  # (e.g. "kodi-living-room") should be declared on the host directly, as
+  # the same kodi-media-player config may be imported by multiple hosts.
+  networking.dns.aliases = [ "kodi-${host-id}" ];
 
   # Configure NFS mount for media files.
   nfsConsumerFacts = {
