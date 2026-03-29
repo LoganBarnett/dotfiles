@@ -16,10 +16,12 @@ in
 {
   imports = [
     ../nixos-configs/acme.nix
+    ../nixos-configs/alertmanager.nix
     ../hardware/aeotec-z-stick-7.nix
     ../nixos-configs/openhab.nix
     flake-inputs.garage-queue.nixosModules.server
     flake-inputs.loku.nixosModules.default
+    flake-inputs.nix-hapi.nixosModules.default
     flake-inputs.org-wiki.nixosModules.web
     ../nixos-configs/org-wiki.nix
     ../nixos-configs/dhcp-lease-textfile.nix
@@ -31,11 +33,13 @@ in
     ../nixos-configs/notes-sync.nix
     ../nixos-configs/dns-server.nix
     ../nixos-configs/dns-smart-block.nix
+    ../nixos-modules/grafana.nix
     ../nixos-modules/makemkv-ripper.nix
     ../nixos-modules/makemkv-updater.nix
     ../nixos-configs/matrix-server.nix
     ../nixos-configs/nfs-mount-provider-from-facts.nix
     ../nixos-configs/openldap-facts.nix
+    ../nixos-modules/prometheus-server.nix
     ../nixos-configs/loku.nix
     ../nixos-configs/authelia.nix
     ../nixos-configs/immich.nix

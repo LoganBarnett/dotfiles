@@ -5,7 +5,7 @@
 # Each service host declares its LDAP users and groups inline via the
 # auth.ldap.{users,groups} options (provided by nixos-modules/ldap-auth.nix).
 # This config aggregates those declarations from specialArgs.nodes and feeds
-# them to the ldap-reconciler, which keeps the live directory in sync.
+# them to nix-hapi, which keeps the live directory in sync.
 #
 # ldap-auth-facts.nix handles the person accounts (sourced from facts.nix).
 # Service accounts come from each service's own config via nodes.
@@ -46,101 +46,9 @@ let
     name: _: !(lib.hasAttr name config.auth.ldap.users)
   ) all-ldap-users;
 
-  user-dn = username: "uid=${username},ou=users,${base-dn}";
-  group-dn = name: "cn=${name},ou=groups,${base-dn}";
-
   # The systemd unit name determines the credential directory path.
   credential-path =
-    name: "/run/credentials/ldap-reconciler.service/${name}-ldap-password-hashed";
-
-  user-entry =
-    username: ucfg:
-    lib.nameValuePair (user-dn username) (
-      {
-        objectClass = [
-          "inetOrgPerson"
-          "person"
-          "top"
-        ];
-        cn = ucfg.fullName;
-        uid = username;
-        sn = username;
-        mail = ucfg.email;
-        # managed=true: reconciler always syncs from `path` (service accounts).
-        # managed=false: reconciler sets the password only on initial creation
-        # from `initialPath` (human accounts whose passwords evolve over time).
-        userPassword =
-          if ucfg.managed then
-            {
-              managed = true;
-              path = credential-path username;
-            }
-          else
-            {
-              managed = false;
-              initialPath = credential-path username;
-            };
-      }
-      # Omit description when empty — LDAP DirectoryString requires >= 1 char.
-      // lib.optionalAttrs (ucfg.description != "") {
-        description = ucfg.description;
-      }
-    );
-
-  group-entry =
-    name: group:
-    lib.nameValuePair (group-dn name) (
-      {
-        objectClass = [
-          "groupOfNames"
-          "top"
-        ];
-        cn = name;
-        ou = name;
-        # Managed: group membership stays authoritative from declared config.
-        member = map user-dn group.members;
-      }
-      // lib.optionalAttrs (group.description != "") {
-        description = group.description;
-      }
-    );
-
-  desired-state = {
-    baseDn = base-dn;
-    entries = {
-      "${base-dn}" = {
-        objectClass = [
-          "domain"
-          "top"
-        ];
-        dc = "proton";
-      };
-      "ou=users,${base-dn}" = {
-        objectClass = [
-          "organizationalUnit"
-          "top"
-        ];
-        ou = "users";
-        description = "Users in the proton network.";
-      };
-      "ou=groups,${base-dn}" = {
-        objectClass = [
-          "organizationalUnit"
-          "top"
-        ];
-        ou = "groups";
-        description = "Groups in the proton network.";
-      };
-    }
-    // builtins.listToAttrs (lib.mapAttrsToList user-entry all-ldap-users)
-    // builtins.listToAttrs (lib.mapAttrsToList group-entry all-ldap-groups);
-  };
-
-  desired-state-file = pkgs.writeText "ldap-desired-state.json" (
-    builtins.toJSON desired-state
-  );
-
-  ldap-reconciler-pkg = flake-inputs.ldap-reconciler.packages.${system}.default;
+    name: "/run/credentials/nix-hapi-ldap.service/${name}-ldap-password-hashed";
 
   # Credential name -> agenix secret path, one per LDAP user across all hosts.
   user-credentials = lib.mapAttrsToList (
@@ -148,6 +56,9 @@ let
     "${name}-ldap-password-hashed"
     + ":${config.age.secrets."${name}-ldap-password-hashed".path}"
   ) all-ldap-users;
+
+  inherit (flake-inputs.nix-hapi.lib) mkManagedFromPath mkInitialFromPath;
+  inherit (flake-inputs.nix-hapi-provider-ldap.lib) mkLdapProvider mkLdapUser;
 
 in
 {
@@ -184,12 +95,45 @@ in
     ) foreign-ldap-users
   );
 
-  systemd.services.ldap-reconciler = {
-    description = "LDAP desired-state reconciler";
-    # Run after openldap is up so the socket is ready.  wantedBy multi-user
-    # ensures this fires at every boot and on nixos-switch (the ExecStart path
-    # is content-addressed, so systemd detects the unit changed and re-runs it
-    # when the desired state changes).
+  services.nix-hapi = {
+    enable = true;
+    package = flake-inputs.nix-hapi.packages.${system}.default;
+    trees.ldap = {
+      desiredState = {
+        proton-ldap = mkLdapProvider {
+          url = "ldaps://ldap.${facts.network.domain}";
+          baseDn = base-dn;
+          bindDn = "cn=admin,${base-dn}";
+          bindPassword = mkManagedFromPath "/run/credentials/nix-hapi-ldap.service/ldap-root-pass";
+          users = lib.mapAttrs (
+            name: ucfg:
+            mkLdapUser {
+              cn = ucfg.fullName;
+              sn = name;
+              mail = ucfg.email;
+              userPassword =
+                if ucfg.managed then
+                  mkManagedFromPath (credential-path name)
+                else
+                  mkInitialFromPath (credential-path name);
+              description = if ucfg.description != "" then ucfg.description else null;
+            }
+          ) all-ldap-users;
+          groups = lib.mapAttrs (_name: group: {
+            description = if group.description != "" then group.description else null;
+            members = group.members;
+          }) all-ldap-groups;
+        };
+      };
+      providers.ldap =
+        "${flake-inputs.nix-hapi-provider-ldap.packages.${system}.default}"
+        + "/bin/nix-hapi-provider-ldap";
+    };
+  };
+
+  # Extend the generated service with LDAP ordering, credentials,
+  # hardening, and restart triggers.
+  systemd.services.nix-hapi-ldap = {
     after = [
       "openldap.service"
       "run-agenix.d.mount"
@@ -199,18 +143,15 @@ in
       "run-agenix.d.mount"
     ];
     wantedBy = [ "multi-user.target" ];
+    # Restart when the tree JSON or any LDAP password hash changes.
+    restartTriggers = [
+      config.environment.etc."nix-hapi/ldap.json".source
+    ]
+    ++ lib.mapAttrsToList (
+      name: _: config.age.secrets."${name}-ldap-password-hashed".file
+    ) all-ldap-users;
     serviceConfig = {
-      Type = "oneshot";
       RemainAfterExit = true;
-      # Read the admin bind password from the credential, strip any trailing
-      # newline, and pass it directly to the reconciler.
-      ExecStart = pkgs.writeShellScript "ldap-reconciler-run" ''
-        ${ldap-reconciler-pkg}/bin/ldap-reconciler \
-          --ldap-url "ldaps://ldap.${facts.network.domain}" \
-          --ldap-bind-dn "cn=admin,${base-dn}" \
-          --ldap-password "$(tr -d '\n' < /run/credentials/ldap-reconciler.service/ldap-root-pass)" \
-          --state-file "${desired-state-file}"
-      '';
       LoadCredential = [
         "ldap-root-pass:${config.age.secrets.ldap-root-pass.path}"
       ]
@@ -219,17 +160,6 @@ in
       PrivateTmp = true;
       ProtectSystem = "strict";
       ProtectHome = true;
-    };
-  };
-
-  # Periodic timer as a drift-correction backstop.  The primary run is handled
-  # by the service's wantedBy = multi-user.target above; this catches any
-  # out-of-band LDAP mutations that need to be corrected over time.
-  systemd.timers.ldap-reconciler = {
-    wantedBy = [ "timers.target" ];
-    timerConfig = {
-      OnUnitActiveSec = "1h";
-      Persistent = true;
     };
   };
 }

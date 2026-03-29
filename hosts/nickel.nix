@@ -1,13 +1,8 @@
 ################################################################################
 # This defines the entirety of the configuration for the nickel host.
 #
-# Nickel handles DNS, metrics gathering, alerting, and display.  It's a fully
-# laden host.  Do not put more things on here.  If anything, we need to remove
-# things - if anything goes wrong with the deployment, we tend to have a network
-# outage.
-#
-# The ultimate goal of Nickel should be to replace most of our router's
-# functions with this host.
+# Nickel is a Raspberry Pi 4 running a minimal NixOS configuration.  Monitoring
+# services (Prometheus, Grafana, Alertmanager) have been migrated to silicon.
 #
 # Use this to build:
 # nix build '.#nixosConfigurations.nickel.config.system.build.sdImage' --show-trace
@@ -27,9 +22,6 @@ in
     # ../nixos-configs/dns-server.nix
     ../nixos-configs/raspberry-pi-4.nix
     ../nixos-modules/linux-host.nix
-    ../nixos-modules/prometheus-server.nix
-    ../nixos-modules/grafana.nix
-    ../nixos-configs/alertmanager.nix
     # (import ../nixos-modules/freeipa-server.nix { inherit host-id; })
     # Pi stuff.
     (
