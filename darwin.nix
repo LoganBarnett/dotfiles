@@ -71,6 +71,7 @@ in
     ./nixos-modules/nix-flake-environment.nix
     ./nixos-modules/darwin-tls-trust.nix
     ./nixos-modules/dns-aliases.nix
+    ./nixos-modules/monitors.nix
     # ./nixos-configs/user-can-admin.nix.
     # NixOS has this built in; import it from nixpkgs for Darwin.  Needed for
     # "${flake-inputs.nixpkgs}/nixos/modules/programs/pay-respects.nix"

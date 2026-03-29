@@ -75,7 +75,8 @@
     # - ipv4 The host portion of this host's IP address.  This will be fixed in
     #   the DNS.  Leaving this out means the host uses DHCP.  Alternatively it
     #   means we're talking about a container.
-    # - monitors A list of monitors to use for this host.
+    # - monitors (optional) A list of monitors for non-Nix-managed hosts.
+    #   Nix-managed hosts declare monitors via networking.monitors instead.
     # - roaming (optional, default false) Whether or not this host roams on and
     #   off this network.  This is generally intended for personal laptops that
     #   will frequently be offline, and thus should not trigger alerts when
@@ -105,11 +106,6 @@
       arsenic = {
         controlledHost = true;
         ipv4 = 7;
-        monitors = [
-          "node"
-          "nvidia-gpu"
-          "systemd"
-        ];
         system = "x86_64-linux";
       };
       bromine = {
@@ -118,11 +114,6 @@
           nixpkgs = "nixpkgs-nixos-raspberrypi";
         };
         ipv4 = 3;
-        monitors = [
-          "goss"
-          "node"
-          "systemd"
-        ];
         system = "aarch64-linux";
       };
       cassandra-macbook = {
@@ -147,20 +138,11 @@
           nixpkgs = "nixpkgs-nixos-raspberrypi";
         };
         ipv4 = 11;
-        monitors = [
-          "node"
-          "systemd"
-        ];
         system = "aarch64-linux";
       };
       copper = {
         controlledHost = true;
         ipv4 = 10;
-        monitors = [
-          "goss"
-          "node"
-          "systemd"
-        ];
         system = "x86_64-linux";
       };
       gallium = {
@@ -169,11 +151,6 @@
           nixpkgs = "nixpkgs-nixos-raspberrypi";
         };
         ipv4 = 4;
-        monitors = [
-          "goss"
-          "node"
-          "systemd"
-        ];
         system = "aarch64-linux";
       };
       # germanium = {
@@ -192,11 +169,6 @@
       lithium = {
         controlledHost = true;
         ipv4 = 8;
-        monitors = [
-          "node"
-          "nvidia-gpu"
-          "systemd"
-        ];
         system = "x86_64-linux";
       };
       "M-CL64PK702X" = {
@@ -210,7 +182,6 @@
           "bc:d0:74:07:50:eb" # WiFi
           "c8:a3:62:84:33:99" # Ethernet dongle
         ];
-        monitors = [ "goss" ];
         system = "aarch64-darwin";
       };
       manganese = {
@@ -228,12 +199,6 @@
           nixpkgs = "nixpkgs-nixos-raspberrypi";
         };
         ipv4 = 1;
-        monitors = [
-          "goss"
-          # "openldap"
-          "node"
-          "systemd"
-        ];
         system = "aarch64-linux";
       };
       nucleus = {
@@ -268,10 +233,6 @@
       rubidium = {
         controlledHost = true;
         ipv4 = 13;
-        monitors = [
-          "node"
-          "systemd"
-        ];
         system = "x86_64-linux";
       };
       scandium = {
@@ -281,7 +242,6 @@
           nixpkgs = "nixpkgs";
         };
         ipv4 = 101;
-        monitors = [ ];
         roaming = true;
         system = "aarch64-darwin";
       };
@@ -291,11 +251,6 @@
           nixpkgs = "nixpkgs-nixos-raspberrypi";
         };
         ipv4 = 5;
-        monitors = [
-          # "octoprint"
-          "node"
-          "systemd"
-        ];
         system = "aarch64-linux";
       };
       silicon = {
@@ -308,34 +263,18 @@
         flake-input-overrides = { };
         ipv4 = 9;
         macAddresses = [ "b8:ca:3a:77:a9:2a" ];
-        monitors = [
-          "dns-smart-block"
-          "dnsmasq"
-          "goss"
-          "node"
-          "systemd"
-          "wireguard"
-        ];
         networkInterface = "eno1";
         system = "x86_64-linux";
       };
       krypton = {
         controlledHost = true;
         ipv4 = 12;
-        monitors = [
-          "node"
-          "systemd"
-        ];
         system = "x86_64-linux";
       };
       titanium = {
         blockProfiles = [ "adult" ];
         controlledHost = true;
         ipv4 = 6;
-        monitors = [
-          "node"
-          "systemd"
-        ];
         system = "x86_64-linux";
       };
 

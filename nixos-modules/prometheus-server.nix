@@ -32,6 +32,7 @@
 {
   config,
   facts,
+  host-id,
   lib,
   nodes,
   pkgs,
@@ -56,8 +57,21 @@ in
     globalConfig.scrape_interval = "10s";
     scrapeConfigs =
       let
+        # Resolve monitors for a single hostname from three sources:
+        #  1. This host reads its own config directly to avoid infinite
+        #     recursion through nodes.${host-id}.
+        #  2. Other Nix-managed hosts expose monitors via their module.
+        #  3. Non-Nix hosts fall back to the facts monitors field verbatim.
+        host-monitors =
+          hostname:
+          if hostname == host-id then
+            config.networking.monitors
+          else if builtins.hasAttr hostname nodes then
+            (nodes.${hostname}.config.networking.monitors or [ ])
+          else
+            (facts.network.hosts.${hostname}.monitors or [ ]);
         monitors = lib.pipe facts.network.hosts [
-          (lib.attrsets.mapAttrsToList (host: settings: (settings.monitors or [ ])))
+          (lib.attrsets.mapAttrsToList (host: _: host-monitors host))
           lib.lists.flatten
           lib.lists.unique
         ];
@@ -67,8 +81,8 @@ in
             (lib.attrsets.filterAttrs (
               host: settings:
               (settings.controlledHost or false)
-              && (!settings.roaming or false)
-              && (lib.lists.any (m: m == monitor) settings.monitors)
+              && !(settings.roaming or false)
+              && (lib.lists.any (m: m == monitor) (host-monitors host))
             ))
             (lib.attrsets.mapAttrsToList (
               host: settings:

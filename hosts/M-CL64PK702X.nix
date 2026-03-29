@@ -282,4 +282,5 @@ in
       };
     }
   ];
+  networking.monitors = [ "goss" ];
 }
