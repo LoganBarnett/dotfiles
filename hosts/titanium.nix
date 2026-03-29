@@ -72,6 +72,9 @@
       }
     )
   ];
+  # musicgpt-ui is currently commented out; alias is pre-declared for
+  # when the service is re-enabled.
+  networking.dns.aliases = [ "musicgpt" ];
   services.garage-queue-worker.workers.ollama.settings.capabilities.scalars.vram_mb =
     12288;
   services.proc-siding.settings.detector.kind = "amd";
