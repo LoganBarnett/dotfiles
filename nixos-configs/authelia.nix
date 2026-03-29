@@ -122,6 +122,10 @@ let
 
 in
 {
+  networking.dns.aliases = [
+    "authelia"
+    "sso"
+  ];
   # LDAP service account for Authelia's bind DN.  Declaring the user here
   # causes the ldap-auth module to auto-generate two agenix secrets:
   #   ${host-id}-authelia-service-ldap-password        (plaintext passphrase)

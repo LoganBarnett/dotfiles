@@ -28,6 +28,7 @@ in
   imports = [
     ./https.nix
   ];
+  networking.dns.aliases = [ "grafana" ];
   services.https.fqdns."grafana.${facts.network.domain}" = {
     internalPort = config.services.grafana.settings.server.http_port;
   };
@@ -173,6 +174,11 @@ in
   };
   systemd.services.grafana = {
     wants = [ "run-agenix.d.mount" ];
+    # TODO: Submit StateDirectory upstream to the NixOS Grafana module.  The
+    # upstream module relies on the grafana user already owning /var/lib/grafana
+    # but never declares StateDirectory, so data migrations (or fresh deploys
+    # to a new host) leave root-owned files that Grafana cannot write to.
+    serviceConfig.StateDirectory = "grafana";
     serviceConfig.LoadCredential = [
       "ldap-password:${
         config.age.secrets."${service-user-prefix}-grafana-service-ldap-password".path

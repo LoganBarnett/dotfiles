@@ -11,6 +11,7 @@ di@{
     ../nixos-modules/chronicle-proxy.nix
     ../nixos-modules/environment-file-secrets.nix
   ];
+  networking.dns.aliases = [ "chronicle-proxy" ];
   age.secrets = {
     openai-api-key = {
       rekeyFile = ../secrets/chronicle-proxy-openai-api-key.age;
