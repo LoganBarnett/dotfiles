@@ -145,7 +145,7 @@ in
     wantedBy = [ "multi-user.target" ];
     # Restart when the tree JSON or any LDAP password hash changes.
     restartTriggers = [
-      config.environment.etc."nix-hapi/ldap.json".source
+      config.services.nix-hapi.jsonFiles.ldap
     ]
     ++ lib.mapAttrsToList (
       name: _: config.age.secrets."${name}-ldap-password-hashed".file

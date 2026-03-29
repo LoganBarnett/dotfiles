@@ -102,7 +102,7 @@ in
     wants = [ "run-agenix.d.mount" ];
     # Restart when the desired-state JSON changes (new records, updated keys).
     restartTriggers = [
-      config.environment.etc."nix-hapi/porkbun.json".source
+      config.services.nix-hapi.jsonFiles.porkbun
     ];
     serviceConfig = {
       RemainAfterExit = true;
