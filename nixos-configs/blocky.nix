@@ -64,7 +64,7 @@ let
   };
 in
 {
-  networking.dnsAliases = [ "blocky" ];
+  networking.dns.aliases = [ "blocky" ];
   # TODO: Make dynamic some day.  Make it follow "gateway".
   networking.defaultGateway = "${subnet}.254";
   # Allow actual DNS and DHCP connections.

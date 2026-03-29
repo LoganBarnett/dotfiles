@@ -9,7 +9,7 @@ let
   fqdn = "matrix.${facts.network.domain}";
 in
 {
-  networking.dnsAliases = [ "matrix" ];
+  networking.dns.aliases = [ "matrix" ];
   services.https.fqdns."${fqdn}" = {
     serviceNameForSocket = "matrix-synapse";
   };

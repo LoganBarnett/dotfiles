@@ -28,7 +28,7 @@ in
   imports = [
     ./https.nix
   ];
-  networking.dnsAliases = [ "grafana" ];
+  networking.dns.aliases = [ "grafana" ];
   services.https.fqdns."grafana.${facts.network.domain}" = {
     internalPort = config.services.grafana.settings.server.http_port;
   };
