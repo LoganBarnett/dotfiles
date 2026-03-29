@@ -128,6 +128,10 @@
       url = "github:LoganBarnett/nix-hapi-provider-ldap";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    nix-hapi-provider-porkbun = {
+      url = "github:LoganBarnett/nix-hapi-provider-porkbun";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     nix-homebrew.url = "github:zhaofengli/nix-homebrew";
     nix-option-search = {
       url = "github:ciderale/nix-option-search";
