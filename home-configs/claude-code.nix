@@ -113,6 +113,14 @@ in
               }
             ];
           }
+          {
+            hooks = [
+              {
+                type = "command";
+                command = ''echo "[$(date '+%Y-%m-%d %H:%M:%S')] Claude stopped."'';
+              }
+            ];
+          }
         ];
       };
     };
