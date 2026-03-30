@@ -8,15 +8,26 @@
 #   1. Gracefully disconnect any existing VPN session.
 #   2. Connect via gp-connect-auto (full auth cycle).
 #   3. Run the test script unconditionally.
-#   4. Check network connectivity; call vpn-test-harness-recover if it is gone.
+#   4. Run baseline network assertions; recover and retry up to 3× if any fail.
 #   5. Gracefully disconnect VPN so the vpnc-script restores the default route.
-#   6. Exit with the test script's original exit code.
+#   6. Run baseline assertions again to guarantee the network is healthy on exit.
+#   7. Exit with the test script's original exit code.
+#
+# Baseline assertions check six things: DNS resolution + IP reachability for
+# silicon.proton (local), yahoo.com (external), and api.anthropic.com (Claude
+# API).  All six must pass before the harness returns.  Any failure triggers
+# vpn-test-harness-recover followed by a retry, up to BASELINE_MAX_RETRIES
+# times.  This guarantees Claude Code always resumes on a healthy network.
 #
 # The test script should print everything it wants observed and must exit
 # non-zero on failure.  Do not swallow errors with >/dev/null inside it.
 ################################################################################
 
 set -euo pipefail
+
+# GNU inetutils ifconfig (from Nix) silently returns empty output for macOS
+# interface addresses.  Use the macOS system ifconfig explicitly.
+IFCONFIG=/sbin/ifconfig
 
 # Tee all output to a timestamped log file for post-mortem debugging.
 LOG_DIR="${HOME}/.local/state/vpn-test-harness"
@@ -30,8 +41,11 @@ echo "Logging to: $LOG_FILE"
 echo "Follow live:  tail -f $LOG_DIR/current.log"
 echo ""
 
-PING_HOST="yahoo.com"
-PING_ATTEMPTS=3
+# Stable IP for the local DNS/network host.  Used as a fallback when DNS is
+# broken so routing can still be verified independently of resolution.
+SILICON_IP_STABLE="192.168.254.9"
+# How many recovery attempts before giving up and logging a fatal warning.
+BASELINE_MAX_RETRIES=3
 GPCLIENT_LOCK="/var/run/gpclient.lock"
 # Seconds to wait for VPN to come up after gp-connect-auto.
 VPN_CONNECT_TIMEOUT=120
@@ -102,6 +116,149 @@ vpn_disconnect_graceful() {
   echo "  VPN disconnected"
 }
 
+# Resolve a hostname to its first IPv4 address via DNS.
+# Prints the IP on stdout; prints nothing if resolution fails.
+resolve_ip() {
+  dig +timeout=3 +tries=1 "$1" A +short 2>/dev/null \
+    | grep -E '^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$' \
+    | head -1 \
+    || true
+}
+
+# Run all six baseline network assertions unconditionally.
+# Checks DNS resolution and IP reachability for three hosts.
+# Returns 1 if any check fails; all checks always run to completion.
+run_baseline_assertions() {
+  local fail=0
+
+  echo "  --- Baseline assertions ---"
+
+  # --- 1 & 2: silicon.proton (local DNS server) ---
+  local silicon_ip
+  silicon_ip=$(resolve_ip silicon.proton)
+  if [ -n "$silicon_ip" ]; then
+    echo "  [DNS ] silicon.proton → $silicon_ip  ✓"
+  else
+    echo "  [DNS ] silicon.proton → (failed; using stable fallback $SILICON_IP_STABLE)  ✗"
+    silicon_ip="$SILICON_IP_STABLE"
+    fail=1
+  fi
+  if ping -c 1 -W 5 "$silicon_ip" >/dev/null 2>&1; then
+    echo "  [IP  ] silicon.proton ($silicon_ip) reachable  ✓"
+  else
+    echo "  [IP  ] silicon.proton ($silicon_ip) NOT reachable  ✗"
+    fail=1
+  fi
+
+  # --- 3 & 4: yahoo.com (external internet) ---
+  local yahoo_ip
+  yahoo_ip=$(resolve_ip yahoo.com)
+  if [ -n "$yahoo_ip" ]; then
+    echo "  [DNS ] yahoo.com → $yahoo_ip  ✓"
+    if ping -c 1 -W 5 "$yahoo_ip" >/dev/null 2>&1; then
+      echo "  [IP  ] yahoo.com ($yahoo_ip) reachable  ✓"
+    else
+      echo "  [IP  ] yahoo.com ($yahoo_ip) NOT reachable  ✗"
+      fail=1
+    fi
+  else
+    echo "  [DNS ] yahoo.com → (failed)  ✗"
+    echo "  [IP  ] yahoo.com (skipped — DNS failed)  ✗"
+    fail=1
+  fi
+
+  # --- 5 & 6: api.anthropic.com (Claude API) ---
+  local anthropic_ip
+  anthropic_ip=$(resolve_ip api.anthropic.com)
+  if [ -n "$anthropic_ip" ]; then
+    echo "  [DNS ] api.anthropic.com → $anthropic_ip  ✓"
+    if ping -c 1 -W 5 "$anthropic_ip" >/dev/null 2>&1; then
+      echo "  [IP  ] api.anthropic.com ($anthropic_ip) reachable  ✓"
+    else
+      echo "  [IP  ] api.anthropic.com ($anthropic_ip) NOT reachable  ✗"
+      fail=1
+    fi
+  else
+    echo "  [DNS ] api.anthropic.com → (failed)  ✗"
+    echo "  [IP  ] api.anthropic.com (skipped — DNS failed)  ✗"
+    fail=1
+  fi
+
+  if [ "$fail" -eq 0 ]; then
+    echo "  --- All baseline assertions passed ---"
+  else
+    echo "  --- Baseline assertions FAILED ---"
+  fi
+  return "$fail"
+}
+
+# Run baseline assertions; recover and retry on failure.
+# Blocks until all six assertions pass or BASELINE_MAX_RETRIES is exhausted.
+# Logs a fatal warning if the limit is reached, but always returns 0 so the
+# harness can still exit with the test script's own code.
+baseline_assertion_gate() {
+  local label="$1"
+  echo "========================================================"
+  echo "vpn-test-harness: baseline assertions ($label)"
+  echo "========================================================"
+  echo ""
+
+  local attempt=0
+  while [ $attempt -lt $BASELINE_MAX_RETRIES ]; do
+    attempt=$((attempt + 1))
+    echo "Attempt $attempt/$BASELINE_MAX_RETRIES..."
+    if run_baseline_assertions; then
+      echo "✓ All baseline assertions passed"
+      echo ""
+      return 0
+    fi
+    echo ""
+    if [ $attempt -lt $BASELINE_MAX_RETRIES ]; then
+      echo "Assertions failed — running vpn-test-harness-recover..."
+      sudo -E vpn-test-harness-recover || true
+      echo "Waiting 5s for network stack to settle..."
+      sleep 5
+      echo ""
+    fi
+  done
+
+  echo "FATAL: Baseline assertions still failing after $BASELINE_MAX_RETRIES attempt(s)" >&2
+  echo "  Network may not be healthy — manual intervention may be required" >&2
+  echo ""
+}
+
+# ---------------------------------------------------------------------------
+# Step 0: ensure the physical interface has an IP (DHCP may still be pending
+# from a previous recovery cycle).  gp-connect-auto's pre-VPN state capture
+# and the vpnc-script both depend on en10 having a valid IPv4 address.
+# ---------------------------------------------------------------------------
+
+echo "========================================================"
+echo "vpn-test-harness: [0/5] ensuring physical interface has IP"
+echo "========================================================"
+echo ""
+
+_PHYS_IF=$(route -n get default 2>/dev/null | awk '/interface:/ {print $2; exit}') || true
+_PHYS_IP=$("$IFCONFIG" "${_PHYS_IF:-en10}" 2>/dev/null | awk '/inet [0-9]/ {print $2}' | head -1) || true
+if [ -z "$_PHYS_IP" ]; then
+  echo "  ${_PHYS_IF:-en10} has no IPv4 — requesting DHCP and waiting up to 30s..."
+  ipconfig set "${_PHYS_IF:-en10}" DHCP 2>/dev/null || true
+  for _dhcp_wait in $(seq 1 30); do
+    _PHYS_IP=$("$IFCONFIG" "${_PHYS_IF:-en10}" 2>/dev/null | awk '/inet [0-9]/ {print $2}' | head -1) || true
+    if [ -n "$_PHYS_IP" ]; then
+      echo "  ✓ ${_PHYS_IF:-en10} got IP $_PHYS_IP after ${_dhcp_wait}s"
+      break
+    fi
+    sleep 1
+  done
+  if [ -z "$_PHYS_IP" ]; then
+    echo "  WARNING: ${_PHYS_IF:-en10} still has no IP after 30s — continuing anyway" >&2
+  fi
+else
+  echo "  ✓ ${_PHYS_IF:-en10} already has IP $_PHYS_IP"
+fi
+echo ""
+
 # ---------------------------------------------------------------------------
 # Step 1: disconnect any existing session
 # ---------------------------------------------------------------------------
@@ -122,16 +279,28 @@ echo "vpn-test-harness: [2/5] connecting VPN"
 echo "========================================================"
 echo ""
 
-# Pass -E to preserve ORG_NAME/GP_SERVER/GP_USERNAME; sudoers rule includes SETENV.
-sudo -E gp-connect-auto &
+# The harness runs as root (via sudo -E vpn-test-harness), so gp-connect-auto
+# inherits root privileges directly.  Do NOT use 'sudo -E' here — a nested
+# sudo overwrites SUDO_USER, causing gpauth to refuse with "cannot be run as
+# root" (gpauth uses SUDO_USER to drop privileges for the browser auth flow).
+gp-connect-auto &
 CONNECT_PID=$!
 
 echo "Waiting up to ${VPN_CONNECT_TIMEOUT}s for VPN to connect..."
+echo "  CONNECT_PID=$CONNECT_PID  GPCLIENT_LOCK=$GPCLIENT_LOCK"
 WAITED=0
 while [ $WAITED -lt $VPN_CONNECT_TIMEOUT ]; do
   if vpn_is_connected; then
     echo "✓ VPN connected"
     break
+  fi
+  # Every 10 seconds, print diagnostic info to help debug stalls.
+  if [ $(( WAITED % 10 )) -eq 0 ] && [ $WAITED -gt 0 ]; then
+    _LOCK_EXISTS="no"
+    [ -f "$GPCLIENT_LOCK" ] && _LOCK_EXISTS="yes ($(cat "$GPCLIENT_LOCK" 2>/dev/null))"
+    _BG_ALIVE="no"
+    kill -0 "$CONNECT_PID" 2>/dev/null && _BG_ALIVE="yes"
+    echo "  [${WAITED}s] lock=$_LOCK_EXISTS bg_alive=$_BG_ALIVE"
   fi
   sleep 1
   WAITED=$((WAITED + 1))
@@ -142,6 +311,75 @@ if ! vpn_is_connected; then
   # Clean up background connect process.
   kill "$CONNECT_PID" 2>/dev/null || true
   exit 1
+fi
+echo ""
+
+# Wait for the VPN data plane to stabilise.  gpclient reports "connected"
+# as soon as the lock file is written, but the openconnect TCP session
+# (TLS mode) may still be recovering from the brief IP-absent window
+# caused by gpclient's 'ipconfig set NONE' call.  Poll for a reachable
+# VPN DNS server instead of sleeping a fixed amount.
+echo "Waiting for VPN data plane (DNS query to 10.198.51.37, up to 90s)..."
+# Show utun state once at the start for diagnostics.
+echo "  utun interfaces at wait start:"
+"$IFCONFIG" | awk '/^utun/{iface=$1} /inet /{print "    " iface ": " $2}' | grep -E "10\.|192\." || echo "    (none with 10.x/192.x)"
+echo "  utun4 flags: $("$IFCONFIG" utun4 2>/dev/null | head -1 | sed 's/.*flags=//;s/ .*//')"
+echo "  default route: $(route -n get default 2>/dev/null | awk '/interface:/ {print $2}')"
+echo "  bypass for VPN server: $(route -n get 130.41.54.241 2>/dev/null | awk '/gateway:|interface:/ {printf $2 " "}')"
+VPN_READY=false
+for _i in $(seq 1 90); do
+  # Use a DNS query rather than ping: ICMP may be blocked by corporate
+  # VPN policy even when the data plane is working.
+  DIG_OUT=$(dig +timeout=1 +tries=1 @10.198.51.37 stash.americas.nwea.pvt A 2>&1 || true)
+  # Only accept NOERROR with an actual answer — NXDOMAIN or SERVFAIL mean
+  # the DNS server responded but stash did not resolve, which is not a
+  # working data plane.
+  if echo "$DIG_OUT" | grep -q "NOERROR"; then
+    _STASH_IP=$(echo "$DIG_OUT" | awk '/^stash\..*IN\s+A\s/ {print $NF}' | head -1)
+    if [ -n "$_STASH_IP" ]; then
+      echo "  ✓ VPN data plane ready after ${_i}s (stash → $_STASH_IP)"
+    else
+      echo "  ✓ VPN data plane ready after ${_i}s (NOERROR but no A record)"
+    fi
+    VPN_READY=true
+    break
+  fi
+  # Every 10 seconds, print a brief status line so we can see the dig error.
+  if [ $(( _i % 10 )) -eq 0 ]; then
+    echo "  [${_i}s] dig status: $(echo "$DIG_OUT" | grep -E "status:|timed out|refused|unreachable" | head -1)"
+    echo "    en10: $("$IFCONFIG" en10 2>/dev/null | awk '/inet [0-9]/ {print $2}' | head -1)"
+    echo "    bypass: $(route -n get 130.41.54.241 2>/dev/null | awk '/gateway:|interface:/ {printf $2 " "}')"
+    echo "    default route: $(route -n get default 2>/dev/null | awk '/interface:/ {print $2}')"
+    echo "    utun4 flags: $("$IFCONFIG" utun4 2>/dev/null | head -1 | sed 's/.*flags=//;s/ .*//')"
+    echo "    utun4 pkts: $(netstat -I utun4 -n 2>/dev/null | awk 'NR>1 {ip+=$5; op+=$7} END {print "Ipkts=" ip " Opkts=" op}')"
+    echo "    10.198.51.37 route: $(route -n get 10.198.51.37 2>/dev/null | awk '/interface:|gateway:|flags:/ {printf $2 " "}')"
+    echo "    10.0.0.0/8 route: $(netstat -rn 2>/dev/null | awk '/^10\.0\.0\.0/ {print $1,$2,$3,$6}' | head -2)"
+    echo "    any→vpnserver: $(netstat -an 2>/dev/null | awk '/130\.41\.54\.241/ && !/LISTEN/ {print $1 " " $4 " " $5}' | head -3)"
+  fi
+  sleep 1
+done
+if [ "$VPN_READY" = "false" ]; then
+  echo "  (VPN DNS still unreachable after 90s — final utun state:)"
+  "$IFCONFIG" | awk '/^utun/{iface=$1} /inet /{print "    " iface ": " $2}'
+fi
+
+# Now that the VPN data plane is confirmed working, restart mDNSResponder so
+# it evaluates supplemental resolver reachability with the tunnel active.
+# The vpnc-script deliberately does NOT restart mDNSResponder because the
+# tunnel data plane isn't ready during vpnc-script execution.  This is the
+# FIRST restart with a working data plane.
+if [ "$VPN_READY" = "true" ]; then
+  # Flush DNS cache and notify configd.  Use HUP (not full restart) to avoid
+  # killing mDNSResponder — a full restart via launchctl kickstart -k takes
+  # 15+ seconds to rebind port 53 on this macOS version.
+  echo "Flushing DNS cache and notifying configd..."
+  dscacheutil -flushcache 2>/dev/null || true
+  killall -HUP mDNSResponder 2>/dev/null || true
+  scutil << SCEOF
+notify State:/Network/Global/DNS
+quit
+SCEOF
+  sleep 1
 fi
 echo ""
 
@@ -170,38 +408,10 @@ echo "========================================================"
 echo ""
 
 # ---------------------------------------------------------------------------
-# Step 4: check network; recover if needed
+# Step 4: baseline assertions — block until network is healthy or give up
 # ---------------------------------------------------------------------------
 
-echo "========================================================"
-echo "vpn-test-harness: [4/5] checking network connectivity"
-echo "========================================================"
-echo ""
-
-NETWORK_OK=false
-for attempt in $(seq 1 $PING_ATTEMPTS); do
-  echo "  Ping $PING_HOST (attempt $attempt/$PING_ATTEMPTS)..."
-  if ping -c 1 -t 3 "$PING_HOST" >/dev/null 2>&1; then
-    echo "  ✓ Network reachable"
-    NETWORK_OK=true
-    break
-  else
-    echo "  ✗ No response"
-  fi
-done
-
-if [ "$NETWORK_OK" = "false" ]; then
-  echo ""
-  echo "WARNING: Network connectivity lost — running vpn-test-harness-recover..."
-  sudo -E vpn-test-harness-recover
-  echo ""
-  if ping -c 1 -t 5 "$PING_HOST" >/dev/null 2>&1; then
-    echo "✓ Network restored"
-  else
-    echo "✗ Network still unavailable after recovery" >&2
-  fi
-fi
-echo ""
+baseline_assertion_gate "after test script"
 
 # ---------------------------------------------------------------------------
 # Step 5: disconnect cleanly
@@ -213,6 +423,12 @@ echo "========================================================"
 echo ""
 vpn_disconnect_graceful
 echo ""
+
+# Final baseline check: guarantee the network is healthy before returning to
+# Claude Code.  The vpnc-script disconnect case restores the default route, but
+# DNS overrides set via networksetup may still linger; this catches any
+# residual breakage and blocks until all six assertions pass.
+baseline_assertion_gate "after disconnect"
 
 echo "========================================================"
 echo "vpn-test-harness: done (exit $TEST_EXIT)"

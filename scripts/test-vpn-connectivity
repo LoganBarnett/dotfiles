@@ -2,11 +2,16 @@
 ################################################################################
 # Test VPN connectivity for all required endpoints.
 # Reports status of each test with aggressive timeouts.
+# All tests run regardless of individual failures; exits non-zero if any
+# test fails so the harness can detect the overall result.
 ################################################################################
 
-set -e
+# GNU inetutils ifconfig (from Nix) silently returns empty output for macOS
+# interface addresses.  Use the macOS system ifconfig explicitly.
+IFCONFIG=/sbin/ifconfig
 
 TIMEOUT=5
+OVERALL_FAIL=0
 
 echo "============================================================"
 echo "VPN Connectivity Test"
@@ -14,12 +19,17 @@ echo "============================================================"
 echo ""
 
 # Test 1: VPN tunnel exists
+# On macOS, ifconfig prints the interface name and inet address on separate
+# lines, so "utun.*10\.89\." never matches a single line.  Track the last
+# utun interface name seen and check the inet line that follows it.
 echo "[1/7] Checking VPN tunnel..."
-if ifconfig | grep -q "utun.*10\.89\."; then
-  TUNNEL=$(ifconfig | grep -A 2 "utun" | grep "inet 10\.89\." | head -1 | awk '{print $2}')
-  echo "✓ VPN tunnel UP: $TUNNEL"
+TUNNEL=$("$IFCONFIG" | awk '/^utun/{iface=$1} /inet 10\.89\./{print iface; exit}' | tr -d ':')
+if [ -n "$TUNNEL" ]; then
+  TUNNEL_IP=$("$IFCONFIG" "$TUNNEL" 2>/dev/null | awk '/inet 10\.89\./{print $2}' | head -1)
+  echo "✓ VPN tunnel UP: $TUNNEL_IP on $TUNNEL"
 else
   echo "✗ VPN tunnel DOWN"
+  OVERALL_FAIL=1
 fi
 echo ""
 
@@ -30,6 +40,7 @@ if [ -f /var/run/gpclient.lock ] && ps -o pid= -p "$(cat /var/run/gpclient.lock 
   echo "✓ gpclient running (PID: $PID)"
 else
   echo "✗ gpclient not running"
+  OVERALL_FAIL=1
 fi
 echo ""
 
@@ -38,19 +49,24 @@ echo "[3/7] Checking VPN routes..."
 ROUTE_COUNT=$(netstat -rn | grep -c "10\." 2>/dev/null || echo "0")
 if [ "$ROUTE_COUNT" -gt 0 ]; then
   echo "✓ Found $ROUTE_COUNT routes for 10.x networks"
-  netstat -rn | grep "10\." | head -5
+  netstat -rn | grep "10\." | head -5 || true
 else
   echo "✗ No routes found for 10.x networks"
+  OVERALL_FAIL=1
 fi
 echo ""
 
 # Test 4: DNS resolver files
+# Count all per-domain resolver files we create (pvt, hmco.com, hmhco.com,
+# hegn.us, etc.) not just *.pvt.
 echo "[4/7] Checking DNS resolver files..."
-RESOLVER_COUNT=$(find /etc/resolver -name "*.pvt" 2>/dev/null | wc -l | tr -d ' ')
+RESOLVER_COUNT=$(find /etc/resolver -type f 2>/dev/null | wc -l | tr -d ' ')
 if [ "$RESOLVER_COUNT" -gt 0 ]; then
   echo "✓ Found $RESOLVER_COUNT resolver files"
+  find /etc/resolver -type f 2>/dev/null | sed 's|.*/||' | sort | sed 's/^/  /' || true
 else
   echo "✗ No resolver files found"
+  OVERALL_FAIL=1
 fi
 echo ""
 
@@ -60,6 +76,23 @@ if timeout $TIMEOUT ping -c 1 10.198.51.37 >/dev/null 2>&1; then
   echo "✓ VPN DNS server 10.198.51.37 is reachable"
 else
   echo "✗ VPN DNS server 10.198.51.37 is NOT reachable"
+  OVERALL_FAIL=1
+fi
+echo ""
+
+# Test 5b: Public DNS and routing diagnostics (informational — always runs,
+# failures are noted but do not set OVERALL_FAIL independently since test 6
+# below covers the end-to-end check).
+echo "[5b] Public DNS/routing diagnostics..."
+echo "  System DNS (dig yahoo.com):"
+dig +short +timeout=3 yahoo.com 2>&1 | head -3 | sed 's/^/    /' || true
+echo "  Direct DNS (dig @192.168.254.9 yahoo.com):"
+dig +short +timeout=3 @192.168.254.9 yahoo.com 2>&1 | head -3 | sed 's/^/    /' || true
+echo "  Routing check (ping 8.8.8.8 by IP, bypass DNS):"
+if timeout 3 ping -c 1 8.8.8.8 >/dev/null 2>&1; then
+  echo "    ✓ 8.8.8.8 reachable by IP"
+else
+  echo "    ✗ 8.8.8.8 NOT reachable (routing issue)"
 fi
 echo ""
 
@@ -70,22 +103,79 @@ if [ "$RESULT" = "200" ]; then
   echo "✓ Local DNS working (HTTP 200)"
 elif [ "$RESULT" = "TIMEOUT" ]; then
   echo "✗ Connection timed out"
+  OVERALL_FAIL=1
 else
   echo "✗ Failed (HTTP $RESULT)"
+  OVERALL_FAIL=1
 fi
 echo ""
 
 # Test 7: VPN DNS (stash.americas.nwea.pvt)
-echo "[7/7] Testing VPN DNS: https://stash.americas.nwea.pvt"
-RESULT=$(timeout $TIMEOUT curl -s -o /dev/null -w "%{http_code}" https://stash.americas.nwea.pvt 2>&1 || echo "TIMEOUT")
-if [ "$RESULT" = "200" ] || [ "$RESULT" = "301" ] || [ "$RESULT" = "302" ]; then
-  echo "✓ VPN DNS working (HTTP $RESULT)"
-elif [[ "$RESULT" =~ "Could not resolve" ]]; then
-  echo "✗ DNS resolution failed"
-elif [ "$RESULT" = "TIMEOUT" ]; then
-  echo "✗ Connection timed out"
+# Break this into sub-steps so we can diagnose exactly where it fails:
+# DNS resolution, routing, TCP connectivity, then full HTTPS.
+STASH_HOST="stash.americas.nwea.pvt"
+echo "[7/7] Testing VPN endpoint: https://$STASH_HOST"
+
+# 7a: DNS resolution via VPN DNS server.
+STASH_IP=$(dig +short +timeout=3 +tries=1 @10.198.51.37 "$STASH_HOST" A 2>/dev/null | head -1) || true
+if [ -n "$STASH_IP" ]; then
+  echo "  [7a] DNS resolution: $STASH_HOST → $STASH_IP  ✓"
 else
-  echo "✗ Failed (HTTP $RESULT)"
+  echo "  [7a] DNS resolution via VPN DNS (10.198.51.37): FAILED"
+  # Also try system resolver for comparison.
+  STASH_IP_SYS=$(dig +short +timeout=3 "$STASH_HOST" A 2>/dev/null | head -1) || true
+  echo "       System resolver: ${STASH_IP_SYS:-FAILED}"
+  echo "  ✗ Cannot resolve $STASH_HOST"
+  OVERALL_FAIL=1
+fi
+
+if [ -n "$STASH_IP" ]; then
+  # 7b: Route check — which interface handles this IP?
+  STASH_ROUTE_IF=$(route -n get "$STASH_IP" 2>/dev/null | awk '/interface:/ {print $2}') || true
+  STASH_ROUTE_GW=$(route -n get "$STASH_IP" 2>/dev/null | awk '/gateway:/ {print $2}') || true
+  echo "  [7b] Route for $STASH_IP: interface=${STASH_ROUTE_IF:-none} gateway=${STASH_ROUTE_GW:-none}"
+  if [[ "${STASH_ROUTE_IF:-}" == utun* ]]; then
+    echo "       → routed through VPN tunnel  ✓"
+  elif [ -n "$STASH_ROUTE_IF" ]; then
+    echo "       → routed through $STASH_ROUTE_IF (NOT VPN tunnel)  ✗"
+  fi
+
+  # 7c: TCP connectivity to port 443.
+  if timeout 5 bash -c "echo >/dev/tcp/$STASH_IP/443" 2>/dev/null; then
+    echo "  [7c] TCP connect to $STASH_IP:443  ✓"
+  else
+    echo "  [7c] TCP connect to $STASH_IP:443  ✗ (timed out or refused)"
+    # Show what we can see about the path.
+    echo "       ping (1 pkt): $(timeout 3 ping -c 1 -W 2 "$STASH_IP" 2>&1 | tail -1)"
+  fi
+
+  # 7d: Full HTTPS request.  Use --resolve to bypass mDNSResponder's
+  # supplemental resolver, which unreliably forwards .pvt domain queries to
+  # the VPN DNS server.  The direct DNS resolution (7a) already verified the
+  # VPN DNS server works; this test verifies TLS + HTTP through the tunnel.
+  RESULT=$(timeout 10 curl -s -o /dev/null -w "%{http_code}" \
+    --resolve "$STASH_HOST:443:$STASH_IP" \
+    "https://$STASH_HOST" 2>&1 || echo "TIMEOUT")
+  if [ "$RESULT" = "200" ] || [ "$RESULT" = "301" ] || [ "$RESULT" = "302" ]; then
+    echo "  [7d] HTTPS request (--resolve): HTTP $RESULT  ✓"
+    echo "✓ VPN endpoint working (HTTP $RESULT)"
+  elif [ "$RESULT" = "000TIMEOUT" ] || [ "$RESULT" = "TIMEOUT" ]; then
+    echo "  [7d] HTTPS request (--resolve): timed out (10s)"
+    # Show curl error detail.
+    CURL_ERR=$(timeout 5 curl -sv \
+      --resolve "$STASH_HOST:443:$STASH_IP" \
+      "https://$STASH_HOST" 2>&1 | head -20) || true
+    echo "       curl -sv output (first 20 lines):"
+    while IFS= read -r _line; do echo "         $_line"; done <<< "$CURL_ERR"
+    echo "✗ HTTPS connection timed out"
+    OVERALL_FAIL=1
+  else
+    echo "  [7d] HTTPS request (--resolve): HTTP $RESULT"
+    echo "✗ Failed (HTTP $RESULT)"
+    OVERALL_FAIL=1
+  fi
+else
+  echo "  (skipping routing and connectivity tests — DNS failed)"
 fi
 echo ""
 
@@ -97,14 +187,23 @@ else
   SSH_RESULT=$(timeout $TIMEOUT ssh -o ConnectTimeout=$TIMEOUT -o StrictHostKeyChecking=no -p 2222 git@gitea.proton 2>&1 || echo "TIMEOUT")
   if [[ "$SSH_RESULT" =~ "TIMEOUT" ]]; then
     echo "✗ SSH connection timed out"
+    OVERALL_FAIL=1
   elif [[ "$SSH_RESULT" =~ "Could not resolve" ]]; then
     echo "✗ DNS resolution failed"
+    OVERALL_FAIL=1
   else
     echo "✗ SSH connection failed"
+    OVERALL_FAIL=1
   fi
 fi
 echo ""
 
 echo "============================================================"
-echo "Test Complete"
+if [ "$OVERALL_FAIL" -eq 0 ]; then
+  echo "Test Complete — all tests passed"
+else
+  echo "Test Complete — one or more tests FAILED"
+fi
 echo "============================================================"
+
+exit "$OVERALL_FAIL"

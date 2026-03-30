@@ -7,6 +7,10 @@
 
 set -e
 
+# GNU inetutils ifconfig (from Nix) silently returns empty output for macOS
+# interface addresses.  Use the macOS system ifconfig explicitly.
+IFCONFIG=/sbin/ifconfig
+
 # Configuration
 GP_SERVER="${GP_SERVER:-}"
 GP_GATEWAY="${GP_GATEWAY:-}"
@@ -140,6 +144,62 @@ GP_CMD="$GP_CMD \"$GP_SERVER\""
 
 echo "Starting gpclient in remote browser mode with PTY..."
 echo "Running: $GP_CMD"
+echo ""
+
+# ── Pre-VPN state capture ─────────────────────────────────────────────
+# Save the physical interface state BEFORE gpclient strips en10's IPv4.
+# gpclient calls 'ipconfig set <iface> NONE' before firing vpnc-script
+# pre-init, so pre-init cannot capture this state itself.  The vpnc-script
+# connect case reads these files as a fallback.
+echo "Saving pre-VPN network state..."
+# Each pipeline is guarded with || true because writeShellApplication sets
+# pipefail: head -1 causes SIGPIPE on awk (exit 141), which pipefail
+# propagates, and set -e kills the script.
+_PV_IF=$(route -n get default 2>/dev/null | awk '/interface:/ {print $2; exit}') || true
+_PV_GW=$(route -n get default 2>/dev/null | \
+  awk '/gateway:/ && $2 ~ /^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$/ {print $2; exit}') || true
+_PV_IP=$("$IFCONFIG" "${_PV_IF:-}" 2>/dev/null | \
+  awk '/inet [0-9]/ {print $2}' | head -1) || true
+_PV_MASK=$("$IFCONFIG" "${_PV_IF:-}" 2>/dev/null | \
+  awk '/inet [0-9]/ {print $4}' | head -1) || true
+echo "  interface=${_PV_IF:-none} ip=${_PV_IP:-none} mask=${_PV_MASK:-none} gw=${_PV_GW:-none}"
+
+if [ -n "$_PV_IF" ] && [ -n "$_PV_IP" ] && [ -n "$_PV_MASK" ]; then
+  printf '%s %s %s %s\n' "$_PV_IF" "$_PV_IP" "$_PV_MASK" "${_PV_GW:-}" \
+    > /var/run/vpnc-pre-vpn-state
+  echo "  Saved to /var/run/vpnc-pre-vpn-state"
+
+  # Save DHCP DNS nameservers.  The || true guards against pipefail: grep
+  # returns 1 when no lines match, which would kill the script under set -e.
+  _PV_DNS=$(printf 'show State:/Network/Service/DHCP-%s/DNS\nquit\n' \
+    "$_PV_IF" | scutil 2>/dev/null | \
+    awk '$1 ~ /^[0-9]+$/ {print $3}' | \
+    grep -E '^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$' | tr '\n' ' ' | \
+    sed 's/[[:space:]]*$//') || true
+  if [ -n "$_PV_DNS" ]; then
+    echo "$_PV_DNS" > /var/run/vpnc-pre-vpn-dns
+    echo "  Saved pre-VPN DNS: $_PV_DNS"
+  fi
+
+  # Save network service name for networksetup.  The || true guards against
+  # pipefail if networksetup or awk returns non-zero.
+  _PV_SVC=$(networksetup -listnetworkserviceorder 2>/dev/null | \
+    awk -v dev="$_PV_IF" '
+      /^\(Hardware Port:/ {
+        if (index($0, "Device: " dev) > 0) {
+          match(prev, /^\([0-9]+\) /)
+          print substr(prev, RLENGTH + 1)
+        }
+      }
+      { prev = $0 }
+    ') || true
+  if [ -n "$_PV_SVC" ]; then
+    echo "$_PV_SVC" > /var/run/vpnc-pre-vpn-service
+    echo "  Saved pre-VPN network service: $_PV_SVC"
+  fi
+else
+  echo "  WARNING: Could not capture pre-VPN state (IP or mask missing)"
+fi
 echo ""
 
 # Use Python PTY wrapper to run gpclient

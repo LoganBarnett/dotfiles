@@ -1,8 +1,10 @@
 {
   bash,
+  bind,
   coreutils,
   curl,
   gnugrep,
+  inetutils,
   nettools,
   openssh,
   writeShellApplication,
@@ -13,9 +15,11 @@ writeShellApplication {
   name = "test-vpn-connectivity";
   runtimeInputs = [
     bash
+    bind
     coreutils
     curl
     gnugrep
+    inetutils
     nettools
     openssh
   ];

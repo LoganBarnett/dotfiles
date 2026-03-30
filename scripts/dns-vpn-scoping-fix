@@ -8,8 +8,34 @@
 
 set -e
 
-# Find the VPN tunnel interface (utun with 10.89.x.x IP).
-VPN_IF=$(ifconfig | grep -B 3 "inet 10.89" | grep "^utun" | head -1 | cut -d: -f1)
+# GNU inetutils ifconfig (from Nix) silently returns empty output for macOS
+# interface addresses.  Use the macOS system ifconfig explicitly.
+IFCONFIG=/sbin/ifconfig
+
+# Find the VPN tunnel interface: prefer UP utun interfaces with a 10.89.x IP,
+# then any UP utun with a 10.x IP.  The old code picked the first match in
+# ifconfig order, which could be a stale not-UP interface from a previous
+# session.
+VPN_IF=""
+for _iface_line in $("$IFCONFIG" | awk '/^utun/{print $1}' | tr -d ':'); do
+  "$IFCONFIG" "$_iface_line" 2>/dev/null | head -1 | grep -q "UP" || continue
+  _ip=$("$IFCONFIG" "$_iface_line" 2>/dev/null | awk '/inet 10\.89\./ {print $2}' | head -1)
+  if [ -n "$_ip" ]; then
+    VPN_IF="$_iface_line"
+    break
+  fi
+done
+# Fallback: any UP utun with a 10.x IP.
+if [ -z "$VPN_IF" ]; then
+  for _iface_line in $("$IFCONFIG" | awk '/^utun/{print $1}' | tr -d ':'); do
+    ifconfig "$_iface_line" 2>/dev/null | head -1 | grep -q "UP" || continue
+    _ip=$(ifconfig "$_iface_line" 2>/dev/null | awk '/inet 10\./ {print $2}' | head -1)
+    if [ -n "$_ip" ]; then
+      VPN_IF="$_iface_line"
+      break
+    fi
+  done
+fi
 
 if [ -z "$VPN_IF" ]; then
   echo "Error: No VPN tunnel interface found"
@@ -22,7 +48,7 @@ echo "Found VPN interface: $VPN_IF"
 DNS_CONFIG=$(scutil --dns)
 
 # Extract VPN DNS servers (internal IPs in 10.x range, excluding the VPN tunnel
-# IP itself).
+# IP range itself).
 mapfile -t VPN_DNS_SERVERS < <(echo "$DNS_CONFIG" | \
   grep "nameserver\[" | \
   awk '{print $3}' | \
@@ -44,7 +70,21 @@ if [ ${#VPN_DNS_SERVERS[@]} -eq 0 ]; then
 fi
 
 if [ ${#VPN_SEARCH_DOMAINS[@]} -eq 0 ]; then
-  echo "Warning: No VPN search domains found in current configuration"
+  # The VPN server sent no CISCO_SPLIT_DNS domains and scutil has no domain
+  # hints.  Fall back to the known corporate TLDs so that VPN DNS is scoped
+  # correctly.  Without this, macOS uses the VPN DNS servers globally (since
+  # scutil ServerAddresses without SupplementalMatchDomains applies to all
+  # queries), breaking public-domain resolution (e.g. yahoo.com returns
+  # NXDOMAIN from the corporate resolver).
+  VPN_SEARCH_DOMAINS=(
+    americas.nwea.pvt
+    nwea.pvt
+    nweacolo.pvt
+    pubedu.hegn.us
+    rpcsys.hmco.com
+    sap2.hmhco.com
+  )
+  echo "No VPN search domains from scutil — using known corporate domains as fallback"
 fi
 
 echo "Found VPN DNS servers: ${VPN_DNS_SERVERS[*]}"
@@ -56,14 +96,16 @@ echo "Creating resolver configurations..."
 for domain in "${VPN_SEARCH_DOMAINS[@]}"; do
   echo "Configuring resolver for $domain..."
 
-  # Call privileged helper to create resolver file
-  sudo dns-resolver-helper.sh create-resolver "$domain" "${VPN_DNS_SERVERS[@]}"
+  # Call privileged helper to create resolver file.  Use sudo so this script
+  # can be run as a regular user; when already root (e.g. from vpnc-script)
+  # sudo is a no-op.
+  sudo dns-resolver-helper create-resolver "$domain" "${VPN_DNS_SERVERS[@]}"
 
   echo "  Created /etc/resolver/$domain"
 done
 
 # Flush DNS cache to apply changes.
 echo "Flushing DNS cache..."
-sudo dns-resolver-helper.sh flush-cache
+sudo dns-resolver-helper flush-cache
 
 echo "DNS scoping configured successfully for ${#VPN_SEARCH_DOMAINS[@]} domains"

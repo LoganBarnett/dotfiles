@@ -1,6 +1,7 @@
 {
   bash,
   coreutils,
+  inetutils,
   writeShellApplication,
   ...
 }:
@@ -10,6 +11,7 @@ writeShellApplication {
   runtimeInputs = [
     bash
     coreutils
+    inetutils
   ];
   text = builtins.readFile ../scripts/vpn-test-harness-recover;
 }
