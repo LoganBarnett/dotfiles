@@ -1,22 +1,30 @@
 #!/usr/bin/env bash
 ################################################################################
-# Scorched-earth network recovery after VPN tunnel collapse.
+# GP-specific teardown and non-disruptive network recovery.
 #
-# Unconditionally:
-#   1. Removes the current default route (whatever it points at).
-#   2. Deletes any utun-based routes left over from the VPN session.
-#   3. Clears scutil DNS state injected by the vpnc-script.
-#   4. Triggers DHCP renewal on every active physical (en*) interface.
-#   5. Waits up to 15s for a usable default route to be re-established.
-#   6. Flushes the DNS cache.
+#   1. Kills any running gpclient instance (by PID from lock file).
+#   2. Kills vpnc-script watchdog processes.
+#   3. Removes VPN routes (10.x private ranges, utun default, utun routes).
+#   4. Clears scutil DNS and IPv4 entries injected by the vpnc-script.
+#   5. Removes all /var/run/vpnc-* and gpclient state files.
+#   6. Targeted network recovery: DHCP restore on active interfaces, DNS
+#      override clear, /etc/resolver cleanup, DNS cache flush.
 #
-# No attempt is made to detect the current state; the script always performs
-# all steps so stale state can never cause a missed recovery.
+# Recovery deliberately avoids disabling/re-enabling network services
+# (the old vpn-dns-recover approach) because that kills Claude Code's
+# API streaming connection mid-recovery.
+#
+# No attempt is made to detect the current state; every step runs
+# unconditionally so stale state can never cause a missed cleanup.
 #
 # Requires root (called via sudo from vpn-test-harness or run manually).
 ################################################################################
 
 set -euo pipefail
+
+# GNU inetutils ifconfig (from Nix) silently returns empty output for macOS
+# interface addresses.  Use the macOS system ifconfig explicitly.
+IFCONFIG=/sbin/ifconfig
 
 if [ "$(id -u)" -ne 0 ]; then
   echo "Error: vpn-test-harness-recover must run as root" >&2
@@ -24,11 +32,11 @@ if [ "$(id -u)" -ne 0 ]; then
 fi
 
 echo "========================================================"
-echo "vpn-test-harness-recover: scorched-earth network recovery"
+echo "vpn-test-harness-recover: GP-specific teardown"
 echo "========================================================"
 echo ""
 
-# Show pre-recovery state for diagnosis.
+# Show pre-recovery routing state for post-mortem diagnosis.
 echo "Pre-recovery default route:"
 route -n get default 2>&1 || echo "  (none)"
 echo ""
@@ -56,23 +64,59 @@ else
 fi
 
 # ---------------------------------------------------------------------------
+# Step 1b: Kill vpnc-script watchdog processes.
+# ---------------------------------------------------------------------------
+# These bash subshells inherit the utun fd from gpclient.  They must be killed
+# before the kernel can destroy the utun interface, otherwise the stale not-UP
+# interface lingers and confuses the next session's TUNDEV detection.
+echo "Killing vpnc-script watchdog processes..."
+KILLED_WDOGS=0
+for _wf in /var/run/vpnc-connect-watchdog.pid /var/run/vpnc-preinit-watchdog.pid; do
+  if [ -f "$_wf" ]; then
+    _WP=$(cat "$_wf" 2>/dev/null || echo "")
+    if [ -n "$_WP" ] && kill -0 "$_WP" 2>/dev/null; then
+      echo "  Sending SIGKILL to watchdog PID $_WP ($(basename "$_wf"))..."
+      kill -9 "$_WP" 2>/dev/null || true
+      KILLED_WDOGS=$((KILLED_WDOGS + 1))
+    fi
+    rm -f "$_wf"
+  fi
+done
+echo "  Killed $KILLED_WDOGS watchdog process(es)"
+
+# ---------------------------------------------------------------------------
+# Step 1c: Explicitly delete known VPN private routes.
+# ---------------------------------------------------------------------------
+# The utun-interface scan below may miss WASCLONED host routes (gateway
+# column shows link#N rather than utun).  Delete by destination to be safe.
+echo "Removing known VPN private routes..."
+route delete -net 10.0.0.0/8 2>/dev/null && echo "  Deleted 10.0.0.0/8" || \
+  echo "  (no 10.0.0.0/8 route)"
+route delete -net 172.16.0.0/12 2>/dev/null && echo "  Deleted 172.16.0.0/12" || \
+  echo "  (no 172.16.0.0/12 route)"
+
+# ---------------------------------------------------------------------------
 # Step 2: Remove the current default route.
 # ---------------------------------------------------------------------------
-echo "Removing current default route..."
-if route delete default 2>/dev/null; then
-  echo "  ✓ Default route deleted"
+echo "Checking default route..."
+_DEF_IF=$(route -n get default 2>/dev/null | awk '/interface:/ {print $2; exit}')
+if [[ "${_DEF_IF:-}" == utun* ]]; then
+  echo "  Default route via utun ($_DEF_IF) — deleting"
+  route delete default 2>/dev/null || true
 else
-  echo "  (no default route to delete)"
+  echo "  Default route via ${_DEF_IF:-none} (physical) — keeping"
 fi
 
 # ---------------------------------------------------------------------------
-# Step 2: Remove any remaining utun-based routes.
+# Step 2b: Remove any remaining utun-based routes.
 # ---------------------------------------------------------------------------
 echo "Removing utun routes from routing table..."
 REMOVED=0
 while true; do
-  # Find any route whose gateway interface is a utun device and delete it.
-  UTUN_ROUTE=$(netstat -rn -f inet 2>/dev/null | awk '$6 ~ /^utun/ {print $1; exit}')
+  # Find any route whose gateway or interface column references a utun device.
+  # WASCLONED host routes have gateway=link#N but interface=utunX ($6 or $NF).
+  UTUN_ROUTE=$(netstat -rn -f inet 2>/dev/null | \
+    awk '/^[0-9]/ && ($2 ~ /^utun/ || $NF ~ /^utun/) {print $1; exit}' || true)
   if [ -z "$UTUN_ROUTE" ]; then
     break
   fi
@@ -87,67 +131,87 @@ echo "  Removed $REMOVED utun route(s)"
 # ---------------------------------------------------------------------------
 # Step 3: Clear scutil DNS state injected by the vpnc-script.
 # ---------------------------------------------------------------------------
-echo "Clearing VPN DNS state from scutil..."
-# Enumerate State:/Network/Service/utun*/DNS entries and remove them.
+echo "Clearing VPN DNS/IPv4 state from scutil..."
+# Enumerate State:/Network/Service/utun*/{DNS,IPv4} entries and remove them.
 while IFS= read -r key; do
   [ -z "$key" ] && continue
   printf 'remove %s\nquit\n' "$key" | scutil 2>/dev/null || true
   echo "  Removed scutil key: $key"
-done < <(printf 'list\n' | scutil 2>/dev/null | awk '/utun.*DNS/ {print $4}' || true)
+done < <(printf 'list\n' | scutil 2>/dev/null | \
+  awk '/utun.*(DNS|IPv4)/ {print $4}' || true)
+# Remove the synthetic VPN corporate DNS service (vpn-corp-dns).
+printf 'remove State:/Network/Service/vpn-corp-dns/DNS\nremove State:/Network/Service/vpn-corp-dns/IPv4\nquit\n' \
+  | scutil 2>/dev/null || true
+echo "  Removed vpn-corp-dns service"
+# Remove the synthetic public DNS service created during connect.
+if [ -f /var/run/vpnc-public-dns-service ]; then
+  _PUB_SVC=$(cat /var/run/vpnc-public-dns-service)
+  printf 'remove State:/Network/Service/%s/DNS\nremove State:/Network/Service/%s/IPv4\nquit\n' \
+    "$_PUB_SVC" "$_PUB_SVC" | scutil 2>/dev/null || true
+  rm -f /var/run/vpnc-public-dns-service
+  echo "  Removed synthetic public DNS service"
+fi
 
 # ---------------------------------------------------------------------------
-# Step 4: Clean up gateway save file so the next connect starts fresh.
+# Step 4: Remove all VPN state files so the next session starts clean.
 # ---------------------------------------------------------------------------
-GATEWAY_FILE="/var/run/vpnc-default-gateway"
-TUNDEV_FILE="/var/run/vpnc-actual-tundev"
-VPN_GW_FILE="/var/run/vpnc-vpn-gateway"
-rm -f "$GATEWAY_FILE" "$TUNDEV_FILE" "$VPN_GW_FILE"
+# Keep /var/run/vpnc-dns-domains for the recovery section below — it
+# reads the file to clean up /etc/resolver entries, then removes it.
+rm -f /var/run/vpnc-default-gateway \
+      /var/run/vpnc-actual-tundev \
+      /var/run/vpnc-vpn-gateway \
+      /var/run/vpnc-pre-vpn-if \
+      /var/run/vpnc-pre-vpn-state \
+      /var/run/vpnc-pre-vpn-dns \
+      /var/run/vpnc-pre-vpn-service \
+      /var/run/gp-vpnc-script \
+      /var/run/vpnc-connect-watchdog.pid \
+      /var/run/vpnc-preinit-watchdog.pid
 echo "Cleared VPN state files"
 
-# ---------------------------------------------------------------------------
-# Step 5: Trigger DHCP on every active physical interface.
-# ---------------------------------------------------------------------------
-echo "Triggering DHCP on active physical interfaces..."
-RENEWED=0
-while IFS= read -r iface; do
-  [ -z "$iface" ] && continue
-  # Only renew interfaces that are active (have a link).
-  if ifconfig "$iface" 2>/dev/null | grep -q "status: active"; then
-    echo "  ipconfig set $iface DHCP"
-    if /usr/sbin/ipconfig set "$iface" DHCP 2>/dev/null; then
-      RENEWED=$((RENEWED + 1))
-    else
-      echo "    Warning: DHCP renewal failed for $iface"
-    fi
-  fi
-done < <(networksetup -listallhardwareports 2>/dev/null | awk '/^Device:/{print $2}' || true)
-echo "  Renewed $RENEWED interface(s)"
-
-# ---------------------------------------------------------------------------
-# Step 6: Wait up to 15s for a default route to be established.
-# ---------------------------------------------------------------------------
+# ── Targeted network recovery (non-disruptive) ───────────────────────
+# Unlike vpn-dns-recover, this does NOT disable/re-enable network
+# services — that breaks Claude Code's API streaming connection.
 echo ""
-echo "Waiting for default route..."
-for i in $(seq 1 15); do
+echo "Performing targeted network recovery..."
+
+# Restore DHCP on active hardware interfaces.
+while IFS= read -r _iface; do
+  if "$IFCONFIG" "$_iface" 2>/dev/null | grep -q 'status: active'; then
+    echo "  ipconfig set $_iface DHCP"
+    ipconfig set "$_iface" DHCP 2>/dev/null || true
+  fi
+done < <(networksetup -listallhardwareports | awk '/^Device:/{print $2}')
+
+# Wait for default route to come back.
+echo "  Waiting for default route..."
+for _w in $(seq 1 30); do
   if route -n get default >/dev/null 2>&1; then
-    echo "  ✓ Default route restored after ${i}s"
-    route -n get default 2>&1 | grep -E "gateway:|interface:" | sed 's/^/    /'
+    echo "  Default route restored after ${_w}s"
     break
   fi
   sleep 1
 done
-if ! route -n get default >/dev/null 2>&1; then
-  echo "  ✗ No default route after 15s — DHCP may have failed" >&2
+
+# Clear any explicit DNS overrides left by the vpnc-script.
+while IFS= read -r _svc; do
+  networksetup -setdnsservers "$_svc" Empty 2>/dev/null || true
+  networksetup -setsearchdomains "$_svc" Empty 2>/dev/null || true
+done < <(networksetup -listallnetworkservices | tail -n +2)
+
+# Clean up /etc/resolver files created during VPN connect.
+if [ -f /var/run/vpnc-dns-domains ]; then
+  while IFS= read -r _dom; do
+    [ -n "$_dom" ] && rm -f "/etc/resolver/$_dom"
+  done < /var/run/vpnc-dns-domains
+  rm -f /var/run/vpnc-dns-domains
 fi
 
-# ---------------------------------------------------------------------------
-# Step 7: Flush DNS cache.
-# ---------------------------------------------------------------------------
-echo ""
-echo "Flushing DNS cache..."
-dscacheutil -flushcache
+# Flush DNS cache.
+dscacheutil -flushcache 2>/dev/null || true
 killall -HUP mDNSResponder 2>/dev/null || true
-echo "  ✓ DNS cache flushed"
+echo "  DNS cache flushed"
+echo "  Targeted recovery complete"
 
 echo ""
 echo "========================================================"
