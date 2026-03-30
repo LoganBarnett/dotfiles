@@ -12,10 +12,15 @@ set -euo pipefail
 INTERVAL="${1:-30}"
 
 play_alarm() {
-    for _burst in 1 2 3; do
-        play -n synth 0.2 sine 880:1600 fade q 0.01 0.2 0.03 vol 0.7
-        play -n synth 0.2 sine 1600:880 fade q 0.01 0.2 0.03 vol 0.7
-    done
+    # SoX pipe-input syntax (|cmd) generates each segment inline; --combine
+    # concatenate sequences them into a single play invocation.
+    play --combine concatenate \
+        "|sox -n -p synth 0.2 sine 880:1600 fade q 0.01 0.2 0.03 vol 0.7" \
+        "|sox -n -p synth 0.2 sine 1600:880 fade q 0.01 0.2 0.03 vol 0.7" \
+        "|sox -n -p synth 0.2 sine 880:1600 fade q 0.01 0.2 0.03 vol 0.7" \
+        "|sox -n -p synth 0.2 sine 1600:880 fade q 0.01 0.2 0.03 vol 0.7" \
+        "|sox -n -p synth 0.2 sine 880:1600 fade q 0.01 0.2 0.03 vol 0.7" \
+        "|sox -n -p synth 0.2 sine 1600:880 fade q 0.01 0.2 0.03 vol 0.7"
 }
 
 trap 'echo; echo "Alert stopped."; exit 0' INT TERM
