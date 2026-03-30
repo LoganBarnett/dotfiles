@@ -273,9 +273,7 @@ in
         ../darwin-modules/global-protect-persistent.nix
       ];
       services.globalprotect-monitor = {
-        # Disabled: conflicts with vpn-test-harness (both try to manage the
-        # VPN lifecycle).  Re-enable once the harness is stable.
-        enable = false;
+        enable = true;
         server = "vpn-${org-alias}.gpcloudservice.com";
         username = "${username}@${org-domain}";
         orgName = org-alias;
