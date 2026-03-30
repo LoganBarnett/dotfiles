@@ -34,7 +34,7 @@ in
         "1.1.1.1"
       ];
       description = ''
-        Hosts to monitor.  An alert sounds when all have been unreachable for
+        Hosts to monitor.  An alert sounds when any have been unreachable for
         downtimeThreshold seconds continuously.  Reachability is tested with
         ping (covers both DNS resolution and ICMP in a single probe).
       '';
