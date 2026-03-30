@@ -1,0 +1,321 @@
+#+title:     VPN
+#+author:    Logan Barnett
+#+email:     logustus@gmail.com
+#+date:      <2026-03-27 Fri>
+#+language:  en
+#+file_tags:
+#+tags:
+
+* Rust Refactor: Extract VPN Scripts into =gp-vpn=
+
+** Context
+
+The GlobalProtect VPN management for macOS has grown to ~2,229 lines across 6+
+shell scripts with complex state management, background watchdog processes, and
+intricate macOS system integration.  The shell scripts work (all 8 tests pass
+as of commit =78e9d38e=) but cannot be easily extracted for reuse, are fragile
+(bash =set -e= gotchas, PATH shadowing), and lack type safety for the 13+
+state files they manage.
+
+The test harness is the most valuable piece — it enables tight debugging loops
+and good diagnostics.  Preserving and enhancing it is of great importance.
+
+** Project Structure
+
+A Cargo workspace named =gp-vpn= with three crates:
+
+#+begin_example
+gp-vpn/
+  Cargo.toml              # workspace root
+  flake.nix
+  README.org
+  .envrc
+  crates/
+    gp-vpn-core/          # library: all business logic, testable via traits
+    gp-vpn-cli/           # binary: gp-vpn {harness,test,recover,connect,...}
+    gp-vpn-vpnc-shim/     # binary: exec'd by gpclient as the vpnc-script
+#+end_example
+
+*** Why Three Crates
+
+- *gp-vpn-core*: Every system interaction goes through a =Platform= trait.
+  Unit-testable with a =MockPlatform=.  Single source of truth for state.
+- *gp-vpn-cli*: User-facing binary with clap subcommands.  Replaces
+  =vpn-test-harness=, =test-vpn-connectivity=, =vpn-test-harness-recover=,
+  =dns-vpn-scoping-fix=, =dns-resolver-helper=.
+- *gp-vpn-vpnc-shim*: Minimal binary that reads =reason= env var and
+  dispatches to =gp-vpn-core=.  Lives in the Nix store at a stable path — no
+  runtime file generation needed.
+
+** Script-to-Rust Mapping
+
+| Shell Script                | Rust Component                                      | CLI Command                |
+|-----------------------------+-----------------------------------------------------+----------------------------|
+| =vpnc-script-macos=        | =gp_vpn_core::vpnc::{pre_init,connect,disconnect}= | =gp-vpn-vpnc-shim= (auto) |
+| =vpn-test-harness=         | =gp_vpn_core::harness=                              | =gp-vpn harness <script>= |
+| =test-vpn-connectivity=    | =gp_vpn_core::network::diagnostics=                 | =gp-vpn test=             |
+| =vpn-test-harness-recover= | =gp_vpn_core::recovery=                             | =gp-vpn recover=          |
+| =gp-connect-auto=          | =gp_vpn_cli::commands::connect=                     | =gp-vpn connect=          |
+| =dns-vpn-scoping-fix=      | =gp_vpn_core::network::dns=                         | =gp-vpn dns-fix=          |
+
+Python scripts (=gp-connect-pty=, =gp-auth-headless=) remain Python — Rust
+spawns them just as the current shell does.
+
+** Key Design Decisions
+
+*** Platform Trait (testability foundation)
+
+All macOS system interactions (=/sbin/ifconfig=, =/sbin/route=,
+=/usr/sbin/scutil=, =/usr/sbin/networksetup=, =/usr/sbin/ipconfig=) go through
+a =Platform= trait.  The =MacOsPlatform= impl hardcodes absolute paths,
+eliminating the Nix PATH shadowing issue at the type level.
+
+*** Unified State File
+
+Replace the 13+ individual =/var/run/vpnc-*= files with a single
+=/var/run/gp-vpn-state.json= (typed, serialized with serde).  Read legacy
+files as fallback during migration.
+
+*** vpnc-script Integration
+
+The =gp-vpn-vpnc-shim= binary IS the vpnc-script.  gpclient execs it via
+=--script <store-path>=.  No heredoc embedding or =/var/run/gp-vpnc-script=
+copy needed.
+
+*** Watchdog Processes
+
+Remain as spawned child processes (not async tasks) — they must outlive the
+vpnc-script process.  Use =setsid()= in =pre_exec= for daemonization.
+PIDs stored in the unified state file.
+
+*** No Async Runtime
+
+Synchronous Rust throughout.  All system interactions are =Command=
+invocations.  No tokio dependency.
+
+** Core Module Layout
+
+#+begin_example
+gp-vpn-core/src/
+  lib.rs
+  config.rs           # VpnConfig, timeouts, retry counts
+  state.rs            # VpnSessionState, VpnPhase enum, StateStore trait
+  platform.rs         # Platform trait + MacOsPlatform impl
+  harness.rs          # Test harness state machine (the crown jewel)
+  recovery.rs         # Network recovery logic
+  network/
+    interface.rs      # utun/physical interface management
+    route.rs          # routing table operations
+    dns.rs            # scutil services, /etc/resolver, mDNSResponder
+    diagnostics.rs    # ConnectivityProbe, 8-point test suite
+  vpnc/
+    pre_init.rs       # pre-init reason handler
+    connect.rs        # connect handler (ifconfig retry, routes, DNS)
+    disconnect.rs     # disconnect handler (cleanup)
+    watchdog.rs       # route-fixer, IP-keep-alive daemons
+  process.rs          # PID file management, process lifecycle
+  logging.rs          # tracing setup, log rotation
+#+end_example
+
+** Migration Phases (Incremental)
+
+Both shell scripts and Rust binaries coexist during migration.  Each phase
+replaces 1-2 scripts and can be deployed independently.
+
+*** Phase 1: Foundation + Recovery + DNS Helper
+
+Builds the =Platform= trait, =MacOsPlatform=, state management, DNS module,
+and recovery module.  Replaces =dns-resolver-helper= and
+=vpn-test-harness-recover=.  Simplest scripts — validates the platform
+abstraction works.
+
+*** Phase 2: Connectivity Tests + DNS Fix
+
+Replaces =test-vpn-connectivity= and =dns-vpn-scoping-fix=.  Adds structured
+JSON output mode for =gp-vpn test=.
+
+*** Phase 3: vpnc-script
+
+Replaces =vpnc-script-macos=.  The =gp-vpn-vpnc-shim= binary handles
+pre-init/connect/disconnect, including watchdog spawning.  Backward-compatible
+read of legacy =/var/run/vpnc-*= files.
+
+*** Phase 4: Test Harness
+
+Replaces =vpn-test-harness=.  Orchestrates connect/test/disconnect with
+structured =tracing= logging, diagnostic snapshots at each phase transition,
+and =current.log= symlink for =tail -f=.
+
+*** Phase 5: Connect Orchestration
+
+Replaces =gp-connect-auto= (partially — Python auth scripts stay Python).
+Pre-VPN state capture moves into Rust.
+
+*** Phase 6: Cleanup
+
+Remove replaced shell scripts, update derivations to point to flake input
+packages, update =darwin-modules/global-protect-persistent.nix= sudoers.
+
+** Flake Integration
+
+*** New project flake (crane + rust-overlay)
+
+#+begin_src nix :exports code
+{
+  inputs = {
+    crane.url = "github:ipetkov/crane";
+    nixpkgs.url = "github:nixos/nixpkgs/25.11";
+    rust-overlay = {
+      url = "github:oxalica/rust-overlay";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+  };
+  # Outputs: packages.{cli, vpnc-shim}, devShells.default
+  # macOS-only (aarch64-darwin, x86_64-darwin)
+}
+#+end_src
+
+*** Dotfiles integration
+
+#+begin_src nix :exports code
+# flake.nix inputs:
+gp-vpn = {
+  url = "git+ssh://git@gitea.proton:2222/logan/gp-vpn.git";
+  inputs.nixpkgs.follows = "nixpkgs";
+};
+
+# darwin-modules/global-protect-persistent.nix:
+# Replace callPackage derivations with flake input packages.
+# Update sudoers to reference new binary paths.
+#+end_src
+
+** Key Dependencies
+
+#+begin_src toml :exports code
+clap = { version = "4", features = ["derive"] }
+color-eyre = "0.6"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+thiserror = "2"
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+tracing-appender = "0.2"
+chrono = "0.4"
+nix = { version = "0.29", features = ["signal", "process"] }
+#+end_src
+
+** Critical Files to Modify
+
+- =darwin-modules/global-protect-persistent.nix= — sudoers + systemPackages
+- =derivations/gp-connect-auto.nix= — vpnc-script path changes
+- =flake.nix= — new =gp-vpn= input
+- =vpn.org= — archive old findings, document new project
+
+** Testing Strategy
+
+- *Unit tests*: =MockPlatform= verifies every system interaction sequence.
+- *Integration tests*: =RecordingPlatform= logs calls without executing.
+- *E2E*: =gp-vpn harness gp-vpn test= — the harness tests itself.  Gated
+  behind =GP_VPN_E2E=1=.
+
+** Scaffolding
+
+Scaffold from =~/dev/rust-template= per its =README.org=.  The template
+provides the baseline =flake.nix=, Cargo workspace, CI, and formatting
+configuration.  The crane + rust-overlay setup described above augments or
+replaces the template's flake as needed for this project's macOS-only scope.
+
+** Verification
+
+After each migration phase:
+
+1. =nix-darwin-switch= to deploy.
+2. =sudo -E vpn-test-harness $(which test-vpn-connectivity)= (or the Rust
+   equivalent once Phase 4 is done).
+3. =tail -f ~/.local/state/vpn-test-harness/current.log=.
+4. All 8 connectivity tests pass.
+
+* Archive                                                           :archive:
+
+** VPN (original notes)
+
+This document covers our VPN needs or desires.
+
+*** Unattended GlobalProtect connection
+
+We need an unattended VPN connection via GlobalProtect.  GlobalProtect requires
+clicking on things, and it's been configured to drop our connection every 24
+hours.  Our vector for addressing this is two-fold:
+
+1. Add to our nix-darwin configuration for =M-CL64PK702X= host the capability
+   to access it via screen sharing.
+2. Finish the work we've already started on automating the VPN connection
+   process.
+
+**** Screen sharing
+
+If screen sharing is enabled, then we can connect to GlobalProtect manually.
+This is our escape hatch in case the automation isn't going to work.  It's the
+easiest thing to do, so we'll do that first.  Only the =M-CL64PK702X= host
+should have this configuration, not all macOS hosts.  If there is no nix-darwin
+option for it, you'll need to add an activation script for it.  Make this a
+=darwin-configs= file, so we can drop it into any host we want.
+
+Apply the configuration with =nix-darwin-switch=.  Test to see if the port is
+open.  If it is, we're good.  Commit and push these results.
+
+**** Fully unattended VPN connections
+
+We already have a start on this.  We have a
+=darwin-modules/global-protect-persistent.nix= file that can serve as a
+starting point.  We also have a number of =docs/global-protect-*.org= files you
+can reference for findings.  My last memory is that we got it working, but the
+tunnel wasn't split.
+
+In order to make this debugging session /also/ fully unattended for Claude
+itself, we have created the =scripts/with-vpn-reset= script.  This is a prefix
+command (like =sudo= or =ssh=) where you supply it with the command you want to
+run.  The script will fire your test invocation - this invocation will attempt
+to connect to the network (=with-vpn-reset= does not do this itself).  Should
+your command fail, the =with-vpn-reset= will fail and reset the connection.  It
+will also try to probe a few hosts (local, Internet, VPN) and show you the
+results, and fail if those can't be reached.  If you wish to invoke your own
+tests, instead of altering the script itself, you can a =vpn-test.sh= (=+x=
+permissions) to your /current directory/ (=$PWD=) and the script will also
+invoke that to do whatever probes you want it to do.  It will trust your exit
+code.
+
+If the VPN connection invocation can't be reached in about a minute, the reset
+script will assume something went wrong, and it will begin the reset process.
+
+This reset should be a full flush of the network connection.  All routes, scoped
+connections, and the network connection itself will be lost.  The script will
+block until this is done.  So by the time the script completes, you, Claude,
+should have a working network connection again, and you can continue to
+communicate with the claude-code runner.  This is your workflow loop.  Make more
+changes to the config/scripts/etc, apply them with =nix-darwin-switch=, and run
+the =with-vpn-reset= invocation again.
+
+Document your findings.  This is helpful in case context loss occurs and we need
+to restart.
+
+Consult the script's help, and dump the invocation here that you want to use:
+
+#+begin_src sh :results none :exports code
+bash scripts/with-vpn-reset 300 vpn-test-harness /run/current-system/sw/bin/test-vpn-connectivity
+#+end_src
+
+*** Findings
+
+**** 2026-03-27 — Okta password expired; DNS fix deployed but untested
+
+The =vpn-test-harness= drove through the full Okta/TOTP flow successfully,
+but landed on =/signin/password-expired= and stalled.  The VPN connection
+never completed.  The Okta work password must be updated and then the new
+password must be stored in =pass= (=pass edit hmh=) before the next run.
+
+The DNS split-tunnel fix (=scripts/vpnc-script-macos=) was deployed:
+on connect, =dns-resolver-helper= now creates =/etc/resolver/<domain>= files
+for each domain in =CISCO_SPLIT_DNS=, and removes them on disconnect.  This
+replaces the unreliable =scutil SupplementalMatchDomains= approach.  The
+fix has not yet been verified end-to-end.
