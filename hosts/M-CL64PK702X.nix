@@ -82,6 +82,7 @@ in
     ../darwin.nix
     ../darwin-configs/garage-queue-worker.nix
     ../darwin-configs/host-connectivity-monitor.nix
+    ../darwin-configs/screen-sharing.nix
     ../darwin-configs/proc-siding-worker.nix
     ../darwin-configs/goss-ollama-metal-gpu.nix
     ../darwin-configs/ollama.nix
@@ -272,7 +273,8 @@ in
         ../darwin-modules/global-protect-persistent.nix
       ];
       services.globalprotect-monitor = {
-        # Disabled while debugging routing issues — run gp-connect-auto manually.
+        # Disabled: conflicts with vpn-test-harness (both try to manage the
+        # VPN lifecycle).  Re-enable once the harness is stable.
         enable = false;
         server = "vpn-${org-alias}.gpcloudservice.com";
         username = "${username}@${org-domain}";

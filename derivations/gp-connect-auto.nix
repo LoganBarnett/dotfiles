@@ -48,10 +48,16 @@ writeShellApplication {
       ${pythonWithPlaywright}/bin/playwright install chromium
     fi
 
-    # Make Python scripts and vpnc script available in PATH for the duration of this script
+    # Make Python scripts and vpnc script available for this session.
+    # Auth and PTY scripts are temp files — they are only needed while
+    # gp-connect-auto runs and can be safely deleted on exit.
+    # The vpnc-script is written to a stable path in /var/run so that
+    # gpclient can call it throughout the VPN session (connect, disconnect,
+    # etc.) after gp-connect-auto exits.  A temp file would be deleted by
+    # the EXIT trap before gpclient's later lifecycle calls use it.
     AUTH_SCRIPT=$(mktemp)
     PTY_SCRIPT=$(mktemp)
-    VPNC_SCRIPT=$(mktemp)
+    VPNC_SCRIPT="/var/run/gp-vpnc-script"
     cat > "$AUTH_SCRIPT" << 'AUTH_EOF'
     ${authScript}
     AUTH_EOF
@@ -75,8 +81,8 @@ writeShellApplication {
     export -f gp-auth-headless.py
     export -f gp-connect-pty.py
 
-    # Setup cleanup trap
-    trap 'rm -f "$AUTH_SCRIPT" "$PTY_SCRIPT" "$VPNC_SCRIPT"' EXIT
+    # Clean up only the temp scripts on exit; leave VPNC_SCRIPT in place.
+    trap 'rm -f "$AUTH_SCRIPT" "$PTY_SCRIPT"' EXIT
 
     # Path to openconnect's HIP report CSD wrapper, baked in at build time so
     # that gpclient can submit the host integrity check required to unblock the
