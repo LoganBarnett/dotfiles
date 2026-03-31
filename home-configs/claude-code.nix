@@ -457,6 +457,140 @@ in
         Do not rely on memory or prior knowledge of file contents.
       '';
     };
+    skills = {
+      new-rust-project = ''
+        ---
+        name: new-rust-project
+        description: Scaffold a new Rust project from ~/dev/rust-template and create a Gitea remote
+        disable-model-invocation: true
+        argument-hint: <project-name> [--crates cli,web] [--description "..."]
+        ---
+
+        Scaffold a new Rust project.  Follow these steps in order:
+
+        ## 1. Read the template instructions
+
+        Read `~/dev/rust-template/README.org` in full — it contains the
+        canonical setup procedure including all flags and post-generation
+        steps.  Do not skip or paraphrase; follow it literally.
+
+        ## 2. Gather parameters
+
+        - **Project name**: `$ARGUMENTS` (first positional arg).  If empty,
+          ask the user.
+        - **Crates**: default `cli,web`.  Pass `--crates` if the user
+          specified something different.
+        - **Description**: pass `--description` if the user provided one.
+        - **Output directory**: `~/dev/<project-name>` unless the user says
+          otherwise.
+
+        ## 3. Run the scaffolding script
+
+        ```sh
+        ~/dev/rust-template/new-project.sh \
+          --name <project-name> \
+          --output ~/dev/<project-name> \
+          [--crates <crates>] \
+          [--description "<description>"]
+        ```
+
+        ## 4. Post-generation steps
+
+        Work through every item in the "Post-generation steps" section of
+        the README.  This includes metadata updates in `Cargo.toml` and
+        `flake.nix`, initializing git, and running `direnv allow`.
+
+        ## 5. Create the Gitea remote
+
+        ```sh
+        cd ~/dev/<project-name>
+        tea repo create --name <project-name>
+        git remote add origin ssh://git@gitea.proton:2222/$USER/<project-name>.git
+        git push -u origin master
+        ```
+
+        Use `$USER` as the Gitea username.  The clone URL must use
+        `ssh://git@gitea.proton:2222/` — `tea` generates incorrect URLs.
+
+        ## 6. Verify
+
+        ```sh
+        nix develop --command cargo build --workspace
+        nix develop --command cargo test --workspace
+        ```
+
+        Both must succeed before declaring the project ready.
+      '';
+      nix-flake-git-add = ''
+        ---
+        name: nix-flake-git-add
+        description: In Nix flake projects, git-add new files immediately after creating them so Nix can see them
+        user-invocable: false
+        ---
+
+        Nix flakes only see files tracked by git.  When working in a
+        project that has a `flake.nix` at the repository root, run
+        `git add <file>` on every newly created file **immediately after
+        creating it** — before any `nix` command that might reference it.
+
+        Forgetting this causes opaque "file not found" or "No such file or
+        directory" errors from Nix that do not mention git tracking as the
+        cause.
+      '';
+      task-plan = ''
+        ---
+        name: task-plan
+        description: Plan work into a tasks.org file, execute items sequentially, and commit each
+        disable-model-invocation: true
+        ---
+
+        Before starting any implementation work, create a `tasks.org` file
+        in the project root (or update the existing one) with org-mode TODO
+        items covering every step needed to complete the request.
+
+        ## Planning phase
+
+        1. Analyze the request and break it into discrete, committable units
+           of work.
+        2. Write each unit as a TODO item in `tasks.org`:
+
+           ```org
+           * TODO Short imperative description
+             Context or acceptance criteria if needed.
+           ```
+
+        3. Order items so that dependencies come first.
+        4. Present the plan to the user and wait for approval before
+           proceeding.
+
+        ## Execution phase
+
+        For each item, in order:
+
+        1. Mark it `IN-PROGRESS`:
+           ```org
+           * IN-PROGRESS Short imperative description
+           ```
+        2. Implement the change.
+        3. Mark it `DONE`:
+           ```org
+           * DONE Short imperative description
+           ```
+        4. Stage the relevant files and create a git commit whose message
+           summarizes what was done for that item.
+        5. Move to the next item.
+
+        ## Rules
+
+        - One commit per task item — do not batch unrelated changes.
+        - If a task item turns out to need splitting, add sub-items before
+          continuing.
+        - If an item is blocked, mark it `BLOCKED`, note the reason, and
+          skip to the next unblocked item.
+        - When all items are `DONE`, remove `tasks.org` (it served its
+          purpose) and report completion.
+      '';
+    };
   };
   # Capitalism demands I move at full speed or die.  If I die because it
   # blows up on me, that's just bad luck but also life.  I told Claude this
