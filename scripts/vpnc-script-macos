@@ -891,8 +891,7 @@ EOF
 
     rm -f "$ACTUAL_TUNDEV_FILE" "$PRE_VPN_STATE_FILE" \
           "$PRE_VPN_DNS_FILE" "$PRE_VPN_SERVICE_FILE" \
-          /var/run/vpnc-public-dns-service \
-          /var/run/gp-vpnc-script
+          /var/run/vpnc-public-dns-service
     echo "DNS configuration removed"
     ;;
 

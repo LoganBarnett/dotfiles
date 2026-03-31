@@ -164,7 +164,6 @@ rm -f /var/run/vpnc-default-gateway \
       /var/run/vpnc-pre-vpn-state \
       /var/run/vpnc-pre-vpn-dns \
       /var/run/vpnc-pre-vpn-service \
-      /var/run/gp-vpnc-script \
       /var/run/vpnc-connect-watchdog.pid \
       /var/run/vpnc-preinit-watchdog.pid
 echo "Cleared VPN state files"
