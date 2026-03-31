@@ -348,7 +348,7 @@ EOF
         _DNSMASQ_DOMAINS=()
         if [ ${#SEARCH_DOMAINS[@]} -gt 0 ]; then
           _DNSMASQ_DOMAINS=("${SEARCH_DOMAINS[@]}")
-        elif [ ${#FALLBACK_DOMAINS[@]:-0} -gt 0 ]; then
+        elif [ ${#FALLBACK_DOMAINS[@]} -gt 0 ]; then
           _DNSMASQ_DOMAINS=("${FALLBACK_DOMAINS[@]}")
         fi
         if [ ${#_DNSMASQ_DOMAINS[@]} -gt 0 ]; then
