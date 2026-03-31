@@ -1,5 +1,6 @@
 {
   bash,
+  callPackage,
   coreutils,
   expect,
   gpclient,
@@ -21,10 +22,14 @@ let
   # Pass with OTP extension
   passWithOtp = pass.withExtensions (exts: [ exts.pass-otp ]);
 
-  # Python scripts and custom vpnc script as separate files in the package
+  # Python scripts as separate files in the package.
   authScript = builtins.readFile ../scripts/gp-auth-headless;
   ptyScript = builtins.readFile ../scripts/gp-connect-pty;
-  vpncScript = builtins.readFile ../scripts/vpnc-script-macos;
+
+  # vpnc-script as a derivation so gpclient references a stable Nix store
+  # path.  darwin-rebuild switch updates it immediately without needing a
+  # daemon restart or VPN reconnect.
+  vpncScriptPkg = callPackage ./vpnc-script-macos.nix { };
 
   name = "gp-connect-auto";
 in
@@ -48,27 +53,23 @@ writeShellApplication {
       ${pythonWithPlaywright}/bin/playwright install chromium
     fi
 
-    # Make Python scripts and vpnc script available for this session.
-    # Auth and PTY scripts are temp files — they are only needed while
-    # gp-connect-auto runs and can be safely deleted on exit.
-    # The vpnc-script is written to a stable path in /var/run so that
-    # gpclient can call it throughout the VPN session (connect, disconnect,
-    # etc.) after gp-connect-auto exits.  A temp file would be deleted by
-    # the EXIT trap before gpclient's later lifecycle calls use it.
+    # Make Python scripts available for this session as temp files — they
+    # are only needed while gp-connect-auto runs and can be safely deleted
+    # on exit.
+    #
+    # The vpnc-script is a Nix derivation referenced by store path so that
+    # darwin-rebuild switch updates it immediately without needing a daemon
+    # restart or VPN reconnect.
     AUTH_SCRIPT=$(mktemp)
     PTY_SCRIPT=$(mktemp)
-    VPNC_SCRIPT="/var/run/gp-vpnc-script"
     cat > "$AUTH_SCRIPT" << 'AUTH_EOF'
     ${authScript}
     AUTH_EOF
     cat > "$PTY_SCRIPT" << 'PTY_EOF'
     ${ptyScript}
     PTY_EOF
-    cat > "$VPNC_SCRIPT" << 'VPNC_EOF'
-    ${vpncScript}
-    VPNC_EOF
-    chmod +x "$AUTH_SCRIPT" "$PTY_SCRIPT" "$VPNC_SCRIPT"
-    export GP_VPNC_SCRIPT="$VPNC_SCRIPT"
+    chmod +x "$AUTH_SCRIPT" "$PTY_SCRIPT"
+    export GP_VPNC_SCRIPT="${vpncScriptPkg}/bin/vpnc-script-macos"
 
     # Create wrappers for the Python scripts
     # shellcheck disable=SC2329  # Function invoked indirectly from gp-connect-pty.py
@@ -81,7 +82,8 @@ writeShellApplication {
     export -f gp-auth-headless.py
     export -f gp-connect-pty.py
 
-    # Clean up only the temp scripts on exit; leave VPNC_SCRIPT in place.
+    # Clean up temp scripts on exit.  The vpnc-script lives in the Nix
+    # store and does not need cleanup.
     trap 'rm -f "$AUTH_SCRIPT" "$PTY_SCRIPT"' EXIT
 
     # Path to openconnect's HIP report CSD wrapper, baked in at build time so
