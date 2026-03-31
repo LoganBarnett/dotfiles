@@ -64,10 +64,9 @@ in
       timerConfig = {
         # Give the network time to settle after boot before the first run.
         OnBootSec = "2min";
-        # OnUnitInactiveSec fires 12h after the unit last became inactive
-        # (success or failure), ensuring periodic retries even after a failed
-        # run — e.g. when the router was temporarily unreachable.
-        OnUnitInactiveSec = "12h";
+        # Retry frequently during the first hour in case the router's UPnP
+        # service is slow to start, then fall back to the 12-hour refresh.
+        OnUnitInactiveSec = "5min";
       };
     };
   };

@@ -43,6 +43,11 @@ let
 in
 {
   networking.monitors = [ "dnsmasq" ];
+  # The DHCP server has fully static addressing — it must not run a DHCP
+  # client on the same interface.  networking-static.nix enables
+  # networking.useDHCP globally (needed by other hosts), but dhcpcd racing
+  # with the static address setup can drop secondary IPs on reboot.
+  networking.useDHCP = lib.mkForce false;
   networking.interfaces = {
     # systemd "predictable".
     enp3s0 = forced-ip-interface-config;
