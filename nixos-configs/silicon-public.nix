@@ -17,6 +17,14 @@
     ../nixos-modules/upnp-portforward.nix
   ];
 
+  # Nginx binds to 192.168.254.100 which is a secondary static address on
+  # eno1.  It must wait for the address to actually be configured on the
+  # interface, not just for the network management stack to be running.
+  systemd.services.nginx = {
+    after = [ "network-online.target" ];
+    wants = [ "network-online.target" ];
+  };
+
   services.https.domains = {
     "proton" = {
       addr = "192.168.254.9";
@@ -32,13 +40,15 @@
     };
   };
 
-  # Keep the public-facing port-forward registration alive via UPnP.
-  services.upnp-portforward = {
-    enable = true;
-    addr = "192.168.254.100";
-    externalPort = 443;
-    localPort = 443;
-  };
+  # UPnP port-forwarding is disabled — the router's UPnP service has been
+  # unreliable and the mapping can be configured statically on the router
+  # instead.
+  # services.upnp-portforward = {
+  #   enable = true;
+  #   addr = "192.168.254.100";
+  #   externalPort = 443;
+  #   localPort = 443;
+  # };
 
   # Switch the NixOS firewall to the nftables backend so the custom table
   # below is handled by the same stack.

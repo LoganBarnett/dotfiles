@@ -145,12 +145,13 @@ in
     after = [
       "openldap.service"
       "run-agenix.d.mount"
+      "network-online.target"
     ];
     wants = [
       "openldap.service"
       "run-agenix.d.mount"
+      "network-online.target"
     ];
-    wantedBy = [ "multi-user.target" ];
     # Restart when the tree JSON or any LDAP password hash changes.
     restartTriggers = [
       config.services.nix-hapi.jsonFiles.ldap

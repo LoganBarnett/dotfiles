@@ -72,10 +72,22 @@ in
     };
   };
 
-  # Ensure oauth2-proxy starts after agenix secrets are decrypted.
+  # Ensure oauth2-proxy starts after agenix secrets are decrypted and after
+  # its OIDC provider (authelia behind nginx) is reachable.  Without this,
+  # OIDC discovery fails with "no such host" when DNS is not yet available.
   systemd.services.oauth2-proxy = {
-    after = [ "run-agenix.d.mount" ];
+    after = [
+      "run-agenix.d.mount"
+      "network-online.target"
+      "nginx.service"
+      "authelia-authelia.service"
+    ];
     requires = [ "run-agenix.d.mount" ];
+    wants = [
+      "network-online.target"
+      "nginx.service"
+      "authelia-authelia.service"
+    ];
   };
 
   # Merge the real admin password hash into users.json after openhab-setup
