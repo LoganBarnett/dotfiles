@@ -133,6 +133,16 @@ run_baseline_assertions() {
 
   echo "  --- Baseline assertions ---"
 
+  # --- 0: dnsmasq health check ---
+  # Confirm dnsmasq is running before testing DNS.  Catches dnsmasq crashes
+  # before they manifest as mysterious resolution failures.
+  if pgrep -x dnsmasq >/dev/null 2>&1; then
+    echo "  [DNSM] dnsmasq running  ✓"
+  else
+    echo "  [DNSM] dnsmasq NOT running  ✗"
+    fail=1
+  fi
+
   # --- 1 & 2: silicon.proton (local DNS server) ---
   local silicon_ip
   silicon_ip=$(resolve_ip silicon.proton)

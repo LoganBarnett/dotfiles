@@ -194,10 +194,26 @@ for _w in $(seq 1 30); do
 done
 
 # Clear any explicit DNS overrides left by the vpnc-script.
+# When dnsmasq is running, restore DNS to 127.0.0.1 so all tools
+# continue resolving through dnsmasq.
+if pgrep -x dnsmasq >/dev/null 2>&1; then
+  _DNS_TARGET="127.0.0.1"
+  echo "  dnsmasq running — restoring DNS to $_DNS_TARGET"
+else
+  _DNS_TARGET="Empty"
+fi
 while IFS= read -r _svc; do
-  networksetup -setdnsservers "$_svc" Empty 2>/dev/null || true
+  networksetup -setdnsservers "$_svc" "$_DNS_TARGET" 2>/dev/null || true
   networksetup -setsearchdomains "$_svc" Empty 2>/dev/null || true
 done < <(networksetup -listallnetworkservices | tail -n +2)
+
+# Clear dnsmasq VPN servers so corporate domains stop resolving after
+# recovery.
+if pgrep -x dnsmasq >/dev/null 2>&1; then
+  : > /var/run/dnsmasq-vpn-servers.conf 2>/dev/null || true
+  killall -HUP dnsmasq 2>/dev/null || true
+  echo "  Cleared dnsmasq VPN servers"
+fi
 
 # Clean up /etc/resolver files created during VPN connect.
 if [ -f /var/run/vpnc-dns-domains ]; then
