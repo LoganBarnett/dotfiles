@@ -202,7 +202,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     home-manager = {
-      url = "github:nix-community/home-manager/release-25.11";
+      # Pinned to master at PR #8770 merge commit, which fixes skills
+      # generating flat <name>.md files instead of <name>/SKILL.md
+      # directories.  release-25.11 does not have this fix.
+      # https://github.com/nix-community/home-manager/pull/8770
+      url = "github:nix-community/home-manager/91be7cce763fa4022c7cf025a71b0c366d1b6e77";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     openhab-flake = {
