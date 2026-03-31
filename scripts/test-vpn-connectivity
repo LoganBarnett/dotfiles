@@ -124,7 +124,8 @@ if [ -n "$STASH_IP" ]; then
 else
   echo "  [7a] DNS resolution via VPN DNS (10.198.51.37): FAILED"
   # Also try system resolver for comparison.
-  STASH_IP_SYS=$(dig +short +timeout=3 "$STASH_HOST" A 2>/dev/null | head -1) || true
+  STASH_IP_SYS=$(dig +short +timeout=3 "$STASH_HOST" A 2>/dev/null \
+    | grep -E '^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$' | head -1) || true
   echo "       System resolver: ${STASH_IP_SYS:-FAILED}"
   echo "  ✗ Cannot resolve $STASH_HOST"
   OVERALL_FAIL=1
@@ -180,7 +181,8 @@ if [ -n "$STASH_IP" ]; then
   # Nix tools (curl with c-ares, git, dig) read /etc/resolv.conf for DNS
   # instead of macOS /etc/resolver/ split-DNS.  This test verifies that
   # VPN domains resolve through the /etc/resolv.conf path.
-  STASH_IP_SYS=$(dig +short +timeout=3 +tries=1 "$STASH_HOST" A 2>/dev/null | head -1) || true
+  STASH_IP_SYS=$(dig +short +timeout=3 +tries=1 "$STASH_HOST" A 2>/dev/null \
+    | grep -E '^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$' | head -1) || true
   if [ -n "$STASH_IP_SYS" ]; then
     echo "  [7e] System resolver DNS: $STASH_HOST → $STASH_IP_SYS  ✓"
   else
