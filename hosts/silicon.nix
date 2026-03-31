@@ -219,14 +219,26 @@ in
     }
   ];
 
-  # Add secondary IPs from facts.network.hosts.silicon.extraAddresses to eno1.
-  # dhcp-server.nix contributes the primary /24 address (.9); each /32 here
-  # adds an extra address without introducing a duplicate subnet route.  NixOS
-  # merges list attributes across modules, so all addresses coexist.
-  networking.interfaces.eno1.ipv4.addresses = builtins.map (ipv4: {
-    address = "${facts.network.subnets.barnett-main}.${toString ipv4}";
-    prefixLength = 32;
-  }) (builtins.attrValues facts.network.hosts.silicon.extraAddresses);
+  # Add secondary IPs from facts.network.hosts.silicon.extraAddresses to the
+  # physical NIC.  dhcp-server.nix contributes the primary /24 address (.9) on
+  # all possible interface name variants; mirror that approach here so the
+  # secondary /32 addresses land on whichever name the kernel actually assigns.
+  # NixOS merges list attributes across modules, so all addresses coexist.
+  networking.interfaces =
+    lib.genAttrs
+      [
+        "enp3s0"
+        "eno1"
+        "end0"
+        "ens0"
+        "eth0"
+      ]
+      (_: {
+        ipv4.addresses = builtins.map (ipv4: {
+          address = "${facts.network.subnets.barnett-main}.${toString ipv4}";
+          prefixLength = 32;
+        }) (builtins.attrValues facts.network.hosts.silicon.extraAddresses);
+      });
 
   # Configure ACLs for shared media directory so both nextcloud and kodi can
   # read/write.
