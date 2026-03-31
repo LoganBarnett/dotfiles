@@ -63,13 +63,14 @@ in
 {
   imports = [
     ./darwin-configs/goss.nix
-    ./darwin-configs/proton-network.nix
-    ./darwin-configs/optnix.nix
     ./darwin-modules/goss.nix
     ./darwin-modules/goss-exporter.nix
+    ./darwin-modules/host-connectivity-monitor.nix
+    ./darwin-configs/proton-network.nix
+    ./darwin-configs/optnix.nix
     flake-inputs.proc-siding.darwinModules.default
     ./nixos-modules/nix-flake-environment.nix
-    ./nixos-modules/darwin-tls-trust.nix
+    ./darwin-modules/darwin-tls-trust.nix
     ./nixos-modules/dns-aliases.nix
     ./nixos-modules/monitors.nix
     # ./nixos-configs/user-can-admin.nix.
@@ -537,11 +538,12 @@ in
       # LaunchServices.LSQuarantine = false;
       # Disable trackpad tap to click.
       trackpad.Clicking = false;
-      universalaccess = {
-        # Zoom in with Control + Scroll Wheel.
-        closeViewScrollWheelToggle = true;
-        closeViewZoomFollowsFocus = true;
-      };
+      # TODO: Fix this.  I can't do a switch with it.
+      # universalaccess = {
+      #   # Zoom in with Control + Scroll Wheel.
+      #   closeViewScrollWheelToggle = true;
+      #   closeViewZoomFollowsFocus = true;
+      # };
       # Where to save screenshots.
       screencapture.location = "~/Desktop";
       screensaver = {

@@ -9,8 +9,6 @@
 ################################################################################
 { ... }:
 {
-  imports = [ ../darwin-modules/host-connectivity-monitor.nix ];
-
   services.hostConnectivityMonitor = {
     enable = true;
     hosts = [
