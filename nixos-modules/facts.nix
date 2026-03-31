@@ -263,7 +263,7 @@
         flake-input-overrides = { };
         ipv4 = 9;
         macAddresses = [ "b8:ca:3a:77:a9:2a" ];
-        networkInterface = "eno1";
+        networkInterface = "eth0";
         system = "x86_64-linux";
       };
       krypton = {
