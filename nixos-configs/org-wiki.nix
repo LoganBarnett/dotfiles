@@ -41,10 +41,22 @@ in
     serviceNameForSocket = "org-wiki-web";
   };
 
-  # Ensure agenix secrets are decrypted before the service starts.
+  # Ensure agenix secrets are decrypted and the OIDC provider (authelia
+  # behind nginx) is reachable before starting.  Without this, OIDC discovery
+  # fails on boot before nginx has bound its socket.
   systemd.services.org-wiki-web = {
-    after = [ "run-agenix.d.mount" ];
+    after = [
+      "run-agenix.d.mount"
+      "network-online.target"
+      "nginx.service"
+      "authelia-authelia.service"
+    ];
     requires = [ "run-agenix.d.mount" ];
+    wants = [
+      "network-online.target"
+      "nginx.service"
+      "authelia-authelia.service"
+    ];
   };
 
   # Initialise the content repository on first boot.  If the repository
