@@ -117,7 +117,8 @@ STASH_HOST="stash.americas.nwea.pvt"
 echo "[7/7] Testing VPN endpoint: https://$STASH_HOST"
 
 # 7a: DNS resolution via VPN DNS server.
-STASH_IP=$(dig +short +timeout=3 +tries=1 @10.198.51.37 "$STASH_HOST" A 2>/dev/null | head -1) || true
+STASH_IP=$(dig +short +timeout=3 +tries=1 @10.198.51.37 "$STASH_HOST" A 2>/dev/null \
+  | grep -E '^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$' | head -1) || true
 if [ -n "$STASH_IP" ]; then
   echo "  [7a] DNS resolution: $STASH_HOST → $STASH_IP  ✓"
 else
