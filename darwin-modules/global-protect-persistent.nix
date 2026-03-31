@@ -3,6 +3,10 @@
 # Automatically connects and maintains VPN connection using gp-connect-auto.
 # Runs as a system daemon (root) to allow VPN tunnel creation while accessing
 # the primary user's gpg keys and pass password store for authentication.
+#
+# Also provides a local dnsmasq forwarder on 127.0.0.1:53 so that Nix-compiled
+# tools (curl with c-ares, git, dig) can resolve VPN domains through
+# /etc/resolv.conf instead of relying on macOS /etc/resolver/ split-DNS.
 ################################################################################
 {
   config,
@@ -16,6 +20,7 @@ with lib;
 let
 
   cfg = config.services.globalprotect-monitor;
+  dnsCfg = cfg.dnsmasq;
 
   monitorScript = pkgs.writeShellScript "gp-monitor-wrapper" ''
     set -e
@@ -34,6 +39,35 @@ let
     # Run the monitor script
     exec ${cfg.package}/bin/gp-monitor
   '';
+
+  dnsmasqConf = pkgs.writeText "dnsmasq.conf" ''
+    # Listen only on localhost so dnsmasq does not conflict with
+    # mDNSResponder on the wildcard address.
+    listen-address=127.0.0.1
+    bind-interfaces
+
+    # Upstream DNS discovered by dnsmasq-upstream-sync via DHCP.
+    # dnsmasq polls this file for changes automatically.
+    resolv-file=${dnsCfg.upstreamResolvFile}
+
+    # VPN domain-specific servers written by vpnc-script-macos on connect
+    # and cleared on disconnect.  Reloaded on SIGHUP.
+    servers-file=${dnsCfg.vpnServersFile}
+
+    # Static domain forwarding (e.g. proton -> home DNS).
+    ${concatMapStringsSep "\n" (
+      e: "server=/${e.domain}/${e.server}"
+    ) dnsCfg.domainForwarding}
+
+    # Sane defaults for a local forwarder.
+    cache-size=${toString dnsCfg.cacheSize}
+    domain-needed
+    bogus-priv
+  '';
+
+  dnsmasqUpstreamSync =
+    pkgs.callPackage ../derivations/dnsmasq-upstream-sync/default.nix
+      { };
 
 in
 {
@@ -128,6 +162,66 @@ in
         default = pkgs.callPackage ../derivations/gp-monitor.nix { };
         description = "The gp-monitor package to use.";
       };
+
+      dnsmasq = {
+        domainForwarding = mkOption {
+          type = types.listOf (
+            types.submodule {
+              options = {
+                domain = mkOption {
+                  type = types.str;
+                  description = "Domain to forward (e.g. proton).";
+                };
+                server = mkOption {
+                  type = types.str;
+                  description = "DNS server IP for this domain.";
+                };
+              };
+            }
+          );
+          default = [ ];
+          example = [
+            {
+              domain = "proton";
+              server = "192.168.254.9";
+            }
+          ];
+          description = "Static domain-specific DNS forwarding entries.";
+        };
+
+        vpnServersFile = mkOption {
+          type = types.str;
+          default = "/var/run/dnsmasq-vpn-servers.conf";
+          description = ''
+            Path for dynamic VPN domain servers written by vpnc-script-macos
+            on connect and cleared on disconnect.
+          '';
+        };
+
+        upstreamResolvFile = mkOption {
+          type = types.str;
+          default = "/var/run/dnsmasq-upstream-resolv.conf";
+          description = ''
+            Path for upstream resolv.conf written by dnsmasq-upstream-sync
+            from DHCP-provided DNS.
+          '';
+        };
+
+        cacheSize = mkOption {
+          type = types.int;
+          default = 1000;
+          description = "Number of DNS cache entries for dnsmasq.";
+        };
+
+        syncInterval = mkOption {
+          type = types.int;
+          default = 30;
+          description = ''
+            Seconds between upstream DNS discovery checks by
+            dnsmasq-upstream-sync.
+          '';
+        };
+      };
     };
   };
 
@@ -141,6 +235,8 @@ in
       (pkgs.callPackage ../derivations/cleanup-vpn.nix { })
       (pkgs.callPackage ../derivations/dns-resolver-helper.nix { })
       (pkgs.callPackage ../derivations/dns-vpn-scoping-fix.nix { })
+      pkgs.dnsmasq
+      dnsmasqUpstreamSync
       pkgs.gpclient
       (pkgs.callPackage ../derivations/gp-connect-auto.nix { })
       (pkgs.callPackage ../derivations/test-vpn-connectivity.nix { })
@@ -170,6 +266,7 @@ in
       ${cfg.primaryUser} ALL=(root) NOPASSWD: /usr/sbin/ipconfig set * DHCP
       ${cfg.primaryUser} ALL=(root) NOPASSWD: /usr/sbin/networksetup -setdhcp *
       ${cfg.primaryUser} ALL=(root) NOPASSWD: /usr/sbin/networksetup -setdnsservers * Empty
+      ${cfg.primaryUser} ALL=(root) NOPASSWD: /usr/sbin/networksetup -setdnsservers * 127.0.0.1
       ${cfg.primaryUser} ALL=(root) NOPASSWD: /usr/sbin/networksetup -setsearchdomains * Empty
       ${cfg.primaryUser} ALL=(root) NOPASSWD: /usr/sbin/networksetup -setwebproxystate * Off
       ${cfg.primaryUser} ALL=(root) NOPASSWD: /usr/sbin/networksetup -setsecurewebproxystate * Off
@@ -179,6 +276,7 @@ in
       ${cfg.primaryUser} ALL=(root) NOPASSWD: /usr/sbin/networksetup -setnetworkserviceenabled * On
       ${cfg.primaryUser} ALL=(root) NOPASSWD: /usr/bin/dscacheutil -flushcache
       ${cfg.primaryUser} ALL=(root) NOPASSWD: /usr/bin/killall -HUP mDNSResponder
+      ${cfg.primaryUser} ALL=(root) NOPASSWD: /usr/bin/killall -HUP dnsmasq
       # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       # !! DO NOT COMMIT - TEMPORARY DEVELOPMENT RULE - REMOVE BEFORE MERGE !!
       # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -186,6 +284,64 @@ in
         pkgs.callPackage ../derivations/vpn-test-harness.nix { }
       }/bin/vpn-test-harness *
     '';
+
+    # Ensure dnsmasq data files exist before dnsmasq starts, and point
+    # all network services' DNS to 127.0.0.1 so every tool (Nix and
+    # native) resolves through dnsmasq.
+    system.activationScripts.postActivation.text =
+      let
+        vpnServersFile = dnsCfg.vpnServersFile;
+        upstreamResolvFile = dnsCfg.upstreamResolvFile;
+      in
+      ''
+        # dnsmasq data files: touch so dnsmasq does not fail on first boot.
+        if [ ! -f "${vpnServersFile}" ]; then
+          touch "${vpnServersFile}"
+        fi
+        if [ ! -f "${upstreamResolvFile}" ]; then
+          # Seed with a sane default so DNS works before the first sync.
+          echo "nameserver 192.168.254.9" > "${upstreamResolvFile}"
+        fi
+
+        # Point all network services' DNS to 127.0.0.1 (dnsmasq).
+        /usr/sbin/networksetup -listallnetworkservices | tail -n +2 | while IFS= read -r svc; do
+          /usr/sbin/networksetup -setdnsservers "$svc" 127.0.0.1 2>/dev/null || true
+        done
+      '';
+
+    # dnsmasq local DNS forwarder — always active when the module is
+    # imported.  VPN DNS resolution is inseparable from the VPN service.
+    launchd.daemons.dnsmasq = {
+      serviceConfig = {
+        KeepAlive = true;
+        RunAtLoad = true;
+        ProgramArguments = [
+          "${pkgs.dnsmasq}/bin/dnsmasq"
+          "--keep-in-foreground"
+          "--conf-file=${dnsmasqConf}"
+        ];
+        StandardOutPath = "/var/log/dnsmasq.log";
+        StandardErrorPath = "/var/log/dnsmasq.log";
+      };
+    };
+
+    # Companion daemon that discovers DHCP DNS from the active interface
+    # and writes it to the upstream resolv file for dnsmasq.
+    launchd.daemons.dnsmasq-upstream-sync = {
+      serviceConfig = {
+        KeepAlive = true;
+        RunAtLoad = true;
+        ProgramArguments = [
+          "${dnsmasqUpstreamSync}/bin/dnsmasq-upstream-sync"
+        ];
+        EnvironmentVariables = {
+          DNSMASQ_UPSTREAM_RESOLV_FILE = dnsCfg.upstreamResolvFile;
+          DNSMASQ_SYNC_INTERVAL = toString dnsCfg.syncInterval;
+        };
+        StandardOutPath = "/var/log/dnsmasq-upstream-sync.log";
+        StandardErrorPath = "/var/log/dnsmasq-upstream-sync.log";
+      };
+    };
 
     # The launchd daemon is only created when explicitly enabled.
     launchd.daemons.globalprotect-monitor = mkIf cfg.enable {

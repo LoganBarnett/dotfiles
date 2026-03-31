@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+################################################################################
+# Discover DHCP-provided DNS servers and write a resolv.conf for dnsmasq.
+# Runs in a loop; dnsmasq polls the resolv-file for changes automatically.
+#
+# Environment variables:
+#   DNSMASQ_UPSTREAM_RESOLV_FILE — output path (default /var/run/dnsmasq-upstream-resolv.conf)
+#   DNSMASQ_SYNC_INTERVAL        — seconds between checks (default 30)
+################################################################################
+set -euo pipefail
+
+RESOLV_FILE="${DNSMASQ_UPSTREAM_RESOLV_FILE:-/var/run/dnsmasq-upstream-resolv.conf}"
+SYNC_INTERVAL="${DNSMASQ_SYNC_INTERVAL:-30}"
+
+while true; do
+  dns_found=""
+  # Check each hardware interface for DHCP DNS.
+  while IFS= read -r iface; do
+    dns=$(/usr/sbin/ipconfig getpacket "$iface" 2>/dev/null \
+      | awk -F'[{}]' '/domain_name_server/{print $2}' \
+      | tr ',' '\n' | sed 's/^ *//') || true
+    if [ -n "$dns" ]; then
+      dns_found="$dns"
+      break
+    fi
+  done < <(/usr/sbin/networksetup -listallhardwareports \
+    | awk '/^Device:/{print $2}')
+
+  # Write resolv.conf for dnsmasq.  No fallback — blocky handles fallback
+  # internally.  If no DHCP DNS is found, leave the file unchanged (dnsmasq
+  # keeps using the last known good upstream).
+  if [ -n "$dns_found" ]; then
+    new_content=$(echo "$dns_found" | while read -r ip; do
+      [ -n "$ip" ] && echo "nameserver $ip"
+    done)
+    # Only write if changed (avoids unnecessary dnsmasq reloads).
+    current=$(cat "$RESOLV_FILE" 2>/dev/null || echo "")
+    if [ "$new_content" != "$current" ]; then
+      echo "$new_content" > "$RESOLV_FILE"
+      echo "Updated $RESOLV_FILE with: $(echo "$dns_found" | tr '\n' ' ')"
+    fi
+  fi
+  sleep "$SYNC_INTERVAL"
+done

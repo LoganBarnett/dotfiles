@@ -337,6 +337,32 @@ EOF
 
       fi
 
+      # Update dnsmasq servers-file so Nix tools (curl with c-ares, git,
+      # dig) can resolve VPN domains through /etc/resolv.conf -> 127.0.0.1
+      # -> dnsmasq.  Guard with pgrep so the script still works without
+      # dnsmasq installed.
+      if pgrep -x dnsmasq >/dev/null 2>&1; then
+        DNSMASQ_VPN_FILE="/var/run/dnsmasq-vpn-servers.conf"
+        echo "  Writing dnsmasq VPN servers to $DNSMASQ_VPN_FILE..."
+        # Use SEARCH_DOMAINS if available, otherwise FALLBACK_DOMAINS.
+        _DNSMASQ_DOMAINS=()
+        if [ ${#SEARCH_DOMAINS[@]} -gt 0 ]; then
+          _DNSMASQ_DOMAINS=("${SEARCH_DOMAINS[@]}")
+        elif [ ${#FALLBACK_DOMAINS[@]:-0} -gt 0 ]; then
+          _DNSMASQ_DOMAINS=("${FALLBACK_DOMAINS[@]}")
+        fi
+        if [ ${#_DNSMASQ_DOMAINS[@]} -gt 0 ]; then
+          : > "$DNSMASQ_VPN_FILE"
+          for _dom in "${_DNSMASQ_DOMAINS[@]}"; do
+            for _dns in "${DNS_SERVERS[@]}"; do
+              echo "server=/${_dom}/${_dns}" >> "$DNSMASQ_VPN_FILE"
+            done
+          done
+          killall -HUP dnsmasq 2>/dev/null || true
+          echo "  dnsmasq VPN servers updated (${#_DNSMASQ_DOMAINS[@]} domains)"
+        fi
+      fi
+
       # Restore the pre-VPN public DNS so non-VPN queries (e.g. yahoo.com)
       # keep resolving during the VPN session.  gpclient strips the physical
       # interface DHCP configuration via 'ipconfig set NONE', removing the
@@ -804,15 +830,23 @@ SCEOF
       echo "Routes removed"
     fi
 
-    # Clear the explicit DNS set by networksetup during connect.  The "Empty"
-    # argument removes the Setup: key, returning DNS control to DHCP.  Must
-    # run before ipconfig set DHCP so DHCP can provide DNS uncontested.
+    # Clear the explicit DNS set by networksetup during connect.  When
+    # dnsmasq is running, restore DNS to 127.0.0.1 so all tools continue
+    # resolving through dnsmasq.  Otherwise, "Empty" returns DNS control
+    # to DHCP.  Must run before ipconfig set DHCP so DHCP can provide DNS
+    # uncontested.
     if [ -f "$PRE_VPN_SERVICE_FILE" ]; then
       SAVED_SERVICE=$(cat "$PRE_VPN_SERVICE_FILE")
-      echo "  Clearing explicit DNS on service '$SAVED_SERVICE'..."
-      networksetup -setdnsservers "$SAVED_SERVICE" "Empty" 2>/dev/null || true
+      if pgrep -x dnsmasq >/dev/null 2>&1; then
+        echo "  Restoring DNS to 127.0.0.1 (dnsmasq) on service '$SAVED_SERVICE'..."
+        networksetup -setdnsservers "$SAVED_SERVICE" "127.0.0.1" 2>/dev/null || true
+        echo "  DNS pointed to dnsmasq"
+      else
+        echo "  Clearing explicit DNS on service '$SAVED_SERVICE'..."
+        networksetup -setdnsservers "$SAVED_SERVICE" "Empty" 2>/dev/null || true
+        echo "  DNS management returned to DHCP"
+      fi
       rm -f "$PRE_VPN_SERVICE_FILE"
-      echo "  DNS management returned to DHCP"
     fi
 
     # Remove the synthetic VPN corporate DNS service and public DNS service.
@@ -846,6 +880,13 @@ EOF
       done < "$DNS_DOMAINS_FILE"
       dns-resolver-helper flush-cache
       rm -f "$DNS_DOMAINS_FILE"
+    fi
+
+    # Clear dnsmasq VPN servers so corporate domains stop resolving.
+    if pgrep -x dnsmasq >/dev/null 2>&1; then
+      : > /var/run/dnsmasq-vpn-servers.conf
+      killall -HUP dnsmasq 2>/dev/null || true
+      echo "  Cleared dnsmasq VPN servers"
     fi
 
     rm -f "$ACTUAL_TUNDEV_FILE" "$PRE_VPN_STATE_FILE" \

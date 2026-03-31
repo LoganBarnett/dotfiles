@@ -268,19 +268,32 @@ in
       ];
       # services.open-webui.enable = true;
     }
-    {
-      imports = [
-        ../darwin-modules/global-protect-persistent.nix
-      ];
-      services.globalprotect-monitor = {
-        enable = true;
-        server = "vpn-${org-alias}.gpcloudservice.com";
-        username = "${username}@${org-domain}";
-        orgName = org-alias;
-        primaryUser = username;
-        checkInterval = 60;
-      };
-    }
+    (
+      {
+        facts,
+        pkgs,
+        ...
+      }:
+      {
+        imports = [
+          ../darwin-modules/global-protect-persistent.nix
+        ];
+        services.globalprotect-monitor = {
+          enable = true;
+          server = "vpn-${org-alias}.gpcloudservice.com";
+          username = "${username}@${org-domain}";
+          orgName = org-alias;
+          primaryUser = username;
+          checkInterval = 60;
+          dnsmasq.domainForwarding = [
+            {
+              domain = facts.network.domain;
+              server = pkgs.lib.custom.networkDnsIp facts;
+            }
+          ];
+        };
+      }
+    )
   ];
   networking.monitors = [ "goss" ];
 }
