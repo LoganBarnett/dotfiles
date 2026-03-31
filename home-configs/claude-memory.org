@@ -25,14 +25,8 @@ their conventions when contributing to or copying patterns from those.
 
 * Dev environment
 
-** New projects
-
-Unless stipulated otherwise, non-trivial projects should be built in Rust.  New
-Rust projects must be scaffolded from ~~/dev/rust-template~; follow its
-~README.org~ for setup instructions.
-
-New projects must have a remote repository created on ~gitea.proton~ via ~tea~,
-using ~$USER~ as the Gitea username.
+Unless stipulated otherwise, non-trivial projects should be built in Rust.  Use
+~/new-rust-project~ to scaffold them.
 
 ** Global tools
 
