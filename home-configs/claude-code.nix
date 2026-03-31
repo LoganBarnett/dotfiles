@@ -61,10 +61,7 @@ in
         defaultMode = "bypassPermissions";
       };
       skipDangerousModePermissionPrompt = true;
-      # I tried Opus - it just burns through tokens without really showing much
-      # better use.
-      # model = "claude-opus-4-20250514";
-      model = "claude-sonnet-4-6";
+      # Omitted — Claude Code defaults to Opus 4.6.
       mcp = {
         allowedDirectories = {
           read = [ "/nix/store" ];
