@@ -415,6 +415,9 @@
             pkgs.callPackage ./derivations/nix-host-key-install.nix
               { };
           gnused-wrapper = pkgs.callPackage ./derivations/gnused-wrapper.nix { };
+          sonification-test =
+            pkgs.callPackage ./derivations/sonification-test/default.nix
+              { };
           work-alias = lib.concatStrings [
             "n"
             "w"
@@ -433,6 +436,7 @@
               # wrapper wins because mkShell prepends packages before stdenv
               # tools.
               gnused-wrapper
+              sonification-test
               pkgs.just
               pkgs.nixfmt-rfc-style
               pkgs.treefmt
