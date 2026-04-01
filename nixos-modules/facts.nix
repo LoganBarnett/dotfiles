@@ -19,6 +19,10 @@
       # The main network, whose atypical subnet is a vestigial dictation by the
       # consumer router.
       barnett-main = "192.168.254";
+      # IoT VLAN (20) — isolated devices with per-device internet allowlisting.
+      barnett-iot = "10.20.0";
+      # Guest VLAN (30) — internet-only access, no internal LAN visibility.
+      barnett-guest = "10.30.0";
     };
     ##
     # The nfsVolumes here have the following structure:
