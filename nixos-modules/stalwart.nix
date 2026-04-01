@@ -254,6 +254,10 @@ in
     };
 
     systemd.services.stalwart-mail = {
+      # Restart whenever the generated TOML changes (e.g. relay rules, cert
+      # paths, LDAP filters).  The upstream module does not trigger restarts
+      # on settings changes by itself.
+      restartTriggers = [ (builtins.toJSON config.services.stalwart-mail.settings) ];
       after = [
         "ldap-reconciler.service"
         "run-agenix.d.mount"
