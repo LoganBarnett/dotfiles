@@ -24,6 +24,11 @@ in
 {
   options.services.ldap-server = {
     enable = lib.mkEnableOption "OpenLDAP LDAP server";
+    passwordWriteDNs = lib.mkOption {
+      type = lib.types.listOf lib.types.str;
+      default = [ ];
+      description = "Full DNs granted write access to the userPassword attribute.";
+    };
   };
 
   config = lib.mkIf config.services.ldap-server.enable {
@@ -134,9 +139,12 @@ in
               olcAccess = [
                 ''
                   {0}to attrs=userPassword
-                                    by self write
-                                    by anonymous auth
-                                    by * none''
+                                      by self write
+                                      by anonymous auth
+                                      ${lib.concatMapStringsSep "\n                    " (
+                                        dn: ''by dn.exact="${dn}" write''
+                                      ) config.services.ldap-server.passwordWriteDNs}
+                                      by * none''
                 ''{0}to * by dn.exact="cn=admin,dc=proton,dc=org" write by * read''
                 ''
                   {1}to *
