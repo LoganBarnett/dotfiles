@@ -23,7 +23,7 @@ let
 in
 {
   imports = [
-    flake-inputs.openhab-flake.nixosModules.${system}.openhab
+    flake-inputs.openhab-flake.nixosModules.openhab
   ];
   networking.dnsAliases = [ "openhab" ];
   nixpkgs.overlays = [ flake-inputs.openhab-flake.overlays.default ];
@@ -281,6 +281,19 @@ in
     # default for OH 3+ because Felix can hot-reload most settings, but
     # JSONDB files are only read at startup.
     workarounds.restart.onDeploy = true;
+    # Allow OpenHAB to download addons from the marketplace at startup.
+    # The Z-Wave binding communicates directly with the Aeotec Z-Stick 7
+    # over its serial port; once the binding is installed the controller
+    # thing can be added via the UI and device discovery begins.
+    initialAddons = {
+      remote = true;
+      binding = [ "zwave" ];
+    };
+    # Serial port locking (via /run/lock) is required by the Z-Wave
+    # binding to claim exclusive access to the USB controller.  This adds
+    # the uucp group so the openhab service can write lock files.
+    workarounds.lockDir = true;
+    workarounds.nativeLibs = true;
     # Grant implicit user role to requests from the oauth2-proxy host.  All
     # external traffic reaches OpenHAB through nginx, which is gated by
     # oauth2-proxy and Authelia SSO.
