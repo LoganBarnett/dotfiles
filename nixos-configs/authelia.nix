@@ -260,7 +260,10 @@ in
       };
       notifier = {
         smtp = {
-          address = "submission://mail.${facts.network.domain}:587";
+          # Connect via loopback — both services are on the same host.
+          # Using the DNS name would route through the LAN IP, which
+          # Stalwart rate-limits independently.
+          address = "submission://localhost:587";
           username = "${host-id}-authelia-service";
           sender = "Authelia <${host-id}-authelia-service@${facts.network.domain}>";
           tls = {
