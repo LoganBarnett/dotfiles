@@ -181,7 +181,10 @@ in
               attributes = {
                 name = "uid";
                 description = [ "cn" ];
-                secret = "userPassword";
+                # Omit `secret` so Stalwart authenticates via LDAP bind
+                # instead of reading the password hash and verifying locally.
+                # Local verification fails because our passwords are argon2
+                # hashes and Stalwart does not support that scheme.
                 email = [ "mail" ];
                 member-of = [ "memberOf" ];
               };
