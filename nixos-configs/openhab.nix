@@ -9,6 +9,7 @@
   config,
   facts,
   flake-inputs,
+  lib,
   pkgs,
   system,
   ...
