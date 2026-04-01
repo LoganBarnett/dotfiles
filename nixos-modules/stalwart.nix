@@ -17,6 +17,7 @@
 {
   config,
   lib,
+  pkgs,
   ...
 }:
 let
@@ -33,6 +34,11 @@ let
   internalFqdn = "mail.${cfg.internalDomain}";
   # Credential name delivered via LoadCredential for the LDAP bind password.
   ldapCredential = "${cfg.ldap.serviceAccountName}-ldap-password";
+  # Stalwart's %{file:...}% macro reads files verbatim, including trailing
+  # newlines.  agenix-decrypted secrets end with \n, which makes the LDAP
+  # bind password wrong.  ExecStartPre strips the newline into this path.
+  strippedCredsDir = "/run/stalwart-mail-creds";
+  strippedLdapCred = "${strippedCredsDir}/${ldapCredential}";
 
 in
 {
@@ -161,8 +167,9 @@ in
               bind = {
                 dn = "uid=${cfg.ldap.serviceAccountName},ou=users,${cfg.ldap.baseDn}";
                 # %{file:...}% reads the credential at runtime so the password
-                # never appears in the Nix store.
-                secret = "%{file:/run/credentials/stalwart-mail.service/${ldapCredential}}%";
+                # never appears in the Nix store.  We use the stripped copy
+                # (no trailing newline) from ExecStartPre.
+                secret = "%{file:${strippedLdapCred}}%";
               };
               filter = {
                 name = "(&(objectClass=inetOrgPerson)(uid=?))";
@@ -277,6 +284,19 @@ in
         # filesystem read-only.  The tank RocksDB path is outside the
         # StateDirectory so it needs an explicit exemption.
         ReadWritePaths = [ "/tank/data/stalwart-mail" ];
+        RuntimeDirectory = "stalwart-mail-creds";
+        RuntimeDirectoryMode = "0700";
+        ExecStartPre = [
+          "+${pkgs.writeShellScript "stalwart-strip-creds" ''
+            # Stalwart's %{file:...}% reads verbatim, so strip trailing
+            # newlines that agenix adds to secret files.
+            ${pkgs.coreutils}/bin/tr -d '\n' \
+              < /run/credentials/stalwart-mail.service/${ldapCredential} \
+              > ${strippedLdapCred}
+            chown stalwart-mail:stalwart-mail ${strippedLdapCred}
+            chmod 0400 ${strippedLdapCred}
+          ''}"
+        ];
         LoadCredential = [
           "${ldapCredential}:${config.age.secrets.${ldapCredential}.path}"
           "tls-key:${config.age.secrets.${cfg.internalTls.keySecretName}.path}"
