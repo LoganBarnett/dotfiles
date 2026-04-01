@@ -95,9 +95,9 @@ in
       # If OIDC discovery still fails despite the gate (e.g. transient DNS
       # hiccup), space out restarts so we don't hit the default start-limit
       # (5 failures in 10 s → permanently failed).
-      RestartSec = 3;
-      StartLimitIntervalSec = 120;
-      StartLimitBurst = 20;
+      RestartSec = lib.mkDefault 3;
+      StartLimitIntervalSec = lib.mkDefault 120;
+      StartLimitBurst = lib.mkDefault 20;
     };
   };
 
