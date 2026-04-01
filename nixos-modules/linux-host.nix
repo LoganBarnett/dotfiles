@@ -52,8 +52,13 @@
     #     hostPubkey = ../secrets/${host-id}-pub-key.pub;
     #   };
     # }
+    flake-inputs.dns-smart-block.nixosModules.default
+    flake-inputs.garage-queue.nixosModules.server
     flake-inputs.garage-queue.nixosModules.worker
     flake-inputs.home-manager.nixosModules.home-manager
+    flake-inputs.loku.nixosModules.default
+    flake-inputs.nix-hapi.nixosModules.default
+    flake-inputs.org-wiki.nixosModules.web
     flake-inputs.proc-siding.nixosModules.default
     ../nixos-modules/dns-aliases.nix
     ../nixos-modules/monitors.nix

@@ -19,10 +19,6 @@ in
     ../nixos-configs/alertmanager.nix
     ../hardware/aeotec-z-stick-7.nix
     ../nixos-configs/openhab.nix
-    flake-inputs.garage-queue.nixosModules.server
-    flake-inputs.loku.nixosModules.default
-    flake-inputs.nix-hapi.nixosModules.default
-    flake-inputs.org-wiki.nixosModules.web
     ../nixos-configs/org-wiki.nix
     ../nixos-configs/dhcp-lease-textfile.nix
     ../nixos-configs/chronicle-proxy.nix
@@ -51,7 +47,6 @@ in
     ../nixos-configs/stalwart.nix
     ../nixos-configs/nix-builder-provide.nix
     ../nixos-modules/linux-host.nix
-    flake-inputs.dns-smart-block.nixosModules.default
     # TODO: Right now agenix-rekey wants to build wireguard to do the
     # generation.  This fails due to a problem with macOS building wireguard-go
     # (documented in the overlay in this repository).  It is not understood why
