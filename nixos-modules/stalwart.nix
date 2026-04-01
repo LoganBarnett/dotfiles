@@ -154,6 +154,10 @@ in
               type = "ldap";
               url = cfg.ldap.url;
               base-dn = cfg.ldap.baseDn;
+              # Stalwart uses rustls with webpki-roots, which ignores the
+              # system trust store.  The internal CA is not in Mozilla's
+              # root list, so we must skip verification here.
+              tls.allow-invalid-certs = true;
               bind = {
                 dn = "uid=${cfg.ldap.serviceAccountName},ou=users,${cfg.ldap.baseDn}";
                 # %{file:...}% reads the credential at runtime so the password
