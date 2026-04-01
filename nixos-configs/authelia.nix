@@ -137,6 +137,12 @@ in
     description = "Authelia LDAP bind account on ${host-id}.";
   };
 
+  # Grant the Authelia service account write access to userPassword so it can
+  # perform password resets on behalf of users.
+  services.ldap-server.passwordWriteDNs = [
+    "uid=${host-id}-authelia-service,ou=users,dc=proton,dc=org"
+  ];
+
   # The NixOS authelia module runs the service as "authelia-<instance>", i.e.
   # "authelia-authelia".  PostgreSQL peer auth requires the OS user and the
   # database user to match exactly, so we use the same name for both.
@@ -253,11 +259,10 @@ in
         }) facts.network.services;
       };
       notifier = {
-        # Docs recommend against this, but we have no email relay and the
-        # notification file is never read in practice.
-        disable_startup_check = true;
-        filesystem = {
-          filename = "/var/lib/${service-name}/notification.txt";
+        smtp = {
+          address = "submission://mail.${facts.network.domain}:587";
+          username = "${host-id}-authelia-service";
+          sender = "Authelia <${host-id}-authelia-service@${facts.network.domain}>";
         };
       };
       server = {
@@ -393,6 +398,7 @@ in
         # Deliver the LDAP bind password via LoadCredential and point
         # Authelia to the credential path via this env var.
         AUTHELIA_AUTHENTICATION_BACKEND_LDAP_PASSWORD_FILE = "/run/credentials/${service-name}.service/ldap-password";
+        AUTHELIA_NOTIFIER_SMTP_PASSWORD_FILE = "/run/credentials/${service-name}.service/ldap-password";
       };
       serviceConfig = {
         LoadCredential =
