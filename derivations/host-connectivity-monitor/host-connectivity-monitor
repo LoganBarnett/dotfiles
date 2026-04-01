@@ -66,6 +66,7 @@ while true; do
             down_since=""
         else
             echo "$(date): ok — up=${reachable_hosts[*]}"
+            sonification-test healthy
         fi
     else
         now="$(date +%s)"
