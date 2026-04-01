@@ -212,7 +212,7 @@ in
             # Internal CA certificate for mail.<internalDomain>.
             certificate."internal" = {
               cert = "%{file:${cfg.internalTls.certFile}}%";
-              key = "%{file:/run/credentials/stalwart-mail.service/tls-key}%";
+              private-key = "%{file:/run/credentials/stalwart-mail.service/tls-key}%";
             };
 
             # Allow relay only for authenticated users.
@@ -231,7 +231,7 @@ in
           # LoadCredential so no group membership changes are needed.
           certificate.${d.domain} = {
             cert = "/var/lib/acme/${d.domain}/fullchain.pem";
-            key = "%{file:/run/credentials/stalwart-mail.service/acme-key-${d.domain}}%";
+            private-key = "%{file:/run/credentials/stalwart-mail.service/acme-key-${d.domain}}%";
           };
 
           auth.dkim.sign.${d.domain} = {

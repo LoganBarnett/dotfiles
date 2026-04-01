@@ -263,6 +263,10 @@ in
           address = "submission://mail.${facts.network.domain}:587";
           username = "${host-id}-authelia-service";
           sender = "Authelia <${host-id}-authelia-service@${facts.network.domain}>";
+          tls = {
+            server_name = "mail.${facts.network.domain}";
+            trusted_certificates = [ "${../secrets/proton-ca.crt}" ];
+          };
         };
       };
       server = {
