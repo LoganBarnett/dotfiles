@@ -61,9 +61,9 @@ in
       "authelia-authelia-ready.service"
     ];
     serviceConfig = {
-      RestartSec = 3;
-      StartLimitIntervalSec = 120;
-      StartLimitBurst = 20;
+      RestartSec = lib.mkDefault 3;
+      StartLimitIntervalSec = lib.mkDefault 120;
+      StartLimitBurst = lib.mkDefault 20;
     };
   };
 
