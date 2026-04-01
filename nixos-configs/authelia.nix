@@ -384,7 +384,7 @@ in
   # run DB migrations, bind to LDAP, and initialise OIDC.  Services that
   # perform OIDC discovery at startup (oauth2-proxy, org-wiki-web) depend on
   # this unit instead of authelia-authelia.service directly.
-  systemd.services.${service-name}-ready = {
+  systemd.services."${service-name}-ready" = {
     description = "Wait for Authelia to become healthy";
     after = [ "${service-name}.service" ];
     requires = [ "${service-name}.service" ];
