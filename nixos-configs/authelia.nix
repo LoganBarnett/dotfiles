@@ -265,7 +265,10 @@ in
           sender = "Authelia <${host-id}-authelia-service@${facts.network.domain}>";
           tls = {
             server_name = "mail.${facts.network.domain}";
-            trusted_certificates = [ "${../secrets/proton-ca.crt}" ];
+            # Both services run on the same host; the internal CA cert is not
+            # in the system trust store and Authelia's SMTP TLS has no
+            # trusted_certificates option.
+            skip_verify = true;
           };
         };
       };
