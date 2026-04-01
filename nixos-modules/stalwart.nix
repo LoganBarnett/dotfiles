@@ -170,6 +170,11 @@ in
                 # never appears in the Nix store.  We use the stripped copy
                 # (no trailing newline) from ExecStartPre.
                 secret = "%{file:${strippedLdapCred}}%";
+                # Use LDAP bind auth: Stalwart looks up the user's DN, then
+                # binds as that user with the provided password.  This lets
+                # OpenLDAP verify argon2 hashes natively instead of Stalwart
+                # trying (and failing) to verify them locally.
+                auth.method = "lookup";
               };
               filter = {
                 name = "(&(objectClass=inetOrgPerson)(uid=?))";
@@ -181,7 +186,6 @@ in
               attributes = {
                 name = "uid";
                 description = [ "cn" ];
-                secret = "userPassword";
                 email = [ "mail" ];
                 member-of = [ "memberOf" ];
               };
