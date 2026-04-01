@@ -58,6 +58,9 @@ in
     # However I already have pre-generated secrets so I'm not bumping into the
     # issue currently.
     ../nixos-configs/silicon-public.nix
+    # Enable to make this host the network gateway (VLANs, NAT, inter-VLAN
+    # firewall).  Disable to use the consumer router as the gateway.
+    # ../nixos-configs/network-gateway.nix
     ../nixos-configs/wireguard/server-standard.nix
     (
       { pkgs, ... }:
