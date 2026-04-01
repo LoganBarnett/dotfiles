@@ -1,0 +1,334 @@
+#+title:     Sonification
+#+author:    Logan Barnett
+#+email:     logustus@gmail.com
+#+date:      <2026-04-01 Tue>
+#+language:  en
+#+file_tags:
+#+tags:
+
+* Overview
+
+Sonification is the encoding of system state into sound — a persistent,
+ambient audio layer that communicates health, load, and identity without
+requiring visual attention.  The goal is a Star Trek bridge feel: rhythmic
+pulses and tonal shifts that encode real meaning into peripheral awareness.
+
+Each machine self-reports.  There is no centralized collector scraping metrics.
+A machine starts whining when something breaks, groans under load, and hums
+contentedly when healthy.  Physical speaker placement gives spatial location as
+a free information channel — the NixOS server to your left, the Mac to your
+right.
+
+* Prior Art
+
+The academic field exists but practical implementations for infrastructure
+monitoring are sparse.
+
+- [[https://sonification.de/handbook/][The Sonification Handbook]] — canonical academic reference.
+- [[https://www.usenix.org/legacyurl/peep-network-auralizer-monitoring-your-network-sound][Peep (The Network Auralizer)]] — USENIX 2000.  Created a "sonic ecology"
+  where normal operation sounds like a healthy environment and anomalies become
+  audible disturbances.
+- [[https://paulvickers.github.io/SoNSTAR/][SoNSTAR]] — modern real-time network sonification.  Introduces the concept of
+  a WISP (Weakly Intrusive Sonic Periphery).
+- [[https://sonification.design/][Data Sonification Archive]] — catalog of sonification projects.
+
+Nobody appears to have built this properly for modern infrastructure with
+NixOS-style declarative configuration.
+
+* Existing Implementation
+
+The current prototype lives in ~derivations/sonification-test/~ and uses sox
+~play~ to synthesize sounds from the command line.  Four samples exist today:
+
+| Sample  | Character                     | Frequency | Use Case              |
+|---------+-------------------------------+-----------+-----------------------|
+| ping    | Brief rising chirp            | 880-1320  | Network services      |
+| chime   | Two-tone descending bell      | 554, 440  | Application services  |
+| thrum   | Slow-beating low tone (2Hz)   | 111       | Storage/infra         |
+| healthy | Three descending-volume boops | 523 (C5)  | All-clear heartbeat   |
+
+The ~host-connectivity-monitor~ runs as a launchd user agent (macOS) and plays
+the healthy sound on successful checks or triggers ~alert-me-locally~ after
+sustained downtime.
+
+* Architecture
+
+** Design Principles
+
+1. *Distributed self-report* — each machine produces its own audio.  No central
+   server.  The machine itself is the source of truth about its state.
+2. *Declarative voice assignment* — NixOS/nix-darwin config declares each
+   machine's voice, time slot, and check set.
+3. *Non-intrusive ambience* — sounds should be pleasant enough for continuous
+   background listening.  Anomalies shift the texture, they don't blast alarms
+   (that's what ~alert-me-locally~ is for).
+4. *Spatial encoding* — physical speaker placement provides machine identity for
+   free.
+
+** Multi-Machine Timing
+
+Multiple machines producing sound simultaneously need a time-division scheme to
+avoid cacophony.
+
+- Assign each machine a *time slot* within a cycle period.
+- Example: 10-second cycle, 5 machines → 2 seconds per machine.
+- Each machine's sounds must fit within its slot (attack + sustain + decay +
+  silence buffer).
+- NTP synchronization gives ~10ms precision, which is sufficient for
+  second-level slots.
+- Slot assignments are declarative in Nix config.
+
+When overlap is unavoidable or intentional, sounds must be harmonically
+compatible — see [[*Music Theory and Harmonic Encoding]].
+
+** Timing Precision
+
+Systemd timers default to ~AccuracySec=1min~.  Setting ~AccuracySec=1us~ gets
+microsecond precision, but each activation spawns a process, making sub-second
+intervals impractical.
+
+For second-level discrete sounds (heartbeat pulses, state-change chimes), a
+systemd timer with ~AccuracySec=1s~ suffices.
+
+For continuous analog representation (load hum, temperature-driven pitch shift),
+a *long-running daemon* is required.  A Rust daemon with an internal timer loop
+avoids all process-spawn overhead and achieves millisecond precision trivially.
+
+* Music Theory and Harmonic Encoding
+
+** Consonance as Health
+
+Use [[https://en.wikipedia.org/wiki/Just_intonation][just intonation]] (whole-number frequency ratios) so overlapping sounds
+blend cleanly without beating artifacts.
+
+| Interval       | Ratio | Consonance       | Mapping         |
+|----------------+-------+------------------+-----------------|
+| Perfect Fifth  |   3:2 | Very consonant   | Healthy         |
+| Major Third    |   5:4 | Consonant        | Nominal         |
+| Minor Third    |   6:5 | Mildly consonant | Degraded        |
+| Minor Second   | 16:15 | Very dissonant   | Warning         |
+| Tritone        | 45:32 | Maximally tense  | Critical        |
+
+If each service gets a frequency register and encodes its health as an interval
+relative to a shared root tone, the *aggregate chord quality* becomes an instant
+gestalt of system health.  Major chord = all good.  Increasing dissonance =
+something is off.  You literally hear the system get tense.
+
+** Analog Parameter Mapping
+
+Continuous system metrics map to continuous sound parameters:
+
+- *Tremolo rate* → CPU load (faster pulsing = higher load).
+- *Pitch* → temperature or memory pressure (rising pitch = hotter).
+- *Volume* → general activity level.
+- *Noise floor* → network traffic (pink noise mixed in, volume proportional to
+  throughput).
+
+* TODO Machine Voice Design
+:PROPERTIES:
+:ID:       voice-design
+:END:
+
+How a machine gets "voiced" is an open design question with significant depth.
+
+** The Problem
+
+Pure sine waves are too sterile and indistinct.  With multiple machines, we need
+voices that are *recognizably different* from each other while remaining
+pleasant and non-distracting.  Critically, the voices must not sound like real
+things we'd respond to — no phone rings, no doorbells, no speech-like formants.
+
+** Dimensions to Explore
+
+*** Timbre Through Waveform Blending
+
+A voice is not a single waveform but a *blend*.  Mixing sine, triangle, saw,
+and square waves at different ratios creates distinct timbres the way different
+instruments do.  A mostly-sine voice with a touch of triangle has a different
+character than one with a hint of saw.
+
+*** Envelope Shaping (Attack, Decay, Sustain, Release)
+
+The ADSR envelope gives each voice its own "feel":
+
+- A sharp attack with fast decay → percussive, clicky.
+- A slow attack with long sustain → pad-like, warm.
+- A medium attack with gentle release → bell-like.
+
+This is independent of pitch and waveform, so it multiplies the available voice
+space.
+
+*** Register Assignment
+
+Bass voices for servers (low, rumbly), mid-range for workstations, higher
+registers for lightweight services or edge devices.  Register provides immediate
+spatial-frequency separation.
+
+*** Harmonic Overtones
+
+Adding specific overtones (2nd, 3rd, 5th harmonics at controlled amplitudes)
+creates richness without changing the perceived fundamental pitch.  This is
+essentially how real instruments differ — a clarinet emphasizes odd harmonics, a
+violin emphasizes even ones.
+
+*** Open Questions
+
+- How many distinct voices do we actually need?  (Current machine count plus
+  growth margin.)
+- Should voices be hand-tuned or algorithmically derived from a seed (e.g.
+  machine hostname hashed to voice parameters)?
+- How do stressed/degraded variants of a voice preserve identity while clearly
+  communicating state change?  The voice should be recognizable as "the same
+  machine, but unhappy."
+- What's the minimum timbral distance between voices for reliable
+  identification?  Probably needs listening tests.
+
+* Technology Stack
+
+** Current: sox
+
+Sox (~play~) is the current backend.  Strengths:
+
+- Extremely terse command-line DSL for one-shot sounds.
+- No compilation or runtime needed beyond the ~sox~ package.
+- Pipe-concatenation (~"|sox -n -p ..."~) eliminates gaps in multi-tone sounds.
+- Already proven in ~sonification-test~ and ~host-connectivity-monitor~.
+
+Limitations:
+
+- Batch-oriented — each ~play~ is a separate process.
+- No persistent audio graph — cannot smoothly transition between states.
+- No real-time parameter control (cannot gradually shift pitch as load climbs).
+- Process-spawn latency makes sub-second patterns impractical.
+
+Sox remains a good fit for discrete event sounds: heartbeat pulses, alarm
+wails, state-change chimes.
+
+** Future: Rust Daemon with fundsp + cpal
+
+For continuous ambient voice with smooth analog representation, a long-running
+Rust daemon using [[https://github.com/SamiPerttu/fundsp][fundsp]] (audio DSP graph library) and [[https://github.com/RustAudio/cpal][cpal]] (cross-platform
+audio I/O) is the natural path.
+
+*** fundsp's Composability
+
+fundsp uses operator overloading to create an inline audio graph DSL:
+
+#+begin_src rust :exports code
+  // A voice: sine with tremolo, envelope, and volume.
+  sine_hz(111.0)
+      * lfo(|t| 0.6 + 0.4 * sin_hz(2.0, t))  // 2Hz tremolo, 80% depth
+      * envelope(|t| {
+          let fade_in = if t < 0.06 { sin(t / 0.06 * PI / 2.0) } else { 1.0 };
+          let fade_out = if t > 0.26 { cos((t - 0.26) / 0.14 * PI / 2.0) } else { 1.0 };
+          fade_in * fade_out
+      })
+      * 0.45
+#+end_src
+
+*** Static vs Dynamic Graphs
+
+fundsp offers two graph systems:
+
+- *AudioNode* (static) — monomorphized at compile time.  Zero-cost but rigid.
+- *Net* (dynamic) — heap-allocated, built at runtime.  Supports hot-swap with
+  crossfade.
+
+*** Live Parameter Control
+
+The ~shared()~ primitive allows any thread to update a parameter that the audio
+graph reads in real time:
+
+#+begin_src rust :exports code
+  let load = shared(0.0);
+  let voice = sine_hz(111.0)
+      * lfo(|t| 0.6 + 0.4 * sin_hz(2.0, t))
+      * (var(&load) >> follow(0.5));
+
+  // From the monitoring thread:
+  load.set_value(get_cpu_load());  // voice shifts smoothly
+#+end_src
+
+*** Hot-Swap with Crossfade
+
+The ~Net~ API supports glitch-free node replacement:
+
+#+begin_src rust :exports code
+  net.crossfade(voice_id, Fade::Smooth, 0.2,
+      Box::new(sine_hz(111.0) * lfo(|t| 0.6 + 0.4 * sin_hz(8.0, t))),
+  );
+  net.commit();  // sends change to audio thread
+#+end_src
+
+** TODO Scripting Layer for Voice Definition
+
+Compiling voice definitions directly into the Rust binary works for initial
+prototyping and for validating the ~shared()~ / live-parameter approach.  But
+for the full vision — where voices are declared in Nix config and loaded without
+recompilation — we need a runtime scripting layer.
+
+Options under consideration:
+
+- *Rhai* — pure Rust embeddable scripting language, designed for exactly this
+  pattern.  Safe sandboxed execution.  Would bind fundsp's ~Net~ API into the
+  scripting layer.
+- *Lua* (via ~mlua~ or ~rlua~) — larger ecosystem and mindshare.  Well-proven
+  embedding story.
+- *[[https://github.com/tomara-x/lapis][Lapis]]* — an existing fundsp-specific interpreter/REPL.  Parses a subset
+  of Rust-like syntax mapping directly to fundsp's API.  May have a headless
+  mode, but this is unconfirmed.  As a purpose-built DSL it might be limited in
+  expressing arbitrary functionality (conditionals, data flow from system
+  metrics, etc.) — needs investigation.
+- *Compiled-in definitions* — acceptable as a first pass.  Voice definitions
+  change rarely once tuned.  This approach has the advantage of validating the
+  core ~shared()~ / ~Net~ architecture before adding scripting complexity.
+
+The first pass should compile voices directly to validate the fundsp + cpal
+pipeline and the experience of feeding live system data into ~shared()~
+variables.  The scripting layer can come later once the sound design stabilizes.
+
+* TODO NixOS Module Design
+
+A sketch of what the declarative config could look like:
+
+#+begin_src nix :exports code
+  services.sonification = {
+    enable = true;
+    root-frequency = 220;  # A3 — shared root tone for harmonic encoding.
+    time-slot = {
+      offset-ms = 0;
+      duration-ms = 1500;
+      cycle-ms = 10000;
+    };
+    checks = {
+      networking = {
+        type = "online";
+        interval-ms = 5000;
+        register = "mid";
+      };
+      load = {
+        type = "analog";
+        source = "cpu-load";
+        register = "low";
+      };
+      disk = {
+        type = "threshold";
+        source = "disk-usage";
+        warn = 80;
+        crit = 95;
+        register = "high";
+      };
+    };
+  };
+#+end_src
+
+* Resources
+
+- [[https://sonification.de/handbook/][The Sonification Handbook]] — free online textbook.
+- [[https://sonification.de/handbook/chapters/chapter15/][Ch. 15: Parameter Mapping Sonification]] — the technique most applicable here.
+- [[https://sonification.de/handbook/chapters/chapter18/][Ch. 18: Process Monitoring]] — directly relevant use case.
+- [[https://github.com/SamiPerttu/fundsp][fundsp]] — Rust audio DSP library with inline graph notation.
+- [[https://github.com/RustAudio/cpal][cpal]] — cross-platform Rust audio I/O.
+- [[https://github.com/tomara-x/lapis][Lapis]] — fundsp interpreter/REPL.
+- [[https://en.wikipedia.org/wiki/Just_intonation][Just Intonation]] — whole-number frequency ratios for clean harmonic blending.
+- [[https://www.kylegann.com/tuning.html][Kyle Gann — Just Intonation Explained]] — practical guide.
