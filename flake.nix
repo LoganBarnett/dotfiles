@@ -124,6 +124,10 @@
       url = "github:LoganBarnett/nix-hapi";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    nix-hapi-provider-aruba-cx = {
+      url = "github:LoganBarnett/nix-hapi-provider-aruba-cx";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     nix-hapi-provider-ldap = {
       url = "github:LoganBarnett/nix-hapi-provider-ldap";
       inputs.nixpkgs.follows = "nixpkgs";
