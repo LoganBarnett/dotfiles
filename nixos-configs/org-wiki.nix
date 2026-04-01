@@ -41,22 +41,30 @@ in
     serviceNameForSocket = "org-wiki-web";
   };
 
-  # Ensure agenix secrets are decrypted and the OIDC provider (authelia
-  # behind nginx) is reachable before starting.  Without this, OIDC discovery
-  # fails on boot before nginx has bound its socket.
+  # Ensure agenix secrets are decrypted and Authelia is *healthy* before
+  # starting.  authelia-authelia-ready.service polls Authelia's /api/health endpoint
+  # so OIDC discovery succeeds on the first attempt.  blocky.service is
+  # needed because OIDC discovery resolves authelia.<domain> through local DNS.
   systemd.services.org-wiki-web = {
     after = [
       "run-agenix.d.mount"
       "network-online.target"
+      "blocky.service"
       "nginx.service"
-      "authelia-authelia.service"
+      "authelia-authelia-ready.service"
     ];
     requires = [ "run-agenix.d.mount" ];
     wants = [
       "network-online.target"
+      "blocky.service"
       "nginx.service"
-      "authelia-authelia.service"
+      "authelia-authelia-ready.service"
     ];
+    serviceConfig = {
+      RestartSec = 3;
+      StartLimitIntervalSec = 120;
+      StartLimitBurst = 20;
+    };
   };
 
   # Initialise the content repository on first boot.  If the repository

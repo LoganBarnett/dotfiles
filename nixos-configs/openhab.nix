@@ -72,22 +72,33 @@ in
     };
   };
 
-  # Ensure oauth2-proxy starts after agenix secrets are decrypted and after
-  # its OIDC provider (authelia behind nginx) is reachable.  Without this,
-  # OIDC discovery fails with "no such host" when DNS is not yet available.
+  # Ensure oauth2-proxy starts after Authelia is *healthy* (not just forked).
+  # authelia-authelia-ready.service polls /api/health and only completes once Authelia
+  # can serve OIDC discovery.  blocky.service is needed because OIDC discovery
+  # resolves authelia.<domain> through local DNS.
   systemd.services.oauth2-proxy = {
     after = [
       "run-agenix.d.mount"
       "network-online.target"
+      "blocky.service"
       "nginx.service"
-      "authelia-authelia.service"
+      "authelia-authelia-ready.service"
     ];
     requires = [ "run-agenix.d.mount" ];
     wants = [
       "network-online.target"
+      "blocky.service"
       "nginx.service"
-      "authelia-authelia.service"
+      "authelia-authelia-ready.service"
     ];
+    serviceConfig = {
+      # If OIDC discovery still fails despite the gate (e.g. transient DNS
+      # hiccup), space out restarts so we don't hit the default start-limit
+      # (5 failures in 10 s → permanently failed).
+      RestartSec = 3;
+      StartLimitIntervalSec = 120;
+      StartLimitBurst = 20;
+    };
   };
 
   # Merge the real admin password hash into users.json after openhab-setup
