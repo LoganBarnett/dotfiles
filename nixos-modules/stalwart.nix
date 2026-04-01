@@ -7,7 +7,7 @@
 # activate.
 #
 # Listener layout:
-#   25   SMTP     STARTTLS   Inbound MX + unauthenticated LAN relay
+#   25   SMTP     STARTTLS   Inbound MX
 #   587  SMTP     STARTTLS   Authenticated client submission
 #   993  IMAP     implicit   Mailbox access
 #
@@ -22,15 +22,11 @@
 let
   inherit (lib)
     concatMap
-    concatStringsSep
     map
     mkEnableOption
     mkIf
     mkMerge
     mkOption
-    splitString
-    take
-    toInt
     types
     ;
   cfg = config.services.stalwart-host;
@@ -38,19 +34,6 @@ let
   # Credential name delivered via LoadCredential for the LDAP bind password.
   ldapCredential = "${cfg.ldap.serviceAccountName}-ldap-password";
 
-  # Derive a starts_with prefix from a CIDR for relay network matching.
-  # Stalwart 0.14 has no CIDR matching function; starts_with is the closest
-  # approximation for octet-aligned prefixes (/8, /16, /24).
-  cidrPrefix =
-    cidr:
-    let
-      parts = splitString "/" cidr;
-      ip = builtins.head parts;
-      maskBits = toInt (builtins.elemAt parts 1);
-      octets = splitString "." ip;
-      numOctets = maskBits / 8;
-    in
-    "${concatStringsSep "." (take numOctets octets)}.";
 in
 {
   options.services.stalwart-host = {
@@ -117,15 +100,6 @@ in
         default = "stalwart";
         description = "Username of the LDAP service account used for directory lookups.";
       };
-    };
-
-    # CIDR ranges (beyond loopback) whose hosts may relay through port 25
-    # without authenticating.  Intended for internal services using this as a
-    # smarthost.
-    relayNetworks = mkOption {
-      type = types.listOf types.str;
-      default = [ ];
-      description = "CIDR ranges allowed to relay without authentication.";
     };
 
     # Internal CA cert/key for mail.<internalDomain>.  The module auto-declares
@@ -205,8 +179,7 @@ in
             server = {
               hostname = internalFqdn;
 
-              # Port 25: inbound MX + unauthenticated LAN relay for internal
-              # services that use mail.<internalDomain>:25 as a smarthost.
+              # Port 25: inbound MX.
               listener."smtp" = {
                 bind = [ "0.0.0.0:25" ];
                 protocol = "smtp";
@@ -242,27 +215,14 @@ in
               key = "%{file:/run/credentials/stalwart-mail.service/tls-key}%";
             };
 
-            # Allow relay for authenticated users, loopback, and configured
-            # LAN networks.  Stalwart 0.14 uses an array of {if, then} rules;
-            # there is no CIDR matching function so starts_with is used for
-            # octet-aligned prefixes (/8, /16, /24).
+            # Allow relay only for authenticated users.
             session.rcpt.relay = [
               {
                 "if" = "!is_empty(authenticated_as)";
                 "then" = true;
               }
-            ]
-            ++ [
-              {
-                "if" = "starts_with(remote_ip, '127.')";
-                "then" = true;
-              }
-            ]
-            ++ map (cidr: {
-              "if" = "starts_with(remote_ip, '${cidrPrefix cidr}')";
-              "then" = true;
-            }) cfg.relayNetworks
-            ++ [ { "else" = false; } ];
+              { "else" = false; }
+            ];
           }
         ]
         # Per external domain: Let's Encrypt TLS certificate + DKIM signing.
