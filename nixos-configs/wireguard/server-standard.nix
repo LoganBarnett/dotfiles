@@ -60,7 +60,7 @@ in
   ];
   networking.monitors = [ "wireguard" ];
   networking.nat.enable = true;
-  networking.nat.externalInterface = network-interface;
+  networking.nat.externalInterface = lib.mkDefault network-interface;
   networking.nat.internalInterfaces = [ "wg0" ];
   networking.firewall = {
     allowedUDPPorts = [ 51820 ];
@@ -97,12 +97,12 @@ in
       # and hence be like a VPN For this to work you have to set the dnsserver
       # IP of your router (or dnsserver of choice) in your clients.
       postSetup = ''
-        ${pkgs.iptables}/bin/iptables -t nat -A POSTROUTING -s ${vpn-subnet-prefix}.0/24 -o ${network-interface} -j MASQUERADE
+        ${pkgs.iptables}/bin/iptables -t nat -A POSTROUTING -s ${vpn-subnet-prefix}.0/24 -o ${config.networking.nat.externalInterface} -j MASQUERADE
       '';
 
       # This undoes the above command.
       postShutdown = ''
-        ${pkgs.iptables}/bin/iptables -t nat -D POSTROUTING -s ${vpn-subnet-prefix}.0/24 -o ${network-interface} -j MASQUERADE
+        ${pkgs.iptables}/bin/iptables -t nat -D POSTROUTING -s ${vpn-subnet-prefix}.0/24 -o ${config.networking.nat.externalInterface} -j MASQUERADE
       '';
 
       privateKeyFile = config.age.secrets."${host-id}-wireguard-server".path;
