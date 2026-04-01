@@ -378,9 +378,35 @@ in
     };
   };
 
+  # Readiness gate: blocks dependent services until Authelia's HTTP health
+  # endpoint responds.  systemd considers authelia-authelia.service "started"
+  # the instant the process forks (Type=simple), but Authelia still needs to
+  # run DB migrations, bind to LDAP, and initialise OIDC.  Services that
+  # perform OIDC discovery at startup (oauth2-proxy, org-wiki-web) depend on
+  # this unit instead of authelia-authelia.service directly.
+  systemd.services.${service-name}-ready = {
+    description = "Wait for Authelia to become healthy";
+    after = [ "${service-name}.service" ];
+    requires = [ "${service-name}.service" ];
+    serviceConfig = {
+      Type = "oneshot";
+      RemainAfterExit = true;
+      # Poll the internal listener directly (no DNS or TLS dependency).
+      ExecStart = pkgs.writeShellScript "wait-for-authelia" ''
+        until ${pkgs.curl}/bin/curl -sf http://127.0.0.1:${toString port}/api/health >/dev/null 2>&1; do
+          sleep 1
+        done
+      '';
+      # Give Authelia a generous window — DB migrations on first boot can be
+      # slow.  If this fires, something is genuinely broken.
+      TimeoutStartSec = 120;
+    };
+  };
+
   systemd.services.${service-name} =
     let
       after = [
+        "openldap.service"
         "postgresql.service"
         "run-agenix.d.mount"
       ];
