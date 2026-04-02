@@ -108,6 +108,7 @@ in
     # Ugh why did environment variables get named "settings" when there is a
     # "settings.json" file we _really_ want to have controlled?
     settings = mkOption {
+      default = { };
       type = types.submodule {
         freeformType =
           with types;
