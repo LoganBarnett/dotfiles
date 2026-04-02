@@ -314,7 +314,7 @@ in
         label = "Z-Wave JS";
         params = {
           hostname = "127.0.0.1";
-          port = "3000";
+          port = "3004";
         };
       }
     ];
