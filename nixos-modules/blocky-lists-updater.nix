@@ -11,14 +11,28 @@
 #
 # Both trigger Blocky refresh via its /api/lists/refresh endpoint.
 ################################################################################
-{ config, lib, pkgs, ... }: let
-  inherit (lib) mkEnableOption mkOption mkIf types;
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
+let
+  inherit (lib)
+    mkEnableOption
+    mkOption
+    mkIf
+    types
+    ;
   cfg = config.services.blocky-lists-updater;
 
-  blocky-lists-updater = pkgs.callPackage ../derivations/blocky-lists-updater.nix {};
+  blocky-lists-updater =
+    pkgs.callPackage ../derivations/blocky-lists-updater.nix
+      { };
 
-  sourcesFormat = pkgs.formats.keyValue {};
-in {
+  sourcesFormat = pkgs.formats.keyValue { };
+in
+{
   options.services.blocky-lists-updater = {
     enable = mkEnableOption "blocky-lists-updater service";
 
@@ -36,7 +50,7 @@ in {
 
     sources = mkOption {
       type = types.attrsOf (types.listOf types.str);
-      default = {};
+      default = { };
       example = {
         ads = [
           "https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts"
@@ -57,7 +71,7 @@ in {
 
     watchLists = mkOption {
       type = types.attrsOf types.lines;
-      default = {};
+      default = { };
       example = {
         custom-blocks = ''
           evil.example.com
@@ -91,7 +105,13 @@ in {
     };
 
     logLevel = mkOption {
-      type = types.enum [ "NONE" "ERROR" "WARN" "INFO" "DEBUG" ];
+      type = types.enum [
+        "NONE"
+        "ERROR"
+        "WARN"
+        "INFO"
+        "DEBUG"
+      ];
       default = "INFO";
       description = "Log verbosity level.";
     };
@@ -106,7 +126,10 @@ in {
   config = mkIf cfg.enable {
     systemd.services.blocky-lists-updater = {
       description = "Blocky Lists Updater";
-      after = [ "network.target" "blocky.service" ];
+      after = [
+        "network.target"
+        "blocky.service"
+      ];
       wantedBy = [ "multi-user.target" ];
       wants = [ "blocky.service" ];
 
@@ -121,24 +144,31 @@ in {
         BLU_INITIAL_DELAY_SECONDS = toString cfg.initialDelay;
         BLU_LOG_LEVEL = cfg.logLevel;
         BLU_LOG_FORMAT = "text";
+        # Keep IPC notify files under the persistent state directory instead
+        # of /tmp, which systemd-tmpfiles can clean while the service runs.
+        BLU_NOTIFY_DIR = "${cfg.stateDir}/notify";
       };
 
       preStart = ''
-        mkdir -p ${cfg.stateDir}/{sources,web/{downloaded,watch}}
+        mkdir -p ${cfg.stateDir}/{notify,sources,web/{downloaded,watch}}
 
         # Write source files containing URLs to download.
-        ${lib.concatStringsSep "\n" (lib.mapAttrsToList (name: urls: ''
-          cat > ${cfg.stateDir}/sources/${name}.txt <<'EOF'
-          ${lib.concatStringsSep "\n" urls}
-          EOF
-        '') cfg.sources)}
+        ${lib.concatStringsSep "\n" (
+          lib.mapAttrsToList (name: urls: ''
+            cat > ${cfg.stateDir}/sources/${name}.txt <<'EOF'
+            ${lib.concatStringsSep "\n" urls}
+            EOF
+          '') cfg.sources
+        )}
 
         # Write watch lists for local monitoring.
-        ${lib.concatStringsSep "\n" (lib.mapAttrsToList (name: content: ''
-          cat > ${cfg.stateDir}/web/watch/${name}.txt <<'EOF'
-          ${content}
-          EOF
-        '') cfg.watchLists)}
+        ${lib.concatStringsSep "\n" (
+          lib.mapAttrsToList (name: content: ''
+            cat > ${cfg.stateDir}/web/watch/${name}.txt <<'EOF'
+            ${content}
+            EOF
+          '') cfg.watchLists
+        )}
       '';
 
       serviceConfig = {
@@ -159,7 +189,11 @@ in {
         ProtectKernelTunables = true;
         ProtectKernelModules = true;
         ProtectControlGroups = true;
-        RestrictAddressFamilies = [ "AF_INET" "AF_INET6" "AF_UNIX" ];
+        RestrictAddressFamilies = [
+          "AF_INET"
+          "AF_INET6"
+          "AF_UNIX"
+        ];
         RestrictNamespaces = true;
         LockPersonality = true;
         RestrictRealtime = true;

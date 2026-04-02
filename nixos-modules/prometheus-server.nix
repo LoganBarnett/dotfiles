@@ -82,6 +82,7 @@ in
               host: settings:
               (settings.controlledHost or false)
               && !(settings.roaming or false)
+              && (settings.expectedOnline or true)
               && (lib.lists.any (m: m == monitor) (host-monitors host))
             ))
             (lib.attrsets.mapAttrsToList (

@@ -1,4 +1,9 @@
-{ pkgs ? import <nixpkgs> {}, lib, makeWrapper, stdenv }:
+{
+  pkgs ? import <nixpkgs> { },
+  lib,
+  makeWrapper,
+  stdenv,
+}:
 
 stdenv.mkDerivation {
   pname = "blocky-lists-updater";
@@ -13,18 +18,33 @@ stdenv.mkDerivation {
 
   nativeBuildInputs = [ makeWrapper ];
 
+  # Use a persistent directory for IPC notify files when BLU_NOTIFY_DIR is
+  # set, instead of mktemp under /tmp.  systemd-tmpfiles can clean stale
+  # /tmp entries, deleting the IPC files while the service is still running.
+  # When the files disappear, inotifywait returns immediately and the
+  # refresh loop spins without backoff, pegging blocky with constant
+  # list-reimport requests (~2 M entries every ~20 s).
+  postPatch = ''
+    substituteInPlace src/entrypoint.sh \
+      --replace-fail \
+        'NOTIFY_BASE=$(mktemp -d)' \
+        'if [ -n "''${BLU_NOTIFY_DIR:-}" ]; then NOTIFY_BASE="''${BLU_NOTIFY_DIR}"; mkdir -p "''${NOTIFY_BASE}"; else NOTIFY_BASE=$(mktemp -d); fi'
+  '';
+
   installPhase = ''
     mkdir -p $out/bin $out/lib
     cp -r src/* $out/lib/
 
     makeWrapper $out/lib/entrypoint.sh $out/bin/blocky-lists-updater \
-      --prefix PATH : ${lib.makeBinPath [
-        pkgs.bash
-        pkgs.busybox
-        pkgs.curl
-        pkgs.inotify-tools
-        pkgs.static-web-server
-      ]}
+      --prefix PATH : ${
+        lib.makeBinPath [
+          pkgs.bash
+          pkgs.busybox
+          pkgs.curl
+          pkgs.inotify-tools
+          pkgs.static-web-server
+        ]
+      }
   '';
 
   meta = with lib; {
