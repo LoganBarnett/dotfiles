@@ -90,3 +90,126 @@ Nix store against a closure pushed from a trusted build machine.
 This does not appear to exist as packaged tooling yet.  The primitives are
 all present in Nix (~nix store verify --store~, ~nix nar dump-path~, store
 signing).
+
+* Investigations
+
+** RESOLVED Willnorn SoundPlus X (SOUNDPLUS_X_E0A8) — Chinese domain traffic :false_alarm:
+
+- Status :: False alarm
+- Date investigated :: [2026-04-02 Thu]
+- Device :: Willnorn SoundPlus X (Bluetooth/WiFi speaker)
+- Hostname :: ~SOUNDPLUS_X_E0A8~
+- MAC address :: ~02:22:6c:07:e0:a8~
+- IP :: ~192.168.254.139~
+- facts.nix entry :: ~SOUNDPLUS_X_E0A8~
+
+*** Device description
+
+The Willnorn SoundPlus X is a consumer WiFi/Bluetooth speaker built on the
+Linkplay chipset.  It frequently drops off the home network and sometimes
+rejoins on its own.  When it's not connected to the home WiFi, it creates its
+own ad-hoc WiFi access point that you can join to configure it.  The AP may or
+may not be password protected.  The device also runs its own web server for
+configuration when in AP mode.
+
+*** Observed behavior
+
+The device polls two Chinese domains in a tight loop, approximately every 6
+seconds each:
+
+| Domain            | Queries/24h | Purpose                                          |
+|-------------------+-------------+--------------------------------------------------|
+| ~www.baidu.com~   |      24,136 | Connectivity check (Chinese captive portal detection) |
+| ~www.sina.com.cn~ |      22,262 | Connectivity check (Chinese captive portal detection) |
+
+These are the Chinese equivalents of Apple's ~captive.apple.com~ or Android's
+~connectivitycheck.gstatic.com~ — they are used by the Linkplay firmware to
+determine whether the device has internet access.
+
+Additionally, the device makes occasional calls to:
+
+| Domain                         | Queries/24h | Purpose                            |
+|--------------------------------+-------------+------------------------------------|
+| ~s000.linkplay.com~            |          80 | Linkplay firmware OTA check        |
+| ~old-ota-redirect.linkplay.co~ |          80 | Linkplay firmware OTA redirect     |
+| ~apresolve.spotify.com~        |           8 | Spotify Connect endpoint discovery |
+| ~ap.spotify.com~               |           8 | Spotify Connect endpoint           |
+
+No unusual, unknown, or suspicious destinations were observed.  No contact with
+C2-like infrastructure, no data exfiltration patterns.
+
+*** Traffic volume
+
+~46,000 DNS queries per day (~0.5 queries/sec).  This is trivial for Blocky —
+almost all resolve from cache.  The device's DNS traffic was *not* the cause of
+the silicon CPU spike (see below).
+
+*** Coincident issue: blocky-lists-updater pegging silicon
+
+During the investigation, silicon was observed at sustained ~2.5 CPU cores for
+approximately 10 hours (2026-04-01 15:38 UTC through 2026-04-02 01:11 UTC).
+Blocky was the heavy-hitting process.
+
+Root cause: the ~blocky-lists-updater~ service stores IPC files (used by
+~inotifywait~ to coordinate refresh requests) under ~/tmp~ via ~mktemp~.
+~systemd-tmpfiles~ cleaned these stale ~/tmp~ entries while the service was
+still running.  When the IPC files disappeared, ~inotifywait~ returned
+immediately on every loop iteration, and the refresh loop spun without backoff
+— hammering Blocky's ~/api/lists/refresh~ endpoint every ~20 seconds.  Each
+refresh forced Blocky to re-import ~2 million blocklist entries from remote
+URLs.
+
+This was confirmed via Prometheus: the CPU spike began at 15:38 and immediately
+dropped to baseline at 01:11 after the fix was deployed.  The
+~dns-smart-block~ classification rate was negligible and unchanged throughout
+the spike — the IoT device's DNS traffic was a red herring.
+
+Fix: commit ~c353bad8~ in dotfiles — IPC files now persist under
+~/var/lib/blocky-lists-updater/notify/~ (the ~StateDirectory~) instead of
+~/tmp~.
+
+*** Timestamp anomalies in dns-smart-block
+
+Some ~dns-smart-block~ classification records for this device show a
+~created_at~ of *2013-01-31*, which predates the device's presence on the
+network by over a decade.
+
+Cause: the SoundPlus X has no RTC battery.  Its NTP server is ~cn.ntp.org.cn~
+(a Chinese NTP pool that may not be reachable from this network).  When the
+device power-cycles and cannot sync time, it falls back to a firmware-epoch
+date — January 2013, consistent with the Linkplay chipset build date.  The
+~dns-smart-block~ log processor recorded the device's clock rather than wall
+time for these entries.
+
+*** The ~.proton~ domain chain
+
+The ~dns-smart-block~ database contains entries like:
+
+#+begin_example
+www.sina.com.cn.proton
+www.sina.com.cn.proton.proton
+www.sina.com.cn.proton.proton.proton
+... (up to 14 levels deep)
+#+end_example
+
+This is a separate DNS resolution artifact.  When the device queries
+~www.sina.com.cn~ and the lookup passes through dnsmasq's conditional
+forwarding, failed lookups get the ~.proton~ search domain appended.  Each
+successive failure appends another ~.proton~ suffix.  ~dns-smart-block~
+classified each variant independently (all correctly as "not a gaming site" and
+"not a video streaming site").
+
+This chain has been appearing since *2026-03-03*, indicating the device has been
+on the network and exhibiting this behavior for approximately a month.
+
+*** Conclusion
+
+The Willnorn SoundPlus X is behaving normally for a cheap Chinese IoT speaker
+on the Linkplay platform.  The firmware's connectivity-check polling is
+aggressive (every ~6 seconds) but does not represent a security threat.  The
+domains contacted are legitimate, well-known Chinese internet properties used
+for captive portal detection.
+
+No action needed beyond awareness.  The device does expose an open WiFi AP when
+disconnected from the home network, which is a minor local security
+consideration but not related to the DNS traffic investigation.
