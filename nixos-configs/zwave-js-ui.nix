@@ -31,6 +31,9 @@
   ...
 }:
 {
+  imports = [
+    ../nixos-modules/zwave-js-ui.nix
+  ];
   networking.dnsAliases = [ "zwave-js-ui" ];
   disabledModules = [
     "services/home-automation/zwave-js-ui.nix"
