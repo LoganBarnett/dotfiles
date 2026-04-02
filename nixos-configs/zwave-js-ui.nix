@@ -32,9 +32,6 @@
 }:
 {
   networking.dnsAliases = [ "zwave-js-ui" ];
-  disabledModules = [
-    "services/home-automation/zwave-js-ui.nix"
-  ];
   services.https.fqdns."zwave-js-ui.${facts.network.domain}" = {
     enable = true;
     internalPort = 8091;
