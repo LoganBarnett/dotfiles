@@ -286,6 +286,8 @@ in
 
   services.openhab = {
     enable = true;
+    # OpenHAB 5.x requires Java 21 (module defaults to 17).
+    java.package = pkgs.openjdk21_headless;
     # Avoid conflict with the goss prometheusContentTypeFixProxy, which
     # occupies port 8080 on all linux hosts via linux-host.nix.
     ports.http = 8085;
