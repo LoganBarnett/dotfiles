@@ -4,6 +4,7 @@
 {
   age.secrets.logan-password = {
     generator.script = "long-passphrase";
+    shared = true;
   };
 
   age.secrets.logan-password-hashed = {
