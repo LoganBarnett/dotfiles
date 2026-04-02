@@ -54,6 +54,7 @@
     # The hosts here have the following structure:
     # "${hostname}" = {
     #  controlledHost = boolean;
+    #  expectedOnline = boolean;
     #  flake-input-overrides = {
     #    nixpkgs = "nixpkgs-some-pr-or-variant";
     #  };
@@ -81,6 +82,11 @@
     #   means we're talking about a container.
     # - monitors (optional) A list of monitors for non-Nix-managed hosts.
     #   Nix-managed hosts declare monitors via networking.monitors instead.
+    # - expectedOnline (optional, default true) Whether this host is expected
+    #   to be reachable.  Hosts marked false are excluded from Prometheus
+    #   scraping entirely, suppressing node_down and similar alerts.  Use for
+    #   hosts that are legitimately powered off or decommissioned but not yet
+    #   removed from facts.
     # - roaming (optional, default false) Whether or not this host roams on and
     #   off this network.  This is generally intended for personal laptops that
     #   will frequently be offline, and thus should not trigger alerts when
@@ -114,6 +120,7 @@
       };
       bromine = {
         controlledHost = true;
+        expectedOnline = false;
         flake-input-overrides = {
           nixpkgs = "nixpkgs-nixos-raspberrypi";
         };
@@ -146,6 +153,7 @@
       };
       copper = {
         controlledHost = true;
+        expectedOnline = false;
         ipv4 = 10;
         system = "x86_64-linux";
       };
@@ -172,6 +180,7 @@
       };
       lithium = {
         controlledHost = true;
+        expectedOnline = false;
         ipv4 = 8;
         system = "x86_64-linux";
       };
@@ -595,6 +604,13 @@
           full-name = "wiki";
           devices = [ ];
         };
+        sftpgo = {
+          email = "sftpgo@proton";
+          type = "oidc-client";
+          description = "SFTPGo OIDC client.";
+          full-name = "sftpgo";
+          devices = [ ];
+        };
       };
 
     services = {
@@ -695,6 +711,20 @@
             "[CERTIFICATE_EXPIRATION] > 168h"
           ];
         };
+      };
+
+      sftpgo = {
+        authentication = "oidc";
+        fqdn = "sftpgo.${domain}";
+        groups = [
+          "sftpgo-admins"
+          "sftpgo-users"
+        ];
+        redirectUris = [
+          "https://sftpgo.${domain}/web/oidc/redirect"
+          "https://sftpgo.${domain}/web/oauth2/redirect"
+        ];
+        tokenEndpointAuthMethod = "client_secret_basic";
       };
 
     };
