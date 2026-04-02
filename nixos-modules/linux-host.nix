@@ -111,6 +111,10 @@
     ../nixos-configs/user-can-admin.nix
     ../nixos-modules/user-lockout-schedule.nix
     ../users/logan-server.nix
+    ../nixos-modules/zwave-js-ui.nix
+  ];
+  disabledModules = [
+    "services/home-automation/zwave-js-ui.nix"
   ];
 
   # Every controlled Linux host exports node and systemd metrics.

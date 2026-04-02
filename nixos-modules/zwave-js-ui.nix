@@ -21,9 +21,6 @@ let
   cfg = config.services.zwave-js-ui;
 in
 {
-  disabledModules = [
-    "services/home-automation/zwave-js-ui.nix"
-  ];
   options.services.zwave-js-ui = {
     enable = mkEnableOption "zwave-js-ui";
 
