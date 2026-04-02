@@ -309,7 +309,7 @@ in
       {
         type = "Bridge";
         binding = "zwavejs";
-        subtype = "bridge";
+        subtype = "gateway";
         id = "zwave";
         label = "Z-Wave JS";
         params = {
