@@ -79,6 +79,11 @@ in
           DOWNTIME_THRESHOLD = toString cfg.downtimeThreshold;
           CHECK_INTERVAL = toString cfg.checkInterval;
         };
+        # Without this, macOS defaults to "Background" which enables App Nap
+        # and I/O throttling.  That causes sox to block indefinitely on the
+        # CoreAudio device when the screen is locked, effectively killing
+        # audio output until the session resumes.
+        ProcessType = "Interactive";
         RunAtLoad = true;
         KeepAlive = true;
         StandardOutPath = "/tmp/host-connectivity-monitor.log";
