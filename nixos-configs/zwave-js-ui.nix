@@ -31,9 +31,6 @@
   ...
 }:
 {
-  imports = [
-    ../nixos-modules/zwave-js-ui.nix
-  ];
   networking.dnsAliases = [ "zwave-js-ui" ];
   disabledModules = [
     "services/home-automation/zwave-js-ui.nix"
@@ -64,7 +61,7 @@
         commandsTimeout = 30;
         serverEnabled = true;
         serverHost = "127.0.0.1";
-        serverPort = 3000;
+        serverPort = 3004;
         enableStatistics = false;
         disclaimerVersion = 1;
         # Per the document, this is where the secret settings show up, which win
