@@ -184,10 +184,14 @@ in
       running = true;
     };
   };
+  # TODO: The upstream gitea module already uses postgresql.target, but our
+  # custom after list was overriding it with postgresql.service (missing
+  # postgresql-setup.service).  Remove this override if the upstream module
+  # gains run-agenix.d.mount awareness or we find a better way to inject it.
   systemd.services.gitea =
     let
       after = [
-        "postgresql.service"
+        "postgresql.target"
         "run-agenix.d.mount"
       ];
     in

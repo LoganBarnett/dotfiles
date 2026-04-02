@@ -403,11 +403,13 @@ in
     };
   };
 
+  # TODO: Upstream the authelia NixOS module to use postgresql.target when a
+  # postgresql storage backend is configured, so we can drop the manual ordering.
   systemd.services.${service-name} =
     let
       after = [
         "openldap.service"
-        "postgresql.service"
+        "postgresql.target"
         "run-agenix.d.mount"
       ];
     in
