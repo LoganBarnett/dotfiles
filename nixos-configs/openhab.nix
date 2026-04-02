@@ -23,9 +23,6 @@ let
   );
 in
 {
-  imports = [
-    flake-inputs.openhab-flake.nixosModules.openhab
-  ];
   networking.dnsAliases = [ "openhab" ];
   nixpkgs.overlays = [ flake-inputs.openhab-flake.overlays.default ];
 
@@ -163,8 +160,14 @@ in
   # The restartTrigger ensures openhab restarts whenever the users-override
   # secret is rekeyed, so it never runs with a stale in-memory hash.
   systemd.services.openhab = {
-    wants = [ "openhab-admin-auth.service" ];
-    after = [ "openhab-admin-auth.service" ];
+    wants = [
+      "openhab-admin-auth.service"
+      "zwave-js-ui.service"
+    ];
+    after = [
+      "openhab-admin-auth.service"
+      "zwave-js-ui.service"
+    ];
     restartTriggers = [ config.age.secrets.openhab-admin-users-override.file ];
   };
 
@@ -294,18 +297,25 @@ in
     # JSONDB files are only read at startup.
     workarounds.restart.onDeploy = true;
     # Allow OpenHAB to download addons from the marketplace at startup.
-    # The Z-Wave binding communicates directly with the Aeotec Z-Stick 7
-    # over its serial port; once the binding is installed the controller
-    # thing can be added via the UI and device discovery begins.
+    # The zwavejs binding connects to zwave-js-ui over websocket; it does
+    # not need direct serial port access.
     initialAddons = {
       remote = true;
-      binding = [ "zwave" ];
+      binding = [ "zwavejs" ];
     };
-    # Serial port locking (via /run/lock) is required by the Z-Wave
-    # binding to claim exclusive access to the USB controller.  This adds
-    # the uucp group so the openhab service can write lock files.
-    workarounds.lockDir = true;
-    workarounds.nativeLibs = true;
+    things = [
+      {
+        type = "Bridge";
+        binding = "zwavejs";
+        subtype = "bridge";
+        id = "zwave";
+        label = "Z-Wave JS";
+        params = {
+          hostname = "127.0.0.1";
+          port = "3000";
+        };
+      }
+    ];
     # Grant implicit user role to requests from the oauth2-proxy host.  All
     # external traffic reaches OpenHAB through nginx, which is gated by
     # oauth2-proxy and Authelia SSO.
