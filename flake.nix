@@ -215,8 +215,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     openhab-flake = {
-      # url = "github:LoganBarnett/openhab-flake/add-darwin-devshell-support";
-      url = "git+ssh://git@gitea.proton:2222/logan/openhab-flake?ref=add-darwin-devshell-support";
+      url = "github:LoganBarnett/openhab-flake/add-darwin-devshell-support";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     org-wiki = {
