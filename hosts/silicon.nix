@@ -43,6 +43,7 @@ in
     ../nixos-configs/mastodon.nix
     ../nixos-configs/metube.nix
     ../nixos-configs/porkbun-email-dns.nix
+    ../nixos-configs/sftpgo.nix
     ../nixos-modules/stalwart.nix
     ../nixos-configs/stalwart.nix
     ../nixos-configs/nix-builder-provide.nix
