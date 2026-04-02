@@ -12,6 +12,7 @@ let
   device-path = "/dev/serial/by-id/usb-Silicon_Labs_CP2102N_USB_to_UART_Bridge_Controller_64d2edfddf7ced11ac6adbf3fdf7b791-if00-port0";
 in
 {
+  hardware.aeotec-z-stick-7.serialPort = device-path;
   age.secrets =
     (builtins.listToAttrs (
       builtins.map (key: {

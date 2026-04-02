@@ -1,13 +1,7 @@
 ################################################################################
-# TOMBSTONE — The zwave-js-ui NixOS module is no longer in use.
-#
 # A custom NixOS module for running zwave-js-ui as a hardened systemd service.
 # It fills gaps in the upstream nixpkgs module: settings.json management via a
 # pre-start merge step, and stricter systemd sandboxing.
-#
-# Tombstoned alongside zwave-js-ui.  Z-Wave JS tooling is designed as a
-# companion to Home Assistant, which we are no longer running.  This file is
-# kept for historical reference.
 ################################################################################
 {
   config,
