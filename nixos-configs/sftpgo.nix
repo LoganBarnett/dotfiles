@@ -113,10 +113,12 @@ in
   # Override ExecStart with a wrapper that reads the agenix secret into the
   # env var SFTPGO_HTTPD__BINDINGS__0__OIDC__CLIENT_SECRET (which SFTPGo
   # reads as an override of the config file value) then exec's the real binary.
+  # TODO: Upstream the sftpgo NixOS module to use postgresql.target when a
+  # postgresql data_provider is configured, so we can drop the manual ordering.
   systemd.services.sftpgo =
     let
       after = [
-        "postgresql.service"
+        "postgresql.target"
         "run-agenix.d.mount"
         "tank-data.mount"
       ];
