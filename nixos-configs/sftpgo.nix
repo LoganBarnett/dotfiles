@@ -23,6 +23,11 @@ in
     "webdav"
   ];
 
+  # SFTPGo is AGPL-3.0 + unfreeRedistributable (bundled GeoIP database).
+  allowUnfreePackagePredicates = [
+    (pkg: lib.getName pkg == "sftpgo")
+  ];
+
   tankVolumes.volumes.${service} = {
     group = service;
     pgDatabase = service;
