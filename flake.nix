@@ -125,7 +125,8 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     nix-hapi-provider-aruba-cx = {
-      url = "github:LoganBarnett/nix-hapi-provider-aruba-cx";
+      # url = "github:LoganBarnett/nix-hapi-provider-aruba-cx";
+      url = "git+ssh://git@gitea.proton:2222/logan/nix-hapi-provider-aruba-cx.git";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     nix-hapi-provider-ldap = {
@@ -214,17 +215,16 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     openhab-flake = {
-      url = "github:LoganBarnett/openhab-flake/add-darwin-devshell-support";
+      # url = "github:LoganBarnett/openhab-flake/add-darwin-devshell-support";
+      url = "git+ssh://git@gitea.proton:2222/logan/openhab-flake?ref=add-darwin-devshell-support";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     org-wiki = {
       url = "github:LoganBarnett/org-wiki";
-      # url = "git+ssh://git@gitea.proton:2222/logan/org-wiki";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     proc-siding = {
       url = "github:LoganBarnett/proc-siding";
-      # url = "git+ssh://git@gitea.proton:2222/logan/proc-siding.git";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     programsdb = {
