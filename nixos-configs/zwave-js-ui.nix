@@ -1,18 +1,8 @@
 ################################################################################
-# TOMBSTONE — zwave-js-ui is no longer hosted.
-#
-# Configures zwave-js-ui for managing a Z-Wave controller.  zwave-js-ui
-# provides a web-based interface and WebSocket API for Z-Wave device management,
-# and was preferred over zwave-js-server for its active maintenance and saner
-# defaults.
-#
-# Z-Wave JS tooling is designed as a companion to Home Assistant.  We are no
-# longer running Home Assistant.  Hardware secrets are retained in
-# hardware/aeotec-z-stick-7.nix.  This file is kept for historical reference.
-#
-# ---- original notes ----
-#
-# See the hardware directory for including a controller.
+# Configures zwave-js-ui as a headless Z-Wave driver for OpenHAB.  OpenHAB's
+# native Z-Wave binding lacks S2 security support, so we run zwave-js-ui to
+# manage the Aeotec Z-Stick 7 and expose a websocket that OpenHAB connects to
+# via the zwavejs binding.
 #
 # zwave-js-ui gives a lot of control over things, but you lose a lot of logs
 # (unless maybe you set the log level to "silly", but I haven't confirmed this
@@ -47,61 +37,30 @@
   imports = [
     ../nixos-modules/zwave-js-ui.nix
   ];
-  https.fqdns."zwave-js-ui.${facts.network.domain}" = {
+  services.https.fqdns."zwave-js-ui.${facts.network.domain}" = {
     enable = true;
     internalPort = 8091;
   };
   systemd.services.zwave-js-ui = {
-    # serviceConfig = {
-    #   Environment = let
-    #     dir = "/run/credentials/%n";
-    #   in [
-    #     "KEY_S0_Legacy=${dir}/legacy"
-    #     "KEY_S2_Unauthenticated=${dir}/unauthenticated"
-    #     "KEY_S2_Authenticated=${dir}/authenticated"
-    #     "KEY_S2_AccessControl=${dir}/access-control"
-    #   ];
-    # };
+    after = [ "run-agenix.d.mount" ];
+    requires = [ "run-agenix.d.mount" ];
+    serviceConfig = {
+      LoadCredential = [
+        "zwave-js-secret:${config.age.secrets.aeotec-z-stick-7-zwave-js-ui-security-file.path}"
+      ];
+    };
   };
   services.zwave-js-ui = {
     enable = true;
-    package = pkgs.zwave-js-ui.overrideAttrs (
-      let
-        version = "10.9.0";
-      in
-      old: rec {
-        inherit version;
-        src = pkgs.fetchFromGitHub {
-          owner = "LoganBarnett";
-          repo = "zwave-js-ui";
-          rev = "fix-settings-circular-on-logging-override";
-          # hash = lib.fakeHash;
-          hash = "sha256-QYIfrkirCdIvuvy8vqEB+NgwijTWFUGWlvHcNucjtwo=";
-        };
-        # overrideAttrs and buildNpmPackage don't play together.  This has to be
-        # overridden in npmDeps as well.
-        # Don't actually worry about setting this.
-        # npmDepsHash = lib.fakeHash;
-        npmDeps = pkgs.fetchNpmDeps {
-          inherit src;
-          # hash = lib.fakeHash;
-          hash = "sha256-E3+6N04R02Re/AIMQu1l5PlZrwpnfEQJGVf7CzXo8zw=";
-        };
-      }
-    );
+    serialPort = config.hardware.aeotec-z-stick-7.serialPort;
     secretsConfigFile = "/run/credentials/zwave-js-ui.service/zwave-js-secret";
-    settings = {
+    settings2 = {
       # See
       # https://github.com/zwave-js/zwave-js-ui/blob/26f2e698354e56b7ec1b82cd3a99e106fedcf923/api/lib/ZwaveClient.ts#L588
       # for the closest thing to a document for some of these settings.
       zwave = {
+        port = config.hardware.aeotec-z-stick-7.serialPort;
         commandsTimeout = 30;
-        # logLevel = "debug";
-        # logEnabled = true;
-        # Prevent it from logging the good stuff to a file where the systemd
-        # journal doesn't see it, and also keeps us from having to worry about
-        # log rotation outside of the journal.
-        # logToFile = false;
         serverEnabled = true;
         serverHost = "127.0.0.1";
         serverPort = 3000;
@@ -122,7 +81,6 @@
         options = {
           # Force it to log everything to the console and not just some things.
           logConfig = {
-            # Which is it?
             enable = true;
             enabled = true;
             forceConsole = true;
@@ -131,8 +89,6 @@
           };
         };
       };
-    }
-    // {
       # This section has settings that are set by the UI on startup.  We'll set
       # them first.
       securityKeysLongRange = { };
@@ -176,6 +132,5 @@
         streamerMode = false;
       };
     };
-    # settings = {};
   };
 }
