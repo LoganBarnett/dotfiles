@@ -31,6 +31,20 @@ let
       fi
     fi
   '';
+
+  # Block the BSD `sed -i '' ...` idiom.  GNU sed (provided by Nix) treats the
+  # empty string as a filename, not a backup suffix.  The PATH-level
+  # gnused-wrapper catches this too, but devShell environments can shadow it.
+  # A PreToolUse hook is immune to PATH ordering.
+  block-bsd-sed = pkgs.writeShellScript "block-bsd-sed" ''
+    input=$(cat)
+    cmd=$(printf '%s' "$input" | ${pkgs.jq}/bin/jq --raw-output '.tool_input.command // ""')
+
+    if printf '%s' "$cmd" | grep --quiet --extended-regexp "sed\s+-i(\s+)?'''"; then
+      printf 'Blocked: This is GNU sed.  Use sed -i (no suffix) for in-place editing, not the BSD sed -i empty-string form.  Better yet, use the Edit tool instead of sed.\n' >&2
+      exit 2
+    fi
+  '';
 in
 {
   # allowUnfreePackagePredicates = [
@@ -75,6 +89,15 @@ in
               {
                 type = "command";
                 command = "${block-nix-run}";
+              }
+            ];
+          }
+          {
+            matcher = "Bash";
+            hooks = [
+              {
+                type = "command";
+                command = "${block-bsd-sed}";
               }
             ];
           }
