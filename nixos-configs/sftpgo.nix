@@ -58,7 +58,7 @@ in
           enable_web_client = true;
           oidc = {
             client_id = "sftpgo";
-            # client_secret injected at runtime via env var wrapper (see below).
+            # client_secret injected at runtime via LoadCredential (see below).
             client_secret = "";
             config_url = "https://authelia.${facts.network.domain}";
             redirect_base_url = "https://${domain}";
@@ -110,14 +110,16 @@ in
 
   # SFTPGo has no client_secret_file option.  The NixOS module generates a
   # static JSON config in the Nix store, so we cannot embed the secret there.
-  # Override ExecStart with a wrapper that reads the agenix secret into the
-  # env var SFTPGO_HTTPD__BINDINGS__0__OIDC__CLIENT_SECRET (which SFTPGo
-  # reads as an override of the config file value) then exec's the real binary.
+  # Override ExecStart with a wrapper that reads the secret via LoadCredential
+  # (which systemd copies into /run/credentials/<unit>/ as the service user)
+  # into SFTPGO_HTTPD__BINDINGS__0__OIDC__CLIENT_SECRET, then exec's the
+  # real binary.
   # TODO: Upstream the sftpgo NixOS module to use postgresql.target when a
   # postgresql data_provider is configured, so we can drop the manual ordering.
   systemd.services.sftpgo =
     let
       after = [
+        "authelia-authelia-ready.service"
         "postgresql.target"
         "run-agenix.d.mount"
         "tank-data.mount"
@@ -126,12 +128,13 @@ in
     {
       inherit after;
       requires = after;
+      serviceConfig.LoadCredential = [
+        "oidc-client-secret:${config.age.secrets."sftpgo-oidc-client-secret".path}"
+      ];
       serviceConfig.ExecStart = lib.mkForce (
         toString (
           pkgs.writeShellScript "sftpgo-start" ''
-            export SFTPGO_HTTPD__BINDINGS__0__OIDC__CLIENT_SECRET=$(cat ${
-              config.age.secrets."sftpgo-oidc-client-secret".path
-            })
+            export SFTPGO_HTTPD__BINDINGS__0__OIDC__CLIENT_SECRET=$(cat "$CREDENTIALS_DIRECTORY/oidc-client-secret")
             exec ${config.services.sftpgo.package}/bin/sftpgo serve
           ''
         )
