@@ -9,8 +9,19 @@
 # The service runs as the specified user and updates ~/.MakeMKV/settings.conf
 # with the latest beta key from the MakeMKV forum.
 ################################################################################
-{ config, lib, pkgs, ... }: let
-  inherit (lib) mkEnableOption mkOption mkIf types;
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
+let
+  inherit (lib)
+    mkEnableOption
+    mkOption
+    mkIf
+    types
+    ;
   cfg = config.services.makemkv-updater;
 
   updateScript = pkgs.writeShellScript "makemkv-update-beta-key" ''
@@ -29,7 +40,7 @@
     if ! ${pkgs.curl}/bin/curl \
       --silent \
       --fail \
-      --max-time 30 \
+      --max-time 120 \
       --output "$TEMP_FILE" \
       'https://forum.makemkv.com/forum/viewtopic.php?f=5&t=1053'; then
       echo "ERROR: Failed to download beta key page" >&2
@@ -86,7 +97,8 @@
 
     echo "MakeMKV beta key updated successfully"
   '';
-in {
+in
+{
   options.services.makemkv-updater = {
     enable = mkEnableOption "automatic MakeMKV beta key updater";
 
@@ -139,10 +151,12 @@ in {
   config = mkIf cfg.enable {
     # Pre-create the MakeMKV settings directory so systemd can bind-mount it.
     systemd.tmpfiles.rules = [
-      (if cfg.user == "root" then
-        "d /root/.MakeMKV 0755 root ${cfg.group} -"
-      else
-        "d /home/${cfg.user}/.MakeMKV 0755 ${cfg.user} ${cfg.group} -")
+      (
+        if cfg.user == "root" then
+          "d /root/.MakeMKV 0755 root ${cfg.group} -"
+        else
+          "d /home/${cfg.user}/.MakeMKV 0755 ${cfg.user} ${cfg.group} -"
+      )
     ];
 
     systemd.services.makemkv-update-beta-key = {
@@ -164,7 +178,10 @@ in {
         ProtectKernelTunables = true;
         ProtectKernelModules = true;
         ProtectControlGroups = true;
-        RestrictAddressFamilies = [ "AF_INET" "AF_INET6" ];
+        RestrictAddressFamilies = [
+          "AF_INET"
+          "AF_INET6"
+        ];
         RestrictNamespaces = true;
         LockPersonality = true;
         RestrictRealtime = true;
@@ -173,7 +190,11 @@ in {
 
         # Allow writing to user's home directory for settings file.
         # Use conditional path based on whether user is root.
-        ReadWritePaths = if cfg.user == "root" then [ "/root/.MakeMKV" ] else [ "/home/${cfg.user}/.MakeMKV" ];
+        ReadWritePaths =
+          if cfg.user == "root" then
+            [ "/root/.MakeMKV" ]
+          else
+            [ "/home/${cfg.user}/.MakeMKV" ];
       };
     };
 
@@ -181,14 +202,18 @@ in {
       description = "MakeMKV Beta Key Update Timer";
       wantedBy = [ "timers.target" ];
 
-      timerConfig = if cfg.onCalendar != null then {
-        OnCalendar = cfg.onCalendar;
-        Persistent = true;
-      } else {
-        OnBootSec = "5min";
-        OnUnitActiveSec = cfg.interval;
-        Persistent = true;
-      };
+      timerConfig =
+        if cfg.onCalendar != null then
+          {
+            OnCalendar = cfg.onCalendar;
+            Persistent = true;
+          }
+        else
+          {
+            OnBootSec = "5min";
+            OnUnitActiveSec = cfg.interval;
+            Persistent = true;
+          };
     };
   };
 }
