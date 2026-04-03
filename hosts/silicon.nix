@@ -307,6 +307,9 @@ in
     };
   };
 
+  # Allow the physical eject button to open the optical drive tray.
+  hardware.opticalDrive.lockDoor = false;
+
   # MakeMKV DVD ripper for Silicon's internal drive.
   services.makemkv-ripper = {
     enable = true;
