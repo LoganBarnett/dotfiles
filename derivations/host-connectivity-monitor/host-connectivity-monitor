@@ -1,19 +1,19 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Monitor a list of hosts and sound a local alert after any have been
-# continuously unreachable for DOWNTIME_THRESHOLD seconds.
+# Monitor a list of hosts and play a sonification based on overall health.
+# When all hosts are reachable, plays the "healthy" sound.  When any host is
+# unreachable, plays the alert alarm.
 #
 # Reachability is tested with ping, which covers both DNS resolution and ICMP
-# in a single call.  Every host must respond to suppress the alarm.
+# in a single call.  Every host must respond for the system to be considered
+# healthy.
 #
 # Usage: host-connectivity-monitor HOST [HOST ...]
 #
 # Environment variables:
-#   DOWNTIME_THRESHOLD  seconds before alerting (default: 300)
 #   CHECK_INTERVAL      seconds between polls (default: 15)
 
-DOWNTIME_THRESHOLD="${DOWNTIME_THRESHOLD:-300}"
 CHECK_INTERVAL="${CHECK_INTERVAL:-15}"
 
 if [[ $# -eq 0 ]]; then
@@ -23,7 +23,6 @@ fi
 
 hosts=("$@")
 down_since=""
-alert_pid=""
 
 # Sets reachable_hosts and unreachable_hosts arrays from the global hosts list.
 # Returns 0 if at least one host responded, 1 if none did.
@@ -41,18 +40,8 @@ check_all_hosts() {
     [[ "${#reachable_hosts[@]}" -gt 0 ]]
 }
 
-stop_alert() {
-    if [[ -n "${alert_pid}" ]]; then
-        kill "${alert_pid}" 2>/dev/null || true
-        wait "${alert_pid}" 2>/dev/null || true
-        alert_pid=""
-    fi
-}
-
-trap 'stop_alert; exit 0' INT TERM
-
 echo "Monitoring: ${hosts[*]}"
-echo "Alert threshold: ${DOWNTIME_THRESHOLD}s, check interval: ${CHECK_INTERVAL}s"
+echo "Check interval: ${CHECK_INTERVAL}s"
 
 reachable_hosts=()
 unreachable_hosts=()
@@ -61,27 +50,22 @@ while true; do
     check_all_hosts || true
     if [[ "${#unreachable_hosts[@]}" -eq 0 ]]; then
         if [[ -n "${down_since}" ]]; then
-            echo "$(date): all hosts reachable again — stopping alert."
-            stop_alert
+            echo "$(date): all hosts reachable again."
             down_since=""
         else
             echo "$(date): ok — up=${reachable_hosts[*]}"
-            # Run in background with a timeout so a stalled audio device
-            # (e.g. screen locked) cannot block the monitor loop.
-            timeout "${CHECK_INTERVAL}" sonification-test healthy &
         fi
+        # Run in background with a timeout so a stalled audio device
+        # (e.g. screen locked) cannot block the monitor loop.
+        timeout "${CHECK_INTERVAL}" sonification-test healthy &
     else
-        now="$(date +%s)"
         if [[ -z "${down_since}" ]]; then
-            down_since="${now}"
-            echo "$(date): unreachable: ${unreachable_hosts[*]}"
+            down_since="$(date +%s)"
         fi
-        downtime=$(( now - down_since ))
-        if [[ "${downtime}" -ge "${DOWNTIME_THRESHOLD}" ]] && [[ -z "${alert_pid}" ]]; then
-            echo "$(date): ${downtime}s continuous downtime — starting alert."
-            alert-me-locally &
-            alert_pid="$!"
-        fi
+        echo "$(date): unreachable: ${unreachable_hosts[*]}"
+        # Run in background with a timeout so a stalled audio device
+        # (e.g. screen locked) cannot block the monitor loop.
+        timeout "${CHECK_INTERVAL}" alert-me-locally &
     fi
     sleep "${CHECK_INTERVAL}"
 done

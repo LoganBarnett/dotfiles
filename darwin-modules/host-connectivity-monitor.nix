@@ -1,7 +1,7 @@
 ################################################################################
-# Darwin launchd user agent that monitors host reachability and plays a local
-# alert when all watched hosts have been continuously unreachable for
-# downtimeThreshold seconds.
+# Darwin launchd user agent that monitors host reachability and plays a
+# sonification based on overall health.  Healthy → gentle chime, any host
+# unreachable → alarm.
 #
 # Runs as a user agent (not a daemon) so it has access to the audio session
 # for sound output.
@@ -34,19 +34,9 @@ in
         "1.1.1.1"
       ];
       description = ''
-        Hosts to monitor.  An alert sounds when any have been unreachable for
-        downtimeThreshold seconds continuously.  Reachability is tested with
-        ping (covers both DNS resolution and ICMP in a single probe).
-      '';
-    };
-
-    downtimeThreshold = lib.mkOption {
-      type = lib.types.ints.positive;
-      default = 300;
-      example = 60;
-      description = ''
-        Seconds of continuous total downtime across all monitored hosts before
-        the alert starts.
+        Hosts to monitor.  The alarm sounds each poll cycle while any host is
+        unreachable.  Reachability is tested with ping (covers both DNS
+        resolution and ICMP in a single probe).
       '';
     };
 
@@ -76,7 +66,6 @@ in
         ]
         ++ cfg.hosts;
         EnvironmentVariables = {
-          DOWNTIME_THRESHOLD = toString cfg.downtimeThreshold;
           CHECK_INTERVAL = toString cfg.checkInterval;
         };
         # Without this, macOS defaults to "Background" which enables App Nap
