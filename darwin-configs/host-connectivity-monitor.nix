@@ -3,9 +3,8 @@
 #
 # Watches the gateway, the local DNS server (silicon), and external reference
 # points (OpenDNS, Anthropic API).  IP entries detect layer-3 reachability;
-# name entries also exercise DNS resolution — both must fail before the alarm
-# can sound.  If all entries have been unreachable for 10 continuous minutes
-# the alarm sounds — one surviving host is enough to keep it quiet.
+# name entries also exercise DNS resolution.  If any host is unreachable, the
+# alarm sounds each poll cycle — all must respond for the healthy chime.
 ################################################################################
 { ... }:
 {
@@ -19,6 +18,5 @@
       "resolver1.opendns.com" # OpenDNS — name; exercises external DNS
       "api.anthropic.com" # Anthropic/Claude API — name; CDN-backed, no stable IP
     ];
-    downtimeThreshold = 600; # 10 minutes
   };
 }
