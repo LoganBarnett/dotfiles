@@ -33,6 +33,13 @@ let
             # docs, which could possibly use expansion.
             # firewallFilter = "-i br0 -p tcp -m tcp --dport ${port}";
           };
+        # Query dnsmasq directly on port 5353 instead of the default port 53,
+        # which is Blocky.  Without this, the exporter's CHAOS class queries
+        # (.bind. domains) get forwarded by Blocky to upstream resolvers that
+        # refuse them.
+        dnsmasq = {
+          dnsmasqListenAddress = "localhost:5353";
+        };
         # The blackbox exporter is too simplistic for multi-tenant HTTPS services.
         # It does only one check.  So we leave it out and favor Gatus instead.  It
         # might make sense to
