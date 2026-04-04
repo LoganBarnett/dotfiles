@@ -20,7 +20,7 @@
     drone.metrics = [
       {
         name = "cpu";
-        command = "awk '{nproc='\"$(nproc)\"'; printf \"%.2f\\n\", $1/nproc}' /proc/loadavg";
+        command = "${pkgs.gawk}/bin/awk '{nproc='\"$(${pkgs.coreutils}/bin/nproc)\"'; printf \"%.2f\\n\", $1/nproc}' /proc/loadavg";
         resultMode = "stdout";
         register = "mid";
       }
