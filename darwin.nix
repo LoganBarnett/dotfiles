@@ -65,7 +65,6 @@ in
     ./darwin-configs/goss.nix
     ./darwin-modules/goss.nix
     ./darwin-modules/goss-exporter.nix
-    ./darwin-modules/host-connectivity-monitor.nix
     ./darwin-configs/proton-network.nix
     ./darwin-configs/optnix.nix
     flake-inputs.proc-siding.darwinModules.default
