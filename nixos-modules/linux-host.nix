@@ -63,6 +63,7 @@
     flake-inputs.proc-siding.nixosModules.default
     flake-inputs.sonify-health.nixosModules.default
     ../nixos-modules/aeotec-z-stick-7.nix
+    ../nixos-modules/amd-gpu-card.nix
     ../nixos-modules/dns-aliases.nix
     ../nixos-modules/monitors.nix
     ../nixos-modules/environment-file-secrets.nix
