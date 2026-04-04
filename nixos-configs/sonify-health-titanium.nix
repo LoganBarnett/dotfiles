@@ -3,6 +3,7 @@
   services.sonify-health = {
     enable = true;
     listen = "/run/sonify-health/sonify-health.sock";
+    audioDevice = "Built-in";
     heartbeat = {
       slot = 1;
       cycleDurationSecs = 8;
