@@ -23,25 +23,6 @@
       OLLAMA_DEBUG = "30";
     };
   };
-  services.https = {
-    fqdns."ollama.${facts.network.domain}" = {
-      internalPort = config.services.ollama.port;
-    };
-  };
-  services.nginx.virtualHosts."ollama.${facts.network.domain}".locations."/" = {
-    # Turn these off, this made a big difference for me.
-    recommendedProxySettings = false;
-    recommendedUwsgiSettings = false;
-    # It is unknown how many of these are needed, but since the prior
-    # "recommended" settings are off now, I think we need them.  No
-    # experimentation done yet to confirm.
-    extraConfig = ''
-      proxy_set_header Origin "";
-      proxy_set_header Connection "";
-      proxy_set_header Upgrade "";
-      proxy_set_header Host 127.0.0.1;
-    '';
-  };
   # ollama-model-loader starts after ollama.service reaches exec, but CUDA
   # initialisation means the HTTP port isn't immediately ready.  Poll until
   # it responds before launching the pull jobs so the unit doesn't fail and

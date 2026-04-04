@@ -1924,6 +1924,107 @@ cut-over requires accepting manual admin management.  If Server-Side
 Encryption is ever enabled, OIDC is completely blocked (SSE requires
 cleartext passwords at login time).
 
+* Ollama
+
+LLM inference is available at =ollama.proton= but the endpoint is not a
+direct Ollama server — it's [[https://gitea.proton/logan/garage-queue][garage-queue]], a capability-aware work queue
+that distributes inference requests across all hosts running Ollama.
+
+** Architecture
+
+#+begin_example
+  client (curl, gold-dig, etc.)
+    │
+    │  HTTPS
+    ▼
+  ollama.proton (DNS → silicon)
+    │
+    │  nginx → Unix socket
+    ▼
+  garage-queue-server (silicon)
+    │
+    │  NATS JetStream
+    ▼
+  garage-queue-worker (titanium, arsenic, mac, …)
+    │
+    │  HTTP localhost:11434
+    ▼
+  Ollama (local to worker)
+#+end_example
+
+*** What gets queued
+
+Only ~POST /api/generate~ is routed through the queue.  The server matches
+the incoming path against configured queue routes, extracts capability
+requirements from the JSON body (model tag + estimated VRAM), and enqueues
+the item.  The connection is held open until a worker returns a result.
+
+*** What does not work
+
+Every other Ollama endpoint (~GET /api/tags~, ~POST /api/chat~, etc.)
+returns a 405 (Method Not Allowed for GET) or 404 (no queue mapped for
+POST to unmapped paths) from garage-queue.  There is currently no proxy
+pass-through for non-queued routes.
+
+This means:
+- Clients cannot discover available models via ~ollama.proton/api/tags~.
+- ~POST /api/chat~ does not work through the queue endpoint.
+
+** Workers and capabilities
+
+Each host that runs Ollama also runs a ~garage-queue-worker~.  The worker
+advertises:
+
+- *Tags* — the model names from ~services.ollama.loadModels~ (e.g.
+  ~llama3.1:8b~, ~qwen2.5:14b~).
+- *Scalars* — numeric capacities like ~vram_mb~ declared per-host.
+
+When an inference request arrives, the server finds a worker whose
+advertised tags include the requested model and whose VRAM scalar meets
+the estimated requirement.
+
+** Model tiers
+
+Models are configured in Nix by VRAM tier.  Each tier imports the previous
+one:
+
+| Tier   | File                           | Adds                                  |
+|--------+--------------------------------+---------------------------------------|
+| 8 GB   | ~ollama-models-8gb-vram.nix~   | dolphin3:8b, gemma3:4b, llama3.1:8b, |
+|        |                                | llama3.2:3b, mistral:7b, phi4-mini    |
+| 12 GB  | ~ollama-models-12gb-vram.nix~  | gemma3:12b, qwen2.5:14b              |
+
+A host imports the tier matching its GPU.  The ~ollama-model-loader~
+systemd service pulls models on boot.
+
+** Relevant files
+
+| File                                     | Role                                |
+|------------------------------------------+-------------------------------------|
+| ~nixos-configs/garage-queue-server.nix~  | Server + nginx on silicon           |
+| ~nixos-configs/garage-queue-worker.nix~  | Worker config (all Ollama hosts)    |
+| ~nixos-configs/ollama.nix~               | Ollama service + model loader       |
+| ~nixos-configs/ollama-models-*-vram.nix~ | Per-tier model lists                |
+| ~hosts/titanium.nix~                     | 12 GB VRAM worker example           |
+
+** Direct access
+
+To bypass the queue and hit Ollama directly (e.g. for ~/api/tags~ or
+debugging), SSH to the host and use ~localhost:11434~:
+
+#+begin_src sh :results none :exports code
+ssh titanium.proton curl -s http://localhost:11434/api/tags | jq '.models[].name'
+#+end_src
+
+** Known limitations
+
+- ~GET /api/tags~ is not supported through ~ollama.proton~.  garage-queue
+  would need to synthesize this response by aggregating the model tags
+  that workers have advertised, which is not yet implemented.
+- ~POST /api/chat~ is not queued.  Adding it would require a second queue
+  definition mirroring the ~/api/generate~ setup.
+- There is no transparent proxy fallback for non-queued routes.
+
 * Operations
 ** File syncing
 
