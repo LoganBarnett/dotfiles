@@ -37,10 +37,9 @@ in
     nats.enable = true;
     settings = {
       server = {
-        host = "0.0.0.0";
-        port = 9090;
+        # host and port are managed by the Nix module's top-level options
+        # (socket mode by default).  Only nats_url needs to be here.
         nats_url = "nats://127.0.0.1:4222";
-        generate_queue = "ollama";
       };
       queues.ollama = {
         route = "/api/generate";
