@@ -109,6 +109,11 @@ in
       serviceConfig = {
         KeepAlive = true;
         RunAtLoad = true;
+        # Without this, macOS defaults to "Background" which enables App Nap
+        # and I/O throttling.  That can cause the OS to deprioritize Ollama
+        # and evict its Metal GPU context when the screen is locked or under
+        # memory pressure.
+        ProcessType = "Interactive";
         ProgramArguments = [
           "${cfg.package}/bin/ollama"
           "serve"

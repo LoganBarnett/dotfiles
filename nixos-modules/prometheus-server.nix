@@ -152,7 +152,7 @@ in
               };
               goss = {
                 metrics_path = "/healthz";
-                scrape_interval = "30s";
+                scrape_interval = "15s";
               };
             }
             .${monitor} or { }
