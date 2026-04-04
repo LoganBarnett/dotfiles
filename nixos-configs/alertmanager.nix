@@ -123,25 +123,6 @@
             name = "ollama_alerts";
             rules = [
               {
-                # GPU baseline: ~900 classifications/hr.  CPU fallback: ~2/hr.
-                # A threshold of 50/hr sits well clear of both — any sustained
-                # drop below it signals Metal acceleration has been lost.
-                alert = "ollama_gpu_degraded";
-                expr = ''deriv(dns_smart_block_classifications_total[1h]) * 3600 < 50'';
-                for = "30m";
-                labels = {
-                  severity = "page";
-                };
-                annotations = {
-                  summary = "Ollama GPU acceleration degraded on {{ $labels.instance }}.";
-                  description = ''
-                    DNS classification throughput has been below 50/hr for more
-                    than 30 minutes, indicating Ollama has fallen back to CPU
-                    inference.  Current rate: {{ $value | humanize }}/hr.
-                  '';
-                };
-              }
-              {
                 # Fires immediately so alertmanager can attempt remediation
                 # without delay.  The goss check samples via metalps: if the
                 # Ollama process has no accumulated gpu_time_ns (Metal GPU
@@ -164,19 +145,19 @@
                 };
               }
               {
-                # Fires when GPU eviction has persisted for 20 minutes despite
+                # Fires when GPU eviction has persisted for 8 minutes despite
                 # repeated automated restart attempts.  Routes only to
                 # team-admins (not ollama-remediation) to avoid a restart loop.
                 alert = "ollama_metal_gpu_remediation_failed";
                 expr = ''increase(goss_tests_outcomes_total{outcome="fail",resource_id="ollama-metal-acceleration"}[5m]) > 0'';
-                for = "20m";
+                for = "8m";
                 labels = {
                   severity = "page";
                 };
                 annotations = {
                   summary = "Ollama Metal GPU remediation failed on {{ $labels.instance }}.";
                   description = ''
-                    GPU eviction has persisted for more than 20 minutes despite
+                    GPU eviction has persisted for more than 8 minutes despite
                     automated restart attempts.  Manual intervention is
                     required.
                   '';
@@ -247,8 +228,10 @@
               continue = true;
               # Fire immediately — no batching delay for remediation.
               group_wait = "0s";
-              # Re-POST every 10 minutes while the alert remains active.
-              repeat_interval = "10m";
+              # Re-POST every 2 minutes while the alert remains active,
+              # giving ~4 restart attempts before the 8-minute human
+              # escalation fires.
+              repeat_interval = "2m";
             }
           ];
         };
