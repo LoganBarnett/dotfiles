@@ -47,6 +47,7 @@ in
     ../nixos-configs/sftpgo.nix
     ../nixos-modules/stalwart.nix
     ../nixos-configs/stalwart.nix
+    ../nixos-configs/sonify-health-silicon.nix
     ../nixos-configs/nix-builder-provide.nix
     ../nixos-modules/linux-host.nix
     # TODO: Right now agenix-rekey wants to build wireguard to do the

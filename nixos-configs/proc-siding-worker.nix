@@ -18,6 +18,18 @@
         pressure_url = "http://127.0.0.1:9091/control/pause";
         clear_url = "http://127.0.0.1:9091/control/resume";
       };
+      # Mute sonify-health while GPU is under non-inference load.
+      # Requires proc-siding Http variant + Unix socket support (see
+      # ~/dev/proc-siding/tasks.org).  Uncomment once proc-siding is updated.
+      # extra_actions = [
+      #   {
+      #     kind = "http";
+      #     pressure_url = "unix:/run/sonify-health/sonify-health.sock:/api/mute";
+      #     pressure_method = "PUT";
+      #     clear_url = "unix:/run/sonify-health/sonify-health.sock:/api/mute";
+      #     clear_method = "DELETE";
+      #   }
+      # ];
     };
   };
 }

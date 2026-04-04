@@ -10,6 +10,7 @@
   imports = [
     ../users/logan-desktop.nix
     ../nixos-configs/proc-siding-worker.nix
+    ../nixos-configs/sonify-health-titanium.nix
     ../nixos-configs/airplay-server.nix
     ../nixos-modules/amd-gpu.nix
     ../nixos-configs/discord.nix
