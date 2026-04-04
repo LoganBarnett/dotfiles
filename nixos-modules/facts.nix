@@ -43,6 +43,17 @@
         providerHostId = "silicon";
         peerNumber = 4;
         service = "media-shared";
+        volume = "kodi-media";
+        user = "kodi";
+        group = "media-shared";
+        gid = 29974;
+        backupContents = true;
+      }
+      {
+        consumerHostId = "krypton";
+        providerHostId = "silicon";
+        peerNumber = 4;
+        service = "media-shared";
         volume = "nextcloud-shared-media";
         user = "kodi";
         group = "media-shared";
