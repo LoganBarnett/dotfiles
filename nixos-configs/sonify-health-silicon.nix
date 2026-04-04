@@ -26,5 +26,4 @@
       }
     ];
   };
-  systemd.services.sonify-health.serviceConfig.RuntimeDirectory = "sonify-health";
 }
