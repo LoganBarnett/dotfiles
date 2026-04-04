@@ -150,7 +150,7 @@ in
       status = 200;
       timeout = 5000;
     };
-    port."tcp:${toString sftpPort}" = {
+    port."tcp6:${toString sftpPort}" = {
       listening = true;
     };
     service.sftpgo = {
