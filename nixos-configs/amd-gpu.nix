@@ -4,13 +4,14 @@
 # these various settings, so for which applications these settings are needed is
 # less understood.  That's an exercise left the reader.
 {
+  config,
   lib,
   options,
   pkgs,
   ...
 }:
 let
-  kmsDevice = "/dev/dri/card1";
+  kmsDevice = "/dev/dri/card${toString config.hardware.amdGpuCard.index}";
 in
 {
   boot.initrd.kernelModules = [ "amdgpu" ];
