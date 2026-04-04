@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ config, pkgs, ... }:
 {
   services.sonify-health = {
     enable = true;
@@ -20,7 +20,7 @@
     drone.metrics = [
       {
         name = "gpu";
-        command = "awk 'BEGIN{getline v < \"/sys/class/drm/card0/device/gpu_busy_percent\"; printf \"%.2f\\n\", v/100}'";
+        command = "${pkgs.gawk}/bin/awk 'BEGIN{getline v < \"${config.hardware.amdGpuCard.sysfsPath}/gpu_busy_percent\"; printf \"%.2f\\n\", v/100}'";
         resultMode = "stdout";
         register = "low";
       }
