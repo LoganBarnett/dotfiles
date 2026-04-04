@@ -125,6 +125,7 @@
       #   system = "aarch64-linux";
       # };
       arsenic = {
+        blockProfiles = [ "kid-gaming-rig" ];
         controlledHost = true;
         ipv4 = 7;
         system = "x86_64-linux";
@@ -191,6 +192,7 @@
         monitors = [ ];
       };
       lithium = {
+        blockProfiles = [ "kid-gaming-rig" ];
         controlledHost = true;
         expectedOnline = false;
         ipv4 = 8;
