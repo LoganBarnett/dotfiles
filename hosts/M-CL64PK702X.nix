@@ -259,8 +259,6 @@ in
           # when run as root.  Or I'm using it wrong.
           # chsh -u logan.barnett -s /run/current-system/sw/bin/zsh
           echo 'User shells updated.'
-          echo 'Creating sonify-health socket directory...'
-          mkdir --parents /var/run/sonify-health
         '';
       }
     )
