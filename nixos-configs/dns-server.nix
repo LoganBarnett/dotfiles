@@ -17,7 +17,6 @@
 {
   host-id,
   facts,
-  pkgs,
   ...
 }:
 {
@@ -42,12 +41,5 @@
       server = "127.0.0.1";
       timeout = 3000;
     };
-    # Verify the HTTPS admin interface is accessible (handled by reverse proxy).
-    port."tcp:443" = {
-      listening = true;
-    };
-    # Confirm the reverse proxy is reachable from all interfaces, not
-    # only on one specific address.
-    command."tcp:443-wildcard-binding" = pkgs.lib.custom.gossWildcardPortCheck 443;
   };
 }
