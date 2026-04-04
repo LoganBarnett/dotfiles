@@ -259,6 +259,8 @@ in
           # when run as root.  Or I'm using it wrong.
           # chsh -u logan.barnett -s /run/current-system/sw/bin/zsh
           echo 'User shells updated.'
+          echo 'Creating sonify-health socket directory...'
+          mkdir --parents /var/run/sonify-health
         '';
       }
     )
@@ -296,4 +298,36 @@ in
     )
   ];
   networking.monitors = [ "goss" ];
+  services.sonify-health = {
+    enable = true;
+    listen = "/var/run/sonify-health/sonify-health.sock";
+    heartbeat = {
+      slot = 0;
+      cycleDurationSecs = 8;
+      checks = [
+        {
+          name = "internal";
+          command = "${pkgs.fping}/bin/fping -q -t 4000 -r 1 192.168.254.254 192.168.254.9 silicon.proton";
+        }
+        {
+          name = "external";
+          command = "${pkgs.fping}/bin/fping -q -t 4000 -r 1 208.67.222.222 9.9.9.9 resolver1.opendns.com api.anthropic.com";
+        }
+        {
+          name = "vpn";
+          command = "${pkgs.fping}/bin/fping -q -t 4000 -r 1 10.210.16.247 10.210.16.191 idm01.mgmt.${work-alias}colo.pvt artifacts.americas.${work-alias}.pvt";
+        }
+      ];
+    };
+    drone.metrics = [
+      {
+        name = "gpu";
+        command = "${
+          flake-inputs.metalps.packages.${system}.cli
+        }/bin/metalps --json --interval-ms 500 | ${pkgs.jq}/bin/jq '[.processes[].gpu_percent] | add // 0 | . / 100'";
+        resultMode = "stdout";
+        register = "low";
+      }
+    ];
+  };
 }

@@ -69,6 +69,7 @@ in
     ./darwin-configs/proton-network.nix
     ./darwin-configs/optnix.nix
     flake-inputs.proc-siding.darwinModules.default
+    flake-inputs.sonify-health.darwinModules.default
     ./nixos-modules/nix-flake-environment.nix
     ./darwin-modules/darwin-tls-trust.nix
     ./nixos-modules/dns-aliases.nix

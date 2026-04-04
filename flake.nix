@@ -235,6 +235,10 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    sonify-health = {
+      url = "github:LoganBarnett/sonify-health";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     sytter = {
       url = "github:LoganBarnett/sytter";
       # url = "git+ssh://git@gitea.proton:2222/logan/sytter";
