@@ -81,7 +81,6 @@ in
     }
     ../darwin.nix
     ../darwin-configs/garage-queue-worker.nix
-    ../darwin-configs/host-connectivity-monitor.nix
     ../darwin-configs/screen-sharing.nix
     ../darwin-configs/proc-siding-worker.nix
     ../darwin-configs/goss-ollama-metal-gpu.nix
