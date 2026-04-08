@@ -1,4 +1,5 @@
-{ pkgs, config, ... }: {
+{ pkgs, config, ... }:
+{
   imports = [
   ];
   # This is one half of the glue between home-manager and nix-darwin.  The other
@@ -10,9 +11,8 @@
   home-manager.users.logan = import ../home.nix;
   # TODO: Make this configurable such that my client machines require
   # passwords but service machines do not.
-  security.${
-    if !pkgs.stdenv.isDarwin then "sudo.wheelNeedsPassword" else null
-  } = true;
+  security.${if !pkgs.stdenv.isDarwin then "sudo.wheelNeedsPassword" else null} =
+    true;
   # Left as reference if you want fine-grained settings:
   # security.sudo.extraRules = [
   #   {
@@ -29,17 +29,22 @@
       ];
       home = "/Users/logan";
     }
-      # nix-darwin isn't in perfect harmony with NixOS in terms of schema.
-      # Conditionally add these if we're not on Darwin.
-    // (if !pkgs.stdenv.isDarwin then {
-      # Allow this user to sudo.
-      extraGroups = [ "wheel" ];
-      # TODO: You can set an initial password for your user.
-      # If you do, you can skip setting a root password by passing
-      # '--no-root-passwd' to nixos-install.
-      # Be sure to change it (using passwd) after rebooting!
-      initialPassword = "correcthorsebatterystaple";
-      isNormalUser = true;
-    } else {});
+    # nix-darwin isn't in perfect harmony with NixOS in terms of schema.
+    # Conditionally add these if we're not on Darwin.
+    // (
+      if !pkgs.stdenv.isDarwin then
+        {
+          # Allow this user to sudo.
+          extraGroups = [ "wheel" ];
+          # TODO: You can set an initial password for your user.
+          # If you do, you can skip setting a root password by passing
+          # '--no-root-passwd' to nixos-install.
+          # Be sure to change it (using passwd) after rebooting!
+          # initialPassword = "correcthorsebatterystaple";
+          isNormalUser = true;
+        }
+      else
+        { }
+    );
   };
 }
