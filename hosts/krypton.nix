@@ -20,6 +20,7 @@
     (flake-inputs.nixos-hardware + "/apple/macmini")
     ../nixos-modules/linux-host.nix
     ../nixos-configs/kodi-media-player.nix
+    ../nixos-configs/cec-adapter.nix
     (
       { lib, ... }:
       {
