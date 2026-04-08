@@ -298,7 +298,6 @@ in
   services.sonify-health = {
     enable = true;
     logLevel = "debug";
-    listen = "/var/run/sonify-health/sonify-health.sock";
     heartbeat = {
       slot = 0;
       cycleDurationSecs = 14;
