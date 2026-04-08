@@ -240,9 +240,18 @@ in
 
   config = mkIf cfg.enable {
     # Install MakeMKV system-wide.
-    environment.systemPackages = [ pkgs.makemkv ];
+    environment.systemPackages = [
+      pkgs.makemkv
+      pkgs.makemkv-flasher
+    ];
     allowUnfreePackagePredicates = [
-      (pkg: builtins.elem (lib.getName pkg) [ "makemkv" ])
+      (
+        pkg:
+        builtins.elem (lib.getName pkg) [
+          "makemkv"
+          "makemkv-flasher"
+        ]
+      )
     ];
 
     # Load sg (SCSI generic) kernel module for optical drive access.
