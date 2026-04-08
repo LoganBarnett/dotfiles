@@ -27,6 +27,15 @@
     };
   };
 
+  # MakeMKV 1.18.x has a firmware flashing bug (100% CPU spin).  This older
+  # binary is used solely for the `makemkvcon f` firmware tool.
+  makemkv-flasher = {
+    version = "1.17.7";
+    bin = {
+      hash = "sha256-jFvIMbyVKx+HPMhFDGTjktsLJHm2JtGA8P/JZWaJUdA=";
+    };
+  };
+
   signal-desktop-bin = {
     version = "8.2.1";
     hash = "sha256-hZj86neX7WnDzrFV8ONPkeXKAcCVt7iZqAHDTpnEClc=";
