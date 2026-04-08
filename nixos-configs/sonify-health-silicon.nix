@@ -18,7 +18,7 @@
     listen = "/run/sonify-health/sonify-health.sock";
     heartbeat = {
       slot = 2;
-      cycleDurationSecs = 8;
+      cycleDurationSecs = 14;
       checks = [
         {
           name = "internal";
