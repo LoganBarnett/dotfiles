@@ -172,6 +172,33 @@ let
             BindPaths=''${mountPoint} into the serviceConfig.
           '';
         };
+
+        healthCheck = {
+          enable = (mkEnableOption "periodic NFS mount health monitoring") // {
+            default = true;
+          };
+          interval = mkOption {
+            type = types.str;
+            default = "60s";
+            description = ''
+              How often to probe. Systemd time span format.
+            '';
+          };
+          timeout = mkOption {
+            type = types.int;
+            default = 10;
+            description = ''
+              Seconds to wait for stat probe before declaring mount stale.
+            '';
+          };
+          restartWireGuard = mkOption {
+            type = types.bool;
+            default = true;
+            description = ''
+              Restart WireGuard interface as part of recovery.
+            '';
+          };
+        };
       };
     };
 
@@ -363,6 +390,77 @@ let
     }
   ) { } mountsEnabled;
 
+  healthCheckMounts = lib.filterAttrs (_: m: m.healthCheck.enable) mountsEnabled;
+
+  timersHealthCheck = foldlAttrs (
+    acc: name: m:
+    acc
+    // {
+      "nfs-mount-${name}-health" = {
+        wantedBy = [ "timers.target" ];
+        timerConfig = {
+          OnBootSec = "2min";
+          OnUnitActiveSec = m.healthCheck.interval;
+          RandomizedDelaySec = "5s";
+        };
+      };
+    }
+  ) { } healthCheckMounts;
+
+  servicesHealthCheck = foldlAttrs (
+    acc: name: m:
+    let
+      mountUnit = "${toMountUnit (toString m.mountPoint)}.mount";
+      wgService = "wireguard-${m.wgInterfaceName}.service";
+      timeoutSec = toString m.healthCheck.timeout;
+      mp = toString m.mountPoint;
+    in
+    acc
+    // {
+      "nfs-mount-${name}-health" = {
+        description = "Health check for NFS mount ${mp}";
+        after = [
+          mountUnit
+          wgService
+        ];
+        serviceConfig = {
+          Type = "oneshot";
+          TimeoutStartSec = "90s";
+        };
+        script = ''
+          # Probe — if the mount is healthy, exit early.
+          if timeout ${timeoutSec}s stat "${mp}/${m.preconditionFile}" >/dev/null 2>&1; then
+            echo "Mount ${mp} is healthy."
+            exit 0
+          fi
+          echo "Mount ${mp} is stale — starting recovery."
+
+          # Lazy unmount to detach immediately even with open handles.
+          umount -l "${mp}" || true
+
+          # Reset systemd mount unit state (may already be failed).
+          systemctl stop "${mountUnit}" || true
+
+          ${lib.optionalString m.healthCheck.restartWireGuard ''
+            # Restart WireGuard to force a fresh handshake.
+            systemctl restart "${wgService}"
+            sleep 3
+          ''}
+
+          # Re-establish mount via its full dependency chain.
+          systemctl start "${mountUnit}"
+
+          # Verify recovery succeeded.
+          if ! timeout ${timeoutSec}s stat "${mp}/${m.preconditionFile}" >/dev/null 2>&1; then
+            echo "Recovery FAILED for ${mp}."
+            exit 1
+          fi
+          echo "Recovery succeeded for ${mp}."
+        '';
+      };
+    }
+  ) { } healthCheckMounts;
+
 in
 {
   options.services.nfs-mount = {
@@ -394,7 +492,12 @@ in
     # A gotcha: Don't use fileSystems and systemd.mounts.  fileSystems will emit
     # systemd.mounts, in effect.
     fileSystems = fileSystems;
-    systemd.services = servicesFromBinds // servicesSanity // wireguardPeerServices;
+    systemd.services =
+      servicesFromBinds
+      // servicesSanity
+      // wireguardPeerServices
+      // servicesHealthCheck;
+    systemd.timers = timersHealthCheck;
     users.groups = mapAttrs' (name: value: {
       name = value.bindToService;
       value = {
