@@ -14,8 +14,19 @@
 #   Auto-trigger: Insert disc (if autoRip is enabled)
 #   Check status: systemctl status makemkv-rip@sr0
 ################################################################################
-{ config, lib, pkgs, ... }: let
-  inherit (lib) mkEnableOption mkOption mkIf types;
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
+let
+  inherit (lib)
+    mkEnableOption
+    mkOption
+    mkIf
+    types
+    ;
   cfg = config.services.makemkv-ripper;
 
   ripScript = pkgs.writeShellScript "makemkv-rip" ''
@@ -137,7 +148,8 @@
       ${cfg.notifyCommand} "MakeMKV rip complete" "$CLEAN_TITLE has been ripped to $OUTPUT_FILE" || log "Warning: Notification failed"
     ''}
   '';
-in {
+in
+{
   options.services.makemkv-ripper = {
     enable = mkEnableOption "MakeMKV automatic disc ripper";
 
@@ -247,7 +259,7 @@ in {
       serviceConfig = {
         Type = "oneshot";
         ExecStart = "${ripScript} /dev/%I";
-        TimeoutStartSec = "4h";  # Long timeout for large discs.
+        TimeoutStartSec = "4h"; # Long timeout for large discs.
 
         # Run as root to access optical drive and write to output directory.
         User = "root";
@@ -261,20 +273,21 @@ in {
         ProtectKernelModules = true;
         ProtectKernelLogs = true;
         ProtectControlGroups = true;
-        PrivateNetwork = true;  # Disable all network access.
+        # MakeMKV needs network access for AACS/BD+ disc key lookups.
+        PrivateNetwork = false;
         RestrictNamespaces = true;
         LockPersonality = true;
         RestrictRealtime = true;
         RestrictSUIDSGID = true;
         SystemCallArchitectures = "native";
-        MemoryDenyWriteExecute = false;  # MakeMKV needs this for JIT.
+        MemoryDenyWriteExecute = false; # MakeMKV needs this for JIT.
 
         # Allow access to optical drives and output directory.
         DevicePolicy = "closed";
         DeviceAllow = [
-          "block-sr rwm"  # Block devices sr* (optical drives).
-          "char-sg rwm"  # SCSI generic devices (required for MakeMKV).
-          "char-usb_device rw"  # For USB optical drives.
+          "block-sr rwm" # Block devices sr* (optical drives).
+          "char-sg rwm" # SCSI generic devices (required for MakeMKV).
+          "char-usb_device rw" # For USB optical drives.
         ];
         ReadWritePaths = [ cfg.outputPath ];
         # Allow reading MakeMKV settings (including beta key).
