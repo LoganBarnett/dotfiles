@@ -318,7 +318,7 @@ in
   ];
   networking.monitors = [ "goss" ];
   services.sonify-health = {
-    enable = true;
+    enable = false;
     logLevel = "debug";
     heartbeat = {
       slot = 3;
