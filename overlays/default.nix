@@ -73,6 +73,9 @@
   # into this section.
   (final: prev: {
     bgutil-pot = final.callPackage ../derivations/bgutil-pot/default.nix { };
+    makemkv-flasher =
+      final.callPackage ../derivations/makemkv-flasher/default.nix
+        { };
     chronicle-proxy = final.callPackage ../derivations/chronicle-proxy.nix { };
     metube = final.callPackage ../derivations/metube/default.nix { };
     confluence-markdown-exporter =
