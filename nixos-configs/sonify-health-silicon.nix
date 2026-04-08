@@ -1,5 +1,18 @@
 { pkgs, ... }:
 {
+  environment.systemPackages = [ pkgs.alsa-utils ];
+
+  systemd.services.alsa-unmute = {
+    description = "Unmute ALSA master volume";
+    wantedBy = [ "sonify-health.service" ];
+    before = [ "sonify-health.service" ];
+    serviceConfig = {
+      Type = "oneshot";
+      RemainAfterExit = true;
+      ExecStart = "${pkgs.alsa-utils}/bin/amixer -D hw:0 sset Master 100% unmute";
+    };
+  };
+
   services.sonify-health = {
     enable = true;
     listen = "/run/sonify-health/sonify-health.sock";
