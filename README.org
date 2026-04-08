@@ -442,6 +442,8 @@ Two external steps remain outside of NixOS configuration:
 
 Secrets are managed via ~agenix~ and ~agenix-rekey~.
 
+*** Generating Secrets
+
 To generate secrets, and rekey them, use:
 
 #+begin_src sh :results none :exports code
@@ -452,6 +454,27 @@ This must be run by a human.  If you're not a human, ask the human to run it.
 
 If you must regenerate secrets, remove the base secret file, and then ask your
 human to run the above invocation.
+
+*** Wiring Secrets to Services
+
+To wire up a secret to a service, you need to populate the service's
+~LoadCredentials~ list with your secrets.  This creates a mapping of the secret
+from ~/run/agenix/<secret>~ to ~/run/credentials/%C/<secret>~, where ~%C~ is a
+magic variable for ~systemd~ to expand into the unit name.
+
+~LoadCredentials~ secrets cannot be read, even by root.
+
+If the service does not accept secret files, and filing a PR to change that
+seems implausible, look into adding an ~ExecStartPre~ which maps these over to
+environment variables.
+
+If environment variables cannot be supported, then look to
+[[./agenix/secret-template-file.nix]] which can generate arbitrary files which have
+secrets.  You will also need to setup a ~restartTriggers~ to include the secret,
+so changes to the secret provoke a restart of the service.
+
+There is also [[./agenix/environment-file-secret.nix]] if the service accepts an
+environment-file.
 
 ** Generations
 
