@@ -16,7 +16,6 @@
   services.sonify-health = {
     enable = true;
     logLevel = "debug";
-    listen = "/run/sonify-health/sonify-health.sock";
     heartbeat = {
       slot = 2;
       cycleDurationSecs = 14;
