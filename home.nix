@@ -16,6 +16,8 @@ let
   # openconnect-sso-src = builtins.fetchTarball "https://github.com/vlaci/openconnect-sso/archive/master.tar.gz";
 in
 {
+  # home-manager is ahead of nixpkgs to pick up Claude Code features.
+  home.enableNixpkgsReleaseCheck = false;
   imports = [
     ./home-configs/btop.nix
     ./home-configs/claude-code.nix
