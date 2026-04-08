@@ -267,7 +267,10 @@ in
         # Security hardening.
         PrivateTmp = true;
         ProtectSystem = "strict";
-        ProtectHome = true;
+        # read-only (not true) so MakeMKV can read ~/.MakeMKV/ for the beta
+        # key and AACS KEYDB.cfg.  ProtectHome=true hides /root entirely and
+        # ReadOnlyPaths does not override it.
+        ProtectHome = "read-only";
         NoNewPrivileges = true;
         ProtectKernelTunables = true;
         ProtectKernelModules = true;
