@@ -33,6 +33,7 @@ in
     ../nixos-modules/grafana.nix
     ../nixos-modules/makemkv-ripper.nix
     ../nixos-modules/makemkv-updater.nix
+    ../nixos-modules/makemkv-keydb-updater.nix
     ../nixos-configs/matrix-server.nix
     ../nixos-configs/nfs-mount-provider-from-facts.nix
     ../nixos-configs/openldap-facts.nix
@@ -324,6 +325,13 @@ in
 
   # Auto-update MakeMKV beta key monthly.
   services.makemkv-updater = {
+    enable = true;
+    user = "root";
+    group = "root";
+  };
+
+  # Auto-update MakeMKV AACS key database monthly.
+  services.makemkv-keydb-updater = {
     enable = true;
     user = "root";
     group = "root";
