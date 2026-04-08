@@ -1,5 +1,13 @@
-{ pkgs, ... }:
 {
+  config,
+  facts,
+  pkgs,
+  ...
+}:
+{
+  services.https.fqdns."silicon-sonify.${facts.network.domain}" = {
+    serviceNameForSocket = "sonify-health";
+  };
   environment.systemPackages = [ pkgs.alsa-utils ];
 
   systemd.services.alsa-unmute = {
@@ -16,6 +24,13 @@
   services.sonify-health = {
     enable = true;
     logLevel = "debug";
+    oidc = {
+      enable = true;
+      baseUrl = "https://silicon-sonify.${facts.network.domain}";
+      issuer = "https://authelia.${facts.network.domain}";
+      clientId = "silicon-sonify";
+      clientSecretFile = config.age.secrets.silicon-sonify-oidc-client-secret.path;
+    };
     heartbeat = {
       slot = 2;
       cycleDurationSecs = 14;

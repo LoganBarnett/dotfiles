@@ -1,8 +1,24 @@
-{ config, pkgs, ... }:
 {
+  config,
+  facts,
+  pkgs,
+  ...
+}:
+{
+  services.https.fqdns."titanium-sonify.${facts.network.domain}" = {
+    serviceNameForSocket = "sonify-health";
+  };
+
   services.sonify-health = {
     enable = true;
     logLevel = "debug";
+    oidc = {
+      enable = true;
+      baseUrl = "https://titanium-sonify.${facts.network.domain}";
+      issuer = "https://authelia.${facts.network.domain}";
+      clientId = "titanium-sonify";
+      clientSecretFile = config.age.secrets.titanium-sonify-oidc-client-secret.path;
+    };
     audioDevice = "CARD=PCH";
     heartbeat = {
       slot = 1;

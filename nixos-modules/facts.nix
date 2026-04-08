@@ -741,6 +741,20 @@
         tokenEndpointAuthMethod = "client_secret_basic";
       };
 
+      silicon-sonify = {
+        authentication = "oidc";
+        fqdn = "silicon-sonify.${domain}";
+        nixosService = "sonify-health";
+        groups = [ ];
+      };
+
+      titanium-sonify = {
+        authentication = "oidc";
+        fqdn = "titanium-sonify.${domain}";
+        nixosService = "sonify-health";
+        groups = [ ];
+      };
+
     };
 
     monitoring = {
