@@ -3,7 +3,6 @@
   services.sonify-health = {
     enable = true;
     logLevel = "debug";
-    listen = "/run/sonify-health/sonify-health.sock";
     audioDevice = "CARD=PCH";
     heartbeat = {
       slot = 1;
