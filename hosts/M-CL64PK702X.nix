@@ -300,7 +300,7 @@ in
     listen = "/var/run/sonify-health/sonify-health.sock";
     heartbeat = {
       slot = 0;
-      cycleDurationSecs = 8;
+      cycleDurationSecs = 14;
       checks = [
         {
           name = "internal";

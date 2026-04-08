@@ -6,7 +6,7 @@
     audioDevice = "CARD=PCH";
     heartbeat = {
       slot = 1;
-      cycleDurationSecs = 8;
+      cycleDurationSecs = 14;
       checks = [
         {
           name = "internal";
