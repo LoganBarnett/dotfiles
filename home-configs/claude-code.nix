@@ -568,6 +568,9 @@ in
         in the project root (or update the existing one) with org-mode TODO
         items covering every step needed to complete the request.
 
+        If the `tasks.org` file already exists and there are open tasks on it,
+        ask about each task one at a time.
+
         ## Planning phase
 
         1. Analyze the request and break it into discrete, committable units
