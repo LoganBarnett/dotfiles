@@ -114,7 +114,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     nix-hapi-provider-aruba-cx = {
-      url = "git+ssh://git@gitea.proton:2222/logan/nix-hapi-provider-aruba-cx.git";
+      url = "github:LoganBarnett/nix-hapi-provider-aruba-cx";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     nix-hapi-provider-ldap = {
@@ -222,7 +222,7 @@
     };
 
     sonify-health = {
-      url = "github:LoganBarnett/sonify-health";
+      url = "git+ssh://git@gitea.proton:2222/logan/sonify-health";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     sytter = {

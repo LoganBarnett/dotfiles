@@ -1347,15 +1347,15 @@
       "locked": {
         "lastModified": 1775108353,
         "narHash": "sha256-gxOoaTfpN9/Ay5P6s9pFFKuM+QxyNuxDoXpLEQ0mRfw=",
-        "ref": "refs/heads/main",
+        "owner": "LoganBarnett",
+        "repo": "nix-hapi-provider-aruba-cx",
         "rev": "1cefad948a886a86db590809c114f36501c403bc",
-        "revCount": 12,
-        "type": "git",
-        "url": "ssh://git@gitea.proton:2222/logan/nix-hapi-provider-aruba-cx.git"
+        "type": "github"
       },
       "original": {
-        "type": "git",
-        "url": "ssh://git@gitea.proton:2222/logan/nix-hapi-provider-aruba-cx.git"
+        "owner": "LoganBarnett",
+        "repo": "nix-hapi-provider-aruba-cx",
+        "type": "github"
       }
     },
     "nix-hapi-provider-ldap": {
@@ -2302,11 +2302,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1753745702,
-        "narHash": "sha256-CNaDiUFcV9VQJzAspfoY1yBbVsv2Jw0vjhE554eO0M8=",
+        "lastModified": 1775108795,
+        "narHash": "sha256-8bXPTfdxKNmq312DBS5pmq6xQFtARoaJ2wqi0h1BmS0=",
         "owner": "LoganBarnett",
         "repo": "openhab-flake",
-        "rev": "da8a8a9ec53f24e5bb7391c240b0aa29038872d4",
+        "rev": "e411408ca88d3acd724b7a186ea6255ea13fe1d5",
         "type": "github"
       },
       "original": {
@@ -2980,17 +2980,17 @@
         "rust-overlay": "rust-overlay_19"
       },
       "locked": {
-        "lastModified": 1775321314,
-        "narHash": "sha256-X7p0cc0Dwz1NIGSIM1sO7ijGjuqHUoB/7bqdXJ/rygA=",
-        "owner": "LoganBarnett",
-        "repo": "sonify-health",
-        "rev": "7e8e7980bd9a6c06cf047894ccbf4710aea9c672",
-        "type": "github"
+        "lastModified": 1775446365,
+        "narHash": "sha256-im/Lhd7GB6LeLdJz4z+zN0IQVyD9m/kEaR6C7BvzSp4=",
+        "ref": "refs/heads/main",
+        "rev": "767c6284bd0d224c4dfc5c9b8dffc54ca496bbb1",
+        "revCount": 47,
+        "type": "git",
+        "url": "ssh://git@gitea.proton:2222/logan/sonify-health"
       },
       "original": {
-        "owner": "LoganBarnett",
-        "repo": "sonify-health",
-        "type": "github"
+        "type": "git",
+        "url": "ssh://git@gitea.proton:2222/logan/sonify-health"
       }
     },
     "spectrum": {
