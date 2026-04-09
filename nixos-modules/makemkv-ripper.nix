@@ -46,6 +46,10 @@ let
       log "ERROR: $*" >&2
     }
 
+    unlock_tray() {
+      ${pkgs.util-linux}/bin/eject -i off "$DEVICE" 2>/dev/null || true
+    }
+
     # Verify device exists.
     if [[ ! -e "$DEVICE" ]]; then
       error "Device $DEVICE does not exist"
@@ -60,6 +64,7 @@ let
     if ! ${pkgs.makemkv}/bin/makemkvcon -r --cache=1 info "dev:$DEVICE" > "$TEMP_DIR/disc-info.txt" 2>&1; then
       error "Failed to query disc information"
       ${pkgs.coreutils}/bin/cat "$TEMP_DIR/disc-info.txt" >&2
+      unlock_tray
       exit 1
     fi
 
@@ -112,6 +117,7 @@ let
       ${pkgs.coreutils}/bin/cat "$TEMP_DIR/disc-info.txt" >&2
       log "=== rip.log ==="
       ${pkgs.coreutils}/bin/cat "$TEMP_DIR/rip.log" >&2
+      unlock_tray
       exit 1
     fi
 
@@ -121,6 +127,7 @@ let
 
     if [[ -z "$RIPPED_FILES" ]]; then
       error "No MKV files found after rip"
+      unlock_tray
       exit 1
     fi
 
