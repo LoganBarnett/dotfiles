@@ -182,9 +182,6 @@ in
     port."tcp:443" = {
       listening = true;
     };
-    # Confirm the reverse proxy is reachable from all interfaces, not
-    # only on one specific address.
-    command."tcp:443-wildcard-binding" = pkgs.lib.custom.gossWildcardPortCheck 443;
     # Check that the prometheus service is running.
     service.prometheus = {
       enabled = true;

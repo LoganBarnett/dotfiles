@@ -5,6 +5,7 @@
   config,
   host-id,
   lib,
+  pkgs,
   ...
 }:
 let
@@ -263,6 +264,18 @@ in
             };
           };
         }) serviceSocketFqdns
+      );
+
+      # Verify each domain-policy address is bound on port 443.  When no
+      # domain policies exist, uniqueAddrs is empty and no checks are
+      # generated.
+      services.goss.checks = mkMerge (
+        map (addr: {
+          command."tcp:443-bound-${builtins.replaceStrings [ "." ] [ "-" ] addr}" = {
+            exec = "${pkgs.iproute2}/bin/ss --tcp --listening --numeric --no-header | ${pkgs.gnugrep}/bin/grep --quiet --fixed-strings '${addr}:443'";
+            "exit-status" = 0;
+          };
+        }) uniqueAddrs
       );
 
       services.nginx = {

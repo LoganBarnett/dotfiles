@@ -84,18 +84,6 @@
               certs-acc.certs
             );
 
-          # Lifted from:
-          # https://gist.github.com/manveru/74eb41d850bc146b7e78c4cb059507e2
-          # Returns a goss command check value that passes when TCP port
-          # `port` is bound to a wildcard address — either the IPv4
-          # wildcard (0.0.0.0) or the IPv6 wildcard ([::]). Assign the
-          # return value to a `command.<name>` key in
-          # `services.goss.checks`.
-          gossWildcardPortCheck = port: {
-            exec = "${final.iproute2}/bin/ss --tcp --listening --numeric --no-header | ${final.gnugrep}/bin/grep --quiet --extended-regexp '(0[.]0[.]0[.]0|[[]::]):${toString port}'";
-            "exit-status" = 0;
-          };
-
           toBase64 =
             text:
             let

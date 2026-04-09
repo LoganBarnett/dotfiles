@@ -120,9 +120,13 @@ in
         let
           grp = if v.group != null then v.group else "root";
           exportGrp = if v.pgDatabase != null then "postgres" else "root";
+          # When a PG export is configured, the postgres user needs to
+          # traverse the volume root to reach exports/.  Grant o+x so
+          # postgres can descend without being able to list or read.
+          volMode = if v.pgDatabase != null then "0771" else "0770";
         in
         [
-          "d ${volPath name}                   0770 root ${grp}       -"
+          "d ${volPath name}                   ${volMode} root ${grp}       -"
           "f ${volPath name}/nfs-working-share 0555 root root         -"
           "d ${volPath name}/data              0770 root ${grp}       -"
           "d ${volPath name}/exports           0770 root ${exportGrp} -"
