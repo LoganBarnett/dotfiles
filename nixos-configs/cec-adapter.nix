@@ -10,29 +10,44 @@
 # The kernel CEC subsystem is still enabled for the i915 DRM driver, but the
 # pulse8_cec module and inputattach service are intentionally omitted.
 #
-# IMPORTANT: HDMI port number must match the physical TV port.
-# ============================================================
-# The Pulse-Eight adapter cannot auto-detect which HDMI port it is plugged
-# into.  It communicates with the host over USB serial (P8_USB protocol) and
-# has no access to the TV's EDID/DDC lines, so it relies on a manually
-# configured port number.  Kodi stores this in:
-#
-#   ~/.kodi/userdata/peripheral_data/usb_2548_1002_CEC_Adapter.xml
-#     <setting id="cec_hdmi_port" value="3"/>
-#
-# If this value doesn't match the actual TV HDMI port, the adapter announces
-# the wrong CEC physical address and the TV will not route remote control
-# commands to it.  Symptoms: CEC device registers in Kodi's log, the TV may
-# show the device name, but arrow keys and OK on the TV remote do nothing.
-#
-# To fix: change cec_hdmi_port in the XML above (or in Kodi's GUI under
-# System → Input → Peripherals → CEC Adapter) to match the TV port, then
-# restart Kodi.
+# HDMI port number: the adapter cannot auto-detect the physical TV port.
+# The port is declaratively set via services.kodi-standalone.peripheralSettings
+# below (defaulting to port 1).  Override cec_hdmi_port in the host config
+# to match the actual TV HDMI input.
 ################################################################################
 {
+  lib,
   pkgs,
   ...
 }:
+let
+  cecDefaults = lib.mapAttrs (_: lib.mkDefault) {
+    activate_source = "1";
+    button_release_delay_ms = "0";
+    button_repeat_rate_ms = "0";
+    cec_hdmi_port = "1";
+    cec_standby_screensaver = "0";
+    cec_wake_screensaver = "1";
+    connected_device = "36037";
+    device_name = "Kodi";
+    device_type = "36051";
+    double_tap_timeout_ms = "300";
+    enabled = "1";
+    pause_or_stop_playback_on_deactivate = "36045";
+    pause_playback_on_deactivate = "0";
+    physical_address = "ffff";
+    power_avr_on_as = "0";
+    send_inactive_source = "1";
+    standby_devices = "36037";
+    standby_devices_advanced = "";
+    standby_pc_on_tv_standby = "13011";
+    standby_tv_on_pc_standby = "1";
+    tv_vendor = "0";
+    use_tv_menu_language = "1";
+    wake_devices = "36037";
+    wake_devices_advanced = "";
+  };
+in
 {
   environment.systemPackages = [
     # cec-client — interactive CEC console and scanner.
@@ -44,4 +59,11 @@
   # /dev/ttyACM0 is owned by root:dialout.  The kodi user needs this group
   # to open the serial device.
   users.groups.dialout = { };
+
+  # Declarative CEC adapter settings.  Both files are managed because Kodi
+  # reads one keyed by USB VID:PID and one generic CEC fallback.
+  services.kodi-standalone.peripheralSettings = {
+    "usb_2548_1002_CEC_Adapter" = cecDefaults;
+    "cec_CEC_Adapter" = cecDefaults;
+  };
 }

@@ -106,6 +106,12 @@
     })
   ];
 
+  # CEC adapter is on HDMI port 3 of the Philips TV.
+  services.kodi-standalone.peripheralSettings = {
+    "usb_2548_1002_CEC_Adapter".cec_hdmi_port = "3";
+    "cec_CEC_Adapter".cec_hdmi_port = "3";
+  };
+
   # Additional packages useful for a media server.
   # kodi-media-player.nix registers "kodi-krypton" generically.  This
   # host additionally gets a location-specific alias for the living room.
