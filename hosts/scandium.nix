@@ -135,6 +135,7 @@ in
             pkg:
             builtins.elem (lib.getName pkg) [
               "claude-code"
+              "discord"
               "firefox-bin"
               "firefox"
               "firefox-bin-unwrapped"
