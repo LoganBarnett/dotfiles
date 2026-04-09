@@ -153,6 +153,11 @@
     "ntfs"
     "xfs"
   ];
+  # Install terminfo entries for all packaged terminal emulators so that
+  # programs like watch, htop, etc. work correctly over SSH regardless of
+  # which terminal the connecting user runs.
+  environment.enableAllTerminfo = true;
+
   environment.systemPackages = [
     # This gives us strings among other things.
     pkgs.binutils
