@@ -153,6 +153,7 @@ in
             ../home-configs/ssh-config-container-vm.nix
             flake-inputs.emacs-config.homeModules.ssh-config-emacs
             ../home-configs/ssh-config-proton.nix
+            ../home-configs/dasht.nix
             ../home-configs/tea.nix
           ];
           # Make machines write the code instead.  What could go wrong? :D
@@ -179,15 +180,10 @@ in
           enable = true;
           casks = [
             "alfred"
-            "dash"
-            "discord"
             # firefox managed via pkgs.firefox-bin overlay; see
             # overlays/firefox-bin.nix and static.nix.
             # "doxie"
-            "istat-menus"
-            "keycastr"
             # "openscad"
-            "prusaslicer"
             "steam"
             "ultimaker-cura"
             # "vlc"
@@ -214,11 +210,17 @@ in
             # build on macOS because Reasons.
             # pkgs.deadbeef
             (pkgs.callPackage ../derivations/dice-roller.nix { })
+            # Voice and text chat.  Moved from homebrew cask to nixpkgs.
+            pkgs.discord
             # Let us communicate with the Matrix chat protocol.
             pkgs.element-desktop
             # Download content from Fanbox.
             pkgs.fanbox-dl
             pkgs.firefox-bin
+            # System monitoring in the menu bar.  Moved from homebrew cask.
+            pkgs.istat-menus
+            # Open-source keystroke visualizer.  Moved from homebrew cask.
+            pkgs.keycastr
             pkgs.moonlight-qt
             # Drawing program (Like MS Paint, or more like Gimp/Photoshop?).
             # Linux-only though in Nix.  Probably due to problems with GTK that a
@@ -237,9 +239,8 @@ in
             # Download content from Pixiv.
             pkgs.pxder
             # A 3D printer slicer I really like.  It might work for resin printers
-            # but I know it best for its FFF/FDM support.
-            # pkgs.prusa-slicer
-            # (pkgs.prusa-slicer.override { boost = pkgs.boost179; })
+            # but I know it best for its FFF/FDM support.  Moved from homebrew cask.
+            pkgs.prusa-slicer
             # Yet another chat app.  I guess it's supposed to be secure, but I
             # assume anything going to the Internet is fundamentally insecure to
             # whomever receives it, and everyone in between.
