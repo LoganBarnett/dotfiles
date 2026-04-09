@@ -21,6 +21,7 @@
     emacs-config = {
       url = "github:LoganBarnett/emacs-config";
       inputs.nixpkgs.follows = "nixpkgs";
+      inputs.hyuqueue.follows = "hyuqueue";
     };
     # https://github.com/oddlama/agenix-rekey
     # Allows re-keying and bootstrapping of secrets used by agenix.
@@ -190,6 +191,10 @@
       # https://github.com/NixOS/nix/pull/13813
       url = "github:siraben/nix?ref=store-break-lock";
       # url = "github:nixos/nix?ref=2.24.11";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    hyuqueue = {
+      url = "github:LoganBarnett/hyuqueue";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     home-manager = {
