@@ -241,8 +241,9 @@ in
             # Download content from Pixiv.
             pkgs.pxder
             # A 3D printer slicer I really like.  It might work for resin printers
-            # but I know it best for its FFF/FDM support.  Moved from homebrew cask.
-            pkgs.prusa-slicer
+            # but I know it best for its FFF/FDM support.  Disabled: nixpkgs version
+            # pulls webkitgtk (broken on Darwin) and the overlay drifted too far.
+            # pkgs.prusa-slicer
             # Yet another chat app.  I guess it's supposed to be secure, but I
             # assume anything going to the Internet is fundamentally insecure to
             # whomever receives it, and everyone in between.
