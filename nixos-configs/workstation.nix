@@ -88,9 +88,6 @@ in
     # and weird build dependencies.  It supports various debugging options as
     # well.  See https://github.com/mark3labs/mcphost for details.
     mcphost
-    # Allow surgical edits to static/literal Nix files.  Great for doing things
-    # like bumping a version and hash automatically.
-    flake-inputs.nix-editor.packages.${system}.default
     npm-generate-package-lock-json
   ];
 
