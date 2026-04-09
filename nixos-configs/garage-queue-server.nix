@@ -32,6 +32,7 @@ in
       proxy_send_timeout 10m;
     '';
 
+  networking.dnsAliases = [ "ollama" ];
   services.garage-queue-server = {
     enable = true;
     nats.enable = true;
