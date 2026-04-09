@@ -108,6 +108,9 @@ let
       all \
       "$TEMP_DIR" 2>&1 | ${pkgs.coreutils}/bin/tee "$TEMP_DIR/rip.log"; then
       error "Rip failed"
+      log "=== disc-info.txt ==="
+      ${pkgs.coreutils}/bin/cat "$TEMP_DIR/disc-info.txt" >&2
+      log "=== rip.log ==="
       ${pkgs.coreutils}/bin/cat "$TEMP_DIR/rip.log" >&2
       exit 1
     fi
