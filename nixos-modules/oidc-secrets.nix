@@ -43,6 +43,7 @@ in
         ${credName name} = {
           generator.script = "hex";
           settings.length = 64;
+          shared = true;
         };
       }
     ) oidcServices

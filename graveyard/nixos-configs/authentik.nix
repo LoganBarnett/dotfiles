@@ -430,6 +430,7 @@ in
       value = {
         generator.script = "hex";
         settings.length = 60;
+        shared = true;
       };
     }) oidc-clients)
     // {
