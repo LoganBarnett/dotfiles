@@ -50,6 +50,15 @@
       meta.platforms = final.lib.platforms.unix;
     });
   })
+  # Hash mismatch: upstream re-published the zip with different contents.
+  (final: prev: {
+    istat-menus = prev.istat-menus.overrideAttrs (old: {
+      src = prev.fetchurl {
+        url = old.src.url;
+        hash = "sha256-oJApYp7ejtcMrm7CyeohV/euXYkJJ0yCRBW2i5AgcEE=";
+      };
+    });
+  })
   (final: prev: {
     dness = final.callPackage ../derivations/dness.nix { };
   })
