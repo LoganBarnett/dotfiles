@@ -112,8 +112,6 @@
   # Add kodi user to media-shared group (created by nfs-consumer-facts).
   users.users.${config.services.kodi-standalone.systemUser}.extraGroups = [
     "media-shared"
-    # Serial device access for USB CEC adapter (/dev/ttyACM0).
-    "dialout"
   ];
 
   # Pre-configure Kodi for the kodi user.
