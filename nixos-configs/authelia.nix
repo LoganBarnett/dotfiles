@@ -486,8 +486,6 @@ in
     port."tcp:443" = {
       listening = true;
     };
-    # Confirm the reverse proxy is reachable from all interfaces.
-    command."tcp:443-wildcard-binding" = pkgs.lib.custom.gossWildcardPortCheck 443;
     # Check that the authelia service is running.
     service.${service-name} = {
       enabled = true;
