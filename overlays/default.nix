@@ -26,7 +26,7 @@
   (import ./maven.nix)
   (import ./nightlight.nix)
   (import ./percol.nix)
-  (import ./prusa-slicer.nix)
+  # (import ./prusa-slicer.nix)
   # (import ./python-hatch-vcs-fix.nix)
   # (import ./tmux.nix)
   # Give us rust-docs.
