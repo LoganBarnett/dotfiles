@@ -56,6 +56,7 @@
     flake-inputs.garage-queue.nixosModules.server
     flake-inputs.garage-queue.nixosModules.worker
     flake-inputs.home-manager.nixosModules.home-manager
+    flake-inputs.hyuqueue.nixosModules.default
     flake-inputs.loku.nixosModules.default
     flake-inputs.nix-hapi.nixosModules.default
     flake-inputs.openhab-flake.nixosModules.default

@@ -67,6 +67,7 @@ in
     ./darwin-modules/goss-exporter.nix
     ./darwin-configs/proton-network.nix
     ./darwin-configs/optnix.nix
+    flake-inputs.hyuqueue.darwinModules.default
     flake-inputs.proc-siding.darwinModules.default
     flake-inputs.sonify-health.darwinModules.default
     ./nixos-modules/nix-flake-environment.nix
