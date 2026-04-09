@@ -9,6 +9,11 @@
   imports = [
     ../nixos-configs/pytorch-bin.nix
   ];
+  ##############################################################################
+  # Do not add networking.dnsAliases nor services.https.fqdns."ollama.proton"
+  # here.  This just gives us a local ollama.  We don't set up the alias nor the
+  # https here because this is handled via a garage-queue instance instead.
+  ##############################################################################
   services.ollama = {
     enable = true;
     loadModels = [ ];
