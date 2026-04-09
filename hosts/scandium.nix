@@ -137,6 +137,7 @@ in
               "claude-code"
               "discord"
               "firefox-bin"
+              "istat-menus"
               "firefox"
               "firefox-bin-unwrapped"
               "ngrok"
