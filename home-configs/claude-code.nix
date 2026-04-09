@@ -610,8 +610,6 @@ in
           continuing.
         - If an item is blocked, mark it `BLOCKED`, note the reason, and
           skip to the next unblocked item.
-        - When all items are `DONE`, remove `tasks.org` (it served its
-          purpose) and report completion.
       '';
     };
   };
