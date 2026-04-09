@@ -326,6 +326,7 @@ in
           home.file = lib.mapAttrs' (
             peripheralName: settings:
             lib.nameValuePair ".kodi/userdata/peripheral_data/${peripheralName}.xml" {
+              force = true;
               text = ''
                 <settings>
                     ${builtins.concatStringsSep "\n    " (
