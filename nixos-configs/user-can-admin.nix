@@ -165,6 +165,10 @@ in
     pkgs.lshw
     # Show network traffic and the associated processes.
     pkgs.nethogs
+    # Memory usage reporting that accounts for shared memory (PSS/USS).
+    # Shows real per-process memory instead of the inflated RSS numbers
+    # from top/htop.
+    pkgs.smem
     # Partition editing.
     pkgs.parted
     # Use for querying available hardware.  See also lshw.
