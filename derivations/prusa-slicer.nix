@@ -1,42 +1,44 @@
-{ stdenv
-, lib
-, binutils
-, fetchFromGitHub
-, fetchpatch
-, cmake
-, pkg-config
-, wrapGAppsHook3
-, boost
-, cereal
-, cgal
-, curl
-, darwin
-, dbus
-, eigen
-, expat
-, glew
-, glib
-, glib-networking
-, gmp
-, gtk3
-, hicolor-icon-theme
-, ilmbase
-, libpng
-, mpfr
-, nanosvg
-, nlopt
-, opencascade-occt_7_6
-, openvdb
-, pcre
-, qhull
-, tbb_2022
-, wxGTK32
-, xorg
-, libbgcode
-, heatshrink
-, catch2
-, withSystemd ? lib.meta.availableOn stdenv.hostPlatform systemd, systemd
-, wxGTK-override ? null
+{
+  stdenv,
+  lib,
+  binutils,
+  fetchFromGitHub,
+  fetchpatch,
+  cmake,
+  pkg-config,
+  wrapGAppsHook3,
+  boost,
+  cereal,
+  cgal_5,
+  curl,
+  darwin,
+  dbus,
+  eigen,
+  expat,
+  glew,
+  glib,
+  glib-networking,
+  gmp,
+  gtk3,
+  hicolor-icon-theme,
+  ilmbase,
+  libpng,
+  mpfr,
+  nanosvg,
+  nlopt,
+  opencascade-occt_7_6,
+  openvdb,
+  pcre,
+  qhull,
+  tbb_2022,
+  wxGTK32,
+  xorg,
+  libbgcode,
+  heatshrink,
+  catch2,
+  withSystemd ? lib.meta.availableOn stdenv.hostPlatform systemd,
+  systemd,
+  wxGTK-override ? null,
 }:
 let
   opencascade-occt = opencascade-occt_7_6;
@@ -65,7 +67,8 @@ let
     };
   });
   openvdb_tbb_2022 = openvdb;
-  wxGTK-override' = if wxGTK-override == null then wxGTK-prusa else wxGTK-override;
+  wxGTK-override' =
+    if wxGTK-override == null then wxGTK-prusa else wxGTK-override;
 
   patches = [
     (fetchpatch {
@@ -109,7 +112,7 @@ stdenv.mkDerivation (finalAttrs: {
     binutils
     boost
     cereal
-    cgal
+    cgal_5
     curl
     dbus
     eigen
@@ -135,7 +138,8 @@ stdenv.mkDerivation (finalAttrs: {
     libbgcode
     heatshrink
     catch2
-  ] ++ lib.optionals withSystemd [
+  ]
+  ++ lib.optionals withSystemd [
     systemd
   ];
 
@@ -215,13 +219,19 @@ stdenv.mkDerivation (finalAttrs: {
     runHook postCheck
   '';
 
-  meta = with lib; {
-    description = "G-code generator for 3D printer";
-    homepage = "https://github.com/prusa3d/PrusaSlicer";
-    license = licenses.agpl3Plus;
-    maintainers = with maintainers; [ tweber tmarkus ];
-    platforms = platforms.unix;
-  } // lib.optionalAttrs (stdenv.hostPlatform.isDarwin) {
-    mainProgram = "PrusaSlicer";
-  };
+  meta =
+    with lib;
+    {
+      description = "G-code generator for 3D printer";
+      homepage = "https://github.com/prusa3d/PrusaSlicer";
+      license = licenses.agpl3Plus;
+      maintainers = with maintainers; [
+        tweber
+        tmarkus
+      ];
+      platforms = platforms.unix;
+    }
+    // lib.optionalAttrs (stdenv.hostPlatform.isDarwin) {
+      mainProgram = "PrusaSlicer";
+    };
 })
