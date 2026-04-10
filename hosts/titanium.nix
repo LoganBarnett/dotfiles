@@ -1,4 +1,5 @@
 {
+  config,
   flake-inputs,
   host-id,
   modulesPath,
@@ -79,7 +80,7 @@
   services.garage-queue-worker.workers.ollama.settings.capabilities.scalars.vram_mb =
     12288;
   hardware.amdGpuCard.index = 1;
-  services.proc-siding.settings.detector.kind = "amd";
+  services.proc-siding.settings.detector_cmd = "${config.services.proc-siding.package}/share/proc-siding/detectors/amd-gpu.sh --exclude-unit ollama.service";
   environment.systemPackages = [
     # Let's be able to consume media.
     pkgs.ffmpeg

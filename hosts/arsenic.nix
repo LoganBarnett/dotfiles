@@ -2,6 +2,7 @@
 # arsenic is Kai's gaming computer.
 ##
 {
+  config,
   facts,
   flake-inputs,
   host-id,
@@ -103,5 +104,5 @@
   };
   services.garage-queue-worker.workers.ollama.settings.capabilities.scalars.vram_mb =
     8192;
-  services.proc-siding.settings.detector.kind = "nvidia";
+  services.proc-siding.settings.detector_cmd = "${config.services.proc-siding.package}/share/proc-siding/detectors/nvidia-gpu.sh --exclude-unit ollama.service";
 }
