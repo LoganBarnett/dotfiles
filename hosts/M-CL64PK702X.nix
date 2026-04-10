@@ -298,32 +298,220 @@ in
   services.sonify-health = {
     enable = true;
     logLevel = "debug";
-    heartbeat = {
-      slot = 0;
-      cycleDurationSecs = 14;
-      checks = [
-        {
-          name = "internal";
-          command = "${pkgs.fping}/bin/fping -q -t 4000 -r 1 192.168.254.254 192.168.254.9 silicon.proton";
-        }
-        {
-          name = "external";
-          command = "${pkgs.fping}/bin/fping -q -t 4000 -r 1 208.67.222.222 9.9.9.9 resolver1.opendns.com api.anthropic.com";
-        }
-        {
-          name = "vpn";
-          command = "${pkgs.fping}/bin/fping -q -t 4000 -r 1 10.210.16.247 10.210.16.191 idm01.mgmt.${work-alias}colo.pvt artifacts.americas.${work-alias}.pvt";
-        }
-      ];
+    patches = {
+      star-trek-ok = {
+        amplitude = 0.327;
+        attack_ms = 6.0;
+        brightness = 1.82;
+        chirp_ratio = 1.01;
+        crush = 0.0;
+        decay_ms = 0.0;
+        downsample = 0.0;
+        drive = 0.5;
+        duration = 0.22;
+        echo_delay = 0.32;
+        echo_mix = 0.33;
+        fm_depth = 0.0;
+        fm_ratio = 0.0;
+        freq = 4307.0;
+        gap = 0.0;
+        highpass = 0.0;
+        noise_mix = 0.0;
+        release_ms = 22.0;
+        resonance = 3.72;
+        reverb_mix = 0.89;
+        saw_ratio = 0.02;
+        sine_ratio = 2.37;
+        square_ratio = 0.0;
+        stereo_pan = -0.42;
+        sub_octave = 0.03;
+        sustain = 1.0;
+        tremolo_depth = 0.11;
+        tremolo_rate = 0.0;
+        tri_ratio = 1.22;
+        vibrato_depth = 0.49;
+        vibrato_rate = 0.0;
+      };
+      star-trek-error = {
+        amplitude = 0.54;
+        chirp_ratio = 0.8;
+        overrides = "star-trek-ok";
+      };
+      warpdrive-cpu-lo = {
+        amplitude = 1.0;
+        attack_ms = 5.0;
+        brightness = 0.2;
+        chirp_ratio = 1.0;
+        crush = 0.0;
+        decay_ms = 400.0;
+        downsample = 0.0;
+        drive = 0.01;
+        duration = 1.68;
+        echo_delay = 0.08;
+        echo_mix = 0.15;
+        fm_depth = 0.0;
+        fm_ratio = 0.0;
+        freq = 60.0;
+        gap = 0.0;
+        highpass = 0.0;
+        noise_mix = 1.0;
+        release_ms = 200.0;
+        resonance = 5.0;
+        reverb_mix = 0.25;
+        saw_ratio = 0.0;
+        sine_ratio = 0.0;
+        square_ratio = 0.0;
+        stereo_pan = 0.0;
+        sub_octave = 0.0;
+        sustain = 0.39;
+        tremolo_depth = 0.0;
+        tremolo_rate = 0.0;
+        tri_ratio = 0.0;
+        vibrato_depth = 0.0;
+        vibrato_rate = 0.0;
+      };
+      warpdrive-cpu-hi = {
+        gap = -1.64;
+        overrides = "warpdrive-cpu-lo";
+      };
     };
-    drone.metrics = [
+    heartbeats = [
+      {
+        name = "internal";
+        command = "${pkgs.fping}/bin/fping -q -t 4000 -r 1 192.168.254.254 192.168.254.9 silicon.proton";
+        resultMode = "exit-code";
+        cycleSecs = 15.0;
+        playback = "clock";
+        cycleOffsetSecs = 0.0;
+        notes = [
+          {
+            transition = {
+              type = "discrete";
+              states = [
+                {
+                  threshold = 0.5;
+                  patch = "star-trek-ok";
+                }
+                {
+                  threshold = 1.01;
+                  patch = "star-trek-error";
+                }
+              ];
+            };
+          }
+          {
+            offset = 0.2;
+            transition = {
+              type = "discrete";
+              states = [
+                {
+                  threshold = 0.5;
+                  patch = "star-trek-ok";
+                }
+                {
+                  threshold = 1.01;
+                  patch = "star-trek-error";
+                }
+              ];
+            };
+          }
+        ];
+      }
+      {
+        name = "external";
+        command = "${pkgs.fping}/bin/fping -q -t 4000 -r 1 208.67.222.222 9.9.9.9 resolver1.opendns.com api.anthropic.com";
+        resultMode = "exit-code";
+        cycleSecs = 15.0;
+        playback = "clock";
+        cycleOffsetSecs = 3.0;
+        notes = [
+          {
+            transition = {
+              type = "discrete";
+              states = [
+                {
+                  threshold = 0.5;
+                  patch = "star-trek-ok";
+                }
+                {
+                  threshold = 1.01;
+                  patch = "star-trek-error";
+                }
+              ];
+            };
+          }
+          {
+            offset = 0.2;
+            transition = {
+              type = "discrete";
+              states = [
+                {
+                  threshold = 0.5;
+                  patch = "star-trek-ok";
+                }
+                {
+                  threshold = 1.1;
+                  patch = "star-trek-error";
+                }
+              ];
+            };
+          }
+        ];
+      }
+      {
+        name = "vpn";
+        command = "${pkgs.fping}/bin/fping -q -t 4000 -r 1 10.210.16.247 10.210.16.191 idm01.mgmt.${work-alias}colo.pvt artifacts.americas.${work-alias}.pvt";
+        resultMode = "exit-code";
+        cycleSecs = 15.0;
+        playback = "clock";
+        cycleOffsetSecs = 6.0;
+        notes = [
+          {
+            transition = {
+              type = "discrete";
+              states = [
+                {
+                  threshold = 0.5;
+                  patch = "star-trek-ok";
+                }
+                {
+                  threshold = 1.01;
+                  patch = "star-trek-error";
+                }
+              ];
+            };
+          }
+        ];
+      }
       {
         name = "gpu";
         command = "${
           flake-inputs.metalps.packages.${system}.cli
         }/bin/metalps --json --interval-ms 500 | ${pkgs.jq}/bin/jq '[.processes[].gpu_percent] | add // 0 | . / 100'";
         resultMode = "stdout";
-        register = "low";
+        cycleSecs = 15.0;
+        playback = "loop";
+        cycleOffsetSecs = 0.0;
+        crossfadeMs = 42.0;
+        pollIntervalSecs = 5.0;
+        notes = [
+          {
+            volume = 1.0;
+            transition = {
+              type = "gradient";
+              patches = [
+                "warpdrive-cpu-lo"
+                "warpdrive-cpu-hi"
+              ];
+              segments = [
+                {
+                  strategy = "linear";
+                  intensity = 5.3;
+                }
+              ];
+            };
+          }
+        ];
       }
     ];
   };
