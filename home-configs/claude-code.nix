@@ -610,6 +610,7 @@ in
           continuing.
         - If an item is blocked, mark it `BLOCKED`, note the reason, and
           skip to the next unblocked item.
+        - Mark as done _before_ committing.
       '';
     };
   };
