@@ -325,27 +325,5 @@ in
   services.sonify-health = {
     enable = false;
     logLevel = "debug";
-    heartbeat = {
-      slot = 3;
-      cycleDurationSecs = 14;
-      checks = [
-        {
-          name = "internal";
-          command = "${pkgs.fping}/bin/fping -q -t 4000 -r 1 192.168.254.254 192.168.254.9 silicon.proton";
-        }
-        {
-          name = "external";
-          command = "${pkgs.fping}/bin/fping -q -t 4000 -r 1 208.67.222.222 9.9.9.9 resolver1.opendns.com api.anthropic.com";
-        }
-      ];
-    };
-    drone.metrics = [
-      {
-        name = "cpu";
-        command = "/usr/sbin/sysctl -n vm.loadavg | ${pkgs.gawk}/bin/awk '{gsub(/[{}]/,\"\"); nproc='\"$(/usr/sbin/sysctl -n hw.ncpu)\"'; printf \"%.2f\\n\", $1/nproc}'";
-        resultMode = "stdout";
-        register = "mid";
-      }
-    ];
   };
 }
