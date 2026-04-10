@@ -299,6 +299,11 @@
               ;
             disko-proper = flake-inputs.disko;
             lib-custom = import ./lib.nix;
+          }
+          # nixos-raspberrypi modules now expect the flake ref via specialArgs
+          # (since cdda49f).  Pass it through when available so RPi hosts work.
+          // flake-inputs.nixpkgs.lib.optionalAttrs (flake-inputs ? nixos-raspberrypi) {
+            inherit (flake-inputs) nixos-raspberrypi;
           };
           modules = [
             flake-inputs.home-manager.nixosModules.home-manager
