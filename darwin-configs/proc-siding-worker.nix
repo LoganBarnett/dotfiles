@@ -9,11 +9,7 @@
         hysteresis = 12;
         poll_interval_ms = 5000;
       };
-      detector.kind = "metal";
-      process_discovery = {
-        kind = "process_name";
-        pattern = "ollama";
-      };
+      detector_cmd = "${config.services.proc-siding.package}/share/proc-siding/detectors/metal-gpu.sh --exclude-pattern ollama";
       action = {
         kind = "http_post";
         pressure_url = "http://127.0.0.1:9091/control/pause";

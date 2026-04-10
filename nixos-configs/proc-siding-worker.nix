@@ -9,10 +9,7 @@
         hysteresis = 12;
         poll_interval_ms = 5000;
       };
-      process_discovery = {
-        kind = "systemd_unit";
-        unit = "ollama.service";
-      };
+      # detector_cmd is set per-host (GPU vendor varies).
       action = {
         kind = "http_post";
         pressure_url = "http://127.0.0.1:9091/control/pause";
