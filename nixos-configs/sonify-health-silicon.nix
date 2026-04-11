@@ -111,6 +111,8 @@
       };
       medbay-cpu-hi = {
         freq = 182.0;
+        resonance = 1.8;
+        brightness = 0.3;
         overrides = "medbay-cpu-lo";
       };
     };
