@@ -118,7 +118,13 @@ in
       mapAttrsToList (
         name: v:
         let
-          grp = if v.group != null then v.group else "root";
+          grp =
+            if v.group != null then
+              v.group
+            else if v.pgDatabase != null then
+              "postgres"
+            else
+              "root";
           exportGrp = if v.pgDatabase != null then "postgres" else "root";
         in
         [
