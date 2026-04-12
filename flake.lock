@@ -3154,11 +3154,11 @@
         "rust-overlay": "rust-overlay_20"
       },
       "locked": {
-        "lastModified": 1775873909,
-        "narHash": "sha256-Ms3o7l9SfyjYyOfR9aPscdmVxrpclt3ng8YyvNKLYjY=",
+        "lastModified": 1777791163,
+        "narHash": "sha256-ksjQTeftnghW4ZOQ4yQGxd+jZyOXWpe7KXJxXc6xP2s=",
         "owner": "LoganBarnett",
         "repo": "sonify-health",
-        "rev": "42b8b9bd306ce95f434a510a2e56cb6bc6343e8e",
+        "rev": "599515c11098c61b83441f385b32c93b4dabb08d",
         "type": "github"
       },
       "original": {
