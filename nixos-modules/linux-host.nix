@@ -17,6 +17,7 @@
     publicKey = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDMvereFiYoq2bHjtLiEkTL+peEXZXAUIhZES1kf2xsxEav43NCJ+uiRePzPom2YpfdxNss9f61SL505zQNwVxwBAgl4u+mFnMa0OxLZQaJjOxO3Q8KeEJBWD2HZZZWXwevk73M1Ww/zezK+sUnUrvjHp5yVS0vogsWN/rLgQybz0WhcTkMVcC+tNbiZyeGiyGpvwNzvlxXt/JqFD5L26erpJiJuGmDwyb83l87AuzlzksRYeoRQzH0fK8i61Dk0d3r2doBM/M5fWQja+Ve/mFYgB2YgPFZZ+pcWWimwe6BaMP4+0lBiIeg5hFRgzRpuJV8f9b3HFUPyxGonbAQ2PNB4BZeVIY/vyvrMjzJnQUuVrYMqMPE3mwU+Yu2ILl/D3fhDm2RZAsoSfK22jVlz8uxggcDtVTXAXDgqx4+NPKkO2XINNw/YsGFCiqhQ2kISpde6Ep4HdHsoAxbbrZRXzYC9N63mNAEMDpVIt20c5Gq7eRcWuBI42AHZo1kcyHI7JZidhb7WQctREVhtDGdd4ypT2CROcFZZcaxYlEl0xAbXaHr1hk8DNvkxZgPQ28b7GxmM/Yl/8xZ05loI9UlXpe++ND4sgQxfe3tSwrvz/haKN3qoDrzbApiGDvoB5OJFMKY7PDTariWTOkBGudJ2VulKjZ6SO3pFfVJ/vpejF0UnQ==";
   };
   imports = [
+    ../nixos-configs/audio.nix
     ../nixos-configs/journalctl-iso8601.nix
     {
       networking.domain = facts.network.domain;
