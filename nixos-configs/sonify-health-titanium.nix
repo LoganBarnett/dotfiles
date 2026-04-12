@@ -19,7 +19,11 @@
       clientId = "titanium-sonify";
       clientSecretFile = config.age.secrets.titanium-sonify-oidc-client-secret.path;
     };
-    audioDevice = "CARD=PCH";
+    # Use plughw: (direct hardware with format conversion) instead of
+    # relying on ALSA hint enumeration, which routes through dmix.
+    # dmix's MMAP mixing loop silently fails on this snd_hda_intel
+    # device, resulting in appl_ptr stuck at 0 (silence).
+    audioDevice = "plughw:CARD=0";
     patches = {
       reactor-ok = {
         amplitude = 0.327;
