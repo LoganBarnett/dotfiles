@@ -38,8 +38,9 @@
         # wed = weekday;
         # thu = weekday;
         # fri = weekday;
-        sat = weekend;
-        sun = weekend;
+        # Help out around the house.
+        # sat = weekend;
+        # sun = weekend;
       };
   };
   # Nothing to do here yet.
