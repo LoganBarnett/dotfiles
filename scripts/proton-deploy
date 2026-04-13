@@ -33,29 +33,22 @@ shift 2
 deploy_type=$(nix eval --raw ".#hostSystems.\"${host}\"")
 
 if [ "$deploy_type" = "darwin" ]; then
-  # darwin-rebuild does not support --target-host (PR #1631 pending upstream),
-  # so we build the system derivation locally, copy the closure to the remote
-  # host, and run its activate script over SSH.
+  # darwin-rebuild does not support --target-host (PR #1631 pending upstream).
+  # Instead, archive the flake and all its locked inputs to the remote store
+  # (source trees are content-addressed, so no store-signing issues), then run
+  # darwin-rebuild on the remote against the archived flake.  This reuses the
+  # host's existing sudo rule for darwin-rebuild.
   if [ "$verb" != "switch" ]; then
     echo "error: darwin hosts only support the 'switch' verb (got '$verb')" >&2
     exit 1
   fi
-  # Evaluate locally to get the derivation path, then copy the derivation
-  # (recipe, not built output) to the remote and build there.  This mirrors
-  # the NixOS path's --build-host behavior and avoids store-signing issues
-  # that arise when pushing locally-built outputs.
-  echo "Evaluating darwin configuration for $host..." >&2
-  drv=$(nix path-info --derivation ".#darwinConfigurations.${host}.system" \
-    --accept-flake-config)
-  echo "Copying derivation to $host.proton..." >&2
-  nix copy --derivation --to "ssh-ng://${host}.proton" "$drv"
-  echo "Building on $host.proton..." >&2
+  echo "Archiving flake to $host.proton..." >&2
+  flake_path=$(nix flake archive --to "ssh-ng://${host}.proton" --json \
+    | jq -r '.path')
+  echo "Building and activating on $host.proton..." >&2
   # shellcheck disable=SC2029
-  system=$(ssh "$host.proton" nix build "$drv" \
-    --no-link --print-out-paths --accept-flake-config)
-  echo "Activating on $host.proton..." >&2
-  # shellcheck disable=SC2029
-  ssh "$host.proton" sudo "$system/activate"
+  ssh "$host.proton" sudo darwin-rebuild switch \
+    --flake "${flake_path}#${host}"
 else
   # --fast is the same as --no-build-nix which is "useful you call nixos-rebuild
   # frequently" but it also makes the difference between working and not working.
