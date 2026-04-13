@@ -1,0 +1,73 @@
+#!/usr/bin/env bash
+
+################################################################################
+# Updates static.nix with the latest Discord version and hashes.
+#
+# Discord has separate version tracks for macOS and Linux.  Both are resolved
+# from the download redirect URL and prefetched independently.
+################################################################################
+
+set -euo pipefail
+
+update_platform() {
+  local platform="$1" url="$2" name="$3" key_prefix="$4"
+  local format="${5:-}"
+
+  echo "==> ${platform}"
+
+  local location
+  location="$(curl --silent --head --location "$url" \
+    | grep -i '^location:' \
+    | tail -1 \
+    | tr -d $'\r'
+  )"
+
+  local version
+  version="$(echo "$location" | sed 's|.*/apps/[^/]*/\([^/]*\)/.*|\1|')"
+
+  if [[ -z "$version" ]]; then
+    echo "ERROR: Could not determine latest ${platform} version" >&2
+    exit 1
+  fi
+
+  echo "  Version: ${version}"
+
+  local download_url
+  download_url="$(echo "$location" | sed 's|^location: *||i')"
+
+  local hash_32
+  hash_32="$(nix-prefetch-url --type sha256 --name "$name" "$download_url")"
+  local hash_sri
+  hash_sri="$(nix hash convert --hash-algo sha256 --to sri "$hash_32")"
+
+  echo "  Hash: ${hash_sri}"
+
+  nix-editor \
+    static.nix \
+    "${key_prefix}.version" \
+    --val "\"$version\"" \
+    --inplace
+
+  # shellcheck disable=SC2086
+  nix-editor \
+    static.nix \
+    "${key_prefix}.hash" \
+    --val "\"$hash_sri\"" \
+    --inplace \
+    $format
+}
+
+update_platform \
+  "Darwin" \
+  "https://discord.com/api/download?platform=osx" \
+  "Discord.dmg" \
+  "discord.darwin"
+
+update_platform \
+  "Linux" \
+  "https://discord.com/api/download?platform=linux&format=tar.gz" \
+  "discord-linux.tar.gz" \
+  "discord.linux" \
+  "--format"
+
+echo "Updated static.nix successfully"

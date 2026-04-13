@@ -10,6 +10,17 @@
 ################################################################################
 {
 
+  discord = {
+    darwin = {
+      version = "0.0.384";
+      hash = "sha256-vAp991ilLVviievPZHGFuyi/zMMpDoApjnNTGkXYbwo=";
+    };
+    linux = {
+      version = "0.0.132";
+      hash = "sha256-DDt/zr+9sfvyPYUMKCXqEsRvk7wZaxbw2eCWlwxcVec=";
+    };
+  };
+
   claude-code = {
     version = "2.1.59";
     hash = "sha256-Dam9aJ0qBdqU40ACfzGQHuytW6ur0fMLm8D5fIKd1TE=";
