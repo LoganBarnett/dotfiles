@@ -1,5 +1,6 @@
 {
   nixos-rebuild,
+  openssh,
   writeShellApplication,
 }:
 let
@@ -16,6 +17,9 @@ let
 in
 writeShellApplication {
   name = "proton-deploy";
-  runtimeInputs = [ patched-nixos-rebuild ];
+  runtimeInputs = [
+    openssh
+    patched-nixos-rebuild
+  ];
   text = builtins.readFile ../scripts/proton-deploy;
 }

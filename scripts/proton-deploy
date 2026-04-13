@@ -26,20 +26,45 @@ verb="$1"
 host="$2"
 shift 2
 
-# --fast is the same as --no-build-nix which is "useful you call nixos-rebuild
-# frequently" but it also makes the difference between working and not working.
-# In this case if `--fast` is omitted, we see:
-# /nix/store/f12m00gy5s976qm6p4xmcv8mkvc24an3-nixos-rebuild/bin/nixos-rebuild: line 432: /nix/store/ssqdazslv2wjpybnk0pjwnpq0dfpa6q2-coreutils-9.5/bin/mktemp: cannot execute binary file: Exec format error
-# See
-# https://discourse.nixos.org/t/deploy-nixos-configurations-on-other-machines/22940/23
-# for more oddities on the topic.
-nixos-rebuild \
-  "$verb" \
-  --flake '.#'"$host" \
-  --target-host "$host.proton" \
-  --build-host "$host.proton" \
-  --use-remote-sudo \
-  --use-substitutes \
-  --accept-flake-config \
-  --fast \
-  "$@"
+# Look up the deploy type for this host from the flake's hostSystems output.
+# This maps every host identifier to "darwin" or "nixos" without evaluating any
+# full system configuration.  Let errors propagate (set -e) so misconfiguration
+# is visible instead of silently falling through to the wrong deploy path.
+deploy_type=$(nix eval --raw ".#hostSystems.\"${host}\"")
+
+if [ "$deploy_type" = "darwin" ]; then
+  # darwin-rebuild does not support --target-host (PR #1631 pending upstream),
+  # so we build the system derivation locally, copy the closure to the remote
+  # host, and run its activate script over SSH.
+  if [ "$verb" != "switch" ]; then
+    echo "error: darwin hosts only support the 'switch' verb (got '$verb')" >&2
+    exit 1
+  fi
+  echo "Building darwin configuration for $host..." >&2
+  system=$(nix build ".#darwinConfigurations.${host}.system" \
+    --no-link --print-out-paths --accept-flake-config)
+  echo "Copying closure to $host.proton..." >&2
+  nix copy --to "ssh-ng://${host}.proton" \
+    --substitute-on-destination "$system"
+  echo "Activating on $host.proton..." >&2
+  # shellcheck disable=SC2029
+  ssh "$host.proton" sudo "$system/activate"
+else
+  # --fast is the same as --no-build-nix which is "useful you call nixos-rebuild
+  # frequently" but it also makes the difference between working and not working.
+  # In this case if `--fast` is omitted, we see:
+  # /nix/store/f12m00gy5s976qm6p4xmcv8mkvc24an3-nixos-rebuild/bin/nixos-rebuild: line 432: /nix/store/ssqdazslv2wjpybnk0pjwnpq0dfpa6q2-coreutils-9.5/bin/mktemp: cannot execute binary file: Exec format error
+  # See
+  # https://discourse.nixos.org/t/deploy-nixos-configurations-on-other-machines/22940/23
+  # for more oddities on the topic.
+  nixos-rebuild \
+    "$verb" \
+    --flake '.#'"$host" \
+    --target-host "$host.proton" \
+    --build-host "$host.proton" \
+    --use-remote-sudo \
+    --use-substitutes \
+    --accept-flake-config \
+    --fast \
+    "$@"
+fi
