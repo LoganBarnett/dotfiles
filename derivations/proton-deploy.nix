@@ -1,4 +1,5 @@
 {
+  jq,
   nixos-rebuild,
   openssh,
   writeShellApplication,
@@ -18,6 +19,7 @@ in
 writeShellApplication {
   name = "proton-deploy";
   runtimeInputs = [
+    jq
     openssh
     patched-nixos-rebuild
   ];
