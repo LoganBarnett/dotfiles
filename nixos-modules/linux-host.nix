@@ -106,6 +106,7 @@
     ../nixos-modules/goss-checks.nix
     ../nixos-modules/nix-flake-environment.nix
     ../nixos-modules/optical-drive.nix
+    ../nixos-modules/terminal-kiosk.nix
     ../nixos-configs/nix-store-optimize.nix
     ../nixos-configs/restic-shim.nix
     # Haven't gotten this working yet.
