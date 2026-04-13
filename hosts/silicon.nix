@@ -337,6 +337,17 @@ in
     group = "root";
   };
 
+  # Terminal kiosk on tty1 — shows btop on a dedicated monitor.
+  services.terminal-kiosk = {
+    enable = true;
+    programs = [
+      {
+        name = "btop";
+        command = "${pkgs.btop}/bin/btop";
+      }
+    ];
+  };
+
   # Silicon provides builds to other hosts, so it should not consume builds
   # from itself.  Override the nix-builder-consume module imported by
   # linux-host.nix to prevent self-referential build loops.
