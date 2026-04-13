@@ -17,12 +17,6 @@
   networking.dnsAliases = [ "ollama" ];
   services.garage-queue-server = {
     enable = true;
-    nats.enable = true;
     queues.ollama.integrations.ollama.enable = true;
-    settings.server = {
-      # host and port are managed by the Nix module's top-level options
-      # (socket mode by default).  Only nats_url needs to be here.
-      nats_url = "nats://127.0.0.1:4222";
-    };
   };
 }
