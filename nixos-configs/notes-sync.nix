@@ -76,9 +76,8 @@ in
         ''
           ${script}/bin/notes-sync
         '';
-      # Ensure these get captured.  We were observing stderr not getting logged.
       StandardOutput = "journal";
-      StandardError = "journal+console";
+      StandardError = "journal";
       Type = "oneshot";
       # TODO: Make this less sloppy.
       User = "nextcloud";
