@@ -40,12 +40,19 @@ if [ "$deploy_type" = "darwin" ]; then
     echo "error: darwin hosts only support the 'switch' verb (got '$verb')" >&2
     exit 1
   fi
-  echo "Building darwin configuration for $host..." >&2
-  system=$(nix build ".#darwinConfigurations.${host}.system" \
+  # Evaluate locally to get the derivation path, then copy the derivation
+  # (recipe, not built output) to the remote and build there.  This mirrors
+  # the NixOS path's --build-host behavior and avoids store-signing issues
+  # that arise when pushing locally-built outputs.
+  echo "Evaluating darwin configuration for $host..." >&2
+  drv=$(nix path-info --derivation ".#darwinConfigurations.${host}.system" \
+    --accept-flake-config)
+  echo "Copying derivation to $host.proton..." >&2
+  nix copy --derivation --to "ssh-ng://${host}.proton" "$drv"
+  echo "Building on $host.proton..." >&2
+  # shellcheck disable=SC2029
+  system=$(ssh "$host.proton" nix build "$drv" \
     --no-link --print-out-paths --accept-flake-config)
-  echo "Copying closure to $host.proton..." >&2
-  nix copy --to "ssh-ng://${host}.proton" \
-    --substitute-on-destination "$system"
   echo "Activating on $host.proton..." >&2
   # shellcheck disable=SC2029
   ssh "$host.proton" sudo "$system/activate"
