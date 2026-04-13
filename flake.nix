@@ -73,7 +73,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     hash-color = {
-      url = "github:LoganBarnett/hash-color";
+      url = "github:LoganBarnett/hash-color?ref=main";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 

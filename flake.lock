@@ -1128,6 +1128,7 @@
       },
       "original": {
         "owner": "LoganBarnett",
+        "ref": "main",
         "repo": "hash-color",
         "type": "github"
       }
