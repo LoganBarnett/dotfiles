@@ -170,7 +170,7 @@ in
 
     # Autologin the kiosk user on the designated TTY.
     systemd.services."getty@tty${toString cfg.tty}" = {
-      overrideStrategy = "asDropIn";
+      overrideStrategy = "asDropin";
       serviceConfig = {
         ExecStart = [
           # Clear the inherited ExecStart before setting a new one.
