@@ -50,8 +50,6 @@ echo "BIN Hash: ${hash_bin_sri}"
 echo ""
 
 # Update static.nix using nix-editor.
-cd "$(dirname "$0")/.."
-
 nix-editor \
   static.nix \
   'makemkv.version' \

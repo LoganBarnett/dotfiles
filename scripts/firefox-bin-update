@@ -27,8 +27,6 @@ hash_sri="$(nix hash convert --hash-algo sha256 --to sri "${hash_32}")"
 
 echo "Hash: ${hash_sri}"
 
-cd "$(dirname "$0")/.."
-
 nix-editor \
   static.nix \
   'firefox-bin.version' \
