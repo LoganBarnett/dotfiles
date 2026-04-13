@@ -53,6 +53,91 @@ let
   # because they require the package.json and package-lock.json files to be
   # readily available.
   github-copilot-cli = pkgs.callPackage ../derivations/github-copilot-cli.nix { };
+  # nix-editor upstream uses cargoLock.lockFile which produces a dangling
+  # Cargo.lock symlink in cargo-vendor-dir under Nix >= 2.33.  Rebuild from
+  # the flake input source using cargoHash until upstream fixes it.
+  nix-editor = pkgs.rustPlatform.buildRustPackage {
+    pname = "nix-editor";
+    version = "0.3.0";
+    src = flake-inputs.nix-editor;
+    cargoHash = "sha256-t9QkcRY3viyuDuzxVxT/jWUJ4YPN1riLK9pRK4CRkpo=";
+  };
+  signal-desktop-update = pkgs.writeShellApplication {
+    name = "signal-desktop-update";
+    text = builtins.readFile ../scripts/signal-desktop-update;
+    runtimeInputs = [
+      nix-editor
+      pkgs.curl
+      pkgs.jq
+      pkgs.nix
+    ];
+  };
+  firefox-bin-update = pkgs.writeShellApplication {
+    name = "firefox-bin-update";
+    text = builtins.readFile ../scripts/firefox-bin-update;
+    runtimeInputs = [
+      nix-editor
+      pkgs.curl
+      pkgs.jq
+      pkgs.nix
+    ];
+  };
+  yt-dlp-update = pkgs.writeShellApplication {
+    name = "yt-dlp-update";
+    text = builtins.readFile ../scripts/yt-dlp-update;
+    runtimeInputs = [
+      nix-editor
+      pkgs.curl
+      pkgs.jq
+      pkgs.nix
+    ];
+  };
+  zoom-us-update = pkgs.writeShellApplication {
+    name = "zoom-us-update";
+    text = builtins.readFile ../scripts/zoom-us-update;
+    runtimeInputs = [
+      nix-editor
+      pkgs.curl
+      pkgs.gnugrep
+      pkgs.gnused
+      pkgs.coreutils
+      pkgs.nix
+    ];
+  };
+  bgutil-pot-update = pkgs.writeShellApplication {
+    name = "bgutil-pot-update";
+    text = builtins.readFile ../scripts/bgutil-pot-update;
+    runtimeInputs = [
+      nix-editor
+      pkgs.curl
+      pkgs.jq
+      pkgs.nix
+    ];
+  };
+  makemkv-update = pkgs.writeShellApplication {
+    name = "makemkv-update";
+    text = builtins.readFile ../scripts/makemkv-update;
+    runtimeInputs = [
+      nix-editor
+      pkgs.curl
+      pkgs.gnugrep
+      pkgs.coreutils
+      pkgs.nix
+    ];
+  };
+  claude-code-update = pkgs.writeShellApplication {
+    name = "claude-code-update";
+    text = builtins.readFile ../scripts/claude-code-update;
+    runtimeInputs = [
+      nix-editor
+      pkgs.curl
+      pkgs.jq
+      pkgs.coreutils
+      pkgs.gnutar
+      pkgs.nix
+      pkgs.nodejs
+    ];
+  };
 in
 {
 
@@ -88,7 +173,17 @@ in
     # and weird build dependencies.  It supports various debugging options as
     # well.  See https://github.com/mark3labs/mcphost for details.
     mcphost
+    # Allow surgical edits to static/literal Nix files.  Great for doing things
+    # like bumping a version and hash automatically.
+    nix-editor
     npm-generate-package-lock-json
+    signal-desktop-update
+    firefox-bin-update
+    yt-dlp-update
+    zoom-us-update
+    bgutil-pot-update
+    makemkv-update
+    claude-code-update
   ];
 
 }

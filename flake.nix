@@ -106,8 +106,11 @@
     };
     # Allow surgical edits to static/literal Nix files.  Great for doing things
     # like bumping a version and hash automatically.
+    # Pinned to b5017f8d (last known-good revision).  The upstream
+    # cargoLock.lockFile derivation produces a dangling Cargo.lock symlink
+    # under Nix >= 2.33; workstation.nix rebuilds from source with cargoHash.
     nix-editor = {
-      url = "github:snowfallorg/nix-editor";
+      url = "github:snowfallorg/nix-editor/b5017f8d61753ce6a3a1a2aa7e474d59146a8ae3";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     nix-hapi = {
