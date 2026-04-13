@@ -13,7 +13,7 @@ version="$(curl --location --silent \
 )"
 hash_32="$(nix-prefetch-url \
   --type sha256 \
-  --name signal-desktop-bin-${version//./-} \
+  --name "signal-desktop-bin-${version//./-}" \
   "https://updates.signal.org/desktop/signal-desktop-mac-universal-${version#v}.dmg"
 )"
 hash_sri="$(nix hash convert --hash-algo sha256 --to sri "${hash_32}")"
