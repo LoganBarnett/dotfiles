@@ -417,6 +417,7 @@
             pkgs.callPackage ./derivations/nix-host-key-install.nix
               { };
           gnused-wrapper = pkgs.callPackage ./derivations/gnused-wrapper.nix { };
+          proton-deploy = pkgs.callPackage ./derivations/proton-deploy.nix { };
           sonification-test =
             pkgs.callPackage ./derivations/sonification-test/default.nix
               { };
@@ -438,6 +439,7 @@
               # wrapper wins because mkShell prepends packages before stdenv
               # tools.
               gnused-wrapper
+              proton-deploy
               sonification-test
               pkgs.just
               pkgs.nixfmt-rfc-style
