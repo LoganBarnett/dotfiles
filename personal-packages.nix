@@ -115,8 +115,8 @@
   # I could install this, but on macOS it's actually podman-remote. This is
   # not useful to me.
   # pkgs.podman
-  # Deploy things in my network.
-  (pkgs.callPackage ./derivations/proton-deploy.nix { })
+  # proton-deploy lives in the flake devShell — it's only needed when
+  # actively deploying from the repo working directory.
   # (pkgs.python2.withPackages (ps: [
   # Run Windows programs (sometimes even I need this).
 
