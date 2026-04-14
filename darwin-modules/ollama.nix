@@ -85,6 +85,7 @@ in
 
     system.activationScripts.postActivation.text = ''
       mkdir --parents /var/log/ollama
+      chown "$(stat -f '%Su' /dev/console)" /var/log/ollama
       chmod 755 /var/log/ollama
     '';
 
