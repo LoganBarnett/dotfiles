@@ -14,6 +14,15 @@
   # here.  This just gives us a local ollama.  We don't set up the alias nor the
   # https here because this is handled via a garage-queue instance instead.
   ##############################################################################
+  # Liveness check — confirm Ollama is running and responding to HTTP
+  # requests.  Catches process-down or wedged-startup failures that
+  # surface in Grafana's Service Health panels via Prometheus.
+  services.goss.checks.http."http://localhost:${toString config.services.ollama.port}/api/tags" =
+    {
+      status = 200;
+      timeout = 5000;
+    };
+
   services.ollama = {
     enable = true;
     loadModels = [ ];

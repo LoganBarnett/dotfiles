@@ -83,6 +83,15 @@ in
   config = lib.mkIf cfg.enable {
     environment.systemPackages = [ cfg.package ];
 
+    # Liveness check — confirm Ollama is running and responding to HTTP
+    # requests.  This catches the process-completely-down case that the GPU
+    # eviction check (goss-ollama-metal-gpu.nix) cannot detect because it
+    # passes when no models are loaded.
+    services.goss.checks.http."http://localhost:${toString cfg.port}/api/tags" = {
+      status = 200;
+      timeout = 5000;
+    };
+
     system.activationScripts.postActivation.text = ''
       mkdir --parents /var/log/ollama
       chown "$(/usr/bin/stat -f '%Su' /dev/console)" /var/log/ollama
