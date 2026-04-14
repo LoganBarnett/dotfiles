@@ -5,6 +5,9 @@
 # wrapper script.  The wrapper launches a configured program (e.g. btop),
 # and when it exits shows a countdown with TTY-switch instructions before
 # restarting.  No usable shell is ever exposed.
+#
+# Enables kmscon on all VTs for truecolor and Nerd Font glyph support.
+# Only the kiosk TTY auto-logs in; other VTs show a normal login prompt.
 ################################################################################
 {
   config,
@@ -19,6 +22,7 @@ let
     mkOption
     ;
   cfg = config.services.terminal-kiosk;
+  kmsconCfg = config.services.kmscon;
   programCount = builtins.length cfg.programs;
   runtimeDeps = [
     pkgs.ncurses # tput / clear
@@ -26,10 +30,24 @@ let
   ++ lib.optionals (programCount > 1) [
     pkgs.dialog
   ];
+  # Build a kmscon config directory that mirrors the global kmscon settings.
+  # We need our own copy so we can override ExecStart for autologin on just
+  # the kiosk TTY while keeping the same font/rendering configuration.
+  kioskKmsconConfig = pkgs.writeTextDir "kmscon.conf" (
+    lib.concatStringsSep "\n" (
+      lib.optionals (kmsconCfg.fonts != null) (
+        map (f: "font-name=${f.name}") kmsconCfg.fonts
+      )
+      ++ [ kmsconCfg.extraConfig ]
+    )
+  );
   wrapperScript = pkgs.writeShellApplication {
     name = "terminal-kiosk-shell";
     runtimeInputs = runtimeDeps;
     text = ''
+      # Advertise truecolor support so programs like btop use 24-bit color.
+      export COLORTERM=truecolor
+
       # Disable job-control signals so the user cannot escape to a shell.
       trap "" TSTP QUIT
 
@@ -168,16 +186,43 @@ in
     # Register the wrapper as a valid login shell.
     environment.shells = [ "${wrapperScript}/bin/terminal-kiosk-shell" ];
 
-    # Autologin the kiosk user on the designated TTY.
-    systemd.services."getty@tty${toString cfg.tty}" = {
+    # Use kmscon for truecolor and TTF font support on all VTs.
+    services.kmscon = {
+      enable = true;
+      hwRender = true;
+      fonts = [
+        {
+          name = "JetBrainsMono Nerd Font";
+          package = pkgs.nerd-fonts.jetbrains-mono;
+        }
+      ];
+      extraConfig = "font-size=14";
+      extraOptions = "--term xterm-256color";
+    };
+
+    # Override the kmscon VT on the kiosk TTY to autologin.  Other TTYs
+    # use the unmodified kmsconvt@ template and show a normal login prompt.
+    systemd.services."kmsconvt@tty${toString cfg.tty}" = {
       overrideStrategy = "asDropin";
       serviceConfig = {
         ExecStart = [
           # Clear the inherited ExecStart before setting a new one.
           ""
-          "${pkgs.util-linux}/bin/agetty --autologin ${cfg.user} --noclear %I $TERM"
+          (lib.concatStringsSep " " [
+            "${pkgs.kmscon}/bin/kmscon"
+            "\"--vt=%I\""
+            (lib.optionalString kmsconCfg.hwRender "--hwaccel")
+            kmsconCfg.extraOptions
+            "--seats=seat0"
+            "--no-switchvt"
+            "--configdir ${kioskKmsconConfig}"
+            "--login"
+            "--"
+            "${pkgs.shadow}/bin/login"
+            "-p"
+            "-f ${cfg.user}"
+          ])
         ];
-        Restart = "always";
       };
     };
 
