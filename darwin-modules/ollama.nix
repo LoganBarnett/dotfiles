@@ -104,13 +104,23 @@ in
         KeepAlive = false;
         ProgramArguments = [
           "${pkgs.writeShellScript "ollama-model-loader" ''
+            set -euo pipefail
+            echo "[$(date -Iseconds)] model-loader starting"
             # Wait for the ollama server to accept connections before pulling.
             until ${cfg.package}/bin/ollama list >/dev/null 2>&1; do
+              echo "[$(date -Iseconds)] waiting for ollama server..."
               sleep 2
             done
+            echo "[$(date -Iseconds)] ollama server ready"
             ${lib.concatMapStrings (model: ''
-              ${cfg.package}/bin/ollama pull ${lib.escapeShellArg model}
+              echo "[$(date -Iseconds)] pulling ${model}..."
+              if ${cfg.package}/bin/ollama pull ${lib.escapeShellArg model}; then
+                echo "[$(date -Iseconds)] pulled ${model} successfully"
+              else
+                echo "[$(date -Iseconds)] ERROR: failed to pull ${model} (exit $?)"
+              fi
             '') cfg.loadModels}
+            echo "[$(date -Iseconds)] model-loader complete"
           ''}"
         ];
         StandardOutPath = "/var/log/ollama/model-loader.log";
