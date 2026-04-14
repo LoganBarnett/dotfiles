@@ -119,6 +119,9 @@ in
           "serve"
         ];
 
+        StandardOutPath = "/tmp/ollama.log";
+        StandardErrorPath = "/tmp/ollama.log";
+
         EnvironmentVariables =
           cfg.environment
           // {
