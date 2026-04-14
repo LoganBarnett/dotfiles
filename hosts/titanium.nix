@@ -12,6 +12,7 @@
     ../users/logan-desktop.nix
     ../nixos-configs/proc-siding-worker.nix
     ../nixos-configs/sonify-health-titanium.nix
+    ../nixos-configs/sonify-health-goss.nix
     ../nixos-configs/airplay-server.nix
     ../nixos-configs/amd-gpu.nix
     ../nixos-configs/discord.nix
