@@ -302,7 +302,7 @@ in
     # to ensure we created the socket first, which is something you have to do
     # on macOS that systemd just handles a little more automatically.  There's
     # also the question of how to access the web UI.
-    socker = null;
+    socket = null;
     port = 3000;
     logLevel = "debug";
     patches = {
