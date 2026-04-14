@@ -84,6 +84,7 @@ in
     ../darwin-configs/screen-sharing.nix
     ../darwin-configs/proc-siding-worker.nix
     ../darwin-configs/goss-ollama-metal-gpu.nix
+    ../darwin-configs/sonify-health-goss.nix
     ../darwin-configs/ollama.nix
     # M1 Max with 32 GB unified memory: 32 × 0.75 ≈ 24 GB available for
     # model weights when the machine is lightly loaded.
@@ -297,6 +298,12 @@ in
   networking.monitors = [ "goss" ];
   services.sonify-health = {
     enable = true;
+    # Socket stuff doesn't seem to work with macOS the way we have it.  I need
+    # to ensure we created the socket first, which is something you have to do
+    # on macOS that systemd just handles a little more automatically.  There's
+    # also the question of how to access the web UI.
+    socker = null;
+    port = 3000;
     logLevel = "debug";
     patches = {
       star-trek-ok = {
