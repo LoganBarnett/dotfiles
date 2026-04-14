@@ -83,6 +83,20 @@ in
   config = lib.mkIf cfg.enable {
     environment.systemPackages = [ cfg.package ];
 
+    system.activationScripts.postActivation.text = ''
+      mkdir --parents /var/log/ollama
+      chmod 755 /var/log/ollama
+    '';
+
+    # Rotate Ollama and model-loader logs via macOS newsyslog.
+    # N = no signal (Ollama isn't syslogd; it re-opens the file on next write).
+    # J = bzip2 compression for rotated files.
+    environment.etc."newsyslog.d/ollama.conf".text = ''
+      # logfilename                          mode count size  when flags
+      /var/log/ollama/ollama.log              644  5     10240 *    NJ
+      /var/log/ollama/model-loader.log        644  3     1024  *   NJ
+    '';
+
     launchd.user.agents.ollama-model-loader = lib.mkIf (cfg.loadModels != [ ]) {
       serviceConfig = {
         RunAtLoad = true;
@@ -98,8 +112,8 @@ in
             '') cfg.loadModels}
           ''}"
         ];
-        StandardOutPath = "/tmp/ollama-model-loader.log";
-        StandardErrorPath = "/tmp/ollama-model-loader.log";
+        StandardOutPath = "/var/log/ollama/model-loader.log";
+        StandardErrorPath = "/var/log/ollama/model-loader.log";
       };
     };
 
@@ -119,8 +133,8 @@ in
           "serve"
         ];
 
-        StandardOutPath = "/tmp/ollama.log";
-        StandardErrorPath = "/tmp/ollama.log";
+        StandardOutPath = "/var/log/ollama/ollama.log";
+        StandardErrorPath = "/var/log/ollama/ollama.log";
 
         EnvironmentVariables =
           cfg.environment
