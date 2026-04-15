@@ -790,6 +790,9 @@
           system-monitoring = import ../nixos-configs/grafana-host-monitor.nix {
             inherit height width without-socket-port;
           };
+          garage-queue = import ../nixos-configs/grafana-garage-queue.nix {
+            inherit without-socket-port;
+          };
           nvidia-gpu = import ../nixos-configs/grafana-nvidia-gpu.nix {
             inherit without-socket-port;
           };

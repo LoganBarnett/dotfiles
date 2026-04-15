@@ -52,7 +52,12 @@ let
   # services.prometheus.exporters.  For example, "goss" is handled by
   # goss-exporter.nix.
   exporterMonitors = builtins.filter (
-    m: !builtins.elem m [ "goss" ]
+    m:
+    !builtins.elem m [
+      "goss"
+      "garage-queue-server"
+      "garage-queue-worker"
+    ]
   ) config.networking.monitors;
 
 in

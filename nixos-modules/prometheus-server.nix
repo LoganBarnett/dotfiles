@@ -75,6 +75,18 @@ in
           lib.lists.flatten
           lib.lists.unique
         ];
+        # Ports for monitors that aren't standard Prometheus exporters.
+        hardcoded-ports = {
+          goss = 8080;
+          garage-queue-server = 443;
+          garage-queue-worker = 443;
+        };
+        # Target hostname overrides for monitors that use FQDN-based
+        # virtual hosts instead of bare hostnames.
+        target-name = {
+          garage-queue-server = _host: "ollama.${facts.network.domain}";
+          garage-queue-worker = host: "${host}-ollama-worker.${facts.network.domain}";
+        };
         host-targets =
           monitor:
           lib.pipe facts.network.hosts [
@@ -87,16 +99,16 @@ in
             ))
             (lib.attrsets.mapAttrsToList (
               host: settings:
-              "${host}:${
-                toString (
-                  # Goss is handled by its own module, not via
-                  # services.prometheus.exporters, so use a hardcoded port.
-                  if monitor == "goss" then
-                    8080
+              let
+                hostname = (target-name.${monitor} or (h: h)) host;
+                port = toString (
+                  if builtins.hasAttr monitor hardcoded-ports then
+                    hardcoded-ports.${monitor}
                   else
                     nodes.${host}.config.services.prometheus.exporters.${pkgs.lib.custom.monitor-to-exporter-name monitor}.port
-                )
-              }"
+                );
+              in
+              "${hostname}:${port}"
             ))
           ];
       in
@@ -153,6 +165,20 @@ in
               goss = {
                 metrics_path = "/healthz";
                 scrape_interval = "15s";
+              };
+              garage-queue-server = {
+                scheme = "https";
+                tls_config = {
+                  insecure_skip_verify = true;
+                };
+                metrics_path = "/metrics";
+              };
+              garage-queue-worker = {
+                scheme = "https";
+                tls_config = {
+                  insecure_skip_verify = true;
+                };
+                metrics_path = "/metrics";
               };
             }
             .${monitor} or { }

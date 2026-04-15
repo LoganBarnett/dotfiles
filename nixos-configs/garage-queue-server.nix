@@ -18,6 +18,7 @@
     '';
 
   networking.dnsAliases = [ "ollama" ];
+  networking.monitors = [ "garage-queue-server" ];
   services.garage-queue-server = {
     enable = true;
     queues.ollama.integrations.ollama.enable = true;
