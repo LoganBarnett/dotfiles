@@ -9,10 +9,6 @@
         server_url = "https://ollama.${facts.network.domain}";
         poll_interval_ms = 1000;
       };
-      control = {
-        host = "127.0.0.1";
-        port = 9091;
-      };
     };
   };
 }
