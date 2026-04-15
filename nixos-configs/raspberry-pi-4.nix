@@ -18,5 +18,5 @@
       }
     )
   ];
-  boot.loader.raspberryPi.bootloader = "uboot";
+  boot.loader.raspberry-pi.bootloader = "uboot";
 }
