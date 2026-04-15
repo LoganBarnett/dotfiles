@@ -64,9 +64,6 @@ in
         # Freaky workaround that's already fixed, but we're pinned to an older
         # nixpkgs.  See: https://github.com/NixOS/nixpkgs/issues/261777
         programs.fish.vendor.config.enable = false;
-        # Override the value from ../nixos-modules/nix-flake-environment.nix
-        # because we're on 23.05 for lithium to make nvidia support smoother.
-        # nix.package = lib.mkForce flake-inputs.nix.packages.${system}.nix;
         nix.settings = {
           # Allow building i686-linux binaries too.  This is helpful if an
           # x86_64-linux build needs 32bit support, which is what i686 indicates.
