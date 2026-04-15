@@ -9,7 +9,7 @@
     flake-inputs.nixos-raspberrypi.nixosModules.raspberry-pi-5.base
     flake-inputs.nixos-raspberrypi.nixosModules.raspberry-pi-5.page-size-16k
   ];
-  boot.loader.raspberryPi.bootloader = "kernel";
+  boot.loader.raspberry-pi.bootloader = "kernel";
   # Undocumented from nixos-raspberrypi.  See
   # https://github.com/nvmd/nixos-raspberrypi/blob/f8900910f63477626010938da8d849ba2cc3d011/modules/configtxt-config.nix
   # for now this gets laid down.

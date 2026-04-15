@@ -27,7 +27,7 @@
   # Unfortunately the options are presently undocumented, so see
   # https://github.com/nvmd/nixos-raspberrypi/blob/f8900910f63477626010938da8d849ba2cc3d011/modules/system/boot/loader/raspberrypi/default.nix
   # for the options.
-  boot.loader.raspberryPi = {
+  boot.loader.raspberry-pi = {
     enable = true;
     # This is set differently between 4 and 5.
     # bootloader = "kernel";
