@@ -7,9 +7,7 @@
 { pkgs, ... }:
 {
   environment.systemPackages = [
-    (pkgs.writeShellApplication {
-      name = "nix-store-lock-clean";
-      text = builtins.readFile ../scripts/nix-store-lock-clean;
-    })
+    (pkgs.callPackage ../derivations/nix-store-diagnose.nix { })
+    (pkgs.callPackage ../derivations/nix-store-dislodge.nix { })
   ];
 }
