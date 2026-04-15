@@ -186,7 +186,7 @@
     # nixpkgs-octoprint.url = "github:nixos/nixpkgs/24.11";
     nixos-option-pr-369151.url = "github:nixos/nixpkgs?ref=pull/369151/head";
     lix-module = {
-      url = "https://git.lix.systems/lix-project/nixos-module/archive/main.tar.gz";
+      url = "https://git.lix.systems/lix-project/nixos-module/archive/2.93.3-2.tar.gz";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     hyuqueue = {
