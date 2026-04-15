@@ -70,6 +70,7 @@ in
     flake-inputs.hyuqueue.darwinModules.default
     flake-inputs.proc-siding.darwinModules.default
     flake-inputs.sonify-health.darwinModules.default
+    flake-inputs.lix-module.darwinModules.lixFromNixpkgs
     ./nixos-modules/nix-flake-environment.nix
     ./darwin-modules/darwin-tls-trust.nix
     ./nixos-modules/dns-aliases.nix

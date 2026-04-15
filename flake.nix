@@ -185,15 +185,8 @@
     # authentication settings are removed.
     # nixpkgs-octoprint.url = "github:nixos/nixpkgs/24.11";
     nixos-option-pr-369151.url = "github:nixos/nixpkgs?ref=pull/369151/head";
-    # This is the Nix runtime itself, so be real careful about bumping this.
-    # But at least now I can bump it without having to reinstall everything.
-    nix = {
-      # Use this pull request to do `nix store break-lock <derv-path>` to remove
-      # locks on errant builds.  I've seen this lodged on macOS once out a very
-      # long time.  Might be related to remote builds.
-      # https://github.com/NixOS/nix/pull/13813
-      url = "github:siraben/nix?ref=store-break-lock";
-      # url = "github:nixos/nix?ref=2.24.11";
+    lix-module = {
+      url = "https://git.lix.systems/lix-project/nixos-module/archive/main.tar.gz";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     hyuqueue = {
@@ -250,7 +243,6 @@
   outputs =
     flake-inputs@{
       agenix-rekey,
-      nix,
       nix-darwin,
       nixpkgs,
       nixos-generators,

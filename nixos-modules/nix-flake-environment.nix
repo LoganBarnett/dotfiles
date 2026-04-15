@@ -25,7 +25,7 @@
 let
   base = "/etc/nixpkgs/channels";
   nixpkgsPath = "${base}/nixpkgs";
-  inherit (flake-inputs) nixpkgs nix;
+  inherit (flake-inputs) nixpkgs;
   # Additional versions of nixpkgs should be added thusly:
   # nixpkgs2105Path = "${base}/nixpkgs2105";
   # nixpkgs2111Path = "${base}/nixpkgs2111";
@@ -51,8 +51,6 @@ in
   })
   {
     nix = {
-      # package = pkgs.nixVersions.latest;
-      package = nix.packages.${system}.nix;
       # Enable flakes and new 'nix' command.
       settings = {
         # This apparently defaults to true, but when doing flake evaluation,
