@@ -1,0 +1,82 @@
+#!/usr/bin/env bash
+################################################################################
+# Create (or recreate) the GPG signing subkey used by headless development
+# hosts.  The only interactive step is entering the master key passphrase.
+#
+# What this script does:
+#   1. Creates an ed25519 signing subkey under the master key.
+#   2. Exports the full public keyring to gpg-keys/logan-gpg-public.asc.
+#   3. Exports only the new secret subkey to a temporary file.
+#   4. Encrypts the secret subkey with rage for agenix.
+#   5. Shreds the plaintext.
+#   6. Prints the subkey fingerprint for use in the Nix configuration.
+#
+# After running, update the git-signing-key value in
+# users/logan-headless-development.nix with the printed fingerprint, then
+# commit and push.
+#
+# See secrets.org § "GPG signing subkey for headless development" for context.
+################################################################################
+
+set -o errexit -o nounset -o pipefail
+
+MASTER_KEY="41E46FB1ACEA3EF0"
+
+if [[ -z "${FLAKE_ROOT:-}" ]]; then
+  echo "error: FLAKE_ROOT is not set.  Source your shell profile first." >&2
+  exit 1
+fi
+
+secrets_dir="$FLAKE_ROOT/secrets"
+gpg_keys_dir="$FLAKE_ROOT/gpg-keys"
+
+mkdir --parents "$gpg_keys_dir"
+
+echo "Creating ed25519 signing subkey (you will be prompted for the master key passphrase)..."
+gpg --quick-add-key "$MASTER_KEY" ed25519 sign 0
+
+# Identify the newest subkey fingerprint.  gpg --list-keys --with-colons
+# outputs "sub" lines; the last one is the one we just created.  Field 5 is
+# the key ID.
+subkey_id=$(gpg --list-keys --with-colons "$MASTER_KEY" \
+  | grep '^sub' \
+  | tail --lines=1 \
+  | cut --delimiter=: --fields=5)
+
+if [[ -z "$subkey_id" ]]; then
+  echo "error: could not determine new subkey fingerprint." >&2
+  exit 1
+fi
+
+echo "New subkey fingerprint: $subkey_id"
+
+# Export the full public keyring (master + all subkeys).
+gpg --export --armor "$MASTER_KEY" > "$gpg_keys_dir/logan-gpg-public.asc"
+echo "Public key exported to gpg-keys/logan-gpg-public.asc"
+
+# Export only the secret subkey to a temporary file.
+# The trailing "!" on the subkey ID is GPG syntax meaning "exactly this key
+# only" — without it, GPG exports all secret subkeys.
+tmpfile=$(mktemp)
+trap 'shred --remove "$tmpfile" || true' EXIT
+gpg --export-secret-subkeys --armor "${subkey_id}!" > "$tmpfile"
+
+# Encrypt for agenix.
+rage --encrypt \
+  --identity "$secrets_dir/agenix-master-key-3.age" \
+  --output "$secrets_dir/logan-gpg-signing-subkey.age" \
+  "$tmpfile"
+echo "Encrypted subkey written to secrets/logan-gpg-signing-subkey.age"
+
+# The trap handles shredding, but be explicit for clarity.
+shred --remove "$tmpfile" || true
+trap - EXIT
+echo "Plaintext shredded."
+
+echo ""
+echo "── Next steps ──────────────────────────────────────────────────────"
+echo "1. Update git-signing-key in users/logan-headless-development.nix:"
+echo "     git-signing-key = \"$subkey_id\";"
+echo "2. Commit and push dotfiles."
+echo "3. In nix-config-private: nix flake update dotfiles"
+echo "4. caffeinate proton-deploy switch rubidium"

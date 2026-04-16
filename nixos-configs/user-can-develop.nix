@@ -8,6 +8,9 @@ let
   emacs-unfreeze = pkgs.callPackage ../derivations/emacs-unfreeze.nix { };
   flac2alac = pkgs.callPackage ../derivations/flac2alac.nix { };
   gif2mp4 = pkgs.callPackage ../derivations/gif2mp4.nix { };
+  gpg-dev-signing-key-setup =
+    pkgs.callPackage ../derivations/gpg-dev-signing-key-setup.nix
+      { };
   git-outstanding-repos =
     pkgs.callPackage ../derivations/git-outstanding-repos.nix
       { };
@@ -80,6 +83,8 @@ in
     flac2alac
     # Convert an animated GIF to an MP4.
     gif2mp4
+    # Create or recreate the GPG signing subkey for headless development hosts.
+    gpg-dev-signing-key-setup
     # Report git repositories with unstaged changes or unpushed commits.
     git-outstanding-repos
     # Poll a host with ping until it responds.

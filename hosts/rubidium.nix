@@ -25,6 +25,7 @@
     ../nixos-configs/code-headless.nix
     ../nixos-configs/deployment-server.nix
     ../nixos-modules/linux-host.nix
+    ../users/logan-headless-development.nix
     (
       { lib, ... }:
       {
