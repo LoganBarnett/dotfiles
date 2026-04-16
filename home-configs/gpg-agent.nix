@@ -1,4 +1,5 @@
-{ pkgs, ... }: {
+{ pkgs, ... }:
+{
   services.gpg-agent = {
     enable = true;
     enableZshIntegration = true;
@@ -10,9 +11,8 @@
     # home-manager does not auto-detect the platform for pinentry, so we
     # select the native macOS dialog on Darwin and fall back to the generic
     # curses interface elsewhere.
-    pinentry.package = if pkgs.stdenv.isDarwin
-      then pkgs.pinentry_mac
-      else pkgs.pinentry;
+    pinentry.package =
+      if pkgs.stdenv.isDarwin then pkgs.pinentry_mac else pkgs.pinentry-curses;
     extraConfig = ''
       allow-emacs-pinentry
       allow-loopback-pinentry
