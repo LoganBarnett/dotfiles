@@ -18,12 +18,19 @@
   flake-inputs,
   lib,
   pkgs,
+  system,
   ...
 }:
 {
   imports = [
     ../nixos-configs/user-can-develop.nix
   ];
+
+  # home.nix expects `system` (e.g. for flake-inputs.*.packages.${system}),
+  # but linux-host.nix doesn't include it in extraSpecialArgs.
+  home-manager.extraSpecialArgs = {
+    inherit system;
+  };
 
   # Provide the git-users argument consumed by git-config.nix (imported
   # transitively via user-can-develop.nix).
