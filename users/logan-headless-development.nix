@@ -31,6 +31,11 @@
   home-manager.extraSpecialArgs = {
     inherit system;
   };
+  # Use the system-level nixpkgs (and its unfree predicates) for home-manager
+  # packages.  darwin.nix sets this for macOS hosts; NixOS hosts need it
+  # explicitly when importing home.nix.
+  home-manager.useGlobalPkgs = true;
+  home-manager.useUserPackages = true;
 
   # Provide the git-users argument consumed by git-config.nix (imported
   # transitively via user-can-develop.nix).
