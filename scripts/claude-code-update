@@ -26,7 +26,7 @@ hash_32="$(nix-prefetch-url \
   --unpack \
   "https://registry.npmjs.org/@anthropic-ai/claude-code/-/claude-code-${version}.tgz"
 )"
-hash_sri="$(nix hash convert --hash-algo sha256 --to sri "${hash_32}")"
+hash_sri="$(nix hash to-sri --type sha256 "${hash_32}")"
 
 echo "Version: ${version}"
 echo "Hash: ${hash_sri}"
