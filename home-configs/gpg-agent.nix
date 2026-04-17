@@ -1,5 +1,10 @@
 { pkgs, ... }:
 {
+  # pinentry-curses needs GPG_TTY to know which terminal to use.  pinentry_mac
+  # doesn't need this (it uses a GUI dialog), but setting it is harmless there.
+  programs.zsh.initExtra = ''
+    export GPG_TTY="$(tty)"
+  '';
   services.gpg-agent = {
     enable = true;
     enableZshIntegration = true;
