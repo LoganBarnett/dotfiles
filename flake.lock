@@ -2622,11 +2622,11 @@
         "rust-overlay": "rust-overlay_19"
       },
       "locked": {
-        "lastModified": 1765831047,
-        "narHash": "sha256-YASO9o9ZfJtEN8jekQxmhQqkOaCzWgxCCro+PMZmKnw=",
+        "lastModified": 1776405327,
+        "narHash": "sha256-kPL/k9HGDdc2Z0LrunOFcMCY3zQ+WNh+GgdXt6mH1Go=",
         "owner": "LoganBarnett",
         "repo": "repo-sync",
-        "rev": "3c9412fd91d146a0bfb6c77ceeda207efd7c4a34",
+        "rev": "8a7af4a1fa3257b60e669da138b0d6e2a5c7db20",
         "type": "github"
       },
       "original": {
