@@ -37,11 +37,14 @@
   home-manager.useGlobalPkgs = true;
   home-manager.useUserPackages = true;
 
+  # gnupg is needed on PATH for interactive commit signing.  The systemd
+  # import service uses full store paths, but git invokes gpg by name.
+  environment.systemPackages = [
+    pkgs.gnupg
+  ];
+
   # Provide the git-users argument consumed by git-config.nix (imported
   # transitively via user-can-develop.nix).
-  #
-  # TODO: Replace the placeholder git-signing-key with the real subkey
-  # fingerprint after the GPG ceremony.
   _module.args.git-users = [
     {
       git-email = "logustus@gmail.com";
