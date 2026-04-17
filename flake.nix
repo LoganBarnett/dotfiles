@@ -233,8 +233,8 @@
     };
 
     typeypipe-flake = {
-      url = "github:dkoontz/TypeyPipe";
-      # url = "github:LoganBarnett/TypeyPipe";
+      # url = "github:dkoontz/TypeyPipe";
+      url = "github:LoganBarnett/TypeyPipe";
       # url = "path:/Users/logan/dev/TypeyPipe";
       # inputs.nixpkgs.follows = "nixpkgs";
     };

@@ -3384,15 +3384,15 @@
         "rust-overlay": "rust-overlay_22"
       },
       "locked": {
-        "lastModified": 1754521137,
-        "narHash": "sha256-iAmuGPEDh0xszTeLiL/t/2aVKLtIgMwxZdRrJU0bdJw=",
-        "owner": "dkoontz",
+        "lastModified": 1776405501,
+        "narHash": "sha256-K6UlXBY1XnBdLhsTc0yVHOCwZr4Tpez3P1vpkRU2d6o=",
+        "owner": "LoganBarnett",
         "repo": "TypeyPipe",
-        "rev": "65b946f5dccae552069829152679bb267543b2ce",
+        "rev": "0f0e5ddb3bd97b6ecf3109c9988f24cd2a6f0bd7",
         "type": "github"
       },
       "original": {
-        "owner": "dkoontz",
+        "owner": "LoganBarnett",
         "repo": "TypeyPipe",
         "type": "github"
       }
