@@ -26,42 +26,11 @@
     audioDevice = "plughw:CARD=0";
     patches = {
       reactor-ok = {
-        amplitude = 0.327;
-        attack_ms = 6.0;
-        brightness = 1.82;
-        chirp_ratio = 1.01;
-        crush = 0.0;
-        decay_ms = 97.0;
-        downsample = 0.0;
-        drive = 0.5;
-        duration = 0.22;
-        echo_delay = 0.32;
-        echo_mix = 0.33;
-        fm_depth = 0.0;
-        fm_ratio = 0.0;
-        freq = 861.0;
-        gap = 0.0;
-        highpass = 0.0;
-        noise_mix = 0.0;
-        release_ms = 22.0;
-        resonance = 3.72;
-        reverb_mix = 0.89;
-        saw_ratio = 0.02;
-        sine_ratio = 2.37;
-        square_ratio = 0.0;
-        stereo_pan = -0.42;
-        sub_octave = 0.03;
-        sustain = 0.47;
-        tremolo_depth = 0.11;
-        tremolo_rate = 0.0;
-        tri_ratio = 1.22;
-        vibrato_depth = 0.49;
-        vibrato_rate = 0.0;
+        freq = 350.0;
+        overrides = "chirp";
       };
       reactor-error = {
-        amplitude = 0.54;
-        chirp_ratio = 0.8;
-        overrides = "reactor-ok";
+        overrides = "chirp";
       };
       reactor-cpu-lo = {
         amplitude = 0.3;
@@ -108,7 +77,7 @@
         resultMode = "exit-code";
         cycleSecs = 15.0;
         playback = "clock";
-        cycleOffsetSecs = 11.0;
+        cycleOffsetSecs = 9.0;
         notes = [
           {
             transition = {
@@ -133,7 +102,7 @@
         resultMode = "exit-code";
         cycleSecs = 15.0;
         playback = "clock";
-        cycleOffsetSecs = 7.0;
+        cycleOffsetSecs = 10.0;
         notes = [
           {
             transition = {

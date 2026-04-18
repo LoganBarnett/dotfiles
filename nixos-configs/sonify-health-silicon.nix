@@ -123,7 +123,7 @@
         resultMode = "exit-code";
         cycleSecs = 15.0;
         playback = "clock";
-        cycleOffsetSecs = 11.0;
+        cycleOffsetSecs = 12.0;
         notes = [
           {
             transition = {
@@ -148,7 +148,7 @@
         resultMode = "exit-code";
         cycleSecs = 15.0;
         playback = "clock";
-        cycleOffsetSecs = 7.0;
+        cycleOffsetSecs = 13.0;
         notes = [
           {
             transition = {

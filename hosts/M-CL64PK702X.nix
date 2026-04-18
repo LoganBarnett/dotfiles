@@ -389,25 +389,9 @@ in
         resultMode = "exit-code";
         cycleSecs = 15.0;
         playback = "clock";
-        cycleOffsetSecs = 11.0;
+        cycleOffsetSecs = 5.0;
         notes = [
           {
-            transition = {
-              type = "discrete";
-              states = [
-                {
-                  threshold = 0.5;
-                  patch = "star-trek-ok";
-                }
-                {
-                  threshold = 1.01;
-                  patch = "star-trek-error";
-                }
-              ];
-            };
-          }
-          {
-            offset = 0.2;
             transition = {
               type = "discrete";
               states = [
@@ -430,7 +414,7 @@ in
         resultMode = "exit-code";
         cycleSecs = 15.0;
         playback = "clock";
-        cycleOffsetSecs = 8.0;
+        cycleOffsetSecs = 6.0;
         notes = [
           {
             transition = {
@@ -471,7 +455,7 @@ in
         resultMode = "exit-code";
         cycleSecs = 15.0;
         playback = "clock";
-        cycleOffsetSecs = 5.0;
+        cycleOffsetSecs = 7.0;
         notes = [
           {
             transition = {
