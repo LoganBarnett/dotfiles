@@ -26,7 +26,7 @@
     audioDevice = "plughw:CARD=0";
     patches = {
       reactor-ok = {
-        amplitude = 0.23;
+        amplitude = 0.115;
         attack_ms = 6.0;
         brightness = 0.23;
         chirp_ratio = 1.01;
