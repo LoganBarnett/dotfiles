@@ -24,6 +24,9 @@
   services.sonify-health = {
     enable = true;
     logLevel = "debug";
+    # Use plughw: (direct hardware with format conversion) instead of
+    # relying on ALSA hint enumeration, which routes through dmix.
+    audioDevice = "plughw:CARD=0";
     oidc = {
       enable = true;
       baseUrl = "https://silicon-sonify.${facts.network.domain}";
