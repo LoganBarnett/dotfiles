@@ -101,7 +101,6 @@ in
       # logan-desktop.nix but it is Linux centric.  I want something more
       # general purpose some renaming must be done.
       pkgs.zalgo-cli
-      flake-inputs.typeypipe-flake.packages.${system}.default
       # Flush the macOS DNS cache, adapting to the OS version.
       dnsflush
       # Show the LAN IP address for a named interface type.
