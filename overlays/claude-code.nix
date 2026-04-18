@@ -1,46 +1,73 @@
 ################################################################################
-# Claude Code updates frequently and the package in nixpkgs can fall behind.
-# This overlay allows us to override the version without updating all of
-# nixpkgs.
+# Claude Code 2.1.x ships as a native compiled binary instead of a Node.js
+# bundle.  Platform-specific npm packages (e.g. @anthropic-ai/claude-code-
+# darwin-arm64) each contain a single Mach-O or ELF executable.
 #
-# The npm tarball does not include package-lock.json, so nixpkgs commits one
-# alongside the package definition and copies it in via postPatch before
-# fetchNpmDeps runs.  We do the same by keeping a versioned lock file here.
-#
-# buildNpmPackage uses lib.extendMkDerivation, but overrideAttrs does not
-# cause extendDrvArgs to recompute npmDeps with the new src — it is computed
-# from the original fpargs.  We must therefore provide npmDeps explicitly.
-# fetchNpmDeps is stdenvNoCC.mkDerivation and supports postPatch natively, so
-# we use it to copy the generated lock file before prefetch-npm-deps runs.
+# This overlay fetches the appropriate platform binary and installs it
+# directly — no Node.js runtime, no npm install, no buildNpmPackage.
 ################################################################################
-{ flake-inputs, system, ... }: final: prev: let
+{ flake-inputs, system, ... }:
+final: prev:
+let
   statics = (import ../static.nix).claude-code;
-  inherit (statics) version hash npmDepsHash;
+  inherit (statics) version;
+
+  # Map Nix system identifiers to the npm package platform suffixes.
+  platformMap = {
+    "aarch64-darwin" = "darwin-arm64";
+    "x86_64-darwin" = "darwin-x64";
+    "x86_64-linux" = "linux-x64";
+    "aarch64-linux" = "linux-arm64";
+  };
+
+  suffix =
+    platformMap.${system} or (throw "claude-code: unsupported system ${system}");
+  hash = statics.${system}.hash;
+
   src = final.fetchzip {
-    url = "https://registry.npmjs.org/@anthropic-ai/claude-code/-/claude-code-${version}.tgz";
+    url = "https://registry.npmjs.org/@anthropic-ai/claude-code-${suffix}/-/claude-code-${suffix}-${version}.tgz";
     inherit hash;
   };
-  lockFile = ./claude-code-package-lock.json;
-in {
-  claude-code = prev.claude-code.overrideAttrs (old: {
-    inherit version src npmDepsHash;
-    postPatch = ''
-      cp ${lockFile} package-lock.json
+in
+{
+  claude-code = final.stdenv.mkDerivation {
+    pname = "claude-code";
+    inherit version src;
+
+    nativeBuildInputs = [ final.makeWrapper ];
+
+    # The binary is self-contained; do not strip or patch it.
+    dontBuild = true;
+    dontStrip = true;
+    dontPatchELF = true;
+
+    installPhase = ''
+      runHook preInstall
+      install -Dm755 claude $out/bin/claude
+      runHook postInstall
     '';
-    npmDeps = final.fetchNpmDeps {
-      inherit src;
-      postPatch = ''
-        cp ${lockFile} package-lock.json
-      '';
-      name = "claude-code-${version}-npm-deps";
-      hash = npmDepsHash;
+
+    postInstall = ''
+      wrapProgram $out/bin/claude \
+        --set DISABLE_AUTOUPDATER 1 \
+        --unset DEV
+    '';
+
+    doInstallCheck = true;
+    installCheckPhase = ''
+      # Smoke test: the binary should report its version.
+      ver="$($out/bin/claude --version 2>/dev/null || true)"
+      if ! echo "$ver" | grep -q "${version}"; then
+        echo "Version check failed.  Expected ${version}, got: $ver" >&2
+        exit 1
+      fi
+    '';
+
+    meta = with final.lib; {
+      description = "Agentic coding tool that lives in your terminal";
+      homepage = "https://github.com/anthropics/claude-code";
+      license = licenses.unfree;
+      mainProgram = "claude";
     };
-    # All of claude-code's declared dependencies are optional platform
-    # binaries (sharp).  npm ci --ignore-scripts leaves node_modules
-    # uncreated, which causes npmInstallHook to crash.  An empty directory
-    # satisfies the hook's copy step without shipping unusable native code.
-    preInstall = ''
-      mkdir -p node_modules
-    '';
-  });
+  };
 }

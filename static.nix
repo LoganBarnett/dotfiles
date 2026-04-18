@@ -21,10 +21,15 @@
     };
   };
 
+  # Claude Code 2.1.x ships as a native binary per platform instead of a
+  # Node.js bundle.  Each platform has its own npm package with a single
+  # compiled executable.
   claude-code = {
     version = "2.1.114";
-    hash = "sha256-r78N6eE/8JQsHP8XTWP9efkbzkmuV+o7JSB1GxrlE3E=";
-    npmDepsHash = "sha256-Z6cPokEqwhFWANdpMDvrsR1Z5zEB4Snr+YVzxYSmoaw=";
+    aarch64-darwin.hash = "sha256-Nx0I2PZgoLeI43c5O4rlyPgEQGDom3RO5pemV9V1vqg=";
+    x86_64-darwin.hash = "sha256-1tUHaaE4AI8r7W+vS4wCKTH3OjDOxMRtSzyUt+LHhAs=";
+    x86_64-linux.hash = "sha256-gejcdjRzKnWsvLzxJLfdjr+PeYdOR9tkCOL8owuJuf8=";
+    aarch64-linux.hash = "sha256-atThX6FuIJe0t7pQRd76ZIVCPd+AKfkLl1a48eLglQE=";
   };
 
   makemkv = {
