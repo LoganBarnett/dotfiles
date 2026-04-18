@@ -22,9 +22,9 @@
   };
 
   claude-code = {
-    version = "2.1.59";
-    hash = "sha256-Dam9aJ0qBdqU40ACfzGQHuytW6ur0fMLm8D5fIKd1TE=";
-    npmDepsHash = "sha256-k2ytvmySVD/qBfIOc5i1D1Ge8D/gmO9kjh4eDN9ceZc=";
+    version = "2.1.114";
+    hash = "sha256-r78N6eE/8JQsHP8XTWP9efkbzkmuV+o7JSB1GxrlE3E=";
+    npmDepsHash = "sha256-Z6cPokEqwhFWANdpMDvrsR1Z5zEB4Snr+YVzxYSmoaw=";
   };
 
   makemkv = {
