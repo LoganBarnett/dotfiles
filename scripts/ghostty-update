@@ -1,0 +1,46 @@
+#!/usr/bin/env bash
+
+################################################################################
+# Updates static.nix with the new version and hash for `ghostty-bin` (Darwin).
+#
+# Version detection uses the GitHub tags API (Ghostty doesn't publish GitHub
+# Releases for stable versions, only tags).
+################################################################################
+
+set -euo pipefail
+
+version="$(curl --location --silent \
+  'https://api.github.com/repos/ghostty-org/ghostty/tags?per_page=1' \
+    | jq --raw-output '.[0].name | ltrimstr("v")'
+)"
+
+if [[ -z "$version" ]]; then
+  echo "ERROR: Could not determine latest ghostty version" >&2
+  exit 1
+fi
+
+echo "Latest version: ${version}"
+
+hash_32="$(nix-prefetch-url \
+  --type sha256 \
+  --name 'Ghostty.dmg' \
+  "https://release.files.ghostty.org/${version}/Ghostty.dmg"
+)"
+hash_sri="$(nix hash to-sri --type sha256 "${hash_32}")"
+
+echo "Hash: ${hash_sri}"
+
+nix-editor \
+  static.nix \
+  'ghostty-bin.version' \
+  --val "\"$version\"" \
+  --inplace
+
+nix-editor \
+  static.nix \
+  'ghostty-bin.hash' \
+  --val "\"$hash_sri\"" \
+  --inplace \
+  --format
+
+echo "Updated static.nix successfully"
