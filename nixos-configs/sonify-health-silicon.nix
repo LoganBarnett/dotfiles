@@ -17,7 +17,10 @@
     serviceConfig = {
       Type = "oneshot";
       RemainAfterExit = true;
-      ExecStart = "${pkgs.alsa-utils}/bin/amixer -D hw:0 sset Master 100% unmute";
+      ExecStart = pkgs.writeShellScript "alsa-unmute" ''
+        ${pkgs.alsa-utils}/bin/amixer -D hw:0 sset Master 100% unmute
+        ${pkgs.alsa-utils}/bin/amixer -D hw:0 sset Headphone 100% unmute
+      '';
     };
   };
 
@@ -129,6 +132,7 @@
         cycleOffsetSecs = 12.0;
         notes = [
           {
+            volume = 1.0;
             transition = {
               type = "discrete";
               states = [
@@ -154,6 +158,7 @@
         cycleOffsetSecs = 13.0;
         notes = [
           {
+            volume = 1.0;
             transition = {
               type = "discrete";
               states = [
@@ -169,6 +174,7 @@
             };
           }
           {
+            volume = 1.0;
             offset = 0.15;
             transition = {
               type = "discrete";
