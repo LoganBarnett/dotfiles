@@ -231,13 +231,6 @@
       # url = "git+ssh://git@gitea.proton:2222/logan/sytter";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-
-    typeypipe-flake = {
-      # url = "github:dkoontz/TypeyPipe";
-      url = "github:LoganBarnett/TypeyPipe";
-      # url = "path:/Users/logan/dev/TypeyPipe";
-      # inputs.nixpkgs.follows = "nixpkgs";
-    };
   };
 
   outputs =
