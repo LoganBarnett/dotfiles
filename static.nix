@@ -77,6 +77,11 @@
     hash = "sha256-A4LUCuKCjpVAOJ8jNoYaC3mRCiKH0/wtcsle0YfZyTA=";
   };
 
+  ghostty-bin = {
+    version = "1.3.1";
+    hash = "sha256-GM/ysKbO6Q7q2cfTBk6AiiUqQLryFKp1LB7LeTuPX2k=";
+  };
+
   zoom-us = {
     version = "7.0.0.77593";
     hash = "sha256-YSUaM8YAJHigm4M9W34/bD164M8f/hbhtcmHyUwFN20=";
