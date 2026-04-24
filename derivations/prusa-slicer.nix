@@ -7,7 +7,10 @@
   cmake,
   pkg-config,
   wrapGAppsHook3,
-  boost,
+  # Pinned: 2.8.0 (and through 2.9.x) does not build with boost 1.87+, which
+  # removed the deprecated boost::asio::io_service alias.  See upstream issue:
+  # https://github.com/prusa3d/PrusaSlicer/issues/13799
+  boost186,
   cereal,
   cgal_5,
   curl,
@@ -110,7 +113,7 @@ stdenv.mkDerivation (finalAttrs: {
 
   buildInputs = [
     binutils
-    boost
+    boost186
     cereal
     cgal_5
     curl
