@@ -61,6 +61,20 @@
       };
     });
   })
+  # aiohttp ships a wall-clock performance test
+  # (test_cookie_pattern_performance) that asserts an operation completes in
+  # under 10ms.  Nix builds are not hermetic with respect to CPU scheduling, so
+  # this fails intermittently on loaded build machines and blocks any system
+  # that depends on aiohttp (notably octoprint).  Drop doCheck globally.
+  (final: prev: {
+    pythonPackagesExtensions = prev.pythonPackagesExtensions ++ [
+      (python-final: python-prev: {
+        aiohttp = python-prev.aiohttp.overrideAttrs (_: {
+          doCheck = false;
+        });
+      })
+    ];
+  })
   (final: prev: {
     dness = final.callPackage ../derivations/dness.nix { };
   })
