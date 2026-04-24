@@ -32,31 +32,37 @@ let
     };
     server.port = cfg.port;
     webcam.ffmpeg = "${pkgs.ffmpeg.bin}/bin/ffmpeg";
-  } // lib.optionalAttrs (cfg.host != null) { server.host = cfg.host; };
+  }
+  // lib.optionalAttrs (cfg.host != null) { server.host = cfg.host; };
 
   fullConfig = lib.recursiveUpdate cfg.extraConfig baseConfig;
 
   cfgUpdate = pkgs.writeText "config.yaml" (builtins.toJSON fullConfig);
 
-  loggingConfig = pkgs.writeText "logging.yaml" (builtins.toJSON {
-    loggers = {
-      # octoprint = {
-      #   level = "DEBUG";
-      # };
-      "octoprint.plugins.auth_ldap" = {
-        level = "DEBUG";
+  loggingConfig = pkgs.writeText "logging.yaml" (
+    builtins.toJSON {
+      loggers = {
+        # octoprint = {
+        #   level = "DEBUG";
+        # };
+        # "octoprint.plugins.auth_ldap" = {
+        #   level = "DEBUG";
+        # };
       };
-    };
-  });
-
-  printerProfilesConfig = (lib.mapAttrs (name: value:
-    pkgs.writeText
-      "printerProfiles/${name}.profile"
-      (builtins.toJSON ({ id = name; } // value)))
-    cfg.printerProfiles
+    }
   );
 
-  pluginsEnv = package: package.python.withPackages (ps: [ ps.octoprint ] ++ (cfg.plugins ps));
+  printerProfilesConfig = (
+    lib.mapAttrs (
+      name: value:
+      pkgs.writeText "printerProfiles/${name}.profile" (
+        builtins.toJSON ({ id = name; } // value)
+      )
+    ) cfg.printerProfiles
+  );
+
+  pluginsEnv =
+    package: package.python.withPackages (ps: [ ps.octoprint ] ++ (cfg.plugins ps));
 
 in
 {
@@ -225,12 +231,13 @@ in
   config = lib.mkIf cfg.enable {
 
     environment.systemPackages =
-      lib.optionals cfg.raspberryPiVoltageThrottlingCheck [
-        # We are specifically looking for the vcgencmd here.
-        # Unfortunately this isn't enough to get the service to restart if it
-        # gets added.
-        libraspberrypi
-      ];
+      lib.optionals cfg.raspberryPiVoltageThrottlingCheck
+        [
+          # We are specifically looking for the vcgencmd here.
+          # Unfortunately this isn't enough to get the service to restart if it
+          # gets added.
+          libraspberrypi
+        ];
 
     users.users = lib.optionalAttrs (cfg.user == "octoprint") {
       octoprint = {
@@ -245,7 +252,8 @@ in
 
     systemd.tmpfiles.rules = [
       "d '${cfg.stateDir}' - ${cfg.user} ${cfg.group} - -"
-    ] ++ lib.optionals cfg.raspberryPiVoltageThrottlingCheck [
+    ]
+    ++ lib.optionals cfg.raspberryPiVoltageThrottlingCheck [
       # this will allow octoprint access to raspberry specific hardware to check for throttling
       # read-only will not work: "VCHI initialization failed" error
       "a /dev/vchiq - - - - u:octoprint:rw"
@@ -260,37 +268,39 @@ in
       # https://blog.withsam.org/blog/nixos-path-restart-trigger/ to promote
       # restarts.  Spoiler alert: `restartTriggers` doesn't work seamlessly, but
       # it works fine if we serialize and hash our inputs.
-      restartTriggers =  [
+      restartTriggers = [
         # Look at what you made me do.
         (builtins.hashString "sha256" (builtins.toJSON libraspberrypi))
       ];
 
       # TODO: It would be way better to just have a declarative configuration.
-      preStart = let
-        join-lines = lines:
-          lib.strings.concatStrings
-            (lib.strings.intersperse "\n" lines)
-        ;
-        # There is a --config option to point to a configuration file, but
-        # Octoprint will fail to start if the config file is not writable.
-      in ''
-        cp --force "${cfgUpdate}" "${cfg.stateDir}/config.yaml"
-        chmod 600 "${cfg.stateDir}/config.yaml"
-        rm --force "${cfg.stateDir}/logging.yaml"
-        cp "${loggingConfig}" "${cfg.stateDir}/logging.yaml"
-        rm -rf ${cfg.stateDir}/printerProfiles
-        mkdir --parents --mode 775 "${cfg.stateDir}/printerProfiles"
-        ${join-lines (
-           lib.mapAttrsToList (name: printerConfig:
-             let
-               dest = "${cfg.stateDir}/printerProfiles/${name}.profile";
-             in ''
-              cp ${printerConfig} "${dest}"
-              chmod 660 "${dest}"
-             ''
-           ) printerProfilesConfig
-         )}
-      '';
+      preStart =
+        let
+          join-lines =
+            lines: lib.strings.concatStrings (lib.strings.intersperse "\n" lines);
+          # There is a --config option to point to a configuration file, but
+          # Octoprint will fail to start if the config file is not writable.
+        in
+        ''
+          cp --force "${cfgUpdate}" "${cfg.stateDir}/config.yaml"
+          chmod 600 "${cfg.stateDir}/config.yaml"
+          rm --force "${cfg.stateDir}/logging.yaml"
+          cp "${loggingConfig}" "${cfg.stateDir}/logging.yaml"
+          rm -rf ${cfg.stateDir}/printerProfiles
+          mkdir --parents --mode 775 "${cfg.stateDir}/printerProfiles"
+          ${join-lines (
+            lib.mapAttrsToList (
+              name: printerConfig:
+              let
+                dest = "${cfg.stateDir}/printerProfiles/${name}.profile";
+              in
+              ''
+                cp ${printerConfig} "${dest}"
+                chmod 660 "${dest}"
+              ''
+            ) printerProfilesConfig
+          )}
+        '';
 
       serviceConfig = {
         ExecStart = ''

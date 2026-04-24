@@ -225,7 +225,7 @@
       };
       serial = {
         autoconnect = true;
-        log = true;
+        log = false;
       };
       server = {
         # Prevent us from entering the wizard which won't work because the
