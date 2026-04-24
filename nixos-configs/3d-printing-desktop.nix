@@ -17,6 +17,6 @@
     # which I do not have in my nixpkgs yet.
     # pkgs.blender
     # pkgs.openscad
-    # pkgs.prusa-slicer
+    pkgs.prusa-slicer
   ];
 }
