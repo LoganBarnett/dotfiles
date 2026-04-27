@@ -89,6 +89,13 @@ I do have some inconsistencies wherein some ~nixos-modules~ are actually
 ~nixos-configs~, but I didn't have the split pattern at time of authorship of
 those.
 
+*** Nix Build
+
+A ~nix build '.#nixosConfigurations.${host}.config.system.build.toplevel'~
+invocation is almost assured to fail because there will likely be a mismatch
+between architecture and platform.  See [[file:./README.org::*deploy tools][deploy tools]] for how to do a deployment,
+which will also do your build.
+
 *** Scripts
 
 Scripts that ship as part of a derivation are co-located with their
