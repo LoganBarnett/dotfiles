@@ -64,8 +64,16 @@ gree-remote wlan --ssid '<home-ssid>' --psw '<home-password>'
 #+end_src
 
 The ~wlan~ subcommand sends an unencrypted UDP packet to ~192.168.1.1:7000~
-with the WiFi credentials.  After receiving it, the unit reboots onto the
-home network.  The provisioning AP disappears.
+with the WiFi credentials.  A successful response looks like:
+
+#+begin_example
+WLAN configuration accepted: {'t': 'ret', 'r': 200, 'mac': '<device-mac>'}
+#+end_example
+
+The unit reboots onto the home network and the provisioning AP disappears.
+Note the ~mac~ field in the response — it's the device MAC, useful if you
+need to drive ~bind~ directly later (e.g. across a VLAN where broadcast
+discovery doesn't reach).
 
 The ~wlan~ subcommand is provided by our fork of ~tomikaa87/gree-remote~
 (see [[*Implementation notes][Implementation notes]]); it is not in upstream.
@@ -81,9 +89,26 @@ gree-remote search -b 192.168.x.255
 
 (Replace ~192.168.x.255~ with the actual home subnet broadcast.)
 
-The output will print the unit's IP, MAC ID, and a freshly-bound per-device
-key.  Save these — they're needed for ongoing ~get~ / ~set~ commands.  Pin
-a static DHCP lease for the unit's MAC so the IP doesn't drift.
+Search broadcasts a scan, decrypts each response, and immediately invokes
+~bind~ for every device found.  Our fork tries both ECB and GCM encryption
+on bind — V3+ firmware reports a GCM-capable version string but in practice
+only accepts ECB-keyed bind requests, so the fallback matters.
+
+Capture four things from the output:
+
+- the unit's IP
+- its MAC ID
+- the per-device key (16 chars, e.g. ~Fbmtho7no8Q22aL3~)
+- *the encryption mode that succeeded* (printed in the "Binding device:
+  ... encryption: ECB|GCM" line)
+
+The encryption mode matters for every subsequent ~get~ / ~set~ — passing
+the wrong ~-e~ flag silently times out the same way the wrong-mode bind
+did.  V3+ firmware in this network has been observed to bind in ECB; older
+units may bind in GCM.
+
+Pin a static DHCP lease for the unit's MAC on the router so the IP doesn't
+drift.
 
 ** Re-provisioning onto a different network
 
@@ -109,25 +134,43 @@ mode for the first time.
 ** Local control
 
 Once the unit is on the LAN and bound, ~gree-remote get~ and ~gree-remote
-set~ read and write parameters.  Common parameter names include ~Pow~,
-~Mod~, ~SetTem~, ~WdSpd~, ~TemSen~ (see ~gree.py~ source for the full
-list).  This is control plane only — outdoor-unit sensors (compressor
-current, IPM temperature, discharge temperature) are not exposed over
-the LAN protocol; for those, the IDU's hidden self-check mode on the
-remote is the path.
+set~ read and write parameters.  Pass the same ~-e~ encryption mode that
+the bind succeeded with:
+
+#+begin_src sh :exports code
+gree-remote get -c <ip> -i <mac> -k <key> -e ECB Pow Mod SetTem TemSen
+gree-remote set -c <ip> -i <mac> -k <key> -e ECB SetTem=21
+#+end_src
+
+Common parameter names include ~Pow~, ~Mod~, ~SetTem~, ~WdSpd~, ~TemSen~
+(see ~gree.py~ source for the full list).
+
+This is control plane only — outdoor-unit sensors (compressor current, IPM
+temperature, discharge temperature) are not exposed over the LAN protocol;
+for those, the IDU's hidden self-check mode on the remote is the path.
 
 ** Implementation notes
 
 - ~gree-remote~ is packaged in this repo at
   [[file:../derivations/gree-remote/default.nix]] and made available via
   [[file:../agnostic-configs/iot-utils.nix]].
-- The ~wlan~ and ~bind~ subcommands referenced above are provided by our
-  fork at ~LoganBarnett/gree-remote~; they are not present in the upstream
-  Python CLI.  See ~tasks.org~ in ~nix-config-private~ for status.
+- Our fork at ~LoganBarnett/gree-remote~ (branch ~wlan-subcommand~) carries
+  three patches not in upstream:
+  1. ~wlan~ subcommand for AP-mode WiFi provisioning.
+  2. ~bind~ subcommand for invoking the bind handshake without a broadcast
+     scan (useful across VLANs).
+  3. Compatibility patches for V3+ firmware: search now falls back to
+     ~pack['mac']~ when ~cid~ is empty, and ~bind~ retries the opposite
+     encryption mode on timeout.  Both are needed because V3+ units
+     report GCM in scan responses but only respond to ECB-keyed binds.
+- See [[file:../../nix-config-private/tasks.org]] for the upstream-PR
+  status of these patches.
 
 ** References
 
 - Upstream gree-remote: https://github.com/tomikaa87/gree-remote
 - Issue #54 (stuck-binding warning): https://github.com/tomikaa87/gree-remote/issues/54
+- Issue #63 (V3+ firmware bind protocol drift):
+  https://github.com/tomikaa87/gree-remote/issues/63
 - Gree+ WiFi installation manual:
   https://www.greecomfort.com/assets/documents/resource-materials/wifi-info/gree-wifi-app-installation-and-operation.pdf
