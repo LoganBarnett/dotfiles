@@ -1,0 +1,133 @@
+#+title:     IoT Devices
+#+language:  en
+
+* Overview
+
+This document covers IoT devices on the home network: how they're identified,
+how they're provisioned onto the LAN, and how they're controlled locally.
+
+The general posture for any IoT device on this network is:
+
+- Provision onto the LAN once, ideally without the vendor's cloud app.
+- After provisioning, block the device's egress to the WAN at the firewall.
+  Local control keeps working; cloud heartbeats fail harmlessly.
+- Pin a static DHCP lease so addresses don't drift.
+- Prefer open-source local control (Home Assistant, openHAB, CLI tools)
+  over vendor mobile apps.
+
+* Stealth split heat pump
+
+** Identification
+
+The unit is sold as "Stealth" by Stealth Comfort Solutions (a 1HVAC brand),
+but the hardware and firmware are Gree-OEM rebranded.  Confirmed by:
+
+- Provisioning AP SSID format (=GR_AC_xxxxxxxx=).
+- Error code map matches Gree exactly (e.g. H5 = IPM Protection trip).
+- Vendor control app is Gree+, not a Stealth-specific app.
+- LAN protocol is the Gree UDP/7000 protocol, including AES-ECB and
+  AES-GCM variants for newer firmware.
+
+For service work, Gree service manuals (e.g. RIO, Multi) are usually the
+correct reference when the Stealth manual is thin.
+
+** Provisioning runbook
+
+Goal: get the unit off its temporary provisioning AP and onto the home
+WiFi network so it can be controlled locally via ~gree-remote~.
+
+*** 1. Put the unit in AP/pairing mode
+
+On the OEM remote, hold ~MODE~ + ~TURBO~ for ~10 seconds until the unit
+beeps twice.  The IDU will start broadcasting its provisioning AP.
+
+The AP will appear nearby as an SSID like ~GR_AC_xxxxxxxx~ (the trailing
+characters are derived from the unit's MAC).
+
+*** 2. Connect the host to the unit's AP
+
+From the host that has ~gree-remote~ installed (currently scandium), join
+the unit's AP.  The well-known default password is:
+
+#+begin_example
+12345678
+#+end_example
+
+This is the same on every Gree-OEM unit out of the box — it's not a
+per-device secret.  The host will get a DHCP lease in ~192.168.1.x~, with
+the unit itself reachable at ~192.168.1.1~.
+
+*** 3. Push the home WiFi credentials
+
+#+begin_src sh :exports code
+gree-remote wlan --ssid '<home-ssid>' --psw '<home-password>'
+#+end_src
+
+The ~wlan~ subcommand sends an unencrypted UDP packet to ~192.168.1.1:7000~
+with the WiFi credentials.  After receiving it, the unit reboots onto the
+home network.  The provisioning AP disappears.
+
+The ~wlan~ subcommand is provided by our fork of ~tomikaa87/gree-remote~
+(see [[*Implementation notes][Implementation notes]]); it is not in upstream.
+
+*** 4. Verify on the LAN
+
+Reconnect the host to the home WiFi, then discover the unit and capture
+its bind details:
+
+#+begin_src sh :exports code
+gree-remote search -b 192.168.x.255
+#+end_src
+
+(Replace ~192.168.x.255~ with the actual home subnet broadcast.)
+
+The output will print the unit's IP, MAC ID, and a freshly-bound per-device
+key.  Save these — they're needed for ongoing ~get~ / ~set~ commands.  Pin
+a static DHCP lease for the unit's MAC so the IP doesn't drift.
+
+** Re-provisioning onto a different network
+
+If the unit has already been provisioned and you want to move it to a
+different SSID, *always reset the WiFi state on the unit before pushing
+new credentials*.  Skipping this step can leave the unit in a "stuck"
+state where it responds to ~search~ but refuses to bind or accept commands
+because of cached binding state — see upstream issue
+[[https://github.com/tomikaa87/gree-remote/issues/54][tomikaa87/gree-remote#54]].
+
+To reset:
+
+1. Power on the unit.
+2. Hold ~MODE~ + ~TURBO~ on the remote for 10 seconds until the unit
+   beeps twice.  This drops it back to AP/unbound mode and the
+   ~GR_AC_xxxxxxxx~ AP reappears.
+3. Then run the provisioning runbook above against the new SSID.
+
+For a unit that has *never* been provisioned (e.g. a fresh install), this
+reset step is unnecessary — pressing MODE+TURBO simply puts it into AP
+mode for the first time.
+
+** Local control
+
+Once the unit is on the LAN and bound, ~gree-remote get~ and ~gree-remote
+set~ read and write parameters.  Common parameter names include ~Pow~,
+~Mod~, ~SetTem~, ~WdSpd~, ~TemSen~ (see ~gree.py~ source for the full
+list).  This is control plane only — outdoor-unit sensors (compressor
+current, IPM temperature, discharge temperature) are not exposed over
+the LAN protocol; for those, the IDU's hidden self-check mode on the
+remote is the path.
+
+** Implementation notes
+
+- ~gree-remote~ is packaged in this repo at
+  [[file:../derivations/gree-remote/default.nix]] and made available via
+  [[file:../agnostic-configs/iot-utils.nix]].
+- The ~wlan~ and ~bind~ subcommands referenced above are provided by our
+  fork at ~LoganBarnett/gree-remote~; they are not present in the upstream
+  Python CLI.  See ~tasks.org~ in ~nix-config-private~ for status.
+
+** References
+
+- Upstream gree-remote: https://github.com/tomikaa87/gree-remote
+- Issue #54 (stuck-binding warning): https://github.com/tomikaa87/gree-remote/issues/54
+- Gree+ WiFi installation manual:
+  https://www.greecomfort.com/assets/documents/resource-materials/wifi-info/gree-wifi-app-installation-and-operation.pdf

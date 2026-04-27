@@ -179,6 +179,9 @@ host='host'; ssh-keyscan $host.proton | grep -o 'ssh-ed25519.*' > secrets/$host-
 This covers miscellaneous devices on the network which need special instruction
 or understanding.
 
+For IoT devices specifically — how they're identified, provisioned onto the
+LAN, and controlled locally — see [[file:docs/iot.org]].
+
 ** Aruba 6300M
 
 Sometimes the windfall is pretty good!
