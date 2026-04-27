@@ -219,7 +219,14 @@ in
             pkgs.element-desktop
             # Download content from Fanbox.
             pkgs.fanbox-dl
-            pkgs.firefox-bin
+            # firefox is provided by home-manager via ../home-configs/firefox.nix
+            # (programs.firefox uses pkgs.firefox-bin via the overlay in
+            # overlays/firefox-bin.nix).  Including pkgs.firefox-bin here as well
+            # produces a duplicate /Applications/Nix Apps/Firefox.app alongside
+            # the Home Manager trampoline at
+            # ~/Applications/Home Manager Trampolines/Firefox.app — both with the
+            # same bundle ID, which confuses Spotlight/Alfred.  The trampoline
+            # alone is what carries the home-manager profile (extensions, prefs).
             # System monitoring in the menu bar.  Moved from homebrew cask.
             pkgs.istat-menus
             # Open-source keystroke visualizer.  Moved from homebrew cask.

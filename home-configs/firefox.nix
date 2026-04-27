@@ -17,6 +17,20 @@
 # management UI (added in Firefox 129) so Firefox silently falls back to
 # StartWithLastProfile / Default=1 without showing a picker.  The failed
 # background write of the Install section does not cause a crash.
+#
+# Sideloaded extension auto-disable: home-manager symlinks the extension
+# .xpi files into Profiles/default/extensions/.  Firefox treats anything
+# discovered through the filesystem (rather than installed via about:addons
+# or AMO) as a "foreign install" and, since Firefox 73, marks them
+# userDisabled=true on first discovery — even when signedState=2 (signed by
+# Mozilla).  The extensions.autoDisableScopes pref is a bitfield of install
+# scopes whose foreign installs should be auto-disabled (default 15 = all:
+# profile|user|system|application).  Setting it to 0 lets all scopes through.
+# This pref only applies when the addon is *first discovered*; if Firefox
+# has already cached an extension as disabled in extensions.json /
+# addonStartup.json.lz4, the pref change alone won't re-enable it — those
+# state files must be deleted so Firefox rescans the .xpi files and applies
+# the new pref to the fresh discovery.
 ################################################################################
 { pkgs, ... }:
 {
@@ -79,6 +93,17 @@
         # browser.profiles.enabled = false set above also suppresses the
         # profile-picker dialog; this pref targets the in-browser banner.
         "browser.profiles.createdByDevEdition" = false;
+        # Allow filesystem-discovered (foreignInstall=true) extensions —
+        # i.e. the .xpi files home-manager symlinks into the profile's
+        # extensions/ directory — to be active by default instead of being
+        # auto-disabled.  See banner comment above for the full rationale.
+        # 0 = no scopes auto-disable; default is 15 (all scopes).
+        "extensions.autoDisableScopes" = 0;
+        # Scan all install scopes at startup so home-manager-symlinked
+        # extensions are picked up after every nix-darwin switch (the symlink
+        # target inside the Nix store changes with each generation).  Default
+        # is 15 (all scopes) — set explicitly to make intent clear.
+        "extensions.startupScanScopes" = 15;
       };
     };
   };
