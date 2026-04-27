@@ -53,6 +53,13 @@ the code review agents:
 This review process is mandatory for all code changes unless explicitly told
 to skip reviews.
 
+** Network and Hosts
+
+The local network uses the ~.proton~ domain suffix.  Host names declared in
+~nixos-modules/facts.nix~ are reachable at ~<hostname>.proton~ (e.g.
+~rubidium.proton~, ~scandium.proton~).  When SSH-ing to a host by short name,
+append ~.proton~ — e.g. ~ssh rubidium.proton~.
+
 ** Nix
 
 *** Flake Inputs
