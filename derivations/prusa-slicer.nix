@@ -183,6 +183,11 @@ stdenv.mkDerivation (finalAttrs: {
     # Fix resources folder location on macOS
     substituteInPlace src/PrusaSlicer.cpp \
       --replace "#ifdef __APPLE__" "#if 0"
+
+    # Stash the upstream macOS Info.plist template for postInstall.  cmake
+    # switches into a build subdir, so capturing it here (at source root)
+    # avoids relying on phase-specific cwd later.
+    install -D src/platform/osx/Info.plist.in "$TMPDIR/Info.plist.in"
   '';
 
   cmakeFlags = [
@@ -202,6 +207,36 @@ stdenv.mkDerivation (finalAttrs: {
     mkdir -p "$out/share/pixmaps/"
     ln -s "$out/share/PrusaSlicer/icons/PrusaSlicer.png" "$out/share/pixmaps/PrusaSlicer.png"
     ln -s "$out/share/PrusaSlicer/icons/PrusaSlicer-gcodeviewer_192px.png" "$out/share/pixmaps/PrusaSlicer-gcodeviewer.png"
+  ''
+  + lib.optionalString stdenv.hostPlatform.isDarwin ''
+    # Lay down a macOS .app bundle so PrusaSlicer is launchable from Finder
+    # / Launchpad and picked up by nix-darwin's Applications symlinker.  The
+    # bundle is metadata + icon over the existing wrapped CLI binary.
+    app="$out/Applications/PrusaSlicer.app"
+    mkdir -p "$app/Contents/MacOS" "$app/Contents/Resources"
+
+    # Use upstream's Info.plist template so file associations (.stl, .3mf,
+    # .gcode, etc.) and the prusaslicer:// URL handler match Prusa's
+    # official builds.
+    install -m 644 "$TMPDIR/Info.plist.in" "$app/Contents/Info.plist"
+    substituteInPlace "$app/Contents/Info.plist" \
+      --replace "@SLIC3R_APP_KEY@"  "PrusaSlicer" \
+      --replace "@SLIC3R_APP_NAME@" "PrusaSlicer" \
+      --replace "@SLIC3R_BUILD_ID@" "${finalAttrs.version}"
+
+    for icns in PrusaSlicer.icns stl.icns gcode.icns bgcode.icns; do
+      icns_src="$out/share/PrusaSlicer/icons/$icns"
+      [ -f "$icns_src" ] && ln -s "$icns_src" "$app/Contents/Resources/$icns"
+    done
+
+    # Launch Services strips most of the user's shell env, so DISPLAY won't
+    # be set when launched from Finder.  XQuartz listens on :0 by default.
+    cat > "$app/Contents/MacOS/PrusaSlicer" <<SHIM
+    #!/bin/sh
+    export DISPLAY="\''${DISPLAY:-:0}"
+    exec "$out/bin/PrusaSlicer" "\$@"
+    SHIM
+    chmod +x "$app/Contents/MacOS/PrusaSlicer"
   '';
 
   preFixup = ''
