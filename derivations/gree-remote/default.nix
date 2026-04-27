@@ -33,8 +33,8 @@ stdenv.mkDerivation {
   src = fetchFromGitHub {
     owner = "LoganBarnett";
     repo = "gree-remote";
-    rev = "7ee5495e8185ee1b0678e9826b666117f2c148bf";
-    hash = "sha256-hLJLUNCeDrsaz1akI+mhjKg+bMDCG/ATjWWHfEgnd/I=";
+    rev = "c78fbeeab9ad758a721ad5d307833a5aac4fac93";
+    hash = "sha256-6n1v7PNS1NMbqb6HqkAwENVERFuU0C5ZsoppbnB8hEg=";
   };
 
   nativeBuildInputs = [ makeWrapper ];
