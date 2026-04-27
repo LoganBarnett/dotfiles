@@ -34,6 +34,21 @@ let
   work-domain = "${work-alias}.org";
   # Email domain (different from org name).
   org-domain = "${org-alias}co.com";
+  # Runs BOTH the Nix-provided `fping` and the macOS system `/sbin/ping`
+  # against each host, succeeding only if both succeed.  Nix fping uses
+  # its own resolver and routes; macOS ping uses the system resolver and
+  # routing tables.  When VPN DNS scoping (e.g. /etc/resolver bindings)
+  # is partially broken, one will pass while the other fails — we want
+  # the heartbeat to flag that asymmetry rather than mask it.
+  ping-hosts =
+    hosts:
+    let
+      host-args = lib.concatStringsSep " " hosts;
+      macos-checks = lib.concatMapStringsSep " && " (
+        h: "/sbin/ping -c 1 -W 4000 ${h} > /dev/null"
+      ) hosts;
+    in
+    "${pkgs.fping}/bin/fping -q -t 4000 -r 1 ${host-args} && ${macos-checks}";
 in
 {
   services.garage-queue-worker.workers.ollama.settings.capabilities.scalars.vram_mb =
@@ -385,7 +400,11 @@ in
     heartbeats = [
       {
         name = "internal";
-        command = "${pkgs.fping}/bin/fping -q -t 4000 -r 1 192.168.254.254 192.168.254.9 silicon.proton";
+        command = ping-hosts [
+          "192.168.254.254"
+          "192.168.254.9"
+          "silicon.proton"
+        ];
         resultMode = "exit-code";
         cycleSecs = 15.0;
         playback = "clock";
@@ -410,7 +429,12 @@ in
       }
       {
         name = "external";
-        command = "${pkgs.fping}/bin/fping -q -t 4000 -r 1 208.67.222.222 9.9.9.9 resolver1.opendns.com api.anthropic.com";
+        command = ping-hosts [
+          "208.67.222.222"
+          "9.9.9.9"
+          "resolver1.opendns.com"
+          "api.anthropic.com"
+        ];
         resultMode = "exit-code";
         cycleSecs = 15.0;
         playback = "clock";
@@ -451,7 +475,12 @@ in
       }
       {
         name = "vpn";
-        command = "${pkgs.fping}/bin/fping -q -t 4000 -r 1 10.210.16.247 10.210.16.191 idm01.mgmt.${work-alias}colo.pvt artifacts.americas.${work-alias}.pvt";
+        command = ping-hosts [
+          "10.210.16.247"
+          "10.210.16.191"
+          "idm01.mgmt.${work-alias}colo.pvt"
+          "artifacts.americas.${work-alias}.pvt"
+        ];
         resultMode = "exit-code";
         cycleSecs = 15.0;
         playback = "clock";
