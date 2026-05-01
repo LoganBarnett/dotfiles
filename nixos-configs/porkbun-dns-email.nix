@@ -1,6 +1,6 @@
 ################################################################################
-# Manages email-related DNS records for meshward.com and logustus.com via
-# nix-hapi-provider-porkbun.
+# Manages email-related Porkbun DNS records for meshward.com and
+# logustus.com via the typed nix-hapi-porkbun module.
 #
 # Records managed here (per domain):
 #   MX/@                    — inbound mail server
@@ -14,6 +14,10 @@
 #   A/vpn                 — VPN A record (managed by dness, logustus.com only)
 #   NS/*                  — apex NS records (managed by the registrar)
 #
+# Other Porkbun-managed records (e.g. blog CNAMEs) live in sibling files
+# that contribute to the same `services.nix-hapi-porkbun.scopes`; per-key
+# merging means contributions compose without losing config.
+#
 # Credentials: reuses the same Porkbun API key/secret already declared by
 # acme.nix.  The nix-hapi-porkbun service binds them via LoadCredential.
 ################################################################################
@@ -21,12 +25,10 @@
   config,
   flake-inputs,
   lib,
-  system,
   ...
 }:
 let
   inherit (flake-inputs.nix-hapi.lib) mkManagedFromPath;
-  inherit (flake-inputs.nix-hapi-provider-porkbun.lib) mkPorkbunProvider mkRecord;
 
   cred-path = name: "/run/credentials/nix-hapi-porkbun.service/${name}";
 
@@ -43,15 +45,17 @@ let
 
   # Email DNS records common to any externally-hosted domain.
   emailRecords = domain: dkimPub: {
-    "MX/@" = mkRecord {
+    "MX/@" = {
       content = "mail.${domain}";
       prio = "10";
     };
-    "TXT/@" = mkRecord { content = "v=spf1 mx ~all"; };
-    "TXT/default._domainkey" = mkRecord {
+    "TXT/@" = {
+      content = "v=spf1 mx ~all";
+    };
+    "TXT/default._domainkey" = {
       content = "v=DKIM1; k=ed25519; p=${dkimPub}";
     };
-    "TXT/_dmarc" = mkRecord {
+    "TXT/_dmarc" = {
       content = "v=DMARC1; p=none; rua=mailto:logustus+dmarc@gmail.com";
     };
   };
@@ -67,37 +71,39 @@ let
   );
 in
 {
-  services.nix-hapi = {
+  imports = [
+    flake-inputs.nix-hapi-provider-porkbun.nixosModules.default
+  ];
+
+  services.nix-hapi.enable = true;
+  services.nix-hapi-porkbun = {
     enable = true;
-    trees.porkbun = {
-      desiredState = {
-        meshward-dns = mkPorkbunProvider {
-          domain = "meshward.com";
-          api_key = api-key;
-          secret_api_key = api-secret;
-          ignore = [
-            ignore-acme
-            ignore-wildcard-a
-            ignore-ns
-          ];
-          records = emailRecords "meshward.com" meshward-dkim-pub;
-        };
-        logustus-dns = mkPorkbunProvider {
-          domain = "logustus.com";
-          api_key = api-key;
-          secret_api_key = api-secret;
-          ignore = [
-            ignore-acme
-            ignore-wildcard-a
-            ignore-vpn-a
-            ignore-ns
-          ];
-          records = emailRecords "logustus.com" logustus-dkim-pub;
-        };
+
+    scopes."meshward.com" = {
+      provider = {
+        api_key = api-key;
+        secret_api_key = api-secret;
       };
-      providers.porkbun =
-        "${flake-inputs.nix-hapi-provider-porkbun.packages.${system}.default}"
-        + "/bin/nix-hapi-provider-porkbun";
+      ignore = [
+        ignore-acme
+        ignore-wildcard-a
+        ignore-ns
+      ];
+      records = emailRecords "meshward.com" meshward-dkim-pub;
+    };
+
+    scopes."logustus.com" = {
+      provider = {
+        api_key = api-key;
+        secret_api_key = api-secret;
+      };
+      ignore = [
+        ignore-acme
+        ignore-wildcard-a
+        ignore-vpn-a
+        ignore-ns
+      ];
+      records = emailRecords "logustus.com" logustus-dkim-pub;
     };
   };
 

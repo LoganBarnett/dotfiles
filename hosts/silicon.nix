@@ -44,7 +44,8 @@ in
     ../nixos-configs/ivatar.nix
     ../nixos-configs/mastodon.nix
     ../nixos-configs/metube.nix
-    ../nixos-configs/porkbun-email-dns.nix
+    ../nixos-configs/porkbun-dns-email.nix
+    ../nixos-configs/porkbun-dns.nix
     ../nixos-configs/sftpgo.nix
     ../nixos-modules/stalwart.nix
     ../nixos-configs/stalwart.nix
