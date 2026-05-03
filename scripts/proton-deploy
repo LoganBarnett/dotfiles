@@ -46,11 +46,12 @@ if [ "$deploy_type" = "darwin" ]; then
     exit 1
   fi
   if [ "$host" = "$local_host" ]; then
-    # Deploying to ourselves.  In modern nix-darwin (with system.primaryUser
-    # set) `darwin-rebuild switch` activates without sudo; just point it at
-    # the working tree directly.
+    # Deploying to ourselves.  System activation always needs root; the
+    # `nix-darwin-switch` helper exists exactly because raw `darwin-rebuild
+    # switch` errors with "system activation must now be run as root" when
+    # invoked unprivileged.
     echo "Building and activating $host locally..." >&2
-    darwin-rebuild switch --flake ".#${host}"
+    sudo darwin-rebuild switch --flake ".#${host}"
   else
     # Archive the flake and all its locked inputs to the remote store
     # (source trees are content-addressed, so no store-signing issues),
