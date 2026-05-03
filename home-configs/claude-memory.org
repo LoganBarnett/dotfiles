@@ -10,6 +10,23 @@ or the project was established by non-org-mode users (e.g. existing repo with a
 GitHub does not require markdown files for anything - org-mode can be used in
 place of any markdown file.
 
+* Prose conventions
+
+When authoring prose — org-mode docs, markdown, multi-sentence code
+comments, commit message bodies, plain text — put two spaces after
+sentence-ending punctuation (~.~, ~!~, ~?~).  Single space inside a
+sentence as normal.
+
+This gives an unambiguous machine-readable sentence boundary, so
+vim/evil sentence text objects (~dis~, ~cis~, ~)~, ~(~) work
+reliably.  Single-space + period collides with abbreviations like
+"Mr." or "e.g."; two-space terminators do not.  Vim's ~'cpoptions'~
+~J~ flag formalizes the same convention.
+
+When editing existing prose that uses single-spacing, match the
+surrounding style rather than reflowing.  HTML/web output is exempt
+— browsers collapse whitespace in rendered output regardless.
+
 * Nix
 
 ** Explicit ~default.nix~ paths

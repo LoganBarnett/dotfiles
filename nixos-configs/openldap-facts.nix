@@ -1,11 +1,13 @@
 ################################################################################
 # Activates the ldap-server module and populates it from auth.ldap.* options
-# collected across all hosts in the cluster.
+# collected across all hosts in the cluster, via the typed nix-hapi-ldap
+# module.
 #
 # Each service host declares its LDAP users and groups inline via the
 # auth.ldap.{users,groups} options (provided by nixos-modules/ldap-auth.nix).
 # This config aggregates those declarations from specialArgs.nodes and feeds
-# them to nix-hapi, which keeps the live directory in sync.
+# them through the typed `services.nix-hapi-ldap.scopes` schema, which
+# translates to the JSON the reconciler consumes.
 #
 # ldap-auth-facts.nix handles the person accounts (sourced from facts.nix).
 # Service accounts come from each service's own config via nodes.
@@ -58,15 +60,13 @@ let
   ) all-ldap-users;
 
   inherit (flake-inputs.nix-hapi.lib) mkManagedFromPath mkInitialFromPath;
-  inherit (flake-inputs.nix-hapi-provider-ldap.lib)
-    mkLdapGroup
-    mkLdapProvider
-    mkLdapUser
-    ;
 
 in
 {
-  imports = [ ./ldap-auth-facts.nix ];
+  imports = [
+    ./ldap-auth-facts.nix
+    flake-inputs.nix-hapi-provider-ldap.nixosModules.default
+  ];
   networking.dnsAliases = [ "ldap" ];
 
   services.ldap-server.enable = true;
@@ -100,42 +100,40 @@ in
     ) foreign-ldap-users
   );
 
-  services.nix-hapi = {
+  services.nix-hapi.enable = true;
+  services.nix-hapi.package = flake-inputs.nix-hapi.packages.${system}.default;
+  services.nix-hapi-ldap = {
     enable = true;
-    package = flake-inputs.nix-hapi.packages.${system}.default;
-    trees.ldap = {
-      desiredState = {
-        proton-ldap = mkLdapProvider {
-          url = "ldaps://ldap.${facts.network.domain}";
-          baseDn = base-dn;
-          bindDn = "cn=admin,${base-dn}";
-          bindPassword = mkManagedFromPath "/run/credentials/nix-hapi-ldap.service/ldap-root-pass";
-          users = lib.mapAttrs (
-            name: ucfg:
-            mkLdapUser {
-              cn = ucfg.fullName;
-              sn = name;
-              mail = ucfg.email;
-              userPassword =
-                if ucfg.managed then
-                  mkManagedFromPath (credential-path name)
-                else
-                  mkInitialFromPath (credential-path name);
-              description = if ucfg.description != "" then ucfg.description else null;
-            }
-          ) all-ldap-users;
-          groups = lib.mapAttrs (
-            _name: group:
-            mkLdapGroup {
-              description = if group.description != "" then group.description else null;
-              members = group.members;
-            }
-          ) all-ldap-groups;
-        };
+    # Use the consumer's flake-inputs view of the package so that
+    # nix-config-private's `overridePkg` (which substitutes the patched
+    # build with rewritten Cargo git deps for the gitea-only environment)
+    # is what actually runs.
+    package = flake-inputs.nix-hapi-provider-ldap.packages.${system}.default;
+
+    scopes."proton-ldap" = {
+      provider = {
+        url = "ldaps://ldap.${facts.network.domain}";
+        baseDn = base-dn;
+        bindDn = "cn=admin,${base-dn}";
+        bindPassword = mkManagedFromPath "/run/credentials/nix-hapi-ldap.service/ldap-root-pass";
       };
-      providers.ldap =
-        "${flake-inputs.nix-hapi-provider-ldap.packages.${system}.default}"
-        + "/bin/nix-hapi-provider-ldap";
+
+      users = lib.mapAttrs (name: ucfg: {
+        cn = ucfg.fullName;
+        sn = name;
+        mail = ucfg.email;
+        userPassword =
+          if ucfg.managed then
+            mkManagedFromPath (credential-path name)
+          else
+            mkInitialFromPath (credential-path name);
+        description = if ucfg.description != "" then ucfg.description else null;
+      }) all-ldap-users;
+
+      groups = lib.mapAttrs (_name: group: {
+        description = if group.description != "" then group.description else null;
+        members = group.members;
+      }) all-ldap-groups;
     };
   };
 
