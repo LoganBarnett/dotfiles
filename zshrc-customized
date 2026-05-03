@@ -222,7 +222,7 @@ grepp() {
 # and zsh's vim bindings stumbling over each other. See
 # https://github.com/syl20bnr/spacemacs/issues/7140#issuecomment-252036519 for
 # more config examples.
-if [ $EMACS ]; then
+if [ -n "$INSIDE_EMACS" ] || [ -n "$EMACS" ]; then
   bindkey -e
 else
   # vim mode for zsh
