@@ -25,6 +25,7 @@
   config,
   flake-inputs,
   lib,
+  system,
   ...
 }:
 let
@@ -78,6 +79,13 @@ in
   services.nix-hapi.enable = true;
   services.nix-hapi-porkbun = {
     enable = true;
+    # Use the consumer's flake-inputs view of the package so that
+    # nix-config-private's `overridePkg` (which substitutes the patched
+    # build with rewritten Cargo git deps for the gitea-only environment)
+    # is what actually runs.  The module's own `self.packages.…` default
+    # would resolve to the un-patched build, whose Cargo.lock points
+    # nix-hapi-lib at GitHub — unreachable from the nix-daemon here.
+    package = flake-inputs.nix-hapi-provider-porkbun.packages.${system}.default;
 
     scopes."meshward.com" = {
       provider = {
