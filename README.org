@@ -6,6 +6,11 @@
 #+file_tags:
 #+tags:
 
+#+begin_quote
+⚠️ *Archived.*  Active development continues at
+[[https://github.com/LoganBarnett/nix-config][LoganBarnett/nix-config]].
+#+end_quote
+
 Here I store my notes regarding Nix as it pertains to this repository.  This
 will include some findings and also projects I'm working on.  I do have separate
 notes for Nix in my private notes repository, and I haven't yet come up with a
